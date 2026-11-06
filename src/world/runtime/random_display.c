@@ -306,9 +306,9 @@ static bool body(mc_world_random_display_call *c) {
             return false;
         at(c, 100);
         mc_world_storage_error cause = {0};
-        if (mc_world_runtime_block_get_detailed(c->state.world, c->state.x, c->state.y, c->state.z,
-                                                &c->state.block_id, &cause,
-                                                &c->acquisition) != MC_WORLD_STORAGE_OK)
+        if (mc_world_runtime_block_get_failure(c->state.world, c->state.x, c->state.y, c->state.z,
+                                               &c->state.block_id, &cause,
+                                               &c->acquisition) != MC_WORLD_STORAGE_OK)
             return acquisition_fail(c, cause);
         c->state.block_read = true;
         if (c->state.block_id > 0) {

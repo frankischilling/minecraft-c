@@ -617,7 +617,10 @@ static bool inactive_controls(display_fixture *f) {
     return true;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_RANDOM_DISPLAY_ENTRY
+#define MC_RANDOM_DISPLAY_ENTRY main
+#endif
+int MC_RANDOM_DISPLAY_ENTRY(int argc, char **argv) {
     if (argc != 6)
         return 2;
     display_input direct[128] = {0}, sampler[128] = {0};

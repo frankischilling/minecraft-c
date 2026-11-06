@@ -3,6 +3,7 @@
 #include "../mob/damage_internal.h"
 #include "../mob/death_internal.h"
 #include "../player/damage_internal.h"
+#include "../player/damage_wake_internal.h"
 #include "../player/death_internal.h"
 #include "effects_internal.h"
 
@@ -595,6 +596,13 @@ static bool dead_in_context(mc_entity *entity, mc_registry_classes *registry, mc
                             mc_entity_effect_error *error) {
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
         error->source_class = "gs";
+        if (mc_entity_effect_has_pending(entity)) {
+            (void)mc_player_damage_wake_inspect(entity, &error->player_wake);
+            (void)mc_player_death_inspect(entity, &error->player_death);
+            fail(error, MC_ENTITY_BUSY, MC_ENTITY_EFFECT_CAUSE_OWNER,
+                 "Player K pending native child cleanup", 0);
+            return false;
+        }
         const bool returned = mc_player_dead_entered(entity, registry, math, error);
         error->close_bytecode = (uint16_t)error->player_death.site.pc;
         return returned;
@@ -655,8 +663,9 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_clas
     if (mc_entity_effect_has_pending(entity)) {
         (void)mc_mob_death_inspect(entity, &error->death);
         (void)mc_player_death_inspect(entity, &error->player_death);
+        (void)mc_player_damage_wake_inspect(entity, &error->player_wake);
         fail(error, MC_ENTITY_BUSY, MC_ENTITY_EFFECT_CAUSE_OWNER,
-             "Entity damage pending native death cleanup", 0);
+             "Entity damage pending native child cleanup", 0);
         return false;
     }
     if (source == NULL &&
@@ -706,10 +715,9 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_clas
                 return false;
             }
             if (!entity->base.world->fields.B) {
-                error->player_bytecode = 35;
-                fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
-                     "Player damage actual wake(true,true,false)", 35);
-                return false;
+                error->source_bytecode = error->player_bytecode = 35;
+                if (!mc_player_damage_wake_entered(entity, classes, error))
+                    return false;
             }
         }
         /* Source instanceof first occurs at38, after the health/sleep prefix.
@@ -791,7 +799,8 @@ mc_entity_status mc_entity_effect_damage_with_math(mc_entity *entity, mc_registr
 bool mc_entity_effect_has_pending(const mc_entity *entity) {
     return (mc_entity_has_mob(entity) && entity->mob->pending_death != NULL) ||
            (entity != NULL && entity->local_player != NULL &&
-            entity->local_player->pending_death != NULL);
+            (entity->local_player->pending_death != NULL ||
+             entity->local_player->pending_damage_wake != NULL));
 }
 
 mc_entity_status mc_entity_effect_cleanup(mc_entity *entity, mc_entity_effect_error *error) {
@@ -800,7 +809,8 @@ mc_entity_status mc_entity_effect_cleanup(mc_entity *entity, mc_entity_effect_er
     if (enter(entity, &frame)) {
         if (mc_entity_has_mob(entity))
             (void)mc_mob_death_cleanup(entity, &frame);
-        else if (entity->local_player != NULL)
+        else if (entity->local_player != NULL &&
+                 mc_player_damage_wake_cleanup(entity, &frame) == MC_ENTITY_OK)
             (void)mc_player_death_cleanup(entity, &frame);
         mc_entity_release(entity);
     }
@@ -810,6 +820,22 @@ mc_entity_status mc_entity_effect_cleanup(mc_entity *entity, mc_entity_effect_er
 bool mc_entity_effect_error_retire(mc_entity_effect_error *error) {
     if (error == NULL)
         return false;
+    if (error->player_wake.pending) {
+        mc_entity_effect_error wake_cleanup;
+        mc_entity_effect_error_init(&wake_cleanup);
+        const mc_entity_status status =
+            mc_entity_effect_cleanup(error->player_wake.receiver, &wake_cleanup);
+        if (wake_cleanup.player_wake.entered)
+            error->player_wake = wake_cleanup.player_wake;
+        else if (status != MC_ENTITY_OK) {
+            /* Native effect admission can fail before the pending work is
+             * inspected. Keep that original child reachable for the retry. */
+            error->player_wake.cleanup_status = status;
+            error->player_wake.cleanup_operation = wake_cleanup.operation;
+        }
+        if (status != MC_ENTITY_OK)
+            return false;
+    }
     if (!error->death.pending && !error->player_death.pending)
         return true;
     mc_entity_effect_error cleanup;
@@ -847,6 +873,7 @@ mc_entity_status mc_entity_effect_death_with_math(mc_entity *entity, mc_registry
         if (mc_entity_effect_has_pending(entity)) {
             (void)mc_mob_death_inspect(entity, &frame.death);
             (void)mc_player_death_inspect(entity, &frame.player_death);
+            (void)mc_player_damage_wake_inspect(entity, &frame.player_wake);
             fail(&frame, MC_ENTITY_BUSY, MC_ENTITY_EFFECT_CAUSE_OWNER,
                  "Entity death pending native child cleanup", 0);
         } else if (entity->local_player != NULL) {

@@ -50,7 +50,15 @@ bool mc_tick_effect(mc_entity_tick_error *e, mc_entity_status status, const char
     const bool damage_failure = status != MC_ENTITY_OK && e->effect.status == status &&
                                 e->effect.living_damage.entered &&
                                 !e->effect.living_damage.returned;
-    if (damage_failure) {
+    const bool wake_failure = status != MC_ENTITY_OK && e->effect.status == status &&
+                              e->effect.cause != MC_ENTITY_EFFECT_CAUSE_OWNER &&
+                              e->effect.player_wake.status == status &&
+                              e->effect.player_wake.entered && !e->effect.player_wake.returned;
+    if (wake_failure) {
+        e->source_exception =
+            e->effect.player_wake.source_exception && !e->effect.player_wake.native_policy;
+        e->exception_class = e->source_exception ? e->effect.player_wake.exception_class : NULL;
+    } else if (damage_failure) {
         /* This selected value belongs to the actual damage invocation. Native
          * limit/capture failures take precedence over borrowed Source causes. */
         e->source_exception =
@@ -64,8 +72,8 @@ bool mc_tick_effect(mc_entity_tick_error *e, mc_entity_status status, const char
         e->source_exception = true;
         e->exception_class = "java/lang/NullPointerException";
     }
-    if (status != MC_ENTITY_OK && !damage_failure && e->material.status == status &&
-        e->material.source_exception) {
+    if (status != MC_ENTITY_OK && !damage_failure && !wake_failure &&
+        e->material.status == status && e->material.source_exception) {
         e->source_exception = true;
         e->exception_class = e->material.exception_class;
     }

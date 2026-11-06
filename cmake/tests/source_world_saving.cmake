@@ -73,6 +73,32 @@ if(BUILD_TESTING AND Python3_Interpreter_FOUND)
         LABELS "public;unit;tools;world;performance" TIMEOUT 30)
 endif()
 if(MC_BUILD_BENCHMARKS AND BUILD_TESTING AND TARGET mc_simulation)
+    add_library(mc_benchmark_random_display_workload OBJECT tests/benchmarks/random_display.c)
+    target_include_directories(mc_benchmark_random_display_workload PRIVATE src src/core/java)
+    target_link_libraries(mc_benchmark_random_display_workload PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_math_classes mc_build_options)
+    foreach(_mc_random_display_adapter IN ITEMS detailed failure)
+        add_executable("mc_benchmark_random_display_${_mc_random_display_adapter}"
+            "tests/benchmarks/random_display_${_mc_random_display_adapter}.c"
+            $<TARGET_OBJECTS:mc_benchmark_random_display_workload>)
+        target_include_directories("mc_benchmark_random_display_${_mc_random_display_adapter}"
+            PRIVATE src src/core/java)
+        target_link_libraries("mc_benchmark_random_display_${_mc_random_display_adapter}" PRIVATE
+            mc_simulation mc_resources mc_c_atomics mc_math_classes mc_build_options)
+        set_target_properties("mc_benchmark_random_display_${_mc_random_display_adapter}"
+            PROPERTIES MC_NO_SHELL32_DELAYLOAD TRUE)
+    endforeach()
+    unset(_mc_random_display_adapter)
+    if(Python3_Interpreter_FOUND)
+        add_test(NAME world.random_display_benchmark_controls COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/benchmark_random_display.py"
+            --executable "detailed=$<TARGET_FILE:mc_benchmark_random_display_detailed>"
+            --executable "failure=$<TARGET_FILE:mc_benchmark_random_display_failure>"
+            --artifacts "${CMAKE_CURRENT_BINARY_DIR}/random-display-benchmark-controls"
+            --rounds 1 --mode controls)
+        set_tests_properties(world.random_display_benchmark_controls PROPERTIES
+            LABELS "public;integration;world;performance;ownership" TIMEOUT 420)
+    endif()
     add_executable(mc_benchmark_block_static_getter tests/benchmarks/block_static_getter.c)
     target_link_libraries(mc_benchmark_block_static_getter PRIVATE
         mc_registry mc_c_atomics mc_build_options)

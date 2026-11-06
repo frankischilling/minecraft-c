@@ -73,6 +73,26 @@ typedef struct mc_entity_living_damage_state {
     mc_entity_player_health_damage_state player_health;
 } mc_entity_living_damage_state;
 
+struct mc_player_sleep_error;
+struct mc_player_sleep_cleanup;
+
+/* The damaged Player owns an interrupted wake, including NULL-error calls.
+ * These typed views borrow that one invocation; copying a receipt acquires no
+ * owner. They expire together after checked effect cleanup. */
+typedef struct mc_entity_player_wake_state {
+    bool entered, returned, pending, active;
+    mc_entity_status status;
+    const char *operation;
+    mc_player_site site, child;
+    bool native_policy, source_exception, source_error;
+    const char *exception_class;
+    mc_entity *receiver;
+    const struct mc_player_sleep_error *error;
+    const struct mc_player_sleep_cleanup *cleanup;
+    mc_entity_status cleanup_status;
+    const char *cleanup_operation;
+} mc_entity_player_wake_state;
+
 /* Passive reached-operation frames, independent of constructor diagnostics.
  * source_bytecode belongs to the requested effect; child fields name its
  * actual delegated source bodies. Successful calls return a fresh empty error,
@@ -106,6 +126,7 @@ typedef struct mc_entity_effect_error {
     mc_entity_living_damage_state living_damage;
     mc_mob_death_state death;
     mc_player_death_state player_death;
+    mc_entity_player_wake_state player_wake;
     /* Complete last reached IX child cause, including any actual IZ wear and
      * broken-Item statistic. The compact GS receipt keeps preceding arithmetic.
      * This value owns no Inventory, Stack, Entity or pending work. */
@@ -164,7 +185,7 @@ mc_entity_status mc_entity_effect_death_with_math(mc_entity *, mc_registry_class
                                                   mc_entity_effect_error *);
 bool mc_entity_effect_has_pending(const mc_entity *);
 mc_entity_status mc_entity_effect_cleanup(mc_entity *, mc_entity_effect_error *);
-/* Consume the borrowed pending death named by this value receipt while its
+/* Consume the borrowed pending death or damage wake named by this value receipt while its
  * graph is live. Success clears expired borrows and preserves the source cause.
  * False leaves the remaining producer and cleanup cause available for retry.
  * Copied receipts acquire no independent owner; their borrows expire together. */

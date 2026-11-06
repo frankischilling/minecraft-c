@@ -1,5 +1,86 @@
 # Test scope and reproduction
 
+## Sleeping-Player damage and ambient sampling
+
+The [damage wake component](entity/player-damage-wake.md) connects actual GS35
+with flags `(true,true,false)`. Two fresh original VMs each complete 32 calls:
+25 returns and seven first null exceptions. Windows MSVC 19.51 Release and
+Linux Clang 18 Debug with ASan/UBSan match
+4,748 shared scalars, including the completed wake before a later null-App or
+null-Inventory failure. Forty-six Java schema/stack-name positions are explicitly
+unpaired. Original binaries, resources and raw attempts remain local.
+
+The native authored controls pass 335,423 checks over four directions and
+sixteen additional inputs. These cover optional error output, pending-work
+admission, first-cause preservation, refused outer/child cleanup and environment,
+travel and movement cleanup sinks. The client cleanup fixture passes 241 checks.
+Its additional genuine World/Player/environment/fire chain retains the failed
+wake before client cleanup and prevents another run from overwriting it.
+The other two nested sinks use declared authored cleanup envelopes; they do not
+claim complete source parent execution. No game window is opened by these tests.
+
+A later regression first exposes a new BUSY damage refusal inheriting an old
+wake exception. Classification now requires the current effect cause and status;
+Windows and sanitized Linux pass the new native-admission control.
+
+The original regression first fails at the explicit GS35 frontier. An initial
+test-only assumption of three retained coordinate pins fails; the reached
+position route has released one local, and the corrected control requires its
+two remaining pins. The new original observer's first MSVC compilation also
+rejects `fopen` deprecation; its existing fixture convention now declares
+`_CRT_SECURE_NO_WARNINGS` before includes. These failures precede the passing
+five-case Windows selection and remain in local logs.
+
+```sh
+ctest --test-dir build-windows --output-on-failure --no-tests=error -R '^(entity[.]player_damage_wake(_reference)?|tools[.]player_damage_wake_packet_(normal|optimized)|client[.]player_sleep_tick_cleanup)$'
+```
+
+The separate [ambient CPU comparison](performance/random-display.md) retains
+eight processes, 336 timings, 32 warmups and both complete 114-profile controls.
+Its two workloads execute all 1,000 samples and 6,000 World Random draws per
+completed call. Median CPU time falls by 40.4481% for air and 22.8162% for stone.
+Eight portable audit methods pass normally and under optimized Python, including
+25 changed observations and independent replay of retained RNG/work results.
+The optional native benchmark controls create a fresh subdirectory on every run.
+These measurements do not establish gameplay FPS, GPU time or whole-CI speed.
+
+The complete Windows public selection first finishes at 707/713 in 244.93
+seconds. Six cases refuse stale current-source admission tables after the
+private Player layout changes; they do not reach their native observations.
+All new cases pass. Historical original producers and sealed native captures
+remain independent of the current-source admission refresh.
+
+The first Linux selection passes 12/14 in 27.38 seconds. Its original replay
+wrapper refuses the sanitized executable's size before launch, while the CPU
+wrapper requires a compilation database that this Ninja build has not exported.
+Separate build-product streaming leaves the packet's eight-MiB bound intact;
+the original replay and two packet modes then pass 3/3 in 6.34 seconds with
+leak detection, halt-on-error and UBSan stack traces. The benchmark wrapper now
+reads Ninja's actual read-only compilation database when CMake has not exported
+one, pinning its rules and build graph. Its native controls and two portable
+modes pass 3/3 in 11.86 seconds on the same sanitized build. These follow-ups do not
+relabel the failed selection.
+
+The complete Clang Debug headless Linux build also passes. A separate strict
+GCC syntax check passes eight changed runtime/test translation units. Pinned
+clang-format 18.1.3 checks all 2,197 C/header/fragment files. These are separate
+build, diagnostic and formatting results; they do not establish Linux loaded play.
+
+After correcting current admission and native BUSY classification, the complete
+configured Windows suite passes 721/721 in 232.24 seconds. This Release client
+build has display tests disabled and optional CPU benchmarks enabled. The
+complete Clang Debug headless Linux selection passes 578/578 in 329.10 seconds,
+with `MC_BUILD_CLIENT=OFF`, ASan/UBSan, leak detection and halt-on-error. Neither
+cohort skips a registered case. The Windows selection includes eight cases
+without a public label; the Linux selection includes four. Neither launches a
+new game window or establishes graphical play.
+
+All five admission tables retained before these cohorts remain byte-identical
+afterward. The independent checker again accepts 13,135 entries over 5,576
+current files and separately audits the historical Workbench capture. The
+following result-summary edits refresh only the publication map. They do not
+rebind either completed cohort, original producer or frozen CPU timing product.
+
 ## Player sleeping-NBT continuation
 
 The [Player NBT reader](entity/player-nbt.md) now calls the actual wake at

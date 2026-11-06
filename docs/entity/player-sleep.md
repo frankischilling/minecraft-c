@@ -58,6 +58,10 @@ No source retry, rollback or Player-global retry latch is used.
 
 ## Player tick parents
 
+The [damage parent](player-damage-wake.md) also invokes retained wake at GS35,
+before its zero-damage rejection. Failed work belongs to the damaged Player;
+its borrowed receipt and nested tick/client cleanup have separate controls.
+
 The [Player tick join](player-sleep-tick.md) now invokes retained wake at the
 actual missing-Bed and daytime sites, with source flags and checked ownership
 through World/client cleanup. A separate 36-profile original packet compares

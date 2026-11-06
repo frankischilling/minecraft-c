@@ -95,11 +95,50 @@ bool mc_active_wake_retire(mc_player_tick_error *e) {
     return true;
 }
 
+static bool tick_effect_retire(mc_player_tick_error *e, mc_entity_effect_error *effect,
+                               mc_player_tick_effect_child child) {
+    if (mc_entity_effect_error_retire(effect))
+        return true;
+    e->cleanup.child = MC_PLAYER_TICK_CLEANUP_EFFECT;
+    e->cleanup.effect = child;
+    if (effect->player_wake.pending) {
+        e->cleanup.status = effect->player_wake.cleanup_status;
+        e->cleanup.operation = effect->player_wake.cleanup_operation;
+    } else if (effect->player_death.pending) {
+        e->cleanup.status = effect->player_death.cleanup_status;
+        e->cleanup.operation = effect->player_death.cleanup_operation;
+    } else {
+        e->cleanup.status = effect->death.cleanup_status;
+        e->cleanup.operation = effect->death.cleanup_operation;
+    }
+    if (e->cleanup.status == MC_ENTITY_OK)
+        e->cleanup.status = MC_ENTITY_STATE_ERROR;
+    if (e->cleanup.operation == NULL)
+        e->cleanup.operation = "Active Player nested effect checked retirement";
+    return false;
+}
+
+static bool tick_effects_retire(mc_player_tick_error *e) {
+    if (e->child == MC_PLAYER_TICK_CHILD_ENVIRONMENT)
+        return tick_effect_retire(e, &e->child_error.environment.effect,
+                                  MC_PLAYER_TICK_EFFECT_ENVIRONMENT);
+    if (e->child == MC_PLAYER_TICK_CHILD_ACTION &&
+        (e->child_error.action.child_kind == MC_PLAYER_ACTION_CHILD_NONE ||
+         e->child_error.action.child_kind == MC_PLAYER_ACTION_CHILD_TRAVEL)) {
+        mc_player_travel_error *travel = &e->child_error.action.travel;
+        return tick_effect_retire(e, &travel->effect, MC_PLAYER_TICK_EFFECT_TRAVEL) &&
+               tick_effect_retire(e, &travel->movement.effect, MC_PLAYER_TICK_EFFECT_MOVEMENT);
+    }
+    return true;
+}
+
 bool mc_player_tick_error_retire(mc_player_tick_error *e) {
     if (e == NULL)
         return false;
     e->cleanup = (mc_player_tick_cleanup){0};
     if (!mc_active_wake_retire(e))
+        return false;
+    if (!tick_effects_retire(e))
         return false;
     if (e->retained_registry != NULL) {
         const mc_registry_status status =

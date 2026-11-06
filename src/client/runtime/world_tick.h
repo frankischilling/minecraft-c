@@ -75,6 +75,9 @@ typedef struct mc_client_world_tick {
  * Completed fields and children survive terminal failures; no replay/resume.
  * Failed Player/Mob/FallingSand children transfer owned work into entities;
  * this record must not be copied, cleared or reused before cleanup succeeds.
+ * The Entity child tag also protects nested Player environment/travel damage
+ * work when the outer active/failed/returned flags are zero. Its cleanup checks
+ * the actor-owned death/wake receipts before ending that child projection.
  * The ordered World scheduler is invoked at1260 and retains its exact reached
  * descendants, followed by the actual fd.q random display call at1311.
  * The actual App/menu loop keeps its native transition lease and all failed

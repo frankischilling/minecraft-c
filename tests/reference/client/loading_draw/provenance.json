@@ -438,8 +438,8 @@
       "sha256": "58339fe3230b4a56ea4f36865ec1e2714bfda0b7a9e5ce66e3474d2e8ed80e76"
     },
     "include/mc/entity/movement/effects.h": {
-      "bytes": 15601,
-      "sha256": "cd9d6c75b7573efa485b8d6b725e3c307388b6d47431695c7552cc3f0b073836"
+      "bytes": 16437,
+      "sha256": "3c91b70d38345d624bb8cb778b49960feec733ca0aca6b39db940c082a03456e"
     },
     "include/mc/entity/movement/environment.h": {
       "bytes": 5179,
@@ -498,8 +498,8 @@
       "sha256": "ed03d18203b44f74735df6ee30d3f0e3a8136ce8f638981773881e277c36edee"
     },
     "include/mc/entity/player/tick.h": {
-      "bytes": 4640,
-      "sha256": "591016beaea29348ae52b4f98bcc18a8d267c5ff8f30929f28393f1a0cf15e0a"
+      "bytes": 5233,
+      "sha256": "e2ff2e8b16f01d8666d3d28ae448d75eba1ed5e5babca07c7aca824e0c8735e6"
     },
     "include/mc/entity/registry/registry.h": {
       "bytes": 3167,
@@ -2526,8 +2526,8 @@
       "sha256": "ffeff1e593667e16efd2d0ec820aac3de624807991fc709fee291826f05b09e8"
     },
     "src/entity/movement/effects.c": {
-      "bytes": 43575,
-      "sha256": "824c302f2cb87464435b331b881f755e7d70812df04faca72ea28c0227a52e30"
+      "bytes": 44997,
+      "sha256": "dabace651b5d160a4beeb91afa74034b4493c11b4df64daa18997b8e030c4744"
     },
     "src/entity/movement/environment.c": {
       "bytes": 18491,
@@ -2610,8 +2610,8 @@
       "sha256": "91c9a62ca84f989c1cab42f7b4fcf09b4aecd6e2074f2166d537db4979bdd1a1"
     },
     "src/entity/player/player_internal.h": {
-      "bytes": 2136,
-      "sha256": "753cafb9e47dbc8a80f5debedc4a6a8a485a69cee4b2132081f88c8585940480"
+      "bytes": 2231,
+      "sha256": "0793cc6946a30ce9da49438418efb6c8a493302cb16717446dff11e5b0dfa2d0"
     },
     "src/entity/player/player_tick.c": {
       "bytes": 11409,
@@ -2642,8 +2642,8 @@
       "sha256": "d7e204b9fc456d5a9d82c4859dd421b51756f817779c0c59ab318ad61e9af559"
     },
     "src/entity/player/tick.c": {
-      "bytes": 12873,
-      "sha256": "99594e01a8eae5af1b20dc55dd0df477b3fb345ecc7be12febe5b5f70e6eff7d"
+      "bytes": 14711,
+      "sha256": "351f678d4881c7f6b53b32a811626538ebc98f523502cdbdad1e2df4c0dc482f"
     },
     "src/entity/player/tick_math_internal.h": {
       "bytes": 2505,
@@ -2666,8 +2666,8 @@
       "sha256": "b1b7604e84a809e2cdd5406b357808474a2ec880f177dd13e2ed795d91388cff"
     },
     "src/entity/tick/common.c": {
-      "bytes": 5180,
-      "sha256": "72fbacaddd0d160a41602fbc6dc3cbe29e3305d8a980c28528ae470a162ea265"
+      "bytes": 5782,
+      "sha256": "ce73fbb394e4b9ac590db299bb67fd86433cad783bff09b9fafaac4d2deca1c9"
     },
     "src/entity/tick/environment.c": {
       "bytes": 27894,
@@ -6226,8 +6226,8 @@
       "sha256": "359221645e3d6b26a3ed659523f0ba81a4e613ff1935cbf186127ae3eedab714"
     },
     "src/client/runtime/world_tick.h": {
-      "bytes": 5476,
-      "sha256": "6732a741ab4efe4256d21b8dde3fd33d92a924204d59ac3808254fb60f4a8f31"
+      "bytes": 5711,
+      "sha256": "d46e3738387be2a00ba7f68b291b73bb6690b1ee6ef16a6aba356cd68252ec2e"
     },
     "src/client/view_slot.h": {
       "bytes": 946,
@@ -6958,8 +6958,8 @@
       "sha256": "25c58f085145e129bcae5ba13fadb29eba767651082c05cc03b77fd42be24d0f"
     },
     "src/world/runtime/terminal_inventory.c": {
-      "bytes": 40776,
-      "sha256": "d14abeb393a69ccc24b35c98cc7ef264111ae1ff9090f26f49590bfbcfebb588"
+      "bytes": 41103,
+      "sha256": "be9682598e97c7b6b23061eedc3d753c2e3521cfae79c99f46db1f277d72f7ff"
     },
     "src/world/runtime/terminal_inventory_internal.h": {
       "bytes": 6907,
@@ -7358,8 +7358,8 @@
       "sha256": "30497dfd06788a137e7d076976c366e6c929cbf53aacfe2236bd1bec34334e79"
     },
     "cmake/world_random_display.cmake": {
-      "bytes": 882,
-      "sha256": "52cc20f92e72601ab77b2538f702f841a0140bea6e4f72c434bfbe73019501b6"
+      "bytes": 1494,
+      "sha256": "adce4749dac4fb95f1b41495e58577809edd0d1787f5c29941d1d0fe21036677"
     },
     "include/mc/world/runtime/block_random_display.h": {
       "bytes": 2990,
@@ -7374,16 +7374,16 @@
       "sha256": "0d11d9e9bd7d874a0aae5057904113b27ea1648cf32bbed41a08a8ba05e9ae28"
     },
     "src/world/runtime/random_display.c": {
-      "bytes": 18710,
-      "sha256": "940c2c849d0bfe81760a040a3cda7ca27759ac71e3548e23da47961a9a7c464b"
+      "bytes": 18707,
+      "sha256": "55b7ed5847b3188ce28412f55119c3d1f4828985bc5ba5cb6e8692c120c5cf68"
     },
     "src/world/runtime/step_internal.h": {
       "bytes": 1243,
       "sha256": "4c7c6cf884332a68573b4390c73c9d7d4272c082455412eb2aee88b9df6c6b9f"
     },
     "tests/world/runtime/test_random_display.c": {
-      "bytes": 32424,
-      "sha256": "3070af809a4bab55665783787d0119fb923dbb39ccfaea0996232ccb403ffeb3"
+      "bytes": 32519,
+      "sha256": "0776d9186908e10a50937f5fce43c0ab216a15284a732394e2e0b04b043d25e7"
     },
     "cmake/mob_tick.cmake": {
       "bytes": 7797,
@@ -7934,8 +7934,8 @@
       "sha256": "7e343b192ec286e343fd9496c793b38cb3cdeb0d470ee920772be8fdc222a288"
     },
     "cmake/tests/source_world_saving.cmake": {
-      "bytes": 13481,
-      "sha256": "352b8c0a8fa520a5166c89a9e05c75c530b80b9799535eede4cf9ed13b4aae8f"
+      "bytes": 15326,
+      "sha256": "3e8bcbf829d5f8ae40c608af9b2f03b218040fc8cd2784b87dfafba841bc381b"
     },
     "src/world/runtime/tile_entities/source_save.inc": {
       "bytes": 11082,
@@ -10314,8 +10314,8 @@
       "sha256": "eb477a22925eb83fe2d2a0d7662dd0a437832ad2dcf619e8dbc465081e1f80d2"
     },
     "cmake/player_damage.cmake": {
-      "bytes": 2349,
-      "sha256": "203f7f4ef74ef3fcf9c9f83fec8d7db8c3708011e5b148dcc26ade2d7c180aa5"
+      "bytes": 4572,
+      "sha256": "8bf0af9346cb1216e92a8eb1ca6d0c5ce032b5df386c60ccdaf4adf6960bf6bb"
     },
     "cmake/tests/armor.cmake": {
       "bytes": 739,
@@ -10790,8 +10790,8 @@
       "sha256": "3137781ce5f65bb4f3384c90017a798ccc3e4dd5ac449c0779b6448b73ed7942"
     },
     "tests/entity/player/test_sleep_wake.c": {
-      "bytes": 36081,
-      "sha256": "24dab6f87f7b8fd750efb4c229bb0355ab5b4c174328a1e23bf53b6f0a4dfc3a"
+      "bytes": 36164,
+      "sha256": "a736094fa812841615aea00e9a9c497ebcd2fe5fc5ee6fcda892b079bead7aad"
     },
     "tests/reference/entity/player_sleep_wake/capture_reference.py": {
       "bytes": 6605,
@@ -10846,8 +10846,8 @@
       "sha256": "7beadfaf96b2a1096c960a1030f1e998568eba08a4f4114f333316d597a1faf1"
     },
     "tests/client/gameplay/test_player_sleep_tick_cleanup.c": {
-      "bytes": 7449,
-      "sha256": "75a760781c5e486d8b3a5661d1e9588d183e742ad6072f13b32b5609d3c44042"
+      "bytes": 10143,
+      "sha256": "42e45a3a819c454570ad218f60b765f2ad8813e8d0e76d806ad3be498f3f1724"
     },
     "tests/entity/player/test_sleep_tick.c": {
       "bytes": 34543,
@@ -10944,6 +10944,114 @@
     "tests/tools/entity/test_player_sleep_nbt_parent.py": {
       "bytes": 55640,
       "sha256": "8f3ac9dec1ff470853e19a3097855ad4c182687459e896467c09d3fbb6eb5370"
+    },
+    "src/block/registry/redstone_torch_list_internal.h": {
+      "bytes": 8260,
+      "sha256": "10d6d103a35606bb9464b80cf6b10bd50a5eb1cfaebf27189373c12e5e606a05"
+    },
+    "src/block/registry/rendering_internal.h": {
+      "bytes": 1326,
+      "sha256": "300c7f2f9d834d8f443993ee503acd9b01db38e23061778f05a91841b0039a9e"
+    },
+    "src/entity/player/damage_wake.c": {
+      "bytes": 4983,
+      "sha256": "365adf600fc25c8cf07a38f3e03eb051544f8ec2bf895871b8ecd18cc3e1a4bb"
+    },
+    "src/entity/player/damage_wake_internal.h": {
+      "bytes": 417,
+      "sha256": "ebe262f09b06ac02c789172154b5d7d6401934a1d59a053d697db9b9e6b3ff90"
+    },
+    "src/item/use/metadata_internal.h": {
+      "bytes": 1939,
+      "sha256": "c3c0a3830ed30981f9956d20373ccb1e8902a48c58a952cb0d9648481f8f9254"
+    },
+    "src/world/runtime/mutation/redstone_torch/redstone_torch_internal.h": {
+      "bytes": 4079,
+      "sha256": "48871911ac8eeb821ca704afccf7b751e8cba60d5c5a1fecee99a0552b1a6931"
+    },
+    "src/world/runtime/placement/lever.inc": {
+      "bytes": 9347,
+      "sha256": "467202bcca136148addd500fbf45928d23a26e16bba537ac57908b3a6856f0e1"
+    },
+    "src/world/runtime/plant_substrate_internal.h": {
+      "bytes": 801,
+      "sha256": "3c400a5bd324c8cfedd36ab37f55abe4dd0059c5ce75093b6ef686fa77ca563f"
+    },
+    "src/world/runtime/torch_support_internal.h": {
+      "bytes": 667,
+      "sha256": "45e6be0ee1d7e8028221473c1ec5b9db13e55a73197f1a69ed4b9e3db1ecada7"
+    },
+    "tests/benchmarks/random_display.c": {
+      "bytes": 9553,
+      "sha256": "32c30be19b04383e5d18ae0f56ebad6b597249c44d832f62e1b2a6e2027d952d"
+    },
+    "tests/benchmarks/random_display_adapter.h": {
+      "bytes": 728,
+      "sha256": "2d9665dfa50eb067a95504c3afc32cc2630e3314174cc3ddb371485e4e0bbd5b"
+    },
+    "tests/benchmarks/random_display_detailed.c": {
+      "bytes": 1663,
+      "sha256": "f495f97f0d50a873fee8920ec6fb8d56408fa760c57ba26233fff28455ed4cde"
+    },
+    "tests/benchmarks/random_display_failure.c": {
+      "bytes": 370,
+      "sha256": "2ba4548962e30c9112dc4677c4995100c560ed5f0cc7a6a080aa151735d5b210"
+    },
+    "tests/benchmarks/random_display_windows.json": {
+      "bytes": 706616,
+      "sha256": "dffdaf6900506b82a36fe62046c219ad73854f1c4d9f15f34d11ff81c5765dc4"
+    },
+    "tests/client/render/foliage_item_controls.inc": {
+      "bytes": 27258,
+      "sha256": "8fbf687182857fe0f01586765c008e266a466b9738d47d7410d8f4c96325986b"
+    },
+    "tests/entity/player/test_damage_wake.c": {
+      "bytes": 12711,
+      "sha256": "1be704b58ebd8f4eacc876d9a92ecf8a02d828abb663bef7577a35eda11cc4a7"
+    },
+    "tests/entity/player/test_damage_wake_original.c": {
+      "bytes": 18503,
+      "sha256": "ae23d7d4a6673a47b77d7fb8f19a7099aac1118839b76dc35cccef87713c0ae5"
+    },
+    "tests/reference/entity/player_damage_wake/capture_reference.py": {
+      "bytes": 7833,
+      "sha256": "42b2692fe87aac6ece5cfa8b19d9ba8177c7807aa187c4b236b9b8ea27df7e0f"
+    },
+    "tests/reference/entity/player_damage_wake/packet.py": {
+      "bytes": 11752,
+      "sha256": "83ff48d7800ec2be9b893ebdce040f2998d8ac785b8ec502a9e0e23772f9a9d5"
+    },
+    "tests/reference/entity/player_damage_wake/run_native.py": {
+      "bytes": 7351,
+      "sha256": "6b258b72f30422bf0c6aaa012bdadf47a21f3ac9cb59271f3d77fea90e5bd478"
+    },
+    "tests/reference/entity/player_damage_wake/test_packet.py": {
+      "bytes": 6108,
+      "sha256": "6dc9ed72bebee347fbda0d85b08e854a834d24ad9aab0456ba51ef35e6d827d1"
+    },
+    "tests/tools/entity/test_player_damage_wake.py": {
+      "bytes": 1386,
+      "sha256": "06867b22892a4f763626bafb97bf1bdb93f9d0617b04525d5283eba46c3e9d03"
+    },
+    "tests/tools/world/benchmark_random_display.py": {
+      "bytes": 17853,
+      "sha256": "6fa871471b44fccf46580217da446a3142e5ecb08ec02f40ae9157a325a009fa"
+    },
+    "tests/tools/world/test_benchmark_random_display.py": {
+      "bytes": 9953,
+      "sha256": "ba2f5f9ead854aca172ca96b92ab315c25f10cd3bf1ced3fcca39f08e9978739"
+    },
+    "tests/world/runtime/placement/lever_controls.inc": {
+      "bytes": 9474,
+      "sha256": "19397d3c4bf91368d9c2a838430da544d92392485c3ddb0116b56a68a2acfe2d"
+    },
+    "tests/world/runtime/placement/torch_callbacks.inc": {
+      "bytes": 6168,
+      "sha256": "821eb5d9f2e722e320b20fd9e4a506fdec5e8f812e61e9eae1301614cea5de2a"
+    },
+    "tests/world/runtime/placement/torch_controls.inc": {
+      "bytes": 4834,
+      "sha256": "21a8c0072d46153e4901f53e2d523cacfc00b3d6e042690a0380d678048baac1"
     }
   },
   "actual_source_method": {
@@ -16388,6 +16496,134 @@
             "tests/tools/entity/test_player_sleep_nbt_parent.py"
           ],
           "current_count": 2736
+        }
+      }
+    },
+    {
+      "from_commit": "4cfe4dc4964dc231b0dfac940a93bccb72aa79ba",
+      "role": "Current Player damage-wake child ownership, enclosing effect cleanup, original-component replay and measured random-display dispatch inputs. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 677895,
+        "sha256": "5e564c48cc2d5cea28f066a96b3fff9af05d21c962bc01343ea63c15826d2653"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "include/mc/entity/movement/effects.h": {
+              "bytes": 15601,
+              "sha256": "cd9d6c75b7573efa485b8d6b725e3c307388b6d47431695c7552cc3f0b073836"
+            },
+            "include/mc/entity/player/tick.h": {
+              "bytes": 4640,
+              "sha256": "591016beaea29348ae52b4f98bcc18a8d267c5ff8f30929f28393f1a0cf15e0a"
+            },
+            "src/entity/movement/effects.c": {
+              "bytes": 43575,
+              "sha256": "824c302f2cb87464435b331b881f755e7d70812df04faca72ea28c0227a52e30"
+            },
+            "src/entity/player/player_internal.h": {
+              "bytes": 2136,
+              "sha256": "753cafb9e47dbc8a80f5debedc4a6a8a485a69cee4b2132081f88c8585940480"
+            },
+            "src/entity/player/tick.c": {
+              "bytes": 12873,
+              "sha256": "99594e01a8eae5af1b20dc55dd0df477b3fb345ecc7be12febe5b5f70e6eff7d"
+            },
+            "src/entity/tick/common.c": {
+              "bytes": 5180,
+              "sha256": "72fbacaddd0d160a41602fbc6dc3cbe29e3305d8a980c28528ae470a162ea265"
+            },
+            "src/client/runtime/world_tick.h": {
+              "bytes": 5476,
+              "sha256": "6732a741ab4efe4256d21b8dde3fd33d92a924204d59ac3808254fb60f4a8f31"
+            },
+            "src/world/runtime/terminal_inventory.c": {
+              "bytes": 40776,
+              "sha256": "d14abeb393a69ccc24b35c98cc7ef264111ae1ff9090f26f49590bfbcfebb588"
+            },
+            "cmake/world_random_display.cmake": {
+              "bytes": 882,
+              "sha256": "52cc20f92e72601ab77b2538f702f841a0140bea6e4f72c434bfbe73019501b6"
+            },
+            "src/world/runtime/random_display.c": {
+              "bytes": 18710,
+              "sha256": "940c2c849d0bfe81760a040a3cda7ca27759ac71e3548e23da47961a9a7c464b"
+            },
+            "tests/world/runtime/test_random_display.c": {
+              "bytes": 32424,
+              "sha256": "3070af809a4bab55665783787d0119fb923dbb39ccfaea0996232ccb403ffeb3"
+            },
+            "cmake/tests/source_world_saving.cmake": {
+              "bytes": 13481,
+              "sha256": "352b8c0a8fa520a5166c89a9e05c75c530b80b9799535eede4cf9ed13b4aae8f"
+            },
+            "cmake/player_damage.cmake": {
+              "bytes": 2349,
+              "sha256": "203f7f4ef74ef3fcf9c9f83fec8d7db8c3708011e5b148dcc26ade2d7c180aa5"
+            },
+            "tests/entity/player/test_sleep_wake.c": {
+              "bytes": 36081,
+              "sha256": "24dab6f87f7b8fd750efb4c229bb0355ab5b4c174328a1e23bf53b6f0a4dfc3a"
+            },
+            "tests/client/gameplay/test_player_sleep_tick_cleanup.c": {
+              "bytes": 7449,
+              "sha256": "75a760781c5e486d8b3a5661d1e9588d183e742ad6072f13b32b5609d3c44042"
+            }
+          },
+          "added": [
+            "src/block/registry/redstone_torch_list_internal.h",
+            "src/block/registry/rendering_internal.h",
+            "src/entity/player/damage_wake.c",
+            "src/entity/player/damage_wake_internal.h",
+            "src/item/use/metadata_internal.h",
+            "src/world/runtime/mutation/redstone_torch/redstone_torch_internal.h",
+            "src/world/runtime/placement/lever.inc",
+            "src/world/runtime/plant_substrate_internal.h",
+            "src/world/runtime/torch_support_internal.h",
+            "tests/benchmarks/random_display.c",
+            "tests/benchmarks/random_display_adapter.h",
+            "tests/benchmarks/random_display_detailed.c",
+            "tests/benchmarks/random_display_failure.c",
+            "tests/benchmarks/random_display_windows.json",
+            "tests/client/render/foliage_item_controls.inc",
+            "tests/entity/player/test_damage_wake.c",
+            "tests/entity/player/test_damage_wake_original.c",
+            "tests/reference/entity/player_damage_wake/capture_reference.py",
+            "tests/reference/entity/player_damage_wake/packet.py",
+            "tests/reference/entity/player_damage_wake/run_native.py",
+            "tests/reference/entity/player_damage_wake/test_packet.py",
+            "tests/tools/entity/test_player_damage_wake.py",
+            "tests/tools/world/benchmark_random_display.py",
+            "tests/tools/world/test_benchmark_random_display.py",
+            "tests/world/runtime/placement/lever_controls.inc",
+            "tests/world/runtime/placement/torch_callbacks.inc",
+            "tests/world/runtime/placement/torch_controls.inc"
+          ],
+          "current_count": 2763
+        }
+      }
+    },
+    {
+      "from_commit": "4cfe4dc4964dc231b0dfac940a93bccb72aa79ba",
+      "role": "Current Player damage-wake child ownership, enclosing effect cleanup, original-component replay and measured random-display dispatch inputs. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 687658,
+        "sha256": "af5981f6d1482b53336b933f73d6ffd58abaf0854f23e57db812772f3d20dcea"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "src/entity/tick/common.c": {
+              "bytes": 5629,
+              "sha256": "4b125b06b3bd1419c39f5379816382e9499a7c3bfbfc3cbfbe988b648af2984b"
+            },
+            "tests/entity/player/test_damage_wake.c": {
+              "bytes": 11923,
+              "sha256": "b11c58d2ca30faa35f51d7ae78ccddcc5e096e8819131a021adbcc13b13befd3"
+            }
+          },
+          "added": [],
+          "current_count": 2763
         }
       }
     }

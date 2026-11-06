@@ -98,6 +98,49 @@ int main(int argc, char **argv) {
           app->active_world->persistent_bindings == world_holds && fields->u &&
           fields->private_a == 100 && player->base.bt == 17 && player->base.width == .6f &&
           player->base.height == 1.8f && player->base.offset == 1.62f);
+
+    /* Real periodic fire enters GS35 from the inherited SN environment body,
+     * rather than the earlier GS missing-Bed/daytime parent. */
+    CHECK(wake_tick_prepare(f, app, player, input, 0, false, false));
+    coordinate = player->local_player->nbt_coordinates;
+    while (coordinate != NULL && &coordinate->value != fields->v)
+        coordinate = coordinate->next;
+    CHECK(coordinate != NULL && coordinate->pins == 0);
+    coordinate->pins = SIZE_MAX;
+    pins_changed = true;
+    player->base.bv = 20;
+    player->base.bC = false;
+    CHECK(mc_world_runtime_tick_entity(app->active_world, player, &tick_context, NULL,
+                                       &call->entities) == MC_WORLD_STORAGE_LIMIT &&
+          call->entities.child == MC_WORLD_ENTITY_TICK_CHILD_PLAYER &&
+          call->entities.child_error.player.child == MC_PLAYER_TICK_CHILD_ENVIRONMENT &&
+          call->entities.child_error.player.child_error.environment.effect.player_wake.pending &&
+          call->entities.child_error.player.child_error.environment.effect.player_wake.site.pc ==
+              13);
+    coordinate->pins = old_pins;
+    pins_changed = false;
+    const mc_entity_status damage_status =
+        call->entities.child_error.player.child_error.environment.effect.status;
+    const unsigned int damage_pc = call->entities.bytecode;
+    const char *const damage_operation = call->entities.operation;
+    const size_t pending_holds = player->holds;
+    player->holds = SIZE_MAX;
+    const bool cleanup_refused = !mc_client_world_tick_cleanup(call);
+    player->holds = pending_holds;
+    CHECK(cleanup_refused && call->entities.child == MC_WORLD_ENTITY_TICK_CHILD_PLAYER &&
+          call->entities.child_error.player.child == MC_PLAYER_TICK_CHILD_ENVIRONMENT &&
+          call->entities.child_error.player.cleanup.child == MC_PLAYER_TICK_CLEANUP_EFFECT &&
+          call->entities.child_error.player.cleanup.status == MC_ENTITY_LIMIT &&
+          call->entities.child_error.player.child_error.environment.effect.player_wake.pending &&
+          call->entities.child_error.player.child_error.environment.effect.status ==
+              damage_status &&
+          call->entities.bytecode == damage_pc && call->entities.operation == damage_operation &&
+          !mc_client_world_tick_run(app, math, call) && mc_entity_effect_has_pending(player));
+    CHECK(mc_client_world_tick_cleanup(call) &&
+          call->entities.child == MC_WORLD_ENTITY_TICK_CHILD_NONE &&
+          !mc_entity_effect_has_pending(player) && player->holds == holds &&
+          app->registry->runtime_borrows == borrows && fields->u && fields->private_a == 100 &&
+          player->base.bt == 18 && player->base.bv == 20);
     result = 0;
 cleanup:
     if (pins_changed && coordinate != NULL)

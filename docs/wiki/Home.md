@@ -1,5 +1,21 @@
 # minecraft-c
 
+Current configured suites pass Windows 721/721 and sanitized Linux headless
+578/578. These runs open no game windows. Earlier failed selections and exact
+configuration limits remain in the [test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#sleeping-player-damage-and-ambient-sampling).
+
+[Damage wakes a sleeping Player](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-damage-wake.md)
+before zero-damage rejection. Windows and sanitized Linux match 32 original component calls and
+4,748 shared scalar values. Native ownership controls include the actual
+World/fire/Player failure through client cleanup. Natural night and unrestricted
+combat remain unqualified.
+
+[Ambient sampling](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/random-display.md)
+keeps all 1,000 samples and 6,000 World Random draws while avoiding an unused
+success diagnostic. Eight Windows processes measure 40.45% lower median CPU
+time for air and 22.82% for stone. These fixed workloads supply no gameplay FPS
+claim.
+
 [Sleeping Player NBT](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-nbt.md)
 now runs the actual wake at GS93 and continues through Spawn and Score.
 Windows and sanitized Linux match forty original cases, 9,909 typed scalars

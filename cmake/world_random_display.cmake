@@ -5,6 +5,17 @@ target_sources(mc_simulation PRIVATE
     src/world/runtime/block_random_display.c)
 
 if(BUILD_TESTING)
+    foreach(mode IN ITEMS normal optimized)
+        set(_mc_random_display_python_options -B)
+        if(mode STREQUAL "optimized")
+            list(APPEND _mc_random_display_python_options -O)
+        endif()
+        add_test(NAME "tools.random_display_benchmark_${mode}" COMMAND Python3::Interpreter
+            ${_mc_random_display_python_options}
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_benchmark_random_display.py")
+        set_tests_properties("tools.random_display_benchmark_${mode}" PROPERTIES
+            LABELS "public;unit;world;tools;performance" TIMEOUT 60)
+    endforeach()
     add_executable(mc_test_random_display tests/world/runtime/test_random_display.c)
     target_include_directories(mc_test_random_display PRIVATE src src/core/java)
     target_link_libraries(mc_test_random_display PRIVATE

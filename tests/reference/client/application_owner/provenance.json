@@ -402,8 +402,8 @@
       "sha256": "5898f91eac2f6d83e4cafce4f0ecf7a3de4cfc0bbe66010eefa079400573dfd1"
     },
     "src/entity/player/player_internal.h": {
-      "bytes": 2136,
-      "sha256": "753cafb9e47dbc8a80f5debedc4a6a8a485a69cee4b2132081f88c8585940480"
+      "bytes": 2231,
+      "sha256": "0793cc6946a30ce9da49438418efb6c8a493302cb16717446dff11e5b0dfa2d0"
     },
     "src/entity/player/strings.c": {
       "bytes": 5409,
@@ -464,6 +464,18 @@
     "include/mc/entity/particles/origin.h": {
       "bytes": 1566,
       "sha256": "ffefa3b621365264d9c82e1a494d8ecdaaa442002adaefdfe3be7fe1c629f11a"
+    },
+    "include/mc/entity/player/sleep.h": {
+      "bytes": 7976,
+      "sha256": "e0751fa7493800016c7ad95f7b95c5916addf35c94ba2853fab84adf58e4fc63"
+    },
+    "include/mc/world/dimension/world_provider.h": {
+      "bytes": 11500,
+      "sha256": "07ec44899ca0d7a46f563d237ce35d5807d021209a84aa7f5b32ab84332581b2"
+    },
+    "src/inventory/player/terminal_internal.h": {
+      "bytes": 2239,
+      "sha256": "1822926654d380f67c96d422c43b95ec9ad26b99835925eabff8cc1f8d58c84f"
     }
   },
   "reference_files": {
@@ -882,6 +894,30 @@
           },
           "added": [],
           "current_count": 116
+        }
+      }
+    },
+    {
+      "from_commit": "4cfe4dc4964dc231b0dfac940a93bccb72aa79ba",
+      "role": "Current Player damage-wake child ownership, enclosing effect cleanup, original-component replay and measured random-display dispatch inputs. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 35727,
+        "sha256": "8d4304a9026938a87b9e3a41cab0c190755e35fc06f8dded6d033a839905b5c3"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "src/entity/player/player_internal.h": {
+              "bytes": 2136,
+              "sha256": "753cafb9e47dbc8a80f5debedc4a6a8a485a69cee4b2132081f88c8585940480"
+            }
+          },
+          "added": [
+            "include/mc/entity/player/sleep.h",
+            "include/mc/world/dimension/world_provider.h",
+            "src/inventory/player/terminal_internal.h"
+          ],
+          "current_count": 119
         }
       }
     }

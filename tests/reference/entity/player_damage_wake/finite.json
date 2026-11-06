@@ -1,0 +1,7388 @@
+{
+  "schema": "PLAYER_DAMAGE_WAKE_V1",
+  "scope": "32 prepared unchanged-original CPU component calls; no ticks, frames, natural sleep or sustained gameplay qualification.",
+  "rows": [
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 0,
+      "input": [
+        0,
+        0,
+        20,
+        0,
+        0
+      ],
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "401e000000000000",
+          "40506e1480000000",
+          "401e000000000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "original_bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": false,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          8
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "3e5713050bc2e2d592b7cff89295ef90c4c415ea0ca72ffcddbe2759214a89bc",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 1,
+      "input": [
+        1,
+        1,
+        20,
+        0,
+        0
+      ],
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4020333340000000",
+          "40503c0000000000",
+          "4021000000000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "3fe66666",
+          "00000000"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "402000000cc00000",
+          "40502f3333300000",
+          "4020ccccccc00000",
+          "4020666673400000",
+          "40503c0000000000",
+          "4021333333400000"
+        ],
+        "original_bounds": [
+          "402000000cc00000",
+          "40502f3333300000",
+          "4020ccccccc00000",
+          "4020666673400000",
+          "40503c0000000000",
+          "4021333333400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          13
+        ],
+        "planes": {
+          "blocks": "87f37ecf2ef324231b6a3ac9cd950d43a1d55cc06ff33ff72157a4138203c4fd",
+          "metadata": "3adabe82b3d0cad6cc5353e13ce44dc953a6e60a283c48a5b560750ed124c7ed",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "401e000000000000",
+          "40506e1480000000",
+          "401e000000000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "3fe66666",
+          "00000000"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "original_bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": false,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          9
+        ],
+        "planes": {
+          "blocks": "87f37ecf2ef324231b6a3ac9cd950d43a1d55cc06ff33ff72157a4138203c4fd",
+          "metadata": "c5c506377fd5d34eca01d563ca52d32d3058987f1800716debf2e536fbcd9721",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 2,
+      "input": [
+        2,
+        2,
+        20,
+        0,
+        0
+      ],
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4020333340000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "3fe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402000000cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4020666673400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402000000cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4020666673400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          14
+        ],
+        "planes": {
+          "blocks": "cb9bc417bd58b53760ef4de6a702e0053b021c1470769f779f8005cab8a2a001",
+          "metadata": "151bc76aa49bb25926087cdedd780acdd326f71ff25df51e320e1ab0252c519d",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "401e000000000000",
+          "40506e1480000000",
+          "401e000000000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "3fe66666"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "original_bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": false,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          10
+        ],
+        "planes": {
+          "blocks": "cb9bc417bd58b53760ef4de6a702e0053b021c1470769f779f8005cab8a2a001",
+          "metadata": "93d9d0a0707857a15e27ca7aaea25888f171040cf77fbc2049f67e87b24546d8",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 3,
+      "input": [
+        3,
+        3,
+        20,
+        0,
+        0
+      ],
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021ccccc0000000",
+          "40503c0000000000",
+          "4021000000000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "bfe66666",
+          "00000000"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "402199998cc00000",
+          "40502f3333300000",
+          "4020ccccccc00000",
+          "4021fffff3400000",
+          "40503c0000000000",
+          "4021333333400000"
+        ],
+        "original_bounds": [
+          "402199998cc00000",
+          "40502f3333300000",
+          "4020ccccccc00000",
+          "4021fffff3400000",
+          "40503c0000000000",
+          "4021333333400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          15
+        ],
+        "planes": {
+          "blocks": "e5457b326f7589bdb30a7c866673f866ccc2f22c58fbeca51da85e10ba315137",
+          "metadata": "3d4f7213a31d03bacb747e394b7ff84853f85523020c069f48948b3bbf98d725",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "401e000000000000",
+          "40506e1480000000",
+          "401e000000000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "bfe66666",
+          "00000000"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "original_bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": false,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          11
+        ],
+        "planes": {
+          "blocks": "e5457b326f7589bdb30a7c866673f866ccc2f22c58fbeca51da85e10ba315137",
+          "metadata": "f57f43c1f9ba9919b623ea78d08094444083d93f2600099df416651f8ce0fd99",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 4,
+      "input": [
+        4,
+        0,
+        20,
+        4,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "401e000000000000",
+          "40506e1480000000",
+          "401e000000000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "original_bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 16,
+        "previous_health": 20,
+        "hurt_resistance": 20,
+        "hurt_time": 10,
+        "hurt_maximum": 10,
+        "previous_damage": 4,
+        "idle": 0,
+        "attacked": true,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": false,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          8
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "3e5713050bc2e2d592b7cff89295ef90c4c415ea0ca72ffcddbe2759214a89bc",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "0000fa815c77497d",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "0000d4d95138ab6f",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [
+            [
+              2021,
+              4
+            ]
+          ],
+          "unsent": [
+            [
+              2021,
+              4
+            ]
+          ],
+          "dirty": true
+        },
+        "sounds": [
+          {
+            "name": "random.hurt",
+            "position": [
+              "401e000000000000",
+              "405006666b800000",
+              "401e000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ]
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 5,
+      "input": [
+        5,
+        1,
+        20,
+        4,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4020333340000000",
+          "40503c0000000000",
+          "4021000000000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "3fe66666",
+          "00000000"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "402000000cc00000",
+          "40502f3333300000",
+          "4020ccccccc00000",
+          "4020666673400000",
+          "40503c0000000000",
+          "4021333333400000"
+        ],
+        "original_bounds": [
+          "402000000cc00000",
+          "40502f3333300000",
+          "4020ccccccc00000",
+          "4020666673400000",
+          "40503c0000000000",
+          "4021333333400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          13
+        ],
+        "planes": {
+          "blocks": "87f37ecf2ef324231b6a3ac9cd950d43a1d55cc06ff33ff72157a4138203c4fd",
+          "metadata": "3adabe82b3d0cad6cc5353e13ce44dc953a6e60a283c48a5b560750ed124c7ed",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "401e000000000000",
+          "40506e1480000000",
+          "401e000000000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "3fe66666",
+          "00000000"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "original_bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 16,
+        "previous_health": 20,
+        "hurt_resistance": 20,
+        "hurt_time": 10,
+        "hurt_maximum": 10,
+        "previous_damage": 4,
+        "idle": 0,
+        "attacked": true,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": false,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          9
+        ],
+        "planes": {
+          "blocks": "87f37ecf2ef324231b6a3ac9cd950d43a1d55cc06ff33ff72157a4138203c4fd",
+          "metadata": "c5c506377fd5d34eca01d563ca52d32d3058987f1800716debf2e536fbcd9721",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "0000fa815c77497d",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "0000d4d95138ab6f",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [
+            [
+              2021,
+              4
+            ]
+          ],
+          "unsent": [
+            [
+              2021,
+              4
+            ]
+          ],
+          "dirty": true
+        },
+        "sounds": [
+          {
+            "name": "random.hurt",
+            "position": [
+              "401e000000000000",
+              "405006666b800000",
+              "401e000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ]
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 6,
+      "input": [
+        6,
+        2,
+        20,
+        4,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4020333340000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "3fe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402000000cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4020666673400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402000000cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4020666673400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          14
+        ],
+        "planes": {
+          "blocks": "cb9bc417bd58b53760ef4de6a702e0053b021c1470769f779f8005cab8a2a001",
+          "metadata": "151bc76aa49bb25926087cdedd780acdd326f71ff25df51e320e1ab0252c519d",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "401e000000000000",
+          "40506e1480000000",
+          "401e000000000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "3fe66666"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "original_bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 16,
+        "previous_health": 20,
+        "hurt_resistance": 20,
+        "hurt_time": 10,
+        "hurt_maximum": 10,
+        "previous_damage": 4,
+        "idle": 0,
+        "attacked": true,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": false,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          10
+        ],
+        "planes": {
+          "blocks": "cb9bc417bd58b53760ef4de6a702e0053b021c1470769f779f8005cab8a2a001",
+          "metadata": "93d9d0a0707857a15e27ca7aaea25888f171040cf77fbc2049f67e87b24546d8",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "0000fa815c77497d",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "0000d4d95138ab6f",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [
+            [
+              2021,
+              4
+            ]
+          ],
+          "unsent": [
+            [
+              2021,
+              4
+            ]
+          ],
+          "dirty": true
+        },
+        "sounds": [
+          {
+            "name": "random.hurt",
+            "position": [
+              "401e000000000000",
+              "405006666b800000",
+              "401e000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ]
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 7,
+      "input": [
+        7,
+        3,
+        20,
+        4,
+        0
+      ],
+      "result": true,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021ccccc0000000",
+          "40503c0000000000",
+          "4021000000000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "bfe66666",
+          "00000000"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "402199998cc00000",
+          "40502f3333300000",
+          "4020ccccccc00000",
+          "4021fffff3400000",
+          "40503c0000000000",
+          "4021333333400000"
+        ],
+        "original_bounds": [
+          "402199998cc00000",
+          "40502f3333300000",
+          "4020ccccccc00000",
+          "4021fffff3400000",
+          "40503c0000000000",
+          "4021333333400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          15
+        ],
+        "planes": {
+          "blocks": "e5457b326f7589bdb30a7c866673f866ccc2f22c58fbeca51da85e10ba315137",
+          "metadata": "3d4f7213a31d03bacb747e394b7ff84853f85523020c069f48948b3bbf98d725",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "401e000000000000",
+          "40506e1480000000",
+          "401e000000000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "bfe66666",
+          "00000000"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "original_bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 16,
+        "previous_health": 20,
+        "hurt_resistance": 20,
+        "hurt_time": 10,
+        "hurt_maximum": 10,
+        "previous_damage": 4,
+        "idle": 0,
+        "attacked": true,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": false,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          11
+        ],
+        "planes": {
+          "blocks": "e5457b326f7589bdb30a7c866673f866ccc2f22c58fbeca51da85e10ba315137",
+          "metadata": "f57f43c1f9ba9919b623ea78d08094444083d93f2600099df416651f8ce0fd99",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "0000fa815c77497d",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "0000d4d95138ab6f",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [
+            [
+              2021,
+              4
+            ]
+          ],
+          "unsent": [
+            [
+              2021,
+              4
+            ]
+          ],
+          "dirty": true
+        },
+        "sounds": [
+          {
+            "name": "random.hurt",
+            "position": [
+              "401e000000000000",
+              "405006666b800000",
+              "401e000000000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ]
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 8,
+      "input": [
+        8,
+        0,
+        0,
+        4,
+        0
+      ],
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 0,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 0,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 9,
+      "input": [
+        9,
+        0,
+        -7,
+        4,
+        0
+      ],
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": -7,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": -7,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 10,
+      "input": [
+        10,
+        0,
+        20,
+        0,
+        1
+      ],
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": true,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": true,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 11,
+      "input": [
+        11,
+        0,
+        20,
+        4,
+        1
+      ],
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": true,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": true,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [
+            [
+              2021,
+              4
+            ]
+          ],
+          "unsent": [
+            [
+              2021,
+              4
+            ]
+          ],
+          "dirty": true
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 12,
+      "input": [
+        12,
+        0,
+        20,
+        0,
+        2
+      ],
+      "result": null,
+      "exception": "java/lang/NullPointerException",
+      "exception_frames": [
+        "gs.a"
+      ],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": false,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": false,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 13,
+      "input": [
+        13,
+        0,
+        20,
+        4,
+        2
+      ],
+      "result": null,
+      "exception": "java/lang/NullPointerException",
+      "exception_frames": [
+        "gs.a"
+      ],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": false,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": false,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 14,
+      "input": [
+        14,
+        0,
+        20,
+        0,
+        3
+      ],
+      "result": null,
+      "exception": "java/lang/NullPointerException",
+      "exception_frames": [
+        "sn.e",
+        "gs.a",
+        "gs.a"
+      ],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": null,
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": false,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "401e000000000000",
+          "40506e1480000000",
+          "401e000000000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": null,
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": false,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          8
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "3e5713050bc2e2d592b7cff89295ef90c4c415ea0ca72ffcddbe2759214a89bc",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 15,
+      "input": [
+        15,
+        0,
+        20,
+        4,
+        3
+      ],
+      "result": null,
+      "exception": "java/lang/NullPointerException",
+      "exception_frames": [
+        "sn.e",
+        "gs.a",
+        "gs.a"
+      ],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": null,
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": false,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "401e000000000000",
+          "40506e1480000000",
+          "401e000000000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": null,
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": false,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          8
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "3e5713050bc2e2d592b7cff89295ef90c4c415ea0ca72ffcddbe2759214a89bc",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 16,
+      "input": [
+        16,
+        0,
+        20,
+        0,
+        4
+      ],
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": null,
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": null,
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": false,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 17,
+      "input": [
+        17,
+        0,
+        20,
+        4,
+        4
+      ],
+      "result": true,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": null,
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": null,
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 16,
+        "previous_health": 20,
+        "hurt_resistance": 20,
+        "hurt_time": 10,
+        "hurt_maximum": 10,
+        "previous_damage": 4,
+        "idle": 0,
+        "attacked": true,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": false,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "0000fa815c77497d",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "0000d4d95138ab6f",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [
+            [
+              2021,
+              4
+            ]
+          ],
+          "unsent": [
+            [
+              2021,
+              4
+            ]
+          ],
+          "dirty": true
+        },
+        "sounds": [
+          {
+            "name": "random.hurt",
+            "position": [
+              "4021000000000000",
+              "404fa8a3d7000000",
+              "4021ccccc0000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ]
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 18,
+      "input": [
+        18,
+        0,
+        20,
+        0,
+        5
+      ],
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          0,
+          0
+        ],
+        "planes": {
+          "blocks": "43839725676e3f714f629704e358eb3fd07ed59655900183fb7a5b7163a10fd1",
+          "metadata": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": false,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          0,
+          0
+        ],
+        "planes": {
+          "blocks": "43839725676e3f714f629704e358eb3fd07ed59655900183fb7a5b7163a10fd1",
+          "metadata": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 19,
+      "input": [
+        19,
+        0,
+        20,
+        4,
+        5
+      ],
+      "result": true,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          0,
+          0
+        ],
+        "planes": {
+          "blocks": "43839725676e3f714f629704e358eb3fd07ed59655900183fb7a5b7163a10fd1",
+          "metadata": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 16,
+        "previous_health": 20,
+        "hurt_resistance": 20,
+        "hurt_time": 10,
+        "hurt_maximum": 10,
+        "previous_damage": 4,
+        "idle": 0,
+        "attacked": true,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": false,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          0,
+          0
+        ],
+        "planes": {
+          "blocks": "43839725676e3f714f629704e358eb3fd07ed59655900183fb7a5b7163a10fd1",
+          "metadata": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "0000fa815c77497d",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "0000d4d95138ab6f",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [
+            [
+              2021,
+              4
+            ]
+          ],
+          "unsent": [
+            [
+              2021,
+              4
+            ]
+          ],
+          "dirty": true
+        },
+        "sounds": [
+          {
+            "name": "random.hurt",
+            "position": [
+              "4021000000000000",
+              "404fa8a3d7000000",
+              "4021ccccc0000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ]
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 20,
+      "input": [
+        20,
+        0,
+        20,
+        0,
+        6
+      ],
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "401e000000000000",
+          "40506e1480000000",
+          "401e000000000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "original_bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": false,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          8
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "3e5713050bc2e2d592b7cff89295ef90c4c415ea0ca72ffcddbe2759214a89bc",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 21,
+      "input": [
+        21,
+        0,
+        20,
+        4,
+        6
+      ],
+      "result": null,
+      "exception": "java/lang/NullPointerException",
+      "exception_frames": [
+        "dc.a",
+        "gs.a"
+      ],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "401e000000000000",
+          "40506e1480000000",
+          "401e000000000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "original_bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": false,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          8
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "3e5713050bc2e2d592b7cff89295ef90c4c415ea0ca72ffcddbe2759214a89bc",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 22,
+      "input": [
+        22,
+        0,
+        20,
+        0,
+        7
+      ],
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": false,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": false,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": false,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": false,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 23,
+      "input": [
+        23,
+        0,
+        0,
+        4,
+        2
+      ],
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": false,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 0,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": false,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 0,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 24,
+      "input": [
+        24,
+        0,
+        20,
+        0,
+        8
+      ],
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": null,
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": false,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          0,
+          0
+        ],
+        "planes": {
+          "blocks": "43839725676e3f714f629704e358eb3fd07ed59655900183fb7a5b7163a10fd1",
+          "metadata": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": null,
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": false,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": false,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          0,
+          0
+        ],
+        "planes": {
+          "blocks": "43839725676e3f714f629704e358eb3fd07ed59655900183fb7a5b7163a10fd1",
+          "metadata": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 25,
+      "input": [
+        25,
+        0,
+        20,
+        0,
+        9
+      ],
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": null,
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": null,
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": false,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": null,
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": null,
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": false,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": false,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 26,
+      "input": [
+        26,
+        0,
+        20,
+        0,
+        10
+      ],
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": null,
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": false,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": true,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": null,
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": false,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": true,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 27,
+      "input": [
+        27,
+        0,
+        20,
+        0,
+        11
+      ],
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "401e000000000000",
+          "40506e1480000000",
+          "401e000000000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "original_bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": false,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          8
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "3e5713050bc2e2d592b7cff89295ef90c4c415ea0ca72ffcddbe2759214a89bc",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 28,
+      "input": [
+        28,
+        0,
+        20,
+        4,
+        11
+      ],
+      "result": null,
+      "exception": "java/lang/NullPointerException",
+      "exception_frames": [
+        "gs.b",
+        "ls.a",
+        "gs.a"
+      ],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "401e000000000000",
+          "40506e1480000000",
+          "401e000000000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "original_bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 20,
+        "hurt_resistance": 20,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 4,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": false,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          8
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "3e5713050bc2e2d592b7cff89295ef90c4c415ea0ca72ffcddbe2759214a89bc",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [
+            [
+              2021,
+              4
+            ]
+          ],
+          "unsent": [
+            [
+              2021,
+              4
+            ]
+          ],
+          "dirty": true
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 29,
+      "input": [
+        29,
+        0,
+        20,
+        0,
+        12
+      ],
+      "result": null,
+      "exception": "java/lang/NullPointerException",
+      "exception_frames": [
+        "gs.a"
+      ],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": null,
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": false,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": null,
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": false,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 30,
+      "input": [
+        30,
+        0,
+        20,
+        0,
+        13
+      ],
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": false,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": false,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      }
+    },
+    {
+      "schema": "PLAYER_DAMAGE_WAKE_ROW_V1",
+      "case": 31,
+      "input": [
+        31,
+        0,
+        20,
+        4,
+        13
+      ],
+      "result": true,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": false,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": false,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 16,
+        "previous_health": 20,
+        "hurt_resistance": 20,
+        "hurt_time": 10,
+        "hurt_maximum": 10,
+        "previous_damage": 4,
+        "idle": 0,
+        "attacked": true,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "9838d07f6b1f48b924622c2ef63a3eae4f0baea8d09b69678f3f371820e26ca3",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "0000fa815c77497d",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "0000d4d95138ab6f",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [
+            [
+              2021,
+              4
+            ]
+          ],
+          "unsent": [
+            [
+              2021,
+              4
+            ]
+          ],
+          "dirty": true
+        },
+        "sounds": [
+          {
+            "name": "random.hurt",
+            "position": [
+              "4021000000000000",
+              "40502f3333300000",
+              "4021ccccc0000000"
+            ],
+            "volume": "3f800000",
+            "pitch": "3f732b26"
+          }
+        ]
+      }
+    }
+  ]
+}

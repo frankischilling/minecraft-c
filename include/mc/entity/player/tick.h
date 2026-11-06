@@ -28,13 +28,22 @@ typedef struct mc_player_tick_wake {
 typedef enum mc_player_tick_cleanup_child {
     MC_PLAYER_TICK_CLEANUP_NONE,
     MC_PLAYER_TICK_CLEANUP_WAKE,
-    MC_PLAYER_TICK_CLEANUP_REGISTRY
+    MC_PLAYER_TICK_CLEANUP_REGISTRY,
+    MC_PLAYER_TICK_CLEANUP_EFFECT
 } mc_player_tick_cleanup_child;
+
+typedef enum mc_player_tick_effect_child {
+    MC_PLAYER_TICK_EFFECT_NONE,
+    MC_PLAYER_TICK_EFFECT_ENVIRONMENT,
+    MC_PLAYER_TICK_EFFECT_TRAVEL,
+    MC_PLAYER_TICK_EFFECT_MOVEMENT
+} mc_player_tick_effect_child;
 
 typedef struct mc_player_tick_cleanup {
     mc_entity_status status;
     const char *operation;
     mc_player_tick_cleanup_child child;
+    mc_player_tick_effect_child effect;
     mc_player_sleep_cleanup wake;
     mc_registry_error registry;
 } mc_player_tick_cleanup;
@@ -78,7 +87,11 @@ void mc_player_tick_error_init(mc_player_tick_error *);
  * retire before reusing/clearing the record. Retry performs only native checked
  * cleanup, preserving the first source status/site and every completed effect.
  * Successful child retirement clears its expired borrowed pointers before a
- * later Registry refusal. Inspect the current cleanup discriminator only. */
+ * later Registry refusal. Nested environment and active travel/movement effect
+ * receipts borrow actor-owned work; retirement checks those actual tagged
+ * children before releasing the parent Registry. An EFFECT refusal identifies
+ * its exact nested receipt through cleanup.effect and leaves its first source
+ * cause intact. Inspect the current cleanup discriminator only. */
 bool mc_player_tick_error_retire(mc_player_tick_error *);
 /* Genuine canonical READY dc only. The action entry is dc.o, living names
  * invokespecial ls.w_, and player executes inherited gs.w_. Internal virtual

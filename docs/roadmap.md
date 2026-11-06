@@ -20,8 +20,12 @@ and integration need explicit ownership.
 
 The [Player tick wake parents](entity/player-sleep-tick.md) now have bounded
 original-prefix and native ownership coverage. Next sleep work remains the
-default-hostile CQ/FW branch, damage/NBT parents, real loaded-night acceptance
+default-hostile CQ/FW branch, real loaded-night acceptance
 and original whole-parent qualification.
+The [damage wake parent](entity/player-damage-wake.md) and
+[sleeping-NBT parent](entity/player-nbt.md) now have their own finite component
+comparisons and checked cleanup. Broader attackers and natural hazard play
+still need qualification.
 
 The current priority is playable single-player before server work. All eleven
 default Overworld Mob draw paths have finite comparisons and loaded-client

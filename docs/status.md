@@ -1,5 +1,28 @@
 # Development status
 
+The current configured suites pass Windows 721/721 in 232.24 seconds and
+sanitized Linux headless 578/578 in 329.10 seconds, without registered skips.
+The Windows build includes the client; display tests are disabled for this
+cohort. Linux uses `MC_BUILD_CLIENT=OFF`, ASan, UBSan and leak detection.
+These results qualify those configurations, with no new graphical session.
+Earlier failed selections and later documentation admission remain separate
+in [testing](testing.md#sleeping-player-damage-and-ambient-sampling).
+
+[Damage to a sleeping Player](entity/player-damage-wake.md) now reaches the
+actual wake before zero-damage rejection, statistics and health changes.
+Windows and sanitized Linux match 32 unchanged-original calls and 4,748 shared scalar values.
+Separate native controls pass 335,423 checks, including failed wake ownership,
+null error output and three nested cleanup sinks. The real World/fire/Player
+route also passes through client cleanup, including refusal and retry.
+These component results do not qualify natural night or unrestricted combat.
+
+[Ambient Block sampling](performance/random-display.md) avoids initializing
+an unused success diagnostic for each of its 1,000 samples. Eight fresh Windows
+processes retain all 336 timings, with 40.45% and 22.82% lower median CPU time
+for fixed air and stone workloads. Both 114-profile controls pass. Simulation
+work, Random consumption and failure diagnostics remain covered; gameplay FPS
+and whole-frame timing remain unqualified.
+
 [Sleeping Player NBT](entity/player-nbt.md) now executes the actual wake at
 GS93, then continues Spawn and Score. Windows and sanitized Linux each match
 the new forty-case original packet, 9,909 typed scalars and 58 active source

@@ -843,7 +843,10 @@ cleanup:
     return ok;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_SLEEP_WAKE_ENTRY
+#define MC_SLEEP_WAKE_ENTRY main
+#endif
+int MC_SLEEP_WAKE_ENTRY(int argc, char **argv) {
     int result = 1;
     char root[8192];
     if (argc != 4 || strcmp(argv[1], "sleep-wake") != 0 ||
