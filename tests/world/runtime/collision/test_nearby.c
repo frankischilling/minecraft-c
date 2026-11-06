@@ -697,7 +697,7 @@ cleanup:
 
 static int nearby_foreign_value = 73;
 static void *nearby_foreign_items[] = {&nearby_foreign_value};
-static mc_world_reference_list nearby_foreign = {nearby_foreign_items, 1, 1};
+static mc_world_reference_list nearby_foreign = {nearby_foreign_items, 1, 1, 0};
 
 static bool nearby_terminal(fixture *f) {
     bool ok = false;

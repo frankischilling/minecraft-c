@@ -191,7 +191,7 @@ static bool batch_nullable_control(fixture *f, size_t side) {
           mc_world_runtime_entity_list_valid(w));
     void *world_access_items[] = {NULL};
     mc_world_reference_list world_access = {world_access_items, COUNT(world_access_items),
-                                            COUNT(world_access_items)};
+                                            COUNT(world_access_items), 0};
     mc_world_reference_list *const actual_u = w->fields.u;
     w->fields.u = &world_access;
     const mc_world_storage_status failed = batch_call(w, &borrowed, false, &error);
@@ -234,7 +234,7 @@ static bool batch_limits_and_empty_frontier(fixture *f, size_t side, mc_entity *
 
     int untyped = 123;
     void *items[] = {&untyped};
-    mc_world_reference_list foreign = {items, COUNT(items), COUNT(items)};
+    mc_world_reference_list foreign = {items, COUNT(items), COUNT(items), 0};
     mc_world_reference_list *const actual_b = w->fields.b, *const actual_d = w->fields.D;
     mc_world_reference_list *const actual_u = w->fields.u;
     const size_t w_bytes = w->construction.direct_allocation_bytes;
@@ -291,7 +291,7 @@ static bool batch_combined_retirement(fixture *f, size_t side, mc_entity *primar
           w->construction.direct_allocation_bytes == bytes);
     int untyped = 1;
     void *items[] = {&untyped};
-    mc_world_reference_list unknown = {items, COUNT(items), COUNT(items)};
+    mc_world_reference_list unknown = {items, COUNT(items), COUNT(items), 0};
     mc_world_reference_list *const actual_u = w->fields.u;
     w->fields.u = &unknown;
     const mc_world_storage_status admission = mc_world_runtime_retire_entity_containers(w, NULL);

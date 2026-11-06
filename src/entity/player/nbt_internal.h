@@ -24,4 +24,18 @@ void mc_player_nbt_coordinate_store_held(mc_entity *, struct mc_player_nbt_coord
                                          const mc_player_coordinates **);
 void mc_player_nbt_coordinates_dispose(mc_entity *);
 
+/* Native source-local ownership; caller already holds the canonical Player.
+ * Pin preserves the actual mutable XYZ identity, including NULL and aliases.
+ * These operations perform no Q/v read or source field store. */
+mc_player_status mc_player_coordinate_pin_held(mc_entity *, const mc_player_coordinates *,
+                                               struct mc_player_nbt_coordinate **,
+                                               mc_player_error *);
+mc_player_status mc_player_coordinate_unpin_admit_held(mc_entity *,
+                                                       const struct mc_player_nbt_coordinate *,
+                                                       size_t occurrences);
+void mc_player_coordinate_unpin_commit_held(mc_entity *, struct mc_player_nbt_coordinate **);
+mc_player_status mc_player_coordinate_new_held(mc_entity *, mc_player_site, const char *operation,
+                                               struct mc_player_nbt_coordinate **,
+                                               mc_player_error *);
+
 #endif

@@ -72,12 +72,16 @@ typedef struct mc_client_gui_ingame_draw_state {
     bool pumpkin_entered, pumpkin_returned;
     bool hotbar_returned, crosshair_returned, blinking, random_seeded;
     bool stats_enabled, stats_returned, water, slots_returned, chat_returned;
+    bool sleep_overlay_entered, sleep_overlay_returned;
     unsigned int source_pc, gl_calls, textured_quads, vertices;
     unsigned int heart_backgrounds, heart_foregrounds, armor_icons, empty_slots;
     unsigned int item_slots, item_overlays, animated_slots, item_faces;
     unsigned int pumpkin_pc, pumpkin_vertices;
     unsigned int chat_entries, chat_backgrounds, chat_draws;
     int32_t chat_age[10], chat_alpha[10];
+    int32_t sleep_timer;
+    float sleep_factor;
+    uint32_t sleep_color;
     size_t pumpkin_word_count;
     int32_t pumpkin_words[48]; /* Actual NW backing copied before UQ.a(II) draw107. */
     mc_scaled_resolution resolution;

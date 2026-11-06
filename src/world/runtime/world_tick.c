@@ -13,6 +13,8 @@
 #include "mc/entity/mob/construction.h"
 #include "mc/entity/mob/spawning.h"
 #include "mc/entity/mount/mount.h"
+#include "mc/entity/player/sleep.h"
+#include "mc/world/runtime/bed_state.h"
 #include "mc/world/runtime/entities.h"
 #include "mc/world/runtime/environment.h"
 #include "mc/world/runtime/random_tick.h"
@@ -46,6 +48,10 @@ struct mc_world_tick_call {
     mc_world_random_tick_call *random;
     mc_world_random_tick_state random_state;
     mc_world_random_tick_error random_admission, random_cleanup;
+    mc_player_sleep_call *sleep;
+    mc_player_sleep_state sleep_state;
+    mc_player_sleep_error sleep_admission;
+    mc_player_sleep_cleanup sleep_cleanup;
     bool world_held;
     bool math_held;
 };
@@ -137,11 +143,28 @@ static bool list_get(mc_world_tick_call *c, mc_world_reference_list *list,
         return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                     "World tick reached Entity occurrence provenance", true);
     mc_entity *entity = ledger->entries[index];
-    if (entity != NULL &&
-        (entity->classes != c->state.world->classes->entities ||
-         (player && !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)))) {
+    if (entity != NULL && player) {
+        const mc_entity_class_literal *target = NULL;
+        bool matches = false;
+        mc_entity_status status = mc_entity_class_literal_get(c->state.world->classes->entities,
+                                                              MC_ENTITY_CLASS_KIND_PLAYER, &target);
+        if (status == MC_ENTITY_OK)
+            status =
+                mc_entity_class_literal_is_assignable_from(target, entity->class_literal, &matches);
+        if (status != MC_ENTITY_OK)
+            return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                        "World tick actual Player cast Class identities", true);
+        if (!matches) {
+            c->error.exception_class = "java/lang/ClassCastException";
+            return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World tick reached Player cast",
+                        false);
+        }
+        if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
+            return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                        "World tick canonical Player native field body", true);
+    } else if (entity != NULL && entity->classes != c->state.world->classes->entities) {
         c->error.exception_class = "java/lang/ClassCastException";
-        return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World tick reached Player cast", false);
+        return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World tick reached Entity cast", false);
     }
     *out = entity;
     return true;
@@ -277,6 +300,116 @@ static bool sleep_predicate(mc_world_tick_call *c, bool *sleeping) {
     return true;
 }
 
+static mc_world_storage_status sleep_status(mc_player_sleep_status status) {
+    switch (status) {
+        case MC_PLAYER_SLEEP_OK:
+            return MC_WORLD_STORAGE_OK;
+        case MC_PLAYER_SLEEP_ARGUMENT:
+            return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+        case MC_PLAYER_SLEEP_BUSY:
+            return MC_WORLD_STORAGE_BUSY;
+        case MC_PLAYER_SLEEP_LIMIT:
+            return MC_WORLD_STORAGE_LIMIT;
+        case MC_PLAYER_SLEEP_ALLOCATION_FAILED:
+            return MC_WORLD_STORAGE_ALLOCATION_FAILED;
+        default:
+            return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+    }
+}
+
+static mc_world_storage_status sleep_cleanup_status(const mc_player_sleep_cleanup *cleanup) {
+    if (cleanup->status != MC_PLAYER_SLEEP_CLEANUP_FAILED)
+        return sleep_status(cleanup->status);
+    /* The Player call retains causes from earlier refused retirements.
+     * Only the current discriminator identifies this attempt's failure. */
+    switch (cleanup->child) {
+        case MC_PLAYER_SLEEP_CLEANUP_QUERY:
+        case MC_PLAYER_SLEEP_CLEANUP_WORLD:
+            return cleanup->world.status == MC_WORLD_STORAGE_OK ? MC_WORLD_STORAGE_UNSUPPORTED_STATE
+                                                                : cleanup->world.status;
+        case MC_PLAYER_SLEEP_CLEANUP_REGISTRY:
+            return cleanup->registry.status == MC_REGISTRY_OK
+                       ? MC_WORLD_STORAGE_UNSUPPORTED_STATE
+                       : mc_world_runtime_registry_status(cleanup->registry.status);
+        case MC_PLAYER_SLEEP_CLEANUP_OCCUPANCY:
+            return cleanup->occupancy == NULL ||
+                           cleanup->occupancy->cleanup.status == MC_WORLD_STORAGE_OK
+                       ? MC_WORLD_STORAGE_UNSUPPORTED_STATE
+                       : cleanup->occupancy->cleanup.status;
+        case MC_PLAYER_SLEEP_CLEANUP_COORDINATE:
+            return cleanup->coordinate == MC_PLAYER_BUSY    ? MC_WORLD_STORAGE_BUSY
+                   : cleanup->coordinate == MC_PLAYER_LIMIT ? MC_WORLD_STORAGE_LIMIT
+                                                            : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        case MC_PLAYER_SLEEP_CLEANUP_BED:
+            /* Bed checked retirement refuses malformed retained World holds;
+             * its typed source diagnostic has no separate cleanup status. */
+            return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        default:
+            return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+    }
+}
+
+static bool sleep_retire(mc_world_tick_call *c) {
+    if (mc_player_sleep_retire(&c->sleep, &c->sleep_cleanup) != MC_PLAYER_SLEEP_OK)
+        return false;
+    c->state.sleep = NULL;
+    c->error.sleep = NULL;
+    c->error.sleep_cleanup = NULL;
+    memset(&c->sleep_state, 0, sizeof(c->sleep_state));
+    return true;
+}
+
+static bool wake_player(mc_world_tick_call *c, mc_entity *player) {
+    c->error.child_bytecode = 45;
+    /* list_get proved the actual Player belongs to this World definition's
+     * Entity namespace. Core validates this supplied Registry only at the
+     * reached GS getstatic; Player.World remains an independent receiver. */
+    const mc_player_sleep_context context = {.code_registry = c->state.world->classes->registry};
+    ++c->state.wake_calls;
+    const mc_player_sleep_status status =
+        mc_player_wake_begin(player, false, false, true, &context, &c->sleep, &c->sleep_admission);
+    if (c->sleep != NULL) {
+        if (!mc_player_sleep_inspect(c->sleep, &c->sleep_state))
+            return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                        "World wake retained Player observation", true);
+        c->state.sleep = &c->sleep_state;
+        c->error.descendant_bytecode = c->sleep_state.source_pc;
+    }
+    const mc_player_sleep_error *error =
+        c->sleep == NULL ? &c->sleep_admission : c->sleep_state.failure;
+    if (status != MC_PLAYER_SLEEP_OK) {
+        if (error == NULL)
+            return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                        "World wake retained Player failure view", true);
+        c->error.sleep = error;
+        c->error.descendant_bytecode = error->site.pc;
+        c->error.exception_class = error->exception_class;
+        fail(c,
+             error->world.status != MC_WORLD_STORAGE_OK ? error->world.status
+                                                        : sleep_status(status),
+             error->operation, error->native_policy);
+        if (error->world.status != MC_WORLD_STORAGE_OK)
+            c->error.cause = error->world;
+        return false;
+    }
+    if (c->sleep == NULL || !c->sleep_state.returned)
+        return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World wake returned Player child",
+                    true);
+    ++c->state.wake_returns;
+    if (!sleep_retire(c)) {
+        c->error.sleep_cleanup = &c->sleep_cleanup;
+        return fail(c, sleep_cleanup_status(&c->sleep_cleanup), c->sleep_cleanup.operation, true);
+    }
+    return true;
+}
+
+static bool wake_weather_failed(mc_world_tick_call *c, const mc_world_info *receiver) {
+    if (receiver == NULL)
+        c->error.exception_class = "java/lang/NullPointerException";
+    return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World wake F Info receiver",
+                receiver != NULL);
+}
+
 static bool advance_sleep(mc_world_tick_call *c) {
     mc_world_runtime *w = c->state.world;
     if (w->fields.N && w->fields.q >= 1) {
@@ -301,26 +434,55 @@ static bool advance_sleep(mc_world_tick_call *c) {
     size_t count;
     if (!list_size(c, list, &w->player_membership, 9, &count))
         return false;
-    for (size_t i = 0; i < count; ++i) {
+    const int32_t expected_mod_count = list->mod_count;
+    for (size_t i = 0;; ++i) {
+        c->error.descendant_bytecode = 0;
+        if (!list_size(c, list, &w->player_membership, 16, &count))
+            return false;
+        if (i == count)
+            break;
+        c->error.child_bytecode = 25;
+        if (list->mod_count != expected_mod_count) {
+            c->error.exception_class = "java/util/ConcurrentModificationException";
+            return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                        "World wake actual Iterator.next structural modification", false);
+        }
+        if (i > count) {
+            c->error.exception_class = "java/util/NoSuchElementException";
+            return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                        "World wake actual Iterator.next exhausted", false);
+        }
         mc_entity *player;
         if (!list_get(c, list, &w->player_membership, i, 25, 30, true, &player))
             return false;
         c->error.child_bytecode = 35;
-        if (player == NULL)
+        if (player == NULL) {
+            c->error.exception_class = "java/lang/NullPointerException";
             return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World wake null Player", false);
+        }
         if (((const mc_local_player_object *)player)->state.fields.player.u) {
-            c->error.child_bytecode = 45;
-            return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World wake actual Player.a(ZZZ)V",
-                        true);
+            if (!wake_player(c, player))
+                return false;
         }
     }
     c->error.child_bytecode = 52;
     /* Actual F: fresh Info receiver at each operation, in source order. */
-    if (mc_world_info_source_rain_time_set(w->fields.x, 0) != MC_WORLD_INFO_OK ||
-        mc_world_info_source_raining_set(w->fields.x, false) != MC_WORLD_INFO_OK ||
-        mc_world_info_source_thunder_time_set(w->fields.x, 0) != MC_WORLD_INFO_OK ||
-        mc_world_info_source_thundering_set(w->fields.x, false) != MC_WORLD_INFO_OK)
-        return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World wake F Info receiver", false);
+    c->error.descendant_bytecode = 5;
+    mc_world_info *info = w->fields.x;
+    if (mc_world_info_source_rain_time_set(info, 0) != MC_WORLD_INFO_OK)
+        return wake_weather_failed(c, info);
+    c->error.descendant_bytecode = 13;
+    info = w->fields.x;
+    if (mc_world_info_source_raining_set(info, false) != MC_WORLD_INFO_OK)
+        return wake_weather_failed(c, info);
+    c->error.descendant_bytecode = 21;
+    info = w->fields.x;
+    if (mc_world_info_source_thunder_time_set(info, 0) != MC_WORLD_INFO_OK)
+        return wake_weather_failed(c, info);
+    c->error.descendant_bytecode = 29;
+    info = w->fields.x;
+    if (mc_world_info_source_thundering_set(info, false) != MC_WORLD_INFO_OK)
+        return wake_weather_failed(c, info);
     return true;
 }
 
@@ -1166,8 +1328,17 @@ mc_world_storage_status mc_world_runtime_tick_retire(mc_world_tick_call **slot,
         return rejected(cleanup, MC_WORLD_STORAGE_OK, NULL);
     if (c->state.active)
         return rejected(cleanup, MC_WORLD_STORAGE_BUSY, "World tick call active");
+    if (!sleep_retire(c)) {
+        const mc_world_storage_status status = sleep_cleanup_status(&c->sleep_cleanup);
+        (void)rejected(cleanup, status, c->sleep_cleanup.operation);
+        if (cleanup != NULL)
+            cleanup->sleep_cleanup = &c->sleep_cleanup;
+        return status;
+    }
     if (mc_world_runtime_random_tick_retire(&c->random, &c->random_cleanup) != MC_WORLD_STORAGE_OK)
         return rejected(cleanup, c->random_cleanup.status, c->random_cleanup.operation);
+    c->state.random = NULL;
+    c->error.random = NULL;
     if (c->math_held) {
         mc_math_classes *math = c->state.math;
         const mc_math_class_status status = mc_math_classes_release(&math, NULL);

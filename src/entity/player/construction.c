@@ -155,28 +155,15 @@ mc_entity_status mc_entity_source_position_rotation(mc_entity *entity, double x,
     e.bytecode = 77;
     /* Actual SN.e stores the same x/y/z before width/2 and aW invocation. */
     const double px = entity->base.x, py = entity->base.y, pz = entity->base.z;
-    entity->base.x = px;
-    entity->base.y = py;
-    entity->base.z = pz;
-    const float half_width = at_fdiv(entity->base.width, 2.0f);
-    const float height = entity->base.height;
-    mc_entity_bounds *receiver = entity->bounds; /* SN.e31, before arguments. */
-    const mc_entity_bounds bounds =
-        mc_entity_source_position_values(entity, px, py, pz, half_width, height);
-    e.position_bytecode = 86;
-    if (receiver == NULL) {
-        e.status = MC_ENTITY_STATE_ERROR;
-        e.operation = "SN.e null permanent bounds receiver";
-        e.source_null = true;
+    mc_entity_source_position_error position = {0};
+    e.status = mc_entity_source_position_checked(entity, px, py, pz, &position);
+    e.position_bytecode = position.bytecode;
+    if (e.status != MC_ENTITY_OK) {
+        e.operation = position.operation;
+        e.source_null = position.source_null;
+        e.native_policy = position.native_policy;
         goto done;
     }
-    receiver->min_x = bounds.min_x;
-    receiver->min_y = bounds.min_y;
-    receiver->min_z = bounds.min_z;
-    receiver->max_x = bounds.max_x;
-    receiver->max_y = bounds.max_y;
-    receiver->max_z = bounds.max_z;
-    e.position_bytecode = 90;
     e.bytecode = 80;
 done:
     if (out != NULL)

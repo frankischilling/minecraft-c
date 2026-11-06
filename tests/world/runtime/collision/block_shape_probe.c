@@ -179,7 +179,7 @@ static bool shape_replay(fixture *f, size_t side, const shape_case *row,
     mc_entity_bounds marker = {-9, -8, -7, -6, -5, -4};
     const mc_entity_bounds query_before = query, marker_before = marker;
     void *items[] = {&marker};
-    mc_world_reference_list destination = {items, COUNT(items), COUNT(items)};
+    mc_world_reference_list destination = {items, COUNT(items), COUNT(items), 0};
     CHECK(mc_entity_bounds_pool_reset(classes, NULL) == MC_ENTITY_OK &&
           classes->bounds_pool != NULL);
     const int32_t cursor_before = classes->bounds_cursor;

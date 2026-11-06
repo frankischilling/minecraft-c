@@ -1,13 +1,109 @@
 # Test scope and reproduction
 
+## Player sleep and wake
+
+The [retained Player bodies](entity/player-sleep.md) have a separate unchanged-original
+[76-profile packet](../tests/reference/entity/player_sleep_wake/README.md).
+Two fresh VMs agree on 16 successful sleeps, 56 successful wakes and four
+actual null failures, with 1,313 selected calls and 3,979 ordered events per
+VM. These are prepared World/Player components. They execute no ticks, GUI
+or loaded Minecraft App and compare constructor entropy only within a call.
+
+The corrected native replay passes all 76 rows and 9,784 scalar comparisons
+on Windows and sanitized Linux in 4.82/26.31 CTest seconds. Native fade and
+four-direction Display rotation controls also pass in 2.43/3.98 seconds;
+the shared static occupancy controls pass in 0.14/0.30 seconds. Eleven timer
+inputs check the HUD fade; four actual sleep entries each feed three real
+Display rotations. Native reader controls reject 4,556 altered transports
+and selected values in normal and optimized Python; portable original-packet
+controls reject 890 corruptions per mode. These controls do not count as
+native execution or new original observations. The earlier 48-prefix packet,
+13 segregated later completions and all prior failed opportunities stay intact.
+
+The final World caller selections pass all eight authored scenarios on both
+hosts, with 15,054 native checks each, in 4.30 Windows CTest seconds and 18.91
+Linux seconds. Completed routes return at 198 after 361 genuine Chunk
+acquisitions and 28,880 random samples over the declared stored-air inputs.
+The other scenarios cover actual GS failures, captured iterator mutations,
+retained cleanup causes and the F5 null-Info exception. All range, cell and
+Bed-target notification counts are recorded. Range counts are zero in these
+receipts, so they establish no positive range-callback coverage. These native
+caller controls add no original World-runtime, elapsed-sleep or loaded-night
+qualification.
+
+The first Windows focused cohort remains failed at 20/24 in 33.61 seconds,
+with all 5,498 public inputs unchanged. Its four failures expose an invalid
+native GL_ALPHA_TEST query in the shader-backed alpha assertion, structure
+padding in the fixture's preservation memcmp, buffered JSON interleaving,
+and a repeated-metadata notification expectation contradicted by the actual
+World setter. Test corrections preserve the original observations and every
+claimed field. The next four-case cohorts pass 3/4 on both hosts; the remaining
+World tick fixture lacks a reached range-observer method and then reaches its
+64-Chunk acquisition ceiling. Its complete source footprint needs 361 stored
+Chunks. Those failed runs retain their exact partial wake/weather/time effects;
+they do not qualify the unreturned tick tail or natural elapsed sleep.
+
+After supplying the declared footprint, the next 24-case cohorts remain failed
+at 23/24 on both hosts. The sole failure is an added positive-range assertion:
+the actual World tick already returns at 198 with all 361 Chunks and 28,880
+samples complete. Stored air need not produce a range callback. Removing that
+unsupported assertion retains every source-work check and records the actual
+notification counts. The separate final eight-scenario World selections above
+pass; the earlier failed cohorts remain failed.
+
+Both complete native builds pass. The current Windows public selection passes
+770/770 in 356.59 seconds with no skips. Linux retains 755/756 in 1,039.77
+seconds, with only `tools.world_storage_reference` timing out at 180.01
+seconds. No selected case is skipped and all 5,498 public inputs remain
+unchanged. A later storage correction has separate qualification. These
+local results supply no current hosted CI qualification.
+
+### Storage guard metadata checks
+
+The repeated full-run timeout has separate follow-up evidence. A fresh direct
+Linux run of the unchanged 76 guards passes in 133.149 seconds. The measured
+work-directory hotspot repeats successful existence probes before `samefile`
+performs the same metadata reads. The fast path now obtains fresh output and
+protected-input metadata for each entry and compares their device/inode
+identities. Failed probes execute the complete original existence/identity
+sequence, retaining the host Python's error policy. Nothing is cached across
+entries or calls. Both paths sample metadata without an atomic filesystem
+snapshot during concurrent rebinding.
+
+Thirty-one differential controls pass on each of Linux Python 3.12 and Windows
+Python 3.14, with all five real link kinds exercised and no link skips. Complete
+ordered catalogs retain all 1,503 current inputs, including the new Bed-state
+header. Creation/removal, alias and containment refusal, stable errors and
+output replacement between entries remain covered. Eight fixed identity checks
+use 32 versus 16 `stat` calls on Linux. Windows removes sixteen native existence
+calls while retaining sixteen explicit `stat` calls; these are host-specific
+call counts, not a claim about Windows kernel operations.
+
+The changed direct Linux guard passes all 76 in 123.046 seconds under the same
+180-second limit. This one sequential before/after observation establishes no
+repeated benchmark percentage. The test bytes and ordered case IDs, complete
+protected closure, independent source reads, copying, hashing and final
+immutability checks remain intact.
+
+Registered follow-up passes 11/11 Windows cases in 26.08 seconds, including
+storage in 11.39 seconds, all seven new cases, old sleep/Bed interaction and
+HUD drawing. Linux runs storage beside loading draw and Redstone Torch replay
+with the same three-job schedule: all three pass in 159.13 seconds, with
+storage at 133.74, loading draw at 159.11 and Torch replay at 86.18 seconds.
+All 5,498 public inputs remain unchanged across these selections. Linux keeps
+sanitizers, leak checks and software GL; watchdogs are unchanged on both hosts.
+These follow-ups do not
+replace the failed 755/756 full Linux run or establish whole-client FPS.
+
 ## Bed placement and daytime interaction
 
 The new [Item355 body](item/bed-use.md), [World Bed paths](world/bed-interaction.md)
 and [GS/CW prefix](entity/player-sleep.md) have separate original packets:
 72 direct LP calls, 85 World profiles and 48 sleep-prefix profiles. The World
 comparison ends at an authored Player/message adapter; the real DC/App/UQ
-join has separate client controls. Night success stops before resize119 and
-Nether activation stops at explosion256 after its reached removals.
+join has separate client controls. That earlier finite-prefix comparison stops
+before resize119; the retained body above continues separately. Nether
+activation still stops at explosion256 after its reached removals.
 
 The first thirteen-case selections pass 12/13 on both hosts: Windows takes
 50.56 seconds, sanitized Linux 76.78 seconds. Item355, GS/CW, packet readers

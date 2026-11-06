@@ -31,8 +31,15 @@ in retained diagnostics. The current candidate stays owned through reached
 failure and is released at scheduler retirement. World/Chunk publications own
 their own occurrences. A first-constructor observation records actual source
 values before CQ773 without changing the attempt or Random stream.
-Skeleton jockey [mounting and riding](../entity/mounting.md) now run. Sleeping
-wake transitions remain unfinished.
+Skeleton jockey [mounting and riding](../entity/mounting.md) now run.
+The sleeping branch calls the retained [Player wake body](../entity/player-sleep.md)
+after its actual predicate and time alignment. It preserves the captured Player
+iterator, wrapping modification counter and ordered weather resets. Eight
+authored native controls pass on Windows and sanitized Linux, including complete
+361-Chunk/28,880-sample stored-air tails and retained source/cleanup failures.
+These controls add no original World-runtime or natural elapsed-sleep evidence.
+The default-difficulty hostile CQ33/FW7 branch and loaded-night acceptance
+remain unfinished or unqualified.
 Random Chunk work now retains the actual Chunk local through cave sounds,
 weather, snow/ice and all eighty raw-byte samples per coordinate. Its selected
 concrete Block ticks and genuine Lightning constructor keep their own reached

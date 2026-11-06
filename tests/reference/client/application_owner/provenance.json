@@ -262,8 +262,8 @@
       "sha256": "eb54a753c7fd685aa9b0c3233180daf34ed0c570ed1c401f7b118255a9e06433"
     },
     "include/mc/world/runtime/entity_errors.h": {
-      "bytes": 2075,
-      "sha256": "24827d487a83879fdd4027f1b5eedf26a1ae03abac2fea18841dabdbda99171c"
+      "bytes": 2125,
+      "sha256": "6153adc874e9d7f38a09290040ffc2fdc7d6bfd33ad907b6131d67c186c36fb8"
     },
     "include/mc/world/runtime/runtime.h": {
       "bytes": 12734,
@@ -858,6 +858,26 @@
             "src/entity/classes/classes_internal.h": {
               "bytes": 3220,
               "sha256": "22e9ae3c1a618c3cc785e41fa9a3b1bf3394835a6ca94583491a636715602d26"
+            }
+          },
+          "added": [],
+          "current_count": 116
+        }
+      }
+    },
+    {
+      "from_commit": "727d4aa97fd4c2da640c98d60a6a00466f301333",
+      "role": "Current retained Player sleep/wake, Bed occupancy, World wake iteration, sleep rendering and storage guard metadata inputs. This entry binds current inputs only; earlier original and native observations, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 34815,
+        "sha256": "192e1a3e9a5b9aaff90754bd3983abccf66b83e63f9bd9130ade940cfdfc9910"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "include/mc/world/runtime/entity_errors.h": {
+              "bytes": 2075,
+              "sha256": "24827d487a83879fdd4027f1b5eedf26a1ae03abac2fea18841dabdbda99171c"
             }
           },
           "added": [],

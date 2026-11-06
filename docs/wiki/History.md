@@ -1,5 +1,25 @@
 # History
 
+## Player sleep, wake and local rendering
+
+The retained Player bodies now preserve original bounds and coordinate
+identity, fresh World/Registry occurrences, occupancy notifications, wake
+exit order, timer stores and copied spawn coordinates. Failed children remain
+owned until checked retirement. World ticking adopts real wake calls and the
+captured Player iterator. HUD fade and protected sleeping rotations consume
+actual sleep state.
+
+Two unchanged-original VMs agree on a separate 76-profile packet. Native
+Windows and sanitized Linux replay all 9,784 scalars. Eight authored World
+controls cover the complete declared random footprint and failure/cleanup
+cases; they are not new original World-runtime observations. Initial fixture
+and assertion failures remain in the test record. Linux retains 755/756 public tests in 1,039.77 seconds, with no skips; the sole failure is the unchanged 180.01-second storage guard timeout. All 5,498 frozen public inputs remain unchanged.
+The storage metadata fast path preserves all 1,503 protected inputs and the unchanged 76 guards. Direct Linux runs pass in 133.149 seconds before and 123.046 after; this pair establishes no benchmark percentage. Registered follow-up passes 11/11 Windows cases in 26.08 seconds and the concurrent Linux trio 3/3 in 159.13 seconds, with storage at 133.74 seconds under the unchanged 180-second limit. The failed full run remains separate.
+
+Default-hostile CQ/FW, natural elapsed sleep, damage/NBT wake parents and
+loaded-night gameplay remain unfinished or unqualified. The existing loaded
+focus failure is retained; no FPS gain follows from these component results.
+
 ## Bed placement and daytime interaction
 
 Exact checkpoint `fd11d600` passes hosted Windows 712/712 and Clang 770/770,

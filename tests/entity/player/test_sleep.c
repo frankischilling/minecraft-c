@@ -2,7 +2,9 @@
 #define MC_PLAYER_SPAWN_MAIN mc_sleep_spawn_fixture_main
 #include "test_spawn.c"
 #undef MC_PLAYER_SPAWN_MAIN
+#include "../../../src/entity/player/nbt_internal.h"
 #include "../../../src/entity/player/sleep_internal.h"
+#include "../../../src/entity/position_internal.h"
 #include "mc/entity/player/sleep.h"
 
 static bool sleep_name(const mc_player_sleep_result *value, const char *expected, int ordinal) {
@@ -387,6 +389,129 @@ cleanup:
     return ok;
 }
 
+static bool sleep_retained_cases(fixture *f, mc_entity *player) {
+    bool ok = false;
+    mc_player_sleep_call *call = NULL;
+    mc_player_sleep_error error = {0};
+    mc_player_sleep_cleanup cleanup_error = {0};
+    mc_player_sleep_state state;
+    mc_world_runtime *world = f->worlds[0];
+    const mc_world_runtime_fields old_world = world->fields;
+    const mc_entity_base_fields old_base = player->base;
+    const mc_local_player_snapshot old_player = player->local_player->fields;
+    mc_entity_bounds *bounds = player->bounds;
+    const mc_entity_bounds old_bounds = *bounds;
+    const size_t budget = player->classes->limits.max_allocation_bytes;
+    struct mc_player_nbt_coordinate *pinned = NULL;
+    size_t pin_count = 0;
+    CHECK(old_player.player.v == NULL && old_player.player.private_b == NULL &&
+          old_player.player.private_bN == NULL);
+    const size_t world_holds = world->persistent_bindings, holds = player->holds,
+                 registry_holds = f->registry[0]->runtime_borrows;
+    world->fields.B = true; /* Explicit original remote bypass, not gameplay. */
+    const mc_player_sleep_context context = {.code_registry = f->registry[0]};
+    CHECK(mc_player_try_sleep_begin(player, 0, -1, 0, NULL, &call, &error) == MC_PLAYER_SLEEP_OK &&
+          call != NULL && mc_player_sleep_inspect(call, &state) && state.returned && !state.wake &&
+          state.source_pc == 337 && state.result != NULL && player->local_player->fields.player.u &&
+          player->local_player->fields.player.private_a == 0 &&
+          player->local_player->fields.player.v != NULL &&
+          player->local_player->fields.player.v->y == -1 &&
+          player->local_player->fields.player.private_b == NULL && player->base.width == .2f &&
+          player->base.height == .2f && player->base.offset == .2f && player->base.x == .5 &&
+          player->base.y == -.0625 && player->base.z == .5 && error.size_wrapper.pc == 3 &&
+          strcmp(error.size_wrapper.class_name, "ls") == 0 && error.size_leaf.pc == 10 &&
+          world->persistent_bindings == world_holds + 3 && player->holds == holds + 1 &&
+          f->registry[0]->runtime_borrows == registry_holds);
+    CHECK(mc_player_sleep_retire(&call, &cleanup_error) == MC_PLAYER_SLEEP_OK && call == NULL &&
+          world->persistent_bindings == world_holds && player->holds == holds);
+    const mc_player_coordinates *bed = player->local_player->fields.player.v;
+    const mc_entity_bounds sleeping_bounds = *bounds;
+    CHECK(mc_player_wake_begin(player, false, false, true, &context, &call, &error) ==
+              MC_PLAYER_SLEEP_OK &&
+          mc_player_sleep_inspect(call, &state) && state.returned && state.wake &&
+          state.source_pc == 234 && state.result == NULL &&
+          !player->local_player->fields.player.u &&
+          player->local_player->fields.player.private_a == 100 &&
+          player->local_player->fields.player.v == bed &&
+          player->local_player->fields.player.private_b != bed &&
+          player->local_player->fields.player.private_b->x == bed->x &&
+          player->local_player->fields.player.private_b->y == bed->y &&
+          player->local_player->fields.player.private_b->z == bed->z && player->base.width == .6f &&
+          player->base.height == 1.8f && player->base.offset == 1.62f &&
+          memcmp(bounds, &sleeping_bounds, sizeof(*bounds)) == 0 &&
+          f->registry[0]->runtime_borrows == registry_holds + 1);
+    pinned = player->local_player->nbt_coordinates;
+    while (pinned != NULL && &pinned->value != bed)
+        pinned = pinned->next;
+    CHECK(pinned != NULL && pinned->pins == 3);
+    pin_count = pinned->pins;
+    pinned->pins = 2; /* Explicit corrupt native metadata, not source state. */
+    CHECK(mc_player_sleep_retire(&call, &cleanup_error) == MC_PLAYER_SLEEP_CLEANUP_FAILED &&
+          call != NULL && cleanup_error.child == MC_PLAYER_SLEEP_CLEANUP_COORDINATE &&
+          mc_player_sleep_inspect(call, &state) && state.failure->status == MC_PLAYER_SLEEP_OK &&
+          state.returned && !player->local_player->fields.player.u);
+    pinned->pins = pin_count;
+    pin_count = 0;
+    CHECK(mc_player_sleep_retire(&call, &cleanup_error) == MC_PLAYER_SLEEP_OK && call == NULL &&
+          pinned->pins == 0 && world->persistent_bindings == world_holds &&
+          player->holds == holds && f->registry[0]->runtime_borrows == registry_holds);
+
+    /* Lazy wake Registry read is reached even for a non-Bed. It cannot be
+     * silently supplied from World; preserve size/offset and old timer/u. */
+    CHECK(mc_player_wake_begin(player, true, false, false, NULL, &call, &error) ==
+              MC_PLAYER_SLEEP_ARGUMENT &&
+          error.native_policy && error.site.pc == 51 && !error.returned && call != NULL &&
+          player->local_player->fields.player.private_a == 100);
+    CHECK(mc_player_sleep_retire(&call, &cleanup_error) == MC_PLAYER_SLEEP_OK);
+
+    /* Actual BR allocation289 failure comes after u/timer, before v/motion. */
+    player->base.velocity_x = .25;
+    player->base.velocity_y = .5;
+    player->base.velocity_z = .75;
+    player->classes->limits.max_allocation_bytes = player->classes->allocated_bytes;
+    const mc_player_sleep_status limited =
+        mc_player_try_sleep_begin(player, 0, -1, 0, NULL, &call, &error);
+    player->classes->limits.max_allocation_bytes = budget;
+    CHECK(limited == MC_PLAYER_SLEEP_LIMIT && error.site.pc == 289 && call != NULL &&
+          player->local_player->fields.player.u &&
+          player->local_player->fields.player.private_a == 0 &&
+          player->local_player->fields.player.v == bed && player->base.velocity_x == .25 &&
+          player->base.velocity_y == .5 && player->base.velocity_z == .75);
+    CHECK(mc_player_sleep_retire(&call, &cleanup_error) == MC_PLAYER_SLEEP_OK);
+
+    player->local_player->fields.player.u = false;
+    player->local_player->fields.player.private_a = 17;
+    player->bounds = NULL;
+    const mc_player_sleep_status no_bounds =
+        mc_player_try_sleep_begin(player, 0, -1, 0, NULL, &call, &error);
+    player->bounds = bounds;
+    CHECK(no_bounds == MC_PLAYER_SLEEP_SOURCE_NULL && error.position != NULL &&
+          error.position->source_null && error.position->bytecode == 86 && error.site.pc == 275 &&
+          error.child.pc == 86 && player->base.x == .5 && player->base.y == -.0625 &&
+          player->base.z == .5 && !player->local_player->fields.player.u &&
+          player->local_player->fields.player.private_a == 17);
+    CHECK(mc_player_sleep_retire(&call, &cleanup_error) == MC_PLAYER_SLEEP_OK);
+    CHECK(mc_player_wake_begin(NULL, false, false, false, NULL, &call, NULL) ==
+              MC_PLAYER_SLEEP_SOURCE_NULL &&
+          call != NULL && mc_player_sleep_inspect(call, &state) &&
+          state.failure->source_exception && state.failure->site.pc == 0 &&
+          mc_player_sleep_retire(&call, &cleanup_error) == MC_PLAYER_SLEEP_OK);
+    ok = true;
+cleanup:
+    if (pin_count != 0 && pinned != NULL)
+        pinned->pins = pin_count;
+    player->bounds = bounds;
+    player->classes->limits.max_allocation_bytes = budget;
+    if (mc_player_sleep_retire(&call, &cleanup_error) != MC_PLAYER_SLEEP_OK)
+        return false;
+    player->base = old_base;
+    player->local_player->fields = old_player;
+    world->fields = old_world;
+    *bounds = old_bounds;
+    mc_player_nbt_coordinates_collect_held(player);
+    return ok;
+}
+
 int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
@@ -434,6 +559,7 @@ int main(int argc, char **argv) {
     CHECK(mc_local_player_construct(player, f->worlds[0], NULL, session, 0, NULL, NULL) ==
           MC_PLAYER_OK);
     CHECK(sleep_prefix_cases(f, player));
+    CHECK(sleep_retained_cases(f, player));
     if (reference)
         CHECK(sleep_reference_cases(f, argv[3]));
     result = 0;

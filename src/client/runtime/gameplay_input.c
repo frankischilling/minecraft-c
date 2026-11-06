@@ -317,8 +317,10 @@ static bool use(client_application *app, mc_client_gameplay_input *call, bool on
     const unsigned int pc = on_block ? 239u : 350u;
     if (app->controller == NULL)
         return click_fail(call, "actual click null use controller invocation", pc);
-    const mc_world_block_activation_context activation = {
-        .context = call, .workbench = workbench, .player_message = player_message};
+    const mc_world_block_activation_context activation = {.context = call,
+                                                          .player_code_registry = app->registry,
+                                                          .workbench = workbench,
+                                                          .player_message = player_message};
     const mc_singleplayer_use_context sources = {.activation = &activation,
                                                  .math = app->source_math_classes};
     const mc_singleplayer_use_status status =

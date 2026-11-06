@@ -1046,6 +1046,17 @@ static bool capture_entity_children(mc_client_render_manager_draw_call *c,
     return true;
 }
 
+bool mc_client_draw_capture_acquisition(mc_client_draw_scope *scope,
+                                        mc_world_runtime_acquisition_error *query,
+                                        mc_client_manager_error *error) {
+    if (!scope_valid(scope, error))
+        return false;
+    if (query == NULL)
+        return owner_fail(error, MC_CLIENT_MANAGER_INVALID_ARGUMENT,
+                          "Draw actual acquisition frame");
+    return capture_acquisition(scope->owner, query, error);
+}
+
 bool mc_client_model_runtime_entity_adopt(const mc_client_model_runtime_context *context,
                                           mc_entity_render_error *v, mc_client_manager_error *e) {
     manager_error_init(e);

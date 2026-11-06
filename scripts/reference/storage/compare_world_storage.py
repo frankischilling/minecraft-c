@@ -1255,7 +1255,13 @@ def validate_work_dir(work_dir, protected=()):
         if selected is None:continue
         path=Path(selected).resolve()
         check(resolved!=path and resolved not in path.parents,"output would contain/alias an attributed input")
-        if work.exists() and path.exists():check(not os.path.samefile(work,path),"output aliases an input")
+        try:
+            work_info=work.stat()
+            path_info=path.stat()
+        except (OSError,ValueError):
+            # Retain the host Path.exists/samefile error policy on failed probes.
+            if work.exists() and path.exists():check(not os.path.samefile(work,path),"output aliases an input")
+        else:check(not os.path.samestat(work_info,path_info),"output aliases an input")
     return work
 
 

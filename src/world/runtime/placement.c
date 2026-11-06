@@ -11,6 +11,7 @@
 #include "entity_publication_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/entity/player/sleep.h"
+#include "mc/world/runtime/bed_state.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/collision/spawning.h"
 #include "mc/world/runtime/mutations.h"
@@ -37,9 +38,10 @@ struct mc_world_placement_work {
     mc_world_collision_error *collision;
     mc_world_spawn_collision_error *entities;
     mc_entity *bed_player;
-    mc_world_runtime *bed_player_world;
     mc_entity_classes *bed_enum_owner;
     mc_player_sleep_error *sleep;
+    mc_player_sleep_call *sleep_call;
+    mc_player_sleep_cleanup sleep_cleanup;
     mc_player_error *bed_occupant;
     mc_player_sleep_result_error *sleep_result;
     mc_world_provider_error provider;
@@ -728,6 +730,21 @@ static mc_world_storage_status finish(mc_world_placement_error *e, bool returned
     return e->status;
 }
 
+mc_world_storage_status mc_world_bed_set_occupied(mc_registry_classes *registry,
+                                                  mc_world_runtime *world, int32_t x, int32_t y,
+                                                  int32_t z, bool occupied,
+                                                  mc_world_placement_error *e) {
+    if (e == NULL)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    if (e->work != NULL)
+        return MC_WORLD_STORAGE_BUSY;
+    if (!allocate(e, site("ve", "a", "(Lfd;IIIZ)V", 0)))
+        return e->status;
+    if (!hold_registry(e, registry))
+        return finish(e, false, false, NULL);
+    return finish(e, bed_set_occupied(e, world, x, y, z, occupied), false, NULL);
+}
+
 mc_world_storage_status mc_world_runtime_can_place(mc_world_runtime *world, int32_t id, int32_t x,
                                                    int32_t y, int32_t z, bool ignore, int32_t face,
                                                    bool *out, mc_world_placement_error *e) {
@@ -1091,6 +1108,29 @@ bool mc_world_placement_error_retire(mc_world_placement_error *e) {
         }
         w->bed_enum_owner = NULL;
     }
+    if (w->sleep_call != NULL) {
+        const mc_player_sleep_status status =
+            mc_player_sleep_retire(&w->sleep_call, &w->sleep_cleanup);
+        if (status != MC_PLAYER_SLEEP_OK) {
+            e->cleanup_sleep = &w->sleep_cleanup;
+            e->cleanup = (mc_world_storage_error){status == MC_PLAYER_SLEEP_BUSY
+                                                      ? MC_WORLD_STORAGE_BUSY
+                                                      : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                                  w->sleep_cleanup.operation, 0};
+            return false;
+        }
+        e->cleanup_sleep = NULL;
+        /* A later independent caller-Registry retirement may still refuse.
+         * Keep the copied first scalar failure, but end views into the child
+         * whose storage has now been consumed. */
+        if (w->sleep != NULL) {
+            w->sleep->acquisition = NULL;
+            w->sleep->occupancy = NULL;
+            w->sleep->bed = NULL;
+            w->sleep->world_sleep = NULL;
+            w->sleep->position = NULL;
+        }
+    }
     if (w->registry != NULL) {
         const mc_registry_status status =
             mc_registry_classes_release(w->registry, &e->cleanup_registry);
@@ -1117,8 +1157,6 @@ bool mc_world_placement_error_retire(mc_world_placement_error *e) {
     free(w->bed_occupant);
     free(w->sleep_result);
     mc_entity_release(w->bed_player);
-    if (w->bed_player_world != NULL)
-        mc_world_runtime_binding_release(w->bed_player_world);
     if (w->world != NULL)
         mc_world_runtime_binding_release(w->world);
     free(w);

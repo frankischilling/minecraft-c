@@ -136,7 +136,7 @@ static int one_case(mc_world_runtime_classes *classes, mc_entity_classes *entiti
                                                sizeof(entries) / sizeof(entries[0])};
     CHECK(mc_world_runtime_call_enter(world, NULL) == MC_WORLD_STORAGE_OK);
     void *world_access_entries[] = {NULL};
-    mc_world_reference_list world_access = {world_access_entries, 1, 1};
+    mc_world_reference_list world_access = {world_access_entries, 1, 1, 0};
     mc_world_reference_list *original_world_accesses = world->fields.u;
     if (scenario == 8)
         world->fields.u = &world_access;

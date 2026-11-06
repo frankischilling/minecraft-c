@@ -8,6 +8,78 @@ struct mc_player_coordinate_pin {
     struct mc_player_nbt_coordinate *node;
 };
 
+mc_player_status mc_player_coordinate_pin_held(mc_entity *p, const mc_player_coordinates *value,
+                                               struct mc_player_nbt_coordinate **out,
+                                               mc_player_error *e) {
+    mc_player_error_clear(e);
+    if (out == NULL || *out != NULL || p == NULL ||
+        !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
+        return mc_player_fail(e, MC_PLAYER_INVALID_ARGUMENT, "Player local coordinate pin owner",
+                              NULL, NULL, NULL, 0);
+    if (value == NULL)
+        return MC_PLAYER_OK;
+    struct mc_player_nbt_coordinate *node = p->local_player->nbt_coordinates;
+    while (node != NULL && &node->value != value)
+        node = node->next;
+    if (node == NULL)
+        return mc_player_fail(e, MC_PLAYER_INVALID_ARGUMENT, "Player local coordinate provenance",
+                              NULL, NULL, NULL, 0);
+    if (node->pins == SIZE_MAX)
+        return mc_player_fail(e, MC_PLAYER_LIMIT, "Player local coordinate pin ceiling", NULL, NULL,
+                              NULL, 0);
+    ++node->pins;
+    *out = node;
+    return MC_PLAYER_OK;
+}
+
+mc_player_status mc_player_coordinate_unpin_admit_held(mc_entity *p,
+                                                       const struct mc_player_nbt_coordinate *node,
+                                                       size_t occurrences) {
+    if (node == NULL)
+        return occurrences == 0 ? MC_PLAYER_OK : MC_PLAYER_INVALID_ARGUMENT;
+    if (p == NULL || !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
+        return MC_PLAYER_INVALID_ARGUMENT;
+    const struct mc_player_nbt_coordinate *current = p->local_player->nbt_coordinates;
+    while (current != NULL && current != node)
+        current = current->next;
+    return current != NULL && current->pins >= occurrences ? MC_PLAYER_OK
+                                                           : MC_PLAYER_INVALID_ARGUMENT;
+}
+
+void mc_player_coordinate_unpin_commit_held(mc_entity *p, struct mc_player_nbt_coordinate **slot) {
+    if (slot != NULL && *slot != NULL) {
+        --(*slot)->pins;
+        *slot = NULL;
+        mc_player_nbt_coordinates_collect_held(p);
+    }
+}
+
+mc_player_status mc_player_coordinate_new_held(mc_entity *p, mc_player_site site,
+                                               const char *operation,
+                                               struct mc_player_nbt_coordinate **out,
+                                               mc_player_error *e) {
+    mc_player_error_clear(e);
+    if (p == NULL || out == NULL || *out != NULL ||
+        !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
+        return mc_player_fail(e, MC_PLAYER_INVALID_ARGUMENT, "Player coordinate allocation owner",
+                              NULL, NULL, NULL, 0);
+    mc_entity_error native = {0};
+    struct mc_player_nbt_coordinate *node =
+        mc_entity_construction_allocate(p, sizeof(*node), &native, operation, (uint16_t)site.pc);
+    if (node == NULL) {
+        const mc_player_status status =
+            native.status == MC_ENTITY_LIMIT ? MC_PLAYER_LIMIT : MC_PLAYER_ALLOCATION_FAILED;
+        mc_player_fail(e, status, operation, site.class_name, site.method, site.descriptor,
+                       site.pc);
+        if (e != NULL)
+            e->entity = native;
+        return status;
+    }
+    *node = (struct mc_player_nbt_coordinate){0};
+    *out = node;
+    return MC_PLAYER_OK;
+}
+
 static mc_player_status publish(mc_player_error *out, const mc_player_error *error) {
     if (out != NULL)
         *out = *error;

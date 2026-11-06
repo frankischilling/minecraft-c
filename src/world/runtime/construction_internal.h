@@ -18,6 +18,9 @@ struct mc_world_active_chunks {
 struct mc_world_reference_list {
     void **items;
     size_t count, capacity;
+    /* Java ArrayList structural counter for canonical Entity membership.
+     * Native terminal release is not a source clear operation. */
+    int32_t mod_count;
 };
 
 struct mc_world_light_type {

@@ -806,7 +806,7 @@ cleanup:
 
 static int boxes_foreign_value = 97;
 static void *boxes_foreign_items[] = {&boxes_foreign_value};
-static mc_world_reference_list boxes_foreign = {boxes_foreign_items, 1, 1};
+static mc_world_reference_list boxes_foreign = {boxes_foreign_items, 1, 1, 0};
 
 static bool boxes_terminal_seed(fixture *f, size_t side) {
     bool ok = false;

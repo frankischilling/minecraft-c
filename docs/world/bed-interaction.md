@@ -1,6 +1,6 @@
-# Bed neighbors and daytime activation
+# Bed neighbors and activation
 
-The World implements the original Bed neighbor body and activation prefix on
+The World implements the original Bed neighbor body and reached activation branches on
 the actual client GAME World. [Item355 placement](../item/bed-use.md),
 [rendering](../client/bed-world.md), [Player sleep rejection](../entity/player-sleep.md)
 and [saved-Bed respawn](bed-spawn.md) retain separate scopes.
@@ -43,10 +43,13 @@ captures that Player's App, that App's UQ and calls the real translated
 an English string. The gameplay owner retires this message child before the
 controller Use call so borrowed causes remain live through a failed call.
 
-The Nether arm performs its reached notifying removals before reporting the
-unimplemented explosion invocation at 256. A night route can stop at the
-Player's resize119 frontier. Those failures retain the earlier source effects;
-neither route is reported as successful sleep or complete Nether behavior.
+The retained night route calls the complete [Player sleep body](../entity/player-sleep.md).
+Its GS defining Registry comes explicitly from the activation context; the
+client supplies its actual Registry. A returned CW.a reaches the same notifying
+occupancy setter used by wake. The placement owner retains the sleep child
+through checked cleanup, including failed queries, bounds and callbacks.
+The older finite-prefix comparison still stops before119. The Nether arm
+retains its reached notifying removals before the explosion256 frontier.
 
 ## Original comparison boundary
 
@@ -69,8 +72,16 @@ DC/App/UQ or drawing qualification; separate client controls cover that join.
 ctest --test-dir build --output-on-failure -R '^(world[.]bed_interaction|tools[.]bed_interaction_packet(_optimized)?)$'
 ```
 
-General nighttime sleeping/waking, Nether explosions, original whole-frame
-pixels/audio, Linux loaded Bed play and sustained FPS remain unqualified.
+The separate [sleep/wake comparison](../entity/player-sleep.md#evidence-and-limits)
+qualifies 76 prepared Player components and 9,784 scalar values on Windows and
+sanitized Linux. Eight native World caller controls also pass, including
+complete 361-Chunk/28,880-sample tails and retained failure/cleanup paths.
+The eleven HUD timer inputs and four-direction Player Display calls have
+separate native graphics scope. None extends the original 85-profile World
+packet or qualifies loaded-night gameplay.
+
+Default-hostile CQ33/FW7, Nether explosion256, original whole-frame pixels/audio,
+Linux loaded Bed play and sustained FPS remain unfinished or unqualified.
 
 The corrected native replay passes on Windows in 1.49 CTest seconds and on
 sanitized Linux in 3.88 seconds, with 4,834 native checks. Its first failure

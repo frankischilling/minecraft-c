@@ -1,20 +1,21 @@
 /* Entered UQ.a(FZII)V closed-chat branch. The actual admitted DA kinds are
  * disjoint from GC, so its instanceof1808 selects ten lines and false. */
-static bool chat_rectangle_child(mc_client_gui_ingame_draw_call *c, bool ok, unsigned int pc,
-                                 bool graphics) {
+static bool filled_rectangle_child(mc_client_gui_ingame_draw_call *c, bool ok, unsigned int pc,
+                                   bool graphics, unsigned int parent) {
     if (ok) {
         if (!graphics)
             ++c->state.gl_calls;
         return true;
     }
     return child_fail(c, MC_CLIENT_GUI_INGAME_DRAW_CHILD_FAILED,
-                      graphics ? c->failure.graphics.operation : c->failure.display.operation, 2052,
-                      "ub", "a", "(IIIII)V", pc,
+                      graphics ? c->failure.graphics.operation : c->failure.display.operation,
+                      parent, "ub", "a", "(IIIII)V", pc,
                       graphics ? c->failure.graphics.native_policy : true);
 }
 
-static bool chat_rectangle(mc_client_gui_ingame_draw_call *c, int32_t left, int32_t top,
-                           int32_t right, int32_t bottom, uint32_t color) {
+/* Actual shared ub.a(IIIII)V, reached by both sleep1120 and chat2052. */
+static bool filled_rectangle(mc_client_gui_ingame_draw_call *c, int32_t left, int32_t top,
+                             int32_t right, int32_t bottom, uint32_t color, unsigned int parent) {
     if (left < right) {
         const int32_t swap = left;
         left = right;
@@ -25,53 +26,54 @@ static bool chat_rectangle(mc_client_gui_ingame_draw_call *c, int32_t left, int3
         top = bottom;
         bottom = swap;
     }
-    if (!fp(c, 2052))
+    if (!fp(c, parent))
         return false;
     const float alpha = at_fdiv((float)((color >> 24) & 255u), 255.0f);
     const float red = at_fdiv((float)((color >> 16) & 255u), 255.0f);
     const float green = at_fdiv((float)((color >> 8) & 255u), 255.0f);
     const float blue = at_fdiv((float)(color & 255u), 255.0f);
-    if (!chat_rectangle_child(c,
-                              mc_client_nw_active_use(
-                                  c->graphics, (mc_client_graphics_site){"ub", "a", "(IIIII)V", 86},
-                                  &c->nw, &c->failure.graphics),
-                              86, true) ||
-        !chat_rectangle_child(
+    if (!filled_rectangle_child(
+            c,
+            mc_client_nw_active_use(c->graphics,
+                                    (mc_client_graphics_site){"ub", "a", "(IIIII)V", 86}, &c->nw,
+                                    &c->failure.graphics),
+            86, true, parent) ||
+        !filled_rectangle_child(
             c, mc_client_display_source_blend_enable(c->display, true, &c->failure.display), 94,
-            false) ||
-        !chat_rectangle_child(
+            false, parent) ||
+        !filled_rectangle_child(
             c, mc_client_display_source_texture_enable(c->display, false, &c->failure.display), 100,
-            false) ||
-        !chat_rectangle_child(
+            false, parent) ||
+        !filled_rectangle_child(
             c, mc_client_display_source_blend_function(c->display, 770, 771, &c->failure.display),
-            109, false) ||
-        !chat_rectangle_child(c,
-                              mc_client_display_source_color(c->display, red, green, blue, alpha,
-                                                             &c->failure.display),
-                              120, false) ||
-        !chat_rectangle_child(c, mc_client_nw_begin_quads(c->nw, &c->failure.graphics), 125, true))
+            109, false, parent) ||
+        !filled_rectangle_child(c,
+                                mc_client_display_source_color(c->display, red, green, blue, alpha,
+                                                               &c->failure.display),
+                                120, false, parent) ||
+        !filled_rectangle_child(c, mc_client_nw_begin_quads(c->nw, &c->failure.graphics), 125, true,
+                                parent))
         return false;
     const int32_t x[] = {left, right, right, left};
     const int32_t y[] = {bottom, bottom, top, top};
     const unsigned int pc[] = {136, 147, 157, 167};
     for (size_t i = 0; i < 4; ++i) {
-        if (!chat_rectangle_child(
+        if (!filled_rectangle_child(
                 c,
                 mc_client_nw_vertex(c->nw, (double)x[i], (double)y[i], 0.0, &c->failure.graphics),
-                pc[i], true))
+                pc[i], true, parent))
             return false;
         ++c->state.vertices;
     }
-    if (!chat_rectangle_child(c, mc_client_nw_draw(c->nw, c->display, &c->failure.graphics), 172,
-                              true) ||
-        !chat_rectangle_child(
+    if (!filled_rectangle_child(c, mc_client_nw_draw(c->nw, c->display, &c->failure.graphics), 172,
+                                true, parent) ||
+        !filled_rectangle_child(
             c, mc_client_display_source_texture_enable(c->display, true, &c->failure.display), 178,
-            false) ||
-        !chat_rectangle_child(
+            false, parent) ||
+        !filled_rectangle_child(
             c, mc_client_display_source_blend_enable(c->display, false, &c->failure.display), 184,
-            false))
+            false, parent))
         return false;
-    ++c->state.chat_backgrounds;
     return true;
 }
 
@@ -118,9 +120,11 @@ static bool chat_lines(mc_client_gui_ingame_draw_call *c) {
         if (!null && !mc_gui_chat_text_read(message->a, &text))
             return fail(c, MC_CLIENT_GUI_INGAME_DRAW_DEPENDENCY,
                         "UQ native immutable SW String view", 2022, true);
-        if (!chat_rectangle(c, x, mc_java_i32_sub(y, 1), mc_java_i32_add(x, 320),
-                            mc_java_i32_add(y, 8), (uint32_t)(alpha / 2) << 24) ||
-            !gl(c, mc_client_display_source_blend_enable(c->display, true, &c->failure.display),
+        if (!filled_rectangle(c, x, mc_java_i32_sub(y, 1), mc_java_i32_add(x, 320),
+                              mc_java_i32_add(y, 8), (uint32_t)(alpha / 2) << 24, 2052))
+            return false;
+        ++c->state.chat_backgrounds;
+        if (!gl(c, mc_client_display_source_blend_enable(c->display, true, &c->failure.display),
                 2058))
             return false;
         if (c->font == NULL)

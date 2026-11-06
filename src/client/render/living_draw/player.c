@@ -1,5 +1,7 @@
+#include "block/registry/registry_internal.h"
 #include "block/registry/runtime_internal.h"
 #include "client/render/blocks/internal.h"
+#include "entity/player/nbt_internal.h"
 #include "internal.h"
 #include "inventory/internal.h"
 #include "item/registry/registry_internal.h"
@@ -287,6 +289,135 @@ bool ld_player_translate(ld_frame *f, double x, double y, double z) {
                                                             &f->error->detail.display));
 }
 
+static bool orientation_receipt(ld_frame *f, const void *receiver, const char *source,
+                                const char *method, const char *descriptor,
+                                mc_client_graphics_site caller, const int32_t *args, size_t nargs,
+                                mc_client_manager_draw_query_kind kind, size_t *index) {
+    mc_client_manager_draw_query query = {.receiver = (uintptr_t)receiver,
+                                          .method = {source, method, descriptor, 0},
+                                          .caller = caller,
+                                          .nargs = nargs,
+                                          .kind = kind};
+    if (nargs != 0)
+        memcpy(query.args, args, nargs * sizeof(*args));
+    if (mc_client_draw_query_begin(f->scope, &query, index, &f->error->capture_failure))
+        return true;
+    return ld_fail(f,
+                   f->error->capture_failure.status == MC_CLIENT_MANAGER_LIMIT
+                       ? MC_CLIENT_LIVING_DRAW_LIMIT
+                       : MC_CLIENT_LIVING_DRAW_CHILD_FAILED,
+                   f->error->capture_failure.operation);
+}
+
+static void orientation_end(ld_frame *f, size_t index, bool invoked, bool returned, uint32_t bits) {
+    mc_client_draw_query_end(
+        f->scope, index, invoked, returned, bits, !returned && f->error->native_policy,
+        !returned && f->error->source_exception, returned ? NULL : f->error->exception_class);
+}
+
+static const mc_player_coordinates *orientation_coordinate(ld_frame *f, unsigned int pc,
+                                                           size_t index) {
+    ld_at(f, "gs", "M", "()F", (int32_t)pc);
+    const mc_player_coordinates *value = f->actor->local_player->fields.player.v;
+    f->error->state.player.bed_coordinate_identities[index] = (uintptr_t)value;
+    if (value == NULL) {
+        (void)ld_null(f, "Player orientation current v null coordinate receiver");
+        return NULL;
+    }
+    const struct mc_player_nbt_coordinate *node = f->actor->local_player->nbt_coordinates;
+    while (node != NULL && &node->value != value)
+        node = node->next;
+    if (node == NULL) {
+        (void)ld_fail(f, MC_CLIENT_LIVING_DRAW_STATE,
+                      "Player orientation actual coordinate provenance");
+        return NULL;
+    }
+    return value;
+}
+
+/* Actual GS.M. World and source-producer occurrences belong to this genuine
+ * Manager draw scope; no separate source owner or camera service is created. */
+static bool player_bed_orientation(ld_frame *f, float *out) {
+    mc_client_living_draw_error *e = f->error;
+    ld_at(f, "gs", "M", "()F", 1);
+    if (f->actor->local_player->fields.player.v == NULL) {
+        ld_at(f, "gs", "M", "()F", 84);
+        *out = 0.0f;
+        return true;
+    }
+    mc_world_runtime *world = f->actor->base.world; /* Actual World8, before XYZ. */
+    e->state.player.bed_world_identity = (uintptr_t)world;
+    const mc_player_coordinates *coordinate = orientation_coordinate(f, 15, 0);
+    if (coordinate == NULL)
+        return false;
+    const int32_t x = coordinate->x;
+    coordinate = orientation_coordinate(f, 22, 1);
+    if (coordinate == NULL)
+        return false;
+    const int32_t y = coordinate->y;
+    coordinate = orientation_coordinate(f, 29, 2);
+    if (coordinate == NULL)
+        return false;
+    const int32_t z = coordinate->z;
+    ld_at(f, "gs", "M", "()F", 32);
+    if (!ld_capture(f, mc_client_draw_capture_world(f->scope, world, &e->detail.capture)))
+        return false;
+    const int32_t args[] = {x, y, z};
+    size_t receipt;
+    if (!orientation_receipt(f, world, "fd", "e", "(III)I", e->site, args, 3,
+                             MC_CLIENT_MANAGER_DRAW_QUERY_INTEGER, &receipt))
+        return false;
+    if (world == NULL) {
+        (void)ld_null(f, "Player orientation actual metadata null World receiver");
+        orientation_end(f, receipt, false, false, 0);
+        return false;
+    }
+    mc_client_draw_query_enter(f->scope, receipt);
+    memset(&e->detail, 0, sizeof(e->detail));
+    e->selected_child = MC_CLIENT_LIVING_DRAW_CHILD_BLOCK;
+    int32_t metadata = 0;
+    const mc_world_storage_status status = mc_world_runtime_metadata_get_detailed(
+        world, x, y, z, &metadata, &e->detail.block.cause, &e->detail.block.acquisition);
+    if (status != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_acquisition_error *child = &e->detail.block.acquisition;
+        e->child = ld_site("fd", "e", "(III)I", 0);
+        ld_registry_classify(f, mc_world_runtime_registry(world), &child->registry);
+        ld_access_classify(f, &child->batch.publication.world_access_failure);
+        ld_access_classify(f, &child->tile_entity.world_access_failure);
+        ld_access_classify(f, &child->tile_entity.publication.world_access_failure);
+        ld_access_classify(f, &child->tile_entity.batch.publication.world_access_failure);
+        (void)ld_fail(f, MC_CLIENT_LIVING_DRAW_CHILD_FAILED, e->detail.block.cause.operation);
+    } else {
+        e->state.player.sleep_metadata_returned = true;
+        e->state.player.bed_metadata = metadata;
+    }
+    const bool captured = mc_client_draw_capture_acquisition(f->scope, &e->detail.block.acquisition,
+                                                             &e->capture_failure);
+    if (!captured && status == MC_WORLD_STORAGE_OK)
+        (void)ld_fail(f,
+                      e->capture_failure.status == MC_CLIENT_MANAGER_LIMIT
+                          ? MC_CLIENT_LIVING_DRAW_LIMIT
+                          : MC_CLIENT_LIVING_DRAW_CHILD_FAILED,
+                      e->capture_failure.operation);
+    orientation_end(f, receipt, true, status == MC_WORLD_STORAGE_OK, (uint32_t)metadata);
+    if (status != MC_WORLD_STORAGE_OK || !captured)
+        return false;
+    ld_at(f, "gs", "M", "()F", 37);
+    mc_registry_classes *registry = f->renderer->parent->classes->registry;
+    if (registry == NULL || registry->entities != f->actor->classes)
+        return ld_fail(f, MC_CLIENT_LIVING_DRAW_STATE,
+                       "Player orientation actual defining GS Registry");
+    e->selected_child = MC_CLIENT_LIVING_DRAW_CHILD_REGISTRY;
+    if (mc_registry_bed_active_use(registry, &e->detail.registry) != MC_REGISTRY_OK) {
+        ld_registry_classify(f, registry, &e->detail.registry);
+        return ld_fail(f, MC_CLIENT_LIVING_DRAW_CHILD_FAILED, e->detail.registry.message);
+    }
+    static const float angles[] = {90.0f, 0.0f, 270.0f, 180.0f};
+    *out = angles[(uint32_t)metadata & 3u];
+    e->selected_child = MC_CLIENT_LIVING_DRAW_CHILD_NONE;
+    return true;
+}
+
 bool ld_player_rotation(ld_frame *f, float age, float body, float partial) {
     player_at(f, "a", "(Lgs;FFF)V", 1);
     mc_player_fields *p = player_fields(f);
@@ -295,8 +426,44 @@ bool ld_player_rotation(ld_frame *f, float age, float body, float partial) {
     const mc_living_entity_fields *ls = mc_entity_living_fields(f->actor);
     if (!f->actor->base.be && ls->Y > 0 && p->u) {
         player_at(f, "a", "(Lgs;FFF)V", 15);
-        return ld_fail(f, MC_CLIENT_LIVING_DRAW_UNIMPLEMENTED,
-                       "Player sleeping actual bed orientation");
+        const mc_client_graphics_site caller = f->error->site;
+        const mc_client_graphics_site parent = f->error->parent;
+        size_t receipt;
+        if (!orientation_receipt(f, f->actor, "gs", "M", "()F", caller, NULL, 0,
+                                 MC_CLIENT_MANAGER_DRAW_QUERY_FLOAT_BITS, &receipt))
+            return false;
+        mc_client_draw_query_enter(f->scope, receipt);
+        f->error->parent = caller;
+        f->error->state.player.sleep_orientation_entered = true;
+        float angle = 0.0f;
+        const bool returned = player_bed_orientation(f, &angle);
+        uint32_t bits;
+        memcpy(&bits, &angle, sizeof(bits));
+        orientation_end(f, receipt, true, returned, bits);
+        if (!returned)
+            return false;
+        f->error->state.player.sleep_orientation_returned = true;
+        f->error->state.player.bed_orientation = angle;
+        player_at(f, "a", "(Lgs;FFF)V", 21);
+        if (!ld_display(f, mc_client_display_source_rotate(f->scope->model.display, angle, 0.0f,
+                                                           1.0f, 0.0f, &f->error->detail.display)))
+            return false;
+        ++f->error->state.player.sleep_rotations_returned;
+        /* Actual inherited GV.a(LS) at26 is the literal90 body. */
+        player_at(f, "a", "(Lgs;FFF)V", 32);
+        if (!ld_display(f, mc_client_display_source_rotate(f->scope->model.display, 90.0f, 0.0f,
+                                                           0.0f, 1.0f, &f->error->detail.display)))
+            return false;
+        ++f->error->state.player.sleep_rotations_returned;
+        player_at(f, "a", "(Lgs;FFF)V", 40);
+        if (!ld_display(f, mc_client_display_source_rotate(f->scope->model.display, 270.0f, 0.0f,
+                                                           1.0f, 0.0f, &f->error->detail.display)))
+            return false;
+        ++f->error->state.player.sleep_rotations_returned;
+        player_at(f, "a", "(Lgs;FFF)V", 55);
+        f->error->state.rotation_returned = true;
+        f->error->parent = parent;
+        return true;
     }
     return ld_rotation(f, age, body, partial);
 }

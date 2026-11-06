@@ -20,6 +20,7 @@
 #include "mc/block/registry/runtime.h"
 #include "mc/client/controller/singleplayer.h"
 #include "mc/client/world/overlay_setup.h"
+#include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
 #include "mc/item/registry/runtime.h"
 #include "mc/world/runtime/entities.h"
@@ -788,8 +789,36 @@ static bool body(mc_client_gui_ingame_draw_call *c) {
     p = player(c, 1036, 1039);
     if (p == NULL || !player_fields(c, p, &fields, 1039))
         return false;
-    if (fields.player.private_a > 0)
-        return fail(c, MC_CLIENT_GUI_INGAME_DRAW_DEPENDENCY, "actual sleep overlay", 1048, true);
+    if (fields.player.private_a > 0) {
+        c->state.sleep_overlay_entered = true;
+        if (!gl(c, mc_client_display_source_depth_test(c->display, false, &c->failure.display),
+                1048) ||
+            !gl(c, mc_client_display_source_alpha_test(c->display, false, &c->failure.display),
+                1054))
+            return false;
+        /* UQ reloads App and Player after both GL children. GS.P reads only
+         * the actual current timer; it does not test sleeping or health. */
+        p = player(c, 1061, 1064);
+        if (p == NULL || !player_fields(c, p, &fields, 1064) || !fp(c, 1074))
+            return false;
+        const int32_t timer = fields.player.private_a;
+        float factor = at_fdiv((float)timer, 100.0f);
+        if (factor > 1.0f)
+            factor = at_fsub(1.0f, at_fdiv((float)mc_java_i32_sub(timer, 100), 10.0f));
+        const uint32_t color =
+            ((uint32_t)mc_java_float_to_i32(at_fmul(220.0f, factor)) << 24) | UINT32_C(1052704);
+        c->state.sleep_timer = timer;
+        c->state.sleep_factor = factor;
+        c->state.sleep_color = color;
+        if (!filled_rectangle(c, 0, 0, c->state.resolution.width, c->state.resolution.height, color,
+                              1120) ||
+            !gl(c, mc_client_display_source_alpha_test(c->display, true, &c->failure.display),
+                1126) ||
+            !gl(c, mc_client_display_source_depth_test(c->display, true, &c->failure.display),
+                1132))
+            return false;
+        c->state.sleep_overlay_returned = true;
+    }
     a = app(c, 1139);
     if (a == NULL || !settings(c, a, &s, 1142))
         return false;

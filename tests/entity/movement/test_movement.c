@@ -482,7 +482,7 @@ static bool movement_fire(fixture *f, size_t side, mc_entity *e, bool item) {
     mc_world_reference_list *const world_accesses = f->worlds[side]->fields.u;
     const mc_world_reference_list saved = *world_accesses;
     void *entries[] = {NULL};
-    *world_accesses = (mc_world_reference_list){entries, 1, 1};
+    *world_accesses = (mc_world_reference_list){entries, 1, 1, 0};
     const mc_entity_status fizz = mc_entity_move(e, 0, 0, 0, NULL, &error);
     *world_accesses = saved;
     CHECK(fizz == MC_ENTITY_WORLD_FAILED && error.bytecode == 2016 &&

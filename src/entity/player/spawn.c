@@ -38,29 +38,17 @@ static bool fp(mc_player_spawn_error *e) {
  * The existing public setter assumes nonnull bounds and cannot expose this
  * reached failure prefix. Canonical dc has no e(DDD) override. */
 static bool position(mc_entity *p, double x, double y, double z, mc_player_spawn_error *e) {
-    p->base.x = x;
-    p->base.y = y;
-    p->base.z = z;
-    e->position_bytecode = 21;
-    if (!fp(e))
-        return false;
-    const float half_width = at_fdiv(p->base.width, 2.0f);
-    const float height = p->base.height;
-    mc_entity_bounds *receiver = p->bounds; /* Actual aW read31, before arguments. */
-    const mc_entity_bounds value = mc_entity_source_position_values(p, x, y, z, half_width, height);
-    e->position_bytecode = 86;
-    if (receiver == NULL)
+    mc_entity_source_position_error child = {0};
+    const mc_entity_status status = mc_entity_source_position_checked(p, x, y, z, &child);
+    e->position_bytecode = child.bytecode;
+    if (status == MC_ENTITY_OK)
+        return true;
+    if (child.source_null)
         return fail(e, MC_ENTITY_STATE_ERROR, MC_PLAYER_SPAWN_CAUSE_NULL_REFERENCE,
                     "Player spawn reset null permanent bounds");
-    /* Actual eq.c assigns its same receiver's six fields in this order. */
-    receiver->min_x = value.min_x;
-    receiver->min_y = value.min_y;
-    receiver->min_z = value.min_z;
-    receiver->max_x = value.max_x;
-    receiver->max_y = value.max_y;
-    receiver->max_z = value.max_z;
-    e->position_bytecode = 90;
-    return true;
+    if (status == MC_ENTITY_UNSUPPORTED_FP)
+        return fail(e, status, MC_PLAYER_SPAWN_CAUSE_FP, "Player spawn reset FP admission");
+    return fail(e, status, MC_PLAYER_SPAWN_CAUSE_OWNER, child.operation);
 }
 
 static bool world_result(mc_player_spawn_error *e, mc_world_storage_status status,

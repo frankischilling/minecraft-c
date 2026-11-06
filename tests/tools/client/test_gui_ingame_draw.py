@@ -172,7 +172,9 @@ def main():
         if light_rows != expected["light_rows"]:
             raise AssertionError("HUD in-height bounds/World light observations differ")
         controls = [line for line in result.stdout.splitlines() if line.startswith("HUD_CONTROL ")]
-        if controls != ["HUD_CONTROL blend_numeric_pairs", "HUD_CONTROL projection_null_settings_before_gl", "HUD_CONTROL null_app",
+        if controls != ["HUD_CONTROL blend_numeric_pairs",
+                        "HUD_CONTROL sleep_timer_fade_source_arithmetic_and_pixels",
+                        "HUD_CONTROL projection_null_settings_before_gl", "HUD_CONTROL null_app",
                         "HUD_CONTROL foreign_lookup_preserved", "HUD_CONTROL debug_text_dependency_after_hud",
                         "HUD_CONTROL dirt_count_animation_overlay",
                         "HUD_CONTROL specialized_block_slots",
@@ -180,6 +182,7 @@ def main():
                         "HUD_CONTROL item_cleanup_refusal_retry",
                         "HUD_CONTROL stair_empty_batch_teardown",
                         "HUD_CONTROL item_source_null_preserves_lighting",
+                        "HUD_CONTROL sleep_four_direction_display_rotation_order",
                         "HUD_CONTROL pickup_coordinate_draw_dead_zero_foreign"]:
             raise AssertionError("HUD failure/ownership controls missing")
         blends = [line.split() for line in result.stdout.splitlines() if line.startswith("HUD_BLEND ")]
@@ -202,12 +205,22 @@ def main():
         green, red, white, width, height = map(int, pixels[0][1:])
         if green < 1000 or red < 200 or white < 8 or (width, height) != (320, 240):
             raise AssertionError("authored hotbar, hearts and crosshair are not visibly drawn")
+        sleep_screenshot = Path(str(screenshot) + '.sleep.png')
+        if not sleep_screenshot.is_file():
+            raise AssertionError("native timer100 sleep overlay screenshot missing")
         report.update(status="PASS", original_rows=26, matrix_absolute_tolerance=2e-6,
                       matrix_maximum_absolute_error=maximum, controls=controls,
                       native_blend_pixels=blend_pixels,
                       native_pixels={"hotbar_green": green, "hearts_red": red,
                                      "crosshair_white": white, "width": width, "height": height},
                       screenshot={"path": str(screenshot), "sha256": digest(screenshot)},
+                      sleep_overlay={"timers": [-1, 0, 1, 50, 99, 100, 101, 109, 110, 111, 2147483647],
+                                     "pixel_absolute_tolerance": 1,
+                                     "screenshot": str(sleep_screenshot),
+                                     "sha256": digest(sleep_screenshot)},
+                      sleep_rotation={"directions": 4, "source_rotations_per_direction": 3,
+                                      "matrix_absolute_tolerance": 1e-6,
+                                      "scope": "protected DS child after actual GS sleep; genuine fresh Manager owner and Display; no original GL comparison or loaded-night qualification"},
                       scope="real App/Display320x240 startup, GAME World/LocalPlayer and OS controller; prepared finite source fields; 26 original UQ returns with actual Random seed, matrices/state and final heart NW payloads; GUI integer dimensions differ from exact QQ doubles used for projection; same CURRENT_COLOR query before passive matrices/state; native authored hotbar/crosshair/hearts pixels and screenshot; two actual NW solid quads validate blend factors0/769 and775/769 on nonblack clear RGB within one raw RGB8 unit, with no readback normalization; 12 actual above-height SN brightness fallback vignette profiles and two successful in-height World light vignette profiles; pending ownership/foreign lookup and reached failed source effects preserved; debug text and nonempty item draws remain explicit dependencies; null OpenAL playback has no capture device; no full frame, audio or original pixel equality")
         print(result.stdout.splitlines()[-1])
         if result.stderr:

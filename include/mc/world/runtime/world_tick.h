@@ -35,6 +35,9 @@ typedef struct mc_mob_spawn_state mc_mob_spawn_state;
 typedef struct mc_mob_spawn_error mc_mob_spawn_error;
 typedef struct mc_world_random_tick_error mc_world_random_tick_error;
 typedef struct mc_world_random_tick_state mc_world_random_tick_state;
+typedef struct mc_player_sleep_error mc_player_sleep_error;
+typedef struct mc_player_sleep_state mc_player_sleep_state;
+typedef struct mc_player_sleep_cleanup mc_player_sleep_cleanup;
 typedef struct mc_entity mc_entity;
 
 typedef enum mc_world_tick_child {
@@ -53,6 +56,8 @@ typedef enum mc_world_tick_child {
 typedef struct mc_world_tick_error {
     mc_world_storage_status status;
     const char *operation, *source_class, *source_method, *exception_class;
+    /* FD.l68 / FD.z52 retain their caller sites; descendant is the reached
+     * actual private FD.F invocation5/13/21/29 for weather-clear failures. */
     unsigned int bytecode, child_bytecode, descendant_bytecode;
     bool native_policy;
     mc_world_tick_child child;
@@ -66,6 +71,8 @@ typedef struct mc_world_tick_error {
     const mc_mob_spawn_error *eligibility;
     const mc_world_entity_error *publication;
     const mc_world_random_tick_error *random;
+    const mc_player_sleep_error *sleep;
+    const mc_player_sleep_cleanup *sleep_cleanup;
     mc_math_class_error math;
     mc_world_access_failure world_access;
 } mc_world_tick_error;
@@ -98,6 +105,8 @@ typedef struct mc_world_tick_state {
     bool spawn_eligibility_returned, spawn_eligible;
     const mc_mob_spawn_state *eligibility;
     const mc_world_random_tick_state *random;
+    const mc_player_sleep_state *sleep;
+    size_t wake_calls, wake_returns;
     size_t spawn_constructors, spawn_predicates, spawn_rejections, spawn_publications;
     int32_t spawn_group_successes, spawn_total;
     unsigned int spawn_postspawn_pc;
@@ -125,7 +134,12 @@ typedef struct mc_world_tick_state {
  * body remains a dependency after the real Skeleton construction/publication.
  * Random Chunk work continues through its retained actual fd.n call, including
  * all eighty samples and real reached Block ticks. Missing concrete children
- * preserve their exact typed failure prefixes. Sleeping wake remains separate.
+ * preserve their exact typed failure prefixes. Sleeping wake enters the real
+ * retained GS child, then checked retirement precedes the next captured List
+ * iterator operation and F weather stores. Structural mutations are checked
+ * at Iterator.next; hasNext still compares the current size. Borrowed child
+ * views clear as each child successfully retires. Native cleanup failure
+ * keeps the remaining call graph without replaying source work.
  * Both false spawn flags return before touching its shared candidate Set.
  *
  * A published call independently binds the World and retains complete typed

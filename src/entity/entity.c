@@ -836,8 +836,7 @@ mc_entity_status mc_entity_set_size(mc_entity *entity, float width, float height
         return MC_ENTITY_INVALID_ARGUMENT;
     if (entity->phase != MC_ENTITY_READY)
         return MC_ENTITY_INVALID_PHASE;
-    entity->base.width = width;
-    entity->base.height = height;
+    mc_entity_source_size(entity, width, height);
     return MC_ENTITY_OK;
 }
 

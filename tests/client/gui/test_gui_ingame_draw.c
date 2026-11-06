@@ -12,6 +12,8 @@ int mc_hud_startup_fixture_main(int argc, char **argv);
 #include "client/gui/gui_ingame_internal.h"
 #include "client/particles/application.h"
 #include "client/render/item_gui.h"
+#include "client/render/living_draw/internal.h"
+#include "client/render/manager/draw_internal.h"
 #include "client/render_engine/internal.h"
 #include "client/render_engine/texture_lookup.h"
 #include "entity/player/player_internal.h"
@@ -22,10 +24,12 @@ int mc_hud_startup_fixture_main(int argc, char **argv);
 #include "mc/client/world/overlay_setup.h"
 #include "mc/core/math/math.h"
 #include "mc/entity/item/pickup.h"
+#include "mc/entity/player/sleep.h"
 #include "world/runtime/chunk_provider_internal.h"
 #include "world/runtime/runtime_internal.h"
 #include <SDL3/SDL.h>
 #include <inttypes.h>
+#include <math.h>
 
 typedef struct hud_world {
     mc_world_runtime_classes *classes;
@@ -674,6 +678,77 @@ static int hud_failures(fixture *runtime, client_application *app, mc_entity *pl
     return 0;
 }
 
+/* Arithmetic expectations from UQ1039..1132. These native controls are separate
+ * from the unchanged-original 26-row comparison above. Timer111 also proves
+ * that the source shifts a negative alpha without an invented clamp. */
+static int hud_sleep_overlay(fixture *runtime, client_application *app, mc_entity *player,
+                             mc_math_classes *math, hud_enabled_fn enabled,
+                             const char *screenshot) {
+    static const int32_t timers[] = {-1, 0, 1, 50, 99, 100, 101, 109, 110, 111, INT32_MAX};
+    static const uint32_t colors[] = {0,
+                                      0,
+                                      UINT32_C(0x02101020),
+                                      UINT32_C(0x6e101020),
+                                      UINT32_C(0xd9101020),
+                                      UINT32_C(0xdc101020),
+                                      UINT32_C(0xc6101020),
+                                      UINT32_C(0x16101020),
+                                      UINT32_C(0x00101020),
+                                      UINT32_C(0xea101020),
+                                      UINT32_C(0x00101020)};
+    for (size_t i = 0; i < sizeof(timers) / sizeof(*timers); ++i) {
+        CHECK(hud_prepare(app, player, 0, 0, false) == 0 && hud_reset(runtime, app) == 0);
+        player->local_player->fields.player.private_a = timers[i];
+        /* GS.P ignores u. The post-wake fade uses the same source arm. */
+        CHECK(!player->local_player->fields.player.u);
+        mc_client_gui_ingame_draw_call *call = NULL;
+        mc_client_gui_ingame_draw_error error;
+        CHECK(mc_client_gui_ingame_draw_begin(app->v, runtime->graphics, math, app->display, .375f,
+                                              false, 17, 23, &call,
+                                              &error) == MC_CLIENT_GUI_INGAME_DRAW_OK);
+        mc_client_gui_ingame_draw_state state;
+        CHECK(mc_client_gui_ingame_draw_inspect(call, &state) && state.returned &&
+              state.sleep_overlay_entered == (timers[i] > 0) &&
+              state.sleep_overlay_returned == (timers[i] > 0) && state.sleep_color == colors[i] &&
+              state.chat_backgrounds == 0);
+        CHECK(player->local_player->fields.player.private_a == timers[i] &&
+              !player->local_player->fields.player.u);
+        if (timers[i] > 0) {
+            /* Alpha testing is implemented by the core-profile shader. Inspect
+             * its actual Source state; GL_ALPHA_TEST is not a native core cap. */
+            mc_client_source_draw_state restored;
+            CHECK(state.sleep_timer == timers[i] && enabled(GL_DEPTH_TEST) &&
+                  mc_client_display_source_draw_inspect(app->display, &restored) &&
+                  restored.alpha_test);
+            mc_client_capture pixels = {0};
+            CHECK(mc_client_display_capture_rgba(app->display, &pixels, NULL) &&
+                  pixels.width == 320 && pixels.height == 240);
+            const unsigned int alpha = colors[i] >> 24;
+            const uint8_t *pixel = pixels.pixels + 20 * pixels.stride + 20 * 4;
+            const unsigned int components[] = {16, 16, 32};
+            for (size_t component = 0; component < 3; ++component) {
+                const int expected = (int)((components[component] * alpha + 127u) / 255u);
+                CHECK(abs((int)pixel[component] - expected) <= 1);
+            }
+            if (timers[i] == 100) {
+                char path[4096];
+                const int length = snprintf(path, sizeof(path), "%s.sleep.png", screenshot);
+                CHECK(length > 0 && (size_t)length < sizeof(path));
+                SDL_Surface *surface =
+                    SDL_CreateSurfaceFrom(pixels.width, pixels.height, SDL_PIXELFORMAT_RGBA32,
+                                          pixels.pixels, (int)pixels.stride);
+                CHECK(surface != NULL && SDL_SavePNG(surface, path));
+                SDL_DestroySurface(surface);
+            }
+            mc_client_capture_free(&pixels);
+        }
+        CHECK(mc_client_gui_ingame_draw_retire(&call, &error) == MC_CLIENT_GUI_INGAME_DRAW_OK);
+    }
+    player->local_player->fields.player.private_a = 0;
+    puts("HUD_CONTROL sleep_timer_fade_source_arithmetic_and_pixels");
+    return 0;
+}
+
 static int hud_blend_pixels(fixture *runtime, client_application *app) {
     mc_client_overlay_setup_state projection;
     mc_client_overlay_setup_error projection_error;
@@ -840,6 +915,82 @@ static int hud_pickup_draw(fixture *runtime, client_application *app, hud_world 
     return 0;
 }
 
+/* Selected protected DS child, with a genuine fresh Manager call/scope and
+ * actual Display. The preceding GS sleep creates v; no failed draw is resumed.
+ * Cardinal matrices check all three source rotations and their order. This
+ * is native component evidence, not an original GL or loaded-night comparison. */
+static int hud_sleep_rotation(fixture *runtime, client_application *app, hud_world *world,
+                              mc_math_classes *math, mc_client_render_manager_classes *classes) {
+    mc_client_render_manager *manager = NULL;
+    CHECK(mc_client_render_manager_static_get(classes, &manager, NULL) == MC_CLIENT_MANAGER_OK);
+    mc_client_managed_renderer *renderer = NULL;
+    for (size_t i = 0; i < manager->allocated_renderers; ++i)
+        if (strcmp(manager->renderers[i]->source_class, "ds") == 0)
+            renderer = manager->renderers[i];
+    CHECK(renderer != NULL);
+    const mc_client_manager_draw_services services = {.math = math,
+                                                      .graphics = runtime->graphics,
+                                                      .display = app->display,
+                                                      .application_classes = app->source_namespace};
+    const mc_player_sleep_context context = {.code_registry = runtime->services.registry};
+    const float angles[] = {90, 0, 270, 180};
+    const float cosine[] = {0, 1, 0, -1}, sine[] = {1, 0, -1, 0};
+    mc_chunk_data *data = world->chunks[0]->data;
+    for (unsigned int direction = 0; direction < 4; ++direction) {
+        CHECK(hud_reset(runtime, app) == 0);
+        world->world->fields.f = 5; /* Authored night operand before this component call. */
+        data->blocks[(8u << 11u) | (8u << 7u) | 64u] = 26;
+        CHECK(mc_chunk_nibbles_set(data->metadata, MC_CHUNK_NIBBLE_BYTES, 8, 64, 8,
+                                   (uint8_t)(8u | direction)) &&
+              mc_entity_set_position(world->player, 8.5, 64, 8.5) == MC_ENTITY_OK);
+        mc_player_sleep_call *sleep = NULL;
+        CHECK(mc_player_try_sleep_begin(world->player, 8, 64, 8, &context, &sleep, NULL) ==
+                  MC_PLAYER_SLEEP_OK &&
+              mc_player_sleep_retire(&sleep, NULL) == MC_PLAYER_SLEEP_OK);
+        CHECK(mc_client_display_source_matrix_mode(app->display, GL_MODELVIEW, NULL) &&
+              mc_client_display_source_load_identity(app->display, NULL));
+        mc_client_render_manager_draw_call *draw = NULL;
+        mc_client_manager_error capture;
+        CHECK(manager_draw_allocate(manager, &services, NULL, &draw, NULL) ==
+                  MC_CLIENT_MANAGER_OK &&
+              manager_draw_capture_actor(draw, world->player, &capture) &&
+              manager_draw_capture_renderer(draw, renderer, &capture));
+        ld_frame frame = {&draw->scope, renderer, world->player, &draw->living};
+        CHECK(ld_player_rotation(&frame, 1, 2, .375f) &&
+              draw->living.state.player.sleep_orientation_returned &&
+              draw->living.state.player.bed_orientation == angles[direction] &&
+              draw->living.state.player.sleep_rotations_returned == 3 &&
+              draw->living.state.rotation_returned && draw->living.site.pc == 55);
+        float projection[16], modelview[16];
+        CHECK(mc_client_display_camera_matrices_inspect(app->display, projection, modelview));
+        const float expected[] = {sine[direction],
+                                  0,
+                                  cosine[direction],
+                                  0,
+                                  -cosine[direction],
+                                  0,
+                                  sine[direction],
+                                  0,
+                                  0,
+                                  -1,
+                                  0,
+                                  0,
+                                  0,
+                                  0,
+                                  0,
+                                  1};
+        for (size_t i = 0; i < 16; ++i)
+            CHECK(fabsf(modelview[i] - expected[i]) <= 1e-6f);
+        CHECK(mc_client_render_manager_draw_retire(&draw, NULL) == MC_CLIENT_MANAGER_OK &&
+              mc_player_wake_begin(world->player, true, true, false, &context, &sleep, NULL) ==
+                  MC_PLAYER_SLEEP_OK &&
+              mc_player_sleep_retire(&sleep, NULL) == MC_PLAYER_SLEEP_OK);
+    }
+    CHECK(mc_entity_set_position(world->player, 8.5, 200.5, 8.5) == MC_ENTITY_OK);
+    puts("HUD_CONTROL sleep_four_direction_display_rotation_order");
+    return 0;
+}
+
 static int hud_device(const char *resources, const char *assets, const char *directory,
                       const char *screenshot) {
     fixture runtime;
@@ -884,7 +1035,11 @@ static int hud_device(const char *resources, const char *assets, const char *dir
     CHECK(hud_profiles(&runtime, app, &world, math) == 0);
     CHECK(hud_pixels(&runtime, app, world.player, math, screenshot) == 0);
     CHECK(hud_blend_pixels(&runtime, app) == 0);
+    hud_enabled_fn enabled = (hud_enabled_fn)SDL_GL_GetProcAddress("glIsEnabled");
+    CHECK(enabled != NULL &&
+          hud_sleep_overlay(&runtime, app, world.player, math, enabled, screenshot) == 0);
     CHECK(hud_failures(&runtime, app, world.player, math) == 0);
+    CHECK(hud_sleep_rotation(&runtime, app, &world, math, attempt->manager_classes) == 0);
     CHECK(hud_pickup_draw(&runtime, app, &world, math, attempt->manager_classes) == 0);
     app->controller = NULL;
     CHECK(mc_client_singleplayer_controller_free(&controller, NULL) ==

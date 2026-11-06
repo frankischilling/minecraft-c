@@ -7,6 +7,7 @@
 
 #include "../../../src/block/registry/runtime_internal.h"
 #include "../../../src/entity/player/sleep_internal.h"
+#include "../../../src/entity/position_internal.h"
 #include "../../../src/world/runtime/lighting_internal.h"
 #include "../../../src/world/runtime/mutation/mutation_internal.h"
 #include "mc/entity/player/coordinates.h"
@@ -219,8 +220,10 @@ static bool interaction_profile(int32_t number, const char *root, int32_t metada
     memcpy(input->metadata, data->metadata, sizeof(input->metadata));
     CHECK(fflush(stdout) == 0);
     interaction_message message = {.player = player, .registry = f->registry[0]};
-    const mc_world_block_activation_context context = {
-        .context = &message, .player_message = interaction_message_boundary};
+    const mc_world_block_activation_context context = {.context = &message,
+                                                       .player_code_registry = f->registry[0],
+                                                       .player_message =
+                                                           interaction_message_boundary};
     if (activate) {
         const mc_world_storage_status status = mc_world_block_activate_with_context(
             f->registry[0], bed, world, 8, 64, 8, player, &context, &returned, placement);
@@ -392,8 +395,10 @@ static bool interaction_controls(const char *root) {
     CHECK(mc_registry_block_static_get(f->registry[0], "T", &bed, NULL) == MC_REGISTRY_OK &&
           bed != NULL && interaction_player(f, &player, &sessions));
     interaction_message message = {.player = player, .registry = f->registry[0]};
-    const mc_world_block_activation_context context = {
-        .context = &message, .player_message = interaction_message_boundary};
+    const mc_world_block_activation_context context = {.context = &message,
+                                                       .player_code_registry = f->registry[0],
+                                                       .player_message =
+                                                           interaction_message_boundary};
     bool out = false;
     CHECK(mc_world_block_activate_with_context(f->registry[0], bed, NULL, 8, 64, 8, NULL, &context,
                                                &out, error) == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
@@ -477,7 +482,7 @@ static bool interaction_controls(const char *root) {
                                              &out, error) == MC_WORLD_STORAGE_IO_ERROR &&
         !out && error->bed_occupancy_cleared && error->bed_sleep_returned &&
         error->player_message_entered && !error->player_message_returned && message.count == 1 &&
-        message.order && world->persistent_bindings == bindings + 2 && player->holds == holds + 1 &&
+        message.order && world->persistent_bindings == bindings + 4 && player->holds == holds + 2 &&
         mc_world_runtime_free(world, NULL) == MC_WORLD_STORAGE_BUSY);
     CHECK(f->entity_classes[0]->borrowers == namespace_holds + 1);
     /* Native metadata corruption refuses checked cleanup without consuming
@@ -488,8 +493,8 @@ static bool interaction_controls(const char *root) {
     f->entity_classes[0]->borrowers = retained_namespace_holds;
     CHECK(!retired && error->work != NULL && error->cleanup_enum_classes == MC_ENTITY_STATE_ERROR &&
           error->status == MC_WORLD_STORAGE_IO_ERROR && error->site.pc == 424 &&
-          message.count == 1 && world->persistent_bindings == bindings + 2 &&
-          player->holds == holds + 1);
+          message.count == 1 && world->persistent_bindings == bindings + 4 &&
+          player->holds == holds + 2);
     CHECK(mc_world_placement_error_retire(error) && world->persistent_bindings == bindings &&
           player->holds == holds && f->entity_classes[0]->borrowers == namespace_holds);
     message = (interaction_message){.player = player, .registry = f->registry[0]};
@@ -512,19 +517,32 @@ static bool interaction_controls(const char *root) {
     player->classes->sleep_results->a = saved_a;
     saved_enum = false;
 
-    /* Actual nighttime prefix stops before GS resize119. No occupancy or
-     * invented sleep result is published by the World wrapper. */
+    /* The real nighttime GS return joins the caller's CW identity comparison
+     * and occupancy write. The same published Player makes actual FD.y set J. */
     out = false;
-    CHECK(interaction_reset(f) && interaction_cell(data, 8, 64, 8, 26, 8));
+    CHECK(interaction_reset(f) && interaction_cell(data, 8, 64, 8, 26, 8) &&
+          interaction_cell(data, 8, 64, 7, 26, 0));
     world->fields.f = 4;
     CHECK(mc_entity_set_position(player, 8.5, 64, 8.5) == MC_ENTITY_OK);
     CHECK(mc_world_block_activate_with_context(f->registry[0], bed, world, 8, 64, 8, player,
-                                               &context, &out,
-                                               error) == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
-          !out && error->native_policy && !error->source_exception && error->site.pc == 119 &&
-          error->sleep != NULL && error->sleep->status == MC_PLAYER_SLEEP_UNIMPLEMENTED &&
-          !error->bed_sleep_returned && !player->local_player->fields.player.u &&
-          message.count == 0 && mc_world_placement_error_retire(error));
+                                               &context, &out, error) == MC_WORLD_STORAGE_OK &&
+          out && error->site.pc == 411 && error->sleep != NULL &&
+          error->sleep->status == MC_PLAYER_SLEEP_OK && error->sleep->returned &&
+          error->bed_sleep_returned && player->local_player->fields.player.u && world->fields.J &&
+          player->local_player->fields.player.private_a == 0 &&
+          player->local_player->fields.player.v != NULL &&
+          player->local_player->fields.player.v->x == 8 &&
+          player->local_player->fields.player.v->y == 64 &&
+          player->local_player->fields.player.v->z == 8 && message.count == 0 &&
+          mc_world_placement_error_retire(error));
+    CHECK(mc_world_runtime_metadata_get(world, 8, 64, 8, &metadata, NULL) == MC_WORLD_STORAGE_OK &&
+          metadata == 12);
+    mc_player_sleep_call *wake_call = NULL;
+    const mc_player_sleep_context sleep_context = {.code_registry = f->registry[0]};
+    CHECK(mc_player_wake_begin(player, true, true, false, &sleep_context, &wake_call, NULL) ==
+              MC_PLAYER_SLEEP_OK &&
+          !player->local_player->fields.player.u && !world->fields.J &&
+          mc_player_sleep_retire(&wake_call, NULL) == MC_PLAYER_SLEEP_OK);
 
     /* The neighbor's World.B read115 is genuinely late, after notifying
      * removal and this explicitly authored WorldAccess callback. */
@@ -649,8 +667,10 @@ static bool interaction_namespaces(const char *root) {
                  caller_bindings = a->worlds[0]->persistent_bindings,
                  player_bindings = b->worlds[0]->persistent_bindings;
     interaction_message message = {.player = player, .registry = a->registry[0]};
-    const mc_world_block_activation_context context = {
-        .context = &message, .player_message = interaction_message_boundary};
+    const mc_world_block_activation_context context = {.context = &message,
+                                                       .player_code_registry = b->registry[0],
+                                                       .player_message =
+                                                           interaction_message_boundary};
     bool out = false;
     /* Missing caller dependency is reached after GS, never preflighted as a
      * substitute for that actual Player/World operation. */
@@ -679,7 +699,7 @@ static bool interaction_namespaces(const char *root) {
           a->entity_classes[0]->borrowers == caller_holds + 1 &&
           b->entity_classes[0]->borrowers == player_holds &&
           a->worlds[0]->persistent_bindings == caller_bindings + 1 &&
-          b->worlds[0]->persistent_bindings == player_bindings + 1);
+          b->worlds[0]->persistent_bindings == player_bindings + 3);
     const mc_player_sleep_result *actual = NULL, *caller = NULL;
     CHECK(mc_player_sleep_result_static_get(b->entity_classes[0], "c", &actual, NULL) ==
               MC_PLAYER_SLEEP_RESULT_OK &&
@@ -691,6 +711,36 @@ static bool interaction_namespaces(const char *root) {
           b->entity_classes[0]->borrowers == player_holds &&
           a->worlds[0]->persistent_bindings == caller_bindings &&
           b->worlds[0]->persistent_bindings == player_bindings);
+
+    /* GS's retained child may retire before an independent VE Registry
+     * refuses cleanup. Its consumed borrowed views must end immediately;
+     * the first scalar source failure remains inspectable without replay. */
+    b->worlds[0]->fields.f = 4;
+    CHECK(mc_entity_set_position(player, 8.5, 64, 8.5) == MC_ENTITY_OK);
+    mc_entity_bounds *original_bounds = player->bounds;
+    player->bounds = NULL;
+    out = false;
+    const mc_world_storage_status source_failure = mc_world_block_activate_with_context(
+        a->registry[0], bed, a->worlds[0], 8, 64, 8, player, &context, &out, error);
+    player->bounds = original_bounds;
+    CHECK(source_failure == MC_WORLD_STORAGE_UNSUPPORTED_STATE && !out && error->source_exception &&
+          !error->native_policy && error->site.pc == 250 && error->sleep != NULL &&
+          error->sleep->position != NULL && error->sleep->position->source_null &&
+          error->sleep->position->bytecode == 86);
+    const size_t caller_registry_borrows = a->registry[0]->runtime_borrows;
+    a->registry[0]->runtime_borrows = 0;
+    const bool cleanup_refused = !mc_world_placement_error_retire(error);
+    a->registry[0]->runtime_borrows = caller_registry_borrows;
+    CHECK(cleanup_refused && error->work != NULL &&
+          error->cleanup_registry.status == MC_REGISTRY_INVALID_ARGUMENT &&
+          error->source_exception && error->site.pc == 250 && error->sleep != NULL &&
+          error->sleep->status == MC_PLAYER_SLEEP_SOURCE_NULL && error->sleep->child.pc == 86 &&
+          error->sleep->acquisition == NULL && error->sleep->position == NULL &&
+          error->sleep->world_sleep == NULL && error->sleep->occupancy == NULL &&
+          error->sleep->bed == NULL && error->cleanup_sleep == NULL &&
+          b->worlds[0]->persistent_bindings == player_bindings && message.count == 0);
+    CHECK(mc_world_placement_error_retire(error) &&
+          a->worlds[0]->persistent_bindings == caller_bindings);
     ok = true;
 cleanup:
     if (caller_join != NULL)

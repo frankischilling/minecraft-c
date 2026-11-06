@@ -85,16 +85,30 @@ static bool bed_activation_write(mc_world_placement_error *e, mc_world_runtime *
     return status == MC_WORLD_STORAGE_OK;
 }
 
-static bool bed_occupancy_clear(mc_world_placement_error *e, mc_world_runtime *world, int32_t x,
-                                int32_t y, int32_t z) {
-    e->caller = e->site;
-    e->site = site("ve", "a", "(Lfd;IIIZ)V", 4);
+static bool bed_set_occupied(mc_world_placement_error *e, mc_world_runtime *world, int32_t x,
+                             int32_t y, int32_t z, bool occupied) {
+    e->site = site("ve", "a", "(Lfd;IIIZ)V", 0);
+    if (mc_registry_bed_active_use(e->work->registry, &e->registry) != MC_REGISTRY_OK) {
+        registry_failed(e);
+        return false;
+    }
+    e->site.pc = 4;
     int32_t metadata;
     if (!value_get(e, world, e->query_count, x, y, z, true, &metadata))
         return false;
+    metadata = occupied ? (int32_t)((uint32_t)metadata | UINT32_C(4))
+                        : (int32_t)((uint32_t)metadata & ~UINT32_C(4));
     e->site.pc = 36;
-    if (!bed_activation_write(e, world, x, y, z, (int32_t)((uint32_t)metadata & ~UINT32_C(4)),
-                              false))
+    if (!bed_activation_write(e, world, x, y, z, metadata, false))
+        return false;
+    e->site.pc = 39;
+    return true;
+}
+
+static bool bed_occupancy_clear(mc_world_placement_error *e, mc_world_runtime *world, int32_t x,
+                                int32_t y, int32_t z) {
+    e->caller = e->site;
+    if (!bed_set_occupied(e, world, x, y, z, false))
         return false;
     e->bed_occupancy_cleared = true;
     return true;
@@ -428,22 +442,12 @@ static bool bed_activate(mc_world_placement_error *e, const mc_block *block,
         return false;
     }
     e->sleep = e->work->sleep;
-    /* GS reads Player.aI independently from VE's World argument. Keep that
-     * actual World through the retained diagnostic, including distinct Worlds
-     * and two separate occurrences of one World identity. NULL reaches GS4. */
-    mc_world_runtime *player_world = player->base.world;
-    if (player_world != NULL) {
-        if (!mc_world_runtime_binding_retain(player_world)) {
-            e->caller = e->site;
-            e->site = site("gs", "b", "(III)Lcw;", 4);
-            fail(e, player_world->last_error.status, player_world->last_error.operation, true);
-            return false;
-        }
-        e->work->bed_player_world = player_world;
-    }
-    const mc_player_sleep_result *result = NULL;
-    const mc_player_sleep_status status =
-        mc_player_try_sleep(player, x, y, z, &result, e->work->sleep);
+    /* GS owns each freshly reached Player.aI occurrence and all failed
+     * descendants. Its code Registry is explicit and independent of VE. */
+    const mc_player_sleep_context sleep_context = {
+        .code_registry = context == NULL ? NULL : context->player_code_registry};
+    const mc_player_sleep_status status = mc_player_try_sleep_begin(
+        player, x, y, z, &sleep_context, &e->work->sleep_call, e->work->sleep);
     if (status != MC_PLAYER_SLEEP_OK) {
         const mc_player_sleep_error *child = e->work->sleep;
         e->caller = e->site;
@@ -460,6 +464,12 @@ static bool bed_activate(mc_world_placement_error *e, const mc_block *block,
         e->exception_class = child->exception_class;
         return false;
     }
+    mc_player_sleep_state sleep_state;
+    if (!mc_player_sleep_inspect(e->work->sleep_call, &sleep_state) || !sleep_state.returned) {
+        fail(e, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Bed retained Player sleep return state", true);
+        return false;
+    }
+    const mc_player_sleep_result *result = sleep_state.result;
     e->bed_sleep_returned = true;
     e->bed_sleep_result_identity = (uintptr_t)result;
     const mc_player_sleep_result *expected = NULL;
@@ -469,12 +479,7 @@ static bool bed_activate(mc_world_placement_error *e, const mc_block *block,
         /* A nullable/replaced actual CW.a can select this source arm. The
          * genuine occupancy setter still runs; no sleep result is invented. */
         e->caller = site("ve", "a", "(Lfd;IIILgs;)Z", 407);
-        e->site = site("ve", "a", "(Lfd;IIIZ)V", 4);
-        int32_t current;
-        if (!value_get(e, world, e->query_count, x, y, z, true, &current))
-            return false;
-        e->site.pc = 36;
-        if (!bed_activation_write(e, world, x, y, z, (int32_t)((uint32_t)current | 4u), false))
+        if (!bed_set_occupied(e, world, x, y, z, true))
             return false;
         bed_activation_at(e, 411);
         return true;

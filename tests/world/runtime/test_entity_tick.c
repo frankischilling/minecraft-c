@@ -107,7 +107,8 @@ cleanup:
     return ok;
 }
 
-static bool tick_setup(fixture *f, const char *root) {
+static bool tick_setup_configured(fixture *f, const char *root, size_t chunk_capacity,
+                                  const mc_math_trig *source_trig) {
     bool ok = false;
     const uint16_t title[] = {'T', 'i', 'c', 'k'};
     CHECK(mc_materials_create(&f->materials));
@@ -127,8 +128,8 @@ static bool tick_setup(fixture *f, const char *root) {
     CHECK(mc_registry_classes_allocate(&ro, &f->registry[0], NULL) == MC_REGISTRY_OK);
     CHECK(mc_entity_classes_create(MC_ENTITY_CLIENT, f->profile, NULL, &f->entity_classes[0]) ==
           MC_ENTITY_OK);
-    CHECK(mc_world_runtime_classes_create(MC_WORLD_INFO_CLIENT, f->profile, &trig, &f->classes[0],
-                                          NULL) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_world_runtime_classes_create(MC_WORLD_INFO_CLIENT, f->profile, source_trig,
+                                          &f->classes[0], NULL) == MC_WORLD_STORAGE_OK);
     CHECK(mc_world_runtime_classes_bind_registry(f->classes[0], f->registry[0], NULL) ==
           MC_REGISTRY_OK);
     CHECK(mc_world_runtime_classes_bind_entities(f->classes[0], f->entity_classes[0]) ==
@@ -143,14 +144,14 @@ static bool tick_setup(fixture *f, const char *root) {
                                  .block_map = map,
                                  .block_map_length = 256,
                                  .limits = mc_world_store_default_limits()};
-    so.limits.max_loaded_chunks = 64;
+    so.limits.max_loaded_chunks = chunk_capacity;
     CHECK(mc_world_store_open(path, f->regions, &so, &f->stores[0], NULL) == MC_WORLD_STORAGE_OK);
     const mc_level_info info = {
         .seed = 23, .spawn_y = 64, .level_name = {title, COUNT(title)}, .version = 19132};
     CHECK(mc_world_store_save_info(f->stores[0], &info, 123, NULL) == MC_WORLD_STORAGE_OK);
     CHECK(mc_world_provider_create(0, NULL, &f->dimensions[0], NULL) == MC_WORLD_PROVIDER_OK);
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
-    limits.max_provider_chunks = 64;
+    limits.max_provider_chunks = chunk_capacity;
     CHECK(mc_world_runtime_allocate_world(MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE, f->classes[0],
                                           &limits, &f->worlds[0], NULL) == MC_WORLD_STORAGE_OK);
     const mc_world_runtime_world_arguments a = {
@@ -171,6 +172,10 @@ static bool tick_setup(fixture *f, const char *root) {
     ok = true;
 cleanup:
     return ok;
+}
+
+static bool tick_setup(fixture *f, const char *root) {
+    return tick_setup_configured(f, root, 64, &trig);
 }
 
 static bool tick_presence(fixture *f) {

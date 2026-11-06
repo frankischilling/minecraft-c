@@ -37,6 +37,11 @@ bool mc_client_draw_capture_math(mc_client_draw_scope *, mc_client_manager_error
 bool mc_client_draw_capture_graphics(mc_client_draw_scope *, mc_client_manager_error *);
 bool mc_client_draw_capture_world(mc_client_draw_scope *, mc_world_runtime *,
                                   mc_client_manager_error *);
+/* Retain this exact reached query before its caller reuses a diagnostic union.
+ * No source query, callback retry or ambient failure reconstruction occurs. */
+bool mc_client_draw_capture_acquisition(mc_client_draw_scope *,
+                                        mc_world_runtime_acquisition_error *,
+                                        mc_client_manager_error *);
 /* Consumes/nulls a genuine existing occurrence only after native ledger publication.
  * Failure preserves the slot; retired Worlds need no new source admission. */
 bool mc_client_draw_adopt_world(mc_client_draw_scope *, mc_world_runtime **owned_slot,
@@ -249,6 +254,11 @@ typedef struct mc_client_living_draw_state {
 
     struct {
         bool entered, initial_stack_returned, sneaking_returned, sneaking;
+        bool sleep_orientation_entered, sleep_metadata_returned, sleep_orientation_returned;
+        float bed_orientation;
+        int32_t bed_metadata;
+        uintptr_t bed_world_identity, bed_coordinate_identities[3];
+        unsigned int sleep_rotations_returned;
         bool wrapper_returned, layers_entered, layers_returned;
         bool name_checked, name_enabled, name_self, name_returned;
         bool cape_attempted, cape_textured, cape_returned;

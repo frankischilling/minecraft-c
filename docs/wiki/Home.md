@@ -1,13 +1,23 @@
 # minecraft-c
 
+[Player sleep and wake](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-sleep.md)
+now continue Bed activation through the original pose, bounds, timer, exit
+search and copied spawn operations. The World sleep branch calls actual wake
+bodies with captured-iterator and ordered weather behavior. Local rendering
+adds the HUD fade and sleeping Player rotations. A separate unchanged-original
+packet has 76 profiles; native replay passes 9,784 scalar comparisons on
+Windows and sanitized Linux. Eight authored World controls cover failures,
+cleanup and the full 361-Chunk/28,880-sample stored-air footprint. Eleven HUD
+timer inputs and four-direction Display controls have separate native scope.
+Natural elapsed sleep, default-hostile CQ/FW, damage/NBT wake parents, remote
+sleep-screen behavior and loaded-night acceptance remain unfinished or
+unqualified. The earlier loaded Bed opportunity remains failed during loading
+because Remote Desktop holds foreground focus.
+
 [Bed Item use and daytime interaction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/bed-interaction.md)
-now reach actual Item355 placement, orphan-half removal/drop, the occupied
-Player scan, genuine GS/CW rejection and the client translation/HUD message
-route. Original packets cover 72 placement, 85 World and 48 sleep-prefix
-profiles. Native components pass on Windows and sanitized Linux; the first
-loaded Windows scene stops before placement because Remote Desktop holds
-foreground focus. Night sleep119 and Nether explosion256 remain frontiers.
-The [test-reader comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/reference-readers.md)
+retain their separate 72 placement, 85 World and 48 sleep-prefix profiles.
+Nether explosion256 remains a frontier. The
+[test-reader comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/reference-readers.md)
 preserves all 1,167 controls and lowers measured median reader CPU by
 66.95295% on Windows and 64.83001% on WSL, without an FPS claim.
 
@@ -17,7 +27,7 @@ Player. Missing Beds reach the actual translated HUD message and World spawn.
 Two monitor-2 Windows scenarios pass three real Respawn clicks, source save,
 independent coordinate readback and terminal cleanup. Native Bed geometry
 matches 192 original rows; coordinates, helper queries and chat have separate
-original packets. Bed use/sleeping, full original restart, Linux loaded play
+original packets. Loaded Bed use/sleeping, full original restart, Linux loaded play
 and sustained FPS remain unfinished or unqualified.
 
 [Player death and respawn](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/death-respawn.md)
@@ -26,7 +36,7 @@ and replacement Player creation. A monitor-2 Windows scene completes two real
 Respawn clicks in the same World and cleanup after a partial publication
 failure. Native hurt replay checks 21,247 scalar values from its unchanged
 28-call original packet; a new packet compares 72 original screen components.
-Bed use/sleeping, Nether transitions, ordinary hazard encounters, unrestricted
+Loaded Bed use/sleeping, Nether transitions, ordinary hazard encounters, unrestricted
 survival and sustained FPS remain unfinished or unqualified.
 
 The [Grass and Leaves comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/random-block-ticks.md)

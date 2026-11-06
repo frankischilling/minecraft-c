@@ -17,6 +17,7 @@ typedef struct mc_world_placement_error mc_world_placement_error;
 typedef struct mc_player_sleep_error mc_player_sleep_error;
 typedef struct mc_player_error mc_player_error;
 typedef struct mc_player_sleep_result_error mc_player_sleep_result_error;
+typedef struct mc_player_sleep_cleanup mc_player_sleep_cleanup;
 typedef struct mc_world_provider_error mc_world_provider_error;
 
 /* Reached Player virtual children supplied by the enclosing client call.
@@ -25,6 +26,9 @@ typedef struct mc_world_provider_error mc_world_provider_error;
  * A callback preserves this noncopyable diagnostic's work/ownership fields. */
 typedef struct mc_world_block_activation_context {
     void *context;
+    /* Actual GS defining Registry. Independent of VE and Player.World;
+     * consulted lazily by the reached sleep child, never a World substitute. */
+    mc_registry_classes *player_code_registry;
     mc_world_storage_status (*workbench)(void *, mc_entity *, int32_t, int32_t, int32_t,
                                          mc_world_placement_error *);
     /* Actual reached Player.b(String) virtual. key is the same nullable
@@ -88,6 +92,7 @@ struct mc_world_placement_error {
     mc_registry_error cleanup_registry;
     mc_entity_status cleanup_bounds;
     mc_entity_status cleanup_enum_classes;
+    const mc_player_sleep_cleanup *cleanup_sleep;
     size_t retained_producers;
     mc_world_placement_work *work;
 };

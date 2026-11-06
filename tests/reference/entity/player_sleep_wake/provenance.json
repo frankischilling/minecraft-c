@@ -1,0 +1,133 @@
+{
+  "schema": "PLAYER_SLEEP_WAKE_CANONICAL_V1",
+  "status": "PASS_ORIGINAL_COMPONENTS_ONLY",
+  "archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "profiles_per_vm": 76,
+  "fresh_target_vms": 2,
+  "sleep_successes": 16,
+  "wake_successes": 56,
+  "source_null_prefixes": 4,
+  "live_code_methods": 26,
+  "original_classes": 16,
+  "selected_calls_per_vm": 1313,
+  "ordered_events_per_vm": 3979,
+  "historical_rejected_corruptions_per_audit": 687,
+  "jdi_target_invocations": 0,
+  "jdi_source_writes": 0,
+  "jdi_forced_returns": 0,
+  "jdi_redefinitions": 0,
+  "source_inputs_unchanged": true,
+  "generated_helpers_unchanged": true,
+  "original_projections_identical": true,
+  "source_guard_counters": {
+    "network": 0,
+    "native_links": 0,
+    "writes_deletes": 0,
+    "exec": 0
+  },
+  "canonical_sha256": {
+    "finite.json": "11e7210eda8b1a5d4b79e383bbbc385c55f192377a02d31ee9b350d8de89c6cc",
+    "profiles.json": "cd5eae4dc09ce55a7d7f02bfe9824851e9127287df9dfce9fcbe50edf2621fad",
+    "profiles.tsv": "885b339c90b26eab07d2b6fb783c24cd556c25c18a34d25380ef7b5944c023ec",
+    "source-pins.json": "4f6819b2919fde077c2070e8801368798dfb580986393b0d82eef4a5354dfe64",
+    "helper-pins.json": "dcf59323099ca157732c6c1f6cf6d9c92678b8057dc2405f086c7e38a40696f3",
+    "class-names.txt": "c9376837a845b90d5ffce2033f68da1da3154a62cd0987d0ac8927d8489b1c27"
+  },
+  "executed_producer_sha256": {
+    "BedNightObservation.java": "ada8a94244914f03edfe04d961679570840264527bd173348acd2d1ada45bdb6",
+    "BedNightJdi.java": "b3fde86e0ed0e6d2d95015285c71a0b676c0bc5ffdc8342c77d4d8d4a8214e29",
+    "prepare.py": "3f2771d1d925d9e3d76eff17bb222f155c11a21bb80a051718df396da4c6efb6",
+    "profiles.json": "cd5eae4dc09ce55a7d7f02bfe9824851e9127287df9dfce9fcbe50edf2621fad",
+    "profiles.tsv": "885b339c90b26eab07d2b6fb783c24cd556c25c18a34d25380ef7b5944c023ec",
+    "source-pins.json": "4f6819b2919fde077c2070e8801368798dfb580986393b0d82eef4a5354dfe64",
+    "class-names.txt": "c9376837a845b90d5ffce2033f68da1da3154a62cd0987d0ac8927d8489b1c27",
+    "packet.py": "49d09152e8447bef893a60a70732574a4a3a12d5ae631e16e62d262933361ef0",
+    "capture_reference.py": "c6e8092d2fa11dd656621ce0d1ff4118ede79f04f9204e668805b8372ceebcb9",
+    "support/capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "support/classfile.py": "4411375a115dabb7104e82e9970aa3139bb0cc4cc0b5f169d56496e81c4bec60"
+  },
+  "helper_sha256": {
+    "BedNightJdi.class": "af9fff71ecba18975fdd05f225981839d9a91c51cfe1a4f6c76f69b57c907821",
+    "BedNightObservation$Guard.class": "45dfc8dec94f1c937f15ecdd67c14d104fb367892bc90d6e9660d31b2b1fd70e",
+    "BedNightObservation.class": "ca4e135dcb04963c94668826e067115fa3814564a75177d9aa78863a2ac40b47"
+  },
+  "binary_input_sha256": {
+    "jdk/bin/java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "jdk/bin/javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "sdk/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "sdk/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "sdk/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "sdk/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5"
+  },
+  "version_receipt_sha256": {
+    "java_stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "java_stderr": "60aba3fe0d7bf59797df0e8cb7af289d0843e978623fafea7e3ae5ef925b6622",
+    "javac_stdout": "825ce50fb46a3e8bd8d38f6da5bf8449d442a9f210d9d38c83709234bfa8ee9c",
+    "javac_stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "private_evidence_sha256": {
+    "sealed_provenance": "ac21a100f0d948d8d0e77f5d0addbd38a5fa58015bd6369bddd2b06e34b2dd07",
+    "capture_receipt": "7ea049a442344ee35b070c520a3ede2682fade50b7249b004e6396358e488e9f",
+    "vm0_raw_state": "b300e771a5dd07a6a1ed208fcb33678c9f85d364bf3147e836e6eb1c25768479",
+    "vm0_journal": "1544f44ef5ded196f876848c0cc0fd26aaf6d37d22f4999e2980e14513c35502",
+    "vm0_target_stderr": "885059353e6dc0c5afbaca2ec824859e043fc4782c21491c55cde4814cb310c4",
+    "vm1_raw_state": "46779f204ecc6502f629ce1d8752a9292e9840ec79d4618d678d55d3aca3d395",
+    "vm1_journal": "1544f44ef5ded196f876848c0cc0fd26aaf6d37d22f4999e2980e14513c35502",
+    "vm1_target_stderr": "885059353e6dc0c5afbaca2ec824859e043fc4782c21491c55cde4814cb310c4"
+  },
+  "historical_audit_sha256": {
+    "audit.py": "559449c9c5f38d5ec27979176d1fdb56adefc1196f2a1a347f1df0c7ae978672",
+    "README.md": "0d06ae4a13a9a5158a61d0193c0acf1f5a289c98c8490f17a246495ada007619",
+    "seal.py": "e4ed59579389c402c51288a06e37e6d04114fa9390b273496ab6f1961ef9c7e2",
+    "normal-packet.stdout": "c4f26bdd15b6196de7dc050026094f62c5863e921ffe691cfed3c008beda54ed",
+    "normal-audit.stdout": "bc5decb7cce7d5f1051467690b30c82a4c603eab0490878e6f1c83147f978150",
+    "optimized-packet.stdout": "c4f26bdd15b6196de7dc050026094f62c5863e921ffe691cfed3c008beda54ed",
+    "optimized-audit.stdout": "4adc339e048bc4169aaa9fed1d29807393696365612abe7ae4f3203d929bfbf5"
+  },
+  "current_reproduction_sha256": {
+    ".gitattributes": "a79691a93b46e49ce460c26ef22afcc03d6eca1e63bf2edbc20e96159510f6c9",
+    "BedNightObservation.java": "ada8a94244914f03edfe04d961679570840264527bd173348acd2d1ada45bdb6",
+    "BedNightJdi.java": "b3fde86e0ed0e6d2d95015285c71a0b676c0bc5ffdc8342c77d4d8d4a8214e29",
+    "capture_reference.py": "b26f39d0426b33fa9c2f0364d20f33a81afcf79d694adda393904875e4790038",
+    "export_reference.py": "adc8c088d9910ec92f2b5bd5c8fc254a3f3a36c5e7e476a604b8f893ef924cff",
+    "validate.py": "0304dc80f5da9ea39c24b4f78898bd505072b775e7b7db8e0633f9896e82e62a",
+    "packet.py": "5754c18bf51b1311a58fd8fa94d429ef0f206f3f90a03829abe74349fa4a4865",
+    "test_packet.py": "f94c0e56413bceb11fca09a5bb40e676ea70b184021ad847882f9da4f6d8b0a9",
+    "README.md": "e62e3d59ed484b6273b58065692a28f8eaed3983a5bee0f49ef334fc912b5203"
+  },
+  "canonical_exporter_sha256": {
+    "export_reference.py": "adc8c088d9910ec92f2b5bd5c8fc254a3f3a36c5e7e476a604b8f893ef924cff",
+    "validate.py": "0304dc80f5da9ea39c24b4f78898bd505072b775e7b7db8e0633f9896e82e62a",
+    "packet.py": "5754c18bf51b1311a58fd8fa94d429ef0f206f3f90a03829abe74349fa4a4865"
+  },
+  "vm_projections": [
+    {
+      "finite_sha256": "11e7210eda8b1a5d4b79e383bbbc385c55f192377a02d31ee9b350d8de89c6cc",
+      "profiles": 76,
+      "class_bindings": 16,
+      "calls": 1313,
+      "events": 3979,
+      "live_code": 26,
+      "target_exit": 0,
+      "timed_out": false,
+      "capture_complete": true,
+      "overflow": false,
+      "reader_errors": 0
+    },
+    {
+      "finite_sha256": "11e7210eda8b1a5d4b79e383bbbc385c55f192377a02d31ee9b350d8de89c6cc",
+      "profiles": 76,
+      "class_bindings": 16,
+      "calls": 1313,
+      "events": 3979,
+      "live_code": 26,
+      "target_exit": 0,
+      "timed_out": false,
+      "capture_complete": true,
+      "overflow": false,
+      "reader_errors": 0
+    }
+  ],
+  "scope": "Original components only; prepared published DC/normal Chunk/World.f=5 sleep and wake flags/partial failures; no native/tick/GUI/default-hostile/full-session qualification. Constructor entropy retained privately and only within-call preservation credited.",
+  "eol": "LF for all package members; executed Java bytes already LF; no captured member normalized."
+}

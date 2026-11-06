@@ -327,7 +327,7 @@ static bool untyped(fixture *f, size_t side) {
     mc_world_mutation_error *error = malloc(sizeof(*error));
     CHECK(error != NULL);
     void *items[] = {world}; /* Valid storage, deliberately not an world_access. */
-    mc_world_reference_list foreign = {items, 1, 1};
+    mc_world_reference_list foreign = {items, 1, 1, 0};
     world->fields.u = &foreign;
     mc_world_storage_status status = mc_world_runtime_sound(world, 0, 0, 0, NULL, 0, 0, error);
     world->fields.u = owned;
@@ -498,7 +498,7 @@ static bool terminal_controls(fixture *f, size_t side, receiver *r) {
     const size_t bytes = world->construction.direct_allocation_bytes;
     const size_t memberships = r->self->memberships;
     void *items[] = {world};
-    mc_world_reference_list foreign = {items, 1, 1};
+    mc_world_reference_list foreign = {items, 1, 1, 0};
     world->fields.u = &foreign;
     const mc_world_storage_status rejected = mc_world_runtime_retire_entity_containers(world, NULL);
     world->fields.u = owned;

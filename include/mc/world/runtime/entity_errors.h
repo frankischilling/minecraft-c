@@ -14,6 +14,7 @@ typedef struct mc_world_player_sleep_error {
     const char *operation;
     unsigned int bytecode, player_bytecode;
     size_t index;
+    bool native_policy, source_null, source_cast;
     mc_world_storage_error cause;
     mc_entity_error entity;
 } mc_world_player_sleep_error;

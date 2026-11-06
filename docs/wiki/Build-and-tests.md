@@ -1,5 +1,27 @@
 # Build and tests
 
+The [Player sleep/wake qualification](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#player-sleep-and-wake)
+adds seven registered cases without removing any preceding name. Complete
+Windows and Clang Linux builds pass; Windows public tests pass 770/770 in
+356.59 seconds, without skips, with all 24 visible windows on monitor 2.
+Linux retains 755/756 public tests in 1,039.77 seconds, with no skips; the sole failure is the unchanged 180.01-second storage guard timeout. All 5,498 frozen public inputs remain unchanged.
+
+Native replay matches all 76 original sleep/wake profiles and 9,784 scalars
+on both hosts. Eight World caller controls, Bed occupancy and native HUD/Display
+controls also pass. The complete stored-air World modes perform all 361 Chunk
+acquisitions and 28,880 samples. Their range callback count may be zero;
+positive range coverage is not claimed. Earlier padding, buffered-output,
+shader-alpha, notification and footprint fixture failures remain recorded.
+Original observations, source completion checks, sanitizer settings and
+watchdogs retain their scope. The storage metadata fast path preserves all 1,503 protected inputs and the unchanged 76 guards. Direct Linux runs pass in 133.149 seconds before and 123.046 after; this pair establishes no benchmark percentage. Registered follow-up passes 11/11 Windows cases in 26.08 seconds and the concurrent Linux trio 3/3 in 159.13 seconds, with storage at 133.74 seconds under the unchanged 180-second limit. The failed full run remains separate.
+
+The preceding exact `727d4aa9` source passes
+[hosted run 42191771974](https://github.com/frankischilling/minecraft-c/actions/runs/42191771974):
+Windows 712/712 in 409.76 seconds, GCC 770/770 in 350.89 seconds and Clang
+770/770 in 435.79 seconds, plus formatting of 2,176 files. All four checkout
+trees equal pushed tree `345db345cd31fcec04af310cfcecc516490548d8`.
+These results do not qualify later source or the loaded-night route.
+
 Hosted [run 42189248809](https://github.com/frankischilling/minecraft-c/actions/runs/42189248809)
 at `fd11d600` passes Windows 712/712, Clang 770/770 and formatting. Every
 prior native test name remains and thirteen are added in each completed job.

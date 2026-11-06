@@ -14,6 +14,7 @@
 #include "construction_internal.h"
 #include "dedicated/entity_index.h"
 #include "entity_publication_internal.h"
+#include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
 #include "world_access_internal.h"
 
@@ -252,6 +253,7 @@ bool mc_world_runtime_entity_append_owned(mc_world_runtime *world, mc_world_refe
     }
     ++list->count;
     ++ledger->count;
+    list->mod_count = mc_java_i32_add(list->mod_count, 1);
     return true;
 }
 
@@ -340,8 +342,15 @@ static bool append_entity_batch(mc_world_runtime *world, const mc_world_chunk_en
     if (mc_world_chunk_entity_count(source, &count) != MC_WORLD_STORAGE_OK)
         return entity_fail(publication, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                            "World addAll Entity input is null");
-    if (count == 0)
-        return true; /* Preserve the existing finite empty-source no-op domain. */
+    if (count == 0) {
+        /* ArrayList.addAll increments modCount even for an empty input. The
+         * existing foreign empty-target domain owns no such source field. */
+        const mc_world_entity_list_ledger *empty_owner =
+            deferred ? &world->entity_deferral : &world->entity_membership;
+        if (list == empty_owner->list)
+            list->mod_count = mc_java_i32_add(list->mod_count, 1);
+        return true;
+    }
     mc_world_entity_list_ledger *ledger =
         deferred ? &world->entity_deferral : &world->entity_membership;
     if (!mc_world_runtime_entity_list_valid(world) || list != ledger->list)
@@ -423,6 +432,7 @@ static bool append_entity_batch(mc_world_runtime *world, const mc_world_chunk_en
     }
     list->count = target;
     ledger->count = target;
+    list->mod_count = mc_java_i32_add(list->mod_count, 1);
     free(prepared);
     world->construction.direct_allocation_bytes -= scratch_bytes;
     frame->index = SIZE_MAX;
@@ -592,17 +602,24 @@ static bool sleeping_fail(mc_world_player_sleep_error *frame, mc_world_storage_s
  * this concrete profile. No snapshot or precomputed all-asleep answer is used. */
 static bool update_sleeping_held(mc_world_runtime *world, mc_world_player_sleep_error *frame) {
     frame->index = SIZE_MAX;
+    frame->native_policy = true;
     frame->bytecode = 5;
     mc_world_reference_list *list = world->fields.d;
-    if (!list_shape(list))
+    if (!list_shape(list)) {
+        frame->source_null = list == NULL;
+        frame->native_policy = !frame->source_null;
         return sleeping_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                              "World sleeping d isEmpty receiver");
+    }
     world->fields.J = list->count != 0;
     frame->bytecode = 25;
     list = world->fields.d;
-    if (!list_shape(list))
+    if (!list_shape(list)) {
+        frame->source_null = list == NULL;
+        frame->native_policy = !frame->source_null;
         return sleeping_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                              "World sleeping d iterator receiver");
+    }
     for (size_t index = 0;; ++index) {
         frame->bytecode = 32;
         if (index >= list->count)
@@ -619,14 +636,33 @@ static bool update_sleeping_held(mc_world_runtime *world, mc_world_player_sleep_
             return sleeping_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                  "World sleeping typed Player occurrence");
         mc_entity *player = world->player_membership.entries[index];
-        if (player != NULL && !mc_entity_is_kind(player, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
-            return sleeping_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                 "World sleeping Player cast");
+        if (player != NULL) {
+            const mc_entity_class_literal *target = NULL;
+            bool matches = false;
+            mc_entity_status cast = mc_entity_class_literal_get(
+                world->classes->entities, MC_ENTITY_CLASS_KIND_PLAYER, &target);
+            if (cast == MC_ENTITY_OK)
+                cast = mc_entity_class_literal_is_assignable_from(target, player->class_literal,
+                                                                  &matches);
+            if (cast != MC_ENTITY_OK) {
+                frame->entity.status = cast;
+                return sleeping_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                     "World sleeping Player cast native Class identities");
+            }
+            if (!matches) {
+                frame->native_policy = false;
+                frame->source_cast = true;
+                return sleeping_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                     "World sleeping Player cast");
+            }
+        }
         frame->bytecode = 51;
         bool sleeping;
         mc_player_error cause = {0};
         const mc_player_status status = mc_player_is_sleeping(player, &sleeping, &cause);
         if (status != MC_PLAYER_OK) {
+            frame->source_null = status == MC_PLAYER_NULL_REFERENCE;
+            frame->native_policy = !frame->source_null;
             frame->player_bytecode = cause.site.pc;
             frame->entity = cause.entity;
             return sleeping_fail(frame,
@@ -768,7 +804,7 @@ mc_world_storage_status mc_world_runtime_insert_entity(mc_world_runtime *world, 
 mc_world_storage_status
 mc_world_runtime_update_player_sleeping(mc_world_runtime *world,
                                         mc_world_player_sleep_error *error) {
-    mc_world_player_sleep_error frame = {.index = SIZE_MAX};
+    mc_world_player_sleep_error frame = {.index = SIZE_MAX, .native_policy = true};
     mc_world_entity_error admission = {0};
     if (world != NULL && (world->classes == NULL || world->classes->side != MC_WORLD_INFO_CLIENT)) {
         (void)sleeping_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,

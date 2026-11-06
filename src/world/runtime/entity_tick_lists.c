@@ -84,6 +84,7 @@ bool wt_list_remove(wt_scope *s, mc_world_reference_list *list, int32_t index, u
             (ledger->count - i - 1) * sizeof(*ledger->entries));
     --list->count;
     --ledger->count;
+    list->mod_count = mc_java_i32_add(list->mod_count, 1);
     list->items[list->count] = NULL;
     ledger->entries[ledger->count] = NULL;
     mc_entity_release(victim);
@@ -102,6 +103,7 @@ bool wt_list_clear(wt_scope *s, mc_world_reference_list *list, unsigned int pc) 
             return false;
     }
     const size_t count = list->count;
+    list->mod_count = mc_java_i32_add(list->mod_count, 1);
     list->count = ledger->count = 0;
     for (size_t i = 0; i < count; ++i) {
         mc_entity *p = ledger->entries[i];
@@ -174,6 +176,7 @@ bool wt_list_remove_all(wt_scope *s, mc_world_reference_list *list,
         write += count - read;
     }
     list->count = target->count = write;
+    list->mod_count = mc_java_i32_add(list->mod_count, (int32_t)(count - write));
     for (size_t i = write; i < count; ++i) {
         list->items[i] = NULL;
         target->entries[i] = NULL;

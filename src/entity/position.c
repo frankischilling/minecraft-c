@@ -47,3 +47,54 @@ mc_entity_bounds mc_entity_source_position_values(const mc_entity *p, double x, 
     value.max_z = add(z, widen(half_width));
     return value;
 }
+
+mc_entity_status mc_entity_source_position_checked(mc_entity *entity, double x, double y, double z,
+                                                   mc_entity_source_position_error *out) {
+    mc_entity_source_position_error error = {0};
+    if (entity == NULL) {
+        error.status = MC_ENTITY_INVALID_ARGUMENT;
+        error.operation = "SN.e native receiver";
+        error.native_policy = true;
+        goto done;
+    }
+    entity->base.x = x;
+    entity->base.y = y;
+    entity->base.z = z;
+    error.bytecode = 21;
+    if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
+        error.status = MC_ENTITY_UNSUPPORTED_FP;
+        error.operation = "SN.e reached position floating environment";
+        error.native_policy = true;
+        goto done;
+    }
+    const float half_width =
+        _mm_cvtss_f32(_mm_div_ss(_mm_set_ss(entity->base.width), _mm_set_ss(2.0f)));
+    const float height = entity->base.height;
+    mc_entity_bounds *receiver = entity->bounds; /* Actual aW read31, before arguments. */
+    const mc_entity_bounds value =
+        mc_entity_source_position_values(entity, x, y, z, half_width, height);
+    error.bytecode = 86;
+    if (receiver == NULL) {
+        error.status = MC_ENTITY_STATE_ERROR;
+        error.operation = "SN.e null permanent bounds receiver";
+        error.source_null = true;
+        goto done;
+    }
+    /* Actual eq.c assigns its same receiver's six fields in this order. */
+    receiver->min_x = value.min_x;
+    receiver->min_y = value.min_y;
+    receiver->min_z = value.min_z;
+    receiver->max_x = value.max_x;
+    receiver->max_y = value.max_y;
+    receiver->max_z = value.max_z;
+    error.bytecode = 90;
+done:
+    if (out != NULL)
+        *out = error;
+    return error.status;
+}
+
+void mc_entity_source_size(mc_entity *entity, float width, float height) {
+    entity->base.width = width;
+    entity->base.height = height;
+}
