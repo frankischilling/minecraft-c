@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 342887,
-      "sha256": "aaa1803c72e337a4896fde9e7633526531cfd3656f34a8afd395817266ab30aa"
+      "bytes": 342935,
+      "sha256": "4c655b3042efc8350087a3632e53067b3a9ad9f3a66c89b2d0081360dd15b6d5"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -186,8 +186,8 @@
       "sha256": "1a54745a759c41a57a2453f44296f6cc9793698f281e83afd9a9893bdbe7ae1d"
     },
     "docs/building.md": {
-      "bytes": 23103,
-      "sha256": "4dba398b9d951db52021c212c623a014418f664a035c98558a3a1961a9f1395a"
+      "bytes": 24554,
+      "sha256": "801db6b4773a0286392f3a14ed38339ab89b1a1469826a8264e0aaa1f497f0d7"
     },
     "docs/client/achievement-notice.md": {
       "bytes": 12218,
@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 222144,
-      "sha256": "ae2ec383de2efa5d90a544998d9afac020e7b0fe349387f80e56b2ccaa427123"
+      "bytes": 223179,
+      "sha256": "12d3f3d78a28bcc040c963ba570b5dbb95a0717622075efa04eacfcd1258eb9c"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 575401,
-      "sha256": "d76df06e4654aab8a1336648b4c92a4d4dbccf9c77745337cb1c9d1c4e5bf0fc"
+      "bytes": 577656,
+      "sha256": "419f91fa358093fe2d2cdd43b84c49217e1465fc426bf461ceae22399196bb05"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 719663,
-      "sha256": "4180c3e9f01e0cf636a3a39f0767c7a17418113a99155f59912ae66ef600b3ab"
+      "bytes": 723842,
+      "sha256": "aeaaa9dcb7ffb386c8ada734f0ef1d940c7b6d5712bb2b4de9b206c23a713aff"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 817363,
-      "sha256": "03bb9e653b72ab1242c01924c8f32f68602341effe27dca86db58d26bd0b1968"
+      "bytes": 821727,
+      "sha256": "03b1672986a96230f2f043713920a02ee7dfc97644d31e5dc71ba543c3a43bdc"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 716642,
-      "sha256": "077b787739baf97c1d2f077e74139bc01fe1b9f2114beeef1a9d77027ae7d7bd"
+      "bytes": 720821,
+      "sha256": "efda0dd50b2e4ec448ce734ebd8a178558661c9f9ace16b8a2eedd0c8e3e6fc9"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -23326,8 +23326,36 @@
       "sha256": "72516a6341f46c9d1031e7b55d823725c22ec37d089b43e0246abbe592400c93"
     },
     "docs/world/world-acquisition-execution.md": {
-      "bytes": 6658,
-      "sha256": "baa60e3c78d2f0514c05d95efd9c198a09e61a3a08f488250a91d0e8473ef21c"
+      "bytes": 10584,
+      "sha256": "d3dbac0fa0b05250039fe45ba383312ca89d20c8269b94b433928e21cd2a2a92"
+    },
+    "cmake/tests/world_query_controls.cmake": {
+      "bytes": 3377,
+      "sha256": "3788a7ce3aecbb94b129668645f1a0016782aba7ae0bd7816c6f9d24618b36d5"
+    },
+    "tests/world/runtime/world_access/test_kernel_loader_execution.c": {
+      "bytes": 23441,
+      "sha256": "bfb1d1eba0a87b715c155901479d9eef80fb2f0990706342b7dea6ff3685c06e"
+    },
+    "tests/world/runtime/world_access/test_tile_lookup_execution.c": {
+      "bytes": 34102,
+      "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
+    },
+    "tests/tools/world/test_world_query_controls.py": {
+      "bytes": 34301,
+      "sha256": "dc997619e5d710d2734599df9c0e77ad71dd21195d5311faf86c2e0d32f079ce"
+    },
+    "tests/tools/world/world_query_controls_bundle.json": {
+      "bytes": 9536,
+      "sha256": "6ebc2937b4f23303e02ea362fab4dc8566a3f98a0b4ffda0da8354ac192089a1"
+    },
+    "tests/tools/world/world_query_controls_protocol.json": {
+      "bytes": 4565,
+      "sha256": "37773fe1ce8534fad724edb1b9b17a39971bb49118e80f4596de0f72dbfdb93b"
+    },
+    "tests/tools/world/world_query_inputs.py": {
+      "bytes": 4725,
+      "sha256": "877551f32b09cd29ec4c62f79a0e90ba1c12291ad01a13a977b7aa097dd41e69"
     }
   },
   "self_metadata_excluded": true,
@@ -37552,6 +37580,171 @@
             "docs/world/world-acquisition-execution.md"
           ],
           "current_count": 5832
+        }
+      }
+    },
+    {
+      "from_commit": "a97b750142857d21948a113e17cf80253c39fb2f",
+      "role": "Prospective direct owned source-loader and Tile lookup controls over the existing shared runtime. Current native-source admissions only; compilation and actual malformed loading, lazy construction and callback admission outcomes require separate execution. Historical captured suppliers and observations remain unchanged. No historical native execution or full gameplay qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1651156,
+        "sha256": "6221cb8b89e32fde3b4661c614724105a990e7daf4f9dc03f8b4c626594a8b4b"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 342887,
+              "sha256": "aaa1803c72e337a4896fde9e7633526531cfd3656f34a8afd395817266ab30aa"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 719663,
+              "sha256": "4180c3e9f01e0cf636a3a39f0767c7a17418113a99155f59912ae66ef600b3ab"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 817363,
+              "sha256": "03bb9e653b72ab1242c01924c8f32f68602341effe27dca86db58d26bd0b1968"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 716642,
+              "sha256": "077b787739baf97c1d2f077e74139bc01fe1b9f2114beeef1a9d77027ae7d7bd"
+            }
+          },
+          "added": [
+            "cmake/tests/world_query_controls.cmake",
+            "tests/world/runtime/world_access/test_kernel_loader_execution.c",
+            "tests/world/runtime/world_access/test_tile_lookup_execution.c"
+          ],
+          "current_count": 5835
+        }
+      }
+    },
+    {
+      "from_commit": "a97b750142857d21948a113e17cf80253c39fb2f",
+      "role": "Prospective direct owned source-loader and Tile lookup controls over the existing shared runtime. Current native-source admissions only; compilation and actual malformed loading, lazy construction and callback admission outcomes require separate execution. Historical captured suppliers and observations remain unchanged. No historical native execution or full gameplay qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1653487,
+        "sha256": "d18db50e21fc07dcdbcd7b0594620455c2a9002a0f56381d5145f512eb4f11c3"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 721193,
+              "sha256": "0d41336956381f4be8c61a528f6c7ee5e185b0a5dd7287a79d8e06dc2e8adc08"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 819074,
+              "sha256": "efa920ee281fc823a638b8660362bb6ff1a8338d3940afb75c8639b1fb1b2461"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 718172,
+              "sha256": "5900a026efb5c504e372b3b99feefb0fa9d0599db3f6d7248b8a03fadc1b97f8"
+            },
+            "cmake/tests/world_query_controls.cmake": {
+              "bytes": 716,
+              "sha256": "84430d07572bb13adcc871e406d0d13a74389803bb405ef5a13b82643c2f43b3"
+            }
+          },
+          "added": [
+            "tests/tools/world/test_world_query_controls.py",
+            "tests/tools/world/world_query_controls_bundle.json",
+            "tests/tools/world/world_query_controls_protocol.json",
+            "tests/tools/world/world_query_inputs.py"
+          ],
+          "current_count": 5839
+        }
+      }
+    },
+    {
+      "from_commit": "a97b750142857d21948a113e17cf80253c39fb2f",
+      "role": "Prospective direct owned source-loader and Tile lookup controls over the existing shared runtime. Current native-source admissions only; compilation and actual malformed loading, lazy construction and callback admission outcomes require separate execution. Historical captured suppliers and observations remain unchanged. No historical native execution or full gameplay qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1656027,
+        "sha256": "a7f7c7a27acf422c46499243f87075f1a0f119a3f6c67595c978e1ef22be1ab1"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 722633,
+              "sha256": "19e9b5bd8fcc392fea47a910ed4b29e282a99e60e225740867c0d8052f586b10"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 820516,
+              "sha256": "3116297725a7f3f8379b26fd4398c6ad791c122e36f530966c871870e92f3567"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 719612,
+              "sha256": "55daac7002ff5ea2999bd03f92b6131c7c595ff9e12ab560f1f3fb993f3ece42"
+            },
+            "tests/world/runtime/world_access/test_tile_lookup_execution.c": {
+              "bytes": 33894,
+              "sha256": "0e36d7083d436394583fe324834ae72c7f7f29d103e012289406d0166dc3ad1b"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 34283,
+              "sha256": "520e78cef2e9dccfa640692418b37004e800ec2ca50c734699c90be06f5016a3"
+            },
+            "tests/tools/world/world_query_controls_bundle.json": {
+              "bytes": 9052,
+              "sha256": "155ae9c34f4920fce88dabee30a51aeb01c9c6e0dab2deb22251e104b5a4f7ba"
+            }
+          },
+          "added": [],
+          "current_count": 5839
+        }
+      }
+    },
+    {
+      "from_commit": "a97b750142857d21948a113e17cf80253c39fb2f",
+      "role": "Prospective direct owned source-loader and Tile lookup controls over the existing shared runtime. Current native-source admissions only; compilation and actual malformed loading, lazy construction and callback admission outcomes require separate execution. Historical captured suppliers and observations remain unchanged. No historical native execution or full gameplay qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1658061,
+        "sha256": "319bcd76194e39f3a38517f474881de7a9479dd9748ddf7838b5a47fb91b248c"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/building.md": {
+              "bytes": 23103,
+              "sha256": "4dba398b9d951db52021c212c623a014418f664a035c98558a3a1961a9f1395a"
+            },
+            "docs/parity.md": {
+              "bytes": 222144,
+              "sha256": "ae2ec383de2efa5d90a544998d9afac020e7b0fe349387f80e56b2ccaa427123"
+            },
+            "docs/testing.md": {
+              "bytes": 575401,
+              "sha256": "d76df06e4654aab8a1336648b4c92a4d4dbccf9c77745337cb1c9d1c4e5bf0fc"
+            },
+            "docs/world/world-acquisition-execution.md": {
+              "bytes": 6658,
+              "sha256": "baa60e3c78d2f0514c05d95efd9c198a09e61a3a08f488250a91d0e8473ef21c"
+            }
+          },
+          "added": [],
+          "current_count": 5839
+        }
+      }
+    },
+    {
+      "from_commit": "a97b750142857d21948a113e17cf80253c39fb2f",
+      "role": "Prospective direct owned source-loader and Tile lookup controls over the existing shared runtime. Current native-source admissions only; compilation and actual malformed loading, lazy construction and callback admission outcomes require separate execution. Historical captured suppliers and observations remain unchanged. No historical native execution or full gameplay qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1659560,
+        "sha256": "9cd2637ed17ac9a3c23ff6a5991452b4b33def72a74a9ecb511a758978dee9f2"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/building.md": {
+              "bytes": 24554,
+              "sha256": "a48b795d39da269bd2b73a7a97aeaa566a1540ee8f226fb5d8bc5edb6edb13f5"
+            }
+          },
+          "added": [],
+          "current_count": 5839
         }
       }
     }

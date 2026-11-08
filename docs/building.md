@@ -53,6 +53,7 @@ ctest --test-dir build --output-on-failure
 ```
 
 Use the Linux filesystem for source and build trees when validating under WSL.
+
 Source-binding tests perform many small file operations; mounted Windows sources
 can exceed their existing deadlines. See [recorded test scope](testing.md).
 
@@ -386,3 +387,40 @@ ignored local directories. Copy a world before any writable reference test.
 Current compiler/platform results and remaining graphical access limits are in
 [the resume note](status.md). Client controls, gameplay save support and hosting
 instructions will accompany actual implementations.
+
+## WSL configure search paths
+
+WSL can append Windows drive directories to PATH. CMake may then spend time
+searching those directories for missing optional Linux libraries and headers.
+A retained warm configure in this workspace spent 79.640 seconds configuring,
+including 57.177 seconds in library searches and 17.743 in header searches.
+Removing only `/mnt/<drive>/...` PATH entries from that CMake child reduced the
+configure phase to 2.246 seconds (4.539 seconds including generation and command
+overhead). All 1,827 parsed cache entries stayed identical. This measures local
+configuration search cost, not compilation, native test speed or game FPS.
+
+For native Linux tools, the following keeps other Linux PATH entries and leaves
+the shell's environment unchanged. Choose the build directory and normal CMake
+options for the intended configuration:
+
+```sh
+python3 - <<'PY'
+import os
+import re
+import subprocess
+
+build_env = os.environ.copy()
+build_env["PATH"] = ":".join(
+    entry for entry in build_env["PATH"].split(":")
+    if not re.match(r"^/mnt/[A-Za-z]/", entry)
+)
+subprocess.run(
+    ["cmake", "-S", ".", "-B", "build", "-G", "Ninja", "-DCMAKE_BUILD_TYPE=Debug"],
+    env=build_env, check=True,
+)
+subprocess.run(["cmake", "--build", "build"], env=build_env, check=True)
+PY
+```
+
+Use the normal environment for CTest and the game. This optional build invocation
+uses Linux tools rather than tools stored on the excluded Windows drives.

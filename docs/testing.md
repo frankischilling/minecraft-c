@@ -1,5 +1,40 @@
 # Test scope and reproduction
 
+## Owned loader diagnostics and Tile lookup
+
+The [query controls](world/world-acquisition-execution.md#direct-loader-errors-and-cold-tile-lookup)
+pass 424 native checks per host in seven fresh processes. Two real malformed
+source loads cover caller-error disposal and NULL output while preserving the
+selected inline diagnostic. Five real Tile lookup modes cover imported Map/cache
+results, lazy Chest construction, current ARMED/HELD refusal and a fresh alias
+scope beneath an ARMED callback. World, cache, loader, Map/list, returned holds
+and managed receiver/receipt lifetimes are checked through normal teardown.
+
+An initial fixture incorrectly applied constructor capacity 36 to NBT-imported
+Chests. Both hosts fail the same cold prefix; those callback branches receive no
+execution credit. Original client/server Code, existing native implementation and
+the final unchanged input recipes establish the correct imported capacity 27.
+Only that fixture expectation and its explicit source pins change; all other
+ownership checks remain. The production runtime is unchanged.
+
+The final nine-test selection passes Windows in 60.17 seconds and sanitized Linux
+in 25.84 seconds. Frozen broader regressions pass **Windows 103/103 in 206.96
+seconds** and **Linux 101/101 in 127.93 seconds**, without skips or unrun tests.
+Both builds and exact clang-format 18.1.3 over 2,283 files pass. Both new actual
+GCC syntax recipes pass; the sole changed lookup fixture passes again. Normal and
+optimized Python each reject 350 transport corruptions, 140 altered retained
+payloads, seven literal changes, four changed bundles and three actual whole-root
+loss/replacements; a separate control preserves the first failure. Every returned
+native child retains exact streams/capture JSON, unchanged literal inputs and
+source/product/helper/six-table guards. Only its real eight-byte session.lock
+addition is allowed.
+
+These are finite native component controls. Foreign World/joint Store, canonical
+NULL Chunk.d construction, arbitrary caller/unwind and descendant graph ownership,
+complete SL flight, whole frames and FPS remain open. Linux's two unavailable CPU
+Arrow drawing cases receive no credit. No new original JVM or visible game run
+accompanied this increment.
+
 ## Owned World acquisition and TileEntity calls
 
 The [owned query component](world/world-acquisition-execution.md) shares actual

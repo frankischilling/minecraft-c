@@ -2,8 +2,8 @@
   "scope": "Current authored real-owner loading draw/update/yield/retirement controls; native results are recorded separately for their exact tested snapshots.",
   "native_sources": {
     "CMakeLists.txt": {
-      "bytes": 342887,
-      "sha256": "aaa1803c72e337a4896fde9e7633526531cfd3656f34a8afd395817266ab30aa"
+      "bytes": 342935,
+      "sha256": "4c655b3042efc8350087a3632e53067b3a9ad9f3a66c89b2d0081360dd15b6d5"
     },
     "cmake/client_controllers.cmake": {
       "bytes": 1093,
@@ -11704,6 +11704,26 @@
     "tests/tools/world/test_kernel_execution.py": {
       "bytes": 25690,
       "sha256": "72516a6341f46c9d1031e7b55d823725c22ec37d089b43e0246abbe592400c93"
+    },
+    "cmake/tests/world_query_controls.cmake": {
+      "bytes": 3377,
+      "sha256": "3788a7ce3aecbb94b129668645f1a0016782aba7ae0bd7816c6f9d24618b36d5"
+    },
+    "tests/world/runtime/world_access/test_kernel_loader_execution.c": {
+      "bytes": 23441,
+      "sha256": "bfb1d1eba0a87b715c155901479d9eef80fb2f0990706342b7dea6ff3685c06e"
+    },
+    "tests/world/runtime/world_access/test_tile_lookup_execution.c": {
+      "bytes": 34102,
+      "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
+    },
+    "tests/tools/world/test_world_query_controls.py": {
+      "bytes": 34301,
+      "sha256": "dc997619e5d710d2734599df9c0e77ad71dd21195d5311faf86c2e0d32f079ce"
+    },
+    "tests/tools/world/world_query_inputs.py": {
+      "bytes": 4725,
+      "sha256": "877551f32b09cd29ec4c62f79a0e90ba1c12291ad01a13a977b7aa097dd41e69"
     }
   },
   "actual_source_method": {
@@ -19279,6 +19299,77 @@
           },
           "added": [],
           "current_count": 2926
+        }
+      }
+    },
+    {
+      "from_commit": "a97b750142857d21948a113e17cf80253c39fb2f",
+      "role": "Prospective direct owned source-loader and Tile lookup controls over the existing shared runtime. Current native-source admissions only; compilation and actual malformed loading, lazy construction and callback admission outcomes require separate execution. Historical captured suppliers and observations remain unchanged. No historical native execution or full gameplay qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 817363,
+        "sha256": "03bb9e653b72ab1242c01924c8f32f68602341effe27dca86db58d26bd0b1968"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 342887,
+              "sha256": "aaa1803c72e337a4896fde9e7633526531cfd3656f34a8afd395817266ab30aa"
+            }
+          },
+          "added": [
+            "cmake/tests/world_query_controls.cmake",
+            "tests/world/runtime/world_access/test_kernel_loader_execution.c",
+            "tests/world/runtime/world_access/test_tile_lookup_execution.c"
+          ],
+          "current_count": 2929
+        }
+      }
+    },
+    {
+      "from_commit": "a97b750142857d21948a113e17cf80253c39fb2f",
+      "role": "Prospective direct owned source-loader and Tile lookup controls over the existing shared runtime. Current native-source admissions only; compilation and actual malformed loading, lazy construction and callback admission outcomes require separate execution. Historical captured suppliers and observations remain unchanged. No historical native execution or full gameplay qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 819074,
+        "sha256": "efa920ee281fc823a638b8660362bb6ff1a8338d3940afb75c8639b1fb1b2461"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "cmake/tests/world_query_controls.cmake": {
+              "bytes": 716,
+              "sha256": "84430d07572bb13adcc871e406d0d13a74389803bb405ef5a13b82643c2f43b3"
+            }
+          },
+          "added": [
+            "tests/tools/world/test_world_query_controls.py",
+            "tests/tools/world/world_query_inputs.py"
+          ],
+          "current_count": 2931
+        }
+      }
+    },
+    {
+      "from_commit": "a97b750142857d21948a113e17cf80253c39fb2f",
+      "role": "Prospective direct owned source-loader and Tile lookup controls over the existing shared runtime. Current native-source admissions only; compilation and actual malformed loading, lazy construction and callback admission outcomes require separate execution. Historical captured suppliers and observations remain unchanged. No historical native execution or full gameplay qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 820516,
+        "sha256": "3116297725a7f3f8379b26fd4398c6ad791c122e36f530966c871870e92f3567"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "tests/world/runtime/world_access/test_tile_lookup_execution.c": {
+              "bytes": 33894,
+              "sha256": "0e36d7083d436394583fe324834ae72c7f7f29d103e012289406d0166dc3ad1b"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 34283,
+              "sha256": "520e78cef2e9dccfa640692418b37004e800ec2ca50c734699c90be06f5016a3"
+            }
+          },
+          "added": [],
+          "current_count": 2931
         }
       }
     }

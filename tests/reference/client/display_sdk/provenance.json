@@ -9832,6 +9832,26 @@
     "tests/tools/world/test_kernel_execution.py": {
       "bytes": 25690,
       "sha256": "72516a6341f46c9d1031e7b55d823725c22ec37d089b43e0246abbe592400c93"
+    },
+    "cmake/tests/world_query_controls.cmake": {
+      "bytes": 3377,
+      "sha256": "3788a7ce3aecbb94b129668645f1a0016782aba7ae0bd7816c6f9d24618b36d5"
+    },
+    "tests/world/runtime/world_access/test_kernel_loader_execution.c": {
+      "bytes": 23441,
+      "sha256": "bfb1d1eba0a87b715c155901479d9eef80fb2f0990706342b7dea6ff3685c06e"
+    },
+    "tests/world/runtime/world_access/test_tile_lookup_execution.c": {
+      "bytes": 34102,
+      "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
+    },
+    "tests/tools/world/test_world_query_controls.py": {
+      "bytes": 34301,
+      "sha256": "dc997619e5d710d2734599df9c0e77ad71dd21195d5311faf86c2e0d32f079ce"
+    },
+    "tests/tools/world/world_query_inputs.py": {
+      "bytes": 4725,
+      "sha256": "877551f32b09cd29ec4c62f79a0e90ba1c12291ad01a13a977b7aa097dd41e69"
     }
   },
   "authorities": {
@@ -16770,6 +16790,72 @@
           },
           "added": [],
           "current_count": 2458
+        }
+      }
+    },
+    {
+      "from_commit": "a97b750142857d21948a113e17cf80253c39fb2f",
+      "role": "Prospective direct owned source-loader and Tile lookup controls over the existing shared runtime. Current native-source admissions only; compilation and actual malformed loading, lazy construction and callback admission outcomes require separate execution. Historical captured suppliers and observations remain unchanged. No historical native execution or full gameplay qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 719663,
+        "sha256": "4180c3e9f01e0cf636a3a39f0767c7a17418113a99155f59912ae66ef600b3ab"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {},
+          "added": [
+            "cmake/tests/world_query_controls.cmake",
+            "tests/world/runtime/world_access/test_kernel_loader_execution.c",
+            "tests/world/runtime/world_access/test_tile_lookup_execution.c"
+          ],
+          "current_count": 2461
+        }
+      }
+    },
+    {
+      "from_commit": "a97b750142857d21948a113e17cf80253c39fb2f",
+      "role": "Prospective direct owned source-loader and Tile lookup controls over the existing shared runtime. Current native-source admissions only; compilation and actual malformed loading, lazy construction and callback admission outcomes require separate execution. Historical captured suppliers and observations remain unchanged. No historical native execution or full gameplay qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 721193,
+        "sha256": "0d41336956381f4be8c61a528f6c7ee5e185b0a5dd7287a79d8e06dc2e8adc08"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "cmake/tests/world_query_controls.cmake": {
+              "bytes": 716,
+              "sha256": "84430d07572bb13adcc871e406d0d13a74389803bb405ef5a13b82643c2f43b3"
+            }
+          },
+          "added": [
+            "tests/tools/world/test_world_query_controls.py",
+            "tests/tools/world/world_query_inputs.py"
+          ],
+          "current_count": 2463
+        }
+      }
+    },
+    {
+      "from_commit": "a97b750142857d21948a113e17cf80253c39fb2f",
+      "role": "Prospective direct owned source-loader and Tile lookup controls over the existing shared runtime. Current native-source admissions only; compilation and actual malformed loading, lazy construction and callback admission outcomes require separate execution. Historical captured suppliers and observations remain unchanged. No historical native execution or full gameplay qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 722633,
+        "sha256": "19e9b5bd8fcc392fea47a910ed4b29e282a99e60e225740867c0d8052f586b10"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/world/runtime/world_access/test_tile_lookup_execution.c": {
+              "bytes": 33894,
+              "sha256": "0e36d7083d436394583fe324834ae72c7f7f29d103e012289406d0166dc3ad1b"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 34283,
+              "sha256": "520e78cef2e9dccfa640692418b37004e800ec2ca50c734699c90be06f5016a3"
+            }
+          },
+          "added": [],
+          "current_count": 2463
         }
       }
     }

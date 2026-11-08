@@ -1,0 +1,255 @@
+{
+  "schema": "EXPLICIT_WORLD_QUERY_CONTROLS_BUNDLE_V1",
+  "selection": "a97:nested3+Entity2+kernel2+Tile2;loader1+lookup1-nbt-capacity-fix1",
+  "published_supplier": "a97 (Parent-provided revision label; actual bytes pinned below, no Git run)",
+  "dependencies": {
+    "sl-nested-owner-candidates-3": {
+      "bytes": 7824,
+      "sha256": "2d2690e7c9c4b5e0c492d9302f4a352e16ed06e997a1a6277e290b310a942702"
+    },
+    "sl-activation-owner-joins-1": {
+      "bytes": 10803,
+      "sha256": "068fa5279451f80317987b78730609a71dbef6cd87b61d1f83c3c77bb23cac35"
+    },
+    "sl-kernel-execution-candidates-2": {
+      "bytes": 16482,
+      "sha256": "de9a42dea6f1776cf836572a2f75b3801fb3eab3529dc25595543d6dfe40f0da"
+    },
+    "sl-tile-execution-candidates-2": {
+      "bytes": 14964,
+      "sha256": "1d49624fa1066b96ef69c4bffb1678b8ab3b07257b2da75a104d08eb9b65eea2"
+    }
+  },
+  "fixtures": {
+    "loader": {
+      "manifest": {
+        "bytes": 9115,
+        "sha256": "01e30de5a0245269259815a878ffd059768858b79b1cf11fc06bfcba93f9685b"
+      },
+      "protocol": {
+        "bytes": 1972,
+        "sha256": "fc0b553cf1b23449001bf22a95f943c053a6cc58122eab4d42f408c0548f59f5"
+      },
+      "source": "tests/world/runtime/world_access/test_kernel_loader_execution.c",
+      "source_pin": {
+        "bytes": 23441,
+        "sha256": "bfb1d1eba0a87b715c155901479d9eef80fb2f0990706342b7dea6ff3685c06e"
+      }
+    },
+    "lookup": {
+      "manifest": {
+        "bytes": 40431,
+        "sha256": "1662e2b260efd3cc5bff67768cbe5ed5c4f197abde7853147f7fc3a9251df0dc"
+      },
+      "protocol": {
+        "bytes": 3083,
+        "sha256": "4ee2be5a82fee5e27e7301cee3aff67a4d3583323b55d4fa42d296ea6c98a395"
+      },
+      "source": "tests/world/runtime/world_access/test_tile_lookup_execution.c",
+      "source_pin": {
+        "bytes": 34102,
+        "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
+      }
+    }
+  },
+  "sources": {
+    "src/entity/tick/execution.c": {
+      "bytes": 33359,
+      "sha256": "d5847a88ac1a8db50d1576f2340e17536004a39e997e28ea4f701d0fb3def3e1"
+    },
+    "src/entity/tick/execution_internal.h": {
+      "bytes": 11878,
+      "sha256": "379777c714021593f9605bf6dbfe69e35373e0c8898269583568f0b2fe8086b7"
+    },
+    "src/world/runtime/activation.c": {
+      "bytes": 19603,
+      "sha256": "84e562c66b8e477e134ab199cb91355b3a4da6205801b8b75742a6e41bacd9a6"
+    },
+    "src/world/runtime/activation_entity_execution_internal.h": {
+      "bytes": 1413,
+      "sha256": "9e8a22d52dcfabcf70ff2a8aa64f85111f5a0ecabfa190304d0881304206e460"
+    },
+    "src/world/runtime/activation_execution_internal.h": {
+      "bytes": 1752,
+      "sha256": "56057b04af9216634d6cb60fae3869255526ab39aa8ebd1e5a4d2f8f836ad300"
+    },
+    "src/world/runtime/activation_tile_execution_internal.h": {
+      "bytes": 1449,
+      "sha256": "04522902519f6cc431aacb7350b38a53e0d2d39fa1db610faee07b93aad6349b"
+    },
+    "src/world/runtime/entity_publication.c": {
+      "bytes": 45422,
+      "sha256": "9bf8670cebb46013f78f62cd014f87ff397f6b3bd7189ee3e2d70911695f8203"
+    },
+    "src/world/runtime/entity_publication_detailed_execution_internal.h": {
+      "bytes": 1167,
+      "sha256": "76aa266bb50fc5b6792f7fe0230a327e4492ca6421c2f06973adf885bad06bfa"
+    },
+    "src/world/runtime/entity_publication_execution_internal.h": {
+      "bytes": 1469,
+      "sha256": "b89d38dcb18ea233400e2776e334f671a8385bb66cbda82ad81af9ef28d397de"
+    },
+    "src/world/runtime/execution_acquisition_internal.h": {
+      "bytes": 4567,
+      "sha256": "802d97c9a859698efe6d08404edfb1d177d7854631dfd36410a4f42634e8ddc2"
+    },
+    "src/world/runtime/runtime.c": {
+      "bytes": 71947,
+      "sha256": "4e43b01f389d611486563938963f4b609f16ca1fbed6015c9a1c7e8da4eb0539"
+    },
+    "src/world/runtime/runtime_execution.c": {
+      "bytes": 8293,
+      "sha256": "2d48de6b0bd64a930a16a5d5f84cbed3757a5c17b241b38ad01770632fc5b5d5"
+    },
+    "src/world/runtime/runtime_execution_internal.h": {
+      "bytes": 5846,
+      "sha256": "3f6bd74884ce52af0fe16b83bf0be434dda0034b21af95dc5216451208bebabc"
+    },
+    "src/world/runtime/tile_entities/execution_internal.h": {
+      "bytes": 4017,
+      "sha256": "87113a203ce7c02a51683061839f96e80d318d4dbea8e2c2c7077e94c4466b9e"
+    },
+    "src/world/runtime/tile_entities/tile_entities.c": {
+      "bytes": 282762,
+      "sha256": "93d3f50d1d7e84781a0dae3e8973c285e65d1147f6775dc69271bfe1efac4747"
+    },
+    "tests/world/runtime/world_access/test_kernel_execution.c": {
+      "bytes": 25462,
+      "sha256": "b0a0cf48ee2f249c7ec3384cd9f5f03648611ba2fa7a9462480f03bf94e181f8"
+    },
+    "src/world/runtime/loading/loading.c": {
+      "bytes": 10960,
+      "sha256": "4161d869cdf7d59b51725f8602574187c3b7d6a4e9cbe0ee05ea4bfbb0735f21"
+    },
+    "src/world/runtime/construction.c": {
+      "bytes": 53522,
+      "sha256": "c142846ef528bfad90d377f9b672885793053733cbbf31e9ac7fdfef89bd982f"
+    },
+    "src/world/runtime/source_construction.c": {
+      "bytes": 14856,
+      "sha256": "5e1331ec50f8ef64ee09290c7b0c9d5ca65211b1ffa42957fed4625f5cacd05f"
+    },
+    "src/world/runtime/runtime_internal.h": {
+      "bytes": 6072,
+      "sha256": "20255320186c2fdfc2fdf3ca5d14c712b37966c5cc221db9e236ce9497aab12b"
+    },
+    "src/world/storage/source_chunk_loader.c": {
+      "bytes": 36221,
+      "sha256": "44a1d048aadb52e14e9ec18c01a97b0875c30b41b752efd2027a77b591c3ff9a"
+    },
+    "src/world/storage/source_regions.c": {
+      "bytes": 28464,
+      "sha256": "427f023f458febece5d272af15a846eb32bd08884799666d265fca0f7c8fef11"
+    },
+    "src/world/storage/files.c": {
+      "bytes": 25963,
+      "sha256": "c07e5ceadda4ba01213b409b34226d661f9779e0e9f3a634d67024b54831d666"
+    },
+    "src/world/storage/store_source.inc": {
+      "bytes": 38510,
+      "sha256": "789971109a78ca0e3ac09ef994768ea28032cace641c51364912a231b92796f3"
+    },
+    "src/storage/nbt/stream_owner.inc": {
+      "bytes": 14556,
+      "sha256": "cf41f289f6c195e24f96a160af339db52af2b0b0f5adaf68bc115912138f57c6"
+    },
+    "include/mc/world/runtime/acquisition_error.h": {
+      "bytes": 1045,
+      "sha256": "ae2437bb22228022bf1f3589941214b62500c23ca9f2b6ff3a2f62b4f88c3bf4"
+    },
+    "include/mc/world/storage/source_chunk_loader.h": {
+      "bytes": 7546,
+      "sha256": "e2564671d701c08116d2504f13a3e3e102f2f27bd14efc515e89b1f1af9ea6e9"
+    },
+    "include/mc/storage/nbt/input.h": {
+      "bytes": 5164,
+      "sha256": "6c8182e95e51764943eb8f486292aa8ab4c79b82a9b09b1c978ea9f35f66d95b"
+    },
+    "src/world/cache/acquire.c": {
+      "bytes": 17523,
+      "sha256": "d823bdbbbcc5011aa3f97e3d5e90f48d79363b5bddfe05e697e7869390311ffa"
+    },
+    "tests/world/runtime/tile_entities/test_tile_entities.c": {
+      "bytes": 59083,
+      "sha256": "55ae023dce901cab8a5cb805f878383060e57a7b22b5f9fe1df91aae1548afe6"
+    },
+    "tests/tools/world/test_source_world_construction.py": {
+      "bytes": 4807,
+      "sha256": "6f3dedb2e5aaf9b706ab440a8661238bd650278850fed8e8159583c2968addda"
+    },
+    "tests/world/runtime/world_access/test_kernel_loader_execution.c": {
+      "bytes": 23441,
+      "sha256": "bfb1d1eba0a87b715c155901479d9eef80fb2f0990706342b7dea6ff3685c06e"
+    },
+    "tests/world/runtime/world_access/test_tile_lookup_execution.c": {
+      "bytes": 34102,
+      "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
+    },
+    "cmake/tests/world_query_controls.cmake": {
+      "bytes": 3377,
+      "sha256": "3788a7ce3aecbb94b129668645f1a0016782aba7ae0bd7816c6f9d24618b36d5"
+    }
+  },
+  "helpers": {
+    "tests/tools/world/test_execution_ownership.py": {
+      "bytes": 8205,
+      "sha256": "e00db5dca070917b62c6903ef2e40c06338439c889fc58234974610417c9c2fd"
+    },
+    "tests/reference/client/statistics/support.py": {
+      "bytes": 7123,
+      "sha256": "1ac10e26456a6a8c9ba21751f49499549ec8ed322874c0d5c07be74c5fed4fa1"
+    },
+    "tests/tools/world/test_source_saving.py": {
+      "bytes": 24895,
+      "sha256": "1fc2f69d04e2ab6e5c48f9d2ebef1d9dd7de0c50a5a7278a81735b0a63edcff9"
+    },
+    "tests/tools/world/test_source_world_construction.py": {
+      "bytes": 4807,
+      "sha256": "6f3dedb2e5aaf9b706ab440a8661238bd650278850fed8e8159583c2968addda"
+    },
+    "tests/tools/world/world_query_inputs.py": {
+      "bytes": 4725,
+      "sha256": "877551f32b09cd29ec4c62f79a0e90ba1c12291ad01a13a977b7aa097dd41e69"
+    },
+    "tests/tools/world/world_query_controls_protocol.json": {
+      "bytes": 4565,
+      "sha256": "37773fe1ce8534fad724edb1b9b17a39971bb49118e80f4596de0f72dbfdb93b"
+    }
+  },
+  "inputs": {
+    "loader": [
+      "world/level.dat",
+      "world/data/idcounts.dat",
+      "world/region/r.0.0.mcr",
+      "world/preserve.bin"
+    ],
+    "lookup": [
+      "world/level.dat",
+      "world/region/r.0.0.mcr",
+      "world/preserve.bin"
+    ]
+  },
+  "only_permitted_addition": {
+    "path": "world/session.lock",
+    "bytes": 8
+  },
+  "recipe_equivalence": {
+    "string": true,
+    "tag": true,
+    "metadata": true,
+    "raw_ids": true,
+    "malformed_region": true,
+    "lookup.prepare_lazy": true
+  },
+  "source_projection": {
+    "lookup_fixture": "Strict expected physical capacity: original constructor36, NBT-read27; source runtime and all other fixture assertions unchanged.",
+    "original_source_pin": {
+      "bytes": 33894,
+      "sha256": "0e36d7083d436394583fe324834ae72c7f7f29d103e012289406d0166dc3ad1b"
+    },
+    "selected_source_pin": {
+      "bytes": 34102,
+      "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
+    }
+  }
+}

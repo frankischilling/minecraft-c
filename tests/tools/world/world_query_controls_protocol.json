@@ -1,0 +1,122 @@
+{
+  "schema": "WORLD_QUERY_CONTROLS_PROTOCOL_V1",
+  "status": "STATIC_PREDICTION_NOT_NATIVE_EXECUTION",
+  "timeout_seconds": 240,
+  "stream_limit_bytes": 1048576,
+  "argv": [
+    "EXE",
+    "MODE",
+    "FRESH_ABSOLUTE_ASCII_ROOT"
+  ],
+  "modes": {
+    "loader": [
+      "error",
+      "null-error"
+    ],
+    "lookup": [
+      "map",
+      "lazy",
+      "armed",
+      "held",
+      "nested"
+    ]
+  },
+  "supplier_protocols": {
+    "loader": {
+      "bytes": 1972,
+      "sha256": "fc0b553cf1b23449001bf22a95f943c053a6cc58122eab4d42f408c0548f59f5"
+    },
+    "lookup": {
+      "bytes": 3083,
+      "sha256": "4ee2be5a82fee5e27e7301cee3aff67a4d3583323b55d4fa42d296ea6c98a395"
+    }
+  },
+  "stdout_contract": "Exact global BEGIN, one genuine setup banner pair, ordered actual case markers, explicit lookup OPEN line, literal positive uint32 mode footer, terminal newline; only LF or CRLF",
+  "stderr_contract": "empty on PASS; every partial/red stream retained and verified",
+  "input_contract": "All authored literal bytes before bootstrap; only a new genuine world/session.lock of eight bytes may appear; full terminal snapshot mandatory after any complete before snapshot",
+  "source_outcomes": "UNEXECUTED; no predicted native check counts",
+  "scope": "Actual finite component controls, existing external legacy source graph ownership; no original JVM/full SL/foreign World-Store or arbitrary caller-unwind qualification",
+  "ordered_lines": {
+    "loader/error": [
+      "KERNEL_LOADER_BEGIN error",
+      "16 achievements",
+      "151 recipes",
+      "KERNEL_LOADER_CASE entered",
+      "KERNEL_LOADER_CASE selected",
+      "KERNEL_LOADER_CASE caller-cleared",
+      "KERNEL_LOADER_CASE popped",
+      "KERNEL_LOADER_CASE retired",
+      "PASS: <positive canonical uint32> actual kernel direct-loader checks;mode=error"
+    ],
+    "loader/null-error": [
+      "KERNEL_LOADER_BEGIN null-error",
+      "16 achievements",
+      "151 recipes",
+      "KERNEL_LOADER_CASE entered",
+      "KERNEL_LOADER_CASE selected",
+      "KERNEL_LOADER_CASE caller-cleared",
+      "KERNEL_LOADER_CASE popped",
+      "KERNEL_LOADER_CASE retired",
+      "PASS: <positive canonical uint32> actual kernel direct-loader checks;mode=null-error"
+    ],
+    "lookup/map": [
+      "TILE_LOOKUP_BEGIN schema=1 mode=map",
+      "16 achievements",
+      "151 recipes",
+      "TILE_LOOKUP_CASE cold BEGIN",
+      "TILE_LOOKUP_CASE cold END",
+      "TILE_LOOKUP_CASE cache BEGIN",
+      "TILE_LOOKUP_CASE cache END",
+      "TILE_LOOKUP_CASE unused-defining BEGIN",
+      "TILE_LOOKUP_CASE unused-defining END",
+      "TILE_LOOKUP_OPEN foreign-Store/null-Chunk-world/caller-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual Tile lookup checks;mode=map"
+    ],
+    "lookup/lazy": [
+      "TILE_LOOKUP_BEGIN schema=1 mode=lazy",
+      "16 achievements",
+      "151 recipes",
+      "TILE_LOOKUP_CASE cold BEGIN",
+      "TILE_LOOKUP_CASE cold END",
+      "TILE_LOOKUP_CASE cache BEGIN",
+      "TILE_LOOKUP_CASE cache END",
+      "TILE_LOOKUP_CASE unused-defining BEGIN",
+      "TILE_LOOKUP_CASE unused-defining END",
+      "TILE_LOOKUP_OPEN foreign-Store/null-Chunk-world/caller-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual Tile lookup checks;mode=lazy"
+    ],
+    "lookup/armed": [
+      "TILE_LOOKUP_BEGIN schema=1 mode=armed",
+      "16 achievements",
+      "151 recipes",
+      "TILE_LOOKUP_CASE cold BEGIN",
+      "TILE_LOOKUP_CASE cold END",
+      "TILE_LOOKUP_CASE callback BEGIN",
+      "TILE_LOOKUP_CASE callback END",
+      "TILE_LOOKUP_OPEN foreign-Store/null-Chunk-world/caller-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual Tile lookup checks;mode=armed"
+    ],
+    "lookup/held": [
+      "TILE_LOOKUP_BEGIN schema=1 mode=held",
+      "16 achievements",
+      "151 recipes",
+      "TILE_LOOKUP_CASE cold BEGIN",
+      "TILE_LOOKUP_CASE cold END",
+      "TILE_LOOKUP_CASE callback BEGIN",
+      "TILE_LOOKUP_CASE callback END",
+      "TILE_LOOKUP_OPEN foreign-Store/null-Chunk-world/caller-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual Tile lookup checks;mode=held"
+    ],
+    "lookup/nested": [
+      "TILE_LOOKUP_BEGIN schema=1 mode=nested",
+      "16 achievements",
+      "151 recipes",
+      "TILE_LOOKUP_CASE cold BEGIN",
+      "TILE_LOOKUP_CASE cold END",
+      "TILE_LOOKUP_CASE callback BEGIN",
+      "TILE_LOOKUP_CASE callback END",
+      "TILE_LOOKUP_OPEN foreign-Store/null-Chunk-world/caller-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual Tile lookup checks;mode=nested"
+    ]
+  }
+}

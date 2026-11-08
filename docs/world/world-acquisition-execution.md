@@ -99,12 +99,70 @@ ctest --test-dir <build> -C Release --output-on-failure -R "^(world\.kernel_exec
 
 For Linux Debug, omit the Windows configuration argument.
 
+## Direct loader errors and cold Tile lookup
+
+Two [loader controls](../../tests/world/runtime/world_access/test_kernel_loader_execution.c)
+perform one actual owned get each over a complete authored MCR with non-Compound
+NBT. The ordinary error-output case passes 49 checks; the NULL-output case passes
+48. Each selects the kernel's actual protected loader copy before inspecting the
+known producer. The full caller frame and direct projection match the returned
+failure. Discarding the caller diagnostic, rejecting stale generation tokens,
+popping the failed scope and attempting BUSY World retirement preserve the inline
+copy until checked execution retirement. There is no manually reserved attempt,
+extra getter or outcome supplied after failure. No Chunk was published, so cleanup
+uses the actual empty descriptor/World path and normal source-region flush.
+
+Five [Tile lookup controls](../../tests/world/runtime/world_access/test_tile_lookup_execution.c)
+pass 327 checks: 62 for cold imported-Map lookup, 97 for real lazy construction,
+and 56 each for ARMED refusal, HELD refusal and a fresh nested alias occurrence.
+The lazy input authors one Chest Block byte before bootstrap while leaving its
+TileEntities list empty. The actual supported factory, constructor, World.set
+and Map reread produce the returned Chest. Existing-Map cache calls with NULL
+unused defining borrows do not invoke a factory or preheat another namespace.
+
+The source's [Chest capacity distinction](tile-entities.md#objects-and-shared-classes)
+is preserved: lazy construction has 36 physical slots; NBT import replaces that
+array with 27. The first fixture incorrectly required 36 in both cases and failed
+the common imported prefix on both hosts. Original client/server Code and the
+existing native bodies confirm the distinction. The corrected fixture keeps
+every other Map/list/World/coordinate/ownership check, including at least three real
+holds. Those initial failures provide no callback-admission execution credit.
+
+Actual World-dirty callbacks exercise the current ARMED and HELD nodes. The HELD
+case genuinely removes its receiver and returns a managed receipt; producer and
+receipt retirement remain BUSY until the protected right releases. Lookup refuses
+at the real early admission operation before source prefix work. The nested case
+pushes a distinct alias B occurrence beneath ARMED A, performs its real cached
+lookup, consumes the returned hold and closes B without disturbing A. It does not
+pretend to test foreign World/Store ownership.
+
+The [common runner](../../tests/tools/world/test_world_query_controls.py) uses an
+[explicit source bundle](../../tests/tools/world/world_query_controls_bundle.json)
+and [deferred input recipes](../../tests/tools/world/world_query_inputs.py).
+All seven processes have fresh controlled ASCII roots and retained exact stdout,
+stderr and typed capture JSON. Full source/product/helper/six-table guards and
+all authored files remain unchanged; only the genuine eight-byte session.lock
+addition is allowed. Whole-root loss still fails the terminal check. Normal and
+optimized Python each reject 350 corrupt transports, 140 retained payload
+changes, seven literal changes, four changed bundles and three real directory
+loss/replacements, while preserving the first failure.
+
+These nine CTests pass Windows in 60.17 seconds and sanitized Linux in 25.84
+seconds, with 424 native checks per host. Broader frozen regressions pass Windows
+103/103 in 206.96 seconds and Linux 101/101 in 127.93 seconds, without skipped or
+unrun tests. Both builds, exact formatting of 2,283 files and GCC syntax for both
+new C units pass; the sole changed lookup fixture passes its recipe again.
+Production runtime bodies remain byte-identical to the earlier component.
+
+```text
+ctest --test-dir <build> -C Release --output-on-failure -R "^(world\.(kernel_loader_execution_(error|null-error)|tile_lookup_execution_(map|lazy|armed|held|nested))|tools\.world_query_controls_(normal|optimized))$"
+```
+
 ## Remaining composition
 
-The finite kernel fixture enters Tile Map registration, not the separate cold
-owned Tile lookup/lazy construction chain or a malformed source load through the
-new kernel entry. Those routes need their own runtime controls. Loading/import,
-generation/population and captured-provider descendants retain an explicit
+The finite query controls cover direct malformed loading and cold owned Tile
+lookup/lazy construction through their actual entered bodies. Loading/import,
+generation/population and captured-provider descendants still retain an explicit
 external caller graph lifetime contract. General caller unwind propagation,
 foreign A-query/Chunk.d B joint Store teardown, complete Arrow flight, pickup and
 World-tick dispatch remain unfinished. No new original JVM, visible game,
