@@ -1,7 +1,9 @@
 #include "../chunk/object_internal.h"
+#include "activation_execution_internal.h"
 #include "activation_internal.h"
 
 #include "construction_internal.h"
+#include "entity_publication_execution_internal.h"
 #include "entity_publication_internal.h"
 #include "mc/world/runtime/tile_entities/tile_entities.h"
 #include "runtime_internal.h"
@@ -91,33 +93,98 @@ mc_world_runtime_register_chunk_tile_entities(mc_world_chunk *chunk,
     return status == MC_WORLD_STORAGE_OK ? completed(error) : status;
 }
 
-mc_world_storage_status mc_world_runtime_register_chunk_entities(mc_world_chunk *chunk,
-                                                                 size_t slice,
-                                                                 mc_world_activation_error *error) {
+/* Native checked scope coordination only. Source failure status/cause/typed
+ * batch prefix has already been selected by the one actual entered body and
+ * remains primary if this close also refuses. B stays in the context's exact
+ * current slot on refusal; callers retry only pop, never this Source body. */
+static mc_world_storage_status close_entity_scope(mc_entity_tick_execution *execution,
+                                                  const mc_entity_tick_execution_world_token *token,
+                                                  mc_world_storage_status source_status,
+                                                  mc_world_activation_error *error) {
+    if (execution == NULL)
+        return source_status;
+    const mc_world_storage_status status =
+        mc_entity_tick_execution_pop_world(execution, token, source_status != MC_WORLD_STORAGE_OK);
+    if (status == MC_WORLD_STORAGE_OK || source_status != MC_WORLD_STORAGE_OK)
+        return source_status;
+    /* Native layer attribution. Detailed current admission/cleanup remains in
+     * execution; do not choose an old neutral status by matching its number. */
+    return result(
+        error, NULL, 0, 0,
+        (mc_world_storage_error){status, "Chunk Entity activation owned scope cleanup", 0});
+}
+
+static mc_world_storage_status
+register_chunk_entities_run(mc_world_chunk *chunk, size_t slice, mc_world_activation_error *error,
+                            mc_entity_tick_execution *execution,
+                            mc_entity_tick_execution_site receiver_site) {
+    if (execution != NULL &&
+        (execution->identity != execution || execution->phase != MC_ENTITY_TICK_EXECUTION_OPEN)) {
+        const mc_world_storage_status status = execution->identity != execution
+                                                   ? MC_WORLD_STORAGE_INVALID_ARGUMENT
+                                                   : MC_WORLD_STORAGE_BUSY;
+        execution->admission = (mc_entity_tick_execution_error){
+            status, "Chunk Entity activation execution owner admission", execution->site};
+        return result(error, NULL, 0, 0,
+                      (mc_world_storage_error){
+                          status, "Chunk Entity activation execution owner admission", 0});
+    }
     mc_world_chunk_fields fields;
     mc_world_storage_status status = fields_get(chunk, &fields, error);
     if (status != MC_WORLD_STORAGE_OK)
         return status;
+    /* Actual nullable d33 is evaluated BEFORE m/slice41. Only native ownership
+     * is acquired here; NULL World invocation remains delayed until42. */
+    mc_world_runtime *world = fields.d;
+    mc_entity_tick_execution_world_token token = {0};
+    if (execution != NULL) {
+        status = mc_entity_tick_execution_push_world(execution, world, receiver_site, &token);
+        if (status != MC_WORLD_STORAGE_OK)
+            return result(error, NULL, 0, 0,
+                          (mc_world_storage_error){
+                              status, "Chunk Entity activation evaluated World ownership", 0});
+    }
     const mc_world_chunk_entity_list *source;
     status = mc_world_chunk_slice_at(fields.m, slice, &source);
-    if (status != MC_WORLD_STORAGE_OK)
-        return result(error, NULL, 41, 0,
-                      (mc_world_storage_error){status, "Chunk registration entity slice", 0});
-    mc_world_runtime *world = fields.d;
+    if (status != MC_WORLD_STORAGE_OK) {
+        status = result(error, NULL, 41, 0,
+                        (mc_world_storage_error){status, "Chunk registration entity slice", 0});
+        return close_entity_scope(execution, &token, status, error);
+    }
     status = enter_world(world, 42, error);
     if (status != MC_WORLD_STORAGE_OK)
-        return status;
+        return close_entity_scope(execution, &token, status, error);
     /* b1/addAll5 completes before the subsequent live input size15. A NULL
      * slice is evaluated successfully at41 and fails only inside addAll. */
     mc_world_entity_batch_error detail = mc_world_entity_batch_empty_error();
-    status = mc_world_runtime_entity_batch_held(world, source, false, &detail);
+    status = execution == NULL ? mc_world_runtime_entity_batch_held(world, source, false, &detail)
+                               : mc_world_runtime_entity_batch_held_in_execution(
+                                     execution, world, source, false, &detail);
     if (status != MC_WORLD_STORAGE_OK) {
         result(error, world, 42, detail.publication.bytecode, detail.publication.cause);
         if (error != NULL)
             error->batch = detail;
     }
     mc_world_runtime_call_leave(world);
+    status = close_entity_scope(execution, &token, status, error);
     return status == MC_WORLD_STORAGE_OK ? completed(error) : status;
+}
+
+mc_world_storage_status mc_world_runtime_register_chunk_entities(mc_world_chunk *chunk,
+                                                                 size_t slice,
+                                                                 mc_world_activation_error *error) {
+    return register_chunk_entities_run(chunk, slice, error, NULL,
+                                       (mc_entity_tick_execution_site){NULL, NULL, NULL, -1});
+}
+
+mc_world_storage_status mc_world_runtime_register_chunk_entities_in_execution(
+    mc_entity_tick_execution *execution, mc_world_chunk *chunk, size_t slice,
+    mc_entity_tick_execution_site evaluated_receiver_site, mc_world_activation_error *error) {
+    if (execution == NULL)
+        return result(error, NULL, 0, 0,
+                      (mc_world_storage_error){MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "Chunk Entity activation execution is required", 0});
+    return register_chunk_entities_run(chunk, slice, error, execution, evaluated_receiver_site);
 }
 
 mc_world_storage_status

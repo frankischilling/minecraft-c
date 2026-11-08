@@ -1,5 +1,28 @@
 # Test scope and reproduction
 
+## Nested World ownership and Entity activation
+
+The [execution component](world/world-execution.md) uses stable fixed World and
+lease slots, exact generation tokens and an entered Entity activation body
+shared with legacy calls. No Entity field or public diagnostic layout grows.
+Both hosts pass 181 nested-owner checks, 310 actual activation checks across
+twelve cases, 76 real source-loader checks and 47 actual source-load/cache
+checks. Normal and optimized Python each reject 173 changed transports, seven
+literal input maps and 96 missing or altered retained captures.
+
+Actual controls first fail after genuine cleanup with a held callback or copied
+loader still current. An intermediate fix then fails the genuinely reached
+malformed-held branch. The final owner passes the same fixture/controller bytes
+on both hosts. Initial fixture compiler failures remain retained; strict flags
+stay enabled. Native callback and cleanup failures preserve their distinct causes.
+
+Frozen regressions pass **Windows 88/88 in 121.08 seconds** and **sanitized Linux
+86/86 in 91.19 seconds**, without skips or unrun tests. Both builds pass. Exact
+clang-format 18.1.3 checks 2,274 files; nine actual Linux compilation recipes
+pass GCC syntax checks. Linux's two unavailable CPU Arrow drawing cases receive
+no credit. Complete kernel/TileEntity caller joins, SL flight, returned frames,
+original audiovisual equality and sustained FPS remain unfinished or unqualified.
+
 ## Protected World callback ownership
 
 The [ownership component](world/world-access-ownership.md) transfers an actual

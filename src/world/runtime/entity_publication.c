@@ -15,6 +15,7 @@
 #include "chunk_provider_internal.h"
 #include "construction_internal.h"
 #include "dedicated/entity_index.h"
+#include "entity_publication_execution_internal.h"
 #include "entity_publication_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
@@ -266,7 +267,9 @@ static bool append_entity(mc_world_runtime *world, mc_entity *entity,
 }
 
 static bool observe_base_entity_at(mc_world_runtime *world, mc_entity *entity,
-                                   mc_world_entity_error *frame, unsigned int caller_bytecode) {
+                                   mc_world_entity_error *frame, unsigned int caller_bytecode,
+                                   mc_entity_tick_execution *execution,
+                                   mc_world_access_failure_lease *lease) {
     frame->bytecode = caller_bytecode;
     for (size_t index = 0;; ++index) {
         mc_world_access *world_access = NULL;
@@ -293,8 +296,17 @@ static bool observe_base_entity_at(mc_world_runtime *world, mc_entity *entity,
                 return entity_fail(frame, ownership_status(held), frame->entity.operation);
             }
         }
-        const mc_world_storage_status status = mc_world_access_call_entity_added(
-            world_access, world, entity, &cause, &frame->world_access_failure);
+        const mc_world_storage_status status =
+            execution == NULL
+                ? mc_world_access_call_entity_added(world_access, world, entity, &cause,
+                                                    &frame->world_access_failure)
+                : mc_world_access_call_entity_added_with_lease(
+                      &world_access, world, entity, lease, &cause, &frame->world_access_failure);
+        if (status != MC_WORLD_STORAGE_OK && execution != NULL &&
+            mc_entity_tick_execution_capture_receipt(execution, &frame->world_access_failure) !=
+                MC_WORLD_STORAGE_OK &&
+            execution->capture_pending)
+            frame->world_access_failure = (mc_world_access_failure){0};
         mc_entity_release(entity);
         mc_world_access_release_held(world_access);
         if (status != MC_WORLD_STORAGE_OK)
@@ -305,8 +317,10 @@ static bool observe_base_entity_at(mc_world_runtime *world, mc_entity *entity,
 }
 
 static bool observe_entity_at(mc_world_runtime *world, mc_entity *entity,
-                              mc_world_entity_error *frame, unsigned int caller_bytecode) {
-    if (!observe_base_entity_at(world, entity, frame, caller_bytecode))
+                              mc_world_entity_error *frame, unsigned int caller_bytecode,
+                              mc_entity_tick_execution *execution,
+                              mc_world_access_failure_lease *lease) {
+    if (!observe_base_entity_at(world, entity, frame, caller_bytecode, execution, lease))
         return false;
     if (world->construction.entry != MC_WORLD_RUNTIME_SERVER_DEDICATED)
         return true;
@@ -453,10 +467,11 @@ failed:
     return false;
 }
 
-mc_world_storage_status mc_world_runtime_entity_batch_held(mc_world_runtime *world,
-                                                           const mc_world_chunk_entity_list *source,
-                                                           bool deferred,
-                                                           mc_world_entity_batch_error *error) {
+static mc_world_storage_status entity_batch_run(mc_world_runtime *world,
+                                                const mc_world_chunk_entity_list *source,
+                                                bool deferred, mc_world_entity_batch_error *error,
+                                                mc_entity_tick_execution *execution,
+                                                mc_world_access_failure_lease *lease) {
     mc_world_entity_batch_error frame;
     mc_world_entity_batch_error_init(&frame);
     bool complete = false;
@@ -491,7 +506,7 @@ mc_world_storage_status mc_world_runtime_entity_batch_held(mc_world_runtime *wor
             }
             /* Source cast31 accepts actual typed Entity/NULL; the dedicated
              * override reads its ID only after the base WorldAccess completes. */
-            if (!observe_entity_at(world, entity, &frame.publication, 34)) {
+            if (!observe_entity_at(world, entity, &frame.publication, 34, execution, lease)) {
                 complete = false;
                 break;
             }
@@ -502,6 +517,35 @@ mc_world_storage_status mc_world_runtime_entity_batch_held(mc_world_runtime *wor
     if (error != NULL)
         *error = frame;
     return frame.publication.status;
+}
+
+mc_world_storage_status mc_world_runtime_entity_batch_held(mc_world_runtime *world,
+                                                           const mc_world_chunk_entity_list *source,
+                                                           bool deferred,
+                                                           mc_world_entity_batch_error *error) {
+    return entity_batch_run(world, source, deferred, error, NULL, NULL);
+}
+
+mc_world_storage_status mc_world_runtime_entity_batch_held_in_execution(
+    mc_entity_tick_execution *execution, mc_world_runtime *world,
+    const mc_world_chunk_entity_list *source, bool deferred, mc_world_entity_batch_error *error) {
+    mc_world_access_failure_lease *lease = NULL;
+    mc_world_storage_status status = mc_world_execution_child_lease(execution, world, &lease);
+    if (status == MC_WORLD_STORAGE_OK && world != NULL && world->active_calls == 0) {
+        status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        execution->admission = (mc_entity_tick_execution_error){
+            status, "World Entity batch caller is not entered", execution->site};
+    }
+    if (status != MC_WORLD_STORAGE_OK) {
+        if (error != NULL) {
+            mc_world_entity_batch_error_init(error);
+            (void)entity_fail(&error->publication, status,
+                              execution == NULL ? "World Entity batch execution is required"
+                                                : execution->admission.operation);
+        }
+        return status;
+    }
+    return entity_batch_run(world, source, deferred, error, execution, lease);
 }
 
 mc_world_storage_status mc_world_runtime_entity_by_id(mc_world_runtime *world, int32_t id,
@@ -752,7 +796,7 @@ static bool insert_entity(mc_world_runtime *world, mc_entity *entity, bool *valu
         return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                            "World Entity acquired Chunk receiver");
     if (!add_to_chunk(world, state, entity, frame) || !append_entity(world, entity, frame) ||
-        !observe_entity_at(world, entity, frame, 103))
+        !observe_entity_at(world, entity, frame, 103, NULL, NULL))
         return false;
     *value = true;
     return true;

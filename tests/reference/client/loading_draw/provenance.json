@@ -2,8 +2,8 @@
   "scope": "Current authored real-owner loading draw/update/yield/retirement controls; native results are recorded separately for their exact tested snapshots.",
   "native_sources": {
     "CMakeLists.txt": {
-      "bytes": 342745,
-      "sha256": "815142d58e5df4bc5788d07d13e03ba7bde984a7505c4ac5cc1db7fd82dc830c"
+      "bytes": 342795,
+      "sha256": "25869713b015b93fb8ec05728fa6465a57edc4efbba579789c7069feb62c8281"
     },
     "cmake/client_controllers.cmake": {
       "bytes": 1093,
@@ -3106,8 +3106,8 @@
       "sha256": "f0a5967dda1f6a44f29860b1637c2317c3a2933fae0f105b64e6fa5027cd381d"
     },
     "src/world/runtime/activation.c": {
-      "bytes": 8399,
-      "sha256": "81170400f1cbaa2fa903d3d0695756accae5c24cee7b9bc4eea22344c65b218b"
+      "bytes": 12479,
+      "sha256": "a1c7e8744754318d15a0d127306ad23d6a513bd7e6b5858373835f315c0fdac5"
     },
     "src/world/runtime/activation_internal.h": {
       "bytes": 2195,
@@ -3194,8 +3194,8 @@
       "sha256": "f9b0dadeeb5dddffc82730c07bacf794fc3c5baf02fead2113f4284c45da8939"
     },
     "src/world/runtime/entity_publication.c": {
-      "bytes": 40516,
-      "sha256": "2974b15ed6277b5410edde53fd4fc453abcff052ba6ed3d5767a5e5bc7e870a1"
+      "bytes": 43121,
+      "sha256": "2df15e84c6d33930f5e27e342ef20f20474e8b8a43f13e7a61463526aff768a4"
     },
     "src/world/runtime/entity_publication_internal.h": {
       "bytes": 3048,
@@ -11606,12 +11606,12 @@
       "sha256": "6bf1d0c806c19fad9e53daaf34b4018115b3edd987005991e36cd6304740171e"
     },
     "src/entity/tick/execution.c": {
-      "bytes": 16390,
-      "sha256": "5eee267ec7b46a78946371ba20adae2b5204c8b2f3ec78696b3f9b35899dae2a"
+      "bytes": 33359,
+      "sha256": "d5847a88ac1a8db50d1576f2340e17536004a39e997e28ea4f701d0fb3def3e1"
     },
     "src/entity/tick/execution_internal.h": {
-      "bytes": 6066,
-      "sha256": "363fe58684c713cf26d5b6645c5ba31925d1b7a5abb6c8162a7d41b092681b56"
+      "bytes": 11878,
+      "sha256": "379777c714021593f9605bf6dbfe69e35373e0c8898269583568f0b2fe8086b7"
     },
     "src/world/runtime/world_access_lease_internal.h": {
       "bytes": 6338,
@@ -11632,6 +11632,42 @@
     "tests/world/runtime/world_access/test_execution_children.c": {
       "bytes": 44522,
       "sha256": "c85c6a9cd276bff5d61f3d8d2a19cf8d85a68547b13903f56052f651573cc2af"
+    },
+    "src/world/runtime/activation_execution_internal.h": {
+      "bytes": 1752,
+      "sha256": "56057b04af9216634d6cb60fae3869255526ab39aa8ebd1e5a4d2f8f836ad300"
+    },
+    "src/world/runtime/entity_publication_execution_internal.h": {
+      "bytes": 1469,
+      "sha256": "b89d38dcb18ea233400e2776e334f671a8385bb66cbda82ad81af9ef28d397de"
+    },
+    "src/world/runtime/execution_acquisition_internal.h": {
+      "bytes": 4567,
+      "sha256": "802d97c9a859698efe6d08404edfb1d177d7854631dfd36410a4f42634e8ddc2"
+    },
+    "cmake/tests/world_execution_nested.cmake": {
+      "bytes": 3832,
+      "sha256": "cec7308f161601d37de5a5840d9a8601ef744a09be7ebe8fa19829386a172a64"
+    },
+    "tests/tools/world/test_execution_nested.py": {
+      "bytes": 29429,
+      "sha256": "30c114d0f3c9edbe0fb22efcaab0094c8be160d3cf0f075b1616333732b83fba"
+    },
+    "tests/world/runtime/world_access/test_activation_execution.c": {
+      "bytes": 30628,
+      "sha256": "2f1cfbda3cd6a42dd593a70adb3e5a3a734230cd0f748b7081a34a245f4f3a3c"
+    },
+    "tests/world/runtime/world_access/test_execution_nested.c": {
+      "bytes": 48707,
+      "sha256": "5f2310c62a92f7a2f7f90b34a7459fe2889bbdaf1e7b88f9848b9a0f6270746b"
+    },
+    "tests/world/runtime/world_access/test_execution_nested_loader.c": {
+      "bytes": 17767,
+      "sha256": "a0951d0f655c79a474fc1b800251fb93c953ee639019000db3ea80efaf6ef9fd"
+    },
+    "tests/world/runtime/world_access/test_execution_nested_success.c": {
+      "bytes": 12830,
+      "sha256": "3b3ae634d54610a99e8ee3bddb9fc5e2f36fb64242dd8d7142133b280729addb"
     }
   },
   "actual_source_method": {
@@ -18916,6 +18952,137 @@
             "tests/world/runtime/world_access/test_execution_children.c"
           ],
           "current_count": 2908
+        }
+      }
+    },
+    {
+      "from_commit": "49972297b013b4c364b3ca9ad889d1e01f6fb8fb",
+      "role": "Prospective fixed nested evaluated-World slots, selected loader ownership and same-body Entity activation/publication joins. Native current-source admissions only; actual red/green and remaining kernel, TileEntity projection and complete Arrow flight qualification stay separate. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 799460,
+        "sha256": "f38f85d7bbfecad726eb05e0d62d1d7b55f567050cc756cb26ecac2a8f69297e"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "src/world/runtime/activation.c": {
+              "bytes": 8399,
+              "sha256": "81170400f1cbaa2fa903d3d0695756accae5c24cee7b9bc4eea22344c65b218b"
+            },
+            "src/world/runtime/entity_publication.c": {
+              "bytes": 40516,
+              "sha256": "2974b15ed6277b5410edde53fd4fc453abcff052ba6ed3d5767a5e5bc7e870a1"
+            },
+            "src/entity/tick/execution.c": {
+              "bytes": 16390,
+              "sha256": "5eee267ec7b46a78946371ba20adae2b5204c8b2f3ec78696b3f9b35899dae2a"
+            },
+            "src/entity/tick/execution_internal.h": {
+              "bytes": 6066,
+              "sha256": "363fe58684c713cf26d5b6645c5ba31925d1b7a5abb6c8162a7d41b092681b56"
+            }
+          },
+          "added": [
+            "src/world/runtime/activation_execution_internal.h",
+            "src/world/runtime/entity_publication_execution_internal.h",
+            "src/world/runtime/execution_acquisition_internal.h"
+          ],
+          "current_count": 2911
+        }
+      }
+    },
+    {
+      "from_commit": "49972297b013b4c364b3ca9ad889d1e01f6fb8fb",
+      "role": "Prospective fixed nested evaluated-World slots, selected loader ownership and same-body Entity activation/publication joins. Native current-source admissions only; actual red/green and remaining kernel, TileEntity projection and complete Arrow flight qualification stay separate. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 801785,
+        "sha256": "c5ace1b88712fdd4f57ab33f36b34e56c9f0ac3db81d9c385f4280011a8ca41b"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 342745,
+              "sha256": "815142d58e5df4bc5788d07d13e03ba7bde984a7505c4ac5cc1db7fd82dc830c"
+            }
+          },
+          "added": [
+            "cmake/tests/world_execution_nested.cmake",
+            "tests/tools/world/test_execution_nested.py",
+            "tests/world/runtime/world_access/test_activation_execution.c",
+            "tests/world/runtime/world_access/test_execution_nested.c",
+            "tests/world/runtime/world_access/test_execution_nested_loader.c",
+            "tests/world/runtime/world_access/test_execution_nested_success.c"
+          ],
+          "current_count": 2917
+        }
+      }
+    },
+    {
+      "from_commit": "49972297b013b4c364b3ca9ad889d1e01f6fb8fb",
+      "role": "Prospective fixed nested evaluated-World slots, selected loader ownership and same-body Entity activation/publication joins. Native current-source admissions only; actual red/green and remaining kernel, TileEntity projection and complete Arrow flight qualification stay separate. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 804286,
+        "sha256": "698684ed9b3767f6faee021dc48eeaf2b8e1aa46cfa8da28dd5acd7917ee7ed0"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "tests/tools/world/test_execution_nested.py": {
+              "bytes": 29425,
+              "sha256": "735602d82e4cac3e0808ef30c711c0f9abdc9a5e5869190342a000abb3d5f784"
+            },
+            "tests/world/runtime/world_access/test_activation_execution.c": {
+              "bytes": 30587,
+              "sha256": "38bf3a952b6c6ac23b037aea910fc358ab8a3606b2b8a9e30c255ec1b9465a4b"
+            },
+            "tests/world/runtime/world_access/test_execution_nested.c": {
+              "bytes": 48270,
+              "sha256": "e4f169f7473f37f3ba999bc00f23ed73844789d79584d097ab8ab407fdb53b47"
+            }
+          },
+          "added": [],
+          "current_count": 2917
+        }
+      }
+    },
+    {
+      "from_commit": "49972297b013b4c364b3ca9ad889d1e01f6fb8fb",
+      "role": "Prospective fixed nested evaluated-World slots, selected loader ownership and same-body Entity activation/publication joins. Native current-source admissions only; actual red/green and remaining kernel, TileEntity projection and complete Arrow flight qualification stay separate. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 805751,
+        "sha256": "2b81204993895a34d23f6c7e058b64a45a5638047379efc632a1b61c8b386cc2"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "src/entity/tick/execution.c": {
+              "bytes": 31855,
+              "sha256": "b34ac863fbb122d5bf7e3d07cd3f94d352b6045fd68e0a50d3d2c7ffb77ee571"
+            }
+          },
+          "added": [],
+          "current_count": 2917
+        }
+      }
+    },
+    {
+      "from_commit": "49972297b013b4c364b3ca9ad889d1e01f6fb8fb",
+      "role": "Prospective fixed nested evaluated-World slots, selected loader ownership and same-body Entity activation/publication joins. Native current-source admissions only; actual red/green and remaining kernel, TileEntity projection and complete Arrow flight qualification stay separate. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 806777,
+        "sha256": "af8b17521c304df1883cd72417213c3f617705df79f0b38f34766bc0d856a931"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "src/entity/tick/execution.c": {
+              "bytes": 32804,
+              "sha256": "9cbb271e01a8cb4dc3ee30f8bacdfebe467ae0f77f55170268f9faa6b19e24aa"
+            }
+          },
+          "added": [],
+          "current_count": 2917
         }
       }
     }

@@ -24,8 +24,10 @@ their unowned null-reference envelope. Success and legacy paths reuse one body.
 The caller clears every expired typed borrow before checked lease release and
 keeps actual effect work alive until its own retirement. Native structural
 refusal consumes no held right. The owner reserves storage for selected loader copies and producer diagnostics;
-the loader acquisition and forwarding callers remain unfinished. The current owner supports a single evaluated
-World scope; it does not close the nested acquisition/activation joins.
+the loader acquisition and forwarding callers remain unfinished. The
+[nested owner and entered Entity activation component](world-execution.md)
+now extend the single-scope checkpoint described here. Full acquiring/TileEntity
+caller composition remains unfinished.
 
 An actual callback reentry control first fails the prospective owner on both
 hosts at its compound scope invariant, then passes the unchanged fixture after
@@ -96,7 +98,7 @@ the production owner changed while the tested fixture stayed byte-identical.
 ## Remaining integration
 
 Remaining work includes the complete Arrow parent, six further direct children,
-owned inherited base/effect paths, stable nested evaluated Worlds and selected
-loader forwarding before lossy TileEntity projections. Joint Store teardown for
+owned inherited base/effect paths and selected loader forwarding through complete
+nested acquiring callers before lossy TileEntity projections. Joint Store teardown for
 a coordinator/Chunk.d mismatch is unqualified. Pickup, natural encounters,
 original audiovisual/game-frame equality and sustained FPS remain unfinished.
