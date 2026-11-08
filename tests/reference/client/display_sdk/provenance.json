@@ -570,8 +570,8 @@
       "sha256": "ae2437bb22228022bf1f3589941214b62500c23ca9f2b6ff3a2f62b4f88c3bf4"
     },
     "include/mc/world/runtime/blocks.h": {
-      "bytes": 9908,
-      "sha256": "084970104c0bf18b945bd13e32722a266b129b585e75830d6dc65107ddd8278c"
+      "bytes": 10137,
+      "sha256": "f5cde068d5994487cf38d5546ab92c6ffe3c0a5b92989c43d3103ec5f0f978a2"
     },
     "include/mc/world/runtime/collision/boxes.h": {
       "bytes": 3060,
@@ -1594,16 +1594,16 @@
       "sha256": "df82a84481ba16f4e4d47d6409140a4b6a70ec11d9794e0c8481d3987649e09e"
     },
     "src/entity/construction_internal.h": {
-      "bytes": 4636,
-      "sha256": "6ed508db90a7951f7d4e910ba2c2a6b81c85e1d9f28298e066347705200c5e2a"
+      "bytes": 4643,
+      "sha256": "08eb54324ac75acec97dbdbf68c231b63541841e6bbae2e1a8aedc1500b220f1"
     },
     "src/entity/entity_internal.h": {
       "bytes": 5035,
       "sha256": "5898f91eac2f6d83e4cafce4f0ecf7a3de4cfc0bbe66010eefa079400573dfd1"
     },
     "src/entity/player/construction.c": {
-      "bytes": 18768,
-      "sha256": "0dcd44dd256db6758ffbd46d5546b3828831c2e277f6667235c6e5490a8d0aea"
+      "bytes": 18894,
+      "sha256": "2676072377061533ab34bcfcade65d7ad1c8cc46a0556faa2b5d9983c85afe80"
     },
     "src/entity/player/nbt_internal.h": {
       "bytes": 3006,
@@ -1726,8 +1726,8 @@
       "sha256": "0a975f1f7116c54687f3f1e2af79ef87319118c43b3caeefa1236eedc7793da4"
     },
     "src/world/runtime/acquisition_internal.h": {
-      "bytes": 2315,
-      "sha256": "e653a67149f0d119488b0f3cd15255273e45fed33a41fb82990585770b271996"
+      "bytes": 2907,
+      "sha256": "f0a5967dda1f6a44f29860b1637c2317c3a2933fae0f105b64e6fa5027cd381d"
     },
     "src/world/runtime/runtime_internal.h": {
       "bytes": 6072,
@@ -2350,12 +2350,12 @@
       "sha256": "f94228a30a9409f9df8756c8e796d0a37a6aa23a1066799ac1b1f2c966e8622b"
     },
     "src/client/runtime/menu_loop.c": {
-      "bytes": 65088,
-      "sha256": "f2bc96dde7ffb73cf9c11192b28bef566a0c37d7fc1cc81fb916b4eb9fb4ceb0"
+      "bytes": 65625,
+      "sha256": "dffe6f57aebd5b6a2b475600e5c1d00c539912e4f0387995829f841aae08369c"
     },
     "src/client/runtime/menu_loop.h": {
-      "bytes": 7459,
-      "sha256": "6e59199fb1c3e453aa6fda14cbb9d4fb503156d6c7c5d55c86d173cc7ee19197"
+      "bytes": 7607,
+      "sha256": "525e557d43121276513c0cfae70ceb7ab6c12a04d7b3e0155c039d5816f433dc"
     },
     "src/client/texture_packs/image_io.h": {
       "bytes": 482,
@@ -2570,8 +2570,8 @@
       "sha256": "197d511c00578e1d840d862f07ab37dc420840b70e1cdc3c5284f7d3b3497644"
     },
     "src/world/runtime/construction_internal.h": {
-      "bytes": 1654,
-      "sha256": "17cb5fc32ec5dc31fc4b2e726e7641496969d30c1a4d9f6796687a0c82e6fe17"
+      "bytes": 1738,
+      "sha256": "347e502541f1c4785db4f8545c5582b86e6c7f829fa34cdcb24e2cc4016b492e"
     },
     "src/world/runtime/source_construction.c": {
       "bytes": 14856,
@@ -2774,8 +2774,8 @@
       "sha256": "619946b5733bc9ba5dc95f880e115a07e05d6592fc4840e1501fc1458bec5396"
     },
     "src/world/runtime/world_access_internal.h": {
-      "bytes": 7348,
-      "sha256": "7e763cc2f8b3b394eed69a2d80ae1cca2f482d040df38c63b86e9f7568bfe51e"
+      "bytes": 7579,
+      "sha256": "2f59968df83970a3db57d604f16ec93d451d12c1ab2508b1d82b42c4094eca4e"
     },
     "src/world/storage/files.h": {
       "bytes": 6918,
@@ -3166,8 +3166,8 @@
       "sha256": "44c04d7f465a6fbdbea456db236456ca9a6fc4dcb586951a007d796234a2e412"
     },
     "src/client/runtime/world_tick.c": {
-      "bytes": 19999,
-      "sha256": "359221645e3d6b26a3ed659523f0ba81a4e613ff1935cbf186127ae3eedab714"
+      "bytes": 20406,
+      "sha256": "7c401e27b46efa5a5ee1407ca84f88cc5c6f3d139ff3bb4a5fc4f9aa4f2d13b2"
     },
     "src/client/runtime/world_tick.h": {
       "bytes": 5711,
@@ -3310,8 +3310,8 @@
       "sha256": "cccfd063a41fb3f0aeae92691a98a9becafc21c832a04b86ae1b17ca646df980"
     },
     "cmake/world_tick.cmake": {
-      "bytes": 725,
-      "sha256": "aeaf94c1de931037c94f616707f7e677b2f58627be582ab5c422dfbdd64207c2"
+      "bytes": 3609,
+      "sha256": "38cfd702201a4e06c474e9faaefca525a81ef54de8fd1ec67f507a3f3cce1eac"
     },
     "include/mc/client/world/renderer_focus.h": {
       "bytes": 3003,
@@ -3338,8 +3338,8 @@
       "sha256": "96f95d4c8d7bcf9da6c0739a7e1af4ba1a25f071c7dbe365f7553733f92a88a3"
     },
     "include/mc/world/runtime/world_tick.h": {
-      "bytes": 8365,
-      "sha256": "d11ab27a33cc994145512d19640acab543c0604dd99cbee775e338d4d8abb8c2"
+      "bytes": 9377,
+      "sha256": "4944135d95de47f2687a2af3f146e634dda45dd5b7f8f6689d4912b60d3bd8af"
     },
     "src/client/display/world_frame_surface.h": {
       "bytes": 1202,
@@ -3390,8 +3390,8 @@
       "sha256": "1a7fdd98ee17ee05aec943a1c8287ff7309571eda66da720d9c826bb1d92a39d"
     },
     "src/world/runtime/world_tick.c": {
-      "bytes": 61754,
-      "sha256": "9073c9e54738e3f0be130400aefe625238fe0ee22e5e83d8c5b647c6fca06cab"
+      "bytes": 64763,
+      "sha256": "c5835cc8899011b4a95bd5a9845861c921479adc23cf2e203a45b39c43586943"
     },
     "src/world/runtime/world_tick_scheduled.c": {
       "bytes": 9599,
@@ -4774,8 +4774,8 @@
       "sha256": "8745fb05d0a882b843126a6fbaa903e40782f6a230b1577c6332c6e59e3ff538"
     },
     "include/mc/entity/mob/spawning.h": {
-      "bytes": 2862,
-      "sha256": "803495ebb0c80b60c3b840359336aec585984593110565a18e3c42ec055bd6ea"
+      "bytes": 3376,
+      "sha256": "f3593a89fefb30aded671874e2fc2bfaabf35bed4a7f64ae2f09b8fc9b44c616"
     },
     "include/mc/world/runtime/chunk_random.h": {
       "bytes": 1799,
@@ -4786,8 +4786,8 @@
       "sha256": "7ed2efa2008f302a05d97dcef45f5cf870a2f7446005083e74a1cdc903fd1317"
     },
     "src/entity/mob/spawning.c": {
-      "bytes": 27928,
-      "sha256": "f66809e63ad59f91a854e9bacad65e77ca1bae088cff2266ded7c93d4797eceb"
+      "bytes": 31529,
+      "sha256": "a976d92dc2969649a77ee42f91014ec5dd8ccd948a38710a04e8aa4c724afa92"
     },
     "src/world/runtime/chunk_random.c": {
       "bytes": 5764,
@@ -5026,8 +5026,8 @@
       "sha256": "bb6eb306bde26000752b01331e3ed0c694824c549a3eacdca21fb5dcc17161e7"
     },
     "cmake/world_path.cmake": {
-      "bytes": 1082,
-      "sha256": "809c94081644eaf6bf843549c5379e34bc5cf4d2c25477d71ba1a350bd2d49f6"
+      "bytes": 1772,
+      "sha256": "a74a875fbfc88e03a68699025c1f129599655b9ed58166360effee8880777264"
     },
     "include/mc/world/path/path.h": {
       "bytes": 2191,
@@ -5058,16 +5058,16 @@
       "sha256": "db7dc51f67cd68a310df26237e3c5f08665e53132a6caba504a74fd2674ae97b"
     },
     "src/world/path/common.c": {
-      "bytes": 11284,
-      "sha256": "65b33c1fd64874d617d8d3ae989fc814db8c640f504e2220aba2667c07e7c050"
+      "bytes": 17140,
+      "sha256": "66e4e9b28919851fc6e43a6d768ef08d2727acc22509ff93d357ea86b99bf7da"
     },
     "src/world/path/finder.c": {
-      "bytes": 18322,
-      "sha256": "f386a99e7878eba929a596991588910342e6f843c4ca56f99bbf1b5f11ada559"
+      "bytes": 22845,
+      "sha256": "e98a6dd9a0a3fc9cbdc1e3964d7c14469831aafe02403046a5a67a0fae53b41a"
     },
     "src/world/path/finder_internal.h": {
-      "bytes": 3530,
-      "sha256": "25125cd1438cd1fcde553ea9a2ac6a42e745fd433550e111bc91ec30cf1f0e4e"
+      "bytes": 5494,
+      "sha256": "32e334ffde922087284b583a0a6f3e494405c42915b660bb7e31969b6b86593e"
     },
     "src/world/path/heap.c": {
       "bytes": 5829,
@@ -5082,8 +5082,8 @@
       "sha256": "0dea055fef2ed24eb3261f52bc7fcc32ac45ce84529b71fa46f370b41efce850"
     },
     "src/world/path/path_internal.h": {
-      "bytes": 4920,
-      "sha256": "950e65b0475325dac8df3410f665bb52f6de6501f6ffa162139fffb8b677b074"
+      "bytes": 5540,
+      "sha256": "ad017aa50558761660d870567f530e92b2cf6bf04c1651264c6193b35b6dc6b4"
     },
     "src/world/path/point.c": {
       "bytes": 2766,
@@ -5122,8 +5122,8 @@
       "sha256": "6eb14a4531e4b16aba9245784c2f40ba48ea02e22e371394646d1ddfe4ee59de"
     },
     "tests/world/runtime/test_path.c": {
-      "bytes": 66264,
-      "sha256": "f9ae7355563558ceaac5b6b4573872e3f5ad63a86fba963aba32febe845b2759"
+      "bytes": 66329,
+      "sha256": "e41c3cedc0386cb29a892e4662bbaa77a333e769da64319b97f20e90daa5e4a5"
     },
     "cmake/client_mob_draw.cmake": {
       "bytes": 3574,
@@ -8206,8 +8206,8 @@
       "sha256": "6c04ddcd89c64aaff3db755e60399a64fee045861c599a222c8dbae4c9121165"
     },
     "src/entity/tick/environment.c": {
-      "bytes": 27894,
-      "sha256": "bda65b1bafab831a3f0f802e84c0429137c7b2660ba49e5d52d3f2ef89a25215"
+      "bytes": 27948,
+      "sha256": "fb350f00919650a52f4b0a6be65f555f2300b2da308fbcf28e51f0e57c7506de"
     },
     "src/inventory/runtime/scatter.c": {
       "bytes": 5030,
@@ -8486,8 +8486,8 @@
       "sha256": "6edc9565fd35e7f2a985aaa8f3104e5c9226587181ea30cf4ff5cde1ecb485e6"
     },
     "cmake/client_bed_interaction.cmake": {
-      "bytes": 6390,
-      "sha256": "15cccffb73a26af008f603dfe8074781ceb03cc9ea93f59dfb0c3f6f592ed07e"
+      "bytes": 8686,
+      "sha256": "9511223ff5f26500ea9327d03840b834751b8243f313284c99d0373e20415470"
     },
     "include/mc/entity/player/sleep.h": {
       "bytes": 7976,
@@ -8550,8 +8550,8 @@
       "sha256": "ac430c74f7cf150f20e361f7b392200e09cbf26cf7761b03b2ecc35f60c9c001"
     },
     "tests/client/gameplay/test_bed_placement.c": {
-      "bytes": 21561,
-      "sha256": "ceeec26535d724302fa1689762c96d7c9d81ceddafbcf3e3fbd37db79175f67c"
+      "bytes": 22039,
+      "sha256": "ab7d769e7f87ab7a28041e262e1bff0a4bbf84549cf896d186e07578819768a9"
     },
     "tests/entity/player/test_sleep.c": {
       "bytes": 31130,
@@ -8614,8 +8614,8 @@
       "sha256": "d3c32d41d40135d9ed849084e35c7199bdb7cb597957eece2f9f4cc3b8d3a54e"
     },
     "tests/tools/client/test_bed_placement.py": {
-      "bytes": 16579,
-      "sha256": "9ef7caeb24776d2947dea500f556f37883ceb5f4323b31c570a5191719953625"
+      "bytes": 16695,
+      "sha256": "28ae53d4dde98e532a1f32cdc81d8fa65f5f3c5bdc0c241ee0f2fb88677d14cd"
     },
     "tests/tools/entity/test_player_sleep.py": {
       "bytes": 11271,
@@ -8702,8 +8702,8 @@
       "sha256": "214b9a165b77ac88abe326a410761282af9b3559e4b07e8924972ff697e4fc8d"
     },
     "tests/tools/world/test_sleep_tick.py": {
-      "bytes": 3758,
-      "sha256": "d30b5892734a45b56698b7f83e3a0c49684c11483ec3e0d62157724ca454a085"
+      "bytes": 3761,
+      "sha256": "4a82bb4436610417ef4e95ce2158c643434e91643b8d18cbbde3ac1c16ff1903"
     },
     "tests/world/runtime/collision/block_shape_probe.c": {
       "bytes": 15596,
@@ -8726,8 +8726,8 @@
       "sha256": "7e35e5cca50a22596672959ac288d20d7965e0b7e1624e0d351eb17c5e58c310"
     },
     "tests/world/runtime/test_sleep_tick.c": {
-      "bytes": 22051,
-      "sha256": "0167966a90aa15ba1d8f20e3dfdd5fb9b78641da01ff5f8bb61e16b6835bc057"
+      "bytes": 22712,
+      "sha256": "9047992d577b46f20449c54f76afa6fdfb0212270b52882abbf4bb048f7a430b"
     },
     "tests/world/runtime/world_access/test_world_access.c": {
       "bytes": 29170,
@@ -8762,8 +8762,8 @@
       "sha256": "0c364971776d199adc75c36c7d671630f18cea1c3c7e6c3a506a97b579db8c58"
     },
     "tests/client/gameplay/test_player_sleep_tick_cleanup.c": {
-      "bytes": 10143,
-      "sha256": "42e45a3a819c454570ad218f60b765f2ad8813e8d0e76d806ad3be498f3f1724"
+      "bytes": 16149,
+      "sha256": "4e3e96392c41ef53da385802d02598bc46bc52c60c9ddd4f217c503afd404719"
     },
     "tests/entity/player/test_sleep_tick.c": {
       "bytes": 34543,
@@ -8970,8 +8970,8 @@
       "sha256": "d3141c02dc93c2e78b223c80e4e7239740a45a57ec48c48422f7be31640c666a"
     },
     "src/entity/tick/tick_internal.h": {
-      "bytes": 3949,
-      "sha256": "884af406f1dcbc4db56fce75f8087c953bbd99ca1d19a63ff210dcdd20e8e6a4"
+      "bytes": 4198,
+      "sha256": "468c30d3b352e1461977ad55627fdc9c5206811ac14fc73189bf29fcd49e17bc"
     },
     "src/item/registry/stacks_internal.h": {
       "bytes": 4068,
@@ -9164,6 +9164,98 @@
     "tests/world/runtime/tile_entities/test_tile_entities.c": {
       "bytes": 59083,
       "sha256": "55ae023dce901cab8a5cb805f878383060e57a7b22b5f9fe1df91aae1548afe6"
+    },
+    "include/mc/world/runtime/nightmare.h": {
+      "bytes": 6669,
+      "sha256": "18e9e5eddd843b8357f1a5723835732e0a25a1a15f58292decdbd0b0c049a86b"
+    },
+    "src/entity/mob/spawn_failure_internal.h": {
+      "bytes": 709,
+      "sha256": "92d46e46de41b7535e323c1fc02263b13b366b8c6f6bc18e4bbfc44849433c6b"
+    },
+    "src/world/runtime/nightmare.c": {
+      "bytes": 60124,
+      "sha256": "a27c98b804893bb1f71a50e654f62433961f1cd7f7fdf288275517d9ac484dfe"
+    },
+    "src/world/runtime/nightmare_classes_internal.h": {
+      "bytes": 2312,
+      "sha256": "b270ebb3c86377b82fe716250742d512ece9a7a0c6de5f70767448cc9a04a09c"
+    },
+    "src/world/runtime/nightmare_internal.h": {
+      "bytes": 181,
+      "sha256": "1c26ad3c0111d0d28012b93cdd514a158e9cd0a56151114949e494f53286bda1"
+    },
+    "src/world/runtime/spawn_postspawn.c": {
+      "bytes": 9216,
+      "sha256": "eea9b036654328036865487fb263b472854ff9bed452530997452469e2153de8"
+    },
+    "src/world/runtime/spawn_postspawn_internal.h": {
+      "bytes": 2192,
+      "sha256": "a6d49fa2cd7e2a3d52e17f09102078b7696c197d852c33cfaa8aab959a85af8c"
+    },
+    "tests/client/gameplay/test_bed_sleep.c": {
+      "bytes": 12192,
+      "sha256": "4c4980ed84c26f44920a0c693ec762591cc088b54e9ed65d309f8056ce889079"
+    },
+    "tests/reference/world/nightmare/capture_reference.py": {
+      "bytes": 8927,
+      "sha256": "ac3dadbcd7897cd0182369333d694dc4368ece4e1f74280103d8f4a6f65bace4"
+    },
+    "tests/reference/world/nightmare/export_reference.py": {
+      "bytes": 6469,
+      "sha256": "c6a054dae0b838c36af6ced44c3434730ef0a6b1bd61b2f850f8cbfc049254df"
+    },
+    "tests/reference/world/nightmare/observation.py": {
+      "bytes": 7281,
+      "sha256": "891e8a28fc198de0ed26a040d27d1983e9f0f7eb82dd87b897f0b7c789a4bfa2"
+    },
+    "tests/reference/world/nightmare/packet.py": {
+      "bytes": 7639,
+      "sha256": "9a4111e0b7d6425ae7be6f4208d2ae730522e62100712c2794966c63d76e87d1"
+    },
+    "tests/reference/world/nightmare/run_native.py": {
+      "bytes": 4543,
+      "sha256": "82162986502a220da129a83b08df52850a5243c4880b90869b34b71f6b66058e"
+    },
+    "tests/reference/world/nightmare/test_packet.py": {
+      "bytes": 6418,
+      "sha256": "6ac8cc4255b3292f63b035a8e42492955668a31f5de744ff78e839330079b5c0"
+    },
+    "tests/tools/client/test_bed_sleep.py": {
+      "bytes": 14819,
+      "sha256": "54fdc08b5f3d39a3d50c41de6464fbe46245209b610fe768c6ea52d9a2eeb3ec"
+    },
+    "tests/tools/world/test_nightmare.py": {
+      "bytes": 12440,
+      "sha256": "0b84914f193d1b2b7eea2136ccbafa0bd4223fbf75949fe3a2f196b9ac7c4b9b"
+    },
+    "tests/tools/world/test_nightmare_eligibility.py": {
+      "bytes": 3309,
+      "sha256": "11359bd36a65600eb16bf8a77188ea44aec3526b3dff371e5cdf393a4a294453"
+    },
+    "tests/tools/world/test_path_world.py": {
+      "bytes": 3468,
+      "sha256": "055ea8da5b135996cb60e35bdedcebb608f53c4c0ffae3b97d0f895bfff11c76"
+    },
+    "tests/tools/world/test_spawn_postspawn.py": {
+      "bytes": 3363,
+      "sha256": "2772359e7b224a023a525100ea882b2f15d4389cc05cd4eb363ec4d442236d91"
+    },
+    "tests/world/runtime/test_nightmare.c": {
+      "bytes": 40415,
+      "sha256": "f4a09b61df1a045a785762f0bd7dd6ed6311278dc0b9bfd30d05bf74a267b5b7"
+    },
+    "tests/world/runtime/test_nightmare_eligibility.c": {
+      "bytes": 14161,
+      "sha256": "be8113a3a603b6607c6a0452fad62c4c655ee0bb0f27f4d31b615c044cc8ab58"
+    },
+    "tests/world/runtime/test_path_world.c": {
+      "bytes": 15049,
+      "sha256": "0859b5344780ffa35ce1a9a30c78369348e2f58335e2ac70658d3a1e1425eaaf"
+    },
+    "tests/world/runtime/test_spawn_postspawn.c": {
+      "bytes": 12778,
+      "sha256": "c52a370728b7a1f81f8a4e15a6b2bcc9872f17ee053d508821eff95313435381"
     }
   },
   "authorities": {
@@ -14254,6 +14346,178 @@
           },
           "added": [],
           "current_count": 2291
+        }
+      }
+    },
+    {
+      "from_commit": "61b294201fa351adcbeebb58b0e7c2215fee40a2",
+      "role": "Current CQ nightmare body, reused direct-World pathfinding, live Chunk metadata, shared postspawn ownership and retained nighttime scene inputs. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 597517,
+        "sha256": "7713c413da361896ff40557af0782260fcb48043dae652016a13dcb69e005554"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "include/mc/world/runtime/blocks.h": {
+              "bytes": 9908,
+              "sha256": "084970104c0bf18b945bd13e32722a266b129b585e75830d6dc65107ddd8278c"
+            },
+            "src/entity/construction_internal.h": {
+              "bytes": 4636,
+              "sha256": "6ed508db90a7951f7d4e910ba2c2a6b81c85e1d9f28298e066347705200c5e2a"
+            },
+            "src/entity/player/construction.c": {
+              "bytes": 18768,
+              "sha256": "0dcd44dd256db6758ffbd46d5546b3828831c2e277f6667235c6e5490a8d0aea"
+            },
+            "src/world/runtime/acquisition_internal.h": {
+              "bytes": 2315,
+              "sha256": "e653a67149f0d119488b0f3cd15255273e45fed33a41fb82990585770b271996"
+            },
+            "src/client/runtime/menu_loop.c": {
+              "bytes": 65088,
+              "sha256": "f2bc96dde7ffb73cf9c11192b28bef566a0c37d7fc1cc81fb916b4eb9fb4ceb0"
+            },
+            "src/client/runtime/menu_loop.h": {
+              "bytes": 7459,
+              "sha256": "6e59199fb1c3e453aa6fda14cbb9d4fb503156d6c7c5d55c86d173cc7ee19197"
+            },
+            "src/world/runtime/construction_internal.h": {
+              "bytes": 1654,
+              "sha256": "17cb5fc32ec5dc31fc4b2e726e7641496969d30c1a4d9f6796687a0c82e6fe17"
+            },
+            "src/world/runtime/world_access_internal.h": {
+              "bytes": 7348,
+              "sha256": "7e763cc2f8b3b394eed69a2d80ae1cca2f482d040df38c63b86e9f7568bfe51e"
+            },
+            "src/client/runtime/world_tick.c": {
+              "bytes": 19999,
+              "sha256": "359221645e3d6b26a3ed659523f0ba81a4e613ff1935cbf186127ae3eedab714"
+            },
+            "cmake/world_tick.cmake": {
+              "bytes": 725,
+              "sha256": "aeaf94c1de931037c94f616707f7e677b2f58627be582ab5c422dfbdd64207c2"
+            },
+            "include/mc/world/runtime/world_tick.h": {
+              "bytes": 8365,
+              "sha256": "d11ab27a33cc994145512d19640acab543c0604dd99cbee775e338d4d8abb8c2"
+            },
+            "src/world/runtime/world_tick.c": {
+              "bytes": 61754,
+              "sha256": "9073c9e54738e3f0be130400aefe625238fe0ee22e5e83d8c5b647c6fca06cab"
+            },
+            "include/mc/entity/mob/spawning.h": {
+              "bytes": 2862,
+              "sha256": "803495ebb0c80b60c3b840359336aec585984593110565a18e3c42ec055bd6ea"
+            },
+            "src/entity/mob/spawning.c": {
+              "bytes": 27928,
+              "sha256": "f66809e63ad59f91a854e9bacad65e77ca1bae088cff2266ded7c93d4797eceb"
+            },
+            "cmake/world_path.cmake": {
+              "bytes": 1082,
+              "sha256": "809c94081644eaf6bf843549c5379e34bc5cf4d2c25477d71ba1a350bd2d49f6"
+            },
+            "src/world/path/common.c": {
+              "bytes": 11284,
+              "sha256": "65b33c1fd64874d617d8d3ae989fc814db8c640f504e2220aba2667c07e7c050"
+            },
+            "src/world/path/finder.c": {
+              "bytes": 18322,
+              "sha256": "f386a99e7878eba929a596991588910342e6f843c4ca56f99bbf1b5f11ada559"
+            },
+            "src/world/path/finder_internal.h": {
+              "bytes": 3530,
+              "sha256": "25125cd1438cd1fcde553ea9a2ac6a42e745fd433550e111bc91ec30cf1f0e4e"
+            },
+            "src/world/path/path_internal.h": {
+              "bytes": 4920,
+              "sha256": "950e65b0475325dac8df3410f665bb52f6de6501f6ffa162139fffb8b677b074"
+            },
+            "tests/world/runtime/test_path.c": {
+              "bytes": 66264,
+              "sha256": "f9ae7355563558ceaac5b6b4573872e3f5ad63a86fba963aba32febe845b2759"
+            },
+            "src/entity/tick/environment.c": {
+              "bytes": 27894,
+              "sha256": "bda65b1bafab831a3f0f802e84c0429137c7b2660ba49e5d52d3f2ef89a25215"
+            },
+            "cmake/client_bed_interaction.cmake": {
+              "bytes": 6390,
+              "sha256": "15cccffb73a26af008f603dfe8074781ceb03cc9ea93f59dfb0c3f6f592ed07e"
+            },
+            "tests/client/gameplay/test_bed_placement.c": {
+              "bytes": 21561,
+              "sha256": "ceeec26535d724302fa1689762c96d7c9d81ceddafbcf3e3fbd37db79175f67c"
+            },
+            "tests/tools/client/test_bed_placement.py": {
+              "bytes": 16579,
+              "sha256": "9ef7caeb24776d2947dea500f556f37883ceb5f4323b31c570a5191719953625"
+            },
+            "tests/tools/world/test_sleep_tick.py": {
+              "bytes": 3758,
+              "sha256": "d30b5892734a45b56698b7f83e3a0c49684c11483ec3e0d62157724ca454a085"
+            },
+            "tests/world/runtime/test_sleep_tick.c": {
+              "bytes": 22051,
+              "sha256": "0167966a90aa15ba1d8f20e3dfdd5fb9b78641da01ff5f8bb61e16b6835bc057"
+            },
+            "tests/client/gameplay/test_player_sleep_tick_cleanup.c": {
+              "bytes": 10143,
+              "sha256": "42e45a3a819c454570ad218f60b765f2ad8813e8d0e76d806ad3be498f3f1724"
+            },
+            "src/entity/tick/tick_internal.h": {
+              "bytes": 3949,
+              "sha256": "884af406f1dcbc4db56fce75f8087c953bbd99ca1d19a63ff210dcdd20e8e6a4"
+            }
+          },
+          "added": [
+            "include/mc/world/runtime/nightmare.h",
+            "src/entity/mob/spawn_failure_internal.h",
+            "src/world/runtime/nightmare.c",
+            "src/world/runtime/nightmare_classes_internal.h",
+            "src/world/runtime/nightmare_internal.h",
+            "src/world/runtime/spawn_postspawn.c",
+            "src/world/runtime/spawn_postspawn_internal.h",
+            "tests/client/gameplay/test_bed_sleep.c",
+            "tests/reference/world/nightmare/capture_reference.py",
+            "tests/reference/world/nightmare/export_reference.py",
+            "tests/reference/world/nightmare/observation.py",
+            "tests/reference/world/nightmare/packet.py",
+            "tests/reference/world/nightmare/run_native.py",
+            "tests/reference/world/nightmare/test_packet.py",
+            "tests/tools/client/test_bed_sleep.py",
+            "tests/tools/world/test_nightmare.py",
+            "tests/tools/world/test_nightmare_eligibility.py",
+            "tests/tools/world/test_path_world.py",
+            "tests/tools/world/test_spawn_postspawn.py",
+            "tests/world/runtime/test_nightmare.c",
+            "tests/world/runtime/test_nightmare_eligibility.c",
+            "tests/world/runtime/test_path_world.c",
+            "tests/world/runtime/test_spawn_postspawn.c"
+          ],
+          "current_count": 2314
+        }
+      }
+    },
+    {
+      "from_commit": "61b294201fa351adcbeebb58b0e7c2215fee40a2",
+      "role": "Current CQ nightmare body, reused direct-World pathfinding, live Chunk metadata, shared postspawn ownership and retained nighttime scene inputs. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 608592,
+        "sha256": "530b49f58818bf7dbdf365e5921b2091e8164b1a9ef850a3d0c3a4aaca88c3c0"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/world/runtime/test_nightmare_eligibility.c": {
+              "bytes": 14161,
+              "sha256": "faf4aff6fbdae549c5a1d045c15a6b02f51fd9ddbf682a0c6f2a71972bdd1f94"
+            }
+          },
+          "added": [],
+          "current_count": 2314
         }
       }
     }

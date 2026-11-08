@@ -368,8 +368,17 @@ bool mc_client_world_tick_cleanup(mc_client_world_tick *call) {
     call->scheduler_error.mob = NULL;
     call->scheduler_error.eligibility = NULL;
     call->scheduler_error.publication = NULL;
+    call->scheduler_error.postspawn = NULL;
+    call->scheduler_error.position = NULL;
+    call->scheduler_error.nightmare = NULL;
+    call->scheduler_error.nightmare_cleanup = NULL;
+    call->scheduler_error.nightmare_classes = NULL;
+    call->scheduler_error.sleep = NULL;
+    call->scheduler_error.sleep_cleanup = NULL;
     call->scheduler_error.random = NULL;
     call->scheduler_state.random = NULL;
+    call->scheduler_state.sleep = NULL;
+    call->scheduler_state.nightmare = NULL;
     call->scheduler_state.eligibility = NULL;
     call->scheduler_state.spawn_class = NULL;
     call->scheduler_state.first_constructor.class_literal = NULL;

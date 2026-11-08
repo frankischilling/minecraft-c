@@ -19,7 +19,9 @@
 #include "mc/world/runtime/environment.h"
 #include "mc/world/runtime/random_tick.h"
 #include "mc/world/runtime/saving/saving.h"
+#include "nightmare_internal.h"
 #include "runtime_internal.h"
+#include "spawn_postspawn_internal.h"
 #include "world_access_internal.h"
 
 #include <limits.h>
@@ -45,6 +47,14 @@ struct mc_world_tick_call {
     mc_mob_spawn_state eligibility;
     mc_mob_spawn_error eligibility_error;
     mc_world_entity_error publication;
+    mc_world_spawn_postspawn_work postspawn;
+    mc_entity_position_rotation_error position;
+    mc_entity *spawn_jockey_owner;
+    mc_world_nightmare_call *nightmare;
+    mc_world_nightmare_state nightmare_state;
+    mc_world_nightmare_error nightmare_admission;
+    mc_world_nightmare_cleanup nightmare_cleanup;
+    mc_world_nightmare_class_error nightmare_classes;
     mc_world_random_tick_call *random;
     mc_world_random_tick_state random_state;
     mc_world_random_tick_error random_admission, random_cleanup;
@@ -410,12 +420,53 @@ static bool wake_weather_failed(mc_world_tick_call *c, const mc_world_info *rece
                 receiver != NULL);
 }
 
+static bool nightmare_retire(mc_world_tick_call *c) {
+    if (mc_world_nightmare_retire(&c->nightmare, &c->nightmare_cleanup) != MC_WORLD_STORAGE_OK)
+        return false;
+    c->state.nightmare = NULL;
+    c->error.nightmare = NULL;
+    c->error.nightmare_cleanup = NULL;
+    return true;
+}
+
 static bool advance_sleep(mc_world_tick_call *c) {
     mc_world_runtime *w = c->state.world;
     if (w->fields.N && w->fields.q >= 1) {
         at(c, 33, MC_WORLD_TICK_CHILD_SLEEP, "cq", "a(World,List)Z", 7);
-        return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                    "World sleep hostile-spawn pathfinder constructor", true);
+        const mc_world_nightmare_context context = {
+            .code_classes = w->classes, .list_owner = w, .math = c->state.math};
+        ++c->state.nightmare_calls;
+        const mc_world_storage_status status = mc_world_nightmare_begin(
+            w, w->fields.d, &context, NULL, &c->nightmare, &c->nightmare_admission);
+        if (c->nightmare != NULL) {
+            if (!mc_world_nightmare_inspect(c->nightmare, &c->nightmare_state))
+                return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                            "World sleep retained nightmare observation", true);
+            c->state.nightmare = &c->nightmare_state;
+        }
+        if (status != MC_WORLD_STORAGE_OK) {
+            const mc_world_nightmare_error *error =
+                c->nightmare == NULL ? &c->nightmare_admission : c->nightmare_state.failure;
+            c->error.nightmare = error;
+            c->error.child_bytecode = error->pc;
+            c->error.descendant_bytecode = error->child_pc;
+            c->error.exception_class = error->exception_class;
+            (void)fail(c, status, error->operation, error->native_policy);
+            c->error.cause = error->cause;
+            return false;
+        }
+        if (c->nightmare == NULL || !c->nightmare_state.returned)
+            return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                        "World sleep returned nightmare child", true);
+        ++c->state.nightmare_returns;
+        c->state.nightmare_result = c->nightmare_state.result;
+        c->state.nightmare_wakes = c->nightmare_state.wakes;
+        if (!nightmare_retire(c)) {
+            c->error.nightmare_cleanup = &c->nightmare_cleanup;
+            return fail(c, c->nightmare_cleanup.status, c->nightmare_cleanup.operation, true);
+        }
+        if (c->state.nightmare_result)
+            return true;
     }
     int64_t now;
     at(c, 45, MC_WORLD_TICK_CHILD_SLEEP, "ei", "f()J", 1);
@@ -679,20 +730,16 @@ static bool spawn_mob_failure(mc_world_tick_call *c, unsigned int pc) {
     return fail(c, status, error->operation, error->native_policy);
 }
 
-static void spawn_pose(mc_entity *entity, float x, float y, float z, float yaw) {
+static bool spawn_pose(mc_world_tick_call *c, mc_entity *entity, float x, float y, float z,
+                       float yaw, unsigned int pc) {
     /* Exact inherited sn.c(DDDFF), including the explicit e(DDD) call. */
-    entity->base.x = wt_widen(x);
-    entity->base.aJ = entity->base.x;
-    entity->base.bl = entity->base.x;
-    entity->base.y = wt_add(wt_widen(y), wt_widen(entity->base.offset));
-    entity->base.aK = entity->base.y;
-    entity->base.bm = entity->base.y;
-    entity->base.z = wt_widen(z);
-    entity->base.aL = entity->base.z;
-    entity->base.bn = entity->base.z;
-    entity->base.yaw = yaw;
-    entity->base.aT = 0.0f;
-    mc_entity_source_position(entity, entity->base.x, entity->base.y, entity->base.z);
+    if (mc_entity_source_position_rotation(entity, wt_widen(x), wt_widen(y), wt_widen(z), yaw, 0.0f,
+                                           &c->position) == MC_ENTITY_OK)
+        return true;
+    c->error.position = &c->position;
+    c->error.descendant_bytecode = c->position.position_bytecode;
+    return spawn_error(c, pc, c->position.operation, c->position.native_policy,
+                       c->position.source_null ? "java/lang/NullPointerException" : NULL);
 }
 
 static bool spawn_construct(mc_world_tick_call *c, mc_registry_classes *registry, float x, float y,
@@ -773,7 +820,8 @@ static bool spawn_construct(mc_world_tick_call *c, mc_registry_classes *registry
     c->error.child_bytecode = 815;
     /* Exact inherited sn.c(DDDFF): only current yaw/pitch are assigned;
      * previous yaw is unchanged and vertical offset is added before e(DDD). */
-    spawn_pose(c->state.spawn_entity, x, y, z, yaw);
+    if (!spawn_pose(c, c->state.spawn_entity, x, y, z, yaw, 815))
+        return false;
     c->state.spawn_positioned = true;
     return true;
 }
@@ -794,67 +842,43 @@ static bool spawn_publish(mc_world_tick_call *c, mc_entity *entity, unsigned int
 
 static bool spawn_postspawn(mc_world_tick_call *c, mc_registry_classes *registry, float x, float y,
                             float z) {
-    mc_entity *entity = c->state.spawn_entity;
-    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SPIDER)) {
-        int32_t draw;
-        c->state.spawn_postspawn_pc = 13;
-        if (!spawn_draw(c, 100, 845, 13, &draw))
-            return false;
-        if (draw == 0) {
-            const mc_entity_class_literal *skeleton = NULL;
-            c->state.spawn_postspawn_pc = 24;
-            c->error.child_bytecode = 845;
-            c->error.descendant_bytecode = 24;
-            if (mc_entity_class_literal_get(c->state.world->classes->entities,
-                                            MC_ENTITY_CLASS_KIND_SKELETON,
-                                            &skeleton) != MC_ENTITY_OK)
-                return spawn_error(c, 845, "World spawn Skeleton canonical Class", true, NULL);
-            if (mc_mob_allocate(c->state.world->classes->entities, registry, skeleton,
-                                &c->state.spawn_jockey, &c->mob) != MC_MOB_OK ||
-                mc_mob_construct(c->state.spawn_jockey, c->state.world, &c->mob) != MC_MOB_OK)
-                return spawn_mob_failure(c, 845);
-            if (!fp(c, 845))
-                return false;
-            c->state.spawn_postspawn_pc = 43;
-            spawn_pose(c->state.spawn_jockey, x, y, z, entity->base.yaw);
-            bool published;
-            c->state.spawn_postspawn_pc = 49;
-            if (!spawn_publish(c, c->state.spawn_jockey, 845, 49, &published))
-                return false;
-            c->state.spawn_postspawn_pc = 56;
-            c->error.descendant_bytecode = 56;
-            mc_entity_mount_error mount;
-            mc_entity *actors[] = {c->state.spawn_jockey, entity};
-            if (mc_entity_mount(c->state.spawn_jockey, entity, actors, 2, &mount) != MC_ENTITY_OK)
-                return spawn_error(c, 845, mount.operation, mount.native_policy,
-                                   mount.source_null ? "java/lang/NullPointerException" : NULL);
+    mc_world_storage_error admission = {0};
+    const mc_world_storage_status retired =
+        mc_world_spawn_postspawn_retire(&c->postspawn, &admission);
+    if (retired != MC_WORLD_STORAGE_OK)
+        return spawn_error(c, 845, admission.operation, true, NULL);
+    c->error.child_bytecode = 845;
+    const mc_world_storage_status status = mc_world_spawn_postspawn_begin(
+        c->state.world, registry, c->state.spawn_entity, x, y, z, &c->postspawn, &admission);
+    c->state.spawn_random_calls += c->postspawn.random_calls;
+    c->state.spawn_publications += c->postspawn.publications;
+    c->state.spawn_postspawn_pc = c->postspawn.pc;
+    c->state.spawn_postspawn_returned = c->postspawn.returned;
+    if (c->postspawn.jockey != NULL) {
+        c->state.spawn_jockey = c->postspawn.jockey;
+        if (c->postspawn.returned) {
+            mc_entity_release(c->spawn_jockey_owner);
+            c->spawn_jockey_owner = c->postspawn.jockey;
+            c->postspawn.jockey = NULL;
         }
     }
-    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SHEEP)) {
-        int32_t draw, color;
-        c->state.spawn_postspawn_pc = 77;
-        if (!spawn_draw(c, 100, 845, 77, &draw))
-            return false;
-        if (draw < 5)
-            color = 15;
-        else if (draw < 10)
-            color = 7;
-        else if (draw < 15)
-            color = 8;
-        else if (draw < 18)
-            color = 12;
-        else {
-            if (!spawn_draw(c, 500, 845, 77, &draw))
-                return false;
-            color = draw == 0 ? 6 : 0;
-        }
-        c->state.spawn_postspawn_pc = 80;
-        if (mc_mob_sheep_set_color(entity, color, &c->mob) != MC_MOB_OK)
-            return spawn_mob_failure(c, 845);
-    }
-    c->state.spawn_postspawn_pc = 83;
-    c->state.spawn_postspawn_returned = true;
-    return true;
+    if (status == MC_WORLD_STORAGE_OK)
+        return true;
+    c->error.postspawn = &c->postspawn;
+    if (c->postspawn.child == MC_WORLD_POSTSPAWN_MOB)
+        c->error.mob = &c->postspawn.mob;
+    if (c->postspawn.child == MC_WORLD_POSTSPAWN_POSITION)
+        c->error.position = &c->postspawn.position;
+    if (c->postspawn.child == MC_WORLD_POSTSPAWN_PUBLICATION)
+        c->error.publication = &c->postspawn.publication;
+    c->error.descendant_bytecode = c->postspawn.pc;
+    const char *operation =
+        c->postspawn.operation == NULL ? admission.operation : c->postspawn.operation;
+    (void)spawn_error(c, 845, operation, c->postspawn.native_policy, c->postspawn.exception_class);
+    (void)fail(c, status, operation, c->postspawn.native_policy);
+    if (c->postspawn.child == MC_WORLD_POSTSPAWN_PUBLICATION)
+        c->error.cause = c->postspawn.publication.cause;
+    return false;
 }
 
 static bool spawn_trials(mc_world_tick_call *c, int32_t category, const int32_t spawn[3],
@@ -952,7 +976,13 @@ static bool spawn_trials(mc_world_tick_call *c, int32_t category, const int32_t 
 static bool spawning(mc_world_tick_call *c, bool hostile, bool peaceful) {
     mc_world_runtime *w = c->state.world;
     mc_world_active_chunks *set = &w->classes->spawning_chunks;
-    w->classes->spawning_initialized = true;
+    const mc_world_storage_status initialized =
+        mc_world_nightmare_classes_ensure(w->classes, &c->nightmare_classes);
+    if (initialized != MC_WORLD_STORAGE_OK) {
+        c->error.nightmare_classes = &c->nightmare_classes;
+        c->error.child_bytecode = c->nightmare_classes.pc;
+        return fail(c, initialized, c->nightmare_classes.operation, true);
+    }
     if (!hostile && !peaceful)
         return true;
     if (!set_prepare(c, set, 13) || !spawn_candidates(c, set))
@@ -1316,6 +1346,13 @@ bool mc_world_runtime_tick_inspect(const mc_world_tick_call *c, mc_world_tick_st
     if (c == NULL || out == NULL)
         return false;
     *out = c->state;
+    if (c->postspawn.active) {
+        out->spawn_postspawn_pc = c->postspawn.pc;
+        out->spawn_random_calls += c->postspawn.random_calls;
+        out->spawn_publications += c->postspawn.publications;
+        if (c->postspawn.jockey != NULL)
+            out->spawn_jockey = c->postspawn.jockey;
+    }
     return true;
 }
 
@@ -1328,6 +1365,23 @@ mc_world_storage_status mc_world_runtime_tick_retire(mc_world_tick_call **slot,
         return rejected(cleanup, MC_WORLD_STORAGE_OK, NULL);
     if (c->state.active)
         return rejected(cleanup, MC_WORLD_STORAGE_BUSY, "World tick call active");
+    if (!nightmare_retire(c)) {
+        (void)rejected(cleanup, c->nightmare_cleanup.status, c->nightmare_cleanup.operation);
+        if (cleanup != NULL)
+            cleanup->nightmare_cleanup = &c->nightmare_cleanup;
+        return c->nightmare_cleanup.status;
+    }
+    mc_world_storage_error postspawn_cleanup;
+    const mc_world_storage_status postspawn_status =
+        mc_world_spawn_postspawn_retire(&c->postspawn, &postspawn_cleanup);
+    if (postspawn_status != MC_WORLD_STORAGE_OK) {
+        (void)rejected(cleanup, postspawn_status, postspawn_cleanup.operation);
+        if (cleanup != NULL)
+            cleanup->postspawn = &c->postspawn;
+        return postspawn_status;
+    }
+    c->error.postspawn = NULL;
+    c->state.spawn_jockey = c->spawn_jockey_owner;
     if (!sleep_retire(c)) {
         const mc_world_storage_status status = sleep_cleanup_status(&c->sleep_cleanup);
         (void)rejected(cleanup, status, c->sleep_cleanup.operation);
@@ -1353,7 +1407,7 @@ mc_world_storage_status mc_world_runtime_tick_retire(mc_world_tick_call **slot,
     mc_world_access_failure_release(&c->error.world_access);
     mc_world_access_failure_release(&c->publication.world_access_failure);
     mc_entity_release(c->state.spawn_entity);
-    mc_entity_release(c->state.spawn_jockey);
+    mc_entity_release(c->spawn_jockey_owner);
     if (c->world_held)
         mc_world_runtime_binding_release(c->state.world);
     free(c);

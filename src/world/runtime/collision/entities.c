@@ -357,6 +357,7 @@ bool mc_world_entity_query_acquire_held(mc_world_runtime *world, int32_t x, int3
     if (frame->query.acquisition != MC_CHUNK_ACQUIRE_OK) {
         frame->query.registry = child.registry;
         frame->query.population = child.population;
+        frame->query.source_chunk = child.source_chunk;
         frame->tile_entity = child.tile_entity;
         frame->batch = child.batch;
         frame->load_entity = child.load_entity;

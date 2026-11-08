@@ -6,7 +6,114 @@ int mc_player_sleep_cleanup_fixture_main(int, char **);
 #include "../../world/runtime/test_entity_tick.c"
 #undef MC_WORLD_ENTITY_TICK_MAIN
 #include "../../../src/client/runtime/world_tick.h"
+#include "../../../src/client/world/entity_renderer/internal.h"
+#include "../../../src/world/runtime/nightmare_internal.h"
+#include "../../../src/world/runtime/spawn_postspawn_internal.h"
 #include "mc/core/math/classes.h"
+
+typedef struct scheduler_borrow_sentinels {
+    mc_world_spawn_postspawn_work postspawn;
+    mc_entity_position_rotation_error position;
+    mc_world_nightmare_error nightmare;
+    mc_world_nightmare_cleanup nightmare_cleanup;
+    mc_world_nightmare_class_error nightmare_classes;
+    mc_world_nightmare_state nightmare_state;
+    mc_player_sleep_error sleep;
+    mc_player_sleep_cleanup sleep_cleanup;
+    mc_player_sleep_state sleep_state;
+} scheduler_borrow_sentinels;
+
+static bool scheduler_borrows_ended(const mc_client_world_tick *call) {
+    return call->scheduler_error.weather == NULL && call->scheduler_error.postspawn == NULL &&
+           call->scheduler_error.position == NULL && call->scheduler_error.nightmare == NULL &&
+           call->scheduler_error.nightmare_cleanup == NULL &&
+           call->scheduler_error.nightmare_classes == NULL && call->scheduler_error.sleep == NULL &&
+           call->scheduler_error.sleep_cleanup == NULL && call->scheduler_state.nightmare == NULL &&
+           call->scheduler_state.sleep == NULL;
+}
+
+static bool scheduler_cleanup_projection(fixture *f, client_application *app,
+                                         mc_math_classes *math) {
+    bool ok = false;
+    mc_client_world_tick *call = calloc(1, sizeof(*call));
+    scheduler_borrow_sentinels *views = calloc(1, sizeof(*views));
+    mc_client_render_engine_classes *graphics = NULL;
+    mc_client_source_px *renderer = NULL;
+    CHECK(call != NULL && views != NULL);
+
+    /* This is an actual retained failed scheduler. Its reached null Info
+     * source prefix supplies the immutable failure and a genuine weather view. */
+    mc_world_info *const info = f->worlds[0]->fields.x;
+    f->worlds[0]->fields.x = NULL;
+    const mc_world_storage_status failed =
+        mc_world_runtime_tick_begin(f->worlds[0], math, &call->scheduler, NULL);
+    f->worlds[0]->fields.x = info;
+    CHECK(failed == MC_WORLD_STORAGE_UNSUPPORTED_STATE && call->scheduler != NULL &&
+          mc_world_runtime_tick_inspect(call->scheduler, &call->scheduler_state) &&
+          !call->scheduler_state.returned && call->scheduler_state.error->weather != NULL);
+    call->scheduler_error = *call->scheduler_state.error;
+    const mc_world_tick_error first = call->scheduler_error;
+    call->scheduler_state.error = &call->scheduler_error;
+    call->failed = true;
+    call->operation = first.operation;
+    call->site = (mc_client_graphics_site){"fd", "l", "()V", (int32_t)first.bytecode};
+
+    /* These mutually exclusive typed slots cannot all be populated by one
+     * source failure. Explicit zero-valued native sentinels model their
+     * producer-scoped borrows; they authorize no source outcome or ownership. */
+    call->scheduler_error.postspawn = &views->postspawn;
+    call->scheduler_error.position = &views->position;
+    call->scheduler_error.nightmare = &views->nightmare;
+    call->scheduler_error.nightmare_cleanup = &views->nightmare_cleanup;
+    call->scheduler_error.nightmare_classes = &views->nightmare_classes;
+    call->scheduler_error.sleep = &views->sleep;
+    call->scheduler_error.sleep_cleanup = &views->sleep_cleanup;
+    call->scheduler_state.nightmare = &views->nightmare_state;
+    call->scheduler_state.sleep = &views->sleep_state;
+
+    /* A genuine RAW PX admits a real tick and fails at its null App read.
+     * Its declared native active guard then refuses the LATER cleanup stage. */
+    CHECK(mc_client_render_engine_classes_create(NULL, &graphics) == MC_CLIENT_RENDER_ENGINE_OK);
+    const mc_client_entity_renderer_services services = {
+        .models = app->render_classes, .graphics = graphics, .profile = app->profile};
+    CHECK(mc_client_entity_renderer_allocate(&services, NULL, &renderer, NULL) ==
+              MC_CLIENT_ENTITY_RENDERER_OK &&
+          mc_client_entity_renderer_tick_begin(renderer, math, &call->renderer, NULL) ==
+              MC_CLIENT_RENDERER_TICK_SOURCE_NULL &&
+          call->renderer != NULL);
+    renderer->active = true; /* Native refusal control, not entered Source work. */
+    const bool refused = !mc_client_world_tick_cleanup(call);
+    renderer->active = false;
+    CHECK(refused && call->scheduler == NULL && call->renderer != NULL &&
+          scheduler_borrows_ended(call) && call->scheduler_error.status == first.status &&
+          call->scheduler_error.operation == first.operation &&
+          call->scheduler_error.bytecode == first.bytecode &&
+          call->scheduler_error.child_bytecode == first.child_bytecode &&
+          call->scheduler_error.cause.status == first.cause.status &&
+          call->scheduler_error.cause.operation == first.cause.operation && call->failed &&
+          call->operation == first.operation && call->site.pc == (int32_t)first.bytecode);
+    CHECK(mc_client_world_tick_cleanup(call) && call->renderer == NULL &&
+          scheduler_borrows_ended(call) && call->scheduler_error.status == first.status &&
+          call->scheduler_error.operation == first.operation &&
+          call->scheduler_error.bytecode == first.bytecode &&
+          call->scheduler_error.cause.status == first.cause.status &&
+          call->scheduler_error.cause.operation == first.cause.operation && call->failed &&
+          call->operation == first.operation && call->site.pc == (int32_t)first.bytecode);
+    ok = true;
+cleanup:
+    if (renderer != NULL)
+        renderer->active = false;
+    if (call != NULL && !mc_client_world_tick_cleanup(call))
+        ok = false;
+    if (mc_client_entity_renderer_release(&renderer, NULL) != MC_CLIENT_ENTITY_RENDERER_OK)
+        ok = false;
+    if (graphics != NULL &&
+        mc_client_render_engine_classes_release(graphics) != MC_CLIENT_RENDER_ENGINE_OK)
+        ok = false;
+    free(views);
+    free(call);
+    return ok;
+}
 
 int main(int argc, char **argv) {
     int result = 1;
@@ -141,6 +248,7 @@ int main(int argc, char **argv) {
           !mc_entity_effect_has_pending(player) && player->holds == holds &&
           app->registry->runtime_borrows == borrows && fields->u && fields->private_a == 100 &&
           player->base.bt == 18 && player->base.bv == 20);
+    CHECK(scheduler_cleanup_projection(f, app, math));
     result = 0;
 cleanup:
     if (pins_changed && coordinate != NULL)

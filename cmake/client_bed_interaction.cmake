@@ -1,6 +1,8 @@
 include_guard(GLOBAL)
 option(MC_ENABLE_CLIENT_BED_PLACEMENT_TESTS
     "Run local imported-resource Bed placement and daytime interaction scene" OFF)
+option(MC_ENABLE_CLIENT_BED_SLEEP_TESTS
+    "Run local imported-resource nighttime Bed and natural sleep scene" OFF)
 
 target_sources(mc_entity_classes PRIVATE src/entity/player/sleep_result.c)
 target_sources(mc_simulation PRIVATE
@@ -31,6 +33,42 @@ if(BUILD_TESTING AND TARGET mc_test_world_selection_loop)
     endif()
 endif()
 
+if(BUILD_TESTING AND TARGET mc_test_world_selection_loop)
+    add_executable(mc_test_bed_sleep
+        tests/client/gameplay/test_bed_sleep.c
+        tests/client/world/test_load_world_foreign_loading.c
+        tests/client/world/test_render_global_entities.c
+        tests/client/world/test_refresh_entity.c
+        tests/client/world/test_renderer_focus.c)
+    target_include_directories(mc_test_bed_sleep PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}" src src/platform/time)
+    target_link_libraries(mc_test_bed_sleep PRIVATE
+        mc_client_runtime mc_client_saves mc_build_options)
+    if(CMAKE_CXX_COMPILER_LOADED)
+        set_property(TARGET mc_test_bed_sleep PROPERTY LINKER_LANGUAGE CXX)
+    endif()
+    if(WIN32 AND TARGET OpenAL)
+        add_custom_command(TARGET mc_test_bed_sleep POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
+                "$<TARGET_FILE_DIR:mc_test_bed_sleep>")
+    endif()
+endif()
+
+if(MC_ENABLE_CLIENT_BED_SLEEP_TESTS)
+    if(NOT WIN32 OR NOT BUILD_TESTING OR NOT TARGET mc_test_bed_sleep OR
+       NOT MC_ENABLE_CLIENT_DISPLAY_TESTS OR NOT MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
+        message(FATAL_ERROR "Bed sleep scene requires native Windows client/display tests and imported resources")
+    endif()
+    add_test(NAME client.bed_sleep COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_bed_sleep.py"
+        --executable "$<TARGET_FILE:mc_test_bed_sleep>"
+        --assets "${MC_APPLICATION_STARTUP_IMPORTED_RESOURCES}"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/bed-sleep-scenes")
+    set_tests_properties(client.bed_sleep PROPERTIES
+        LABELS "local;integration;client;input;graphics;entity;ownership;storage"
+        RESOURCE_LOCK mc_desktop_focus TIMEOUT 300)
+endif()
+
 if(MC_ENABLE_CLIENT_BED_PLACEMENT_TESTS)
     if(NOT WIN32 OR NOT BUILD_TESTING OR NOT TARGET mc_test_bed_placement OR
        NOT MC_ENABLE_CLIENT_DISPLAY_TESTS OR NOT MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
@@ -56,6 +94,11 @@ if(BUILD_TESTING)
             ${_mc_bed_fixture_options}
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_bed_placement.py" --self-test)
         set_tests_properties("tools.bed_placement_fixture_${suffix}" PROPERTIES
+            LABELS "public;unit;tools;client;storage" TIMEOUT 90)
+        add_test(NAME "tools.bed_sleep_fixture_${suffix}" COMMAND Python3::Interpreter
+            ${_mc_bed_fixture_options}
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_bed_sleep.py" --self-test)
+        set_tests_properties("tools.bed_sleep_fixture_${suffix}" PROPERTIES
             LABELS "public;unit;tools;client;storage" TIMEOUT 90)
     endforeach()
 

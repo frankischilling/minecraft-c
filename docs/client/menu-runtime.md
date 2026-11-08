@@ -70,6 +70,11 @@ the renderer and completes picking. Its healthy no-screen path now executes
 also returns through World scheduling, terrain and the qualified Mob drawing
 profiles described below. All eleven default Overworld Mob drawing bodies exist, but
 real simulation can still stop a loaded frame before it returns.
+One prepared [nighttime Bed scene](bed-sleep.md) now returns through ordinary
+placement, sleep entry, natural timer progression, default-hostile CQfalse,
+dawn, wake, HUD fade and full source save. Completed call totals survive
+several simulation ticks in a single frame without retaining expired child
+views. This evidence remains limited to that monitor-2 Windows scene.
 Create, Rename and Delete retain the precise
 [unfinished prefixes](world-selection.md#transitions-and-lifetime).
 Fullscreen, source F2 screenshots, debug timing, connection screens and several

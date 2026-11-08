@@ -19,9 +19,11 @@ research can proceed in parallel, but shared interfaces, builds, Git operations
 and integration need explicit ownership.
 
 The [Player tick wake parents](entity/player-sleep-tick.md) now have bounded
-original-prefix and native ownership coverage. Next sleep work remains the
-default-hostile CQ/FW branch, real loaded-night acceptance
-and original whole-parent qualification.
+original-prefix and native ownership coverage. The
+[default-hostile CQ/FW component](world/nightmare.md) and one
+[natural loaded-night scene](client/bed-sleep.md) now have separate finite
+evidence. Broader nightmare/combat gameplay and original whole-Player-parent
+qualification remain open.
 The [damage wake parent](entity/player-damage-wake.md) and
 [sleeping-NBT parent](entity/player-nbt.md) now have their own finite component
 comparisons and checked cleanup. Broader attackers and natural hazard play

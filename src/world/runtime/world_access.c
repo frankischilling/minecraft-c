@@ -416,7 +416,7 @@ mc_world_storage_status mc_world_access_call_cell(mc_world_access *access, mc_wo
     if (access != NULL && access->source_callbacks.cell != NULL) {
         const mc_world_storage_status status =
             access->source_callbacks.cell(access->context, world, x, y, z, error, failure);
-        if (failure->render_global != NULL)
+        if (failure->render_global != NULL || failure->receipt != NULL)
             failure->receiver = access;
         return status;
     }
@@ -434,7 +434,7 @@ mc_world_storage_status mc_world_access_call_range(mc_world_access *access, mc_w
     if (access != NULL && access->source_callbacks.range != NULL) {
         const mc_world_storage_status status = access->source_callbacks.range(
             access->context, world, x0, y0, z0, x1, y1, z1, error, failure);
-        if (failure->render_global != NULL)
+        if (failure->render_global != NULL || failure->receipt != NULL)
             failure->receiver = access;
         return status;
     }
@@ -452,7 +452,7 @@ mc_world_storage_status mc_world_access_call_sound(mc_world_access *access, mc_w
     if (access != NULL && access->source_callbacks.sound != NULL) {
         const mc_world_storage_status status = access->source_callbacks.sound(
             access->context, world, name, x, y, z, volume, pitch, error, failure);
-        if (failure->render_global != NULL)
+        if (failure->render_global != NULL || failure->receipt != NULL)
             failure->receiver = access;
         return status;
     }
@@ -471,7 +471,7 @@ mc_world_storage_status mc_world_access_call_particle(mc_world_access *access,
     if (access != NULL && access->source_callbacks.particle != NULL) {
         const mc_world_storage_status status = access->source_callbacks.particle(
             access->context, world, name, x, y, z, vx, vy, vz, error, failure);
-        if (failure->render_global != NULL)
+        if (failure->render_global != NULL || failure->receipt != NULL)
             failure->receiver = access;
         return status;
     }
@@ -490,7 +490,7 @@ mc_world_storage_status mc_world_access_call_entity_added(mc_world_access *acces
     if (access != NULL && access->source_callbacks.entity_added != NULL) {
         const mc_world_storage_status status =
             access->source_callbacks.entity_added(access->context, world, entity, error, failure);
-        if (failure->render_global != NULL)
+        if (failure->render_global != NULL || failure->receipt != NULL)
             failure->receiver = access;
         return status;
     }
@@ -508,7 +508,7 @@ mc_world_storage_status mc_world_access_call_entity_removed(mc_world_access *acc
     if (access != NULL && access->source_callbacks.entity_removed != NULL) {
         const mc_world_storage_status status =
             access->source_callbacks.entity_removed(access->context, world, entity, error, failure);
-        if (failure->render_global != NULL)
+        if (failure->render_global != NULL || failure->receipt != NULL)
             failure->receiver = access;
         return status;
     }
@@ -526,7 +526,7 @@ mc_world_storage_status mc_world_access_call_sky_changed(mc_world_access *access
     if (access != NULL && access->source_callbacks.sky_changed != NULL) {
         const mc_world_storage_status status =
             access->source_callbacks.sky_changed(access->context, world, error, failure);
-        if (failure->render_global != NULL)
+        if (failure->render_global != NULL || failure->receipt != NULL)
             failure->receiver = access;
         return status;
     }
@@ -542,7 +542,7 @@ mc_world_storage_status mc_world_access_call_tile_entity_dirty(
     if (access != NULL && access->source_callbacks.tile_entity_dirty != NULL) {
         const mc_world_storage_status status = access->source_callbacks.tile_entity_dirty(
             access->context, world, x, y, z, tile, error, failure);
-        if (failure->render_global != NULL)
+        if (failure->render_global != NULL || failure->receipt != NULL)
             failure->receiver = access;
         return status;
     }
@@ -560,7 +560,7 @@ mc_world_access_call_auxiliary(mc_world_access *access, mc_world_runtime *world,
     if (access != NULL && access->source_callbacks.auxiliary != NULL) {
         const mc_world_storage_status status = access->source_callbacks.auxiliary(
             access->context, world, player, effect, x, y, z, data, error, failure);
-        if (failure->render_global != NULL)
+        if (failure->render_global != NULL || failure->receipt != NULL)
             failure->receiver = access;
         return status;
     }
@@ -576,7 +576,7 @@ mc_world_storage_status mc_world_access_receipt_create(mc_world_access *receiver
                                                        mc_world_access_receipt **out,
                                                        mc_world_access_failure *view,
                                                        mc_world_storage_error *error) {
-    if (receiver == NULL || cause == NULL || out == NULL || view == NULL)
+    if (receiver == NULL || out == NULL || view == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "WorldAccess receipt arguments");
     if (receiver->receipt_holds == SIZE_MAX)
         return result(error, MC_WORLD_STORAGE_LIMIT, "WorldAccess receipt owner limit");

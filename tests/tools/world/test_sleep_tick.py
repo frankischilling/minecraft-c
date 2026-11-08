@@ -40,17 +40,17 @@ def main():
         constructor_lines = []
         for line in lines[:-1]:
             if line.startswith(b'SLEEP_RANGE '):
-                matched = re.fullmatch(rb'SLEEP_RANGE ([0-7]) ([0-9]+) ([0-9]+) ([0-9]+)', line)
+                matched = re.fullmatch(rb'SLEEP_RANGE ([0-8]) ([0-9]+) ([0-9]+) ([0-9]+)', line)
                 support.require(matched is not None, 'Malformed World sleep range observation')
                 ranges.append([int(matched[i]) for i in range(1, 5)])
             else:
                 constructor_lines.append(line)
-        support.require(len(lines) == 25 and
-                        constructor_lines == [b'16 achievements', b'151 recipes'] * 8,
+        support.require(len(lines) == 28 and
+                        constructor_lines == [b'16 achievements', b'151 recipes'] * 9,
                         'Unexpected World sleep tick constructor output')
-        support.require(len(ranges) == 8 and [row[0] for row in ranges] == list(range(8)),
+        support.require(len(ranges) == 9 and [row[0] for row in ranges] == list(range(9)),
                         'Missing actual World observer count records')
-        support.require([row[3] for row in ranges] == [2, 0, 1, 1, 1, 2, 1, 2] and
+        support.require([row[3] for row in ranges] == [2, 0, 1, 1, 1, 2, 1, 2, 2] and
                         all(row[2] >= row[3] for row in ranges),
                         'Complete cell/Bed-target observer counts')
         support.require(re.fullmatch(rb'World sleep tick: [1-9][0-9]* checks', lines[-1]) is not None,

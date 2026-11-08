@@ -1337,7 +1337,10 @@ static bool path_ownership_control(path_fixture *f) {
     return true;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_PATH_ENTRY
+#define MC_PATH_ENTRY main
+#endif
+int MC_PATH_ENTRY(int argc, char **argv) {
     if (argc != 6)
         return 2;
     path_profile profiles[256] = {0};

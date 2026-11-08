@@ -392,7 +392,8 @@ static bool wolf_health(mc_entity *entity, int32_t *out, mc_entity_tick_error *e
     return true;
 }
 
-static bool ambient(mc_entity *entity, mc_registry_classes *classes, mc_entity_tick_error *e) {
+bool mc_tick_ambient_entered(mc_entity *entity, mc_registry_classes *classes,
+                             mc_entity_tick_error *e) {
     const char *text = NULL;
     e->source_class = "ls";
     e->source_method = "T()V";
@@ -502,7 +503,7 @@ static bool living_body(mc_entity *entity, mc_registry_classes *classes, mc_math
                               !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SLIME);
         fields->private_a = creature ? -120 : -80;
         living_at(e, 46);
-        if (!ambient(entity, classes, e))
+        if (!mc_tick_ambient_entered(entity, classes, e))
             return false;
     }
     if (!entity->base.be && fields->Y > 0) {

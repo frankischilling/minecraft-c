@@ -390,6 +390,13 @@ static bool tick(mc_client_menu_loop *loop) {
         loop->state.world_tick = &loop->world_tick;
         if (returned) {
             ++loop->state.world_tick_returns;
+            const mc_world_tick_state *scheduler = &loop->world_tick.scheduler_state;
+            loop->state.nightmare_calls += scheduler->nightmare_calls;
+            loop->state.nightmare_returns += scheduler->nightmare_returns;
+            loop->state.nightmare_true_returns += scheduler->nightmare_result ? 1u : 0u;
+            loop->state.nightmare_wake_returns += scheduler->nightmare_wakes;
+            loop->state.sleep_wake_calls += scheduler->wake_calls;
+            loop->state.sleep_wake_returns += scheduler->wake_returns;
             if (loop->world_tick.scheduler_state.random_returned) {
                 ++loop->state.random_chunk_calls;
                 loop->state.last_random_chunk_count =

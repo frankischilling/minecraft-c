@@ -3,6 +3,7 @@
 
 #include "mc/core/java/int_set.h"
 #include "mc/world/runtime/lighting.h"
+#include "nightmare_classes_internal.h"
 
 typedef struct mc_world_chunk_candidate {
     int32_t x, z, hash;
@@ -49,6 +50,7 @@ struct mc_world_runtime_classes {
     /* Actual client cq.b class lifetime, separate from each World.P. */
     bool spawning_initialized;
     mc_world_active_chunks spawning_chunks;
+    mc_world_nightmare_namespace nightmare;
 };
 
 #endif

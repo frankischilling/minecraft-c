@@ -1,4 +1,5 @@
 #include "mc/entity/mob/spawning.h"
+#include "spawn_failure_internal.h"
 
 #include "../../world/runtime/chunk_provider_internal.h"
 #include "../../world/runtime/construction_internal.h"
@@ -28,6 +29,67 @@ typedef struct spawn_frame {
     mc_mob_spawn_error *error;
     bool math_held;
 } spawn_frame;
+
+static bool same_failure(const mc_mob_spawn_error *e, mc_world_storage_status status,
+                         const char *operation) {
+    return status != MC_WORLD_STORAGE_OK && status == e->status && operation == e->operation;
+}
+
+mc_mob_spawn_failure_view mc_mob_spawn_error_project(mc_mob_spawn_error *e) {
+    mc_mob_spawn_failure_view view = {0};
+    if (e == NULL || e->status == MC_WORLD_STORAGE_OK)
+        return view;
+    switch (e->active_child) {
+        case MC_MOB_SPAWN_CHILD_QUERY:
+            view.query = &e->detail.query;
+            break;
+        case MC_MOB_SPAWN_CHILD_BRIGHTNESS:
+            if (same_failure(e, e->detail.brightness.status, e->detail.brightness.operation)) {
+                view.cause = &e->detail.brightness.cause;
+                if (e->detail.brightness.query_reached)
+                    view.query = &e->detail.brightness.query;
+            }
+            break;
+        case MC_MOB_SPAWN_CHILD_NO_ENTITY:
+            if (same_failure(e, e->detail.no_entity.status, e->detail.no_entity.operation))
+                view.nearby = &e->detail.no_entity.nearby;
+            break;
+        case MC_MOB_SPAWN_CHILD_COLLISION:
+            view.nearby = &e->detail.collision.nearby;
+            break;
+        case MC_MOB_SPAWN_CHILD_MATERIAL:
+            if (same_failure(e, e->detail.material.status, e->detail.material.operation)) {
+                view.cause = &e->detail.material.cause;
+                view.registry = &e->detail.material.registry;
+                view.nearby = &e->detail.material.block.nearby;
+            }
+            break;
+        case MC_MOB_SPAWN_CHILD_ACQUISITION:
+            if (e->detail.acquisition.status != MC_CHUNK_ACQUIRE_OK &&
+                same_failure(e, e->detail.acquisition.cause.status,
+                             e->detail.acquisition.cause.operation)) {
+                view.acquisition = &e->detail.acquisition;
+                view.cause = &view.acquisition->cause;
+                view.registry = &view.acquisition->registry;
+            }
+            break;
+        case MC_MOB_SPAWN_CHILD_NONE:
+        case MC_MOB_SPAWN_CHILD_CHUNK_RANDOM:
+            break;
+    }
+    if (view.nearby != NULL)
+        view.query = &view.nearby->query;
+    if (view.query != NULL) {
+        if (!same_failure(e, view.query->status, view.query->operation)) {
+            view.query = NULL;
+            view.nearby = NULL;
+        } else {
+            view.cause = &view.query->cause;
+            view.registry = &view.query->registry;
+        }
+    }
+    return view;
+}
 
 static mc_mob_site location(const char *c, const char *m, const char *d, int32_t pc) {
     return (mc_mob_site){c, m, d, pc};
@@ -159,6 +221,7 @@ static bool light(spawn_frame *f, int32_t x, int32_t y, int32_t z, bool plant, i
     if (!world_enter(f, &world))
         return false;
     mc_world_query_error *e = &f->error->detail.query;
+    f->error->active_child = MC_MOB_SPAWN_CHILD_QUERY;
     const mc_world_storage_status status =
         plant ? mc_world_runtime_plant_light(world, x, y, z, out, e)
               : mc_world_runtime_block_light(world, x, y, z, out, e);
@@ -168,6 +231,7 @@ static bool light(spawn_frame *f, int32_t x, int32_t y, int32_t z, bool plant, i
             location("fd", plant ? "m" : "a", plant ? "(III)I" : "(IIIZ)I", (int32_t)e->bytecode);
         return fail(f, status, e->operation, true, NULL);
     }
+    f->error->active_child = MC_MOB_SPAWN_CHILD_NONE;
     return true;
 }
 
@@ -176,6 +240,7 @@ static bool brightness(spawn_frame *f, int32_t x, int32_t y, int32_t z, float *o
     if (!world_enter(f, &world))
         return false;
     mc_world_brightness_error *e = &f->error->detail.brightness;
+    f->error->active_child = MC_MOB_SPAWN_CHILD_BRIGHTNESS;
     const mc_world_storage_status status = mc_world_runtime_brightness(world, x, y, z, out, e);
     mc_world_runtime_call_leave(world);
     if (status != MC_WORLD_STORAGE_OK) {
@@ -187,6 +252,7 @@ static bool brightness(spawn_frame *f, int32_t x, int32_t y, int32_t z, float *o
                         ? "java/lang/NullPointerException"
                         : NULL);
     }
+    f->error->active_child = MC_MOB_SPAWN_CHILD_NONE;
     return true;
 }
 
@@ -195,6 +261,7 @@ static bool no_entity(spawn_frame *f, bool *out) {
     if (!world_enter(f, &world))
         return false;
     mc_world_spawn_collision_error *e = &f->error->detail.no_entity;
+    f->error->active_child = MC_MOB_SPAWN_CHILD_NO_ENTITY;
     const mc_world_storage_status status =
         mc_world_runtime_no_entity_collision(world, f->entity->bounds, out, e);
     mc_world_runtime_call_leave(world);
@@ -202,6 +269,7 @@ static bool no_entity(spawn_frame *f, bool *out) {
         f->error->child = location("fd", "a", "(Leq;)Z", (int32_t)e->bytecode);
         return fail(f, status, e->operation, e->native_policy, e->exception_class);
     }
+    f->error->active_child = MC_MOB_SPAWN_CHILD_NONE;
     return true;
 }
 
@@ -222,6 +290,7 @@ static bool living(spawn_frame *f, bool *out) {
         return false;
     mc_world_collision_list_view view = {0};
     mc_world_collision_error *e = &f->error->detail.collision;
+    f->error->active_child = MC_MOB_SPAWN_CHILD_COLLISION;
     mc_world_storage_status status =
         mc_world_runtime_collision_boxes(world, f->entity, f->entity->bounds, &view, e);
     if (status != MC_WORLD_STORAGE_OK) {
@@ -230,6 +299,7 @@ static bool living(spawn_frame *f, bool *out) {
         mc_world_runtime_call_leave(world);
         return fail(f, status, e->nearby.query.operation, true, NULL);
     }
+    f->error->active_child = MC_MOB_SPAWN_CHILD_NONE;
     at(f, "ls", "d", "()Z", 26);
     status = mc_world_collision_list_view_count(&view, &f->state->collision_count);
     const bool null_list = view.identity == NULL;
@@ -247,12 +317,14 @@ static bool living(spawn_frame *f, bool *out) {
     if (!world_enter(f, &world))
         return false;
     mc_world_material_movement_error *liquid = &f->error->detail.material;
+    f->error->active_child = MC_MOB_SPAWN_CHILD_MATERIAL;
     status = mc_world_runtime_contains_liquid(world, f->entity->bounds, NULL, &allowed, liquid);
     mc_world_runtime_call_leave(world);
     if (status != MC_WORLD_STORAGE_OK) {
         f->error->child = location("fd", "b", "(Leq;)Z", (int32_t)liquid->bytecode);
         return fail(f, status, liquid->operation, true, NULL);
     }
+    f->error->active_child = MC_MOB_SPAWN_CHILD_NONE;
     *out = !allowed;
     at(f, "ls", "d", "()Z", 53);
     return true;
@@ -265,6 +337,7 @@ static bool below_grass(spawn_frame *f, int32_t x, int32_t y, int32_t z, unsigne
     mc_world_runtime *world;
     if (!world_enter(f, &world))
         return false;
+    f->error->active_child = MC_MOB_SPAWN_CHILD_ACQUISITION;
     mc_world_storage_status status =
         mc_world_runtime_block_get_detailed(world, x, mc_java_i32_sub(y, 1), z, &f->state->below_id,
                                             &f->error->world, &f->error->detail.acquisition);
@@ -272,6 +345,7 @@ static bool below_grass(spawn_frame *f, int32_t x, int32_t y, int32_t z, unsigne
         mc_world_runtime_call_leave(world);
         return fail(f, status, f->error->world.operation, true, NULL);
     }
+    f->error->active_child = MC_MOB_SPAWN_CHILD_NONE;
     at(f, "bg", method, descriptor, static_pc);
     const mc_block *grass = NULL;
     const mc_registry_status registry = mc_registry_block_static_get(
@@ -364,6 +438,7 @@ static bool monster(spawn_frame *f, bool *out) {
     status = mc_world_runtime_call_enter(world, &f->error->world);
     if (status != MC_WORLD_STORAGE_OK)
         return fail(f, status, f->error->world.operation, true, NULL);
+    f->error->active_child = MC_MOB_SPAWN_CHILD_QUERY;
     status = mc_world_runtime_saved_light(world, sky, x, y, z, &f->state->saved_sky,
                                           &f->error->detail.query);
     mc_world_runtime_call_leave(world);
@@ -373,6 +448,7 @@ static bool monster(spawn_frame *f, bool *out) {
             location("fd", "a", "(Leb;III)I", (int32_t)f->error->detail.query.bytecode);
         return fail(f, status, f->error->detail.query.operation, true, NULL);
     }
+    f->error->active_child = MC_MOB_SPAWN_CHILD_NONE;
     at(f, "gz", "d", "()Z", 46);
     if (!own_draw(f, 32, &f->state->draw32))
         return false;
@@ -538,6 +614,7 @@ static bool slime(spawn_frame *f, bool *out) {
         goto done;
     }
     mc_world_runtime_acquisition_error *acquisition = &f->error->detail.acquisition;
+    f->error->active_child = MC_MOB_SPAWN_CHILD_ACQUISITION;
     const mc_chunk_acquire_status acquired = mc_world_runtime_get_detailed(
         captured, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &chunk, acquisition);
     f->state->chunk_reached = true;
@@ -555,6 +632,7 @@ static bool slime(spawn_frame *f, bool *out) {
                    true, NULL);
         goto done;
     }
+    f->error->active_child = MC_MOB_SPAWN_CHILD_NONE;
     if (chunk != NULL) {
         if (!captured->references.retain(captured->references.owner, chunk)) {
             f->error->world = captured->last_error;
@@ -594,6 +672,7 @@ static bool slime(spawn_frame *f, bool *out) {
         goto done;
     }
     mc_world_chunk_random_error *random = &f->error->detail.chunk_random;
+    f->error->active_child = MC_MOB_SPAWN_CHILD_CHUNK_RANDOM;
     status = mc_world_runtime_chunk_random(captured, chunk, INT64_C(987234911),
                                            &f->state->chunk_random, &f->state->chunk, random);
     if (status != MC_WORLD_STORAGE_OK) {
@@ -602,6 +681,7 @@ static bool slime(spawn_frame *f, bool *out) {
         (void)fail(f, status, random->operation, random->native_policy, random->exception_class);
         goto done;
     }
+    f->error->active_child = MC_MOB_SPAWN_CHILD_NONE;
     at(f, "uw", "d", "()Z", 61);
     if (!mc_java_random_next_bounded(&f->state->chunk_random, 10, &f->state->chunk_draw10)) {
         (void)fail(f, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Slime Chunk Random bound", true, NULL);

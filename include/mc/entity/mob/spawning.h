@@ -22,6 +22,17 @@ typedef struct mc_mob_spawn_state {
     mc_java_random chunk_random;
 } mc_mob_spawn_state;
 
+typedef enum mc_mob_spawn_child {
+    MC_MOB_SPAWN_CHILD_NONE,
+    MC_MOB_SPAWN_CHILD_QUERY,
+    MC_MOB_SPAWN_CHILD_BRIGHTNESS,
+    MC_MOB_SPAWN_CHILD_NO_ENTITY,
+    MC_MOB_SPAWN_CHILD_COLLISION,
+    MC_MOB_SPAWN_CHILD_MATERIAL,
+    MC_MOB_SPAWN_CHILD_ACQUISITION,
+    MC_MOB_SPAWN_CHILD_CHUNK_RANDOM
+} mc_mob_spawn_child;
+
 typedef struct mc_mob_spawn_error {
     mc_world_storage_status status;
     const char *operation, *exception_class;
@@ -31,6 +42,9 @@ typedef struct mc_mob_spawn_error {
     mc_math_class_error math;
     mc_world_storage_error world;
     mc_registry_error registry;
+    /* Selects only the genuinely entered, failing detail invocation. A
+     * successful child clears this tag before subsequent source/native work. */
+    mc_mob_spawn_child active_child;
 
     union {
         mc_world_query_error query;

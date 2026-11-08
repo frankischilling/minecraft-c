@@ -242,6 +242,13 @@ static bool sleep_tick_case(const char *root, unsigned int mode, mc_math_classes
     CHECK(sleep_tick_put(f->states[0]->data, 8, 64, 8, 26, 12));
     world->fields.J = true;
     world->fields.N = world->fields.O = false;
+    if (mode == 8) {
+        /* Declared native caller input: retain default-hostile dispatch while
+         * the only supported spawn columns have real high BlockLight. */
+        world->fields.N = true;
+        world->fields.q = 2;
+        memset(f->states[0]->data->block_light, 255, MC_CHUNK_NIBBLE_BYTES);
+    }
     world->fields.p = 40;
     CHECK(mc_world_info_source_time_set(world->fields.x, 15000) == MC_WORLD_INFO_OK &&
           mc_world_info_source_rain_time_set(world->fields.x, 1000) == MC_WORLD_INFO_OK &&
@@ -354,20 +361,25 @@ static bool sleep_tick_case(const char *root, unsigned int mode, mc_math_classes
                     state.wake_returns, state.random_chunk_count, observer.calls,
                     observer.bed_calls, observer.ranges);
         CHECK(completed);
-        if (mode == 0 || mode == 4) {
+        if (mode == 0 || mode == 4 || mode == 8) {
             /* Stored air does not guarantee a range notification. Count every
              * actual call, while requiring the complete source work itself. */
             CHECK(state.returned && state.source_pc == 198 && state.random != NULL &&
                   state.random->returned && state.random_chunk_count == 361 &&
                   state.random->samples_returned == 361u * 80u);
         }
+        if (mode == 8)
+            CHECK(state.nightmare_calls == 1 && state.nightmare_returns == 1 &&
+                  !state.nightmare_result && state.nightmare_wakes == 0 &&
+                  state.nightmare == NULL && state.error->nightmare == NULL && world->fields.N &&
+                  world->fields.q == 2);
         if (mode == 5)
             CHECK(world->fields.d == NULL && !players[1]->local_player->fields.player.u);
         if (mode == 4)
             CHECK(observer.captured->count == 1 && players[1]->local_player->fields.player.u);
     }
     if (mode != 1)
-        CHECK(observer.bed_calls == (mode == 0 || mode == 5 || mode == 7 ? 2u : 1u) &&
+        CHECK(observer.bed_calls == (mode == 0 || mode == 5 || mode == 7 || mode == 8 ? 2u : 1u) &&
               observer.calls >= observer.bed_calls && observer.parent_busy);
     const unsigned int calls = observer.calls;
     players[0]->base.world = world;
@@ -429,7 +441,7 @@ int main(int argc, char **argv) {
           mc_math_classes_create(SIZE_MAX, &math, NULL) == MC_MATH_CLASS_OK &&
           mc_math_classes_ensure(math, NULL) == MC_MATH_CLASS_OK);
     tick_resources = mc_resource_files_source(files);
-    for (unsigned int mode = 0; mode < 8; ++mode)
+    for (unsigned int mode = 0; mode < 9; ++mode)
         CHECK(sleep_tick_case(root, mode, math));
     result = 0;
 cleanup:

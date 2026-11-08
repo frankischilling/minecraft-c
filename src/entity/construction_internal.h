@@ -62,7 +62,7 @@ typedef struct mc_entity_position_rotation_error {
     bool source_null, native_policy;
 } mc_entity_position_rotation_error;
 
-/* Actual inherited client SN.c(DDDFF)V on canonical LocalPlayer storage.
+/* Actual inherited client SN.c(DDDFF)V on canonical LocalPlayer or Mob storage.
  * Caller holds the receiver through this entered child. Preserve x/history
  * before reached FP admission, then y+offset, z/history, both angles and the
  * actual SN.e(DDD) same-bounds child. A null bounds failure retains all pose

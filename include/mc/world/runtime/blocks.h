@@ -33,7 +33,10 @@ mc_world_runtime_block_get_detailed(mc_world_runtime *, int32_t x, int32_t y, in
 
 /* Same admission and real acquisition as block_get. Outside returns zero;
  * the actual blank-chunk getter also returns zero. A normal chunk reads its
- * packed metadata, with even Y in the low nibble and odd Y in the high.
+ * actual current e NibbleArray/backing, with even Y in the low nibble and odd
+ * Y in the high. NULL e/backing and short backing preserve output and report
+ * the reached source failure. Generic stored states without a bound Chunk
+ * object retain their preexisting native fixed-plane representation.
  * Native failure preserves out and any earlier acquisition effects. */
 mc_world_storage_status mc_world_runtime_metadata_get(mc_world_runtime *runtime, int32_t x,
                                                       int32_t y, int32_t z, int32_t *out,

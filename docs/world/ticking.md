@@ -32,14 +32,20 @@ failure and is released at scheduler retirement. World/Chunk publications own
 their own occurrences. A first-constructor observation records actual source
 values before CQ773 without changing the attempt or Random stream.
 Skeleton jockey [mounting and riding](../entity/mounting.md) now run.
+With hostiles enabled and difficulty at least one, the sleeping branch first
+executes the [nightmare body](nightmare.md) through one reused direct-World FW.
+A true result skips dawn alignment and weather clearing; a false result
+continues through the ordinary time alignment and wake loop.
 The sleeping branch calls the retained [Player wake body](../entity/player-sleep.md)
 after its actual predicate and time alignment. It preserves the captured Player
-iterator, wrapping modification counter and ordered weather resets. Eight
+iterator, wrapping modification counter and ordered weather resets. Nine
 authored native controls pass on Windows and sanitized Linux, including complete
 361-Chunk/28,880-sample stored-air tails and retained source/cleanup failures.
-These controls add no original World-runtime or natural elapsed-sleep evidence.
-The default-difficulty hostile CQ33/FW7 branch and loaded-night acceptance
-remain unfinished or unqualified.
+The ninth control retains difficulty 2 and hostile spawning, completes CQfalse
+before both Player wakes, and returns through the full random Chunk tail.
+These are authored caller inputs. The separate
+[loaded Bed scene](../client/bed-sleep.md) qualifies one natural timer/dawn route;
+unrestricted nighttime behavior remains unqualified.
 Random Chunk work now retains the actual Chunk local through cave sounds,
 weather, snow/ice and all eighty raw-byte samples per coordinate. Its selected
 concrete Block ticks and genuine Lightning constructor keep their own reached

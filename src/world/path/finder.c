@@ -1,3 +1,4 @@
+#include "../runtime/runtime_internal.h"
 #include "path_internal.h"
 #include <stddef.h>
 #include <string.h>
@@ -127,11 +128,50 @@ mc_path_status mc_path_finder_create(mc_entity_classes *classes, mc_registry_cla
     return MC_PATH_OK;
 }
 
+mc_path_status mc_path_finder_create_for_world(mc_entity_classes *classes,
+                                               mc_registry_classes *registry, mc_math_classes *math,
+                                               mc_world_runtime *world,
+                                               const mc_path_finder_limits *limits,
+                                               mc_path_budget *budget, mc_path_finder **out,
+                                               mc_path_error *error) {
+    const mc_path_status status =
+        mc_path_finder_create(classes, registry, math, NULL, limits, budget, out, error);
+    if (status != MC_PATH_OK)
+        return status;
+    mc_path_finder *w = *out;
+    w->state.direct_world = true;
+    w->state.world = world;
+    w->world_access = pf_alloc(w, sizeof(*w->world_access), false);
+    if (w->world_access == NULL) {
+        if (error != NULL)
+            *error = w->error.path;
+        return w->error.path.status;
+    }
+    mc_path_world_access *access = w->world_access;
+    access->world = world;
+    mc_path_error_init(&access->cleanup);
+    if (world != NULL) {
+        access->held = mc_world_runtime_binding_retain(world);
+        if (!access->held) {
+            access->error = world->last_error;
+            w->error.world = &access->error;
+            (void)pf_fail(
+                w, access->error.status == MC_WORLD_STORAGE_LIMIT ? MC_PATH_LIMIT : MC_PATH_STATE,
+                "Path direct World native occurrence");
+            if (error != NULL)
+                *error = w->error.path;
+            return w->error.path.status;
+        }
+    }
+    return MC_PATH_OK;
+}
+
 bool mc_path_finder_inspect(const mc_path_finder *w, mc_path_finder_state *out) {
     if (w == NULL || out == NULL)
         return false;
     *out = w->state;
     out->a = w->a;
+    out->cleanup = w->world_access == NULL ? NULL : &w->world_access->cleanup;
     out->heap_identity = w->b;
     out->map_identity = w->c;
     out->pending_heap_identity = w->pending_heap;
@@ -155,7 +195,7 @@ bool mc_path_finder_point_inspect(const mc_path_finder *w, const mc_path_point *
     return w != NULL && pf_point_snapshot(w->arena, p, out);
 }
 
-void mc_path_finder_destroy(mc_path_finder *w) {
+static void destroy_storage(mc_path_finder *w) {
     if (w == NULL)
         return;
     mc_entity_classes *classes = w->classes;
@@ -173,6 +213,63 @@ void mc_path_finder_destroy(mc_path_finder *w) {
         mc_entity_path_arena_close(classes);
     w->budget->bytes -= sizeof(*w);
     mc_entity_class_memory_retire(classes, w, sizeof(*w));
+}
+
+mc_path_status mc_path_finder_retire(mc_path_finder **slot, mc_path_error *error) {
+    mc_path_error local;
+    if (error == NULL)
+        error = &local;
+    mc_path_error_init(error);
+    if (slot == NULL) {
+        error->status = MC_PATH_ARGUMENT;
+        error->native_policy = true;
+        error->operation = "Path finder retirement slot";
+        return error->status;
+    }
+    mc_path_finder *w = *slot;
+    if (w == NULL)
+        return MC_PATH_OK;
+    if (w->state.active) {
+        error->status = MC_PATH_BUSY;
+        error->native_policy = true;
+        error->operation = "Path active finder retirement";
+        return error->status;
+    }
+    w->state.retiring = true;
+    if (!pf_capture_world_query(w)) {
+        *error = w->world_access->cleanup;
+        return error->status;
+    }
+    mc_path_world_access *access = w->world_access;
+    if (access != NULL) {
+        if (access->held && access->world->persistent_bindings == 0) {
+            access->cleanup.status = MC_PATH_STATE;
+            access->cleanup.native_policy = true;
+            access->cleanup.operation = "Path direct World occurrence retirement admission";
+            *error = access->cleanup;
+            return error->status;
+        }
+        for (size_t i = 0; i < access->receipt_count; ++i)
+            mc_world_access_failure_release(&access->receipts[i]);
+        access->receipt_count = 0;
+        if (access->held)
+            mc_world_runtime_binding_release(access->world);
+        access->held = false;
+    }
+    destroy_storage(w);
+    *slot = NULL;
+    return MC_PATH_OK;
+}
+
+void mc_path_finder_destroy(mc_path_finder *w) {
+    /* Compatibility for existing EW owners. Direct-World callers use the
+     * checked slot operation and retain their handle after a refusal. */
+    if (w != NULL && w->state.direct_world) {
+        mc_path_finder *slot = w;
+        (void)mc_path_finder_retire(&slot, NULL);
+        return;
+    }
+    destroy_storage(w);
 }
 
 bool pf_path_construct(mc_path_finder *w, mc_path_point **array, size_t length) {
@@ -404,9 +501,24 @@ static mc_path_status enter(mc_path_finder *w) {
         return MC_PATH_ARGUMENT;
     if (w->state.active)
         return MC_PATH_BUSY;
-    if (!w->state.constructed || w->state.failed || w->state.returned)
+    if (!w->state.constructed || w->state.failed || w->state.retiring ||
+        (w->state.returned && !w->state.direct_world))
         return MC_PATH_STATE;
+    if (w->state.returned) {
+        /* CQ replaces its DH local only after the next invocation returns.
+         * Such an independently retained local keeps its real arena/Points;
+         * the finder ends only its own preceding result occurrence here. */
+        mc_path_release(w->state.result);
+        w->state.result = NULL;
+        w->state.returned = false;
+        /* The passive journal describes this invocation only. Its backing
+         * storage can serve the next search without retaining or copying old
+         * diagnostic rows. Source Point/heap/map objects and cumulative native
+         * work/query ceilings remain independent of this observation count. */
+        w->state.query_count = 0;
+    }
     w->state.active = true;
+    ++w->state.searches;
     return MC_PATH_OK;
 }
 

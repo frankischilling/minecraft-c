@@ -1,6 +1,9 @@
 #include "mc/world/runtime/blocks.h"
 
 #include "../../block/registry/runtime_internal.h"
+#include "../../world/chunk/object_state_internal.h"
+#include "../../world/storage/objects_internal.h"
+#include "acquisition_internal.h"
 #include "construction_internal.h"
 #include "mc/block/registry/rendering.h"
 #include "mc/block/registry/runtime.h"
@@ -124,7 +127,10 @@ mc_world_runtime_block_get_failure(mc_world_runtime *runtime, int32_t x, int32_t
 static mc_world_storage_status metadata_get(mc_world_runtime *runtime, int32_t x, int32_t y,
                                             int32_t z, int32_t *out, mc_world_storage_error *error,
                                             mc_world_runtime_acquisition_error *acquisition,
-                                            bool *acquisition_failed) {
+                                            bool *acquisition_failed,
+                                            mc_world_metadata_source_error *source) {
+    if (source != NULL)
+        *source = (mc_world_metadata_source_error){0};
     if (runtime == NULL || out == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World metadata arguments");
     if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME ||
@@ -145,6 +151,37 @@ static mc_world_storage_status metadata_get(mc_world_runtime *runtime, int32_t x
         *out = 0;
         return result(error, MC_WORLD_STORAGE_OK, NULL);
     }
+    mc_world_chunk *object = mc_world_store_chunk_object(runtime->fields.w, chunk);
+    if (object != NULL) {
+        const mc_world_chunk_nibble *nibble = object->e;
+        const char *exception = NULL;
+        const char *operation = NULL;
+        unsigned int nibble_pc = 0;
+        if (nibble == NULL) {
+            exception = "java/lang/NullPointerException";
+            operation = "World metadata actual Chunk.e null receiver";
+        } else {
+            const int32_t cell = mc_java_i32_shl(x & 15, 11) | mc_java_i32_shl(z & 15, 7) | y;
+            const int32_t index = mc_java_i32_shr(cell, 1);
+            nibble_pc = ((uint32_t)cell & 1u) == 0 ? 36u : 47u;
+            if (nibble->a == NULL) {
+                exception = "java/lang/NullPointerException";
+                operation = "World metadata actual NibbleArray.a null backing";
+            } else if (index < 0 || (size_t)index >= nibble->length) {
+                exception = "java/lang/ArrayIndexOutOfBoundsException";
+                operation = "World metadata actual NibbleArray.a index";
+            } else {
+                *out =
+                    (int32_t)(((uint32_t)nibble->a[index] >> (((uint32_t)cell & 1u) * 4u)) & 15u);
+                return result(error, MC_WORLD_STORAGE_OK, NULL);
+            }
+        }
+        if (source != NULL)
+            *source = (mc_world_metadata_source_error){true, exception, 68, 7, nibble_pc};
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, operation);
+    }
+    /* Generic stored states have no source Chunk object. Preserve their
+     * preexisting native representation; bound GAME objects above read e. */
     if (chunk->data == NULL)
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World metadata owner");
     uint8_t metadata;
@@ -159,7 +196,7 @@ static mc_world_storage_status metadata_get(mc_world_runtime *runtime, int32_t x
 mc_world_storage_status mc_world_runtime_metadata_get(mc_world_runtime *runtime, int32_t x,
                                                       int32_t y, int32_t z, int32_t *out,
                                                       mc_world_storage_error *error) {
-    return metadata_get(runtime, x, y, z, out, error, NULL, NULL);
+    return metadata_get(runtime, x, y, z, out, error, NULL, NULL, NULL);
 }
 
 mc_world_storage_status
@@ -170,7 +207,7 @@ mc_world_runtime_metadata_get_detailed(mc_world_runtime *runtime, int32_t x, int
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                       "World detailed metadata acquisition output");
     acquisition_reset(acquisition);
-    return metadata_get(runtime, x, y, z, out, error, acquisition, NULL);
+    return metadata_get(runtime, x, y, z, out, error, acquisition, NULL, NULL);
 }
 
 mc_world_storage_status
@@ -182,7 +219,23 @@ mc_world_runtime_metadata_get_failure(mc_world_runtime *runtime, int32_t x, int3
                       "World detailed metadata acquisition output");
     bool acquisition_failed = false;
     const mc_world_storage_status status =
-        metadata_get(runtime, x, y, z, out, error, acquisition, &acquisition_failed);
+        metadata_get(runtime, x, y, z, out, error, acquisition, &acquisition_failed, NULL);
+    if (status != MC_WORLD_STORAGE_OK && !acquisition_failed)
+        acquisition_reset(acquisition);
+    return status;
+}
+
+mc_world_storage_status
+mc_world_runtime_metadata_get_source_failure(mc_world_runtime *runtime, int32_t x, int32_t y,
+                                             int32_t z, int32_t *out, mc_world_storage_error *error,
+                                             mc_world_runtime_acquisition_error *acquisition,
+                                             mc_world_metadata_source_error *source) {
+    if (acquisition == NULL || source == NULL)
+        return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                      "World metadata source diagnostic outputs");
+    bool acquisition_failed = false;
+    const mc_world_storage_status status =
+        metadata_get(runtime, x, y, z, out, error, acquisition, &acquisition_failed, source);
     if (status != MC_WORLD_STORAGE_OK && !acquisition_failed)
         acquisition_reset(acquisition);
     return status;

@@ -19,6 +19,9 @@ struct mc_world_access_receipt {
     size_t holds;
 };
 
+/* A generic source callback may have no RenderGlobal child. The independently
+ * owned receiver/receipt and its actual exception_class still carry that same
+ * invocation's Throwable; no renderer record is manufactured for it. */
 mc_world_storage_status mc_world_access_receipt_create(mc_world_access *,
                                                        const mc_client_render_global_error *,
                                                        mc_world_access_receipt **,

@@ -36,4 +36,16 @@ mc_world_runtime_metadata_get_failure(mc_world_runtime *runtime, int32_t x, int3
                                       int32_t *out, mc_world_storage_error *error,
                                       mc_world_runtime_acquisition_error *acquisition);
 
+typedef struct mc_world_metadata_source_error {
+    bool source_exception;
+    const char *exception_class;
+    unsigned int world_pc, chunk_pc, nibble_pc;
+} mc_world_metadata_source_error;
+
+/* Same metadata body and failure-only acquisition contract, with the actual
+ * FD68/LM7/WI array-load failure sites kept separately from native policy. */
+mc_world_storage_status mc_world_runtime_metadata_get_source_failure(
+    mc_world_runtime *, int32_t x, int32_t y, int32_t z, int32_t *out, mc_world_storage_error *,
+    mc_world_runtime_acquisition_error *, mc_world_metadata_source_error *);
+
 #endif

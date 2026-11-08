@@ -7,9 +7,12 @@
 #include "../../entity/classes/path_namespace_internal.h"
 #include "../../entity/entity_internal.h"
 #include "../../entity/player/tick_math_internal.h"
+#include "../runtime/acquisition_internal.h"
 #include "finder_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
+#include "mc/world/runtime/blocks.h"
+#include "mc/world/storage/source_chunk_loader.h"
 
 /* Older MSVC diagnoses this C17 flexible array as extension C4200. */
 #ifdef _MSC_VER
@@ -84,11 +87,24 @@ typedef struct mc_path_map {
     float d;
 } mc_path_map;
 
+typedef struct mc_path_world_access {
+    mc_world_runtime *world;
+    bool held, query_failed, source_copied;
+    mc_world_storage_error error;
+    mc_world_runtime_acquisition_error acquisition;
+    mc_world_metadata_source_error metadata;
+    mc_world_source_chunk_error source;
+    mc_world_access_failure receipts[4];
+    size_t receipt_count;
+    mc_path_error cleanup;
+} mc_path_world_access;
+
 struct mc_path_finder {
     mc_entity_classes *classes;
     mc_registry_classes *registry;
     mc_math_classes *math;
     mc_client_chunk_cache *a;
+    mc_path_world_access *world_access;
     mc_path_heap *b;
     mc_path_map *c;
     mc_path_heap *pending_heap;
@@ -118,6 +134,7 @@ void pf_arena_drop(mc_path_arena *);
 bool pf_registry_fail(mc_path_finder *, const char *);
 bool pf_cache_fail(mc_path_finder *, const char *);
 bool pf_query(mc_path_finder *, bool, int32_t, int32_t, int32_t, int32_t *);
+bool pf_capture_world_query(mc_path_finder *);
 mc_path_point *pf_point_new(mc_path_finder *);
 int32_t pf_point_key(int32_t, int32_t, int32_t);
 bool pf_point_equals(const mc_path_point *, const mc_path_point *);

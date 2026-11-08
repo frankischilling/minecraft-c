@@ -54,6 +54,45 @@ return an existing Point with different coordinates. Point equality still checks
 its coordinates and key. Heap priority ties, right-child selection, cache growth
 and the surviving array contents after clear follow their original bodies.
 
+## Direct World receiver
+
+The internal `mc_path_finder_create_for_world` entry constructs the same FW
+with the actual nullable World as its XP receiver. It creates no EW and enters
+no FD path wrapper. A null receiver survives construction and fails only when
+the search reaches an XP query. Direct block and metadata reads use the actual
+World/provider methods, including their acquisition order and bounded World
+coordinate behavior.
+
+Metadata reads on bound GAME Chunks now follow the actual mutable `Chunk.e`
+NibbleArray and its `a` backing. Rebinding either affects subsequent reads.
+The internal typed source record distinguishes the World call at68, null
+NibbleArray invocation at `lm.b7`, and even/odd backing loads at `wi.a36/47`.
+A short backing reaches its actual array-index exception. The older generic
+stored-state representation has no Java Chunk object; its existing fixed-plane
+read remains a native compatibility scope. It does not qualify mutable Java
+Chunk fields or metadata setters.
+
+A successfully returned direct finder accepts another search on the same
+heap, integer map and neighbor array. The source preparation clears the heap
+count and map entries at their original sites. Prior Point objects remain in
+the same arena; an independently retained Path keeps its original array,
+cursor and predecessor graph through subsequent searches and finder retirement.
+Callers retain a returned Path before preserving it across another request.
+The passive query journal records only the latest entered search and reuses
+its existing allocation. Total query and work counters remain cumulative;
+reusing diagnostic storage changes neither source queries nor their ceilings.
+
+`mc_path_finder_retire` checks native cleanup without replaying a query. Failed
+World queries retain their complete acquisition record, a copied source-loader
+failure and the actual WorldAccess receipts. Loader-copy storage is included in
+the admitted finder owner; capture and retirement require no later allocation
+from an exhausted request budget. Refused receipt capture or World-binding
+retirement preserves the finder and its first source cause for a later cleanup
+attempt. Legacy EW callers keep their existing constructor/destroy contract.
+The separate authored direct-World controls exercise reuse, null XP, block and
+metadata failures and cleanup refusal. These controls supply no new original
+comparison or whole-night gameplay qualification.
+
 ## Creature following
 
 Wandering retains the winning coordinates from ten evaluated candidates. A

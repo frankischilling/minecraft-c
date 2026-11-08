@@ -1,3 +1,4 @@
+#include "../runtime/acquisition_internal.h"
 #include "path_internal.h"
 #include <stddef.h>
 #include <string.h>
@@ -216,6 +217,117 @@ bool pf_cache_fail(mc_path_finder *w, const char *operation) {
                    operation);
 }
 
+static mc_path_status world_status(mc_world_storage_status status) {
+    return status == MC_WORLD_STORAGE_LIMIT               ? MC_PATH_LIMIT
+           : status == MC_WORLD_STORAGE_BUSY              ? MC_PATH_BUSY
+           : status == MC_WORLD_STORAGE_ALLOCATION_FAILED ? MC_PATH_ALLOCATION
+                                                          : MC_PATH_CHILD_FAILED;
+}
+
+static bool capture_failed(mc_path_finder *w, mc_path_status status, const char *operation) {
+    mc_path_world_access *access = w->world_access;
+    access->cleanup.status = status;
+    access->cleanup.operation = operation;
+    access->cleanup.native_policy = true;
+    access->cleanup.site = w->state.site;
+    return false;
+}
+
+bool pf_capture_world_query(mc_path_finder *w) {
+    mc_path_world_access *access = w->world_access;
+    if (access == NULL)
+        return true;
+    mc_path_error_init(&access->cleanup);
+    if (!access->query_failed)
+        return true;
+    if (access->acquisition.source_chunk != NULL && !access->source_copied) {
+        access->source = *access->acquisition.source_chunk;
+        access->source_copied = true;
+        access->acquisition.source_chunk = &access->source;
+        w->error.source_chunk = &access->source;
+    }
+    const mc_world_access_failure *receipts[] = {
+        &access->acquisition.batch.publication.world_access_failure,
+        &access->acquisition.tile_entity.world_access_failure,
+        &access->acquisition.tile_entity.publication.world_access_failure,
+        &access->acquisition.tile_entity.batch.publication.world_access_failure};
+    for (size_t i = 0; i < sizeof(receipts) / sizeof(*receipts); ++i) {
+        const mc_world_access_failure *receipt = receipts[i];
+        if (receipt->receipt == NULL)
+            continue;
+        bool captured = false;
+        for (size_t j = 0; j < access->receipt_count; ++j)
+            if (access->receipts[j].receipt == receipt->receipt)
+                captured = true;
+        if (captured)
+            continue;
+        if (access->receipt_count == sizeof(access->receipts) / sizeof(*access->receipts))
+            return capture_failed(w, MC_PATH_LIMIT, "Path direct World query receipt extent");
+        const mc_world_storage_status status =
+            mc_world_access_failure_retain(receipt, &access->receipts[access->receipt_count]);
+        if (status != MC_WORLD_STORAGE_OK)
+            return capture_failed(w, world_status(status), "Path direct World query receipt hold");
+        ++access->receipt_count;
+    }
+    return true;
+}
+
+static bool world_query(mc_path_finder *w, mc_path_query *q, bool metadata, int32_t x, int32_t y,
+                        int32_t z, int32_t *out) {
+    mc_path_world_access *access = w->world_access;
+    q->direct_world = true;
+    if (access->world == NULL)
+        return pf_source(w, "java/lang/NullPointerException", "Path null XP receiver");
+    const mc_world_storage_status status =
+        metadata
+            ? mc_world_runtime_metadata_get_source_failure(access->world, x, y, z, out,
+                                                           &access->error, &access->acquisition,
+                                                           &access->metadata)
+            : mc_world_runtime_block_get_failure(access->world, x, y, z, out, &access->error,
+                                                 &access->acquisition);
+    q->world_status = status;
+    if (status == MC_WORLD_STORAGE_OK)
+        return true;
+    access->query_failed = true;
+    w->error.world = &access->error;
+    w->error.acquisition = &access->acquisition;
+    w->error.source_chunk = access->acquisition.source_chunk;
+    w->error.metadata = metadata ? &access->metadata : NULL;
+    const char *exception =
+        metadata && access->metadata.source_exception ? access->metadata.exception_class : NULL;
+    const bool null_provider =
+        access->error.operation != NULL &&
+        strcmp(access->error.operation, "World block provider receiver") == 0;
+    if (null_provider)
+        exception = "java/lang/NullPointerException";
+    if (access->acquisition.source_chunk != NULL &&
+        access->acquisition.source_chunk->source.source_exception)
+        exception = access->acquisition.source_chunk->source.exception_class;
+    const mc_world_access_failure *receipts[] = {
+        &access->acquisition.batch.publication.world_access_failure,
+        &access->acquisition.tile_entity.world_access_failure,
+        &access->acquisition.tile_entity.publication.world_access_failure,
+        &access->acquisition.tile_entity.batch.publication.world_access_failure};
+    for (size_t i = 0; exception == NULL && i < sizeof(receipts) / sizeof(*receipts); ++i)
+        (void)mc_world_access_failure_source_exception(receipts[i], &exception);
+    if (exception != NULL) {
+        (void)pf_source(w, exception, access->error.operation);
+        if (metadata && access->metadata.source_exception)
+            w->error.path.child_site =
+                access->metadata.nibble_pc == 0
+                    ? (mc_path_site){"lm", "b", "(III)I", 7}
+                    : (mc_path_site){"wi", "a", "(III)I", (int32_t)access->metadata.nibble_pc};
+        else if (null_provider)
+            w->error.path.child_site = (mc_path_site){"fd", "c", "(II)Llm;", 6};
+    } else if (access->acquisition.registry.status != MC_REGISTRY_OK) {
+        w->error.registry = access->acquisition.registry;
+        (void)pf_registry_fail(w, access->error.operation);
+    } else
+        (void)pf_fail(w, world_status(status), access->error.operation);
+    (void)pf_capture_world_query(w);
+    return false;
+}
+
 bool pf_query(mc_path_finder *w, bool metadata, int32_t x, int32_t y, int32_t z, int32_t *out) {
     if (w->state.cell_queries == w->limits.max_cell_queries)
         return pf_fail(w, MC_PATH_LIMIT, "Path pending cell query ceiling");
@@ -235,13 +347,19 @@ bool pf_query(mc_path_finder *w, bool metadata, int32_t x, int32_t y, int32_t z,
     mc_path_query *q = &w->queries[w->state.query_count++];
     *q = (mc_path_query){.metadata = metadata, .x = x, .y = y, .z = z, .site = w->state.site};
     ++w->state.cell_queries;
-    if (w->a == NULL)
+    if (w->a == NULL && w->world_access == NULL)
         return pf_source(w, "java/lang/NullPointerException", "Path null XP receiver");
     int32_t value;
-    q->status = metadata ? mc_client_chunk_cache_metadata(w->a, x, y, z, &value, &w->error.cache)
-                         : mc_client_chunk_cache_block(w->a, x, y, z, &value, &w->error.cache);
-    if (q->status != MC_CLIENT_CHUNK_CACHE_OK)
-        return pf_cache_fail(w, "Path actual captured EW query");
+    if (w->world_access != NULL) {
+        if (!world_query(w, q, metadata, x, y, z, &value))
+            return false;
+    } else {
+        q->status = metadata
+                        ? mc_client_chunk_cache_metadata(w->a, x, y, z, &value, &w->error.cache)
+                        : mc_client_chunk_cache_block(w->a, x, y, z, &value, &w->error.cache);
+        if (q->status != MC_CLIENT_CHUNK_CACHE_OK)
+            return pf_cache_fail(w, "Path actual captured EW query");
+    }
     q->completed = true;
     q->value = value;
     *out = value;

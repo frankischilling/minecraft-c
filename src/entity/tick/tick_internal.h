@@ -32,6 +32,9 @@ bool mc_tick_registry(mc_entity_tick_error *, mc_registry_status, const char *, 
 bool mc_tick_code(mc_entity *, mc_registry_classes *, mc_entity_tick_error *, unsigned int);
 mc_entity_status mc_tick_finish(mc_entity_tick_error *, mc_entity_tick_error *);
 bool mc_tick_flag(mc_entity *, int32_t, bool, mc_entity_tick_error *);
+/* Actual LS.T only. The caller owns canonical Living admission and the same
+ * Entity/World/Registry through returned sound diagnostics; no tick is added. */
+bool mc_tick_ambient_entered(mc_entity *, mc_registry_classes *, mc_entity_tick_error *);
 bool mc_tick_suffocating(mc_entity *, bool *, mc_entity_tick_error *);
 typedef struct mc_mob_tick_scope mc_mob_tick_scope;
 bool mc_tick_suffocating_entered(mc_entity *, bool *, mc_entity_tick_error *, mc_mob_tick_scope *);

@@ -218,7 +218,8 @@ static int bed_tap(fixture *f, bool placement) {
     const mc_entity_bounds bounds = *before.bounds;
     const uint64_t clicks = f->state.gameplay_right_clicks, blocks = f->state.gameplay_block_uses,
                    air = f->state.gameplay_air_uses, used = f->state.gameplay_used_statistics,
-                   counts = f->state.gameplay_stack_count_stores;
+                   counts = f->state.gameplay_stack_count_stores,
+                   placed = f->state.gameplay_placed_blocks;
     const size_t events = f->state.mouse_events;
     CHECK(bed_button(f, true, true) == 0 && bed_button(f, true, false) == 0);
     bool drained = false, source_returned = false;
@@ -246,6 +247,10 @@ static int bed_tap(fixture *f, bool placement) {
             }
             source_returned = true;
         }
+        /* Totals are published only after the complete input call returns.
+         * Another tick in this frame can replace its borrowed child view. */
+        if (f->state.gameplay_block_uses == blocks + 1)
+            source_returned = true;
         mc_client_sdk_input_state state;
         mc_client_sdk_bytes_state read, queue, buttons;
         CHECK(mc_client_sdk_input_inspect(mc_client_display_inputs(f->app->display), &state) &&
@@ -263,6 +268,7 @@ static int bed_tap(fixture *f, bool placement) {
           f->state.gameplay_block_uses == blocks + 1 && f->state.gameplay_air_uses == air &&
           f->state.gameplay_used_statistics == used + (placement ? 1u : 0u) &&
           f->state.gameplay_stack_count_stores == counts + (placement ? 1u : 0u) &&
+          f->state.gameplay_placed_blocks == placed + (placement ? 1u : 0u) &&
           mc_entity_get_snapshot(f->app->h, &after) == MC_ENTITY_OK &&
           (placement || bed_pose_same(&before, &bounds, &after)));
     printf("BED_PLACEMENT_INPUT action=%s SDK-right-tap=1 source-returned=1 no-air-fallback=1 "
@@ -381,7 +387,10 @@ static int bed_run(fixture *f) {
     return 0;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_BED_PLACEMENT_ENTRY
+#define MC_BED_PLACEMENT_ENTRY main
+#endif
+int MC_BED_PLACEMENT_ENTRY(int argc, char **argv) {
     if (argc != 4 || strcmp(argv[2], "place-daytime") != 0)
         return 2;
     fixture *f = calloc(1, sizeof(*f));

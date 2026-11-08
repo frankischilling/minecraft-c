@@ -1,12 +1,41 @@
 # Development status
 
-The current configured suites pass Windows 721/721 in 232.24 seconds and
+The complete configured suites pass Windows 729/729 in 485.57 seconds and
+sanitized Linux headless 586/586 in 450.24 seconds, without registered skips.
+Windows uses the Release client build with display tests disabled and CPU
+benchmarks enabled. Linux uses Clang Debug, ASan/UBSan and leak detection with
+`MC_BUILD_CLIENT=OFF`. The separate final monitor-2 nighttime scene passes
+2,072 checks. These are finite configurations and prepared gameplay evidence;
+the full playable client and sustained FPS remain unfinished or unqualified.
+
+The [nightmare body](world/nightmare.md) now runs default-hostile sleep attempts
+through real Mob construction, repeated direct-World pathfinding, publication,
+postspawn, wake and ambient sound. Windows and sanitized Linux each pass
+15,517 authored checks, including complete 20- and 21-search cases within a
+19,331,584-byte peak. Explicit native limits and cleanup failures remain distinct
+from ordinary false returns. Original comparison and full-suite results are
+recorded in [testing](testing.md#nightmare-spawning-and-loaded-night).
+
+One [Windows loaded-night scene](client/bed-sleep.md) passes 2,086 checks on
+monitor 2. Ordinary SDK taps place and activate the Bed; natural timer
+progression reaches CQfalse, dawn, the actual wake and completed fade.
+Independent saved NBT confirms copied Bed spawn, cleared occupancy and an
+awake healthy Player. Four preceding failed opportunities remain retained.
+This prepared scene does not establish unrestricted night or sustained FPS.
+
+The preceding configured suites pass Windows 721/721 in 232.24 seconds and
 sanitized Linux headless 578/578 in 329.10 seconds, without registered skips.
 The Windows build includes the client; display tests are disabled for this
 cohort. Linux uses `MC_BUILD_CLIENT=OFF`, ASan, UBSan and leak detection.
-These results qualify those configurations, with no new graphical session.
+These earlier results qualify those configurations and precede the new scene.
 Earlier failed selections and later documentation admission remain separate
 in [testing](testing.md#sleeping-player-damage-and-ambient-sampling).
+
+The exact preceding `61b29420` tree also passes all four jobs in
+[hosted run 42288383704](https://github.com/frankischilling/minecraft-c/actions/runs/42288383704):
+Windows 735/735, GCC and Clang 793/793, plus formatting of 2,197 files.
+Its synthetic merge has the same tree as the pushed commit. These jobs
+qualify that preceding damage-wake/ambient increment.
 
 [Damage to a sleeping Player](entity/player-damage-wake.md) now reaches the
 actual wake before zero-damage rejection, statistics and health changes.
@@ -79,9 +108,10 @@ cases pass. The first visible Windows placement opportunity fails during
 loading while Remote Desktop holds focus, before any Bed action. The retained
 [test record](testing.md#bed-placement-and-daytime-interaction) separates those
 scopes. Complete sleep/wake bodies and Player tick wake parents now have
-separate bounded qualification above. Natural elapsed sleep, default-hostile
-CQ/FW, damage wake parents and loaded-night acceptance remain unfinished
-or unqualified.
+separate bounded qualification above. Default-hostile CQ/FW and one natural
+loaded-night route now have the additional evidence above. Broader combat,
+unrestricted night, original presentation and whole-client parity remain
+unfinished or unqualified.
 
 The [World reference reader](performance/reference-readers.md) preserves all
 1,167 corruption controls while avoiding repeated original-packet validation.

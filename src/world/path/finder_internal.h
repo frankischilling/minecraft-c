@@ -6,6 +6,7 @@
 
 typedef struct mc_path_finder mc_path_finder;
 typedef struct mc_path_map_entry mc_path_map_entry;
+typedef struct mc_world_metadata_source_error mc_world_metadata_source_error;
 
 typedef struct mc_path_budget {
     size_t max_bytes, max_allocations;
@@ -21,6 +22,10 @@ typedef struct mc_path_finder_error {
     mc_path_error path;
     mc_registry_error registry;
     mc_client_chunk_cache_error cache;
+    const mc_world_storage_error *world;
+    const mc_world_runtime_acquisition_error *acquisition;
+    const mc_world_source_chunk_error *source_chunk;
+    const mc_world_metadata_source_error *metadata;
 } mc_path_finder_error;
 
 typedef struct mc_path_query {
@@ -28,12 +33,17 @@ typedef struct mc_path_query {
     int32_t x, y, z, value;
     mc_path_site site;
     mc_client_chunk_cache_status status;
+    bool direct_world;
+    mc_world_storage_status world_status;
 } mc_path_query;
 
 typedef struct mc_path_finder_state {
     bool constructed, active, returned, failed;
     unsigned int constructor_pc;
     mc_client_chunk_cache *a;
+    bool direct_world, retiring;
+    mc_world_runtime *world;
+    size_t searches;
     const void *heap_identity, *map_identity, *pending_heap_identity, *pending_map_identity;
     mc_path_point *const *heap;
     size_t heap_capacity;
@@ -50,6 +60,8 @@ typedef struct mc_path_finder_state {
     int32_t heap_work_index;
     mc_path_point *const *pending_array;
     size_t pending_array_length, points, expanded_points, cell_queries, predecessor_steps, work;
+    /* Latest search only; this borrow ends at the next entered search.
+     * cell_queries/work remain cumulative across the complete finder owner. */
     const mc_path_query *queries;
     size_t query_count;
     mc_path *result, *pending_path;
@@ -57,6 +69,7 @@ typedef struct mc_path_finder_state {
     mc_path_site preparation_site, search_site, neighbors_site, candidate_site;
     mc_path_site clearance_site, intern_site, reconstruction_site;
     const mc_path_finder_error *error;
+    const mc_path_error *cleanup;
 } mc_path_finder_state;
 
 typedef struct mc_path_map_entry_state {
@@ -72,6 +85,18 @@ typedef struct mc_path_map_entry_state {
 mc_path_status mc_path_finder_create(mc_entity_classes *, mc_registry_classes *, mc_math_classes *,
                                      mc_client_chunk_cache *, const mc_path_finder_limits *,
                                      mc_path_budget *, mc_path_finder **, mc_path_error *);
+/* Actual FW(World) used directly by CQ, without an EW constructor or an FD
+ * path wrapper. NULL World is stored by the constructor and fails only at a
+ * reached XP query. The same successfully returned finder can execute another
+ * search; its LF/JX backing storage and Point identities remain genuine.
+ * A returned Path is borrowed until the next search or retirement. Retain it
+ * before preserving that source local across another request. Caller holds
+ * defining Entity/Registry/Math namespaces and all operands live/exclusive.
+ * The supplied budget outlives the complete finder, including every search. */
+mc_path_status mc_path_finder_create_for_world(mc_entity_classes *, mc_registry_classes *,
+                                               mc_math_classes *, mc_world_runtime *,
+                                               const mc_path_finder_limits *, mc_path_budget *,
+                                               mc_path_finder **, mc_path_error *);
 mc_path_status mc_path_finder_to_entity(mc_path_finder *, mc_entity *, mc_entity *, float);
 mc_path_status mc_path_finder_to_coordinates(mc_path_finder *, mc_entity *, int32_t, int32_t,
                                              int32_t, float);
@@ -80,5 +105,10 @@ bool mc_path_finder_point_inspect(const mc_path_finder *, const mc_path_point *,
                                   mc_path_point_state *);
 bool mc_path_map_entry_inspect(const mc_path_map_entry *, mc_path_map_entry_state *);
 void mc_path_finder_destroy(mc_path_finder *);
+/* Required for direct-World owners. Native cleanup is retryable and never
+ * replays a query. Refusal preserves the slot and its first source failure;
+ * inspect again for current surviving child views. Legacy EW destroy remains
+ * infallible under its existing caller-held dependency contract. */
+mc_path_status mc_path_finder_retire(mc_path_finder **, mc_path_error *);
 
 #endif

@@ -1,5 +1,81 @@
 # Test scope and reproduction
 
+## Nightmare spawning and loaded night
+
+The final complete configured cohorts pass Windows 729/729 in 485.57 seconds
+and Linux headless 586/586 in 450.24 seconds, without registered skips. Both
+run with four CTest workers. Windows builds the Release client, disables
+registered display tests and enables CPU benchmark controls. Linux builds
+Clang Debug with `MC_BUILD_CLIENT=OFF`, ASan/UBSan, leak detection and
+halt-on-error. Neither complete cohort opens a game window. Their five current
+admission tables remain byte-identical to the pre-cohort snapshot; the checker
+accepts 13,240 entries over 5,612 files. Result-summary publication admission is
+updated separately after these cohorts.
+
+The first complete attempts were interrupted by the user before completion.
+Their partial logs remain retained. Their tool handles were missing and no
+OS CTest processes remained before the fresh complete cohorts began. They
+receive no whole-suite credit. The first eligibility ownership selection also
+retains its failed test assumption that a producer receipt's final hold is0;
+the actual base hold is1 until producer retirement. Corrected controls pass.
+
+The later loaded-night opportunity, after the final ownership fixes, passes
+2,072 checks. Its [separate receipt](../tests/reference/client/bed_sleep/receipt-current.json)
+records 97 subsequent natural ticks, 88 timer transitions, 162 returned overlays,
+CQfalse, dawn, copied spawn, source save/readback and checked shutdown. It
+preserves the earlier accepted scene and four failed opportunities. The current
+runtime also passes the 39,908-scalar original comparison on sanitized Linux.
+
+The [nightmare component](world/nightmare.md) executes the complete reached
+`CQ.a(World,List)Z` body: real Mob constructors and spawn predicates, one reusable
+direct-World FW, Bed exits, publication, shared postspawn, Player wake and ambient
+sound. Four unchanged-original VMs each execute 28 calls, with 23 returns
+(13 true and 10 false), five uncaught exceptions, 180 attempts and 77 searches.
+The blocked Player completes all 20 searches; both mixed two-player scenes
+complete 21 searches on the same finder. The Spider case publishes and mounts
+an actual Skeleton jockey.
+
+The [public packet](../tests/reference/world/nightmare/README.md) compares
+39,908 selected scalars. Its native scope is 21 whole returns, including 13 true
+results, five source-exception outcomes and two caught-printer prefixes.
+The original caught reflection exceptions print and immediately return at
+CQ366; native printing remains pending at CQ362. Those two cases compare the
+selected mutation prefix and receive no native whole-return credit. Independent
+constructor entropy stays independent; World/Math streams, Chunk planes,
+Player/Mob state, List effects, finder counts/capacities and observer ordering
+retain their declared exact comparisons. Normal and optimized Python each pass
+410 constructor arithmetic checks and 1,198 corruption refusals.
+
+The first guarded Windows component replay passes all 39,908 comparisons with
+1,658 source/product/input guards unchanged. Separate authored nightmare
+controls pass 15,517 checks on Windows and sanitized Linux, including complete
+20- and 21-search cases. These retained results precede the later eligibility
+ownership and copied-scheduler-borrow cleanup fixes; they do not requalify those
+subsequent changes. Original producer identities, current postprocessing sources
+and each native opportunity retain separate records.
+
+After the later ownership fixes, a fresh Windows original replay again matches
+all 39,908 selected scalars, and the focused eligibility-hold controls pass.
+Those focused results have their own source/product opportunity; complete-suite
+results are recorded separately when their cohorts finish.
+
+One [Windows SDK loaded-night scene](client/bed-sleep.md) passes 2,086 checks on
+monitor 2. Ordinary taps place and activate the Bed; 98 subsequent natural ticks
+reach the real default-hostile CQfalse branch, dawn, wake, completed HUD fade,
+copied Bed spawn, full source save, independent NBT readback and checked cleanup.
+The [frozen receipt](../tests/reference/client/bed_sleep/receipt.json) binds
+2,214 source files, two products and 413 imported resources. Four preceding
+failed opportunities remain failed. This successful scene also precedes the
+last ownership fixes and is historical evidence for its exact captured product.
+It does not qualify current modified sources, unrestricted night, general focus
+reliability, Linux loaded play, original pixels/audio or sustained gameplay FPS.
+
+The exact preceding `61b29420` tree passes
+[hosted run 42288383704](https://github.com/frankischilling/minecraft-c/actions/runs/42288383704):
+Windows 735/735, GCC 793/793, Clang 793/793 and formatting of 2,197 files.
+Those jobs qualify that preceding tree; the new nightmare and loaded-night
+changes inherit no hosted qualification from it. Overall FPS remains unqualified.
+
 ## Sleeping-Player damage and ambient sampling
 
 The [damage wake component](entity/player-damage-wake.md) connects actual GS35

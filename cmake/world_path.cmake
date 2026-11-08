@@ -24,4 +24,14 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-path-contracts")
     set_tests_properties(world.path PROPERTIES
         LABELS "public;unit;world;entity;ownership" TIMEOUT 420)
+    add_executable(mc_test_path_world tests/world/runtime/test_path_world.c)
+    target_include_directories(mc_test_path_world PRIVATE src src/core/java)
+    target_link_libraries(mc_test_path_world PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_math_classes mc_build_options)
+    add_test(NAME world.path_world COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_path_world.py"
+        --executable "$<TARGET_FILE:mc_test_path_world>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-path-world-contracts")
+    set_tests_properties(world.path_world PROPERTIES
+        LABELS "public;integration;world;entity;ownership" TIMEOUT 180)
 endif()

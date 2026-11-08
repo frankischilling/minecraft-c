@@ -30,6 +30,12 @@ mc_world_storage_status mc_world_runtime_drain_scheduled(mc_world_runtime *, boo
                                                          mc_world_scheduled_drain_error *);
 
 typedef struct mc_world_tick_call mc_world_tick_call;
+typedef struct mc_world_spawn_postspawn_work mc_world_spawn_postspawn_work;
+typedef struct mc_entity_position_rotation_error mc_entity_position_rotation_error;
+typedef struct mc_world_nightmare_error mc_world_nightmare_error;
+typedef struct mc_world_nightmare_cleanup mc_world_nightmare_cleanup;
+typedef struct mc_world_nightmare_state mc_world_nightmare_state;
+typedef struct mc_world_nightmare_class_error mc_world_nightmare_class_error;
 typedef struct mc_mob_error mc_mob_error;
 typedef struct mc_mob_spawn_state mc_mob_spawn_state;
 typedef struct mc_mob_spawn_error mc_mob_spawn_error;
@@ -70,6 +76,11 @@ typedef struct mc_world_tick_error {
     const mc_mob_error *mob;
     const mc_mob_spawn_error *eligibility;
     const mc_world_entity_error *publication;
+    const mc_world_spawn_postspawn_work *postspawn;
+    const mc_entity_position_rotation_error *position;
+    const mc_world_nightmare_error *nightmare;
+    const mc_world_nightmare_cleanup *nightmare_cleanup;
+    const mc_world_nightmare_class_error *nightmare_classes;
     const mc_world_random_tick_error *random;
     const mc_player_sleep_error *sleep;
     const mc_player_sleep_cleanup *sleep_cleanup;
@@ -107,6 +118,9 @@ typedef struct mc_world_tick_state {
     const mc_world_random_tick_state *random;
     const mc_player_sleep_state *sleep;
     size_t wake_calls, wake_returns;
+    const mc_world_nightmare_state *nightmare;
+    size_t nightmare_calls, nightmare_returns, nightmare_wakes;
+    bool nightmare_result;
     size_t spawn_constructors, spawn_predicates, spawn_rejections, spawn_publications;
     int32_t spawn_group_successes, spawn_total;
     unsigned int spawn_postspawn_pc;
@@ -130,11 +144,13 @@ typedef struct mc_world_tick_state {
  * World Random yaw, actual position and virtual spawn predicate. False predicates
  * continue the attempt loop; true predicates increment the per-Chunk group count
  * before actual publication, postspawn and the virtual group limit. Sheep color
- * and Spider jockey draws preserve World Random order. A reached Skeleton mount
- * body remains a dependency after the real Skeleton construction/publication.
+ * and Spider jockey draws preserve World Random order, including actual
+ * Skeleton construction, publication and mount through the shared postspawn body.
  * Random Chunk work continues through its retained actual fd.n call, including
  * all eighty samples and real reached Block ticks. Missing concrete children
- * preserve their exact typed failure prefixes. Sleeping wake enters the real
+ * preserve their exact typed failure prefixes. Default-hostile sleep executes
+ * CQ with its one reused direct-World FW. A true return skips dawn/weather;
+ * false continues to the real day advance and wake loop. Sleeping wake enters the real
  * retained GS child, then checked retirement precedes the next captured List
  * iterator operation and F weather stores. Structural mutations are checked
  * at Iterator.next; hasNext still compares the current size. Borrowed child

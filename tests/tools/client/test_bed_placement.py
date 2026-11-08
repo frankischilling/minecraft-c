@@ -70,10 +70,12 @@ def grass_arrays():
                 BlockLight=bytes(16384), HeightMap=bytes([64] * 256))
 
 
-def author_regions(world, directory):
+def author_regions(world, directory, arrays_for_chunk=None):
     arrays, regions = grass_arrays(), {}
     for x in range(-8, 9):
         for z in range(-8, 9):
+            if arrays_for_chunk is not None:
+                arrays = arrays_for_chunk(x, z)
             level = world.tag(3, 'xPos', struct.pack('>i', x)) + world.tag(3, 'zPos', struct.pack('>i', z))
             level += world.tag(4, 'LastUpdate', struct.pack('>q', 0))
             for name, data in arrays.items():
