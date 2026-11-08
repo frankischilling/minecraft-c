@@ -1,5 +1,13 @@
 # Development status
 
+Genuine client Arrows now execute their inherited literal-null collision-box
+methods inside the actual World query. The [collision controls](world/collision/boxes.md#arrow-source-and-qualification)
+pass 794 checks on Windows and sanitized Linux after failing the old callee.
+Focused suites pass Windows 51/51 and Linux 49/49, with exact selected names
+and no skips. Both builds, formatting of 2,257 files and GCC syntax checks
+of both changed C units pass. Full Arrow flight, swept impacts and pickup
+remain unfinished; these checks provide no game-frame or FPS qualification.
+
 The complete [Skeleton firing parent](entity/skeleton-firing.md) now runs from
 Creature's actual II97 dispatch. Four original VMs retain 96 calls. Windows
 and sanitized Linux each execute 23 native profiles: 21 complete outcomes match
@@ -17,6 +25,12 @@ These elapsed times describe concurrent validation runs on the restored WSL
 toolchain and provide no performance comparison. The
 [testing record](testing.md#skeleton-firing-and-inherited-arrow-predicates)
 retains the earlier fixture/layout failures and the exact finite scopes.
+
+The published Skeleton increment `0a191cd1` passes [hosted run 42493606126](https://github.com/frankischilling/minecraft-c/actions/runs/42493606126):
+Windows **787/787**, GCC **846/846**, Clang **846/846**, and formatting.
+All four actual checkouts used merge `ee5d45f8`, whose tree matches the published
+commit. Windows selected its available compiler cache; the hosted download-failure
+fallback was not entered. This result qualifies that published tree.
 
 The client now has [Arrow NBT and storage](entity/arrow-nbt.md), the complete
 [MC Arrow renderer](entity/arrow-rendering.md), and direct-Arrow Player damage

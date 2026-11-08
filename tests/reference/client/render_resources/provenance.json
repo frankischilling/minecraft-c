@@ -2218,8 +2218,8 @@
       "sha256": "f5cde068d5994487cf38d5546ab92c6ffe3c0a5b92989c43d3103ec5f0f978a2"
     },
     "include/mc/world/runtime/collision/boxes.h": {
-      "bytes": 3060,
-      "sha256": "ef9586806bffb126539786b90a67cefcfb1bba7b0d84ef4a0781b1cdeb97b4e3"
+      "bytes": 3359,
+      "sha256": "70759c8d335e3619e0aec18ce0d09454266aa06817a56de156af21fd52080b0b"
     },
     "include/mc/world/runtime/collision/entities.h": {
       "bytes": 4186,
@@ -2758,8 +2758,8 @@
       "sha256": "5ad7d035b189651ea91c31ee9ac9427dd11a7e3f06288888325a526a667ba2e5"
     },
     "tests/world/runtime/collision/test_boxes.c": {
-      "bytes": 53657,
-      "sha256": "60f61b1639de03e81c54cccba6fe1c3399c1b5c9bff5dbb096d25d021354746a"
+      "bytes": 71868,
+      "sha256": "8e3a3b6383213d0c8402a47a946bf447966bc1bba7b78852a515aea0a435d655"
     },
     "tests/world/runtime/collision/test_raytrace.c": {
       "bytes": 21992,
@@ -15953,6 +15953,30 @@
             "tests/entity/test_skeleton_fire_reference.c": {
               "bytes": 30638,
               "sha256": "e94adafc05c617eba8064cd6eafcf81fdb272f240c3c4c373cb956c984cb935a"
+            }
+          },
+          "added": [],
+          "current_count": 2379
+        }
+      }
+    },
+    {
+      "from_commit": "0a191cd192fe705d80312131d1d4c3c59926f486",
+      "role": "Genuine client Arrow inherited literal-null collision virtuals at the actual World query leaves, scoped native moving ownership admission and constructed collision controls. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 683762,
+        "sha256": "5824473bd2b64a8c865aa4ca7584eeed5dc56056db097230a1794ab6173a262e"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "include/mc/world/runtime/collision/boxes.h": {
+              "bytes": 3060,
+              "sha256": "ef9586806bffb126539786b90a67cefcfb1bba7b0d84ef4a0781b1cdeb97b4e3"
+            },
+            "tests/world/runtime/collision/test_boxes.c": {
+              "bytes": 53657,
+              "sha256": "60f61b1639de03e81c54cccba6fe1c3399c1b5c9bff5dbb096d25d021354746a"
             }
           },
           "added": [],

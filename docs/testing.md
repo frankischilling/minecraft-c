@@ -1,5 +1,43 @@
 # Test scope and reproduction
 
+## Arrow inherited collision boxes
+
+Genuine held READY client Arrows now execute inherited literal-null candidate
+and moving collision virtuals at their reached World query calls. The
+[source map](reference/collision-boxes.md#arrow-inherited-null-bodies) pins both
+complete methods; the [ownership contract](world/collision/boxes.md) describes
+the native phase/hold admissions separately from the source bodies.
+
+The new fixture fails against the old callee at its first compound Arrow-query
+assertion. That actual process and all 68 captured files remain
+retained. The failed process emits assertion diagnostics without sanitizer or
+cleanup-refusal diagnostics; it does not emit a separate exact-callsite record.
+The same fixture then passes **794 checks** per host with the production patch.
+It covers actual duplicate Chunk/R occurrences, null results followed by the
+independent moving call, identity exclusion, nullable/different stored Worlds,
+a separate client class owner, Minecart/Ghast frontiers, genuine RAW/failed
+constructors and restored native counter-fault controls. Held views block
+retirement, later calls mutate the same K identity, and the existing terminal
+collector completes without invented cleanup stores.
+
+The frozen focused cohort passes **Windows 51/51 in 59.22 seconds** and
+**Linux 49/49 in 60.14 seconds**, with exact selected names and no skips.
+Linux uses Clang Debug, ASan/UBSan, leak detection and halt-on-error. Both
+focused builds pass; all 5,795 declared source files, six admission tables and
+11 changed execution inputs match before and through terminal results.
+Exact clang-format 18.1.3 checks 2,257 files. GCC 15.2 syntax checks pass both
+changed C units using their actual headless compile recipes. This is focused
+local coverage; the complete local-suite result below retains its earlier
+Skeleton source scope. No new original JVM, game frame or FPS run occurred.
+
+After the earlier complete suite finished, 384 pinned, reproducible Linux ELF
+outputs were removed to free 6,701,158,400 allocated bytes. The cleanup preserves
+45 products, all selected targets, every object/archive, all subdirectories,
+fixtures and raw evidence. Exact hashes, current link recipes and the retained
+632-test terminal proof were checked before removal; retained products and
+proofs were checked again afterward. The current focused products were then
+rebuilt normally from the frozen source.
+
 ## Skeleton firing and inherited Arrow predicates
 
 The [complete FR189 parent](entity/skeleton-firing.md) uses the actual Creature
@@ -61,6 +99,12 @@ two compiler processes. The client-only `render_global_access.c` has no recipe
 in that restored Linux build and is explicitly uncovered by this syntax check.
 No GCC runtime was executed by it. Full-suite elapsed times include concurrent
 hosts and the new WSL toolchain; they provide no performance qualification.
+
+The published Skeleton increment `0a191cd1` passes [hosted run 42493606126](https://github.com/frankischilling/minecraft-c/actions/runs/42493606126):
+Windows **787/787**, GCC **846/846**, Clang **846/846**, and formatting.
+All four actual checkouts used merge `ee5d45f8`, whose tree matches the published
+commit. Windows selected its available compiler cache; the hosted download-failure
+fallback was not entered. This result qualifies that published tree.
 
 ## Arrow persistence, rendering and direct damage
 

@@ -25,6 +25,36 @@ The World loop's second get precedes even a null moving-receiver failure.
 Pooled expansion can reuse and overwrite the original query's own identity;
 later descendants must read its actual current contents.
 
+## Arrow inherited null bodies
+
+The client archive SHA-256 is
+`af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c`.
+Complete `sl.class` is 6,123 bytes with SHA-256
+`2ba2e27fbc558a78b87c26316968cd5e9595656b96c861b2975cae79201d3a45`.
+Its direct superclass is `sn`; neither relevant descriptor appears among SL's
+declared methods. Both inherited SN methods return literal null without reading
+the argument, bounds, World, shooter, dead flag or Random state.
+
+| Complete client method | Code bytes | Code-attribute SHA-256 |
+| --- | --- | --- |
+| `SN.f()Leq;` | 2 | `6a01c4869864d7ee9b83f29dc72397f8372ad752b2f0a76408dae836ddeb8b2d` |
+| `SN.a(Lsn;)Leq;` | 2 | `2d3a3cdfdd67ffb7a37cfb1bacf4f5cd24433dee908e1bd1a8c6afa0ce2dc1e4` |
+
+Both Code arrays have SHA-256
+`146cb1bd5c639e50589db67598e4a3f423eb736f7911d3b8329f72e0f5cd5fac`
+and empty exception tables. The complete client World collector has 300 Code
+bytes and SHA-256
+`0689b878be3ff7bf85f91188794d02e411ce79da3fd4a8b6b9f09fce96d0c1d1`.
+Its candidate call at 218 precedes a separate List get at 252 and moving call
+at 260. A null first result skips only its own intersection/add arm.
+
+Minecart remains distinct: `YL.f()` returns null, but its complete five-byte
+`YL.a(SN)` reads the argument's permanent bounds. Its Code SHA-256 is
+`6b1b29e24a992487bef009bb2f88f061c3a9569e8422e45a1cc21d911af0c4d0`.
+Admitting Arrow's inherited pair body does not admit Minecart's pair body or
+server Arrow construction. These are whole-method static identities; no new
+original execution or full-query replay is claimed.
+
 ## Block getters and contributions
 
 All 96 registrations and 69 concrete kinds were checked through their actual

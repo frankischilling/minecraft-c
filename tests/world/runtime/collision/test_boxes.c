@@ -4,10 +4,15 @@
 #include "../test_entity_publication.c"
 #undef main
 
+#include "../../../../src/core/java/random_profile_internal.h"
+#include "../../../../src/entity/arrow/internal.h"
+#include "../../../../src/entity/arrow/references_internal.h"
 #include "../../../../src/entity/bounds/bounds_internal.h"
 #include "../../../../src/world/chunk/object_state_internal.h"
 #include "../../../../src/world/runtime/collision/blocks_internal.h"
 #include "../../../../src/world/runtime/collision/boxes_internal.h"
+#include "mc/entity/minecart/minecart.h"
+#include "mc/entity/mob/construction.h"
 #include "mc/world/runtime/chunks.h"
 
 /* Constructed native contracts, not original-JAR replay. Actual loaded Chunk
@@ -804,6 +809,284 @@ cleanup:
     return ok;
 }
 
+static bool boxes_new_arrow(fixture *f, mc_world_runtime *world, bool construct, double x, double y,
+                            double z, mc_entity **out) {
+    bool ok = false;
+    mc_entity *arrow = NULL;
+    CHECK(f->entity_count < COUNT(f->entities) &&
+          mc_arrow_allocate(f->entity_classes[0], &arrow, NULL) == MC_ENTITY_OK);
+    f->entities[f->entity_count++] = arrow;
+    if (construct)
+        CHECK(mc_arrow_construct_position(arrow, world, x, y, z, NULL) == MC_ENTITY_OK);
+    *out = arrow;
+    ok = true;
+cleanup:
+    return ok;
+}
+
+static bool boxes_nearby_is(mc_world_runtime *world, mc_entity *const *expected, size_t count) {
+    const mc_world_reference_list *list = world->fields.R;
+    if (list != world->nearby_entities.list || list->count != count ||
+        world->nearby_entities.count != count)
+        return false;
+    for (size_t i = 0; i < count; ++i)
+        if (list->items[i] != expected[i] || world->nearby_entities.entries[i] != expected[i])
+            return false;
+    return true;
+}
+
+/* Genuine client SL payloads and real Chunk/R occurrences. These controls do
+ * not manufacture a server Arrow, constructor phase, shape return or R List. */
+static bool boxes_arrow_null_virtuals(fixture *f) {
+    bool ok = false;
+    mc_world_runtime *const w = f->worlds[0];
+    mc_entity_classes *const classes = f->entity_classes[0];
+    mc_entity *a = NULL, *b = NULL, *item = NULL, *moving = NULL, *foreign = NULL;
+    mc_entity *raw = NULL, *failed = NULL, *cart = NULL, *ghast = NULL, *other = NULL;
+    mc_entity_classes *other_classes = NULL;
+    size_t moving_index = SIZE_MAX;
+    mc_world_collision_list_view held = {0}, temporary = {0};
+    mc_world_collision_error error;
+    const mc_entity_bounds query = {7.75, 7.75, 7.75, 9.25, 9.25, 9.25};
+    const mc_entity_bounds item_query = {11.75, 7.75, 11.75, 12.25, 8.75, 12.25};
+    const mc_entity_bounds empty = {8, 64, 8, 9, 65, 9};
+    const mc_entity_bounds origin = {-.25, -.25, -.25, .75, .75, .75};
+    const mc_entity_bounds ghast_query = {3.75, 7.75, 3.75, 4.75, 9.25, 4.75};
+    const mc_entity_bounds stone = {8, 8, 8, 9, 9, 9};
+    const mc_entity_bounds item_stone = {12, 8, 12, 13, 9, 13};
+    const mc_entity_bounds origin_stone = {0, 0, 0, 1, 1, 1};
+    const mc_entity_bounds ghast_stone = {4, 8, 4, 5, 9, 5};
+    boxes_air(f, 0);
+    CHECK(f->entity_count + 9 <= COUNT(f->entities) && boxes_cell(f, 0, 8, 8, 8, 1, 0) &&
+          boxes_cell(f, 0, 12, 8, 12, 1, 0) && boxes_cell(f, 0, 0, 0, 0, 1, 0) &&
+          boxes_cell(f, 0, 4, 8, 4, 1, 0) && boxes_new_arrow(f, w, true, 8, 8, 8, &a) &&
+          boxes_new_arrow(f, w, true, 8.5, 8, 8.5, &b) && make_entity(f, 0, w, 12, 8, 12, &item));
+    moving_index = f->entity_count;
+    CHECK(boxes_new_arrow(f, NULL, true, 40, 40, 40, &moving) &&
+          boxes_new_arrow(f, f->worlds[2], true, -40, 40, -40, &foreign) &&
+          boxes_new_arrow(f, NULL, false, 0, 0, 0, &raw) &&
+          boxes_new_arrow(f, w, false, 0, 0, 0, &failed));
+    mc_arrow_error constructor;
+    CHECK(mc_arrow_construct_living(failed, w, NULL, NULL, &constructor) == MC_ENTITY_STATE_ERROR &&
+          constructor.source_exception && constructor.site.pc == 73 &&
+          failed->phase == MC_ENTITY_FAILED_CONSTRUCTION && failed->bounds != NULL &&
+          raw->phase == MC_ENTITY_RAW && raw->bounds == NULL);
+    CHECK(mc_minecart_entity_allocate(classes, &cart, NULL) == MC_ENTITY_OK);
+    f->entities[f->entity_count++] = cart;
+    CHECK(mc_minecart_entity_construct(cart, w, 8.5, 8, 8.5, 0, NULL) == MC_ENTITY_OK);
+    const mc_entity_class_literal *literal = NULL;
+    mc_mob_error mob;
+    CHECK(mc_entity_class_literal_get(classes, MC_ENTITY_CLASS_KIND_GHAST, &literal) ==
+              MC_ENTITY_OK &&
+          mc_mob_allocate(classes, f->registry[0], literal, &ghast, &mob) == MC_MOB_OK);
+    f->entities[f->entity_count++] = ghast;
+    CHECK(mc_mob_construct(ghast, w, &mob) == MC_MOB_OK &&
+          mc_entity_set_position(ghast, 4, 8, 4) == MC_ENTITY_OK &&
+          mc_arrow_shooter_store(moving, ghast, NULL) == MC_ENTITY_OK &&
+          mc_entity_classes_create(MC_ENTITY_CLIENT, f->profile, NULL, &other_classes) ==
+              MC_ENTITY_OK &&
+          mc_arrow_allocate(other_classes, &other, NULL) == MC_ENTITY_OK &&
+          mc_arrow_construct_position(other, NULL, 80, 80, 80, NULL) == MC_ENTITY_OK);
+    moving->arrow->fields.j = 17;
+    moving->arrow->fields.k = 29;
+    a->base.be = true; /* Authored source dead input, with a genuine READY phase. */
+    CHECK(mc_world_runtime_chunk_add_entity(f->chunks[0], a, NULL) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_chunk_add_entity(f->chunks[0], a, NULL) == MC_WORLD_STORAGE_OK &&
+          mc_entity_bounds_pool_reset(classes, NULL) == MC_ENTITY_OK &&
+          mc_world_runtime_collision_boxes(w, item, &query, &held, &error) == MC_WORLD_STORAGE_OK &&
+          boxes_view_is(&held, &stone, 1) && error.world_bytecode == 0 && w->fields.R->count == 2 &&
+          w->fields.R->items[0] == a && w->fields.R->items[1] == a && a->holds == 5 &&
+          item->holds == 1 && w->collision_boxes.entries[0].entity == NULL &&
+          w->collision_boxes.entries[0].pool == classes);
+    CHECK(mc_world_runtime_chunk_add_entity(f->chunks[0], b, NULL) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_chunk_add_entity(f->chunks[0], item, NULL) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_chunk_add_entity(f->chunks[0], cart, NULL) == MC_WORLD_STORAGE_OK);
+    mc_entity *const all[] = {a, a, b, cart};
+    mc_entity *const only_b[] = {b, cart};
+    mc_entity *const only_a[] = {a, a, cart};
+    mc_entity *const one_item[] = {item};
+    mc_entity *const preserved[] = {a, b, moving, foreign, other};
+    mc_entity_base_fields bases[COUNT(preserved)];
+    mc_arrow_fields fields[COUNT(preserved)];
+    mc_entity_bounds bounds[COUNT(preserved)];
+    mc_java_random randoms[COUNT(preserved)];
+    mc_java_random *random_identity[COUNT(preserved)];
+    mc_entity_bounds *bounds_identity[COUNT(preserved)];
+    mc_entity_watcher *watcher_identity[COUNT(preserved)];
+    mc_entity *shooter_identity[COUNT(preserved)];
+    mc_entity_watcher_snapshot watchers[COUNT(preserved)] = {0};
+    for (size_t i = 0; i < COUNT(preserved); ++i) {
+        memcpy(&bases[i], &preserved[i]->base, sizeof(bases[i]));
+        memcpy(&fields[i], &preserved[i]->arrow->fields, sizeof(fields[i]));
+        memcpy(&bounds[i], preserved[i]->bounds, sizeof(bounds[i]));
+        randoms[i] = *preserved[i]->random;
+        random_identity[i] = preserved[i]->random;
+        bounds_identity[i] = preserved[i]->bounds;
+        watcher_identity[i] = preserved[i]->watcher;
+        shooter_identity[i] = preserved[i]->arrow->shooter_hold;
+        CHECK(mc_entity_watcher_get_snapshot(preserved[i]->watcher, &watchers[i]) == MC_ENTITY_OK);
+    }
+    CHECK(f->profile->math != NULL);
+    mc_java_math_random_owner *const math_owner = f->profile->math;
+    const mc_java_random math_random = {.state = atomic_load(&math_owner->state),
+                                        .next_next_gaussian = math_owner->next_next_gaussian,
+                                        .have_next_next_gaussian =
+                                            math_owner->have_next_next_gaussian};
+    const uint64_t uniquifier = atomic_load(&f->profile->uniquifier);
+    const int32_t next_id = classes->next_id, other_id = other_classes->next_id;
+    const mc_java_random world_random = *w->fields.r;
+    CHECK(boxes_query_is(w, moving, &query, &stone, 1) && boxes_nearby_is(w, all, COUNT(all)) &&
+          a->holds == 5 && b->holds == 3 && cart->holds == 3 && moving->holds == 1 &&
+          boxes_query_is(w, a, &query, &stone, 1) && boxes_nearby_is(w, only_b, COUNT(only_b)) &&
+          a->holds == 3 && b->holds == 3 && boxes_query_is(w, b, &query, &stone, 1) &&
+          boxes_nearby_is(w, only_a, COUNT(only_a)) && a->holds == 5 && b->holds == 2 &&
+          boxes_query_is(w, foreign, &query, &stone, 1) && boxes_nearby_is(w, all, COUNT(all)) &&
+          boxes_query_is(w, other, &query, &stone, 1) && boxes_nearby_is(w, all, COUNT(all)) &&
+          other->holds == 1 && moving->base.world == NULL && foreign->base.world == f->worlds[2]);
+    CHECK(mc_world_runtime_collision_boxes(w, moving, &query, &temporary, NULL) ==
+              MC_WORLD_STORAGE_OK &&
+          boxes_view_is(&temporary, &stone, 1) && temporary.identity == held.identity);
+    mc_world_collision_list_view_release(&temporary);
+    CHECK(w->local_leases == 1 &&
+          mc_world_runtime_retire_entity_containers(w, NULL) == MC_WORLD_STORAGE_BUSY &&
+          mc_world_runtime_retire_world(w, NULL) == MC_WORLD_STORAGE_BUSY &&
+          mc_world_runtime_free(w, NULL) == MC_WORLD_STORAGE_BUSY && !w->entity_containers_retired);
+    mc_world_collision_list_view out = {NULL, held.identity};
+    CHECK(mc_world_runtime_collision_boxes(w, NULL, &query, &out, &error) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          error.world_bytecode == 260 && out.owner == NULL && out.identity == held.identity &&
+          boxes_view_is(&held, &stone, 1) && boxes_nearby_is(w, all, COUNT(all)) &&
+          mc_world_runtime_collision_boxes(w, NULL, &query, &out, NULL) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          out.owner == NULL && out.identity == held.identity && boxes_view_is(&held, &stone, 1) &&
+          mc_world_runtime_collision_boxes(w, cart, &query, &out, &error) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          error.world_bytecode == 260 && out.owner == NULL && out.identity == held.identity &&
+          w->fields.R->count == 3 && w->fields.R->items[0] == a && w->fields.R->items[1] == a &&
+          w->fields.R->items[2] == b && cart->holds == 2);
+    CHECK(boxes_query_is(w, moving, &query, &stone, 1));
+    const int32_t cursor = classes->bounds_cursor;
+    const size_t moving_holds = moving->holds, a_holds = a->holds, b_holds = b->holds;
+    /* Native ownership fault projections only. Restore the real counter before
+     * any assertion, further source operation or checked owner retirement. */
+    moving->holds = 0;
+    const mc_world_storage_status zero =
+        mc_world_runtime_collision_boxes(w, moving, &query, &out, &error);
+    moving->holds = moving_holds;
+    CHECK(zero == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.world_bytecode == 0 &&
+          error.nearby.entity.status == MC_ENTITY_STATE_ERROR && out.owner == NULL &&
+          out.identity == held.identity && boxes_view_is(&held, &stone, 1) &&
+          boxes_nearby_is(w, all, COUNT(all)) && classes->bounds_cursor == cursor &&
+          a->holds == a_holds && b->holds == b_holds && w->active_calls == 0);
+    moving->holds = SIZE_MAX;
+    const mc_world_storage_status overflow =
+        mc_world_runtime_collision_boxes(w, moving, &query, &out, &error);
+    moving->holds = moving_holds;
+    CHECK(overflow == MC_WORLD_STORAGE_LIMIT && error.world_bytecode == 0 &&
+          error.nearby.entity.status == MC_ENTITY_LIMIT && classes->bounds_cursor == cursor &&
+          out.owner == NULL && out.identity == held.identity && boxes_view_is(&held, &stone, 1) &&
+          boxes_nearby_is(w, all, COUNT(all)) && a->holds == a_holds && b->holds == b_holds &&
+          mc_world_runtime_collision_boxes(w, moving, &query, NULL, &error) ==
+              MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+          error.world_bytecode == 0 && classes->bounds_cursor == cursor);
+    CHECK(boxes_query_is(w, raw, &empty, NULL, 0) && boxes_query_is(w, failed, &empty, NULL, 0) &&
+          boxes_query_is(w, NULL, &empty, NULL, 0) && boxes_nearby_is(w, NULL, 0) &&
+          raw->phase == MC_ENTITY_RAW && failed->phase == MC_ENTITY_FAILED_CONSTRUCTION);
+    mc_entity *const phases[] = {raw, failed};
+    for (size_t i = 0; i < COUNT(phases); ++i) {
+        const int32_t before_cursor = classes->bounds_cursor;
+        const size_t before_holds = phases[i]->holds;
+        CHECK(mc_world_runtime_collision_boxes(w, phases[i], &item_query, &out, &error) ==
+                  MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+              error.world_bytecode == 260 && out.owner == NULL && out.identity == held.identity &&
+              boxes_view_is(&held, &item_stone, 1) && boxes_nearby_is(w, one_item, 1) &&
+              classes->bounds_cursor == before_cursor + 2 && phases[i]->holds == before_holds &&
+              w->local_leases == 1 && w->active_calls == 0);
+    }
+    CHECK(mc_world_runtime_collision_boxes(w, raw, &item_query, &out, NULL) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          out.owner == NULL && out.identity == held.identity &&
+          boxes_view_is(&held, &item_stone, 1));
+    CHECK(boxes_query_is(w, moving, &empty, NULL, 0) && b->holds == 2);
+    const int32_t before_candidate = classes->bounds_cursor;
+    const size_t candidate_holds = b->holds;
+    b->holds = SIZE_MAX;
+    const mc_world_storage_status candidate_overflow =
+        mc_world_runtime_collision_boxes(w, moving, &query, &out, &error);
+    b->holds = candidate_holds;
+    CHECK(candidate_overflow == MC_WORLD_STORAGE_LIMIT && error.world_bytecode == 186 &&
+          error.nearby.query.chunk_bytecode == 131 && error.nearby.index == 2 &&
+          error.nearby.entity.status == MC_ENTITY_LIMIT && out.owner == NULL &&
+          out.identity == held.identity && boxes_view_is(&held, &stone, 1) &&
+          boxes_nearby_is(w, all, 2) && classes->bounds_cursor == before_candidate + 2 &&
+          a->holds == 5 && b->holds == candidate_holds);
+    CHECK(mc_world_runtime_chunk_add_entity(f->chunks[0], ghast, NULL) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_collision_boxes(w, moving, &ghast_query, &out, &error) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          error.world_bytecode == 218 && boxes_view_is(&held, &ghast_stone, 1) &&
+          out.owner == NULL && out.identity == held.identity && w->fields.R->count == 1 &&
+          w->fields.R->items[0] == ghast);
+    CHECK(mc_world_runtime_chunk_add_entity(f->chunks[0], failed, NULL) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_collision_boxes(w, moving, &origin, &out, &error) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          error.world_bytecode == 218 && boxes_view_is(&held, &origin_stone, 1) &&
+          w->fields.R->count == 1 && w->fields.R->items[0] == failed &&
+          failed->phase == MC_ENTITY_FAILED_CONSTRUCTION);
+    CHECK(mc_world_runtime_chunk_add_entity(f->chunks[0], raw, NULL) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_collision_boxes(w, moving, &origin, &out, &error) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          error.world_bytecode == 186 && error.nearby.query.chunk_bytecode == 118 &&
+          error.nearby.index == 7 && boxes_view_is(&held, &origin_stone, 1) &&
+          w->fields.R->count == 1 && w->fields.R->items[0] == failed && raw->bounds == NULL &&
+          raw->phase == MC_ENTITY_RAW && out.owner == NULL && out.identity == held.identity);
+    mc_entity *const chunk_order[] = {a, a, b, item, cart, ghast, failed, raw};
+    CHECK(slice_is(f, 0, 0, chunk_order, COUNT(chunk_order)) &&
+          boxes_query_is(w, NULL, &empty, NULL, 0) && boxes_nearby_is(w, NULL, 0) &&
+          boxes_view_is(&held, NULL, 0) && a->holds == 3 && b->holds == 2 && item->holds == 2 &&
+          moving->holds == 1 && other->holds == 1 && w->active_calls == 0 && w->local_leases == 1 &&
+          mc_world_collision_owned_valid(w));
+    for (size_t i = 0; i < COUNT(preserved); ++i) {
+        mc_entity_watcher_snapshot after = {0};
+        CHECK(memcmp(&preserved[i]->base, &bases[i], sizeof(bases[i])) == 0 &&
+              memcmp(&preserved[i]->arrow->fields, &fields[i], sizeof(fields[i])) == 0 &&
+              boxes_coordinates(preserved[i]->bounds, &bounds[i]) &&
+              mc_test_java_random_equal(preserved[i]->random, &randoms[i]) &&
+              preserved[i]->random == random_identity[i] &&
+              preserved[i]->bounds == bounds_identity[i] &&
+              preserved[i]->watcher == watcher_identity[i] &&
+              preserved[i]->arrow->shooter_hold == shooter_identity[i] &&
+              preserved[i]->phase == MC_ENTITY_READY &&
+              mc_entity_watcher_get_snapshot(preserved[i]->watcher, &after) == MC_ENTITY_OK &&
+              after.dirty == watchers[i].dirty && after.size == watchers[i].size &&
+              after.record == watchers[i].record && after.index == watchers[i].index &&
+              after.type == watchers[i].type && after.payload_kind == watchers[i].payload_kind &&
+              after.byte_value == watchers[i].byte_value &&
+              after.record_dirty == watchers[i].record_dirty);
+    }
+    const mc_java_random math_after = {.state = atomic_load(&f->profile->math->state),
+                                       .next_next_gaussian = f->profile->math->next_next_gaussian,
+                                       .have_next_next_gaussian =
+                                           f->profile->math->have_next_next_gaussian};
+    CHECK(moving->arrow->fields.c == ghast && moving->arrow->shooter_hold == ghast &&
+          moving->arrow->fields.j == 17 && moving->arrow->fields.k == 29 && a->base.be &&
+          f->profile->math == math_owner && mc_test_java_random_equal(&math_after, &math_random) &&
+          atomic_load(&f->profile->uniquifier) == uniquifier && classes->next_id == next_id &&
+          other_classes->next_id == other_id &&
+          mc_test_java_random_equal(w->fields.r, &world_random));
+    ok = true;
+cleanup:
+    mc_world_collision_list_view_release(&temporary);
+    mc_world_collision_list_view_release(&held);
+    mc_entity_release(other);
+    if (other_classes != NULL && mc_entity_classes_free(other_classes) != MC_ENTITY_OK)
+        ok = false;
+    if (moving != NULL) {
+        mc_entity_release(moving);
+        f->entities[moving_index] = NULL;
+    }
+    return ok;
+}
+
 static int boxes_foreign_value = 97;
 static void *boxes_foreign_items[] = {&boxes_foreign_value};
 static mc_world_reference_list boxes_foreign = {boxes_foreign_items, 1, 1, 0};
@@ -958,6 +1241,7 @@ int MC_COLLISION_BOXES_MAIN(int argc, char **argv) {
     for (size_t side = 0; side < 2; ++side)
         CHECK(boxes_budget(f, side) && boxes_multipart_failure(f, side) &&
               boxes_native_append_failure(f, side) && boxes_real_entity_descendants(f, side));
+    CHECK(boxes_arrow_null_virtuals(f));
     for (size_t side = 0; side < 2; ++side)
         CHECK(boxes_terminal_seed(f, side));
     CHECK(boxes_terminal(f));

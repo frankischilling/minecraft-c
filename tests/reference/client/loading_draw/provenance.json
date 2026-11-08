@@ -734,8 +734,8 @@
       "sha256": "786bb6f065e6a6da0feb3dfc3dfad106e12f0ff417b3eb00a52e67db39311e95"
     },
     "include/mc/world/runtime/collision/boxes.h": {
-      "bytes": 3060,
-      "sha256": "ef9586806bffb126539786b90a67cefcfb1bba7b0d84ef4a0781b1cdeb97b4e3"
+      "bytes": 3359,
+      "sha256": "70759c8d335e3619e0aec18ce0d09454266aa06817a56de156af21fd52080b0b"
     },
     "include/mc/world/runtime/collision/class_entities.h": {
       "bytes": 3402,
@@ -3150,8 +3150,8 @@
       "sha256": "7ad616ef84cfcb556647f58e47dbe651e847768154f7ef08ac1030433f07fe76"
     },
     "src/world/runtime/collision/boxes.c": {
-      "bytes": 25805,
-      "sha256": "f820d8559143f9764cb4832c2bca0d9b20afdf61011f7c1e60608175cdf96f89"
+      "bytes": 26456,
+      "sha256": "0218d7749b8aec918c47d6453d7364220d08b07f499e6efe98b714b84bb6f61e"
     },
     "src/world/runtime/collision/boxes_internal.h": {
       "bytes": 1673,
@@ -4970,8 +4970,8 @@
       "sha256": "465d0a8842fe7f3c30d3b78442bbf33c044298078463bfe295eef3257dc2ef31"
     },
     "tests/world/runtime/collision/test_boxes.c": {
-      "bytes": 53657,
-      "sha256": "60f61b1639de03e81c54cccba6fe1c3399c1b5c9bff5dbb096d25d021354746a"
+      "bytes": 71868,
+      "sha256": "8e3a3b6383213d0c8402a47a946bf447966bc1bba7b78852a515aea0a435d655"
     },
     "tests/world/runtime/collision/test_class_entities.c": {
       "bytes": 30320,
@@ -18539,6 +18539,34 @@
             "tests/entity/test_skeleton_fire_reference.c": {
               "bytes": 30638,
               "sha256": "e94adafc05c617eba8064cd6eafcf81fdb272f240c3c4c373cb956c984cb935a"
+            }
+          },
+          "added": [],
+          "current_count": 2894
+        }
+      }
+    },
+    {
+      "from_commit": "0a191cd192fe705d80312131d1d4c3c59926f486",
+      "role": "Genuine client Arrow inherited literal-null collision virtuals at the actual World query leaves, scoped native moving ownership admission and constructed collision controls. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 781106,
+        "sha256": "30b75355216b245291f9651ecb3e2afde326a14deac7fa851b16a8cffe966082"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "include/mc/world/runtime/collision/boxes.h": {
+              "bytes": 3060,
+              "sha256": "ef9586806bffb126539786b90a67cefcfb1bba7b0d84ef4a0781b1cdeb97b4e3"
+            },
+            "src/world/runtime/collision/boxes.c": {
+              "bytes": 25805,
+              "sha256": "f820d8559143f9764cb4832c2bca0d9b20afdf61011f7c1e60608175cdf96f89"
+            },
+            "tests/world/runtime/collision/test_boxes.c": {
+              "bytes": 53657,
+              "sha256": "60f61b1639de03e81c54cccba6fe1c3399c1b5c9bff5dbb096d25d021354746a"
             }
           },
           "added": [],

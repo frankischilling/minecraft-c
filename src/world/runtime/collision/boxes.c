@@ -292,6 +292,15 @@ static bool base_null_virtual(mc_entity *entity, mc_world_collision_error *frame
         fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Collision Entity receiver");
         return false;
     }
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ARROW)) {
+        if (!mc_entity_has_arrow(entity) || entity->phase != MC_ENTITY_READY ||
+            entity->holds == 0) {
+            fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                 "Collision Entity actual held READY Arrow storage");
+            return false;
+        }
+        return true; /* Inherited SN.f()/a(Entity): aconst_null; areturn. */
+    }
     if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
         !mc_entity_has_moving_particle(entity) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
@@ -494,7 +503,10 @@ mc_world_storage_status mc_world_runtime_collision_boxes(mc_world_runtime *world
             frame.nearby.query.operation = child.operation;
             frame.nearby.query.cause = child;
         } else {
-            const mc_entity_status held = moving == NULL ? MC_ENTITY_OK : mc_entity_retain(moving);
+            const mc_entity_status held = mc_entity_has_arrow(moving) && moving->holds == 0
+                                              ? MC_ENTITY_STATE_ERROR
+                                          : moving == NULL ? MC_ENTITY_OK
+                                                           : mc_entity_retain(moving);
             if (held != MC_ENTITY_OK) {
                 frame.nearby.entity =
                     (mc_entity_error){.status = held, .operation = "Collision moving Entity hold"};

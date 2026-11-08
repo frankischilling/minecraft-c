@@ -33,6 +33,10 @@ typedef struct mc_world_collision_error {
  * views block retirement/free but permit later synchronous source mutation.
  * Unsupported concrete descendants fail at their reached call, never as an
  * invented successful null shape. A returned null source List is representable.
+ * Genuine held READY client Arrows execute inherited literal-null candidate
+ * and pair bodies. READY is checked only when that virtual is reached. A
+ * genuine client Arrow moving argument must already have a nonzero hold;
+ * this native ownership admission precedes K.clear and leaves out alone.
  */
 mc_world_storage_status mc_world_runtime_collision_boxes(mc_world_runtime *world, mc_entity *moving,
                                                          const mc_entity_bounds *bounds,

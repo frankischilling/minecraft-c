@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 217762,
-      "sha256": "965359441dc69111b1f376815761104c831c4228e4fd4ea02b5f3d0b0e8370db"
+      "bytes": 218546,
+      "sha256": "24d38551a8a974196a6d05cddbb3bd65e556d3adc7e0afeae22c37fd58253c93"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -514,8 +514,8 @@
       "sha256": "717ed3de38d115bd450356b64b3e269a975ea1462e975c98e71ad293d6101db4"
     },
     "docs/reference/collision-boxes.md": {
-      "bytes": 4985,
-      "sha256": "56bc9ca42e39a9fa210b24deebaad85b2989a5387f5e606ec1669bacc8b0185e"
+      "bytes": 6554,
+      "sha256": "8052faba516d96399e847e1edfcaf155f09238d001ffbe26a9dc059416becdcc"
     },
     "docs/reference/compression.md": {
       "bytes": 8886,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 135260,
-      "sha256": "15e33e19fe8c5826bc15f075c2325eb7fcc4b4d8e6ff4e4d868fcd13aff2a4c8"
+      "bytes": 136296,
+      "sha256": "84cb4096c8f1df4096f26416e8d8f985791f42f4f1e49e545dd21dd9f409dc68"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 565663,
-      "sha256": "f345d744eb2a1666074ff95361726fd0a5e2ce639d3a37831032c9f3f5619aab"
+      "bytes": 568540,
+      "sha256": "10f96aa500da742951e90260eb54a4dd0a61b8512c4af250f0d122bb75444c76"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
@@ -902,8 +902,8 @@
       "sha256": "c9a5b6735fed556473ec09622a254ff43c4dc9686269c5c3fc5aa75e82ca6684"
     },
     "docs/world/collision/boxes.md": {
-      "bytes": 4778,
-      "sha256": "828a3ac7f30995bb181277ca6a0580b83604176d0d79ad9268f96e2aac7f231c"
+      "bytes": 7255,
+      "sha256": "b0414ffc85844c866a0140db701a0f96292d2166f5dc21cfe0e6200417c6a73a"
     },
     "docs/world/collision/entities.md": {
       "bytes": 6147,
@@ -1674,8 +1674,8 @@
       "sha256": "786bb6f065e6a6da0feb3dfc3dfad106e12f0ff417b3eb00a52e67db39311e95"
     },
     "include/mc/world/runtime/collision/boxes.h": {
-      "bytes": 3060,
-      "sha256": "ef9586806bffb126539786b90a67cefcfb1bba7b0d84ef4a0781b1cdeb97b4e3"
+      "bytes": 3359,
+      "sha256": "70759c8d335e3619e0aec18ce0d09454266aa06817a56de156af21fd52080b0b"
     },
     "include/mc/world/runtime/collision/class_entities.h": {
       "bytes": 3402,
@@ -4630,8 +4630,8 @@
       "sha256": "7ad616ef84cfcb556647f58e47dbe651e847768154f7ef08ac1030433f07fe76"
     },
     "src/world/runtime/collision/boxes.c": {
-      "bytes": 25805,
-      "sha256": "f820d8559143f9764cb4832c2bca0d9b20afdf61011f7c1e60608175cdf96f89"
+      "bytes": 26456,
+      "sha256": "0218d7749b8aec918c47d6453d7364220d08b07f499e6efe98b714b84bb6f61e"
     },
     "src/world/runtime/collision/boxes_internal.h": {
       "bytes": 1673,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 686966,
-      "sha256": "8aa77b2322352eaf270cf22050474842f76b95a8bde8fa3e20eb5d8bb08e626a"
+      "bytes": 688094,
+      "sha256": "f85211f80d05128eaa3e22acfc82c1ab7d1a258db1d15da12e9590ed067cc271"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 781106,
-      "sha256": "30b75355216b245291f9651ecb3e2afde326a14deac7fa851b16a8cffe966082"
+      "bytes": 782425,
+      "sha256": "a557a1061b39f5c239fbf52bd780fd59e0a8494e781d6e7d2e66fb7c074fbb9c"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 683762,
-      "sha256": "5824473bd2b64a8c865aa4ca7584eeed5dc56056db097230a1794ab6173a262e"
+      "bytes": 684890,
+      "sha256": "7fa939e3474670be3eb12ac5aef506490513cc79d0ac62b8b60bdb8d7a55b535"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9070,8 +9070,8 @@
       "sha256": "465d0a8842fe7f3c30d3b78442bbf33c044298078463bfe295eef3257dc2ef31"
     },
     "tests/world/runtime/collision/test_boxes.c": {
-      "bytes": 53657,
-      "sha256": "60f61b1639de03e81c54cccba6fe1c3399c1b5c9bff5dbb096d25d021354746a"
+      "bytes": 71868,
+      "sha256": "8e3a3b6383213d0c8402a47a946bf447966bc1bba7b78852a515aea0a435d655"
     },
     "tests/world/runtime/collision/test_class_entities.c": {
       "bytes": 30320,
@@ -36300,6 +36300,94 @@
             "tests/reference/entity/skeleton_fire/native-boundaries.md": {
               "bytes": 3580,
               "sha256": "7329d25e9912763f3973fd72d50bd8853086e06862a39c769e0a412ee023dadf"
+            }
+          },
+          "added": [],
+          "current_count": 5795
+        }
+      }
+    },
+    {
+      "from_commit": "0a191cd192fe705d80312131d1d4c3c59926f486",
+      "role": "Genuine client Arrow inherited literal-null collision virtuals at the actual World query leaves, scoped native moving ownership admission and constructed collision controls. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1589734,
+        "sha256": "83f30fb27c2d92fa5de4a9d0acb815c3ab96255aacb9bf71627f05f38b1f2449"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/reference/collision-boxes.md": {
+              "bytes": 4985,
+              "sha256": "56bc9ca42e39a9fa210b24deebaad85b2989a5387f5e606ec1669bacc8b0185e"
+            },
+            "docs/status.md": {
+              "bytes": 135260,
+              "sha256": "15e33e19fe8c5826bc15f075c2325eb7fcc4b4d8e6ff4e4d868fcd13aff2a4c8"
+            },
+            "docs/testing.md": {
+              "bytes": 565663,
+              "sha256": "f345d744eb2a1666074ff95361726fd0a5e2ce639d3a37831032c9f3f5619aab"
+            },
+            "docs/world/collision/boxes.md": {
+              "bytes": 4778,
+              "sha256": "828a3ac7f30995bb181277ca6a0580b83604176d0d79ad9268f96e2aac7f231c"
+            },
+            "include/mc/world/runtime/collision/boxes.h": {
+              "bytes": 3060,
+              "sha256": "ef9586806bffb126539786b90a67cefcfb1bba7b0d84ef4a0781b1cdeb97b4e3"
+            },
+            "src/world/runtime/collision/boxes.c": {
+              "bytes": 25805,
+              "sha256": "f820d8559143f9764cb4832c2bca0d9b20afdf61011f7c1e60608175cdf96f89"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 686966,
+              "sha256": "8aa77b2322352eaf270cf22050474842f76b95a8bde8fa3e20eb5d8bb08e626a"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 781106,
+              "sha256": "30b75355216b245291f9651ecb3e2afde326a14deac7fa851b16a8cffe966082"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 683762,
+              "sha256": "5824473bd2b64a8c865aa4ca7584eeed5dc56056db097230a1794ab6173a262e"
+            },
+            "tests/world/runtime/collision/test_boxes.c": {
+              "bytes": 53657,
+              "sha256": "60f61b1639de03e81c54cccba6fe1c3399c1b5c9bff5dbb096d25d021354746a"
+            }
+          },
+          "added": [],
+          "current_count": 5795
+        }
+      }
+    },
+    {
+      "from_commit": "0a191cd192fe705d80312131d1d4c3c59926f486",
+      "role": "Genuine client Arrow inherited literal-null collision virtuals at the actual World query leaves, scoped native moving ownership admission and constructed collision controls. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1592380,
+        "sha256": "752830221e3fd74a47988900c631ae7d715448558ed0078fd235646fc1e55f99"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/parity.md": {
+              "bytes": 217762,
+              "sha256": "965359441dc69111b1f376815761104c831c4228e4fd4ea02b5f3d0b0e8370db"
+            },
+            "docs/status.md": {
+              "bytes": 135718,
+              "sha256": "cc678ea824131e1c71ee7bff20450ce3c4ec0a9b6a126eef2736605f308fef37"
+            },
+            "docs/testing.md": {
+              "bytes": 566121,
+              "sha256": "4991216e41403611dfef9b3467c903456066e5e0fd31b6d4ba23a1f2d7039044"
+            },
+            "docs/world/collision/boxes.md": {
+              "bytes": 6319,
+              "sha256": "a2a847a7d707a5367e1e849d2e12533e99b59e6916e000ca24efe52d13069e97"
             }
           },
           "added": [],
