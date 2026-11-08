@@ -454,12 +454,12 @@
       "sha256": "4a308bc84d1dc1f4aec704476fcc6bb2fb7c5d0fb71612a5adff4b95790a5f48"
     },
     "include/mc/world/runtime/world_access_error.h": {
-      "bytes": 1925,
-      "sha256": "02892855a6184002eb7c7d9974d1366fecd10981f571c78dc58050a96865054c"
+      "bytes": 2180,
+      "sha256": "6a27812224006fbe8f8336af9f75eb6d40da752def19129466e0dadfc69e4095"
     },
     "include/mc/entity/hit_result.h": {
-      "bytes": 7793,
-      "sha256": "cdfef690358705668d1fba704744a255d0593d709e2c36747808680b74e9a9fa"
+      "bytes": 8117,
+      "sha256": "568dd7a4b821d47f2c2803819f4026c669b21c39910ed27ddcb1d9b373272e8a"
     },
     "include/mc/entity/particles/origin.h": {
       "bytes": 1566,
@@ -966,6 +966,30 @@
             "src/entity/entity_internal.h": {
               "bytes": 5082,
               "sha256": "a724645b0d4db78d86a5d3ac363f49ed395cb3f32fcb7eb1d558837e6d30731b"
+            }
+          },
+          "added": [],
+          "current_count": 119
+        }
+      }
+    },
+    {
+      "from_commit": "3079a3d2791c93a37bbdda6780eb8a975a866bf0",
+      "role": "Genuine Skeleton firing and Arrow inherited predicates, real null sound invocation classification and caller joins, with finite original-source and native-fixture inputs. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 39997,
+        "sha256": "193a744c77ad1d795d7789dfc0ae822009ed5327115f38235473661c915e8c62"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "include/mc/world/runtime/world_access_error.h": {
+              "bytes": 1925,
+              "sha256": "02892855a6184002eb7c7d9974d1366fecd10981f571c78dc58050a96865054c"
+            },
+            "include/mc/entity/hit_result.h": {
+              "bytes": 7793,
+              "sha256": "cdfef690358705668d1fba704744a255d0593d709e2c36747808680b74e9a9fa"
             }
           },
           "added": [],

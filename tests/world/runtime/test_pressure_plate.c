@@ -9,6 +9,8 @@
 #include "../../../src/world/runtime/mutation/mutation_internal.h"
 #include "mc/world/runtime/contact.h"
 #include "mc/world/runtime/scheduling.h"
+#include "mc/world/runtime/world_access.h"
+#include "mc/world/runtime/world_tick.h"
 
 static mc_chunk_state *plate_extra[WORLD_COUNT][3];
 
@@ -24,6 +26,130 @@ static bool plate_counts(mc_world_runtime *world, int32_t ordered, int32_t membe
     return mc_scheduled_ordered_size(world->fields.E, &e) == MC_SCHEDULED_ORDERED_OK &&
            mc_scheduled_membership_size(world->fields.F, &f) == MC_SCHEDULED_MEMBERSHIP_OK &&
            e == ordered && f == membership;
+}
+
+typedef struct plate_sound_observer {
+    size_t calls;
+    bool added;
+} plate_sound_observer;
+
+static mc_world_storage_status plate_sound_cell(void *context, mc_world_runtime *world, int32_t x,
+                                                int32_t y, int32_t z,
+                                                mc_world_storage_error *error) {
+    (void)context;
+    (void)world;
+    (void)x;
+    (void)y;
+    (void)z;
+    (void)error;
+    return MC_WORLD_STORAGE_OK;
+}
+
+static mc_world_storage_status plate_sound_range(void *context, mc_world_runtime *world, int32_t x,
+                                                 int32_t y, int32_t z, int32_t max_x, int32_t max_y,
+                                                 int32_t max_z, mc_world_storage_error *error) {
+    (void)max_x;
+    (void)max_y;
+    (void)max_z;
+    return plate_sound_cell(context, world, x, y, z, error);
+}
+
+static mc_world_storage_status plate_append_null_sound(void *context, mc_world_runtime *world,
+                                                       const mc_registry_string *name, double x,
+                                                       double y, double z, float volume,
+                                                       float pitch, mc_world_storage_error *error) {
+    plate_sound_observer *o = context;
+    ++o->calls;
+    static const char literal[] = "random.click";
+    bool valid = name != NULL && name->length == sizeof(literal) - 1 && x == 8.5 && y == 64.1 &&
+                 z == 8.5 && volume == 0.3f && pitch == 0.5f;
+    for (size_t i = 0; valid && i < sizeof(literal) - 1; ++i)
+        valid = name->units[i] == (uint16_t)literal[i];
+    if (!valid) {
+        *error = (mc_world_storage_error){MC_WORLD_STORAGE_INVALID_DATA,
+                                          "scheduled pressure release actual sound arguments", 0};
+        return error->status;
+    }
+    const mc_world_storage_status status = mc_world_runtime_add_world_access(world, NULL, error);
+    o->added = status == MC_WORLD_STORAGE_OK;
+    return status;
+}
+
+/* Force-drain a genuinely scheduled pressed plate with no nearby entities.
+ * Its release changes metadata and notifies before the real sound loop sees
+ * a newly appended NULL occurrence. A missing native slot stays a native fault. */
+static bool plate_scheduled_sound_failure(fixture *f) {
+    bool ok = false, registered = false;
+    mc_world_runtime *world = f->worlds[0];
+    mc_world_access *access = NULL;
+    plate_sound_observer observer = {0};
+    mc_world_scheduled_drain_error *error = calloc(1, sizeof(*error));
+    CHECK(error != NULL && plate_counts(world, 0, 0) && world->entity_membership.count == 0);
+    for (unsigned int mode = 0; mode < 2; ++mode) {
+        observer = (plate_sound_observer){0};
+        const mc_world_access_callbacks callbacks = {.cell = plate_sound_cell,
+                                                     .range = plate_sound_range,
+                                                     .sound = mode == 0 ? NULL
+                                                                        : plate_append_null_sound};
+        CHECK(mc_world_access_create(&callbacks, &observer, &access, NULL) == MC_WORLD_STORAGE_OK &&
+              mc_world_runtime_add_world_access(world, access, NULL) == MC_WORLD_STORAGE_OK);
+        registered = true;
+        bool changed = false;
+        CHECK(mc_world_runtime_metadata_set_quiet(world, 8, 64, 8, 1, &changed, NULL) ==
+                  MC_WORLD_STORAGE_OK &&
+              changed && plate_at(world, 8, 1));
+        mc_world_schedule_error scheduled;
+        CHECK(mc_world_runtime_schedule(world, 8, 64, 8, 72, 20, &scheduled) ==
+                  MC_WORLD_STORAGE_OK &&
+              plate_counts(world, 1, 1));
+        bool pending = true;
+        const mc_world_storage_status status =
+            mc_world_runtime_drain_scheduled(world, true, &pending, error);
+        bool removed = false;
+        if (observer.added) {
+            CHECK(mc_world_runtime_remove_world_access(world, NULL, &removed, NULL) ==
+                      MC_WORLD_STORAGE_OK &&
+                  removed);
+            observer.added = false;
+        }
+        const char *exception = NULL;
+        CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && pending &&
+              error->call.bytecode == 227 && error->iterations == 1 && error->removed == 1 &&
+              error->call.tick.pressure_tick_bytecode == 26 &&
+              error->call.tick.pressure_bytecode == 387 &&
+              error->call.tick.world_access_bytecode == 41 && error->native_policy == (mode == 0) &&
+              (mode == 0
+                   ? error->exception_class == NULL
+                   : error->exception_class != NULL &&
+                         strcmp(error->exception_class, "java/lang/NullPointerException") == 0) &&
+              mc_world_access_failure_source_exception(&error->call.tick.world_access_failure,
+                                                       &exception) == (mode != 0) &&
+              (mode == 0 ? exception == NULL : strcmp(exception, error->exception_class) == 0) &&
+              error->call.tick.world_access_failure.receiver == NULL &&
+              error->call.tick.world_access_failure.render_global == NULL &&
+              error->call.tick.world_access_failure.receipt == NULL &&
+              observer.calls == (size_t)mode && plate_at(world, 8, 0) &&
+              plate_counts(world, 0, 0) && world->active_calls == 0 && world->local_leases == 0);
+        CHECK(mc_world_runtime_remove_world_access(world, access, &removed, NULL) ==
+                  MC_WORLD_STORAGE_OK &&
+              removed && mc_world_access_free(access, NULL) == MC_WORLD_STORAGE_OK);
+        registered = false;
+        access = NULL;
+    }
+    ok = true;
+cleanup:
+    if (observer.added) {
+        bool ignored;
+        (void)mc_world_runtime_remove_world_access(world, NULL, &ignored, NULL);
+    }
+    if (registered) {
+        bool ignored;
+        (void)mc_world_runtime_remove_world_access(world, access, &ignored, NULL);
+    }
+    if (access != NULL && mc_world_access_free(access, NULL) != MC_WORLD_STORAGE_OK)
+        ok = false;
+    free(error);
+    return ok;
 }
 
 static bool plate_clear(const mc_world_mutation_error *error) {
@@ -759,6 +885,7 @@ int MC_PRESSURE_MAIN_NAME(int argc, char **argv) {
     }
     for (size_t slot = 0; slot < WORLD_COUNT; ++slot)
         CHECK(plate_open_store(f, slot, root) && plate_world(f, slot));
+    CHECK(plate_scheduled_sound_failure(f));
     for (size_t side = 0; side < 2; ++side) {
         CHECK(plate_lifecycle(f, side));
         CHECK(plate_frontiers(f, side));

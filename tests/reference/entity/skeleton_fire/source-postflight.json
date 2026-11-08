@@ -1,0 +1,278 @@
+{
+  "schema": "PRIVATE_SKELETON_FIRE_CAPTURE_POSTFLIGHT_V1",
+  "status": "PASS_FIRST_COMPLETE_ORIGINAL_CAPTURE_NO_NATIVE_OR_PUBLIC_EXPORT",
+  "capture_sha256": "53a6fe2dac7b562455a37355ef3a9308c1a89365cde8603f5ae0e14e9b581308",
+  "reviewed_seal_sha256": "af26f78ba9ef2bbff432092b62936376cde16cb298110297ec984a9d0bc14f23",
+  "runs": [
+    {
+      "kind": "ordinary",
+      "index": 0,
+      "calls": 24,
+      "normal_returns": 15,
+      "exceptions": {
+        "java/lang/NullPointerException": 7,
+        "java/lang/IllegalStateException": 2
+      },
+      "stdout_sha256": "72dbea271ef81bcdd98e8cddefd61d7641e9c0cd55e29becb9429da87b09961f",
+      "target_stderr": "exact four-line JDK17 SecurityManager warning only",
+      "stderr_sha256": "acabbc97fb35cd9133e2de1db9bd17f11afc751e25a741178242936c7fea6442"
+    },
+    {
+      "kind": "ordinary",
+      "index": 1,
+      "calls": 24,
+      "normal_returns": 15,
+      "exceptions": {
+        "java/lang/NullPointerException": 7,
+        "java/lang/IllegalStateException": 2
+      },
+      "stdout_sha256": "d6c0b019b54c196b0c9b90e679ad9b33757f1df807b5fdd1603e56b071aae808",
+      "target_stderr": "exact four-line JDK17 SecurityManager warning only",
+      "stderr_sha256": "acabbc97fb35cd9133e2de1db9bd17f11afc751e25a741178242936c7fea6442"
+    },
+    {
+      "kind": "debugger",
+      "index": 0,
+      "calls": 24,
+      "normal_returns": 15,
+      "exceptions": {
+        "java/lang/NullPointerException": 7,
+        "java/lang/IllegalStateException": 2
+      },
+      "stdout_sha256": "8e59f08af34d54674e3420fb6a27f3d0da42c4cdf2bfc1fbbe787cddec633b93",
+      "target_stderr": "exact four-line JDK17 SecurityManager warning only",
+      "stderr_sha256": "acabbc97fb35cd9133e2de1db9bd17f11afc751e25a741178242936c7fea6442",
+      "events": 2671,
+      "source_Code": 26,
+      "helper_Code": 2,
+      "gaussian_calls": 81,
+      "Skeleton_float_calls": 16,
+      "publication_returns": [
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          false
+        ],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [],
+        [
+          true
+        ]
+      ],
+      "journal_sha256": "dc1ac7d1603bd760da0bbf19f29294a3e446b5c42eaa423c8db3d05a19368e88",
+      "target_receipt": {
+        "reaped": true,
+        "exit": 0,
+        "timed_out": false,
+        "streams_complete": true,
+        "reader_error": null,
+        "timeout_seconds": 540,
+        "limit_each": 16777216,
+        "stdout_bytes": 351577,
+        "stderr_bytes": 398
+      }
+    },
+    {
+      "kind": "debugger",
+      "index": 1,
+      "calls": 24,
+      "normal_returns": 15,
+      "exceptions": {
+        "java/lang/NullPointerException": 7,
+        "java/lang/IllegalStateException": 2
+      },
+      "stdout_sha256": "1d1e2803ce6b0bbbdaf671534f9210e34990edb548ef6f77e0463c9438d9da0f",
+      "target_stderr": "exact four-line JDK17 SecurityManager warning only",
+      "stderr_sha256": "acabbc97fb35cd9133e2de1db9bd17f11afc751e25a741178242936c7fea6442",
+      "events": 2671,
+      "source_Code": 26,
+      "helper_Code": 2,
+      "gaussian_calls": 81,
+      "Skeleton_float_calls": 16,
+      "publication_returns": [
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          false
+        ],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [
+          true
+        ],
+        [],
+        [
+          true
+        ]
+      ],
+      "journal_sha256": "c8b827a6a307f0c62dc7bd9ee5e6c27934b979e4246f9ace01916d3cb45fd572",
+      "target_receipt": {
+        "reaped": true,
+        "exit": 0,
+        "timed_out": false,
+        "streams_complete": true,
+        "reader_error": null,
+        "timeout_seconds": 540,
+        "limit_each": 16777216,
+        "stdout_bytes": 351577,
+        "stderr_bytes": 398
+      }
+    }
+  ],
+  "total_calls": 96,
+  "normal_returns": 60,
+  "exceptions": 36,
+  "raw_ledger_counts": [
+    {
+      "locations": 20618,
+      "groups": {
+        "raw-transport-schema": 24,
+        "ordinary-common-parent-state-and-input-candidate": 8978,
+        "absolute-counter-operands-relative-increment-is-derived": 48,
+        "absolute-Entity-ID": 180,
+        "independent-Random-raw-state-and-within-run-relations": 856,
+        "source-exception-text-and-stack-labels": 55,
+        "unselected-raw-instance-field-inventory": 9675,
+        "independent-Arrow-Gaussian-derived-motion-and-angles": 217,
+        "independent-Skeleton-float-derived-sound-pitch": 14,
+        "ordinary-unobservable-local-Arrow-no-filled-state": 6,
+        "cross-World-publication-native-policy-unresolved": 555,
+        "literal-callback-reseed-final-heading-candidate": 7,
+        "literal-callback-reseed-final-Random-candidate": 3
+      }
+    },
+    {
+      "locations": 20618,
+      "groups": {
+        "raw-transport-schema": 24,
+        "ordinary-common-parent-state-and-input-candidate": 8978,
+        "absolute-counter-operands-relative-increment-is-derived": 48,
+        "absolute-Entity-ID": 180,
+        "independent-Random-raw-state-and-within-run-relations": 856,
+        "source-exception-text-and-stack-labels": 55,
+        "unselected-raw-instance-field-inventory": 9675,
+        "independent-Arrow-Gaussian-derived-motion-and-angles": 217,
+        "independent-Skeleton-float-derived-sound-pitch": 14,
+        "ordinary-unobservable-local-Arrow-no-filled-state": 6,
+        "cross-World-publication-native-policy-unresolved": 555,
+        "literal-callback-reseed-final-heading-candidate": 7,
+        "literal-callback-reseed-final-Random-candidate": 3
+      }
+    },
+    {
+      "locations": 20618,
+      "groups": {
+        "raw-transport-schema": 24,
+        "ordinary-common-parent-state-and-input-candidate": 8978,
+        "absolute-counter-operands-relative-increment-is-derived": 48,
+        "absolute-Entity-ID": 180,
+        "independent-Random-raw-state-and-within-run-relations": 856,
+        "source-exception-text-and-stack-labels": 55,
+        "unselected-raw-instance-field-inventory": 9675,
+        "independent-Arrow-Gaussian-derived-motion-and-angles": 217,
+        "independent-Skeleton-float-derived-sound-pitch": 14,
+        "ordinary-unobservable-local-Arrow-no-filled-state": 6,
+        "cross-World-publication-native-policy-unresolved": 555,
+        "literal-callback-reseed-final-heading-candidate": 7,
+        "literal-callback-reseed-final-Random-candidate": 3
+      }
+    },
+    {
+      "locations": 20618,
+      "groups": {
+        "raw-transport-schema": 24,
+        "ordinary-common-parent-state-and-input-candidate": 8978,
+        "absolute-counter-operands-relative-increment-is-derived": 48,
+        "absolute-Entity-ID": 180,
+        "independent-Random-raw-state-and-within-run-relations": 856,
+        "source-exception-text-and-stack-labels": 55,
+        "unselected-raw-instance-field-inventory": 9675,
+        "independent-Arrow-Gaussian-derived-motion-and-angles": 217,
+        "independent-Skeleton-float-derived-sound-pitch": 14,
+        "ordinary-unobservable-local-Arrow-no-filled-state": 6,
+        "cross-World-publication-native-policy-unresolved": 555,
+        "literal-callback-reseed-final-heading-candidate": 7,
+        "literal-callback-reseed-final-Random-candidate": 3
+      }
+    }
+  ],
+  "producer_inputs_unchanged": true,
+  "compiled_helpers_unchanged": true,
+  "retry_count": 0,
+  "public_export": false,
+  "native_execution": false,
+  "source_only_boundaries": [
+    "row21 native cross-World publication admission unresolved",
+    "rows15/17 authored callback cause detail",
+    "ordinary unobservable unpublished/pre-publication Arrow fields remain absent; passive local witness domain separate",
+    "independent default entropy and derived Gaussian/float outputs remain raw/unpaired except real callback literal reseed row23"
+  ]
+}

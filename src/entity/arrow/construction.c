@@ -98,8 +98,11 @@ static bool gaussian(mc_entity *p, unsigned int pc, double *out, mc_arrow_error 
 }
 
 static bool heading_entered(mc_entity *p, mc_math_classes *math, double x, double y, double z,
-                            float speed, float spread, mc_arrow_error *e) {
+                            float speed, float spread, mc_arrow_error *e,
+                            mc_arrow_heading_arguments *arguments) {
     e->heading_entered = true;
+    if (arguments != NULL)
+        *arguments = (mc_arrow_heading_arguments){x, y, z, speed, spread};
     p->arrow->heading_active = true;
     p->arrow->heading_pc = 0;
     heading_at(e, 2);
@@ -200,7 +203,8 @@ static bool eye(mc_entity *shooter, float *out, mc_arrow_error *e) {
     return true;
 }
 
-static bool living(mc_entity *p, mc_entity *shooter, mc_math_classes *math, mc_arrow_error *e) {
+static bool living(mc_entity *p, mc_entity *shooter, mc_math_classes *math, mc_arrow_error *e,
+                   mc_arrow_heading_arguments *arguments) {
     constructor_at(e, living_descriptor, 52);
     const mc_entity_status held = mc_arrow_shooter_store(p, shooter, &e->entity);
     if (held != MC_ENTITY_OK)
@@ -285,7 +289,7 @@ static bool living(mc_entity *p, mc_entity *shooter, mc_math_classes *math, mc_a
     p->base.velocity_y = at_widen(at_fneg(value));
     p->arrow->constructor_pc = 267;
     const bool headed = heading_entered(p, math, p->base.velocity_x, p->base.velocity_y,
-                                        p->base.velocity_z, 1.5f, 1.0f, e);
+                                        p->base.velocity_z, 1.5f, 1.0f, e, arguments);
     if (!headed && e->child.class_name == NULL)
         e->child = e->site;
     constructor_at(e, living_descriptor, 286);
@@ -299,7 +303,10 @@ typedef enum constructor_kind { WORLD, POSITION, LIVING } constructor_kind;
 
 static mc_entity_status construct(mc_entity *p, mc_world_runtime *world, constructor_kind kind,
                                   double x, double y, double z, mc_entity *shooter,
-                                  mc_math_classes *math, mc_arrow_error *out) {
+                                  mc_math_classes *math, mc_arrow_error *out,
+                                  mc_arrow_heading_arguments *arguments) {
+    if (arguments != NULL)
+        *arguments = (mc_arrow_heading_arguments){0};
     mc_arrow_error e = fresh();
     const char *descriptor = kind == WORLD      ? world_descriptor
                              : kind == POSITION ? position_descriptor
@@ -340,7 +347,7 @@ static mc_entity_status construct(mc_entity *p, mc_world_runtime *world, constru
 #undef STORE
         bool completed = true;
         if (kind == LIVING)
-            completed = living(p, shooter, math, &e);
+            completed = living(p, shooter, math, &e, arguments);
         else {
             mc_entity_source_size(p, .5f, .5f);
             s->constructor_pc = 55;
@@ -371,22 +378,32 @@ done:
 
 mc_entity_status mc_arrow_construct_world(mc_entity *p, mc_world_runtime *world,
                                           mc_arrow_error *e) {
-    return construct(p, world, WORLD, 0, 0, 0, NULL, NULL, e);
+    return construct(p, world, WORLD, 0, 0, 0, NULL, NULL, e, NULL);
 }
 
 mc_entity_status mc_arrow_construct_position(mc_entity *p, mc_world_runtime *world, double x,
                                              double y, double z, mc_arrow_error *e) {
-    return construct(p, world, POSITION, x, y, z, NULL, NULL, e);
+    return construct(p, world, POSITION, x, y, z, NULL, NULL, e, NULL);
 }
 
 mc_entity_status mc_arrow_construct_living(mc_entity *p, mc_world_runtime *world,
                                            mc_entity *shooter, mc_math_classes *math,
                                            mc_arrow_error *e) {
-    return construct(p, world, LIVING, 0, 0, 0, shooter, math, e);
+    return construct(p, world, LIVING, 0, 0, 0, shooter, math, e, NULL);
 }
 
-mc_entity_status mc_arrow_heading(mc_entity *p, mc_math_classes *math, double x, double y, double z,
-                                  float speed, float spread, mc_arrow_error *out) {
+mc_entity_status mc_arrow_construct_living_observed(mc_entity *p, mc_world_runtime *world,
+                                                    mc_entity *shooter, mc_math_classes *math,
+                                                    mc_arrow_heading_arguments *arguments,
+                                                    mc_arrow_error *e) {
+    return construct(p, world, LIVING, 0, 0, 0, shooter, math, e, arguments);
+}
+
+static mc_entity_status heading(mc_entity *p, mc_math_classes *math, double x, double y, double z,
+                                float speed, float spread, mc_arrow_error *out,
+                                mc_arrow_heading_arguments *arguments) {
+    if (arguments != NULL)
+        *arguments = (mc_arrow_heading_arguments){0};
     mc_arrow_error e = fresh();
     if (!mc_entity_has_arrow(p))
         fail(&e, MC_ENTITY_INVALID_ARGUMENT, "Arrow heading actual canonical storage");
@@ -399,13 +416,25 @@ mc_entity_status mc_arrow_heading(mc_entity *p, mc_math_classes *math, double x,
         if (e.status != MC_ENTITY_OK)
             fail(&e, e.status, "Arrow heading independent owner hold");
         else {
-            (void)heading_entered(p, math, x, y, z, speed, spread, &e);
+            (void)heading_entered(p, math, x, y, z, speed, spread, &e, arguments);
             mc_entity_release(p);
         }
     }
     if (out != NULL)
         *out = e;
     return e.status;
+}
+
+mc_entity_status mc_arrow_heading(mc_entity *p, mc_math_classes *math, double x, double y, double z,
+                                  float speed, float spread, mc_arrow_error *out) {
+    return heading(p, math, x, y, z, speed, spread, out, NULL);
+}
+
+mc_entity_status mc_arrow_heading_observed(mc_entity *p, mc_math_classes *math, double x, double y,
+                                           double z, float speed, float spread,
+                                           mc_arrow_heading_arguments *arguments,
+                                           mc_arrow_error *out) {
+    return heading(p, math, x, y, z, speed, spread, out, arguments);
 }
 
 bool mc_arrow_inspect(const mc_entity *p, mc_arrow_state *out) {

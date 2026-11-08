@@ -1,7 +1,7 @@
 typedef struct lever_observer {
     mc_world_placement_error *placement;
     unsigned int ranges, sounds;
-    bool refuse_sound, busy;
+    bool refuse_sound, busy, append_null_sound, null_added;
     float pitch;
 } lever_observer;
 
@@ -50,6 +50,13 @@ static mc_world_storage_status lever_observe_sound(void *context, mc_world_runti
                                           "Lever authored sound refusal after range", 0};
         return error->status;
     }
+    if (o->append_null_sound) {
+        const mc_world_storage_status status =
+            mc_world_runtime_add_world_access(world, NULL, error);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
+        o->null_added = true;
+    }
     return MC_WORLD_STORAGE_OK;
 }
 
@@ -58,6 +65,7 @@ static mc_world_storage_status lever_observe_sound(void *context, mc_world_runti
 static bool lever_placement_controls(fixture *f) {
     bool ok = false, value = false;
     mc_world_placement_error e = {0};
+    lever_observer observer = {.placement = &e};
     mc_world_runtime *world = f->worlds[0];
     const mc_block *lever = NULL;
     const size_t bindings = world->persistent_bindings;
@@ -133,7 +141,6 @@ static bool lever_placement_controls(fixture *f) {
     }
     const mc_world_access_callbacks callbacks = {
         .cell = lever_observe_cell, .range = lever_observe_range, .sound = lever_observe_sound};
-    lever_observer observer = {.placement = &e};
     CHECK(mc_world_access_create(&callbacks, &observer, &access, NULL) == MC_WORLD_STORAGE_OK &&
           mc_world_runtime_add_world_access(world, access, NULL) == MC_WORLD_STORAGE_OK);
     registered = true;
@@ -147,13 +154,43 @@ static bool lever_placement_controls(fixture *f) {
         CHECK(status == (refusal ? MC_WORLD_STORAGE_INVALID_DATA : MC_WORLD_STORAGE_OK) &&
               value == !refusal && e.returned == !refusal && observer.ranges == 1 &&
               observer.sounds == 1 && observer.busy && observer.pitch == 0.6f &&
-              e.site.pc == (refusal ? 97u : 219u));
+              e.site.pc == (refusal ? 97u : 219u) && !e.source_exception && !e.source_error &&
+              (!refusal || e.native_policy) && e.retained_producers == 0);
         int32_t metadata;
         CHECK(mc_world_runtime_metadata_get(world, 8, 64, 8, &metadata, NULL) ==
                   MC_WORLD_STORAGE_OK &&
               metadata == 13 && mc_world_placement_error_retire(&e));
     }
+    /* Append the nullable occurrence during the real sound callback: metadata
+     * and range have returned before FD's next sound-list lookup invokes it. */
+    CHECK(boxes_cell(f, 0, 8, 64, 8, 69, 5));
+    observer.ranges = observer.sounds = 0;
+    observer.refuse_sound = false;
+    observer.append_null_sound = true;
+    value = true;
+    const mc_world_storage_status null_sound =
+        mc_world_block_activate(f->registry[0], lever, world, 8, 64, 8, NULL, &value, &e);
     bool removed;
+    CHECK(observer.null_added &&
+          mc_world_runtime_remove_world_access(world, NULL, &removed, NULL) ==
+              MC_WORLD_STORAGE_OK &&
+          removed);
+    observer.null_added = false;
+    int32_t metadata;
+    const char *exception = NULL;
+    CHECK(null_sound == MC_WORLD_STORAGE_UNSUPPORTED_STATE && value && !e.returned &&
+          e.site.pc == 97 && e.source_exception && !e.source_error && !e.native_policy &&
+          e.exception_class != NULL &&
+          strcmp(e.exception_class, "java/lang/NullPointerException") == 0 &&
+          e.retained_producers == 0 && observer.ranges == 1 && observer.sounds == 1 &&
+          observer.busy && e.mutation != NULL && e.mutation->world_access_bytecode == 41 &&
+          e.mutation->world_access_failure.receiver == NULL &&
+          e.mutation->world_access_failure.render_global == NULL &&
+          e.mutation->world_access_failure.receipt == NULL &&
+          mc_world_access_failure_source_exception(&e.mutation->world_access_failure, &exception) &&
+          strcmp(exception, e.exception_class) == 0 &&
+          mc_world_runtime_metadata_get(world, 8, 64, 8, &metadata, NULL) == MC_WORLD_STORAGE_OK &&
+          metadata == 13 && world->active_calls == 0 && mc_world_placement_error_retire(&e));
     CHECK(mc_world_runtime_remove_world_access(world, access, &removed, NULL) ==
               MC_WORLD_STORAGE_OK &&
           removed);
@@ -175,6 +212,10 @@ static bool lever_placement_controls(fixture *f) {
 cleanup:
     world->fields.B = remote;
     world->fields.r = random;
+    if (registered && observer.null_added) {
+        bool ignored;
+        (void)mc_world_runtime_remove_world_access(world, NULL, &ignored, NULL);
+    }
     (void)mc_world_placement_error_retire(&e);
     if (registered) {
         bool ignored;

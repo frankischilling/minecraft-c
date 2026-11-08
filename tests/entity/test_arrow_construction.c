@@ -6,11 +6,13 @@ int mc_arrow_unused_statistics_main(int, char **);
 #undef main
 
 #include "core/java/random_profile_internal.h"
+#include "entity/action/action_internal.h"
 #include "entity/arrow/internal.h"
 #include "entity/arrow/references_internal.h"
 #include "entity/construction_internal.h"
 #include "entity/mob/internal.h"
 #include "entity/position_internal.h"
+#include "mc/entity/hit_result.h"
 #include "mc/entity/mob/construction.h"
 #include "world/runtime/runtime_internal.h"
 #include <math.h>
@@ -382,6 +384,146 @@ static bool ac_references(arrow_fixture *f) {
     return true;
 }
 
+/* Actual inherited false virtuals on genuine Arrow allocation/constructor
+ * owners. Source and caller admission are separate; no nearby query changes. */
+static bool ac_inherited_predicates(arrow_fixture *f) {
+    mc_entity *a = NULL, *foreign = NULL, *failed = NULL;
+    mc_entity_classes *foreign_classes = NULL;
+    mc_entity_hit_error hit;
+    mc_player_action_error action;
+    bool pickable = true, collidable = true;
+    CHECK(ac_allocate(f, &a));
+    mc_player_action_error_init(&action);
+    action.source_class = "ls";
+    action.source_method = "o()V";
+    action.living_bytecode = 527;
+    CHECK(mc_entity_pickable(a, &pickable, &hit) == MC_ENTITY_HIT_INVALID_PHASE && pickable &&
+          hit.native_policy && !hit.site.entered && strcmp(hit.site.declaring_class, "sn") == 0 &&
+          strcmp(hit.site.method, "h_") == 0 && !mc_action_collidable(a, &collidable, &action) &&
+          collidable && action.status == MC_ENTITY_STATE_ERROR && action.living_bytecode == 527);
+    CHECK(mc_arrow_construct_world(a, NULL, NULL) == MC_ENTITY_OK &&
+          mc_arrow_shooter_store(a, f->base.player, NULL) == MC_ENTITY_OK);
+    a->arrow->fields.j = 37;
+    a->arrow->fields.k = 75;
+    const mc_arrow_fields own = a->arrow->fields;
+    const mc_java_random random = *a->random;
+    const size_t holds = a->holds, shooter_holds = f->base.player->holds;
+    const int32_t counter = a->classes->next_id;
+    const size_t bytes = a->classes->allocated_bytes;
+    for (unsigned int dead = 0; dead < 2; ++dead) {
+        a->base.be = dead != 0;
+        pickable = collidable = true;
+        mc_player_action_error_init(&action);
+        action.source_class = "ls";
+        action.source_method = "o()V";
+        action.living_bytecode = 527;
+        CHECK(mc_entity_pickable(a, &pickable, &hit) == MC_ENTITY_HIT_OK && !pickable &&
+              hit.status == MC_ENTITY_HIT_OK && !hit.site.selected &&
+              mc_action_candidate(a, f->base.player, &action, 514) &&
+              mc_action_collidable(a, &collidable, &action) && !collidable &&
+              action.status == MC_ENTITY_OK && action.living_bytecode == 527 &&
+              action.push_bytecode == 0 && strcmp(action.source_class, "ls") == 0 &&
+              strcmp(action.source_method, "o()V") == 0);
+    }
+    /* These source methods do not dereference any of these reached-unread
+     * child slots. Restore the genuine native occurrences before retirement. */
+    mc_java_random *saved_random = a->random;
+    mc_entity_bounds *saved_bounds = a->bounds;
+    a->random = NULL;
+    a->bounds = NULL;
+    pickable = collidable = true;
+    const mc_entity_hit_status unread_pick = mc_entity_pickable(a, &pickable, NULL);
+    mc_player_action_error_init(&action);
+    const bool unread_action = mc_action_collidable(a, &collidable, &action);
+    a->random = saved_random;
+    a->bounds = saved_bounds;
+    CHECK(
+        unread_pick == MC_ENTITY_HIT_OK && !pickable && unread_action && !collidable &&
+        a->holds == holds && f->base.player->holds == shooter_holds &&
+        a->classes->next_id == counter && a->classes->allocated_bytes == bytes &&
+        ac_random_equal(a->random, &random) && a->arrow->fields.c == own.c &&
+        a->arrow->shooter_hold == own.c && a->arrow->fields.j == own.j &&
+        a->arrow->fields.k == own.k && a->arrow->fields.a == own.a && a->arrow->fields.b == own.b &&
+        a->arrow->fields.d == own.d && a->arrow->fields.e == own.e && a->arrow->fields.f == own.f &&
+        a->arrow->fields.g == own.g && a->arrow->fields.h == own.h && a->arrow->fields.i == own.i);
+    mc_arrow_entity_state *saved_payload = a->arrow;
+    a->arrow = NULL;
+    pickable = collidable = true;
+    const mc_entity_hit_status bad_payload = mc_entity_pickable(a, &pickable, &hit);
+    mc_player_action_error_init(&action);
+    const bool bad_action = mc_action_collidable(a, &collidable, &action);
+    a->arrow = saved_payload;
+    CHECK(bad_payload == MC_ENTITY_HIT_UNSUPPORTED_SOURCE && pickable && hit.native_policy &&
+          !hit.site.selected && !bad_action && collidable &&
+          action.status == MC_ENTITY_STATE_ERROR);
+    for (size_t bad = 0; bad < 2; ++bad) {
+        a->holds = bad == 0 ? 0 : SIZE_MAX;
+        pickable = true;
+        const mc_entity_hit_status limited = mc_entity_pickable(a, &pickable, &hit);
+        bool action_rejected = true;
+        if (bad == 0) {
+            collidable = true;
+            mc_player_action_error_init(&action);
+            action_rejected = !mc_action_collidable(a, &collidable, &action) && collidable &&
+                              action.status == MC_ENTITY_STATE_ERROR;
+        }
+        a->holds = holds;
+        const mc_entity_status cause = bad == 0 ? MC_ENTITY_STATE_ERROR : MC_ENTITY_LIMIT;
+        CHECK(limited == MC_ENTITY_HIT_NATIVE_FAILED && pickable && hit.native_policy &&
+              hit.native.status == cause && action_rejected);
+    }
+    float border = 7;
+    CHECK(mc_entity_pick_border_size(a, &border, &hit) == MC_ENTITY_HIT_UNSUPPORTED_SOURCE &&
+          border == 7 && hit.native_policy);
+    CHECK(mc_entity_pickable(a, NULL, &hit) == MC_ENTITY_HIT_INVALID_ARGUMENT &&
+          hit.native_policy && a->holds == holds);
+    pickable = true;
+    CHECK(mc_entity_pickable(NULL, &pickable, &hit) == MC_ENTITY_HIT_SOURCE_NULL_REFERENCE &&
+          pickable && !hit.native_policy && !hit.site.entered);
+    mc_player_action_error_init(&action);
+    action.source_class = "ls";
+    action.source_method = "o()V";
+    action.living_bytecode = 527;
+    CHECK(!mc_action_collidable(NULL, &collidable, &action) &&
+          action.status == MC_ENTITY_STATE_ERROR && action.living_bytecode == 527);
+    CHECK(mc_entity_classes_create(MC_ENTITY_CLIENT, f->base.app.profile, NULL, &foreign_classes) ==
+              MC_ENTITY_OK &&
+          mc_arrow_allocate(foreign_classes, &foreign, NULL) == MC_ENTITY_OK &&
+          mc_arrow_construct_world(foreign, NULL, NULL) == MC_ENTITY_OK);
+    mc_player_action_error_init(&action);
+    action.source_class = "ls";
+    action.source_method = "o()V";
+    CHECK(!mc_action_candidate(foreign, f->base.player, &action, 514) &&
+          action.status == MC_ENTITY_STATE_ERROR && action.living_bytecode == 514);
+    /* A different namespace's canonical literal is not this actual Class. */
+    const mc_entity_class_literal *saved_class = a->class_literal;
+    a->class_literal = foreign->class_literal;
+    pickable = collidable = true;
+    const mc_entity_hit_status wrong_class = mc_entity_pickable(a, &pickable, &hit);
+    mc_player_action_error_init(&action);
+    const bool wrong_action = mc_action_collidable(a, &collidable, &action);
+    a->class_literal = saved_class;
+    CHECK(wrong_class == MC_ENTITY_HIT_UNSUPPORTED_SOURCE && pickable && hit.native_policy &&
+          !wrong_action && collidable && action.status == MC_ENTITY_STATE_ERROR);
+    mc_arrow_error failed_call;
+    CHECK(ac_allocate(f, &failed) &&
+          mc_arrow_construct_living(failed, NULL, NULL, NULL, &failed_call) ==
+              MC_ENTITY_STATE_ERROR &&
+          failed->phase == MC_ENTITY_FAILED_CONSTRUCTION && failed_call.source_exception &&
+          failed_call.site.pc == 73);
+    pickable = collidable = true;
+    mc_player_action_error_init(&action);
+    CHECK(mc_entity_pickable(failed, &pickable, &hit) == MC_ENTITY_HIT_INVALID_PHASE && pickable &&
+          hit.native_policy && !mc_action_collidable(failed, &collidable, &action) && collidable &&
+          action.status == MC_ENTITY_STATE_ERROR);
+    mc_entity_release(failed);
+    mc_entity_release(foreign);
+    CHECK(mc_entity_classes_free(foreign_classes) == MC_ENTITY_OK);
+    mc_entity_release(a);
+    CHECK(f->base.player->holds == shooter_holds - 1);
+    return true;
+}
+
 static bool ac_geometry_admission(arrow_fixture *f) {
     mc_entity *a = NULL;
     mc_arrow_error e;
@@ -410,7 +552,7 @@ static bool ac_geometry_admission(arrow_fixture *f) {
               MC_ENTITY_OK &&
           mc_arrow_allocate(server, &a, NULL) == MC_ENTITY_INVALID_ARGUMENT && a == NULL &&
           mc_entity_classes_free(server) == MC_ENTITY_OK);
-    return true;
+    return ac_inherited_predicates(f);
 }
 
 static bool ac_failed_disposal(arrow_fixture *f) {

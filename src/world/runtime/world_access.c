@@ -449,6 +449,11 @@ mc_world_storage_status mc_world_access_call_sound(mc_world_access *access, mc_w
                                                    mc_world_storage_error *error,
                                                    mc_world_access_failure *failure) {
     *failure = (mc_world_access_failure){0};
+    if (access == NULL) {
+        failure->source_null_receiver = true;
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World sound WorldAccess invocation");
+    }
     if (access != NULL && access->source_callbacks.sound != NULL) {
         const mc_world_storage_status status = access->source_callbacks.sound(
             access->context, world, name, x, y, z, volume, pitch, error, failure);
@@ -588,13 +593,24 @@ mc_world_storage_status mc_world_access_receipt_create(mc_world_access *receiver
     receipt->holds = 1;
     ++receiver->receipt_holds;
     *out = receipt;
-    *view = (mc_world_access_failure){receiver, cause, receipt};
+    *view = (mc_world_access_failure){receiver, cause, receipt, false};
     return result(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+static bool null_receiver_failure(const mc_world_access_failure *failure) {
+    return failure->source_null_receiver && failure->receiver == NULL &&
+           failure->render_global == NULL && failure->receipt == NULL;
 }
 
 mc_world_storage_status mc_world_access_failure_retain(const mc_world_access_failure *borrowed,
                                                        mc_world_access_failure *out) {
-    if (borrowed == NULL || out == NULL || borrowed == out || borrowed->receipt == NULL ||
+    if (borrowed == NULL || out == NULL || borrowed == out)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    if (null_receiver_failure(borrowed)) {
+        *out = *borrowed;
+        return MC_WORLD_STORAGE_OK;
+    }
+    if (borrowed->source_null_receiver || borrowed->receipt == NULL ||
         borrowed->receiver != borrowed->receipt->receiver ||
         borrowed->render_global != borrowed->receipt->render_global)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
@@ -606,7 +622,13 @@ mc_world_storage_status mc_world_access_failure_retain(const mc_world_access_fai
 }
 
 void mc_world_access_failure_release(mc_world_access_failure *owned) {
-    if (owned == NULL || owned->receipt == NULL)
+    if (owned == NULL)
+        return;
+    if (null_receiver_failure(owned)) {
+        *owned = (mc_world_access_failure){0};
+        return;
+    }
+    if (owned->receipt == NULL)
         return;
     if (owned->receipt->holds <= 1)
         return;
@@ -632,7 +654,14 @@ mc_world_storage_status mc_world_access_receipt_retire(mc_world_access_receipt *
 
 bool mc_world_access_failure_source_exception(const mc_world_access_failure *failure,
                                               const char **exception_class) {
-    if (failure == NULL || failure->receipt == NULL ||
+    if (failure == NULL)
+        return false;
+    if (null_receiver_failure(failure)) {
+        if (exception_class != NULL)
+            *exception_class = "java/lang/NullPointerException";
+        return true;
+    }
+    if (failure->source_null_receiver || failure->receipt == NULL ||
         failure->receiver != failure->receipt->receiver ||
         failure->render_global != failure->receipt->render_global ||
         failure->receipt->exception_class == NULL)

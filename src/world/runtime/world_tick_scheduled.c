@@ -109,7 +109,16 @@ static bool tick(mc_world_runtime *w, mc_scheduled_tick *record,
             if (mc_world_mutation_block_tick(w, block, f.x, f.y, f.z, random, &e->call.tick))
                 return true;
             e->call.registry = e->call.tick.registry;
-            return cause(w, e, e->call.tick.cause);
+            (void)cause(w, e, e->call.tick.cause);
+            /* The actual failed child may carry a null-sound failure by
+             * value, without a concrete producer occurrence to retain. */
+            const char *exception = NULL;
+            if (mc_world_access_failure_source_exception(&e->call.tick.world_access_failure,
+                                                         &exception)) {
+                e->native_policy = false;
+                e->exception_class = exception;
+            }
+            return false;
         }
     }
     e->call.registry = registry;

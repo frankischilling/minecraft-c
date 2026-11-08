@@ -437,6 +437,67 @@ cleanup:
     return ok;
 }
 
+static bool null_sound_receiver(fixture *f) {
+    bool ok = false, registered = false;
+    mc_world_runtime *world = f->worlds[2];
+    mc_entity *entity = NULL;
+    mc_world_access *missing = NULL;
+    mc_world_access_failure captured = {0};
+    mc_world_movement_error *error = malloc(sizeof(*error));
+    const mc_world_access_callbacks absent = {0};
+    const char *exception_class = "untouched";
+    CHECK(error != NULL && make_entity(f, 0, world, 8.5, 64, 8.5, &entity));
+    CHECK(mc_world_runtime_add_world_access(world, NULL, NULL) == MC_WORLD_STORAGE_OK);
+    registered = true;
+    /* A null Entity fails at its first operand read, before invokeinterface. */
+    CHECK(
+        mc_world_runtime_entity_sound(world, NULL, NULL, 0.5f, 0.75f, error) ==
+            MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+        error->bytecode == 33 &&
+        !mc_world_access_failure_source_exception(&error->world_access_failure, &exception_class) &&
+        strcmp(exception_class, "untouched") == 0);
+    CHECK(mc_world_runtime_entity_sound(world, entity, NULL, 0.5f, 0.75f, error) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          error->bytecode == 53 && error->world_access_bytecode == 53);
+    CHECK(
+        mc_world_access_failure_source_exception(&error->world_access_failure, &exception_class) &&
+        strcmp(exception_class, "java/lang/NullPointerException") == 0);
+    CHECK(error->world_access_failure.receiver == NULL &&
+          error->world_access_failure.render_global == NULL &&
+          error->world_access_failure.receipt == NULL &&
+          mc_world_access_failure_retain(&error->world_access_failure, &captured) ==
+              MC_WORLD_STORAGE_OK);
+    CHECK(remove_receiver(world, NULL));
+    registered = false;
+    CHECK(mc_world_access_failure_source_exception(&captured, &exception_class));
+    mc_world_access_failure_release(&captured);
+    exception_class = "released";
+    CHECK(!mc_world_access_failure_source_exception(&captured, &exception_class) &&
+          strcmp(exception_class, "released") == 0);
+    /* A real native receiver with no callback remains an unsupported adapter. */
+    CHECK(mc_world_access_create(&absent, NULL, &missing, NULL) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_add_world_access(world, missing, NULL) == MC_WORLD_STORAGE_OK);
+    CHECK(
+        mc_world_runtime_entity_sound(world, entity, NULL, 0.5f, 0.75f, error) ==
+            MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+        error->bytecode == 53 &&
+        !mc_world_access_failure_source_exception(&error->world_access_failure, &exception_class) &&
+        strcmp(exception_class, "released") == 0);
+    CHECK(remove_receiver(world, missing));
+    CHECK(world->active_calls == 0 && world->local_leases == 0);
+    ok = true;
+cleanup:
+    if (registered)
+        (void)remove_receiver(world, NULL);
+    if (missing != NULL)
+        (void)remove_receiver(world, missing);
+    mc_world_access_failure_release(&captured);
+    if (mc_world_access_free(missing, NULL) != MC_WORLD_STORAGE_OK)
+        ok = false;
+    free(error);
+    return ok;
+}
+
 static bool set_cell(fixture *f, size_t slot, int32_t x, int32_t y, uint8_t id) {
     f->states[slot]->data->blocks[((size_t)x << 11u) | (8u << 7u) | (size_t)y] = id;
     bool ignored = false;
@@ -588,6 +649,7 @@ int main(int argc, char **argv) {
     CHECK(untyped(f, 0) && untyped(f, 1));
     CHECK(entity_sound(f, &receivers[0], &receivers[2]));
     CHECK(registration_controls(f, &receivers[0], &control));
+    CHECK(null_sound_receiver(f));
     CHECK(reentry(f, 0, &receivers[0]) && reentry(f, 1, &receivers[1]));
     CHECK(terminal_controls(f, 0, &receivers[0]) && terminal_controls(f, 1, &receivers[1]));
     CHECK(!log->bad);

@@ -342,7 +342,7 @@ static mc_world_storage_status call_end(mc_render_global_access *access, access_
     call->next = access->failures;
     access->failures = call;
     ++access->failure_count;
-    *failure = (mc_world_access_failure){access->identity, &call->error, call->receipt};
+    *failure = (mc_world_access_failure){access->identity, &call->error, call->receipt, false};
     if (call->source_exception_class != NULL)
         call->receipt->exception_class = call->source_exception_class;
     else if (call->error.status == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE &&

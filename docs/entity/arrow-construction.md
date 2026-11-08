@@ -9,8 +9,10 @@ The public component API is
 [arrow/construction.h](../../include/mc/entity/arrow/construction.h); the source
 body is [construction.c](../../src/entity/arrow/construction.c). Windows and
 sanitized Linux pass the native component/terminal controls and the finite
-unchanged-original constructor/heading comparison. Complete configured suites
-pass Windows 760/760 and sanitized Linux 617/617 without registered skips.
+unchanged-original constructor/heading comparison. The original constructor
+increment passed Windows 760/760 and sanitized Linux 617/617 without skips;
+the later [Skeleton firing](skeleton-firing.md) Source3 cohort passes
+777/777 and 632/632 respectively.
 
 ## Source bodies
 
@@ -87,6 +89,14 @@ Random43 leaves the receipt absent, and partial receipts retain their real count
 They support per-run verification without pretending that independent constructor
 clocks supplied equal seeds across executions.
 
+Actual heading arguments have a separate private observer used by the firing
+comparison. Its 32-byte output is initialized on each attempt and written from
+the arguments at the same entered helper. The existing `heading_entered` flag
+selects valid values. Public entry points pass NULL; both paths share admission,
+holds, arithmetic and cleanup. No heap, persistent Arrow/Mob field or extra draw
+is added. The public Arrow error remains 464 bytes, preserving the 568-byte
+Entity NBT error and its 464-byte Mob-call arm.
+
 Public heading requires a READY Arrow and obtains its own native occurrence
 before entering. An active operation refuses reentry. The constructor calls the
 same entered body while CONSTRUCTING. These native guards do not replace the
@@ -128,7 +138,7 @@ stores; the narrower World terminal scope may refuse them without repairing them
 
 ## Qualification and remaining consumers
 
-[Native constructor controls](../../tests/entity/test_arrow_construction.c) passed
+[Native constructor controls](../../tests/entity/test_arrow_construction.c) initially passed
 215 checks in eight groups on Windows and sanitized Linux. They cover all three complete constructors,
 size-versus-bounds/history behavior, NULL73 and refused native store52 prefixes,
 real Player/Skeleton/Wolf/Ghast shooters, late Math116 failure, independent entropy,
@@ -137,6 +147,13 @@ geometry failure prefixes, strong-reference replacement and failed disposal.
 The retained opportunity is `arrow-construction-dcqrkrn_`, with unchanged protected
 inputs and empty stderr. The bounded parser's positive and 24 corruption refusals
 pass normally and under `-O`.
+
+The current fixture passes 237 checks on both hosts. It also invokes the actual
+inherited `SN.h_` and `SN.i_` false bodies on genuine held READY Arrows. It checks
+live/dead flags, unread null children, phase/payload/namespace refusals and
+balanced occurrences. Nearby queries keep their actual candidates; these leaf
+results do not prefilter them. Arrow's separate border-size and collision-box
+virtual joins remain outside this admission.
 
 The separate Arrow World ownership controls pass 1,067 checks on each host. The first
 production build compiled the Arrow runtime but found two fixture-only issues:
@@ -162,8 +179,9 @@ now have their separate evidence. GS's direct-Arrow branch performs the actual
 shooter reads117/127 for the ally-helper local while preserving the original
 Arrow for LS158; its new controls are native, separate from this constructor
 comparison. Natural SL impact would instead pass current shooter c at737 to
-victim damage741 with literal4. Skeleton firing, Arrow's 1537-byte tick/collision
-body and pickup remain reached frontiers. Existing-reader NBT preserves c/j/k;
+victim damage741 with literal4. The complete [FR189 firing parent](skeleton-firing.md)
+now has its own original/native component qualification. Arrow's 1537-byte
+tick/collision body and pickup remain reached frontiers. Existing-reader NBT preserves c/j/k;
 only a genuinely fresh constructor supplies null/zero defaults. Constructor
 success and World publication provide no natural Skeleton-play, returned
 World frame, complete source Store, audiovisual or FPS qualification.

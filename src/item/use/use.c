@@ -114,8 +114,13 @@ static void receipt_exception(mc_item_use_call *c, const mc_world_access_failure
 }
 
 static bool receipt(mc_item_use_call *c, const mc_world_access_failure *v, bool child_failed) {
-    if (v->receipt == NULL)
+    if (v->receipt == NULL) {
+        /* A null sound receiver carries a source failure by value. Classify
+         * that actual failed invocation without inventing a producer hold or
+         * consuming one of the retained_producers slots. */
+        receipt_exception(c, v, child_failed);
         return true;
+    }
     for (size_t i = 0; i < c->receipt_count; ++i)
         if ((i < USE_RECEIPTS ? c->receipts[i].receipt
                               : c->extra_receipts[i - USE_RECEIPTS].receipt) == v->receipt) {

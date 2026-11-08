@@ -1,3 +1,4 @@
+#include "../arrow/internal.h"
 #include "../minecart/entity_internal.h"
 #include "action_internal.h"
 
@@ -23,6 +24,16 @@ bool mc_action_collidable(mc_entity *candidate, bool *out, mc_player_action_erro
     }
     if (mc_entity_is_kind(candidate, MC_ENTITY_CLASS_KIND_MINECART)) {
         *out = true;
+        return true;
+    }
+    if (mc_entity_is_kind(candidate, MC_ENTITY_CLASS_KIND_ARROW)) {
+        /* The nearby caller already checked its namespace and captured its
+         * local occurrence. Execute actual inherited SN.i_(), not a filter. */
+        if (!mc_entity_has_arrow(candidate) || candidate->phase != MC_ENTITY_READY ||
+            candidate->holds == 0)
+            return mc_action_fail(e, MC_ENTITY_STATE_ERROR,
+                                  "Nearby i_ actual held READY Arrow storage", 527);
+        *out = false; /* SN.i_: iconst_0 at0; ireturn at1. */
         return true;
     }
     if (mc_entity_is_kind(candidate, MC_ENTITY_CLASS_KIND_ITEM) ||

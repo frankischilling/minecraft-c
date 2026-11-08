@@ -1,5 +1,67 @@
 # Test scope and reproduction
 
+## Skeleton firing and inherited Arrow predicates
+
+The [complete FR189 parent](entity/skeleton-firing.md) uses the actual Creature
+II97 route, genuine Arrow constructors and both headings, separate Skeleton
+sound entropy, real World publication and the cooldown/facing tail. The
+[original packet](../tests/reference/entity/skeleton_fire/README.md) retains
+96 calls across two ordinary and two passive VMs: 60 normal returns and 36
+exceptions. Its four-VM common domain agrees on 9,270 scalars; six additional
+passive-local profiles agree on 252. Original ordinary rows keep their
+unobservable Arrow fields null.
+
+Windows and sanitized Linux each execute 23 native profiles. Twenty-one
+complete outcomes, 14 normal returns and seven null-reference exceptions,
+match 7,929 scalars. Profiles 15/17 contribute 816 matched native callback
+failure-prefix scalars; their authored Java Throwable details remain
+source-only. Six passive-local Arrow profiles match another 252 scalars.
+The native emitter passes 4,768 checks per host. Eight authored firing groups
+pass 704 checks; the earlier 702-check cohort remains retained. Default
+constructor entropy stays independent, with each run's actual Gaussian/cache
+and heading arithmetic checked. The literal callback reseed is a declared
+input, separate from those default streams.
+
+Profile 21 is explicitly unexecuted natively before FR entry. The publication
+API admits a different construction World, but the single-World collector
+cannot retire the resulting cross-World graph. There is no native prefix or
+outcome credit for this profile and no source-field rebinding to force cleanup.
+Arrow ticking/collision/pickup, a natural Skeleton encounter, a game frame,
+original audio and FPS remain unqualified.
+
+The actual null WorldAccess sound invocation now produces a value-only source
+null-reference failure after the Entity-coordinate arguments at FD53. It
+retains/releases without inventing a concrete producer. The callee regression
+first fails, then passes 313 WorldAccess checks. Item use, lever placement and
+scheduled draining also classify this reached failure through the shared
+helper; their actual-callee regressions preserve the earlier failures. Genuine
+READY held Arrows now execute inherited h_/i_ false virtuals, with current
+constructor/predicate controls passing 237 checks. Queries keep their actual
+candidates; this does not complete the other collision virtuals.
+
+The first Windows fixture build failed with C4701 for `observer` in
+`lever_controls.inc`: a failing CHECK can jump to cleanup before its initializer.
+Moving initialization before that path fixed the fixture. The first full Linux
+build then rejected the unchanged NBT layout guards: public heading argument
+fields enlarged the Arrow call arm from 464 to 496 bytes and the complete NBT
+error from 568 to 600. Actual arguments now use an optional private 32-byte
+observer at the one entered heading body. Public Arrow errors remain 464
+bytes, Mob call details 464 and Entity NBT errors 568. No public budget guard
+was relaxed, and both failed opportunities remain retained.
+
+The final frozen Source3 cohort passes both complete builds and both twelve-test
+focused selections. Complete configured inventories pass Windows **777/777**
+in **1,414.89 seconds** and Linux Clang ASan/UBSan **632/632** in **1,482.27
+seconds**, with no skips or missing registered names. Linux enables leak
+detection and halt-on-error. All 5,795 declared inputs and the six separately
+pinned admission tables match their frozen source on both hosts. Formatting
+passes 2,257 files. GCC 15.2 syntax-only checks pass the 16 changed/new headless
+C units represented by actual Linux recipes, with empty streams and at most
+two compiler processes. The client-only `render_global_access.c` has no recipe
+in that restored Linux build and is explicitly uncovered by this syntax check.
+No GCC runtime was executed by it. Full-suite elapsed times include concurrent
+hosts and the new WSL toolchain; they provide no performance qualification.
+
 ## Arrow persistence, rendering and direct damage
 
 The [Arrow NBT packet](../tests/reference/entity/arrow_nbt/README.md) retains
@@ -171,7 +233,13 @@ on both hosts. The regression goes red before canonicalizing the fixture root;
 all nine controls then pass normally and under optimized Python on Windows and
 Linux. Existing completion, diagnostic-output and retained-receipt checks remain.
 The wrapper, game runtime, original producers and recorded native outputs are
-unchanged. Hosted validation of this fixture-only repair remains pending.
+unchanged. Hosted [run 42478186878](https://github.com/frankischilling/minecraft-c/actions/runs/42478186878)
+of repair `3079a3d2` passes all four jobs: formatting, Windows 781/781, GCC
+840/840 and Clang 840/840. Complete checkout logs identify merge
+`6ce8c96160912d782cc581ee28c63c4aecc7421c`, whose tree
+`a7c88ff6eaf87de1ea00ec7b56651351d7105aa5` matches the published commit.
+The successful Windows cache download still leaves the hosted failure-fallback
+branch unexecuted.
 
 The repaired readiness head `c0d4589e` passes hosted formatting, Windows 761/761
 and GCC 819/819. Clang passes 818/819 in

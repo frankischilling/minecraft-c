@@ -2,8 +2,8 @@
   "scope": "Current authored real-owner loading draw/update/yield/retirement controls; native results are recorded separately for their exact tested snapshots.",
   "native_sources": {
     "CMakeLists.txt": {
-      "bytes": 342586,
-      "sha256": "6d31ecac91316d274c42b56700a8d822ff189ef2260c517049136bb374fa78a6"
+      "bytes": 342627,
+      "sha256": "a549aa6f6081286d5ab68a60614d996aa767404badb51e8d7e20d126dcd26cf5"
     },
     "cmake/client_controllers.cmake": {
       "bytes": 1093,
@@ -2418,8 +2418,8 @@
       "sha256": "f32d96dd344e77e14f0bedf1bb75698d6f83902e3c9fde0fa17205fb4973eb40"
     },
     "src/entity/action/push.c": {
-      "bytes": 8339,
-      "sha256": "692744f4c74b613a5728cb79c57eaae83924cb1af6fddfa2056855c00a580fd9"
+      "bytes": 8949,
+      "sha256": "2ca442e2a82d8fb504be645df58c1b6ccd98721c4b2de738515bfcc5de12d9d1"
     },
     "src/entity/bounds/bounds.c": {
       "bytes": 22811,
@@ -3622,8 +3622,8 @@
       "sha256": "44d6a5b439f86b9c9962525107eb3b554ebae75918d8f38bc7b2a8f77c15af5d"
     },
     "src/world/runtime/world_access.c": {
-      "bytes": 33321,
-      "sha256": "7ffbf46b00a711332f70c43a530c76b070a5d0b980edabd518e0c21dbe4d61dd"
+      "bytes": 34319,
+      "sha256": "89d3b1ae277a6ba40ad2c5d69fd655f6868ed1215074df265d69d8a4f9ed1b93"
     },
     "src/world/runtime/world_access_internal.h": {
       "bytes": 7579,
@@ -5166,8 +5166,8 @@
       "sha256": "cab8a60dbf4d6fc636423e2cf82b6b082d9993b53cb3005ea7605360ce3e11f3"
     },
     "tests/world/runtime/test_pressure_plate.c": {
-      "bytes": 41763,
-      "sha256": "5589c16b518dbf1ec7707bd06f59ad6d39ca357c7a7314db967d6d16e357db3b"
+      "bytes": 48075,
+      "sha256": "35af6587602a520ee621c43c4eb35a63c2ff836fe61143ab7718f97bd4fd55be"
     },
     "tests/world/runtime/test_queries.c": {
       "bytes": 106847,
@@ -5222,8 +5222,8 @@
       "sha256": "55ae023dce901cab8a5cb805f878383060e57a7b22b5f9fe1df91aae1548afe6"
     },
     "tests/world/runtime/world_access/test_world_access.c": {
-      "bytes": 29170,
-      "sha256": "b44b0aa9c06aec980106ffc32de6cdd66dd3f4ad96354161394054e168988469"
+      "bytes": 32289,
+      "sha256": "b6eed3a62d067cf12312abb24ae0e6a55664a773e449faf005b07d877275323b"
     },
     "tests/world/saved_data/observation_probe.c": {
       "bytes": 9899,
@@ -5938,8 +5938,8 @@
       "sha256": "bb7fbeb36a9153eaefbfee9f7d6b05cace2c7d3f06d449377e21cd70eb37dbed"
     },
     "include/mc/world/runtime/world_access_error.h": {
-      "bytes": 1925,
-      "sha256": "02892855a6184002eb7c7d9974d1366fecd10981f571c78dc58050a96865054c"
+      "bytes": 2180,
+      "sha256": "6a27812224006fbe8f8336af9f75eb6d40da752def19129466e0dadfc69e4095"
     },
     "src/client/render/manager/world.c": {
       "bytes": 4094,
@@ -5970,8 +5970,8 @@
       "sha256": "4c27a952596ec7d60c0c0e851c4c7f200defcac1c6a00bcbed87a1d270c4e287"
     },
     "src/client/world/render_global_access.c": {
-      "bytes": 68370,
-      "sha256": "e45a7148948fc1649e3baa974bba90a6dbfec7db91b5244fc1b97a43022fe39a"
+      "bytes": 68377,
+      "sha256": "991d3e4ced7cc10c6a7e6bcb34c6e9485f8810ab9f993d3ec811e2149f1ba234"
     },
     "src/client/world/render_global_access.h": {
       "bytes": 6118,
@@ -6054,8 +6054,8 @@
       "sha256": "0774f9ef7749e7fae152690226479b1702776ad0910708a21c4ac2c681198974"
     },
     "include/mc/entity/hit_result.h": {
-      "bytes": 7793,
-      "sha256": "cdfef690358705668d1fba704744a255d0593d709e2c36747808680b74e9a9fa"
+      "bytes": 8117,
+      "sha256": "568dd7a4b821d47f2c2803819f4026c669b21c39910ed27ddcb1d9b373272e8a"
     },
     "include/mc/entity/living/view.h": {
       "bytes": 3959,
@@ -6086,8 +6086,8 @@
       "sha256": "11c92f9b2ecda4deaff32ead6c37aefe55338dcc4058b9e2416ae3a151f3aea2"
     },
     "src/entity/hit_result/pickability.c": {
-      "bytes": 3783,
-      "sha256": "361e11092a9fc8fe7174d4d378bb24bf292335e45d980cfa8a3b6d31a90d972c"
+      "bytes": 4673,
+      "sha256": "88817bd93f127103f8c3aaf2b800a9cca57c65bc4fc01abe7e96eca405859aa5"
     },
     "src/entity/living/view.c": {
       "bytes": 16362,
@@ -6378,8 +6378,8 @@
       "sha256": "c5835cc8899011b4a95bd5a9845861c921479adc23cf2e203a45b39c43586943"
     },
     "src/world/runtime/world_tick_scheduled.c": {
-      "bytes": 9599,
-      "sha256": "4e270a22e58bcb1a5f3f48230c6f4ca95ca511605a7f4cf2e3ec86f76d8dcc2b"
+      "bytes": 10083,
+      "sha256": "f60cea4a0b210d9ab344b37d9a1d1b0a84a0687581456e5cf4e5026d0ad774db"
     },
     "tests/client/gui/test_pause_screen.c": {
       "bytes": 10305,
@@ -7386,12 +7386,12 @@
       "sha256": "0776d9186908e10a50937f5fce43c0ab216a15284a732394e2e0b04b043d25e7"
     },
     "cmake/mob_tick.cmake": {
-      "bytes": 9924,
-      "sha256": "b59ffc5550e0c6037637c1ac6b4368bb74bc8bb13a9a7daecd9df9e59901f56a"
+      "bytes": 9966,
+      "sha256": "ccbfbef39adcf7ab4065d6679dec4cd8932207270fc51d24e490268873e60628"
     },
     "include/mc/entity/mob/tick.h": {
-      "bytes": 9423,
-      "sha256": "25572182d66b081260d87b44173864ff7b8bdcbe5dedce987339542d83e4aa1c"
+      "bytes": 9868,
+      "sha256": "d8860d9f3edb149e0cd80c03b5bfcf73bc3d236d72b1a33093a3c30ab6c4cf1f"
     },
     "src/entity/living/fields.c": {
       "bytes": 947,
@@ -7414,8 +7414,8 @@
       "sha256": "7f9cd3c5a8ddf0a1968fd571f4e5b06958446226d91158d05ec096b87625b91b"
     },
     "src/entity/mob/tick/behavior.c": {
-      "bytes": 18903,
-      "sha256": "e28c51781e7e28f15f3a6d40b888d6058baa6c2bed1c17f546cba6f5b26d19a2"
+      "bytes": 19663,
+      "sha256": "29186a88779692c81a10299075c6e0d8e69f8492a99caea00e3104b7c6fcc2b0"
     },
     "src/entity/mob/tick/common.c": {
       "bytes": 23950,
@@ -7426,8 +7426,8 @@
       "sha256": "3a6bc5e5e0a2201bbda57688372ca919442fcf9f6d87d17c4954719d46039028"
     },
     "src/entity/mob/tick/internal.h": {
-      "bytes": 6515,
-      "sha256": "f1c67cb443824a14bfc9a3a050bff2fecc7e05827c1d46d00de4ba9de92e101a"
+      "bytes": 8950,
+      "sha256": "4ccb03514630b6e04f82e9cbe23aeb59c6d756f39409ea9254fb9dd5c31fbe98"
     },
     "src/entity/mob/tick/living.c": {
       "bytes": 8648,
@@ -7442,8 +7442,8 @@
       "sha256": "c9d2b86bc1468399ad9341259cd33a0059c6d3a455a73138de07716410c1135a"
     },
     "src/entity/mob/tick/tick.c": {
-      "bytes": 11596,
-      "sha256": "b8d57249e0a4a3f06f2bb4606c1ce1c7d4a087ff239f56cd947de5416102266d"
+      "bytes": 13855,
+      "sha256": "2a726073b6ff22d90f611183389d86c67ce909165157dbcaadf59fb060757def"
     },
     "src/entity/mob/tick/wolf.c": {
       "bytes": 26597,
@@ -8398,12 +8398,12 @@
       "sha256": "d7a73ee151096aaaf5384997fbfac57af836c2eea81dc03a0e7064282ca365d5"
     },
     "src/item/use/use.c": {
-      "bytes": 53423,
-      "sha256": "5ac33dedb473b08ed55de55a94c804d83394d927500c3cce7f621d5736a5be51"
+      "bytes": 53694,
+      "sha256": "e1f6dd67dd9efd215abee67dde0d75402c00e581889f9a0f75b8de2f566934e4"
     },
     "src/world/runtime/placement.c": {
-      "bytes": 45932,
-      "sha256": "6f5a72acc153761a1bf149be0b30f5c886e19770f701f9c56fa7a3cd19989a54"
+      "bytes": 46345,
+      "sha256": "8bad470e1c7e11861047cd5bed19cc156bfa7a5919d92cf52b938c557cea6665"
     },
     "tests/client/controller/test_use.c": {
       "bytes": 10069,
@@ -8418,8 +8418,8 @@
       "sha256": "90ef1657e379e148a4a96c78d311d94dc77a258996c09ddd601c5181ef101f84"
     },
     "tests/item/use/test_use.c": {
-      "bytes": 36572,
-      "sha256": "a64e8facc3d9320e95bded8e00474d66005e0d10914bd4ff7596612ebcc5c29e"
+      "bytes": 40810,
+      "sha256": "9b5ec4db4b5b0603cb23ad5878471a4b05d8a22162bc5a29ed33719baf0523e0"
     },
     "tests/world/runtime/placement/test_callbacks.c": {
       "bytes": 16084,
@@ -11042,8 +11042,8 @@
       "sha256": "ba2f5f9ead854aca172ca96b92ab315c25f10cd3bf1ced3fcca39f08e9978739"
     },
     "tests/world/runtime/placement/lever_controls.inc": {
-      "bytes": 9474,
-      "sha256": "19397d3c4bf91368d9c2a838430da544d92392485c3ddb0116b56a68a2acfe2d"
+      "bytes": 11781,
+      "sha256": "28c64cc68202ff511d694082a7cd11453556a286187b522a3e631f267380a651"
     },
     "tests/world/runtime/placement/torch_callbacks.inc": {
       "bytes": 6168,
@@ -11362,12 +11362,12 @@
       "sha256": "1aab8eabdef0481da4672256e32b10f6b0739e57742187615da7ec836d17be35"
     },
     "src/entity/arrow/construction.c": {
-      "bytes": 17487,
-      "sha256": "ee4f8c39c5cffc69f8e43f71f41dea3cffb796ce9c3cd2b22efd837bbc5c15f8"
+      "bytes": 19150,
+      "sha256": "05f163fdcd177576472e7feb3cb1cba8ad8285b595fe54be5a46014ed90267f5"
     },
     "src/entity/arrow/internal.h": {
-      "bytes": 630,
-      "sha256": "9d0044eb1f4a78158f56c5dfb9d4b16a61202c354794ad3c32429b8fb88ba3ba"
+      "bytes": 1933,
+      "sha256": "630640bfc263ce987807c3534b5f13f2f83fd18862a839d80d8ad06cb008047b"
     },
     "src/entity/arrow/references.c": {
       "bytes": 2582,
@@ -11378,8 +11378,8 @@
       "sha256": "bdabb328d2b7714edf85cab0c55e2fcbfd4f6745c0780be080321aabf57ebb9f"
     },
     "tests/entity/test_arrow_construction.c": {
-      "bytes": 25141,
-      "sha256": "b4f5866abf17f7852c4052b9ba0eb2fbbfb56df383080294af7a06e97586c8fa"
+      "bytes": 32986,
+      "sha256": "7a78a9a20995ce3d126c1cdc13b5e38ba6a13256602097fc5b6380f2220c6473"
     },
     "tests/tools/entity/test_arrow_construction.py": {
       "bytes": 9793,
@@ -11516,6 +11516,66 @@
     "tests/tools/entity/test_arrow_player_damage.py": {
       "bytes": 9632,
       "sha256": "ca15d0d9f1df9798032f596ddb8a2085ebd2c0c8a3338dfd70bd68db392c18a0"
+    },
+    "cmake/tests/skeleton_fire.cmake": {
+      "bytes": 2800,
+      "sha256": "6a41c5e2c5af3fb644b9ac7ed4f5f336d03aaff74962b2600e4fa790cd8a8258"
+    },
+    "src/entity/mob/tick/skeleton_attack.c": {
+      "bytes": 11821,
+      "sha256": "b809734e1b2481ad27b441511da98c726bd9d764661624c88e282891e6222373"
+    },
+    "tests/entity/test_skeleton_fire.c": {
+      "bytes": 29077,
+      "sha256": "472a467871c4cb83331920df20c98d087b4eb9fbef7f04643ecbcb81f221494e"
+    },
+    "tests/entity/test_skeleton_fire_reference.c": {
+      "bytes": 30860,
+      "sha256": "b73c6006a296a44542d533936138594d0d9d89591b2772ee4277a82000157af8"
+    },
+    "tests/reference/entity/skeleton_fire/captured/capture_reference.py": {
+      "bytes": 10790,
+      "sha256": "1e5257fba88955a8c19016a3e14f43881a1edb189f16e0ac48ebea4c709a5fda"
+    },
+    "tests/reference/entity/skeleton_fire/captured/leaf_ledger.py": {
+      "bytes": 2788,
+      "sha256": "fbac9e2269bb63381acd5b342658dbcb21c7aedf50544d3c2979241c3117cf54"
+    },
+    "tests/reference/entity/skeleton_fire/captured/observation.py": {
+      "bytes": 12258,
+      "sha256": "f04d18b8c19d3f9b5de132f214b02df33c6ffceab143be453ec744ec06d01b4d"
+    },
+    "tests/reference/entity/skeleton_fire/captured/preflight.py": {
+      "bytes": 4655,
+      "sha256": "9a70d6d72e2206d6573433e34e1c1d7350c4fa1e24182101b602c785bb7f61bf"
+    },
+    "tests/reference/entity/skeleton_fire/export_reference.py": {
+      "bytes": 6795,
+      "sha256": "3b9b9495669637d41a02b0948972ecf47a6fe787117c2f91dfc5e225242f8ded"
+    },
+    "tests/reference/entity/skeleton_fire/leaf_ledger.py": {
+      "bytes": 3623,
+      "sha256": "5c0a1f768500767750eca63aec0f8c7ddea07a5e37e025e956399890c674e3b2"
+    },
+    "tests/reference/entity/skeleton_fire/observation.py": {
+      "bytes": 20934,
+      "sha256": "9f6e71d1cd696fb903779c9e55c9aa7bf616da3883bf0b072d0f1dbb0225adfb"
+    },
+    "tests/reference/entity/skeleton_fire/packet.py": {
+      "bytes": 19509,
+      "sha256": "dda06e433364b2fe106ef6ff3a9c10409285ea259697f06da8545a5b9ddca920"
+    },
+    "tests/reference/entity/skeleton_fire/run_native.py": {
+      "bytes": 29931,
+      "sha256": "db2a1da152e1a8dbcbcc8a4ff1c5b77d8aed82c7719109bf8fae5bec06048ded"
+    },
+    "tests/reference/entity/skeleton_fire/test_packet.py": {
+      "bytes": 11950,
+      "sha256": "c01afe47533c2498ada60a56db60ea4f50c144a7f93d35bdd88790b64e45aaf8"
+    },
+    "tests/tools/entity/test_skeleton_fire.py": {
+      "bytes": 9935,
+      "sha256": "13f297d35cd4950b54c9e22f846bd6630ce83de8dd9de8bfbe4fd359d8ac0225"
     }
   },
   "actual_source_method": {
@@ -18299,6 +18359,190 @@
           },
           "added": [],
           "current_count": 2879
+        }
+      }
+    },
+    {
+      "from_commit": "3079a3d2791c93a37bbdda6780eb8a975a866bf0",
+      "role": "Genuine Skeleton firing and Arrow inherited predicates, real null sound invocation classification and caller joins, with finite original-source and native-fixture inputs. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 769748,
+        "sha256": "8e6b47fbb1572656651fa7a5652e6f20c2e35fe445f5fada08521a4438791766"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 342586,
+              "sha256": "6d31ecac91316d274c42b56700a8d822ff189ef2260c517049136bb374fa78a6"
+            },
+            "src/entity/action/push.c": {
+              "bytes": 8339,
+              "sha256": "692744f4c74b613a5728cb79c57eaae83924cb1af6fddfa2056855c00a580fd9"
+            },
+            "src/world/runtime/world_access.c": {
+              "bytes": 33321,
+              "sha256": "7ffbf46b00a711332f70c43a530c76b070a5d0b980edabd518e0c21dbe4d61dd"
+            },
+            "tests/world/runtime/test_pressure_plate.c": {
+              "bytes": 41763,
+              "sha256": "5589c16b518dbf1ec7707bd06f59ad6d39ca357c7a7314db967d6d16e357db3b"
+            },
+            "tests/world/runtime/world_access/test_world_access.c": {
+              "bytes": 29170,
+              "sha256": "b44b0aa9c06aec980106ffc32de6cdd66dd3f4ad96354161394054e168988469"
+            },
+            "include/mc/world/runtime/world_access_error.h": {
+              "bytes": 1925,
+              "sha256": "02892855a6184002eb7c7d9974d1366fecd10981f571c78dc58050a96865054c"
+            },
+            "src/client/world/render_global_access.c": {
+              "bytes": 68370,
+              "sha256": "e45a7148948fc1649e3baa974bba90a6dbfec7db91b5244fc1b97a43022fe39a"
+            },
+            "include/mc/entity/hit_result.h": {
+              "bytes": 7793,
+              "sha256": "cdfef690358705668d1fba704744a255d0593d709e2c36747808680b74e9a9fa"
+            },
+            "src/entity/hit_result/pickability.c": {
+              "bytes": 3783,
+              "sha256": "361e11092a9fc8fe7174d4d378bb24bf292335e45d980cfa8a3b6d31a90d972c"
+            },
+            "src/world/runtime/world_tick_scheduled.c": {
+              "bytes": 9599,
+              "sha256": "4e270a22e58bcb1a5f3f48230c6f4ca95ca511605a7f4cf2e3ec86f76d8dcc2b"
+            },
+            "cmake/mob_tick.cmake": {
+              "bytes": 9924,
+              "sha256": "b59ffc5550e0c6037637c1ac6b4368bb74bc8bb13a9a7daecd9df9e59901f56a"
+            },
+            "include/mc/entity/mob/tick.h": {
+              "bytes": 9423,
+              "sha256": "25572182d66b081260d87b44173864ff7b8bdcbe5dedce987339542d83e4aa1c"
+            },
+            "src/entity/mob/tick/behavior.c": {
+              "bytes": 18903,
+              "sha256": "e28c51781e7e28f15f3a6d40b888d6058baa6c2bed1c17f546cba6f5b26d19a2"
+            },
+            "src/entity/mob/tick/internal.h": {
+              "bytes": 6515,
+              "sha256": "f1c67cb443824a14bfc9a3a050bff2fecc7e05827c1d46d00de4ba9de92e101a"
+            },
+            "src/entity/mob/tick/tick.c": {
+              "bytes": 11596,
+              "sha256": "b8d57249e0a4a3f06f2bb4606c1ce1c7d4a087ff239f56cd947de5416102266d"
+            },
+            "src/item/use/use.c": {
+              "bytes": 53423,
+              "sha256": "5ac33dedb473b08ed55de55a94c804d83394d927500c3cce7f621d5736a5be51"
+            },
+            "src/world/runtime/placement.c": {
+              "bytes": 45932,
+              "sha256": "6f5a72acc153761a1bf149be0b30f5c886e19770f701f9c56fa7a3cd19989a54"
+            },
+            "tests/item/use/test_use.c": {
+              "bytes": 36572,
+              "sha256": "a64e8facc3d9320e95bded8e00474d66005e0d10914bd4ff7596612ebcc5c29e"
+            },
+            "tests/world/runtime/placement/lever_controls.inc": {
+              "bytes": 9474,
+              "sha256": "19397d3c4bf91368d9c2a838430da544d92392485c3ddb0116b56a68a2acfe2d"
+            },
+            "include/mc/entity/arrow/construction.h": {
+              "bytes": 4281,
+              "sha256": "1aab8eabdef0481da4672256e32b10f6b0739e57742187615da7ec836d17be35"
+            },
+            "src/entity/arrow/construction.c": {
+              "bytes": 17487,
+              "sha256": "ee4f8c39c5cffc69f8e43f71f41dea3cffb796ce9c3cd2b22efd837bbc5c15f8"
+            },
+            "tests/entity/test_arrow_construction.c": {
+              "bytes": 25141,
+              "sha256": "b4f5866abf17f7852c4052b9ba0eb2fbbfb56df383080294af7a06e97586c8fa"
+            }
+          },
+          "added": [
+            "cmake/tests/skeleton_fire.cmake",
+            "src/entity/mob/tick/skeleton_attack.c",
+            "tests/entity/test_skeleton_fire.c",
+            "tests/entity/test_skeleton_fire_reference.c",
+            "tests/reference/entity/skeleton_fire/captured/capture_reference.py",
+            "tests/reference/entity/skeleton_fire/captured/leaf_ledger.py",
+            "tests/reference/entity/skeleton_fire/captured/observation.py",
+            "tests/reference/entity/skeleton_fire/captured/preflight.py",
+            "tests/reference/entity/skeleton_fire/export_reference.py",
+            "tests/reference/entity/skeleton_fire/leaf_ledger.py",
+            "tests/reference/entity/skeleton_fire/observation.py",
+            "tests/reference/entity/skeleton_fire/packet.py",
+            "tests/reference/entity/skeleton_fire/run_native.py",
+            "tests/reference/entity/skeleton_fire/test_packet.py",
+            "tests/tools/entity/test_skeleton_fire.py"
+          ],
+          "current_count": 2894
+        }
+      }
+    },
+    {
+      "from_commit": "3079a3d2791c93a37bbdda6780eb8a975a866bf0",
+      "role": "Genuine Skeleton firing and Arrow inherited predicates, real null sound invocation classification and caller joins, with finite original-source and native-fixture inputs. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 778118,
+        "sha256": "a46d26a4ae4b7a9abe6c8075938d8616771e3b0a985b16d6b63f854b5577118c"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "tests/world/runtime/placement/lever_controls.inc": {
+              "bytes": 11781,
+              "sha256": "b917e27a830b9f2b1b30989cea13c798c80a2dbf6d7e335fb562dc90010cdd00"
+            }
+          },
+          "added": [],
+          "current_count": 2894
+        }
+      }
+    },
+    {
+      "from_commit": "3079a3d2791c93a37bbdda6780eb8a975a866bf0",
+      "role": "Genuine Skeleton firing and Arrow inherited predicates, real null sound invocation classification and caller joins, with finite original-source and native-fixture inputs. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 779056,
+        "sha256": "1e5f880b35b1895cc2369dd214e26a1e91790dedbf31b2679b69071c2e0af14a"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "src/entity/mob/tick/internal.h": {
+              "bytes": 8845,
+              "sha256": "99708582e7139d66bf5112a4459840f829d6c8ab3991597cab358654ff3b66bc"
+            },
+            "include/mc/entity/arrow/construction.h": {
+              "bytes": 4507,
+              "sha256": "d9f06cb17bf403836c3ea3461e8f63ffb15e6e9d5cb91b1a18c8bc813112f0de"
+            },
+            "src/entity/arrow/construction.c": {
+              "bytes": 17615,
+              "sha256": "cbc38a2c6b649b2661a378fa296f1d430e16a1ad3e6313d95c957952cc2d63ad"
+            },
+            "src/entity/arrow/internal.h": {
+              "bytes": 630,
+              "sha256": "9d0044eb1f4a78158f56c5dfb9d4b16a61202c354794ad3c32429b8fb88ba3ba"
+            },
+            "src/entity/mob/tick/skeleton_attack.c": {
+              "bytes": 11278,
+              "sha256": "51d505d8926af8c1e5653f4ff9db433210ce6a781041aaf2674251bdbdedb1ff"
+            },
+            "tests/entity/test_skeleton_fire.c": {
+              "bytes": 28125,
+              "sha256": "2a8a0805a31c4ca3f5bef1d58bb653072d535ecea12e0c14fef992b1168f5ace"
+            },
+            "tests/entity/test_skeleton_fire_reference.c": {
+              "bytes": 30638,
+              "sha256": "e94adafc05c617eba8064cd6eafcf81fdb272f240c3c4c373cb956c984cb935a"
+            }
+          },
+          "added": [],
+          "current_count": 2894
         }
       }
     }

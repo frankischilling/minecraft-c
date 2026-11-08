@@ -185,8 +185,17 @@ static bool copy_source(mc_world_placement_error *e, const mc_world_source_chunk
 }
 
 static bool receipt(mc_world_placement_error *e, const mc_world_access_failure *v) {
-    if (v->receipt == NULL)
+    if (v->receipt == NULL) {
+        /* The held child already owns a value-only null-sound failure. It
+         * needs classification, but no producer hold or retained slot. */
+        if (e->status != MC_WORLD_STORAGE_OK &&
+            mc_world_access_failure_source_exception(v, &e->exception_class)) {
+            e->source_exception = true;
+            e->source_error = false;
+            e->native_policy = false;
+        }
         return true;
+    }
     mc_world_placement_work *w = e->work;
     for (size_t i = 0; i < w->receipt_count; ++i)
         if (w->receipts[i].receipt == v->receipt)
@@ -253,8 +262,8 @@ static bool capture(mc_world_placement_error *e) {
     return true;
 }
 
-/* Only exact invocation receipts classify source Exceptions. A native adapter
- * refusal, allocation limit or unavailable body has no such evidence. */
+/* Concrete producer receipts supplement the value-only invocation classified
+ * during capture. Native adapter refusals and limits carry no Throwable. */
 static void classify_receipts(mc_world_placement_error *e) {
     for (size_t i = 0; i < e->work->receipt_count; ++i)
         if (mc_world_access_failure_source_exception(&e->work->receipts[i], &e->exception_class)) {

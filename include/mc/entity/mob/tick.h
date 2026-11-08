@@ -2,12 +2,14 @@
 #define MC_ENTITY_MOB_TICK_H
 #include "mc/core/math/classes.h"
 #include "mc/entity/action/action.h"
+#include "mc/entity/arrow/construction.h"
 #include "mc/entity/hit_result.h"
 #include "mc/entity/mob/construction.h"
 #include "mc/entity/tick/environment.h"
 #include "mc/inventory/player_current.h"
 #include "mc/world/runtime/brightness.h"
 #include "mc/world/runtime/collision/class_entities.h"
+#include "mc/world/runtime/entity_errors.h"
 #include "mc/world/runtime/path.h"
 #include "mc/world/runtime/raytrace.h"
 #include "mc/world/storage/source_chunk_loader.h"
@@ -120,7 +122,9 @@ typedef enum mc_mob_tick_child {
     MC_MOB_TICK_CHILD_RAY,
     MC_MOB_TICK_CHILD_PATH,
     MC_MOB_TICK_CHILD_INVENTORY,
-    MC_MOB_TICK_CHILD_ITEM
+    MC_MOB_TICK_CHILD_ITEM,
+    MC_MOB_TICK_CHILD_ARROW,
+    MC_MOB_TICK_CHILD_ENTITY_PUBLICATION
 } mc_mob_tick_child;
 
 typedef struct mc_mob_tick_query_error {
@@ -204,6 +208,11 @@ typedef struct mc_mob_tick_error {
         mc_mob_tick_ray_error ray;
         mc_mob_tick_path_error path;
         mc_inventory_current_error inventory;
+        /* Arrow errors are values without deferred cleanup. Publication's
+         * WorldAccess receipt borrows its actual live producer, never the
+         * temporary Arrow local or an entered Mob workspace. */
+        mc_arrow_error arrow;
+        mc_world_entity_error publication;
     } detail;
 } mc_mob_tick_error;
 

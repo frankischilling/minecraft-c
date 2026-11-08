@@ -37,7 +37,7 @@ typedef struct use_observer {
     size_t cells, ranges, sounds;
     double x, y, z;
     float volume, pitch;
-    bool valid, fail_sound, change_count;
+    bool valid, fail_sound, change_count, append_null_sound, null_added;
     bool fail_cell;
     mc_world_access *access;
     mc_world_access_receipt *receipt;
@@ -100,6 +100,13 @@ static mc_world_storage_status use_sound(void *context, mc_world_runtime *world,
     if (o->fail_sound) {
         *error = (mc_world_storage_error){MC_WORLD_STORAGE_LIMIT, "authored sound refusal", 0};
         return MC_WORLD_STORAGE_LIMIT;
+    }
+    if (o->append_null_sound) {
+        const mc_world_storage_status status =
+            mc_world_runtime_add_world_access(world, NULL, error);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
+        o->null_added = true;
     }
     return MC_WORLD_STORAGE_OK;
 }
@@ -517,6 +524,74 @@ static bool placement_order(fixture *f, mc_chunk_state *chunk, mc_entity *player
     return true;
 }
 
+/* The first real sound recipient appends a real NULL List occurrence. The
+ * sound loop's next live lookup reaches that invocation after CK's real
+ * setter/hooks, without exposing earlier cell/range loops to a null receiver. */
+static bool placement_null_sound_controls(fixture *f, mc_chunk_state *chunk, mc_entity *player) {
+    const size_t index = ((size_t)8 * 16 + 8) * 128 + 64;
+    for (unsigned int mode = 0; mode < 2; ++mode) {
+        chunk->data->blocks[index] = 0;
+        mc_item_stack *stack = NULL;
+        CHECK(use_stack(3, 4, 0, &stack));
+        use_observer o = {.registry = f->registry,
+                          .stack = stack,
+                          .before = 4,
+                          .valid = true,
+                          .append_null_sound = true};
+        const mc_world_access_callbacks callbacks = {
+            .cell = use_cell, .range = use_range, .sound = mode == 0 ? NULL : use_sound};
+        mc_world_access *access = NULL;
+        CHECK(mc_world_access_create(&callbacks, &o, &access, NULL) == MC_WORLD_STORAGE_OK &&
+              mc_world_runtime_add_world_access(f->world, access, NULL) == MC_WORLD_STORAGE_OK);
+        mc_item_use_call *call = NULL;
+        mc_item_use_state state;
+        mc_item_use_error error;
+        CHECK(mc_item_use_on_block_begin(f->registry, stack, player, f->world, 8, 64, 8, 6, &call,
+                                         &error) == MC_ITEM_USE_WORLD);
+        bool removed = false;
+        if (o.null_added)
+            CHECK(mc_world_runtime_remove_world_access(f->world, NULL, &removed, NULL) ==
+                      MC_WORLD_STORAGE_OK &&
+                  removed);
+        const char *exception = NULL;
+        int32_t count = 0;
+        const bool source =
+            error.sound != NULL && mc_world_access_failure_source_exception(
+                                       &error.sound->world_access_failure, &exception);
+        const bool observed =
+            mc_item_use_inspect(call, &state) && !state.returned && state.setter_returned &&
+            state.setter_value && state.placed_face_returned && state.placed_by_returned &&
+            !state.sound_returned && !state.count_stored && !state.statistic_entered &&
+            error.site.pc == 260 && error.sound != NULL &&
+            error.sound->world_access_bytecode == 41 && error.retained_producers == 0 &&
+            error.source_exception == (mode != 0) && error.native_policy == (mode == 0) &&
+            !error.source_error && source == (mode != 0) &&
+            (mode == 0
+                 ? exception == NULL
+                 : exception != NULL && strcmp(exception, "java/lang/NullPointerException") == 0 &&
+                       error.exception_class != NULL &&
+                       strcmp(error.exception_class, exception) == 0) &&
+            error.sound->world_access_failure.receiver == NULL &&
+            error.sound->world_access_failure.render_global == NULL &&
+            error.sound->world_access_failure.receipt == NULL && o.null_added == (mode != 0) &&
+            o.sounds == (size_t)mode && o.valid &&
+            mc_item_stack_source_count_get(stack, &count) == MC_ITEM_STACK_OK && count == 4 &&
+            chunk->data->blocks[index] == 3 && f->world->active_calls == 0;
+        CHECK(use_retire(&call) &&
+              mc_world_runtime_remove_world_access(f->world, access, &removed, NULL) ==
+                  MC_WORLD_STORAGE_OK &&
+              removed && mc_world_access_free(access, NULL) == MC_WORLD_STORAGE_OK);
+        mc_item_stack_release(stack);
+        if (!observed)
+            fprintf(stderr, "CK null sound mode=%u pc=%u source=%u native=%u producers=%zu\n", mode,
+                    error.site.pc, error.source_exception ? 1u : 0u, error.native_policy ? 1u : 0u,
+                    error.retained_producers);
+        CHECK(observed);
+    }
+    chunk->data->blocks[index] = 0;
+    return true;
+}
+
 #ifdef MC_PLACEMENT_REAL_RENDER_GLOBAL
 static bool placement_receipt_controls(fixture *f, mc_chunk_state *chunk, mc_entity *player) {
     const size_t index = ((size_t)8 * 16 + 8) * 128 + 64;
@@ -664,8 +739,8 @@ static bool use_controls(fixture *f) {
           mc_local_player_construct(player, f->world, NULL, session, 0, NULL, NULL) ==
               MC_PLAYER_OK);
     mc_player_session_retire(&session);
-    CHECK(placement_order(f, state, player) && farming_controls(f, state, player) &&
-          food_controls(f, player) && dye_controls(f, state));
+    CHECK(placement_order(f, state, player) && placement_null_sound_controls(f, state, player) &&
+          farming_controls(f, state, player) && food_controls(f, player) && dye_controls(f, state));
 #ifdef MC_PLACEMENT_REAL_RENDER_GLOBAL
     CHECK(placement_receipt_controls(f, state, player) &&
           placement_real_n_control(f, state, player));

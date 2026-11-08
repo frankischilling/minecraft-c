@@ -10,6 +10,7 @@ target_sources(mc_simulation PRIVATE
     src/entity/mob/tick/behavior.c
     src/entity/mob/tick/creeper.c
     src/entity/mob/tick/monster_attack.c
+    src/entity/mob/tick/skeleton_attack.c
     src/entity/mob/tick/wolf_attack.c
     src/entity/mob/tick/path.c
     src/entity/mob/tick/path_follow.c

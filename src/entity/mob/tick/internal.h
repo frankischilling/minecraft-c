@@ -4,6 +4,7 @@
 #include "../../../block/registry/runtime_internal.h"
 #include "../../../world/runtime/construction_internal.h"
 #include "../../../world/runtime/runtime_internal.h"
+#include "../../arrow/internal.h"
 #include "../../living/fields_internal.h"
 #include "../../player/tick_math_internal.h"
 #include "../internal.h"
@@ -14,6 +15,8 @@
 #include "mc/world/runtime/environment.h"
 #include "mc/world/runtime/queries.h"
 #include "workspace_internal.h"
+
+typedef struct mt_skeleton_fire_observation mt_skeleton_fire_observation;
 
 typedef struct mc_mob_tick_scope {
     mc_entity *entity;
@@ -27,7 +30,35 @@ typedef struct mc_mob_tick_scope {
     const mc_world_path_limits *path_limits;
     size_t work, max_work;
     bool hold_transferred;
+    mc_entity **skeleton_arrow_output;
+    mt_skeleton_fire_observation *skeleton_capture;
 } mc_mob_tick_scope;
+
+/* Optional direct-component values only. Scalar identities own no occurrence;
+ * constructor/final errors own no deferred child. Invoke bits name the reached
+ * caller opcode, not proof that a null/native-rejected callee entered Source.
+ * The separate Arrow output
+ * is an owning occurrence, including actual NEW/failed-constructor prefixes. */
+struct mt_skeleton_fire_observation {
+    bool entered, returned, allocated, constructor_invoked, constructor_returned;
+    bool eye_returned, actor_random_captured, actor_float_returned;
+    bool sound_invoked, sound_returned, publication_invoked, publication_returned;
+    bool publication_result, heading_invoked, heading_returned;
+    bool cooldown_stored, facing_stored, attacking_stored;
+    uintptr_t target_identity, arrow_identity, constructor_world_identity;
+    uintptr_t sound_world_identity, publication_world_identity, actor_random_identity;
+    float distance, eye_height, lift, actor_float, sound_volume, sound_pitch;
+    double dx, dz, dy, heading_x, heading_y, heading_z;
+    float heading_speed, heading_spread;
+    mc_java_random actor_random_before, actor_random_after;
+    /* Actual constructor-result stores before FR59, valid under
+     * constructor_returned. Angles: yaw, pitch, previous yaw, previous pitch. */
+    double constructor_motion[3];
+    float constructor_angles[4];
+    int32_t constructor_j;
+    mc_arrow_heading_arguments constructor_arguments, final_arguments;
+    mc_arrow_error constructor, final_heading;
+};
 
 bool mc_mob_tick_behavior(mc_mob_tick_scope *);
 bool mc_entity_mob_environment_entered(mc_mob_tick_scope *, mc_entity_tick_error *);
@@ -78,6 +109,15 @@ bool mt_concrete_w(mc_mob_tick_scope *);
 bool mt_concrete_o(mc_mob_tick_scope *);
 bool mt_creature(mc_mob_tick_scope *);
 bool mt_monster_attack(mc_mob_tick_scope *, mc_entity *target, float distance);
+bool mt_skeleton_attack(mc_mob_tick_scope *, mc_entity *target, float distance);
+/* Same runner/admission as the real Mob entry. owned_arrow, when present,
+ * starts NULL and receives this call's actual allocation occurrence even on
+ * failed construction. Capture/error/slot must be mutually disjoint and
+ * disjoint from all owners. NULL outputs still execute the same body. */
+mc_entity_status mt_skeleton_component(mc_entity *, mc_registry_classes *, mc_math_classes *,
+                                       const mc_mob_tick_limits *, mc_entity *target,
+                                       float distance, mc_entity **owned_arrow,
+                                       mt_skeleton_fire_observation *, mc_mob_tick_error *);
 bool mt_attack_hurt(mc_mob_tick_scope *, mc_entity *target, int32_t amount);
 bool mt_wolf_attack(mc_mob_tick_scope *, mc_entity *target, float distance);
 mc_entity_status mt_wolf_attack_component(mc_entity *, mc_registry_classes *, mc_math_classes *,

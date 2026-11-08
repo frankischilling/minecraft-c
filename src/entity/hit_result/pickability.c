@@ -1,3 +1,4 @@
+#include "../arrow/internal.h"
 #include "../mob/internal.h"
 #include "internal.h"
 
@@ -33,15 +34,27 @@ static mc_entity_hit_status admit(mc_entity *receiver, bool output, mc_entity_hi
     if (receiver == NULL)
         return pick_failure(receiver, error, MC_ENTITY_HIT_SOURCE_NULL_REFERENCE,
                             "Entity pick null receiver", false, border);
+    const bool arrow = !border && mc_entity_has_arrow(receiver);
     if (receiver->classes->source != MC_ENTITY_CLIENT ||
         (!mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_ITEM) &&
          !mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
          !mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_MINECART) &&
          !mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
-         !mc_entity_has_mob(receiver) &&
+         !mc_entity_has_mob(receiver) && !arrow &&
          !mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE)))
         return pick_failure(receiver, error, MC_ENTITY_HIT_UNSUPPORTED_SOURCE,
                             "Entity pick actual descendant frontier", true, border);
+    /* Narrow native admission for the newly represented inherited SN.h_.
+     * Existing descendants retain their old phase domain; m_ is unchanged. */
+    if (arrow && receiver->phase != MC_ENTITY_READY)
+        return pick_failure(receiver, error, MC_ENTITY_HIT_INVALID_PHASE,
+                            "Entity pick READY Arrow owner", true, border);
+    if (arrow && receiver->holds == 0) {
+        if (error != NULL)
+            error->native.status = MC_ENTITY_STATE_ERROR;
+        return pick_failure(receiver, error, MC_ENTITY_HIT_NATIVE_FAILED,
+                            "Entity pick held Arrow owner", true, border);
+    }
     const mc_entity_status held = mc_entity_retain(receiver);
     if (held != MC_ENTITY_OK) {
         if (error != NULL)
@@ -57,11 +70,14 @@ mc_entity_hit_status mc_entity_pickable(mc_entity *receiver, bool *out,
     const mc_entity_hit_status status = admit(receiver, out != NULL, error, false);
     if (status != MC_ENTITY_HIT_OK)
         return status;
-    *out = (mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) ||
-            mc_entity_has_mob(receiver) ||
-            mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_FALLING_SAND) ||
-            mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_MINECART)) &&
-           !receiver->base.be;
+    if (mc_entity_has_arrow(receiver))
+        *out = false; /* Actual inherited SN.h_: iconst_0 at0; ireturn at1. */
+    else
+        *out = (mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) ||
+                mc_entity_has_mob(receiver) ||
+                mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_FALLING_SAND) ||
+                mc_entity_is_kind(receiver, MC_ENTITY_CLASS_KIND_MINECART)) &&
+               !receiver->base.be;
     mc_entity_release(receiver);
     return MC_ENTITY_HIT_OK;
 }

@@ -396,6 +396,19 @@ bool mt_creature(mc_mob_tick_scope *s) {
                     mt_at(s, "ii", "f_", "()V", 97);
                     if (!mt_wolf_attack(s, target, distance))
                         return false;
+                } else if (kind == MC_ENTITY_CLASS_KIND_SKELETON) {
+                    mt_at(s, "ii", "f_", "()V", 97);
+                    /* The evaluated Java argument stays a separate local
+                     * through callbacks which may replace Creature.d. */
+                    if (target != NULL) {
+                        const mc_entity_status held = mc_entity_retain(target);
+                        if (held != MC_ENTITY_OK)
+                            return mt_fail(s, held, "Creature Skeleton argument local hold");
+                    }
+                    const bool returned = mt_skeleton_attack(s, target, distance);
+                    mc_entity_release(target);
+                    if (!returned)
+                        return false;
                 } else if (declaring != NULL) {
                     mt_at(s, "ii", "f_", "()V", 97);
                     s->error->child_site = (mc_mob_site){declaring, "a", "(Lsn;F)V", 0};

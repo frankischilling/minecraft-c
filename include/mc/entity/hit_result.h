@@ -160,7 +160,11 @@ mc_entity_hit_status mc_entity_bounds_intercept_inspect(const mc_entity_bounds_i
 mc_entity_hit_status mc_entity_bounds_intercept_release(mc_entity_bounds_intercept_call **owned,
                                                         mc_entity_hit_error *error);
 
-/* Actual client h_/m_ dispatch, no READY/World/Random effects. */
+/* Actual client h_/m_ dispatch, with no World or Random effects. Existing
+ * descendant phase domains are unchanged. h_ additionally accepts a genuine
+ * held READY client Arrow and executes inherited SN.h_'s literal false body;
+ * its c/ages/health/dead/World/bounds/Random are not inspected. Arrow m_ remains
+ * outside this narrow admission. Failure preserves out; error is optional. */
 mc_entity_hit_status mc_entity_pickable(mc_entity *receiver, bool *out, mc_entity_hit_error *error);
 mc_entity_hit_status mc_entity_pick_border_size(mc_entity *receiver, float *out,
                                                 mc_entity_hit_error *error);

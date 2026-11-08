@@ -1,5 +1,23 @@
 # Development status
 
+The complete [Skeleton firing parent](entity/skeleton-firing.md) now runs from
+Creature's actual II97 dispatch. Four original VMs retain 96 calls. Windows
+and sanitized Linux each execute 23 native profiles: 21 complete outcomes match
+7,929 scalars, two callback-failure prefixes match 816, and six passive-local
+Arrow observations match another 252. The native emitter passes 4,768 checks;
+eight firing groups pass 704. Profile 21 remains unexecuted until cross-World
+terminal ownership is joined. Publication itself admits a different World.
+
+The frozen Source3 execution passes both full builds, both twelve-test focused
+selections and every configured test: Windows 777/777 in 1,414.89 seconds and
+sanitized Linux 632/632 in 1,482.27 seconds, without skips. Formatting covers
+2,257 files. GCC 15.2 syntax checks pass all 16 represented changed headless C
+units; the client-only renderer bridge has no recipe in that Linux build.
+These elapsed times describe concurrent validation runs on the restored WSL
+toolchain and provide no performance comparison. The
+[testing record](testing.md#skeleton-firing-and-inherited-arrow-predicates)
+retains the earlier fixture/layout failures and the exact finite scopes.
+
 The client now has [Arrow NBT and storage](entity/arrow-nbt.md), the complete
 [MC Arrow renderer](entity/arrow-rendering.md), and direct-Arrow Player damage
 shooter resolution. All eight own tags join the complete Entity parent, genuine
@@ -15,10 +33,10 @@ Tessellator local and six source quads. Its authored native contracts pass
 15 Windows processes and 3,087 checks on the recorded RTX 3060 driver. CPU
 lifetime/guard controls also pass on a separately built Clang Debug Linux
 client with ASan/UBSan and leak detection. This is not an executed original
-renderer or pixel comparison. Complete configured suites pass Windows 771/771
-in 580.30 seconds and sanitized Linux headless 626/626 in 578.32 seconds,
+renderer or pixel comparison. That preceding configured cohort passed Windows
+771/771 in 580.30 seconds and sanitized Linux headless 626/626 in 578.32 seconds,
 without skips. Both complete builds, formatting of 2,254 files and strict GCC
-syntax checks of 15 C units pass. The earlier Windows preparation failure is
+syntax checks of 15 C units passed. The earlier Windows preparation failure is
 retained. Its fixture selected load-or-create instead of the original producer's
 direct-metadata World constructor; the independent source-paired regression
 goes red before the one-enum correction.
@@ -30,16 +48,16 @@ save and checked cleanup. Independent NBT/statistics and all three screenshots
 pass. The preceding controller failure remains retained with its unchanged
 native capture and processing-only correction. This prepared native scene
 does not establish original audiovisual equality, unrestricted play or FPS.
-Skeleton firing and Arrow flight/collision/pickup remain unfinished.
+Arrow ticking/collision/pickup and natural Skeleton encounters remain unfinished.
 
-Hosted [run 42476294517](https://github.com/frankischilling/minecraft-c/actions/runs/42476294517)
-of `9401be4b` passes formatting and all 840 tests each on GCC and Clang.
-Windows passes 779/781; only the two pure diagnostics modes fail before their
-mocked process call. The actual forty-row Player parent passes. A temporary-path
-regression reproduces the fixture mismatch on both hosts, then all nine controls
-pass normally and under optimized Python after canonicalizing its root.
-Runtime code and the native results above remain unchanged; hosted repair
-validation is pending.
+Hosted [run 42478186878](https://github.com/frankischilling/minecraft-c/actions/runs/42478186878)
+of `3079a3d2` passes formatting, Windows 781/781 and GCC and Clang 840/840 each.
+The checkout logs identify merge `6ce8c961` with the same tree as the published
+commit. The preceding run's two Windows pure-diagnostic failures remain retained.
+A temporary-path regression reproduces their zero-process-call mismatch on both
+hosts, then all nine controls pass normally and under optimized Python after
+canonicalizing the fixture root. Game runtime and the native results above
+remain unchanged by that repair.
 
 The preceding constructor increment supplies genuine [Arrow construction and heading](entity/arrow-construction.md),
 including all three constructors, the nullable counted Living shooter and complete
