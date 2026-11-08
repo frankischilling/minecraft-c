@@ -1,3 +1,5 @@
+#include "arrow/internal.h"
+#include "arrow/references_internal.h"
 #include "bounds/bounds_internal.h"
 #include "classes/memory_internal.h"
 #include "construction_internal.h"
@@ -185,6 +187,12 @@ mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_ent
     size_t bytes;
     mc_entity_status status;
     switch (kind) {
+        case MC_ENTITY_CLASS_KIND_ARROW:
+            if (classes->source != MC_ENTITY_CLIENT)
+                return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
+            bytes = sizeof(mc_arrow_entity_object);
+            status = mc_entity_base_class_initialize(classes, error);
+            break;
         case MC_ENTITY_CLASS_KIND_ITEM:
         case MC_ENTITY_CLASS_KIND_FALLING_SAND:
             bytes = sizeof(mc_entity);
@@ -239,7 +247,12 @@ mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_ent
     if (storage == NULL)
         return error->status;
     mc_entity *entity;
-    if (kind == MC_ENTITY_CLASS_KIND_MINECART) {
+    if (kind == MC_ENTITY_CLASS_KIND_ARROW) {
+        mc_arrow_entity_object *object = storage;
+        *object = (mc_arrow_entity_object){0};
+        entity = &object->entity;
+        entity->arrow = &object->state;
+    } else if (kind == MC_ENTITY_CLASS_KIND_MINECART) {
         mc_minecart_entity_object *object = storage;
         *object = (mc_minecart_entity_object){0};
         entity = &object->entity;
@@ -484,7 +497,7 @@ mc_entity_status mc_entity_construct_base(mc_entity *entity, mc_world_runtime *w
     if (status != MC_ENTITY_OK)
         return status;
     entity->base_bytecode = 224;
-    /* Actual hl/ez, ju/gl, yl/pr and client xw/C hooks are empty. DC and concrete
+    /* Actual hl/ez, ju/gl, yl/pr and client sl/xw/C hooks are empty. DC and concrete
      * Mob hooks dispatch here, before any Living/subclass initialization. */
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
         status = mc_local_player_watcher_initialize(entity, error);
@@ -681,14 +694,16 @@ void mc_entity_terminal_pin(mc_entity *entity) {
 
 static void destroy_entity(mc_entity *entity) {
     mc_entity_classes *classes = entity->classes;
-    const size_t bytes =
-        mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART) ? sizeof(mc_minecart_entity_object)
-        : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)
-            ? sizeof(mc_local_player_object)
-        : mc_entity_has_particle(entity)                    ? sizeof(mc_pickup_particle_object)
-        : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_C) ? sizeof(mc_lightning_entity_object)
-        : mc_entity_has_mob(entity)                         ? sizeof(mc_mob_entity_object)
-                                                            : sizeof(*entity);
+    const size_t bytes = mc_entity_has_arrow(entity) ? sizeof(mc_arrow_entity_object)
+                         : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART)
+                             ? sizeof(mc_minecart_entity_object)
+                         : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)
+                             ? sizeof(mc_local_player_object)
+                         : mc_entity_has_particle(entity) ? sizeof(mc_pickup_particle_object)
+                         : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_C)
+                             ? sizeof(mc_lightning_entity_object)
+                         : mc_entity_has_mob(entity) ? sizeof(mc_mob_entity_object)
+                                                     : sizeof(*entity);
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART))
         mc_minecart_entity_dispose(entity);
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
@@ -699,6 +714,8 @@ static void destroy_entity(mc_entity *entity) {
         mc_digging_particle_dispose(entity);
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_C))
         mc_lightning_dispose(entity);
+    if (mc_entity_has_arrow(entity))
+        mc_arrow_references_dispose(entity);
     if (mc_entity_has_mob(entity)) {
         mc_mob_nbt_dispose(entity);
         mc_mob_references_dispose(entity);

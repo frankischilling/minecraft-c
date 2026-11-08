@@ -44,6 +44,10 @@ tests/reference/entity/player_sleep/source-pins.json -text whitespace=trailing-s
 tests/reference/client/gui_ingame_chat/inputs/lang/*.lang text eol=lf
 tests/reference/entity/held_item_attack/HeldItemObservation.java -text whitespace=trailing-space,space-before-tab,cr-at-eol
 tests/reference/inventory/workbench_auto_close/entropy.py -text whitespace=trailing-space,space-before-tab,cr-at-eol,-blank-at-eof
+# Preserve the exact loader/Code inputs pinned by the Arrow capture.
+/tests/reference/entity/arrow_construction/class-names.txt -text whitespace=trailing-space,space-before-tab,cr-at-eol
+/tests/reference/entity/arrow_construction/source-pins.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
 # Keep recorded native replay controller inputs unchanged.
 tests/tools/world/redstone_torch_accounting.py whitespace=trailing-space,space-before-tab,cr-at-eol,-blank-at-eof
 tests/tools/world/redstone_torch_current.py whitespace=trailing-space,space-before-tab,cr-at-eol,-blank-at-eof

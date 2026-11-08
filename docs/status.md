@@ -1,5 +1,21 @@
 # Development status
 
+The client now has genuine [Arrow construction and heading](entity/arrow-construction.md),
+including all three constructors, the nullable counted Living shooter and complete
+World terminal graph/publication admission. Four original VMs each complete
+40 calls: 37 normal returns and three actual null-reference exceptions. Windows
+and sanitized Linux each match 4,396 selected source scalars, with independent
+constructor entropy and raw exclusions kept in their declared scope. Both hosts
+also pass 215 constructor/heading and 1,067 terminal ownership checks. Complete
+configured suites pass Windows 760/760 in 379.36 seconds and sanitized Linux
+617/617 in 397.26 seconds, without registered skips. Both complete builds pass;
+formatting covers 2,246 files and strict GCC syntax checks cover all nine changed
+C translation units. The 53-file execution delta and six admission tables
+retain their prelaunch hashes. Hosted qualification of this Arrow increment
+is pending. Skeleton firing, Arrow
+tick/collision/pickup, MC rendering, Arrow NBT, direct-Arrow Player damage,
+unrestricted play and FPS remain unfinished or unqualified.
+
 Hosted checks of published `8e2b9b3c` found a benchmark-readiness path alias
 failure in [run 42457904291](https://github.com/frankischilling/minecraft-c/actions/runs/42457904291).
 Formatting passed, GCC and Clang each passed 819/819 tests, and Windows passed
@@ -12,8 +28,13 @@ as other configuration inputs. Its lexical `build/../build` regression first
 reproduced the exact KeyError on Windows and Linux; the regression and all
 31 pure tests now pass on both hosts, normally and under `-O`. Runtime, native
 products and the retained CPU cohort are unchanged. Hosted revalidation of the
-repaired head is pending; the following local execution results retain their
-separate historical scope.
+repaired head passes Windows 761/761 and GCC 819/819, plus formatting. Clang
+passes 818/819 in [run 42460583281](https://github.com/frankischilling/minecraft-c/actions/runs/42460583281),
+failing the existing Player sleep-NBT parent's generic native-completion guard.
+The old log does not expose the native cause. Bounded failure diagnostics and
+failure-only artifact retention now preserve the necessary process details;
+their hosted execution remains pending. Earlier local execution results retain
+their separate frozen source scope.
 
 World Mob ticks now use a private working diagnostic and one optional child
 workspace per outer World call. Successful World returns initialize the actual

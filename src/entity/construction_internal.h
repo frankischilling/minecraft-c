@@ -6,10 +6,10 @@
 struct mc_player_string;
 
 /* Concrete callers are Item, FallingSand, Minecart, local Player, pickup
- * particle, Lightning, eleven client Overworld Mobs and Ghast. This is not a public generic-kind
- * factory. Preserve actual active use before live count/budget and header
- * allocation. Mob callers perform their selected initializer first; Minecart's
- * branch performs its own initializer here. No fabricated subtype is admitted. */
+ * particle, Lightning, Arrow, eleven client Overworld Mobs and Ghast. This is not a public
+ * generic-kind factory. Preserve actual active use before live count/budget and header allocation.
+ * Mob callers perform their selected initializer first; Minecart's branch performs its own
+ * initializer here. No fabricated subtype is admitted. */
 mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_entity_class_kind kind,
                                               const char *operation, mc_entity **out,
                                               mc_entity_error *error);
@@ -24,7 +24,7 @@ mc_entity_status mc_entity_constructor_begin(mc_entity *entity, mc_entity_class_
 
 /* Shared base body owns ID/bounds/Random/watcher/World binding/position/Byte0.
  * Its early virtual b() dispatch reaches the real DC or selected Mob hook;
- * Item/Falling/Minecart and client particle targets are verified empty returns. */
+ * Item/Falling/Minecart and client Arrow/particle targets are verified empty returns. */
 mc_entity_status mc_entity_construct_base(mc_entity *entity, mc_world_runtime *world,
                                           mc_entity_error *error);
 
@@ -62,7 +62,7 @@ typedef struct mc_entity_position_rotation_error {
     bool source_null, native_policy;
 } mc_entity_position_rotation_error;
 
-/* Actual inherited client SN.c(DDDFF)V on canonical LocalPlayer or Mob storage.
+/* Actual inherited client SN.c(DDDFF)V on canonical LocalPlayer, Mob or Arrow storage.
  * Caller holds the receiver through this entered child. Preserve x/history
  * before reached FP admission, then y+offset, z/history, both angles and the
  * actual SN.e(DDD) same-bounds child. A null bounds failure retains all pose

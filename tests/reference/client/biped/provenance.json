@@ -90,8 +90,8 @@
       "sha256": "e77454c2bb0a5070c5ef6a632dd044f91b0003b6cdc9fae568e86b225fd2ebf3"
     },
     "include/mc/entity/entity.h": {
-      "bytes": 9411,
-      "sha256": "a9364b4510947cab8ed1348ec9e0d1f8f8af5caf2123e309ece887a0614cec7d"
+      "bytes": 9532,
+      "sha256": "32bbe5e9c4afbc31ff24e6324877299ef01c719a251df528fb457bcb7738bc91"
     },
     "include/mc/entity/errors.h": {
       "bytes": 1058,
@@ -918,6 +918,26 @@
             "src/client/gui/achievement_notice_internal.h",
             "src/client/render/item_renderer_internal.h"
           ],
+          "current_count": 127
+        }
+      }
+    },
+    {
+      "from_commit": "8e2b9b3c41a8246e67dd3c5b04966adcec0ab736",
+      "role": "Current genuine client Arrow construction and heading, strong nullable Living shooter references, canonical allocation and destruction, and complete World terminal graph/publication admission with focused native and original-reference controls. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 36946,
+        "sha256": "9dceab34f3b007a1caf2acc0a329ed064974c4631e20891766c875cd4a3f8193"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "include/mc/entity/entity.h": {
+              "bytes": 9411,
+              "sha256": "a9364b4510947cab8ed1348ec9e0d1f8f8af5caf2123e309ece887a0614cec7d"
+            }
+          },
+          "added": [],
           "current_count": 127
         }
       }

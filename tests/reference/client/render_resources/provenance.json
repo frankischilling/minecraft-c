@@ -314,8 +314,8 @@
       "sha256": "e77454c2bb0a5070c5ef6a632dd044f91b0003b6cdc9fae568e86b225fd2ebf3"
     },
     "include/mc/entity/entity.h": {
-      "bytes": 9411,
-      "sha256": "a9364b4510947cab8ed1348ec9e0d1f8f8af5caf2123e309ece887a0614cec7d"
+      "bytes": 9532,
+      "sha256": "32bbe5e9c4afbc31ff24e6324877299ef01c719a251df528fb457bcb7738bc91"
     },
     "include/mc/entity/errors.h": {
       "bytes": 1058,
@@ -1318,16 +1318,16 @@
       "sha256": "df82a84481ba16f4e4d47d6409140a4b6a70ec11d9794e0c8481d3987649e09e"
     },
     "src/entity/construction_internal.h": {
-      "bytes": 4646,
-      "sha256": "c83b644171fef9ad69a4846155d50c89684e6faabf988a5aa03d6f920b3812a2"
+      "bytes": 4666,
+      "sha256": "51a9c056406cae8f7443d19cee1dcd8d8942d664c5b0e448942b5a46fe703843"
     },
     "src/entity/entity_internal.h": {
-      "bytes": 5082,
-      "sha256": "a724645b0d4db78d86a5d3ac363f49ed395cb3f32fcb7eb1d558837e6d30731b"
+      "bytes": 5277,
+      "sha256": "c5cd93fb54496c5b6017570e3fbe19bb3551e9d20a81a1521ef4dbfe4fc97a96"
     },
     "src/entity/player/construction.c": {
-      "bytes": 18894,
-      "sha256": "2676072377061533ab34bcfcade65d7ad1c8cc46a0556faa2b5d9983c85afe80"
+      "bytes": 18933,
+      "sha256": "1470938833b6a0a95ba885cdc1f02a33510a29185f665d9c07671465dcc684aa"
     },
     "src/entity/player/nbt_internal.h": {
       "bytes": 3006,
@@ -4210,12 +4210,12 @@
       "sha256": "2eb7b5f1bbd8639d0abfd43745668c79b43e852df44a66309ff107b85e2bf312"
     },
     "src/world/runtime/terminal_inventory.c": {
-      "bytes": 41436,
-      "sha256": "605f358cafe43820e52223bfdfa2fd19457319e718ceb06aee346fd90c628114"
+      "bytes": 44802,
+      "sha256": "7a1d07685f8b7c705bdb7b02adcca7b89f4fad808fbc92c971f48a174c7db363"
     },
     "src/world/runtime/terminal_inventory_internal.h": {
-      "bytes": 6907,
-      "sha256": "90196a7d9bd5f34669c936e29351ca47de8dd656e67bf611cad0c63cdb17da9f"
+      "bytes": 6928,
+      "sha256": "067214f34d7722e66a34cf6d2c15fd6cf03c5e61516f88899150a4cbbe67bc1a"
     },
     "src/world/runtime/tile_entities/piston_list_internal.h": {
       "bytes": 2989,
@@ -8446,8 +8446,8 @@
       "sha256": "3137781ce5f65bb4f3384c90017a798ccc3e4dd5ac449c0779b6448b73ed7942"
     },
     "src/entity/entity.c": {
-      "bytes": 35956,
-      "sha256": "e785c7d9e71a59608e5d1090c0b556453cd1354d99c1253614dc5ad95d5e3eec"
+      "bytes": 36833,
+      "sha256": "02e0365e192b2ab0a16b6ed3b4143e7e68acc762c90ceef8353e66bce7319a92"
     },
     "src/entity/player/spawn.c": {
       "bytes": 7806,
@@ -8462,8 +8462,8 @@
       "sha256": "69e5ae20ac102c23c8aa2e84e06222539b75ef0ae69fef8ae93e2c8dcc76e0e7"
     },
     "src/world/runtime/entity_publication.c": {
-      "bytes": 40435,
-      "sha256": "3c729b4e439e27de63c2eed43b618da07368fdc694cf69ebcef5a5079f9545f5"
+      "bytes": 40516,
+      "sha256": "2974b15ed6277b5410edde53fd4fc453abcff052ba6ed3d5767a5e5bc7e870a1"
     },
     "src/world/runtime/entity_tick_lists.c": {
       "bytes": 7575,
@@ -8606,8 +8606,8 @@
       "sha256": "7677557f711787fbbade553807e80adfa240a211808b3db2cbf87c83701437d7"
     },
     "cmake/player_sleep_nbt.cmake": {
-      "bytes": 4004,
-      "sha256": "95194040aacf339c1c6be17df5eed6ce340b3ca361078939b3ea9d7d774a832e"
+      "bytes": 4421,
+      "sha256": "9eb633f1743a67c1926c7f5418a15eeb211c5808b56fcbccd078d7c89d0deebb"
     },
     "include/mc/world/runtime/players.h": {
       "bytes": 3029,
@@ -8686,8 +8686,8 @@
       "sha256": "bc39e30f50918d51c67ea6ae408c268750ea72eace2dab633e413e6f41abaef2"
     },
     "tests/tools/entity/test_player_sleep_nbt_parent.py": {
-      "bytes": 55640,
-      "sha256": "8f3ac9dec1ff470853e19a3097855ad4c182687459e896467c09d3fbb6eb5370"
+      "bytes": 57527,
+      "sha256": "5716106207d01894a5bf09ce19b18f575bcf6d2a33a209ba49016b586e37d7c3"
     },
     "include/mc/block/registry/step_sound.h": {
       "bytes": 2410,
@@ -9280,6 +9280,86 @@
     "tests/tools/entity/test_mob_workspace.py": {
       "bytes": 9375,
       "sha256": "252efbe936e0475ca2723cdbcec73f73c2f3e6b399a7a1d3d31568fe70861b55"
+    },
+    "cmake/tests/arrow_construction.cmake": {
+      "bytes": 1422,
+      "sha256": "434912e707b85e59cfb48004946a3ea14d330a5d926d1a7f360126b37382f3a6"
+    },
+    "include/mc/entity/arrow/construction.h": {
+      "bytes": 4281,
+      "sha256": "1aab8eabdef0481da4672256e32b10f6b0739e57742187615da7ec836d17be35"
+    },
+    "src/entity/arrow/construction.c": {
+      "bytes": 17487,
+      "sha256": "ee4f8c39c5cffc69f8e43f71f41dea3cffb796ce9c3cd2b22efd837bbc5c15f8"
+    },
+    "src/entity/arrow/internal.h": {
+      "bytes": 630,
+      "sha256": "9d0044eb1f4a78158f56c5dfb9d4b16a61202c354794ad3c32429b8fb88ba3ba"
+    },
+    "src/entity/arrow/references.c": {
+      "bytes": 2582,
+      "sha256": "09c11dfb6352c5aca97c0bdc49f320318a8220d88ffa72052073422809ec271c"
+    },
+    "src/entity/arrow/references_internal.h": {
+      "bytes": 971,
+      "sha256": "bdabb328d2b7714edf85cab0c55e2fcbfd4f6745c0780be080321aabf57ebb9f"
+    },
+    "tests/entity/test_arrow_construction.c": {
+      "bytes": 25141,
+      "sha256": "b4f5866abf17f7852c4052b9ba0eb2fbbfb56df383080294af7a06e97586c8fa"
+    },
+    "tests/tools/entity/test_arrow_construction.py": {
+      "bytes": 9347,
+      "sha256": "c1821410ede0f978cdacb817984817ffc6c7f9a9b925406f9c2f4ea53c262603"
+    },
+    "tests/world/runtime/test_arrow_terminal.c": {
+      "bytes": 26234,
+      "sha256": "ebab1b55b7bfd4e9b9074e1ba0777d153298a92a770eecc6b404e222d838fe6a"
+    },
+    "cmake/tests/arrow_terminal.cmake": {
+      "bytes": 768,
+      "sha256": "2cbe615d937b35e02e42916b59dcf59ea3fdfdca8ec54beaca3c9839559ac546"
+    },
+    "tests/tools/world/test_arrow_terminal.py": {
+      "bytes": 4239,
+      "sha256": "1909edad457f06e8fc2d788cde847bd6ee14e2273cde0cc2726f6f754369bde2"
+    },
+    "cmake/tests/arrow_construction_reference.cmake": {
+      "bytes": 1550,
+      "sha256": "a321ce696bdfb15f9cf299c02d937de91f02b419fc8b7cad52ba8b31596178ba"
+    },
+    "tests/entity/test_arrow_construction_reference.c": {
+      "bytes": 20695,
+      "sha256": "7abaa8455e4bcf542f802e459b6c644d50fed43c810251cd1606c5c03c2b67e2"
+    },
+    "tests/reference/entity/arrow_construction/capture_reference.py": {
+      "bytes": 9005,
+      "sha256": "68e682ead9713b4a3df653fdedac6e7667d4b685fc9922758f9cf0419db63f6f"
+    },
+    "tests/reference/entity/arrow_construction/export_reference.py": {
+      "bytes": 3439,
+      "sha256": "8299ced7fcf2e1ca78a317ef21303fd7907b3ff7a01e159261d5c8c882ea7043"
+    },
+    "tests/reference/entity/arrow_construction/observation.py": {
+      "bytes": 19053,
+      "sha256": "ef7ca7cd2fd843f7a14410f8183ece84e2a95677c3053a8e45f29b28c5b38b06"
+    },
+    "tests/reference/entity/arrow_construction/packet.py": {
+      "bytes": 5923,
+      "sha256": "b86e23a89887f8f6f3367a5ce54024c0bbfabfeb94bbefd464dd29dcdae2f476"
+    },
+    "tests/reference/entity/arrow_construction/run_native.py": {
+      "bytes": 6621,
+      "sha256": "c85550a05c861ff488deb0a2723bcda69a597d1b3cf7db7f4eda4d14453d7643"
+    },
+    "tests/reference/entity/arrow_construction/test_packet.py": {
+      "bytes": 8518,
+      "sha256": "24994262270f36fccfae1353c6ac9f57030c6598dbb2285e92345c1bd8dc20de"
+    },
+    "tests/tools/entity/test_player_sleep_nbt_parent_diagnostics.py": {
+      "bytes": 10842,
+      "sha256": "412f1ca1d63d0d8d52338bf57654b93d5c9d6cf18a1fc036c8c8ef2c33a96dee"
     }
   },
   "source_suppliers": {
@@ -15015,6 +15095,203 @@
           },
           "added": [],
           "current_count": 2320
+        }
+      }
+    },
+    {
+      "from_commit": "8e2b9b3c41a8246e67dd3c5b04966adcec0ab736",
+      "role": "Current genuine client Arrow construction and heading, strong nullable Living shooter references, canonical allocation and destruction, and complete World terminal graph/publication admission with focused native and original-reference controls. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 635907,
+        "sha256": "8202075448c0c21047bb7ebd244dc310d58ac1815563fe32347ed96c1e37787c"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "include/mc/entity/entity.h": {
+              "bytes": 9411,
+              "sha256": "a9364b4510947cab8ed1348ec9e0d1f8f8af5caf2123e309ece887a0614cec7d"
+            },
+            "src/entity/construction_internal.h": {
+              "bytes": 4646,
+              "sha256": "c83b644171fef9ad69a4846155d50c89684e6faabf988a5aa03d6f920b3812a2"
+            },
+            "src/entity/entity_internal.h": {
+              "bytes": 5082,
+              "sha256": "a724645b0d4db78d86a5d3ac363f49ed395cb3f32fcb7eb1d558837e6d30731b"
+            },
+            "src/entity/player/construction.c": {
+              "bytes": 18894,
+              "sha256": "2676072377061533ab34bcfcade65d7ad1c8cc46a0556faa2b5d9983c85afe80"
+            },
+            "src/world/runtime/terminal_inventory.c": {
+              "bytes": 41436,
+              "sha256": "605f358cafe43820e52223bfdfa2fd19457319e718ceb06aee346fd90c628114"
+            },
+            "src/world/runtime/terminal_inventory_internal.h": {
+              "bytes": 6907,
+              "sha256": "90196a7d9bd5f34669c936e29351ca47de8dd656e67bf611cad0c63cdb17da9f"
+            },
+            "src/entity/entity.c": {
+              "bytes": 35956,
+              "sha256": "e785c7d9e71a59608e5d1090c0b556453cd1354d99c1253614dc5ad95d5e3eec"
+            },
+            "src/world/runtime/entity_publication.c": {
+              "bytes": 40435,
+              "sha256": "3c729b4e439e27de63c2eed43b618da07368fdc694cf69ebcef5a5079f9545f5"
+            }
+          },
+          "added": [
+            "cmake/tests/arrow_construction.cmake",
+            "include/mc/entity/arrow/construction.h",
+            "src/entity/arrow/construction.c",
+            "src/entity/arrow/internal.h",
+            "src/entity/arrow/references.c",
+            "src/entity/arrow/references_internal.h",
+            "tests/entity/test_arrow_construction.c",
+            "tests/tools/entity/test_arrow_construction.py",
+            "tests/world/runtime/test_arrow_terminal.c"
+          ],
+          "current_count": 2329
+        }
+      }
+    },
+    {
+      "from_commit": "8e2b9b3c41a8246e67dd3c5b04966adcec0ab736",
+      "role": "Current genuine client Arrow construction and heading, strong nullable Living shooter references, canonical allocation and destruction, and complete World terminal graph/publication admission with focused native and original-reference controls. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 640187,
+        "sha256": "db6b0aca09d894001b7e6cc59c9810e3c7058331a9ffe4308c2b6233840ce6c4"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/entity/test_arrow_construction.c": {
+              "bytes": 24722,
+              "sha256": "0dbc8a62a4b6571ddcc937853bc1d2fc4ca011dc3ef47efca5c0fb60031fff9c"
+            },
+            "tests/world/runtime/test_arrow_terminal.c": {
+              "bytes": 25809,
+              "sha256": "fdff32811b9959257354b6b49da635c53ebc1561a515f76fc74f490ba682f196"
+            }
+          },
+          "added": [
+            "cmake/tests/arrow_terminal.cmake",
+            "tests/tools/world/test_arrow_terminal.py"
+          ],
+          "current_count": 2331
+        }
+      }
+    },
+    {
+      "from_commit": "8e2b9b3c41a8246e67dd3c5b04966adcec0ab736",
+      "role": "Current genuine client Arrow construction and heading, strong nullable Living shooter references, canonical allocation and destruction, and complete World terminal graph/publication admission with focused native and original-reference controls. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 641901,
+        "sha256": "71db3e8651eca387a34956c57678588e25aad13ba6d2a793b5a91987b694750b"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {},
+          "added": [
+            "cmake/tests/arrow_construction_reference.cmake",
+            "tests/entity/test_arrow_construction_reference.c",
+            "tests/reference/entity/arrow_construction/capture_reference.py"
+          ],
+          "current_count": 2334
+        }
+      }
+    },
+    {
+      "from_commit": "8e2b9b3c41a8246e67dd3c5b04966adcec0ab736",
+      "role": "Current genuine client Arrow construction and heading, strong nullable Living shooter references, canonical allocation and destruction, and complete World terminal graph/publication admission with focused native and original-reference controls. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 643524,
+        "sha256": "672362532680d83166d9ed4af5acef9ed5bf0781cb5201492ba75bc580826a81"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/entity/arrow_construction/capture_reference.py": {
+              "bytes": 8932,
+              "sha256": "92db6db749e49827dab1dab7756c6013d5dd6aaa0d0ecbaef97aad6a87379952"
+            }
+          },
+          "added": [
+            "tests/reference/entity/arrow_construction/export_reference.py",
+            "tests/reference/entity/arrow_construction/observation.py",
+            "tests/reference/entity/arrow_construction/packet.py"
+          ],
+          "current_count": 2337
+        }
+      }
+    },
+    {
+      "from_commit": "c0d4589ee727873e6cda0af0a6a656bbdf74940d",
+      "role": "Current genuine client Arrow construction and heading, strong nullable Living shooter references, canonical allocation and destruction, and complete World terminal graph/publication admission with focused native and original-reference controls. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 646641,
+        "sha256": "bc9ad91fe8c26af61985e4b298406402ac78a6cc83b30b1d2bb4853b938e2767"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/entity/test_arrow_construction.c": {
+              "bytes": 25118,
+              "sha256": "e2b6da5f976b1e25580d62a44bbd26aeb5b2036909fa4dc0615e4c1c1091d24e"
+            },
+            "cmake/tests/arrow_construction_reference.cmake": {
+              "bytes": 415,
+              "sha256": "ba0e9bf1655300a36bd9b02dd0f2b4eefbcd000ac2f80a5bec2deedd86bb2ec8"
+            },
+            "tests/reference/entity/arrow_construction/capture_reference.py": {
+              "bytes": 8947,
+              "sha256": "01e869ee23417c36c5e7cee9cc0f5af5d7de9d609180fc3d7bb1b6697cf850b8"
+            },
+            "tests/reference/entity/arrow_construction/export_reference.py": {
+              "bytes": 3253,
+              "sha256": "029526dbc5a7c5037d5de5f1dbea0ba284ca1c63fe68aa10e1fc0a3395cfc709"
+            },
+            "tests/reference/entity/arrow_construction/observation.py": {
+              "bytes": 14526,
+              "sha256": "7793e6b421270687c90407d6f466b833136d9748707390c88eba62ee40a586a0"
+            },
+            "tests/reference/entity/arrow_construction/packet.py": {
+              "bytes": 5632,
+              "sha256": "ff4b690b1b88ae5e70a29939f6ba2c68e9095a1faac58d8a9d04440d1eed970f"
+            }
+          },
+          "added": [
+            "tests/reference/entity/arrow_construction/run_native.py",
+            "tests/reference/entity/arrow_construction/test_packet.py"
+          ],
+          "current_count": 2339
+        }
+      }
+    },
+    {
+      "from_commit": "c0d4589ee727873e6cda0af0a6a656bbdf74940d",
+      "role": "Current genuine client Arrow construction and heading, strong nullable Living shooter references, canonical allocation and destruction, and complete World terminal graph/publication admission with focused native and original-reference controls, retained sleep-NBT failure diagnostics and failure-only hosted evidence. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 649281,
+        "sha256": "e617a9dabe731b7dcc081acefe71c9d9db909e52c9218769a3e4d529f2c00dc4"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "cmake/player_sleep_nbt.cmake": {
+              "bytes": 4004,
+              "sha256": "95194040aacf339c1c6be17df5eed6ce340b3ca361078939b3ea9d7d774a832e"
+            },
+            "tests/tools/entity/test_player_sleep_nbt_parent.py": {
+              "bytes": 55640,
+              "sha256": "8f3ac9dec1ff470853e19a3097855ad4c182687459e896467c09d3fbb6eb5370"
+            }
+          },
+          "added": [
+            "tests/tools/entity/test_player_sleep_nbt_parent_diagnostics.py"
+          ],
+          "current_count": 2340
         }
       }
     }

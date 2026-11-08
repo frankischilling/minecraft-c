@@ -756,6 +756,8 @@ add_library(mc_simulation STATIC
     src/world/dimension/world_provider.c
     src/world/dimension/temperature.c
     src/entity/entity.c
+    src/entity/arrow/construction.c
+    src/entity/arrow/references.c
     src/entity/living/construction.c
     src/entity/mob/construction.c
     src/entity/mob/nbt.c
@@ -5682,6 +5684,9 @@ include(cmake/entity_living_damage.cmake)
 include(cmake/entity_animal_death.cmake)
 include(cmake/player_attack.cmake)
 include(cmake/player_damage.cmake)
+include(cmake/tests/arrow_construction.cmake)
+include(cmake/tests/arrow_terminal.cmake)
+include(cmake/tests/arrow_construction_reference.cmake)
 include(cmake/client_respawn.cmake)
 include(cmake/client_bed_respawn.cmake)
 include(cmake/client_bed_interaction.cmake)

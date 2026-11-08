@@ -1,5 +1,71 @@
 # Test scope and reproduction
 
+## Arrow constructors, heading and terminal ownership
+
+The [complete original packet](../tests/reference/entity/arrow_construction/README.md)
+executes all three unchanged SL constructors and the entire heading helper in
+two ordinary and two passive JDI VMs. Each completes 40 calls: 37 returns and
+three actual null-reference exceptions, including two failed constructors and
+the heading's null Random receiver. JDI retains the genuine failed constructor
+receiver; ordinary Java's inaccessible failed receiver remains explicitly absent.
+No original source method, field, return or bytecode is replaced by the observer.
+
+Windows and Clang Debug ASan/UBSan Linux each match 4,396 selected scalar
+positions. Default constructor entropy and jitter-derived values remain
+independent; within-run checks verify actual Gaussian arithmetic, cache/rejection
+consumption and unchanged World/shared Math/shooter state. Seeded standalone
+headings compare all three actual Gaussian returns directly, including zero
+speed/spread where final motion could otherwise hide a wrong local value.
+The 3,256 JDI events provide source-only order evidence. Raw exclusions, separate
+row-zero bootstrap scope and the processing-only addition of actual Code
+inventories are documented in the packet; no synthesized native event journal
+or whole-bootstrap equality is claimed.
+
+Native controls separately pass 215 constructor/heading and 1,067 terminal checks
+per host, including source/hold mismatches, replacement/refused retain, failed
+owners, active calls, duplicate roots, external ownership, pin ceilings,
+cross-World admission and Arrow-to-Mob cycles. The first Windows build exposed
+two fixture compile issues; the first Linux build exposed a missing explicit
+SIMD header. Test-only fixes preserve every declared case and runtime body.
+Fresh four-test runs pass Windows in 3.77 seconds and sanitized Linux in 1.59
+seconds, without skips. The earlier failed builds remain retained. Final
+configured suites pass Windows 760/760 in 379.36 seconds and sanitized Linux
+617/617 in 397.26 seconds, without registered skips. Both complete builds pass;
+clang-format 18 checks 2,246 files and strict GCC syntax checks pass all nine
+changed C translation units. The 53-file execution delta and six admission
+tables retain their prelaunch hashes through both terminal results. No loaded Arrow, natural
+Skeleton encounter, Arrow save/load, frame or FPS qualification follows.
+
+## Retained native process failures
+
+The repaired readiness head `c0d4589e` passes hosted formatting, Windows 761/761
+and GCC 819/819. Clang passes 818/819 in
+[run 42460583281](https://github.com/frankischilling/minecraft-c/actions/runs/42460583281),
+failing `entity.player_sleep_nbt_parent` at the generic native process/stream
+inventory guard. Its native exit, stderr and capture receipt were not exposed
+in the retained job log, and that workflow retained no capture artifacts.
+The native cause is unknown; no timeout, sanitizer or runtime diagnosis follows
+from that message alone.
+
+The wrapper now prints bounded failure details and the retained output paths,
+copies attached controller receipts into its report, and re-raises the original
+error. All successful-body parsing/comparison, completion guards and final
+integrity checks remain unchanged. Eight pure controls exercise returned failures,
+controller exceptions, missing/large stderr, large receipts and diagnostic-output
+failure on Windows and Linux, normally and under optimized Python. The pre-fix
+diagnostic-loss cases remain retained. These tests qualify reporting, not the
+unknown native cause.
+
+Failed hosted test jobs now retain the complete CTest logs and the sleep-NBT
+parent's report, bounded-process receipt and stdout/stderr files for 14 days.
+The pinned upload step excludes copied resources, World files and binaries.
+Its hosted execution remains pending. The first Arrow configured cohort passes
+Windows 758/758 in 416.37 seconds and sanitized Linux 615/615 in 395.51 seconds,
+with every registered test passing and the exact 49-file/six-table freeze intact.
+The additional failure-reporting controls and workflow changes follow that frozen
+cohort. Fresh complete suites then pass Windows 760/760 and sanitized Linux
+617/617, qualifying their current registration with the separate 53-file freeze.
+
 ## Mob benchmark readiness path identity
 
 The hosted `8e2b9b3c` run

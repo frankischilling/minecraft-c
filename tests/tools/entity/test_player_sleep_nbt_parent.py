@@ -42,6 +42,32 @@ def require(value, message):
     if not value:
         raise ValueError(message)
 
+def native_failure_details(output, receipt, returncode):
+    """Keep the failed process visible while complete files remain retained."""
+    output=Path(output)
+    code=returncode if returncode is not None else receipt.get('exit') if type(receipt) is dict else None
+    lines=['Player sleep NBT native failure', 'native exit: '+str(code),
+           'retained report: '+str(output/'report.json'),
+           'retained capture: '+str(output/'native.capture.json'),
+           'retained stdout: '+str(output/'native.stdout'),
+           'retained stderr: '+str(output/'native.stderr')]
+    text=json.dumps(receipt,sort_keys=True)
+    lines.append('capture receipt: '+text[:16384])
+    if len(text)>16384:
+        lines.append('capture receipt excerpt truncated; complete receipt is retained in report.json')
+    try:
+        path=output/'native.stderr'
+        size=path.stat().st_size
+        with path.open('rb') as source: raw=source.read(8193)
+        excerpt=raw[:8192].decode('utf-8','backslashreplace')
+        lines.append('native stderr ('+str(size)+' bytes):\n'+excerpt[:16384])
+        if len(raw)>8192 or len(excerpt)>16384:
+            lines.append('stderr excerpt truncated; complete bytes are retained in native.stderr')
+    except OSError as error:
+        lines.append('native stderr unavailable: '+str(error)[:1024])
+    return '\n'.join(lines)
+
+
 def module(name, path):
     spec = importlib.util.spec_from_file_location(name, Path(path))
     result = importlib.util.module_from_spec(spec)
@@ -771,6 +797,7 @@ def main(argv=None):
             'native_observation':'typed NBT null source reference at SN294/fieldPos; no typed native child86'}],
         'binary_input_scope':'executable, executable-adjacent DLL/shared objects, current Python executable; no OS loader-image equality claim',
         'GUI':False,'loaded_restart':False,'natural_sleep_progression':False}
+    result=None
     try:
         command=[str(executable),'player-nbt-sleep-matrix',str(output/'worlds').encode().hex(),
                  str(resources).encode().hex(),str((reference/'profiles.tsv').resolve())]
@@ -791,6 +818,14 @@ def main(argv=None):
         report['status']='PASS'
     except BaseException as error:
         report['error']={'type':type(error).__name__,'message':str(error)}
+        if getattr(error,'capture_report',None) is not None:
+            report['capture']=error.capture_report
+        try:
+            print(native_failure_details(output,report.get('capture'),
+                                         getattr(result,'returncode',None)),file=sys.stderr)
+        except BaseException as diagnostic_error:
+            report['failure_diagnostic_error']={'type':type(diagnostic_error).__name__,
+                                               'message':str(diagnostic_error)}
         raise
     finally:
         after={str(p):digest(p) for p in source_paths(root,executable,reference)}

@@ -1,6 +1,9 @@
 #include "terminal_inventory_internal.h"
 
+#include "../../entity/arrow/internal.h"
+#include "../../entity/arrow/references_internal.h"
 #include "../../entity/entity_internal.h"
+#include "../../entity/living/fields_internal.h"
 #include "../../entity/mob/internal.h"
 #include "../../entity/mob/references_internal.h"
 #include "../../entity/particles/particle_internal.h"
@@ -187,6 +190,14 @@ static bool pickup_actor(const mc_entity *actor, const mc_entity_classes *classe
            !particle;
 }
 
+static bool arrow_shooter(const mc_entity *shooter, const mc_entity_classes *classes) {
+    /* The source reference permits RAW/failed Living storage and another
+     * World. This terminal operation separately admits its closed World graph
+     * when collect_entity visits the actual owned shooter occurrence. */
+    return shooter == NULL || (shooter->classes == classes && shooter->holds != 0 &&
+                               mc_entity_living_fields((mc_entity *)shooter) != NULL);
+}
+
 static mc_world_storage_status collect_entity(void *context, const void *slot, mc_entity *value,
                                               mc_world_storage_error *error) {
     terminal_collector *c = context;
@@ -247,6 +258,25 @@ static mc_world_storage_status collect_entity(void *context, const void *slot, m
         } else if (mc_entity_is_particle_kind(view.kind))
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal missing particle child storage");
+        if (value->arrow != NULL || view.kind == MC_ENTITY_CLASS_KIND_ARROW) {
+            if (!mc_entity_has_arrow(value) || value->mob != NULL || value->local_player != NULL ||
+                value->particle != NULL)
+                return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "World terminal canonical Arrow child storage");
+            if (value->arrow->constructor_active)
+                return result(error, MC_WORLD_STORAGE_BUSY,
+                              "World terminal Arrow constructor still entered");
+            if (value->arrow->heading_active)
+                return result(error, MC_WORLD_STORAGE_BUSY,
+                              "World terminal Arrow heading still entered");
+            mc_entity *shooter = NULL;
+            mc_entity_error child;
+            if (mc_arrow_shooter_get(value, &shooter, &child) != MC_ENTITY_OK)
+                return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, child.operation);
+            if (!arrow_shooter(shooter, value->classes))
+                return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "World terminal canonical Living Arrow shooter");
+        }
         if (value->base.aG != value->passenger_hold || value->base.aH != value->mount_hold)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal unqualified Entity child or relationship graph");
@@ -356,6 +386,17 @@ static mc_world_storage_status collect_entity_references(terminal_collector *c,
             if (status != MC_WORLD_STORAGE_OK)
                 return status;
             status = collect_entity(c, &pickup->o, pickup->o, error);
+            if (status != MC_WORLD_STORAGE_OK)
+                return status;
+        }
+        if (entity->arrow != NULL) {
+            mc_entity *shooter = NULL;
+            mc_entity_error child;
+            if (mc_arrow_shooter_get(entity, &shooter, &child) != MC_ENTITY_OK)
+                return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, child.operation);
+            /* c mirrors this ONE owning slot; duplicated Arrow roots never
+             * multiply its shooter edge. The queue visits each identity once. */
+            status = collect_entity(c, &entity->arrow->shooter_hold, shooter, error);
             if (status != MC_WORLD_STORAGE_OK)
                 return status;
         }
@@ -654,6 +695,14 @@ static mc_world_storage_status scan_mob(void *context, const void *slot, mc_enti
     (void)error;
     mob_graph_scan *scan = context;
     if (entity != NULL &&
+        (entity->arrow != NULL || mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ARROW))) {
+        if (!mc_entity_has_arrow(entity) || entity->phase == MC_ENTITY_CONSTRUCTING ||
+            entity->mob != NULL || entity->local_player != NULL || entity->particle != NULL ||
+            entity->arrow->constructor_active || entity->arrow->heading_active ||
+            entity->arrow->fields.c != NULL || entity->arrow->shooter_hold != NULL)
+            scan->needed = true;
+    }
+    if (entity != NULL &&
         (entity->mount_hold != NULL || entity->passenger_hold != NULL ||
          (entity->local_player != NULL && (entity->local_player->pending_death != NULL ||
                                            entity->local_player->pending_damage_wake != NULL ||
@@ -767,6 +816,10 @@ mc_world_storage_status mc_world_runtime_terminal_mob_graph_prepare(
         if (entry->holds < entry->occurrences)
             status = result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                             "World terminal Entity reference holds below occurrences");
+        else if (entry->holds != entry->occurrences && entity->arrow != NULL &&
+                 entity->arrow->shooter_hold != NULL)
+            status = result(error, MC_WORLD_STORAGE_BUSY,
+                            "World terminal external owner of Arrow shooter field");
         /* A surviving external owner may still inspect its source targets.
          * Never clear those fields to make shutdown pass. Ordinary externally
          * held leaf Entities retain the older container-retirement contract. */
@@ -799,6 +852,8 @@ void mc_world_runtime_terminal_mob_graph_clear(mc_world_terminal_mob_graph *grap
         return;
     for (size_t i = 0; i < graph->collector.entity_count; ++i) {
         mc_entity_mount_references_dispose(graph->collector.entities[i]);
+        if (graph->collector.entities[i]->arrow != NULL)
+            mc_arrow_references_dispose(graph->collector.entities[i]);
         if (graph->collector.entities[i]->mob != NULL)
             mc_mob_references_dispose(graph->collector.entities[i]);
     }

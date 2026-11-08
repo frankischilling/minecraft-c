@@ -36,6 +36,7 @@ struct mc_local_player_state;
 struct mc_particle_state;
 struct mc_mob_entity_state;
 struct mc_lightning_entity_state;
+struct mc_arrow_entity_state;
 
 struct mc_entity {
     mc_entity_classes *classes;
@@ -67,11 +68,14 @@ struct mc_entity {
     struct mc_mob_entity_state *mob;
     /* Actual C/YU subobject of a genuine Lightning allocation, else NULL. */
     struct mc_lightning_entity_state *lightning;
+    /* Actual embedded SL storage; Arrow has no Living/Mob subobject. */
+    struct mc_arrow_entity_state *arrow;
 };
 
 /* Passive actual subtype admission, valid in every phase. The immutable
  * literal must be this Entity classes owner's canonical literal for kind. */
 bool mc_entity_is_kind(const mc_entity *entity, mc_entity_class_kind kind);
+bool mc_entity_has_arrow(const mc_entity *entity);
 /* Complete concrete XW storage, excluding the query-only XW ancestor. These
  * passive predicates deliberately admit RAW/FAILED storage for retirement;
  * callers keep their own reached READY/active-call checks. */

@@ -125,8 +125,10 @@ const char *mc_entity_status_string(mc_entity_status status);
  * NULL world/stack are accepted. A nonnull world must borrow this same profile;
  * caller keeps it live until its reached counted binding at base bytecode205.
  * Stack storage is retained at item bytecode61 without a READY/field check.
- * The caller keeps the supplied stack live until return. No constructor world
- * callback/insertion, registry lookup, collision or Gaussian draw occurs. */
+ * The caller keeps the supplied stack live until return. These Item
+ * constructors perform no World callback/insertion, registry lookup,
+ * collision or Gaussian draw. Concrete Arrow constructors have their own
+ * source-order and shooter contract in arrow/construction.h. */
 mc_entity_status mc_item_entity_allocate(mc_entity_classes *classes, mc_entity **out,
                                          mc_entity_error *error);
 mc_entity_status mc_item_entity_construct(mc_entity *raw, mc_world_runtime *world, double x,

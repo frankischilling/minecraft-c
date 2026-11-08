@@ -50,7 +50,8 @@ mc_world_storage_status mc_world_runtime_entity_containers_validate(mc_world_run
                                                                     mc_world_storage_error *);
 
 typedef struct mc_world_terminal_mob_graph mc_world_terminal_mob_graph;
-/* After the complete structural preflight, collect actual target occurrences
+/* After the complete structural preflight, collect actual target and Arrow
+ * shooter occurrences
  * and pin the admitted closed field graph without source mutation. Nonnull
  * fields owned outside that graph refuse. clear/release are infallible native
  * commit steps; clear runs only after the World source-admission latch ends. */

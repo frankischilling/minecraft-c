@@ -11,6 +11,11 @@ if(BUILD_TESTING)
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/player_sleep_nbt_parent/test_packet.py")
         set_tests_properties("tools.player_sleep_nbt_parent_packet_${mode}" PROPERTIES
             LABELS "public;unit;entity;world;storage;reference;tools" TIMEOUT 90)
+        add_test(NAME "tools.player_sleep_nbt_parent_diagnostics_${mode}" COMMAND Python3::Interpreter
+            ${_mc_sleep_nbt_python_options}
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_player_sleep_nbt_parent_diagnostics.py")
+        set_tests_properties("tools.player_sleep_nbt_parent_diagnostics_${mode}" PROPERTIES
+            LABELS "public;unit;entity;world;storage;tools" TIMEOUT 90)
     endforeach()
 endif()
 

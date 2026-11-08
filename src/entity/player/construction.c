@@ -130,10 +130,10 @@ mc_entity_status mc_entity_source_position_rotation(mc_entity *entity, double x,
         goto done;
     }
     if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
-        !mc_entity_has_mob(entity)) {
+        !mc_entity_has_mob(entity) && !mc_entity_has_arrow(entity)) {
         e = (mc_entity_position_rotation_error){.status = MC_ENTITY_INVALID_ARGUMENT,
                                                 .operation =
-                                                    "SN.c canonical Player or Mob receiver",
+                                                    "SN.c canonical Player, Mob or Arrow receiver",
                                                 .native_policy = true};
         goto done;
     }

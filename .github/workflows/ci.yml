@@ -170,10 +170,25 @@ jobs:
           key: linux-ubuntu24.04-${{ matrix.compiler }}-ctest-costs-v1-${{ github.sha }}
           restore-keys: linux-ubuntu24.04-${{ matrix.compiler }}-ctest-costs-v1-
       - name: Test
+        id: test
         run: xvfb-run -a -s "-screen 0 1280x1024x24 -noreset" env LIBGL_ALWAYS_SOFTWARE=1 ctest --test-dir build --parallel 4 --output-on-failure
       - name: Report terrain test scopes and failures
         if: always()
         run: python -B scripts/development/report_terrain_tests.py --build build
+      - name: Retain failed native test evidence
+        if: always() && steps.test.outcome == 'failure'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: failed-native-linux-${{ matrix.compiler }}-${{ github.run_attempt }}
+          path: |
+            build/Testing/Temporary/LastTest.log
+            build/Testing/Temporary/LastTestsFailed.log
+            build/player-sleep-nbt-parent/**/report.json
+            build/player-sleep-nbt-parent/**/native.capture.json
+            build/player-sleep-nbt-parent/**/native.stdout
+            build/player-sleep-nbt-parent/**/native.stderr
+          if-no-files-found: warn
+          retention-days: 14
       - name: Check controller mirror identities
         run: python tests/tools/cache/check_controller_mirrors.py --work-dir build/controller-mirrors
       - name: Check lifecycle interval bounds
@@ -289,10 +304,25 @@ jobs:
           key: windows-2022-msvc-ctest-costs-v1-${{ github.sha }}
           restore-keys: windows-2022-msvc-ctest-costs-v1-
       - name: Test
+        id: test
         run: ctest --test-dir build -C Debug --parallel 4 --output-on-failure
       - name: Report terrain test scopes and failures
         if: always()
         run: python -B scripts/development/report_terrain_tests.py --build build
+      - name: Retain failed native test evidence
+        if: always() && steps.test.outcome == 'failure'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: failed-native-windows-${{ github.run_attempt }}
+          path: |
+            build/Testing/Temporary/LastTest.log
+            build/Testing/Temporary/LastTestsFailed.log
+            build/player-sleep-nbt-parent/**/report.json
+            build/player-sleep-nbt-parent/**/native.capture.json
+            build/player-sleep-nbt-parent/**/native.stdout
+            build/player-sleep-nbt-parent/**/native.stderr
+          if-no-files-found: warn
+          retention-days: 14
       - name: Check controller mirror identities
         run: python tests/tools/cache/check_controller_mirrors.py --work-dir build/controller-mirrors
       - name: Check lifecycle interval bounds
