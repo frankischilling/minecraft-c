@@ -1,7 +1,9 @@
-#include "mc/entity/movement/environment.h"
+#include "environment_internal.h"
 
+#include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
 #include "../../world/runtime/construction_internal.h"
+#include "../../world/runtime/material_movement_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../entity_internal.h"
 #include "../mob/internal.h"
@@ -49,14 +51,19 @@ static mc_entity_status result(mc_entity_environment_error *out,
     return e->status;
 }
 
-static bool enter(mc_entity *entity, bool output, mc_entity_environment_error *e) {
+static bool enter_domain(mc_entity *entity, bool output, mc_entity_environment_error *e,
+                         bool inherited_arrow) {
     if (entity == NULL || !output)
         return fail(e, MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_ENVIRONMENT_OWNER,
                     "Entity environment arguments", 0);
     if (entity->phase != MC_ENTITY_READY)
         return fail(e, MC_ENTITY_INVALID_PHASE, MC_ENTITY_ENVIRONMENT_OWNER,
                     "Entity environment READY admission", 0);
-    if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
+    const bool arrow = inherited_arrow && mc_entity_has_arrow(entity);
+    if (arrow && entity->holds == 0)
+        return fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_ENVIRONMENT_OWNER,
+                    "Entity environment held Arrow owner", 0);
+    if (!arrow && !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
@@ -68,6 +75,14 @@ static bool enter(mc_entity *entity, bool output, mc_entity_environment_error *e
         return fail(e, status, MC_ENTITY_ENVIRONMENT_OWNER, "Entity environment lifetime hold", 0);
     e->source_class = entity->classes->source == MC_ENTITY_CLIENT ? "sn" : "lq";
     return true;
+}
+
+static bool enter(mc_entity *entity, bool output, mc_entity_environment_error *e) {
+    return enter_domain(entity, output, e, false);
+}
+
+static bool enter_arrow_base(mc_entity *entity, bool output, mc_entity_environment_error *e) {
+    return enter_domain(entity, output, e, true);
 }
 
 static bool floating(mc_entity_environment_error *e, unsigned pc) {
@@ -120,7 +135,7 @@ static bool world_result(mc_entity_environment_error *e, mc_world_storage_status
 
 static bool liquid_probe(mc_entity *entity, mc_registry_classes *registry, bool water,
                          const mc_world_material_movement_limits *limits, bool *out,
-                         mc_entity_environment_error *e) {
+                         mc_entity_environment_error *e, mc_math_execution *execution) {
     mc_world_runtime *const receiver = entity->base.world; /* Source load1 precedes args. */
     const bool item = water && mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM);
     if (item)
@@ -155,6 +170,13 @@ static bool liquid_probe(mc_entity *entity, mc_registry_classes *registry, bool 
     }
     const unsigned material_pc = item ? 8 : water ? 28 : 20;
     const unsigned world_pc = item ? 12 : water ? 32 : 23;
+    if (execution != NULL && (registry == NULL || registry->entities != entity->classes ||
+                              registry->options.side != MC_REGISTRY_CLIENT ||
+                              registry->options.random_profile != entity->classes->profile)) {
+        fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_ENVIRONMENT_NAMESPACE,
+             "Arrow environment actual defining Registry", material_pc);
+        goto leave;
+    }
     mc_material *material = NULL;
     if (!registry_result(e,
                          mc_registry_material_get(registry, water ? MC_MATERIAL_g : MC_MATERIAL_h,
@@ -165,10 +187,10 @@ static bool liquid_probe(mc_entity *entity, mc_registry_classes *registry, bool 
         goto leave;
     bool value;
     const mc_world_storage_status status =
-        water ? mc_world_runtime_material_accelerate(receiver, query, material, entity, limits,
-                                                     &value, &e->material)
-              : mc_world_runtime_contains_material(receiver, query, material, limits, &value,
-                                                   &e->material);
+        water ? mc_world_runtime_material_accelerate_in_execution(
+                    receiver, query, material, entity, limits, &value, &e->material, execution)
+              : mc_world_runtime_contains_material_in_execution(receiver, query, material, limits,
+                                                                &value, &e->material, execution);
     if (world_result(e, status, receiver, world_pc)) {
         *out = value;
         completed = true;
@@ -193,7 +215,7 @@ static mc_entity_status liquid(mc_entity *entity, mc_registry_classes *registry,
             entity->classes->source == MC_ENTITY_CLIENT ? MC_REGISTRY_CLIENT : MC_REGISTRY_SERVER,
             entity->classes->profile, &e.registry);
         if (registry_result(&e, held, 0)) {
-            completed = liquid_probe(entity, registry, water, limits, &value, &e);
+            completed = liquid_probe(entity, registry, water, limits, &value, &e, NULL);
             /* Exact native borrow retirement, including an admitted synchronous
              * initializer flow. This does not initialize or replace a class. */
             if (!mc_registry_runtime_borrow_release(registry)) {
@@ -209,6 +231,48 @@ static mc_entity_status liquid(mc_entity *entity, mc_registry_classes *registry,
     if (e.status == MC_ENTITY_OK)
         mc_entity_environment_error_init(&e);
     return result(error, &e);
+}
+
+static mc_entity_status liquid_held_in_execution(mc_entity *entity, mc_registry_classes *registry,
+                                                 bool water, mc_math_execution *execution,
+                                                 const mc_world_material_movement_limits *limits,
+                                                 bool *out, mc_entity_environment_error *e) {
+    if (e == NULL)
+        return MC_ENTITY_INVALID_ARGUMENT;
+    mc_entity_environment_error_init(e);
+    if (out == NULL || execution == NULL)
+        fail(e, MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_ENVIRONMENT_OWNER,
+             "Arrow held environment arguments", 0);
+    else if (!mc_entity_has_arrow(entity))
+        fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_ENVIRONMENT_OWNER,
+             "Arrow held environment actual storage", 0);
+    else if (entity->phase != MC_ENTITY_READY)
+        fail(e, MC_ENTITY_INVALID_PHASE, MC_ENTITY_ENVIRONMENT_OWNER,
+             "Arrow held environment READY owner", 0);
+    else if (entity->holds == 0)
+        fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_ENVIRONMENT_OWNER,
+             "Arrow held environment live owner", 0);
+    else {
+        e->source_class = "sn";
+        bool value;
+        if (liquid_probe(entity, registry, water, limits, &value, e, execution))
+            *out = value;
+    }
+    if (e->status == MC_ENTITY_OK)
+        mc_entity_environment_error_init(e);
+    return e->status;
+}
+
+mc_entity_status mc_entity_environment_water_held_in_execution(
+    mc_entity *entity, mc_registry_classes *registry, mc_math_execution *execution,
+    const mc_world_material_movement_limits *limits, bool *out, mc_entity_environment_error *e) {
+    return liquid_held_in_execution(entity, registry, true, execution, limits, out, e);
+}
+
+mc_entity_status mc_entity_environment_lava_held_in_execution(
+    mc_entity *entity, mc_registry_classes *registry, mc_math_execution *execution,
+    const mc_world_material_movement_limits *limits, bool *out, mc_entity_environment_error *e) {
+    return liquid_held_in_execution(entity, registry, false, execution, limits, out, e);
 }
 
 mc_entity_status mc_entity_environment_water(mc_entity *entity, mc_registry_classes *registry,
@@ -227,7 +291,7 @@ mc_entity_status mc_entity_environment_stored_in_water(mc_entity *entity, bool *
                                                        mc_entity_environment_error *error) {
     mc_entity_environment_error e;
     mc_entity_environment_error_init(&e);
-    if (enter(entity, out != NULL, &e)) {
+    if (enter_arrow_base(entity, out != NULL, &e)) {
         if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SQUID))
             fail(&e, MC_ENTITY_STATE_ERROR, MC_ENTITY_ENVIRONMENT_NAMESPACE,
                  "Squid ag requires its actual defining Registry context", 16);

@@ -42,6 +42,9 @@ mc_entity_environment_error mc_entity_environment_empty_error(void);
  * do not assign bx/bA. The contextful ag entry also admits Squid's distinct
  * shrinking-bounds query; the inherited stored-only entry rejects that override.
  * No active Living/Player tick, movement integration or implicit pool reset.
+ * The inherited stored-bx entry additionally admits a genuine held READY
+ * client Arrow. Arrow water/lava require the private held execution context;
+ * the public liquid, clearance and relative domains remain unchanged.
  *
  * The actual code Registry is an explicit native namespace context, independent
  * of nullable Entity.world. Retain validates side/profile without class use;

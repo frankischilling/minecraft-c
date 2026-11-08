@@ -297,4 +297,10 @@ mc_entity_status mc_entity_effect_contact_portal(mc_entity *entity, mc_entity_ef
  * receipt under this same held, exclusive graph contract. Its completed receipt
  * remains available on ordinary true/false returns; it owns no extra resources. */
 
+/* Watcher-byte, attacked, dead and damage entries additionally admit genuine
+ * held READY client Arrow storage. Arrow inherits the typed watcher operation,
+ * SN.ai, SN.K and SN.a(Entity,int), whose ordinary result is false after bb.
+ * Other effect entry domains remain unchanged. This admission adds no Arrow
+ * tick, Living damage, reference mutation or collection removal. */
+
 #endif

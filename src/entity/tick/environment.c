@@ -55,7 +55,29 @@ static bool particle(mc_world_runtime *world, const mc_registry_string *name, do
         "Tick actual World particle", pc);
 }
 
-static bool splash(mc_entity *entity, mc_registry_classes *classes, mc_entity_tick_error *e) {
+static bool math_ready(mc_math_execution *execution, const char *method, const char *descriptor,
+                       mc_entity_tick_error *e, unsigned int pc) {
+    if (execution == NULL)
+        return true;
+    base_at(e, pc);
+    const mc_math_class_status status = mc_math_execution_require(
+        execution, (mc_math_execution_site){"sn", "U", "()V", (int)pc}, method, descriptor);
+    if (status == MC_MATH_CLASS_OK)
+        return true;
+    const mc_math_class_error *child = mc_math_execution_cause(execution);
+    e->source_exception = false;
+    e->exception_class = NULL;
+    return mc_tick_fail(e,
+                        status == MC_MATH_CLASS_LIMIT               ? MC_ENTITY_LIMIT
+                        : status == MC_MATH_CLASS_ALLOCATION_FAILED ? MC_ENTITY_ALLOCATION_FAILED
+                        : status == MC_MATH_CLASS_UNSUPPORTED_FP    ? MC_ENTITY_UNSUPPORTED_FP
+                        : status == MC_MATH_CLASS_BUSY              ? MC_ENTITY_BUSY
+                                                                    : MC_ENTITY_STATE_ERROR,
+                        child->operation, pc);
+}
+
+static bool splash(mc_entity *entity, mc_registry_classes *classes, mc_entity_tick_error *e,
+                   mc_math_execution *execution) {
     base_at(e, 138);
     if (!mc_tick_fp(e, 110))
         return false;
@@ -65,6 +87,8 @@ static bool splash(mc_entity *entity, mc_registry_classes *classes, mc_entity_ti
     squared = mc_tick_dadd(
         squared, mc_tick_dmul(mc_tick_dmul(entity->base.velocity_z, entity->base.velocity_z),
                               mc_tick_widen(.2f)));
+    if (!math_ready(execution, "a", "(D)F", e, 138))
+        return false;
     const double root = _mm_cvtsd_f64(_mm_sqrt_sd(_mm_setzero_pd(), _mm_set_sd(squared)));
     const float root_float = _mm_cvtss_f32(_mm_cvtsd_ss(_mm_setzero_ps(), _mm_set_sd(root)));
     float volume = mc_tick_fmul(root_float, .2f);
@@ -88,9 +112,10 @@ static bool splash(mc_entity *entity, mc_registry_classes *classes, mc_entity_ti
     base_at(e, 188);
     if (entity->bounds == NULL)
         return mc_tick_null(e, "Tick splash null permanent bounds", 188);
-    if (!mc_tick_fp(e, 191))
+    const double min_y = entity->bounds->min_y;
+    if (!math_ready(execution, "b", "(D)I", e, 191) || !mc_tick_fp(e, 191))
         return false;
-    const float floor_y = mc_tick_i2f(mc_math_floor_double(entity->bounds->min_y));
+    const float floor_y = mc_tick_i2f(mc_math_floor_double(min_y));
     for (int kind = 0; kind < 2; ++kind) {
         int32_t index = 0;
         for (;;) {
@@ -162,12 +187,14 @@ static bool lava_damage(mc_entity *entity, mc_registry_classes *classes, mc_math
 
 static bool void_damage(mc_entity *entity, mc_registry_classes *classes, mc_math_classes *math,
                         mc_entity_tick_error *e) {
-    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM)) {
+    const bool arrow = mc_entity_has_arrow(entity);
+    if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) || arrow) {
         e->source_class = "sn";
         e->source_method = "ab()V";
         e->void_bytecode = 1;
-        return mc_tick_effect(e, mc_entity_effect_dead(entity, &e->effect),
-                              "Item void actual inherited K", 1);
+        return mc_tick_effect(
+            e, mc_entity_effect_dead(entity, &e->effect),
+            arrow ? "Arrow void actual inherited K" : "Item void actual inherited K", 1);
     }
     e->source_class = "ls";
     e->source_method = "ab()V";
@@ -176,7 +203,8 @@ static bool void_damage(mc_entity *entity, mc_registry_classes *classes, mc_math
 }
 
 static bool base_body(mc_entity *entity, mc_registry_classes *classes, mc_math_classes *math,
-                      const mc_entity_tick_limits *limits, mc_entity_tick_error *e) {
+                      const mc_entity_tick_limits *limits, mc_entity_tick_error *e,
+                      mc_math_execution *execution) {
     base_at(e, 1);
     mc_entity *rider = entity->base.aH;
     if (rider != NULL) {
@@ -201,14 +229,17 @@ static bool base_body(mc_entity *entity, mc_registry_classes *classes, mc_math_c
     entity->base.aU = entity->base.yaw;
     bool water;
     base_at(e, 81);
-    if (!mc_tick_effect(e,
-                        mc_entity_environment_water(entity, classes,
-                                                    limits == NULL ? NULL : &limits->material,
-                                                    &water, &e->environment),
-                        "Tick actual water virtual", 81))
+    const mc_entity_status water_status =
+        execution == NULL ? mc_entity_environment_water(entity, classes,
+                                                        limits == NULL ? NULL : &limits->material,
+                                                        &water, &e->environment)
+                          : mc_entity_environment_water_held_in_execution(
+                                entity, classes, execution,
+                                limits == NULL ? NULL : &limits->material, &water, &e->environment);
+    if (!mc_tick_effect(e, water_status, "Tick actual water virtual", 81))
         return false;
     if (water) {
-        if (!entity->base.bx && !entity->base.private_c && !splash(entity, classes, e))
+        if (!entity->base.bx && !entity->base.private_c && !splash(entity, classes, e, execution))
             return false;
         entity->base.bk = 0.0f;
         entity->base.bx = true;
@@ -237,11 +268,14 @@ static bool base_body(mc_entity *entity, mc_registry_classes *classes, mc_math_c
     }
     bool lava;
     base_at(e, 516);
-    if (!mc_tick_effect(e,
-                        mc_entity_environment_lava(entity, classes,
-                                                   limits == NULL ? NULL : &limits->material, &lava,
-                                                   &e->environment),
-                        "Tick actual lava virtual", 516))
+    const mc_entity_status lava_status =
+        execution == NULL
+            ? mc_entity_environment_lava(entity, classes, limits == NULL ? NULL : &limits->material,
+                                         &lava, &e->environment)
+            : mc_entity_environment_lava_held_in_execution(
+                  entity, classes, execution, limits == NULL ? NULL : &limits->material, &lava,
+                  &e->environment);
+    if (!mc_tick_effect(e, lava_status, "Tick actual lava virtual", 516))
         return false;
     if (lava) {
         base_at(e, 523);
@@ -491,7 +525,7 @@ static bool living_body(mc_entity *entity, mc_registry_classes *classes, mc_math
         return mc_tick_fail(e, MC_ENTITY_STATE_ERROR, "Living tick represented embedded fields", 0);
     fields->W = fields->X;
     living_at(e, 9);
-    if (!base_body(entity, classes, math, limits, e))
+    if (!base_body(entity, classes, math, limits, e, NULL))
         return false;
     living_at(e, 19);
     if (entity->random == NULL)
@@ -608,7 +642,7 @@ static mc_entity_status run(mc_entity *entity, mc_registry_classes *classes, mc_
         if (living)
             (void)living_body(entity, classes, math, limits, &frame, NULL);
         else
-            (void)base_body(entity, classes, math, limits, &frame);
+            (void)base_body(entity, classes, math, limits, &frame, NULL);
         mc_entity_release(entity);
     }
     return mc_tick_finish(&frame, out);
@@ -647,12 +681,29 @@ bool mc_tick_item_base_body(mc_entity *entity, mc_registry_classes *classes,
                             const mc_entity_tick_limits *limits, mc_entity_tick_error *error) {
     error->max_particle_work =
         limits == NULL ? MC_ENTITY_TICK_DEFAULT_PARTICLE_WORK : limits->max_particle_work;
-    return base_body(entity, classes, NULL, limits, error);
+    return base_body(entity, classes, NULL, limits, error, NULL);
+}
+
+bool mc_tick_arrow_base_body(mc_entity *entity, mc_registry_classes *classes,
+                             mc_math_execution *execution, const mc_entity_tick_limits *limits,
+                             mc_entity_tick_error *error) {
+    if (!mc_entity_has_arrow(entity))
+        return mc_tick_fail(error, MC_ENTITY_STATE_ERROR, "Tick actual client Arrow base owner", 0);
+    if (entity->phase != MC_ENTITY_READY)
+        return mc_tick_fail(error, MC_ENTITY_INVALID_PHASE, "Tick READY Arrow base owner", 0);
+    if (entity->holds == 0)
+        return mc_tick_fail(error, MC_ENTITY_STATE_ERROR, "Tick held Arrow base owner", 0);
+    if (execution == NULL)
+        return mc_tick_fail(error, MC_ENTITY_INVALID_ARGUMENT,
+                            "Tick Arrow private Math execution storage", 0);
+    error->max_particle_work =
+        limits == NULL ? MC_ENTITY_TICK_DEFAULT_PARTICLE_WORK : limits->max_particle_work;
+    return base_body(entity, classes, NULL, limits, error, execution);
 }
 
 bool mc_tick_base_body_entered(mc_entity *entity, mc_registry_classes *classes,
                                const mc_entity_tick_limits *limits, mc_entity_tick_error *error) {
-    return base_body(entity, classes, NULL, limits, error);
+    return base_body(entity, classes, NULL, limits, error, NULL);
 }
 
 bool mc_entity_mob_environment_entered(mc_mob_tick_scope *scope, mc_entity_tick_error *error) {

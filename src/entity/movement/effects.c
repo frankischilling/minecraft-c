@@ -75,7 +75,7 @@ static mc_entity_status fail(mc_entity_effect_error *error, mc_entity_status sta
     return status;
 }
 
-static bool enter(mc_entity *entity, mc_entity_effect_error *error) {
+static bool enter_domain(mc_entity *entity, mc_entity_effect_error *error, bool inherited_arrow) {
     if (entity == NULL) {
         fail(error, MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_EFFECT_CAUSE_OWNER,
              "Entity effect receiver", 0);
@@ -93,6 +93,7 @@ static bool enter(mc_entity *entity, mc_entity_effect_error *error) {
     }
     if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
         !mc_entity_has_moving_particle(entity) &&
+        !(inherited_arrow && mc_entity_has_arrow(entity)) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
         !(mc_entity_has_mob(entity) && mc_entity_is_kind(entity, entity->class_literal->kind))) {
@@ -107,6 +108,14 @@ static bool enter(mc_entity *entity, mc_entity_effect_error *error) {
         return false;
     }
     return true;
+}
+
+static bool enter(mc_entity *entity, mc_entity_effect_error *error) {
+    return enter_domain(entity, error, false);
+}
+
+static bool enter_arrow_base(mc_entity *entity, mc_entity_effect_error *error) {
+    return enter_domain(entity, error, true);
 }
 
 static mc_entity_status finish(mc_entity_effect_error *frame, mc_entity_effect_error *error) {
@@ -225,7 +234,7 @@ mc_entity_status mc_entity_effect_watcher_byte(mc_entity *entity, int32_t index,
     if (out == NULL)
         fail(&frame, MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_EFFECT_CAUSE_OWNER,
              "Watcher Byte output", 0);
-    else if (enter(entity, &frame)) {
+    else if (enter_arrow_base(entity, &frame)) {
         int8_t value;
         if (mc_entity_effect_watcher_byte_entered(entity, index, &value, &frame))
             *out = value;
@@ -663,7 +672,7 @@ static bool dead(mc_entity *entity, mc_entity_effect_error *error) {
 mc_entity_status mc_entity_effect_attacked(mc_entity *entity, mc_entity_effect_error *error) {
     mc_entity_effect_error frame;
     mc_entity_effect_error_init(&frame);
-    if (enter(entity, &frame)) {
+    if (enter_arrow_base(entity, &frame)) {
         mc_entity_effect_attacked_entered(entity);
         mc_entity_release(entity);
     }
@@ -676,7 +685,7 @@ mc_entity_status mc_entity_effect_dead_with_context(mc_entity *entity,
                                                     mc_entity_effect_error *error) {
     mc_entity_effect_error frame;
     mc_entity_effect_error_init(&frame);
-    if (enter(entity, &frame)) {
+    if (enter_arrow_base(entity, &frame)) {
         (void)dead_in_context(entity, registry, math, &frame);
         mc_entity_release(entity);
     }
@@ -839,7 +848,7 @@ mc_entity_status mc_entity_effect_damage_with_math(mc_entity *entity, mc_registr
     if (out == NULL)
         fail(&frame, MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_EFFECT_CAUSE_OWNER,
              "Entity damage output", 0);
-    else if (enter(entity, &frame)) {
+    else if (enter_arrow_base(entity, &frame)) {
         (void)damage(entity, classes, math, source, amount, out, &frame);
         mc_entity_release(entity);
     }

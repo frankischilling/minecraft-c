@@ -1,5 +1,39 @@
 # Test scope and reproduction
 
+## Arrow inherited base and lazy Math
+
+The [base component](entity/arrow-base.md) reuses the actual inherited body and
+material scanners. A private execution context activates and retains Math only
+at a reached IN use. It adds no complete SL flight or World-tick dispatch.
+
+Both hosts pass **136 total Arrow base fixture checks** in five groups and
+**32 Math execution ownership checks**. The expanded water control completes
+a genuine air base call before entering water, then observes one sound,
+eleven bubbles and eleven splashes through a real native WorldAccess adapter.
+It checks every callback's raw arguments and Random position, 57 own draws,
+unchanged World Random, 22 particle iterations and the final water stores.
+Native FP controls separately cover cold FD4 array publication, hot scanner
+refusal and the earlier full-base bounds13 refusal with Math still COLD.
+Null Registry/World ordering, fire/lava/void, particle limits, null sound,
+unused retirement, sticky failure and checked owner release are also covered.
+
+The exact frozen selection passes **Windows 57/57 in 67.50 seconds** and
+**Linux 55/55 in 66.32 seconds**, without skips. Linux uses Clang Debug with
+ASan/UBSan, leak detection and halt-on-error. Both focused builds and GCC syntax
+checks over six changed C units pass. Exact clang-format 18.1.3 checks all 2,261
+C source/header/fragment files; after the final declaration fixes, the sole changed C fixture passes
+again and the other 2,260 stay byte-identical. The unchanged public diagnostic
+size guards compile and execute. All 5,802 declared files, six admission tables
+and 20 changed inputs match before and through terminal results. Only later
+documentation and its admission records change after execution.
+
+The initial Linux build exposed a missing private Registry definition include.
+The expanded fixture's first GCC pass then exposed a signed cursor snapshot
+and a shadowed cleanup variable. Both failed attempts remain retained; the
+fixes preserve the assertions and are included in the final successful runs.
+No new original JVM, visible game, returned frame or FPS measurement ran.
+The broader local suites below retain their earlier source scopes.
+
 ## Arrow inherited collision boxes
 
 Genuine held READY client Arrows now execute inherited literal-null candidate

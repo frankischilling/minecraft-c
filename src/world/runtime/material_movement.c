@@ -324,17 +324,59 @@ static bool accelerate_block(mc_world_runtime *w, const mc_block *b, int32_t x, 
     return true;
 }
 
+static bool floor_ready(mc_math_execution *execution, int kind, unsigned int pc,
+                        mc_world_material_movement_error *e) {
+    if (execution == NULL)
+        return true;
+    /* The new context is selected by the client Arrow's two actual material
+     * invocations; legacy/server and contains-liquid callers pass NULL. */
+    e->bytecode = pc;
+    const mc_math_class_status status = mc_math_execution_require(
+        execution,
+        (mc_math_execution_site){"fd", "a", kind == 2 ? "(Leq;Lln;Lsn;)Z" : "(Leq;Lln;)Z", (int)pc},
+        "b", "(D)I");
+    if (status == MC_MATH_CLASS_OK)
+        return true;
+    const mc_math_class_error *child = mc_math_execution_cause(execution);
+    return fail(e,
+                status == MC_MATH_CLASS_LIMIT               ? MC_WORLD_STORAGE_LIMIT
+                : status == MC_MATH_CLASS_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+                : status == MC_MATH_CLASS_BUSY              ? MC_WORLD_STORAGE_BUSY
+                                                            : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                child->operation);
+}
+
 static bool execute(mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m,
-                    mc_entity *entity, int kind, bool *out, mc_world_material_movement_error *e) {
+                    mc_entity *entity, int kind, bool *out, mc_world_material_movement_error *e,
+                    mc_math_execution *execution) {
     e->bytecode = 1;
     if (b == NULL)
         return fail(e, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Material scan bounds receiver");
     e->bytecode = 4;
-    if (!floating(e))
+    const double min_x = b->min_x; /* Actual FD getfield1 precedes active IN use4. */
+    if (!floor_ready(execution, kind, 4, e) || !floating(e))
         return false;
-    int32_t lx = mc_math_floor_double(b->min_x), hx = mc_math_floor_double(b->max_x + 1.0);
-    int32_t ly = mc_math_floor_double(b->min_y), hy = mc_math_floor_double(b->max_y + 1.0);
-    int32_t lz = mc_math_floor_double(b->min_z), hz = mc_math_floor_double(b->max_z + 1.0);
+    int32_t lx = mc_math_floor_double(min_x);
+    const double max_x = b->max_x + 1.0;
+    if (!floor_ready(execution, kind, kind == 2 ? 15u : 14u, e))
+        return false;
+    int32_t hx = mc_math_floor_double(max_x);
+    const double min_y = b->min_y;
+    if (!floor_ready(execution, kind, kind == 2 ? 24u : 23u, e))
+        return false;
+    int32_t ly = mc_math_floor_double(min_y);
+    const double max_y = b->max_y + 1.0;
+    if (!floor_ready(execution, kind, kind == 2 ? 35u : 34u, e))
+        return false;
+    int32_t hy = mc_math_floor_double(max_y);
+    const double min_z = b->min_z;
+    if (!floor_ready(execution, kind, kind == 2 ? 44u : 43u, e))
+        return false;
+    int32_t lz = mc_math_floor_double(min_z);
+    const double max_z = b->max_z + 1.0;
+    if (!floor_ready(execution, kind, kind == 2 ? 55u : 54u, e))
+        return false;
+    int32_t hz = mc_math_floor_double(max_z);
     if (kind == 1) {
         if (b->min_x < 0.0)
             lx = mc_java_i32_sub(lx, 1);
@@ -448,7 +490,8 @@ leave:
 static mc_world_storage_status run(mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m,
                                    mc_entity *entity, int kind,
                                    const mc_world_material_movement_limits *limits, bool *out,
-                                   mc_world_material_movement_error *error) {
+                                   mc_world_material_movement_error *error,
+                                   mc_math_execution *execution) {
     mc_world_material_movement_error e;
     mc_world_material_movement_error_init(&e);
     e.max_cell_work =
@@ -463,7 +506,7 @@ static mc_world_storage_status run(mc_world_runtime *w, const mc_entity_bounds *
         cause(&e, e.cause);
     else {
         entered = true;
-        (void)execute(w, b, m, entity, kind, out, &e);
+        (void)execute(w, b, m, entity, kind, out, &e, execution);
     }
     if (entered) {
         if (e.status != MC_WORLD_STORAGE_OK)
@@ -485,7 +528,7 @@ mc_world_storage_status
 mc_world_runtime_contains_material(mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m,
                                    const mc_world_material_movement_limits *l, bool *out,
                                    mc_world_material_movement_error *e) {
-    return run(w, b, m, NULL, 0, l, out, e);
+    return run(w, b, m, NULL, 0, l, out, e, NULL);
 }
 
 mc_world_storage_status mc_world_runtime_contains_liquid(mc_world_runtime *w,
@@ -493,12 +536,26 @@ mc_world_storage_status mc_world_runtime_contains_liquid(mc_world_runtime *w,
                                                          const mc_world_material_movement_limits *l,
                                                          bool *out,
                                                          mc_world_material_movement_error *e) {
-    return run(w, b, NULL, NULL, 1, l, out, e);
+    return run(w, b, NULL, NULL, 1, l, out, e, NULL);
 }
 
 mc_world_storage_status
 mc_world_runtime_material_accelerate(mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m,
                                      mc_entity *entity, const mc_world_material_movement_limits *l,
                                      bool *out, mc_world_material_movement_error *e) {
-    return run(w, b, m, entity, 2, l, out, e);
+    return run(w, b, m, entity, 2, l, out, e, NULL);
+}
+
+mc_world_storage_status mc_world_runtime_material_accelerate_in_execution(
+    mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m, mc_entity *entity,
+    const mc_world_material_movement_limits *limits, bool *out,
+    mc_world_material_movement_error *error, mc_math_execution *execution) {
+    return run(w, b, m, entity, 2, limits, out, error, execution);
+}
+
+mc_world_storage_status mc_world_runtime_contains_material_in_execution(
+    mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m,
+    const mc_world_material_movement_limits *limits, bool *out,
+    mc_world_material_movement_error *error, mc_math_execution *execution) {
+    return run(w, b, m, NULL, 0, limits, out, error, execution);
 }

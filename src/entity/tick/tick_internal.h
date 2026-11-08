@@ -5,6 +5,7 @@
 #include "../../world/runtime/runtime_internal.h"
 #include "../living/fields_internal.h"
 #include "../mob/internal.h"
+#include "../movement/environment_internal.h"
 #include "../player/player_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
@@ -45,6 +46,14 @@ bool mc_tick_base_body_entered(mc_entity *, mc_registry_classes *, const mc_enti
 /* Held canonical Item caller only; no public Player admission is widened. */
 bool mc_tick_item_base_body(mc_entity *, mc_registry_classes *, const mc_entity_tick_limits *,
                             mc_entity_tick_error *);
+/* Selected held READY canonical client Arrow caller only. The caller owns
+ * the same Entity/Registry/World graph and fresh disjoint initialized error;
+ * no new hold, wrapper tick or public LocalPlayer admission is added. The
+ * particle ceiling is initialized for this actual SN.U invocation. The required
+ * private execution storage owns reached Math use independently of this error;
+ * its declared Math may be NULL until an actual IN invocation. */
+bool mc_tick_arrow_base_body(mc_entity *, mc_registry_classes *, mc_math_execution *,
+                             const mc_entity_tick_limits *, mc_entity_tick_error *);
 
 static inline float mc_tick_fadd(float a, float b) {
     return _mm_cvtss_f32(_mm_add_ss(_mm_set_ss(a), _mm_set_ss(b)));
