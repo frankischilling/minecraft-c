@@ -10,10 +10,12 @@
 #include "../../storage/objects_internal.h"
 #include "../chunk_provider_internal.h"
 #include "../construction_internal.h"
+#include "../execution_children_internal.h"
 #include "../mutation/mutation_internal.h"
 #include "../runtime_internal.h"
 #include "../terminal_inventory_internal.h"
 #include "../world_access_internal.h"
+#include "execution_internal.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/entities.h"
 #include "piston_list_internal.h"
@@ -91,6 +93,8 @@ struct mc_tile_entity_classes {
 };
 
 struct tile_entity_import_context;
+static mc_world_storage_status live_fail(mc_live_tile_entity_error *, mc_world_storage_status,
+                                         const char *);
 static mc_registry_error live_empty_registry(void);
 static mc_world_storage_status live_tile_entity_error(mc_live_tile_entity_error *,
                                                       mc_tile_entity_status, const char *);
@@ -743,30 +747,99 @@ mc_tile_entity_status mc_tile_entity_set_invalid(mc_tile_entity *tile_entity, bo
     return status;
 }
 
-mc_tile_entity_status mc_tile_entity_dirty_detailed(mc_tile_entity *tile_entity,
-                                                    mc_live_tile_entity_error *error) {
+static mc_tile_entity_status component_dirty_owner_failure(mc_live_tile_entity_error *error,
+                                                           mc_world_runtime_execution_result *owned,
+                                                           mc_world_storage_status status,
+                                                           const char *operation,
+                                                           mc_entity_tick_execution_site site) {
+    mc_world_runtime_execution_result_note(owned, status, operation, site);
+    if (error != NULL) {
+        live_fail(error, status, operation);
+        error->tile_entity.status = MC_TILE_ENTITY_WORLD_FAILED;
+    }
+    return MC_TILE_ENTITY_WORLD_FAILED;
+}
+
+static mc_tile_entity_status component_dirty_run(mc_tile_entity *tile_entity,
+                                                 mc_live_tile_entity_error *error,
+                                                 mc_entity_tick_execution *execution,
+                                                 mc_world_runtime_execution_code code,
+                                                 mc_entity_tick_execution_site receiver_site,
+                                                 mc_world_runtime_execution_result *owned) {
     if (error != NULL)
         mc_live_tile_entities_error_init(error);
+    if (execution != NULL &&
+        (execution->identity != execution || execution->phase != MC_ENTITY_TICK_EXECUTION_OPEN))
+        return component_dirty_owner_failure(
+            error, owned,
+            execution->identity != execution ? MC_WORLD_STORAGE_INVALID_ARGUMENT
+                                             : MC_WORLD_STORAGE_BUSY,
+            "TileEntity dirty execution owner admission", receiver_site);
     const mc_tile_entity_status status = tile_entity_ready(tile_entity);
     if (status != MC_TILE_ENTITY_OK) {
         if (error != NULL)
             live_tile_entity_error(error, status, "TileEntity dirty receiver phase");
         return status;
     }
-    mc_world_runtime *world = tile_entity->world;
-    if (world == NULL) {
+    if (tile_entity->world == NULL) /* actual d1 / null branch4 */
         return MC_TILE_ENTITY_OK;
+    mc_world_runtime *world = tile_entity->world; /* fresh actual receiver d8 */
+    mc_entity_tick_execution_world_token token = {0};
+    if (execution != NULL) {
+        const mc_world_storage_status pushed =
+            mc_entity_tick_execution_push_world(execution, world, receiver_site, &token);
+        if (pushed != MC_WORLD_STORAGE_OK)
+            return component_dirty_owner_failure(
+                error, owned, pushed, "TileEntity dirty evaluated World ownership", receiver_site);
     }
-    const int32_t x = tile_entity->x;
-    const int32_t y = tile_entity->y;
-    const int32_t z = tile_entity->z;
+    const int32_t x = tile_entity->x; /*12*/
+    const int32_t y = tile_entity->y; /*16*/
+    const int32_t z = tile_entity->z; /*20*/
     const mc_world_storage_status dirty =
-        mc_world_runtime_tile_entity_dirty_detailed(world, x, y, z, tile_entity, error);
+        execution == NULL
+            ? mc_world_runtime_tile_entity_dirty_detailed(world, x, y, z, tile_entity, error)
+            : mc_world_runtime_tile_entity_dirty_in_execution(execution, world, code, x, y, z,
+                                                              tile_entity, error, owned);
     if (dirty != MC_WORLD_STORAGE_OK && error != NULL) {
-        error->tile_entity_bytecode = 24; /* ow.y_/jh.i -> actual World dirty invocation */
+        error->tile_entity_bytecode = 24;
         error->tile_entity.status = MC_TILE_ENTITY_WORLD_FAILED;
     }
+    if (execution != NULL) {
+        const mc_world_storage_status closed =
+            mc_entity_tick_execution_pop_world(execution, &token, dirty != MC_WORLD_STORAGE_OK);
+        if (closed != MC_WORLD_STORAGE_OK) {
+            mc_world_runtime_execution_result_note(
+                owned, closed, "TileEntity dirty owned scope cleanup", receiver_site);
+            if (dirty == MC_WORLD_STORAGE_OK)
+                return component_dirty_owner_failure(
+                    error, owned, closed, "TileEntity dirty owned scope cleanup", receiver_site);
+        }
+    }
     return dirty == MC_WORLD_STORAGE_OK ? MC_TILE_ENTITY_OK : MC_TILE_ENTITY_WORLD_FAILED;
+}
+
+mc_tile_entity_status mc_tile_entity_dirty_detailed(mc_tile_entity *tile_entity,
+                                                    mc_live_tile_entity_error *error) {
+    return component_dirty_run(tile_entity, error, NULL, (mc_world_runtime_execution_code){0},
+                               (mc_entity_tick_execution_site){NULL, NULL, NULL, -1}, NULL);
+}
+
+mc_tile_entity_status mc_tile_entity_dirty_in_execution(mc_entity_tick_execution *execution,
+                                                        mc_tile_entity *tile_entity,
+                                                        mc_world_runtime_execution_code code,
+                                                        mc_entity_tick_execution_site receiver_site,
+                                                        mc_live_tile_entity_error *error,
+                                                        mc_world_runtime_execution_result *owned) {
+    if (owned != NULL)
+        mc_world_runtime_execution_result_init(owned);
+    if (execution == NULL || owned == NULL) {
+        if (error != NULL)
+            mc_live_tile_entities_error_init(error);
+        return component_dirty_owner_failure(error, owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                             "TileEntity dirty execution/result required",
+                                             receiver_site);
+    }
+    return component_dirty_run(tile_entity, error, execution, code, receiver_site, owned);
 }
 
 mc_tile_entity_status mc_tile_entity_dirty(mc_tile_entity *tile_entity) {
@@ -3621,7 +3694,9 @@ static bool live_chunk_block(mc_world_chunk *chunk, int32_t x, int32_t y, int32_
 }
 
 static bool live_acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk_state **out,
-                         mc_live_tile_entity_error *error) {
+                         mc_live_tile_entity_error *error, mc_entity_tick_execution *execution,
+                         mc_world_runtime_execution_code code,
+                         mc_world_runtime_execution_result *owned) {
     /* Actual World.c reads v1 before provider.b6, including cached hits. */
     if (world->fields.v == NULL) {
         error->provider_bytecode = 6;
@@ -3644,9 +3719,33 @@ static bool live_acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk
         return false;
     }
     mc_world_runtime_acquisition_error acquired;
-    mc_chunk_acquire_status status = mc_world_runtime_get_detailed(world, x, z, out, &acquired);
-    if (status == MC_CHUNK_ACQUIRE_OK)
+    /* ONE actual same-kernel call. The required result is written/selected
+     * while its complete current frame/held World still exist, BEFORE the
+     * public TileEntity projection below can discard source_chunk. No ambient
+     * last_error query, synthesized frame or after-failure getter is used. */
+    const mc_chunk_acquire_status status =
+        execution == NULL ? mc_world_runtime_get_detailed(world, x, z, out, &acquired)
+                          : mc_world_runtime_get_in_execution(execution, world, code, x, z, out,
+                                                              &acquired, owned);
+    if (status == MC_CHUNK_ACQUIRE_OK) {
+        if (execution != NULL) {
+            bool pending = owned->root_pending;
+            for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+                pending |= owned->pending[i].used;
+            if (pending && owned->ownership_status == MC_WORLD_STORAGE_OK)
+                mc_world_runtime_execution_result_note(
+                    owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                    "TileEntity returned get has pending ownership", execution->site);
+        }
+        if (execution != NULL && owned->ownership_status != MC_WORLD_STORAGE_OK) {
+            live_fail(error, owned->ownership_status, "TileEntity acquisition owned completion");
+            return false; /* Real get returned, but no further Source work is lawful. */
+        }
+        if (execution != NULL)
+            owned->selection_ready =
+                false; /* Completed success/NONE is not a failed later child. */
         return true;
+    }
     if (acquired.tile_entity.status != MC_WORLD_STORAGE_OK) {
         const mc_live_tile_entity_call_frame caller = {
             .bytecode = error->bytecode,
@@ -3695,9 +3794,42 @@ static bool live_lease(mc_world_runtime *world, mc_chunk_state *state, mc_world_
     return true;
 }
 
+/* Native stack VALUE only, never an owner/Source class stamp. Caller keeps
+ * actual defining Registry/factory classes alive through all partial prefixes.
+ * No member is looked up from mutable Chunk.d or an error/World side field. */
+typedef struct live_query_execution {
+    mc_entity_tick_execution *execution;
+    mc_world_runtime
+        *caller_world; /* Held actual entered lookup receiver; native diagnostics only. */
+    mc_world_runtime_execution_code code;
+    mc_registry_classes *registry;
+    mc_world_runtime_classes *factory_classes;
+    mc_entity_tick_execution_site receiver_site;
+    mc_world_runtime_execution_result *owned;
+} live_query_execution;
+
+static bool live_query_close(const live_query_execution *query,
+                             const mc_entity_tick_execution_world_token *token,
+                             bool source_completed, mc_live_tile_entity_error *error) {
+    if (query == NULL)
+        return source_completed;
+    const mc_world_storage_status closed =
+        mc_entity_tick_execution_pop_world(query->execution, token, !source_completed);
+    if (closed != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(query->owned, closed,
+                                               "TileEntity lazy Block owned scope cleanup",
+                                               query->receiver_site);
+        if (source_completed)
+            live_fail(error, closed, "TileEntity lazy Block owned scope cleanup");
+        return false;
+    }
+    return source_completed;
+}
+
 static bool live_chunk_install_held(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z,
                                     mc_tile_entity *tile_entity, size_t storage_ceiling,
-                                    mc_live_tile_entity_error *error) {
+                                    mc_live_tile_entity_error *error,
+                                    const live_query_execution *query) {
     /* Native map admission precedes the source receiver fields. */
     if (!mc_live_tile_entities_map_valid(chunk) ||
         (chunk->l->backing == NULL && chunk->l->release_backing != NULL)) {
@@ -3726,10 +3858,11 @@ static bool live_chunk_install_held(mc_world_chunk *chunk, int32_t x, int32_t y,
         error->chunk_bytecode = 65;
         mc_registry_block_m_view array;
         mc_registry_error cause = live_empty_registry();
-        if (mc_registry_block_m_get(mc_world_runtime_registry(chunk->d), &array, &cause) !=
-            MC_REGISTRY_OK) {
-            return live_registry_cause(chunk->d, error, &cause,
-                                       "TileEntity install Block.m active use");
+        if (mc_registry_block_m_get(
+                (query == NULL ? mc_world_runtime_registry(chunk->d) : query->registry), &array,
+                &cause) != MC_REGISTRY_OK) {
+            return live_registry_cause(query == NULL ? chunk->d : query->caller_world, error,
+                                       &cause, "TileEntity install Block.m active use");
         }
         error->chunk_bytecode = 72;
         if (!live_chunk_block(chunk, x, y, z, &block_id, error))
@@ -3737,8 +3870,8 @@ static bool live_chunk_install_held(mc_world_chunk *chunk, int32_t x, int32_t y,
         error->chunk_bytecode = 75;
         const mc_block *block = NULL;
         if (mc_registry_block_m_at(&array, block_id, &block, &cause) != MC_REGISTRY_OK) {
-            return live_registry_cause(chunk->d, error, &cause,
-                                       "TileEntity install captured Block.m element");
+            return live_registry_cause(query == NULL ? chunk->d : query->caller_world, error,
+                                       &cause, "TileEntity install captured Block.m element");
         }
         error->chunk_bytecode = 76;
         accepts = live_tile_entity_block_kind(block); /* instanceof accepts NULL. */
@@ -3769,7 +3902,8 @@ static bool live_chunk_install_held(mc_world_chunk *chunk, int32_t x, int32_t y,
 }
 
 static bool live_world_set_held(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
-                                mc_tile_entity *tile_entity, mc_live_tile_entity_error *error) {
+                                mc_tile_entity *tile_entity, mc_live_tile_entity_error *error,
+                                const live_query_execution *query) {
     error->bytecode = 2;
     if (tile_entity == NULL) {
         live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "TileEntity World invalid receiver");
@@ -3789,7 +3923,10 @@ static bool live_world_set_held(mc_world_runtime *world, int32_t x, int32_t y, i
         return false;
     error->bytecode = 67;
     mc_chunk_state *state = NULL;
-    if (!live_acquire(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &state, error))
+    if (!live_acquire(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &state, error,
+                      query == NULL ? NULL : query->execution,
+                      query == NULL ? (mc_world_runtime_execution_code){0} : query->code,
+                      query == NULL ? NULL : query->owned))
         return false;
     if (state == NULL || state->blank)
         return true; /* NULL skips; blank's local install is actual return0. */
@@ -3797,13 +3934,45 @@ static bool live_world_set_held(mc_world_runtime *world, int32_t x, int32_t y, i
     mc_world_chunk *chunk;
     if (!live_lease(world, state, &chunk, error))
         return false;
-    const bool completed = live_chunk_install_held(chunk, x & 15, y, z & 15, tile_entity, 0, error);
+    const bool completed =
+        live_chunk_install_held(chunk, x & 15, y, z & 15, tile_entity, 0, error, query);
     (void)mc_world_store_release_chunk(world->fields.w, state, NULL);
     return completed;
 }
 
+/* Share the actual ordinary entered World.set native admission/temp lifetime,
+ * using its caller's existing frame rather than another full error copy. */
+static bool live_world_set_call(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
+                                mc_tile_entity *tile_entity, mc_live_tile_entity_error *error,
+                                const live_query_execution *query, bool *publish_world) {
+    *publish_world = false;
+    if (!live_enter(world, error))
+        return false;
+    if (tile_entity != NULL && tile_entity->classes->parent != world->classes) {
+        live_fail(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "TileEntity application class owner");
+        mc_world_runtime_call_leave(world);
+        return false;
+    }
+    *publish_world = true;
+    bool retained = false;
+    if (tile_entity != NULL) {
+        const mc_tile_entity_status held = mc_tile_entity_retain(tile_entity);
+        if (held != MC_TILE_ENTITY_OK)
+            live_tile_entity_error(error, held, "TileEntity set temporary retain");
+        else
+            retained = true;
+    }
+    if (error->status == MC_WORLD_STORAGE_OK)
+        (void)live_world_set_held(world, x, y, z, tile_entity, error, query);
+    if (retained)
+        mc_tile_entity_release(tile_entity);
+    mc_world_runtime_call_leave(world);
+    return error->status == MC_WORLD_STORAGE_OK;
+}
+
 static bool live_block_added_held(mc_world_runtime *world, const mc_block *block, int32_t x,
-                                  int32_t y, int32_t z, mc_live_tile_entity_error *error) {
+                                  int32_t y, int32_t z, mc_live_tile_entity_error *error,
+                                  const live_query_execution *query) {
     error->bytecode = 6; /* Proved uu/na.c base body returns. */
     if (block == NULL) {
         live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "TileEntity Block added receiver");
@@ -3826,21 +3995,33 @@ static bool live_block_added_held(mc_world_runtime *world, const mc_block *block
     mc_tile_entity *tile_entity = NULL;
     mc_tile_entity_error detail;
     mc_tile_entity_error_init(&detail);
-    mc_tile_entity_status status = mc_tile_entity_allocate(world, kind, &tile_entity);
+    mc_tile_entity_status status =
+        query == NULL
+            ? mc_tile_entity_allocate(world, kind, &tile_entity)
+            : mc_tile_entity_allocate_in_classes(query->factory_classes, kind, &tile_entity);
     if (status == MC_TILE_ENTITY_OK)
         status = mc_tile_entity_construct_detailed(tile_entity, &detail);
     if (status != MC_TILE_ENTITY_OK) {
         error->tile_entity = detail;
         live_tile_entity_error(error, status, "TileEntity Block concrete constructor");
-        if (world->classes->tile_entities != NULL && world->classes->tile_entities->phase == 3) {
-            error->initializer_bytecode = world->classes->tile_entities->initializer_pc;
-            error->registry = world->classes->tile_entities->first_registry_failure;
+        mc_world_runtime_classes *parent = query == NULL ? world->classes : query->factory_classes;
+        if (parent != NULL && parent->tile_entities != NULL && parent->tile_entities->phase == 3) {
+            error->initializer_bytecode = parent->tile_entities->initializer_pc;
+            error->registry = parent->tile_entities->first_registry_failure;
         }
         mc_tile_entity_release(tile_entity);
         return false;
     }
     error->bytecode = 18;
-    const bool completed = live_world_set_held(world, x, y, z, tile_entity, error);
+    bool completed;
+    if (query == NULL)
+        completed = live_world_set_held(world, x, y, z, tile_entity, error, NULL);
+    else {
+        bool publish_world = false;
+        completed = live_world_set_call(world, x, y, z, tile_entity, error, query, &publish_world);
+        if (publish_world)
+            world->last_error = error->cause;
+    }
     if (!completed)
         error->caller_bytecode = 18;
     mc_tile_entity_release(tile_entity); /* Only factory's private temporary. */
@@ -3848,7 +4029,8 @@ static bool live_block_added_held(mc_world_runtime *world, const mc_block *block
 }
 
 static bool live_chunk_get_held(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z,
-                                mc_tile_entity **out, mc_live_tile_entity_error *error) {
+                                mc_tile_entity **out, mc_live_tile_entity_error *error,
+                                const live_query_execution *query) {
     error->chunk_bytecode = 18;
     if (!mc_live_tile_entities_map_valid(chunk) ||
         (chunk->l->backing == NULL && chunk->l->release_backing != NULL)) {
@@ -3865,16 +4047,17 @@ static bool live_chunk_get_held(mc_world_chunk *chunk, int32_t x, int32_t y, int
         error->chunk_bytecode = 42;
         mc_registry_block_p_view flags;
         mc_registry_error cause = live_empty_registry();
-        if (mc_registry_block_p_get(mc_world_runtime_registry(chunk->d), &flags, &cause) !=
-            MC_REGISTRY_OK) {
-            return live_registry_cause(chunk->d, error, &cause,
-                                       "TileEntity lookup Block.p active use");
+        if (mc_registry_block_p_get(
+                (query == NULL ? mc_world_runtime_registry(chunk->d) : query->registry), &flags,
+                &cause) != MC_REGISTRY_OK) {
+            return live_registry_cause(query == NULL ? chunk->d : query->caller_world, error,
+                                       &cause, "TileEntity lookup Block.p active use");
         }
         error->chunk_bytecode = 47;
         bool has_tile_entity;
         if (mc_registry_block_p_at(&flags, id, &has_tile_entity, &cause) != MC_REGISTRY_OK) {
-            return live_registry_cause(chunk->d, error, &cause,
-                                       "TileEntity lookup captured Block.p element");
+            return live_registry_cause(query == NULL ? chunk->d : query->caller_world, error,
+                                       &cause, "TileEntity lookup captured Block.p element");
         }
         if (!has_tile_entity) {
             *out = NULL;
@@ -3882,16 +4065,17 @@ static bool live_chunk_get_held(mc_world_chunk *chunk, int32_t x, int32_t y, int
         }
         error->chunk_bytecode = 53;
         mc_registry_block_m_view array;
-        if (mc_registry_block_m_get(mc_world_runtime_registry(chunk->d), &array, &cause) !=
-            MC_REGISTRY_OK) {
-            return live_registry_cause(chunk->d, error, &cause,
-                                       "TileEntity lookup Block.m active use");
+        if (mc_registry_block_m_get(
+                (query == NULL ? mc_world_runtime_registry(chunk->d) : query->registry), &array,
+                &cause) != MC_REGISTRY_OK) {
+            return live_registry_cause(query == NULL ? chunk->d : query->caller_world, error,
+                                       &cause, "TileEntity lookup Block.m active use");
         }
         error->chunk_bytecode = 58;
         const mc_block *block = NULL;
         if (mc_registry_block_m_at(&array, id, &block, &cause) != MC_REGISTRY_OK) {
-            return live_registry_cause(chunk->d, error, &cause,
-                                       "TileEntity lookup captured Block.m element");
+            return live_registry_cause(query == NULL ? chunk->d : query->caller_world, error,
+                                       &cause, "TileEntity lookup captured Block.m element");
         }
         error->chunk_bytecode = 59;
         if (block != NULL && !live_tile_entity_block_kind(block)) {
@@ -3899,15 +4083,31 @@ static bool live_chunk_get_held(mc_world_chunk *chunk, int32_t x, int32_t y, int
                       "TileEntity lookup Block TileEntity checkcast");
             return false;
         }
+        error->chunk_bytecode = 67;
+        mc_world_runtime *world = chunk->d;
+        mc_entity_tick_execution_world_token token = {0};
+        if (query != NULL) {
+            const mc_world_storage_status pushed = mc_entity_tick_execution_push_world(
+                query->execution, world, query->receiver_site, &token);
+            if (pushed != MC_WORLD_STORAGE_OK) {
+                mc_world_runtime_execution_result_note(
+                    query->owned, pushed, "TileEntity lazy Block evaluated World ownership",
+                    query->receiver_site);
+                live_fail(error, pushed, "TileEntity lazy Block evaluated World ownership");
+                return false;
+            }
+        }
         error->chunk_bytecode = 89;
         const int32_t wx = mc_java_i32_add(mc_java_i32_mul(chunk->constructor_x, 16), x);
         const int32_t wz = mc_java_i32_add(mc_java_i32_mul(chunk->constructor_z, 16), z);
         if (block == NULL) {
             live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "TileEntity lookup TileEntity-block invocation receiver");
-            return false; /* NULL passed checkcast59; callee base6 is NOT entered. */
+            return live_query_close(query, &token, false, error);
+            /* NULL passed checkcast59; callee base6 is NOT entered. */
         }
-        if (!live_block_added_held(chunk->d, block, wx, y, wz, error))
+        const bool called = live_block_added_held(world, block, wx, y, wz, error, query);
+        if (!live_query_close(query, &token, called, error))
             return false;
         error->chunk_bytecode = 98;
         if (!mc_live_tile_entities_map_valid(chunk)) {
@@ -3937,10 +4137,14 @@ static bool live_chunk_get_held(mc_world_chunk *chunk, int32_t x, int32_t y, int
 }
 
 static bool live_world_get_held(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
-                                mc_tile_entity **out, mc_live_tile_entity_error *error) {
+                                mc_tile_entity **out, mc_live_tile_entity_error *error,
+                                const live_query_execution *query) {
     error->bytecode = 7;
     mc_chunk_state *state = NULL;
-    if (!live_acquire(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &state, error))
+    if (!live_acquire(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &state, error,
+                      query == NULL ? NULL : query->execution,
+                      query == NULL ? (mc_world_runtime_execution_code){0} : query->code,
+                      query == NULL ? NULL : query->owned))
         return false;
     if (state == NULL || state->blank) {
         *out = NULL;
@@ -3950,7 +4154,7 @@ static bool live_world_get_held(mc_world_runtime *world, int32_t x, int32_t y, i
     mc_world_chunk *chunk;
     if (!live_lease(world, state, &chunk, error))
         return false;
-    const bool completed = live_chunk_get_held(chunk, x & 15, y, z & 15, out, error);
+    const bool completed = live_chunk_get_held(chunk, x & 15, y, z & 15, out, error, query);
     (void)mc_world_store_release_chunk(world->fields.w, state, NULL);
     return completed;
 }
@@ -3974,22 +4178,65 @@ static bool live_chunk_remove_held(mc_world_chunk *chunk, int32_t x, int32_t y, 
     return true;
 }
 
-mc_world_storage_status mc_live_tile_entities_get(mc_world_runtime *world, int32_t x, int32_t y,
+static mc_world_storage_status live_world_get_run(mc_world_runtime *world, int32_t x, int32_t y,
                                                   int32_t z, mc_tile_entity **out,
-                                                  mc_live_tile_entity_error *error) {
+                                                  mc_live_tile_entity_error *error,
+                                                  const live_query_execution *query) {
     mc_live_tile_entity_error frame;
     mc_live_tile_entities_error_init(&frame);
     if (out == NULL) {
         live_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "TileEntity lookup output");
         return live_finish(NULL, frame, error);
     }
+    if (query != NULL) {
+        mc_world_access_failure_lease *unused_lease = NULL;
+        const mc_world_storage_status admission =
+            mc_world_execution_child_lease(query->execution, world, &unused_lease);
+        if (admission != MC_WORLD_STORAGE_OK) {
+            mc_world_runtime_execution_result_note(query->owned, admission,
+                                                   "TileEntity lookup evaluated World ownership",
+                                                   query->receiver_site);
+            live_fail(&frame, admission, "TileEntity lookup evaluated World ownership");
+            return live_finish(NULL, frame, error);
+        }
+    }
     if (!live_enter(world, &frame))
         return live_finish(NULL, frame, error);
     mc_tile_entity *tile_entity = NULL;
-    if (live_world_get_held(world, x, y, z, &tile_entity, &frame))
+    if (live_world_get_held(world, x, y, z, &tile_entity, &frame, query))
         *out = tile_entity;
     mc_world_runtime_call_leave(world);
     return live_finish(world, frame, error);
+}
+
+mc_world_storage_status mc_live_tile_entities_get(mc_world_runtime *world, int32_t x, int32_t y,
+                                                  int32_t z, mc_tile_entity **out,
+                                                  mc_live_tile_entity_error *error) {
+    return live_world_get_run(world, x, y, z, out, error, NULL);
+}
+
+mc_world_storage_status mc_live_tile_entities_get_in_execution(
+    mc_entity_tick_execution *execution, mc_world_runtime *world,
+    mc_world_runtime_execution_code code, mc_registry_classes *defining_registry,
+    mc_world_runtime_classes *factory_classes, mc_entity_tick_execution_site receiver_site,
+    int32_t x, int32_t y, int32_t z, mc_tile_entity **out, mc_live_tile_entity_error *error,
+    mc_world_runtime_execution_result *owned) {
+    if (owned != NULL)
+        mc_world_runtime_execution_result_init(owned);
+    if (execution == NULL || owned == NULL) {
+        if (error != NULL) {
+            mc_live_tile_entities_error_init(error);
+            live_fail(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                      "TileEntity lookup execution/result required");
+        }
+        mc_world_runtime_execution_result_note(owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "TileEntity lookup execution/result required",
+                                               receiver_site);
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    }
+    const live_query_execution query = {execution,       world,         code, defining_registry,
+                                        factory_classes, receiver_site, owned};
+    return live_world_get_run(world, x, y, z, out, error, &query);
 }
 
 mc_world_storage_status mc_live_tile_entities_set(mc_world_runtime *world, int32_t x, int32_t y,
@@ -3997,27 +4244,9 @@ mc_world_storage_status mc_live_tile_entities_set(mc_world_runtime *world, int32
                                                   mc_live_tile_entity_error *error) {
     mc_live_tile_entity_error frame;
     mc_live_tile_entities_error_init(&frame);
-    if (!live_enter(world, &frame))
-        return live_finish(NULL, frame, error);
-    if (tile_entity != NULL && tile_entity->classes->parent != world->classes) {
-        live_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "TileEntity application class owner");
-        mc_world_runtime_call_leave(world);
-        return live_finish(NULL, frame, error);
-    }
-    bool retained = false;
-    if (tile_entity != NULL) {
-        mc_tile_entity_status held = mc_tile_entity_retain(tile_entity);
-        if (held != MC_TILE_ENTITY_OK)
-            live_tile_entity_error(&frame, held, "TileEntity set temporary retain");
-        else
-            retained = true;
-    }
-    if (frame.status == MC_WORLD_STORAGE_OK)
-        (void)live_world_set_held(world, x, y, z, tile_entity, &frame);
-    if (retained)
-        mc_tile_entity_release(tile_entity);
-    mc_world_runtime_call_leave(world);
-    return live_finish(world, frame, error);
+    bool publish_world = false;
+    (void)live_world_set_call(world, x, y, z, tile_entity, &frame, NULL, &publish_world);
+    return live_finish(publish_world ? world : NULL, frame, error);
 }
 
 mc_world_storage_status mc_live_tile_entities_remove(mc_world_runtime *world, int32_t x, int32_t y,
@@ -4029,7 +4258,7 @@ mc_world_storage_status mc_live_tile_entities_remove(mc_world_runtime *world, in
     mc_tile_entity *tile_entity = NULL;
     frame.bytecode = 4;
     frame.remove_bytecode = 4;
-    if (live_world_get_held(world, x, y, z, &tile_entity, &frame)) {
+    if (live_world_get_held(world, x, y, z, &tile_entity, &frame, NULL)) {
         if (tile_entity != NULL && world->fields.L) {
             frame.bytecode = 23;
             frame.remove_bytecode = 23;
@@ -4044,7 +4273,7 @@ mc_world_storage_status mc_live_tile_entities_remove(mc_world_runtime *world, in
                 frame.remove_bytecode = 53;
                 mc_chunk_state *state = NULL;
                 if (live_acquire(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &state,
-                                 &frame) &&
+                                 &frame, NULL, (mc_world_runtime_execution_code){0}, NULL) &&
                     state != NULL && !state->blank) {
                     frame.bytecode = 74;
                     frame.remove_bytecode = 74;
@@ -4070,7 +4299,7 @@ mc_world_storage_status mc_live_tile_entities_block_added(mc_world_runtime *worl
     mc_live_tile_entities_error_init(&frame);
     if (!live_enter(world, &frame))
         return live_finish(NULL, frame, error);
-    (void)live_block_added_held(world, block, x, y, z, &frame);
+    (void)live_block_added_held(world, block, x, y, z, &frame, NULL);
     mc_world_runtime_call_leave(world);
     return live_finish(world, frame, error);
 }
@@ -4167,7 +4396,8 @@ static bool live_list_add_map(mc_world_runtime *world, bool deferred, mc_world_c
 }
 
 static bool live_chunk_entry(mc_world_chunk *chunk, mc_world_runtime **world,
-                             mc_live_tile_entity_error *error) {
+                             mc_live_tile_entity_error *error, mc_world_runtime *evaluated_world,
+                             bool evaluated) {
     if (chunk == NULL) {
         live_fail(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "TileEntity Chunk receiver");
         return false;
@@ -4176,7 +4406,7 @@ static bool live_chunk_entry(mc_world_chunk *chunk, mc_world_runtime **world,
         live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "TileEntity Chunk source is disabled");
         return false;
     }
-    *world = chunk->d;
+    *world = evaluated ? evaluated_world : chunk->d;
     if (!live_enter(*world, error))
         return false;
     mc_world_chunk *leased;
@@ -4209,10 +4439,10 @@ mc_world_storage_status mc_live_tile_entities_chunk_get(mc_world_chunk *chunk, i
         return live_finish(NULL, frame, error);
     }
     mc_world_runtime *world;
-    if (!live_chunk_entry(chunk, &world, &frame))
+    if (!live_chunk_entry(chunk, &world, &frame, NULL, false))
         return live_finish(NULL, frame, error);
     mc_tile_entity *value = NULL;
-    if (live_chunk_get_held(chunk, x, y, z, &value, &frame))
+    if (live_chunk_get_held(chunk, x, y, z, &value, &frame, NULL))
         *out = value;
     return live_chunk_finish(chunk, frame, error);
 }
@@ -4223,7 +4453,7 @@ mc_world_storage_status mc_live_tile_entities_chunk_import(mc_world_chunk *chunk
     mc_live_tile_entity_error frame;
     mc_live_tile_entities_error_init(&frame);
     mc_world_runtime *world;
-    if (!live_chunk_entry(chunk, &world, &frame))
+    if (!live_chunk_entry(chunk, &world, &frame, NULL, false))
         return live_finish(NULL, frame, error);
     if (tile_entity == NULL)
         live_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -4239,7 +4469,7 @@ mc_world_storage_status mc_live_tile_entities_chunk_import(mc_world_chunk *chunk
             const int32_t z =
                 mc_java_i32_sub(tile_entity->z, mc_java_i32_mul(chunk->constructor_z, 16));
             frame.bytecode = 38;
-            if (live_chunk_install_held(chunk, x, y, z, tile_entity, 0, &frame) &&
+            if (live_chunk_install_held(chunk, x, y, z, tile_entity, 0, &frame, NULL) &&
                 chunk->state->active) {
                 frame.bytecode = 56; /* Direct c append; deliberately no L branch. */
                 (void)live_list_add(world, false, tile_entity, &frame);
@@ -4250,17 +4480,66 @@ mc_world_storage_status mc_live_tile_entities_chunk_import(mc_world_chunk *chunk
     return live_chunk_finish(chunk, frame, error);
 }
 
-mc_world_storage_status mc_live_tile_entities_chunk_register(mc_world_chunk *chunk,
-                                                             mc_live_tile_entity_error *error) {
+static mc_world_storage_status live_chunk_register_run(mc_world_chunk *chunk,
+                                                       mc_live_tile_entity_error *error,
+                                                       mc_entity_tick_execution *execution,
+                                                       mc_world_runtime *evaluated_world,
+                                                       mc_world_runtime_execution_code code,
+                                                       mc_world_runtime_execution_result *owned) {
+    (void)code; /* This actual Map addAll has no acquiring child/code use. */
     mc_live_tile_entity_error frame;
     mc_live_tile_entities_error_init(&frame);
+    if (execution != NULL) {
+        mc_world_access_failure_lease *unused_lease = NULL;
+        const mc_world_storage_status status =
+            mc_world_execution_child_lease(execution, evaluated_world, &unused_lease);
+        if (status != MC_WORLD_STORAGE_OK) {
+            mc_world_runtime_execution_result_note(
+                owned, status, "TileEntity Map registration evaluated World ownership",
+                execution->site);
+            live_fail(&frame, status, "TileEntity Map registration evaluated World ownership");
+            return live_finish(NULL, frame, error);
+        }
+    }
     mc_world_runtime *world;
-    if (!live_chunk_entry(chunk, &world, &frame))
+    if (!live_chunk_entry(chunk, &world, &frame, evaluated_world, execution != NULL))
         return live_finish(NULL, frame, error);
     frame.bytecode = 18;
     frame.chunk_bytecode = world->fields.L ? 12u : 26u;
     (void)live_list_add_map(world, world->fields.L, chunk, &frame);
-    return live_chunk_finish(chunk, frame, error);
+    if (execution == NULL)
+        return live_chunk_finish(chunk, frame, error);
+    /* Native cleanup uses the genuinely entered receiver value. Do not read a
+     * later mutable Chunk.d to choose which actual Store/World right to drop. */
+    (void)mc_world_store_release_chunk(world->fields.w, chunk->state, NULL);
+    mc_world_runtime_call_leave(world);
+    return live_finish(world, frame, error);
+}
+
+mc_world_storage_status mc_live_tile_entities_chunk_register(mc_world_chunk *chunk,
+                                                             mc_live_tile_entity_error *error) {
+    return live_chunk_register_run(chunk, error, NULL, NULL, (mc_world_runtime_execution_code){0},
+                                   NULL);
+}
+
+mc_world_storage_status mc_live_tile_entities_chunk_register_in_execution(
+    mc_entity_tick_execution *execution, mc_world_runtime *evaluated_world,
+    mc_world_runtime_execution_code code, mc_world_chunk *chunk, mc_live_tile_entity_error *error,
+    mc_world_runtime_execution_result *owned) {
+    if (owned != NULL)
+        mc_world_runtime_execution_result_init(owned);
+    if (execution == NULL || owned == NULL) {
+        if (error != NULL) {
+            mc_live_tile_entities_error_init(error);
+            live_fail(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                      "TileEntity Map registration execution/result required");
+        }
+        mc_world_runtime_execution_result_note(
+            owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+            "TileEntity Map registration execution/result required", code.tile_receiver_site);
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    }
+    return live_chunk_register_run(chunk, error, execution, evaluated_world, code, owned);
 }
 
 mc_world_storage_status mc_live_tile_entities_chunk_invalidate(mc_world_chunk *chunk,
@@ -4287,12 +4566,27 @@ mc_world_storage_status mc_live_tile_entities_chunk_invalidate(mc_world_chunk *c
     return live_finish(NULL, frame, error);
 }
 
-mc_world_storage_status
-mc_world_runtime_tile_entity_dirty_detailed(mc_world_runtime *world, int32_t x, int32_t y,
-                                            int32_t z, mc_tile_entity *tile_entity,
-                                            mc_live_tile_entity_error *error) {
+static mc_world_storage_status world_dirty_run(mc_world_runtime *world, int32_t x, int32_t y,
+                                               int32_t z, mc_tile_entity *tile_entity,
+                                               mc_live_tile_entity_error *error,
+                                               mc_entity_tick_execution *execution,
+                                               mc_world_runtime_execution_code code,
+                                               mc_world_runtime_execution_result *owned) {
     mc_live_tile_entity_error frame;
     mc_live_tile_entities_error_init(&frame);
+    mc_world_access_failure_lease *lease = NULL;
+    mc_entity_tick_execution_site receiver_site = {NULL, NULL, NULL, -1};
+    if (execution != NULL) {
+        receiver_site = execution->site; /* Current caller's exact evaluated B site. */
+        const mc_world_storage_status admission =
+            mc_world_execution_child_lease(execution, world, &lease);
+        if (admission != MC_WORLD_STORAGE_OK) {
+            mc_world_runtime_execution_result_note(
+                owned, admission, "World TileEntity dirty execution admission", receiver_site);
+            live_fail(&frame, admission, "World TileEntity dirty execution admission");
+            return live_finish(NULL, frame, error);
+        }
+    }
     if (!live_enter(world, &frame))
         return live_finish(NULL, frame, error);
     bool present = false;
@@ -4307,7 +4601,8 @@ mc_world_runtime_tile_entity_dirty_detailed(mc_world_runtime *world, int32_t x, 
     if (frame.status == MC_WORLD_STORAGE_OK && present) {
         frame.bytecode = 13;
         mc_chunk_state *state = NULL;
-        if (live_acquire(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &state, &frame)) {
+        if (live_acquire(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &state, &frame,
+                         execution, code, owned)) {
             frame.bytecode = 16;
             if (state == NULL)
                 live_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -4346,8 +4641,23 @@ mc_world_runtime_tile_entity_dirty_detailed(mc_world_runtime *world, int32_t x, 
                 break;
             }
         }
-        const mc_world_storage_status status = mc_world_access_call_tile_entity_dirty(
-            world_access, world, x, y, z, tile_entity, &cause, &frame.world_access_failure);
+        const mc_world_storage_status status =
+            execution == NULL
+                ? mc_world_access_call_tile_entity_dirty(world_access, world, x, y, z, tile_entity,
+                                                         &cause, &frame.world_access_failure)
+                : mc_world_access_call_tile_entity_dirty_with_lease(&world_access, world, x, y, z,
+                                                                    tile_entity, lease, &cause,
+                                                                    &frame.world_access_failure);
+        if (status != MC_WORLD_STORAGE_OK && execution != NULL) {
+            const mc_world_storage_status captured =
+                mc_entity_tick_execution_capture_receipt(execution, &frame.world_access_failure);
+            if (captured != MC_WORLD_STORAGE_OK) {
+                mc_world_runtime_execution_result_note(
+                    owned, captured, "World TileEntity dirty owned receipt capture", receiver_site);
+                if (execution->capture_pending)
+                    frame.world_access_failure = (mc_world_access_failure){0};
+            }
+        }
         mc_tile_entity_release(tile_entity);
         mc_world_access_release_held(world_access);
         if (status != MC_WORLD_STORAGE_OK)
@@ -4357,6 +4667,35 @@ mc_world_runtime_tile_entity_dirty_detailed(mc_world_runtime *world, int32_t x, 
     }
     mc_world_runtime_call_leave(world);
     return live_finish(world, frame, error);
+}
+
+mc_world_storage_status
+mc_world_runtime_tile_entity_dirty_detailed(mc_world_runtime *world, int32_t x, int32_t y,
+                                            int32_t z, mc_tile_entity *tile_entity,
+                                            mc_live_tile_entity_error *error) {
+    return world_dirty_run(world, x, y, z, tile_entity, error, NULL,
+                           (mc_world_runtime_execution_code){0}, NULL);
+}
+
+mc_world_storage_status mc_world_runtime_tile_entity_dirty_in_execution(
+    mc_entity_tick_execution *execution, mc_world_runtime *world,
+    mc_world_runtime_execution_code code, int32_t x, int32_t y, int32_t z,
+    mc_tile_entity *tile_entity, mc_live_tile_entity_error *error,
+    mc_world_runtime_execution_result *owned) {
+    if (owned != NULL)
+        mc_world_runtime_execution_result_init(owned);
+    if (execution == NULL || owned == NULL) {
+        if (error != NULL) {
+            mc_live_tile_entities_error_init(error);
+            live_fail(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                      "World TileEntity dirty execution/result required");
+        }
+        mc_world_runtime_execution_result_note(owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "World TileEntity dirty execution/result required",
+                                               code.tile_receiver_site);
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    }
+    return world_dirty_run(world, x, y, z, tile_entity, error, execution, code, owned);
 }
 
 bool mc_world_runtime_tile_entity_dirty(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
@@ -4415,14 +4754,15 @@ mc_world_storage_status mc_live_tile_entities_drain_deferred(mc_world_runtime *w
                         frame.bytecode = 542;
                         mc_chunk_state *state = NULL;
                         if (live_acquire(world, mc_java_i32_shr(tile_entity->x, 4),
-                                         mc_java_i32_shr(tile_entity->z, 4), &state, &frame)) {
+                                         mc_java_i32_shr(tile_entity->z, 4), &state, &frame, NULL,
+                                         (mc_world_runtime_execution_code){0}, NULL)) {
                             if (state != NULL && !state->blank) {
                                 frame.bytecode = 573;
                                 mc_world_chunk *chunk;
                                 if (live_lease(world, state, &chunk, &frame)) {
                                     (void)live_chunk_install_held(
                                         chunk, tile_entity->x & 15, tile_entity->y,
-                                        tile_entity->z & 15, tile_entity, 0, &frame);
+                                        tile_entity->z & 15, tile_entity, 0, &frame, NULL);
                                     (void)mc_world_store_release_chunk(world->fields.w, state,
                                                                        NULL);
                                 }
@@ -4618,7 +4958,7 @@ static bool live_chest_drops_held(mc_world_runtime *world, const mc_block *block
                                   int32_t y, int32_t z, mc_live_tile_entity_error *error) {
     mc_tile_entity *chest = NULL;
     error->bytecode = 5;
-    if (!live_world_get_held(world, x, y, z, &chest, error))
+    if (!live_world_get_held(world, x, y, z, &chest, error, NULL))
         return false;
     error->bytecode = 8;
     if (chest != NULL && chest->kind != MC_TILE_ENTITY_CHEST) {
@@ -4877,7 +5217,7 @@ mc_world_storage_status mc_live_tile_entities_load_records(mc_world_chunk *chunk
     mc_live_tile_entity_error frame;
     mc_live_tile_entities_error_init(&frame);
     mc_world_runtime *world;
-    if (!live_chunk_entry(chunk, &world, &frame))
+    if (!live_chunk_entry(chunk, &world, &frame, NULL, false))
         return live_finish(NULL, frame, error);
     mc_nbt_limits limits;
     if (!tile_entity_limits(requested, &limits))
@@ -4960,7 +5300,7 @@ mc_world_storage_status mc_live_tile_entities_load_records(mc_world_chunk *chunk
                                 tile_entity->z, mc_java_i32_mul(chunk->constructor_z, 16));
                             frame.bytecode = 352;
                             bool installed_ok = live_chunk_install_held(
-                                chunk, lx, ly, lz, tile_entity, ceiling, &frame);
+                                chunk, lx, ly, lz, tile_entity, ceiling, &frame, NULL);
                             if (installed_ok && chunk->state->active) {
                                 frame.chunk_bytecode = 56;
                                 installed_ok = live_list_add(world, false, tile_entity, &frame);

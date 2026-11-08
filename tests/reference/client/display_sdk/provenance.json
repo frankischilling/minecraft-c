@@ -8378,8 +8378,8 @@
       "sha256": "131214790ed8715ae6161b891d6374d659a8de5b758e4c4da2c4fc0ed294a7b2"
     },
     "src/world/runtime/runtime.c": {
-      "bytes": 60626,
-      "sha256": "643a5aff86cfecf4d4158f28174146b534adb2c1c4e67881a40c5d96c3c15faa"
+      "bytes": 71947,
+      "sha256": "4e43b01f389d611486563938963f4b609f16ca1fbed6015c9a1c7e8da4eb0539"
     },
     "tests/client/gui/test_gui_ingame_chat.c": {
       "bytes": 19028,
@@ -8658,8 +8658,8 @@
       "sha256": "69e5ae20ac102c23c8aa2e84e06222539b75ef0ae69fef8ae93e2c8dcc76e0e7"
     },
     "src/world/runtime/entity_publication.c": {
-      "bytes": 43121,
-      "sha256": "2df15e84c6d33930f5e27e342ef20f20474e8b8a43f13e7a61463526aff768a4"
+      "bytes": 45422,
+      "sha256": "9bf8670cebb46013f78f62cd014f87ff397f6b3bd7189ee3e2d70911695f8203"
     },
     "src/world/runtime/entity_tick_lists.c": {
       "bytes": 7575,
@@ -9796,6 +9796,42 @@
     "tests/world/runtime/world_access/test_execution_nested_success.c": {
       "bytes": 12830,
       "sha256": "3b3ae634d54610a99e8ee3bddb9fc5e2f36fb64242dd8d7142133b280729addb"
+    },
+    "src/world/runtime/activation_entity_execution_internal.h": {
+      "bytes": 1413,
+      "sha256": "9e8a22d52dcfabcf70ff2a8aa64f85111f5a0ecabfa190304d0881304206e460"
+    },
+    "src/world/runtime/activation_tile_execution_internal.h": {
+      "bytes": 1449,
+      "sha256": "04522902519f6cc431aacb7350b38a53e0d2d39fa1db610faee07b93aad6349b"
+    },
+    "src/world/runtime/entity_publication_detailed_execution_internal.h": {
+      "bytes": 1167,
+      "sha256": "76aa266bb50fc5b6792f7fe0230a327e4492ca6421c2f06973adf885bad06bfa"
+    },
+    "src/world/runtime/runtime_execution.c": {
+      "bytes": 8293,
+      "sha256": "2d48de6b0bd64a930a16a5d5f84cbed3757a5c17b241b38ad01770632fc5b5d5"
+    },
+    "src/world/runtime/runtime_execution_internal.h": {
+      "bytes": 5846,
+      "sha256": "3f6bd74884ce52af0fe16b83bf0be434dda0034b21af95dc5216451208bebabc"
+    },
+    "src/world/runtime/tile_entities/execution_internal.h": {
+      "bytes": 4017,
+      "sha256": "87113a203ce7c02a51683061839f96e80d318d4dbea8e2c2c7077e94c4466b9e"
+    },
+    "cmake/tests/world_kernel_execution.cmake": {
+      "bytes": 2204,
+      "sha256": "c5b00325a22ec89728d9c14a38d2709238ac1d89133d3280108c99e7db3fcd12"
+    },
+    "tests/world/runtime/world_access/test_kernel_execution.c": {
+      "bytes": 25462,
+      "sha256": "b0a0cf48ee2f249c7ec3384cd9f5f03648611ba2fa7a9462480f03bf94e181f8"
+    },
+    "tests/tools/world/test_kernel_execution.py": {
+      "bytes": 25690,
+      "sha256": "72516a6341f46c9d1031e7b55d823725c22ec37d089b43e0246abbe592400c93"
     }
   },
   "authorities": {
@@ -16591,6 +16627,149 @@
           },
           "added": [],
           "current_count": 2449
+        }
+      }
+    },
+    {
+      "from_commit": "daa3158a20bf6f72712edef9ef18cd281bef33a8",
+      "role": "Prospective same-body owned World acquisition, selected loader outcomes, explicit first native ownership status and TileEntity lookup/activation joins. Current native-source admissions only; compilation, actual component controls and remaining caller/Arrow flight qualification stay separate. Historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 710849,
+        "sha256": "08a9f3271a5b62f150014f3c00e60b1ac9608472f3f0f75c277b6aba02664753"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "src/world/runtime/runtime.c": {
+              "bytes": 60626,
+              "sha256": "643a5aff86cfecf4d4158f28174146b534adb2c1c4e67881a40c5d96c3c15faa"
+            },
+            "src/world/runtime/entity_publication.c": {
+              "bytes": 43121,
+              "sha256": "2df15e84c6d33930f5e27e342ef20f20474e8b8a43f13e7a61463526aff768a4"
+            }
+          },
+          "added": [
+            "src/world/runtime/activation_entity_execution_internal.h",
+            "src/world/runtime/activation_tile_execution_internal.h",
+            "src/world/runtime/entity_publication_detailed_execution_internal.h",
+            "src/world/runtime/runtime_execution.c",
+            "src/world/runtime/runtime_execution_internal.h",
+            "src/world/runtime/tile_entities/execution_internal.h"
+          ],
+          "current_count": 2455
+        }
+      }
+    },
+    {
+      "from_commit": "daa3158a20bf6f72712edef9ef18cd281bef33a8",
+      "role": "Prospective same-body owned World acquisition, selected loader outcomes, explicit first native ownership status and TileEntity lookup/activation joins. Current native-source admissions only; compilation, actual component controls and remaining caller/Arrow flight qualification stay separate. Historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 713489,
+        "sha256": "9e9575468572ba561925e4e4ddeaabdf0db0e3391380e8989ffce2675cef9b41"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {},
+          "added": [
+            "cmake/tests/world_kernel_execution.cmake",
+            "tests/world/runtime/world_access/test_kernel_execution.c"
+          ],
+          "current_count": 2457
+        }
+      }
+    },
+    {
+      "from_commit": "daa3158a20bf6f72712edef9ef18cd281bef33a8",
+      "role": "Prospective same-body owned World acquisition, selected loader outcomes, explicit first native ownership status and TileEntity lookup/activation joins. Current native-source admissions only; compilation, actual component controls and remaining caller/Arrow flight qualification stay separate. Historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 714768,
+        "sha256": "1b6c7696dd4d7c4c0167ab87d9adf33b3acd1a46285948d3353ffe55e1f43c17"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "cmake/tests/world_kernel_execution.cmake": {
+              "bytes": 416,
+              "sha256": "140ec7e97bdf88d77e765027bda6b21837614bf6b315257fa2fd2c1107a090c6"
+            },
+            "tests/world/runtime/world_access/test_kernel_execution.c": {
+              "bytes": 24800,
+              "sha256": "38050461ba7449aa50cb0d8409331f198f0cd833c2cc29faa59afec70bc056d5"
+            }
+          },
+          "added": [
+            "tests/tools/world/test_kernel_execution.py"
+          ],
+          "current_count": 2458
+        }
+      }
+    },
+    {
+      "from_commit": "daa3158a20bf6f72712edef9ef18cd281bef33a8",
+      "role": "Prospective same-body owned World acquisition, selected loader outcomes, explicit first native ownership status and TileEntity lookup/activation joins. Current native-source admissions only; compilation, actual component controls and remaining caller/Arrow flight qualification stay separate. Historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 716216,
+        "sha256": "fb03982192afcc314fec8dd1784d9cb789e2c0f37f72302ed4d6dd614f6ee3d4"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/world/test_kernel_execution.py": {
+              "bytes": 21474,
+              "sha256": "15340c1ed6c9fd28214e585f557c54df8e73ddf32afded749d987f0defdeaf27"
+            }
+          },
+          "added": [],
+          "current_count": 2458
+        }
+      }
+    },
+    {
+      "from_commit": "daa3158a20bf6f72712edef9ef18cd281bef33a8",
+      "role": "Prospective same-body owned World acquisition, selected loader outcomes, explicit first native ownership status and TileEntity lookup/activation joins. Current native-source admissions only; compilation, actual component controls and remaining caller/Arrow flight qualification stay separate. Historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 717225,
+        "sha256": "34f68b219d7fc4e42aa2a841e1823442fb1f5ad1aa13bc794bcb16fd7bc3dd7d"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/world/runtime/world_access/test_kernel_execution.c": {
+              "bytes": 24806,
+              "sha256": "c09599624955a92247cd7a7091f956b6d7e39b8e5edc4e4897f1a80d80f9a45a"
+            },
+            "tests/tools/world/test_kernel_execution.py": {
+              "bytes": 25690,
+              "sha256": "932fc5efd975591066634ceaf7cf0d8194026878c45b5b216f3faa72969b986d"
+            }
+          },
+          "added": [],
+          "current_count": 2458
+        }
+      }
+    },
+    {
+      "from_commit": "daa3158a20bf6f72712edef9ef18cd281bef33a8",
+      "role": "Prospective same-body owned World acquisition, selected loader outcomes, explicit first native ownership status and TileEntity lookup/activation joins. Current native-source admissions only; compilation, actual component controls and remaining caller/Arrow flight qualification stay separate. Historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 718444,
+        "sha256": "6c466d929566680b6f41f9045bf68da88e0585e95f9ece431fbd6886b09c2e48"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/world/runtime/world_access/test_kernel_execution.c": {
+              "bytes": 25323,
+              "sha256": "6fbce0482ad938a647c95b111dea0348022fcfe80c92a0f89d9d68f90f69223f"
+            },
+            "tests/tools/world/test_kernel_execution.py": {
+              "bytes": 25690,
+              "sha256": "787a8f703ed51f3d9e40a1cd5fb4f71f64e60d7b1ad6b51ae613781e014c2b12"
+            }
+          },
+          "added": [],
+          "current_count": 2458
         }
       }
     }

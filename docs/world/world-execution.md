@@ -109,8 +109,9 @@ activation fixtures independently exercise UTF8 paths transported as hex.
 The complete Arrow flight parent, owned inherited base/effect paths, remaining
 direct Block/ray/nearby/damage children and actual World-tick dispatch remain
 unfinished. Source pickup, natural encounters, original audiovisual/whole-frame
-equality and sustained FPS remain unqualified. Kernel and TileEntity owned
-caller joins are being developed separately and receive no execution credit
-from these component tests. Uninvoked loader cancellation, two simultaneous
+equality and sustained FPS remain unqualified. The separate
+[owned acquisition and TileEntity component](world-acquisition-execution.md)
+adds its own finite kernel controls; it receives no execution credit from these
+earlier component tests. Uninvoked loader cancellation, two simultaneous
 failed-query outcomes and full A-query/foreign Chunk.d joint Store teardown
 remain open. No new original JVM or visible game run accompanied this increment.

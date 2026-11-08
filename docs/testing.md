@@ -1,5 +1,35 @@
 # Test scope and reproduction
 
+## Owned World acquisition and TileEntity calls
+
+The [owned query component](world/world-acquisition-execution.md) shares actual
+get/acquire, activation and TileEntity bodies. Explicit evaluated-World scopes,
+first native ownership errors and fixed pending query outcomes preserve real
+failure lifetimes without changing public error layouts or replaying source work.
+
+Both native hosts pass 193 checks in four fresh kernel processes: empty cold/cache,
+source callback failure, native callback failure and first-owner refusal/retry.
+The source inputs, constructors, import, Tile Map registration and Entity callback
+are real. Each final process preserves all three authored files, its complete
+capture and source/product/helper/six-table guards. Normal and optimized Python
+each reject 168 corrupt protocols, 80 retained payload changes, seven literal
+changes, four changed bundles and three actual whole-directory loss/replacements.
+
+Frozen regressions pass **Windows 94/94 in 146.51 seconds** and **sanitized Linux
+92/92 in 94.01 seconds**, without skips or unrun tests. Both builds pass. Exact
+clang-format 18.1.3 checks 2,281 files; thirteen actual GCC recipes pass syntax
+checks, with the sole changed fixture rechecked after its final lifecycle fix.
+Initial MSVC and Windows region-readback failures remain retained. Native file
+equality runs after existing checked teardown closes its cached region handle;
+production sharing and full-file preservation remain unchanged.
+
+These controls enter Tile Map registration, not cold owned Tile lookup/lazy
+construction or a malformed source load through the new kernel entry. Unjoined
+loader/import/generation/population caller lifetimes, foreign World/joint Store
+composition, complete SL flight, returned frames and FPS remain open. Linux's
+two unavailable CPU Arrow drawing cases receive no credit. No new original JVM
+or visible game run accompanied this increment.
+
 ## Nested World ownership and Entity activation
 
 The [execution component](world/world-execution.md) uses stable fixed World and

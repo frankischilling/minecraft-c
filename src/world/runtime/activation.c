@@ -1,12 +1,16 @@
 #include "../chunk/object_internal.h"
+#include "activation_entity_execution_internal.h"
 #include "activation_execution_internal.h"
 #include "activation_internal.h"
+#include "activation_tile_execution_internal.h"
 
 #include "construction_internal.h"
+#include "entity_publication_detailed_execution_internal.h"
 #include "entity_publication_execution_internal.h"
 #include "entity_publication_internal.h"
 #include "mc/world/runtime/tile_entities/tile_entities.h"
 #include "runtime_internal.h"
+#include "tile_entities/execution_internal.h"
 
 static mc_world_storage_status result(mc_world_activation_error *error, mc_world_runtime *world,
                                       unsigned int bytecode, unsigned int world_bytecode,
@@ -66,31 +70,112 @@ static mc_world_storage_status enter_world(mc_world_runtime *world, unsigned int
     return MC_WORLD_STORAGE_OK;
 }
 
-mc_world_storage_status
-mc_world_runtime_register_chunk_tile_entities(mc_world_chunk *chunk,
-                                              mc_world_activation_error *error) {
+/* Checked native scope bookkeeping only. First reached Source status/cause
+ * stays in error even if closing B also refuses. No source operation retries. */
+static mc_world_storage_status close_tile_scope(mc_entity_tick_execution *execution,
+                                                const mc_entity_tick_execution_world_token *token,
+                                                mc_world_storage_status source_status,
+                                                mc_entity_tick_execution_site site,
+                                                mc_world_activation_error *error,
+                                                mc_world_runtime_execution_result *owned) {
+    if (execution == NULL)
+        return source_status;
+    const mc_world_storage_status status =
+        mc_entity_tick_execution_pop_world(execution, token, source_status != MC_WORLD_STORAGE_OK);
+    if (status == MC_WORLD_STORAGE_OK)
+        return source_status;
+    mc_world_runtime_execution_result_note(owned, status,
+                                           "Chunk TileEntity activation owned scope cleanup", site);
+    if (source_status != MC_WORLD_STORAGE_OK)
+        return source_status;
+    return result(
+        error, NULL, 0, 0,
+        (mc_world_storage_error){status, "Chunk TileEntity activation owned scope cleanup", 0});
+}
+
+static mc_world_storage_status register_chunk_tile_entities_run(
+    mc_world_chunk *chunk, mc_world_activation_error *error, mc_entity_tick_execution *execution,
+    mc_world_runtime_execution_code code, mc_world_runtime_execution_result *owned) {
+    if (execution != NULL &&
+        (execution->identity != execution || execution->phase != MC_ENTITY_TICK_EXECUTION_OPEN)) {
+        const mc_world_storage_status status = execution->identity != execution
+                                                   ? MC_WORLD_STORAGE_INVALID_ARGUMENT
+                                                   : MC_WORLD_STORAGE_BUSY;
+        execution->admission = (mc_entity_tick_execution_error){
+            status, "Chunk TileEntity activation execution owner admission", execution->site};
+        mc_world_runtime_execution_result_note(
+            owned, status, "Chunk TileEntity activation execution owner admission",
+            code.tile_receiver_site);
+        return result(error, NULL, 0, 0,
+                      (mc_world_storage_error){
+                          status, "Chunk TileEntity activation execution owner admission", 0});
+    }
     mc_world_chunk_fields fields;
     mc_world_storage_status status = fields_get(chunk, &fields, error);
     if (status != MC_WORLD_STORAGE_OK)
         return status;
-    /* values13 precedes invocation18. Its borrowed finite view is the actual
-     * Map, not an allocated or shared stand-in collection. */
-    if (fields.l == NULL)
-        return failed(error, NULL, 13, 0, "Chunk TileEntity Map values receiver is null");
+    /* Actual nullable d6 is evaluated before l10/values13. Native retention
+     * adds no eager Source invocation, NULL diagnosis or class active use. */
     mc_world_runtime *world = fields.d;
+    mc_entity_tick_execution_world_token token = {0};
+    if (execution != NULL) {
+        status =
+            mc_entity_tick_execution_push_world(execution, world, code.tile_receiver_site, &token);
+        if (status != MC_WORLD_STORAGE_OK) {
+            mc_world_runtime_execution_result_note(
+                owned, status, "Chunk TileEntity activation evaluated World ownership",
+                code.tile_receiver_site);
+            return result(error, NULL, 0, 0,
+                          (mc_world_storage_error){
+                              status, "Chunk TileEntity activation evaluated World ownership", 0});
+        }
+    }
+    /* values13 still precedes invocation18, including when evaluated B=NULL. */
+    if (fields.l == NULL) {
+        status = failed(error, NULL, 13, 0, "Chunk TileEntity Map values receiver is null");
+        return close_tile_scope(execution, &token, status, code.tile_receiver_site, error, owned);
+    }
     status = enter_world(world, 18, error);
     if (status != MC_WORLD_STORAGE_OK)
-        return status;
+        return close_tile_scope(execution, &token, status, code.tile_receiver_site, error, owned);
 
     mc_live_tile_entity_error detail = mc_live_tile_entities_empty_error();
-    status = mc_live_tile_entities_chunk_register(chunk, &detail);
+    status = execution == NULL ? mc_live_tile_entities_chunk_register(chunk, &detail)
+                               : mc_live_tile_entities_chunk_register_in_execution(
+                                     execution, world, code, chunk, &detail, owned);
     if (status != MC_WORLD_STORAGE_OK) {
         result(error, world, detail.bytecode, detail.chunk_bytecode, detail.cause);
         if (error != NULL)
             error->tile_entity = detail;
     }
     mc_world_runtime_call_leave(world);
+    status = close_tile_scope(execution, &token, status, code.tile_receiver_site, error, owned);
     return status == MC_WORLD_STORAGE_OK ? completed(error) : status;
+}
+
+mc_world_storage_status
+mc_world_runtime_register_chunk_tile_entities(mc_world_chunk *chunk,
+                                              mc_world_activation_error *error) {
+    return register_chunk_tile_entities_run(chunk, error, NULL,
+                                            (mc_world_runtime_execution_code){0}, NULL);
+}
+
+mc_world_storage_status mc_world_runtime_register_chunk_tile_entities_in_execution(
+    mc_entity_tick_execution *execution, mc_world_chunk *chunk,
+    mc_world_runtime_execution_code code, mc_world_activation_error *error,
+    mc_world_runtime_execution_result *owned) {
+    if (owned != NULL)
+        mc_world_runtime_execution_result_init(owned);
+    if (execution == NULL || owned == NULL) {
+        mc_world_runtime_execution_result_note(
+            owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+            "Chunk TileEntity activation execution/result required", code.tile_receiver_site);
+        return result(
+            error, NULL, 0, 0,
+            (mc_world_storage_error){MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                     "Chunk TileEntity activation execution/result required", 0});
+    }
+    return register_chunk_tile_entities_run(chunk, error, execution, code, owned);
 }
 
 /* Native checked scope coordination only. Source failure status/cause/typed
@@ -100,11 +185,17 @@ mc_world_runtime_register_chunk_tile_entities(mc_world_chunk *chunk,
 static mc_world_storage_status close_entity_scope(mc_entity_tick_execution *execution,
                                                   const mc_entity_tick_execution_world_token *token,
                                                   mc_world_storage_status source_status,
-                                                  mc_world_activation_error *error) {
+                                                  mc_world_activation_error *error,
+                                                  mc_world_runtime_execution_result *native,
+                                                  mc_entity_tick_execution_site site) {
     if (execution == NULL)
         return source_status;
     const mc_world_storage_status status =
         mc_entity_tick_execution_pop_world(execution, token, source_status != MC_WORLD_STORAGE_OK);
+    /* Select this actual pop's native refusal NOW, before any parent completion.
+     * Keep the earlier Source failure independently primary in error. */
+    mc_world_runtime_execution_result_note(native, status,
+                                           "Chunk Entity activation owned scope cleanup", site);
     if (status == MC_WORLD_STORAGE_OK || source_status != MC_WORLD_STORAGE_OK)
         return source_status;
     /* Native layer attribution. Detailed current admission/cleanup remains in
@@ -117,7 +208,8 @@ static mc_world_storage_status close_entity_scope(mc_entity_tick_execution *exec
 static mc_world_storage_status
 register_chunk_entities_run(mc_world_chunk *chunk, size_t slice, mc_world_activation_error *error,
                             mc_entity_tick_execution *execution,
-                            mc_entity_tick_execution_site receiver_site) {
+                            mc_entity_tick_execution_site receiver_site,
+                            mc_world_runtime_execution_result *native) {
     if (execution != NULL &&
         (execution->identity != execution || execution->phase != MC_ENTITY_TICK_EXECUTION_OPEN)) {
         const mc_world_storage_status status = execution->identity != execution
@@ -125,6 +217,8 @@ register_chunk_entities_run(mc_world_chunk *chunk, size_t slice, mc_world_activa
                                                    : MC_WORLD_STORAGE_BUSY;
         execution->admission = (mc_entity_tick_execution_error){
             status, "Chunk Entity activation execution owner admission", execution->site};
+        mc_world_runtime_execution_result_note(
+            native, status, "Chunk Entity activation execution owner admission", receiver_site);
         return result(error, NULL, 0, 0,
                       (mc_world_storage_error){
                           status, "Chunk Entity activation execution owner admission", 0});
@@ -139,34 +233,40 @@ register_chunk_entities_run(mc_world_chunk *chunk, size_t slice, mc_world_activa
     mc_entity_tick_execution_world_token token = {0};
     if (execution != NULL) {
         status = mc_entity_tick_execution_push_world(execution, world, receiver_site, &token);
-        if (status != MC_WORLD_STORAGE_OK)
+        if (status != MC_WORLD_STORAGE_OK) {
+            mc_world_runtime_execution_result_note(
+                native, status, "Chunk Entity activation evaluated World ownership", receiver_site);
             return result(error, NULL, 0, 0,
                           (mc_world_storage_error){
                               status, "Chunk Entity activation evaluated World ownership", 0});
+        }
     }
     const mc_world_chunk_entity_list *source;
     status = mc_world_chunk_slice_at(fields.m, slice, &source);
     if (status != MC_WORLD_STORAGE_OK) {
         status = result(error, NULL, 41, 0,
                         (mc_world_storage_error){status, "Chunk registration entity slice", 0});
-        return close_entity_scope(execution, &token, status, error);
+        return close_entity_scope(execution, &token, status, error, native, receiver_site);
     }
     status = enter_world(world, 42, error);
     if (status != MC_WORLD_STORAGE_OK)
-        return close_entity_scope(execution, &token, status, error);
+        return close_entity_scope(execution, &token, status, error, native, receiver_site);
     /* b1/addAll5 completes before the subsequent live input size15. A NULL
      * slice is evaluated successfully at41 and fails only inside addAll. */
     mc_world_entity_batch_error detail = mc_world_entity_batch_empty_error();
     status = execution == NULL ? mc_world_runtime_entity_batch_held(world, source, false, &detail)
-                               : mc_world_runtime_entity_batch_held_in_execution(
-                                     execution, world, source, false, &detail);
+             : native == NULL
+                 ? mc_world_runtime_entity_batch_held_in_execution(execution, world, source, false,
+                                                                   &detail)
+                 : mc_world_runtime_entity_batch_held_detailed_in_execution(
+                       execution, world, source, false, receiver_site, &detail, native);
     if (status != MC_WORLD_STORAGE_OK) {
         result(error, world, 42, detail.publication.bytecode, detail.publication.cause);
         if (error != NULL)
             error->batch = detail;
     }
     mc_world_runtime_call_leave(world);
-    status = close_entity_scope(execution, &token, status, error);
+    status = close_entity_scope(execution, &token, status, error, native, receiver_site);
     return status == MC_WORLD_STORAGE_OK ? completed(error) : status;
 }
 
@@ -174,7 +274,7 @@ mc_world_storage_status mc_world_runtime_register_chunk_entities(mc_world_chunk 
                                                                  size_t slice,
                                                                  mc_world_activation_error *error) {
     return register_chunk_entities_run(chunk, slice, error, NULL,
-                                       (mc_entity_tick_execution_site){NULL, NULL, NULL, -1});
+                                       (mc_entity_tick_execution_site){NULL, NULL, NULL, -1}, NULL);
 }
 
 mc_world_storage_status mc_world_runtime_register_chunk_entities_in_execution(
@@ -184,7 +284,26 @@ mc_world_storage_status mc_world_runtime_register_chunk_entities_in_execution(
         return result(error, NULL, 0, 0,
                       (mc_world_storage_error){MC_WORLD_STORAGE_INVALID_ARGUMENT,
                                                "Chunk Entity activation execution is required", 0});
-    return register_chunk_entities_run(chunk, slice, error, execution, evaluated_receiver_site);
+    return register_chunk_entities_run(chunk, slice, error, execution, evaluated_receiver_site,
+                                       NULL);
+}
+
+mc_world_storage_status mc_world_runtime_register_chunk_entities_detailed_in_execution(
+    mc_entity_tick_execution *execution, mc_world_chunk *chunk, size_t slice,
+    mc_world_runtime_execution_code code, mc_world_activation_error *error,
+    mc_world_runtime_execution_result *native) {
+    mc_world_runtime_execution_result_init(native);
+    if (execution == NULL || native == NULL) {
+        mc_world_runtime_execution_result_note(
+            native, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+            "Chunk Entity activation execution/result is required", code.entity_receiver_site);
+        return result(
+            error, NULL, 0, 0,
+            (mc_world_storage_error){MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                     "Chunk Entity activation execution/result is required", 0});
+    }
+    return register_chunk_entities_run(chunk, slice, error, execution, code.entity_receiver_site,
+                                       native);
 }
 
 mc_world_storage_status

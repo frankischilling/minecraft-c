@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 342795,
-      "sha256": "25869713b015b93fb8ec05728fa6465a57edc4efbba579789c7069feb62c8281"
+      "bytes": 342887,
+      "sha256": "aaa1803c72e337a4896fde9e7633526531cfd3656f34a8afd395817266ab30aa"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 221223,
-      "sha256": "8d6891d9f38f2a9ccd5df5a28d8a09f2075218712a0b5d14e91647fbfbb3c28b"
+      "bytes": 222144,
+      "sha256": "ae2ec383de2efa5d90a544998d9afac020e7b0fe349387f80e56b2ccaa427123"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 573481,
-      "sha256": "482d6f35eb8210169ac9c9bab4d8c9f6fb7275e6a0385ba229b726a1dc7fac0f"
+      "bytes": 575401,
+      "sha256": "d76df06e4654aab8a1336648b4c92a4d4dbccf9c77745337cb1c9d1c4e5bf0fc"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
@@ -4586,8 +4586,8 @@
       "sha256": "f0a5967dda1f6a44f29860b1637c2317c3a2933fae0f105b64e6fa5027cd381d"
     },
     "src/world/runtime/activation.c": {
-      "bytes": 12479,
-      "sha256": "a1c7e8744754318d15a0d127306ad23d6a513bd7e6b5858373835f315c0fdac5"
+      "bytes": 19603,
+      "sha256": "84e562c66b8e477e134ab199cb91355b3a4da6205801b8b75742a6e41bacd9a6"
     },
     "src/world/runtime/activation_internal.h": {
       "bytes": 2195,
@@ -4674,8 +4674,8 @@
       "sha256": "f9b0dadeeb5dddffc82730c07bacf794fc3c5baf02fead2113f4284c45da8939"
     },
     "src/world/runtime/entity_publication.c": {
-      "bytes": 43121,
-      "sha256": "2df15e84c6d33930f5e27e342ef20f20474e8b8a43f13e7a61463526aff768a4"
+      "bytes": 45422,
+      "sha256": "9bf8670cebb46013f78f62cd014f87ff397f6b3bd7189ee3e2d70911695f8203"
     },
     "src/world/runtime/entity_publication_internal.h": {
       "bytes": 3048,
@@ -5006,8 +5006,8 @@
       "sha256": "bdceab094d8f5b48adec40403592fd879ce1c58967165d272f1b78166185affb"
     },
     "src/world/runtime/runtime.c": {
-      "bytes": 60626,
-      "sha256": "643a5aff86cfecf4d4158f28174146b534adb2c1c4e67881a40c5d96c3c15faa"
+      "bytes": 71947,
+      "sha256": "4e43b01f389d611486563938963f4b609f16ca1fbed6015c9a1c7e8da4eb0539"
     },
     "src/world/runtime/runtime_internal.h": {
       "bytes": 6072,
@@ -5086,8 +5086,8 @@
       "sha256": "297356b9101ba22b1c870779d7e66dd492436b48e7d70e32b7287aab9b7ad5cc"
     },
     "src/world/runtime/tile_entities/tile_entities.c": {
-      "bytes": 262989,
-      "sha256": "e2c14b39cc82411a1db2955580ea67e4faf0e87e97c21cd20965e427b739c79d"
+      "bytes": 282762,
+      "sha256": "93d3f50d1d7e84781a0dae3e8973c285e65d1147f6775dc69271bfe1efac4747"
     },
     "src/world/runtime/tile_entities/tile_entities_internal.h": {
       "bytes": 1112,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 710849,
-      "sha256": "08a9f3271a5b62f150014f3c00e60b1ac9608472f3f0f75c277b6aba02664753"
+      "bytes": 719663,
+      "sha256": "4180c3e9f01e0cf636a3a39f0767c7a17418113a99155f59912ae66ef600b3ab"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 807803,
-      "sha256": "b9a86853509db1d169686a7df9c3497031962a340175f750233332a7f37a7dce"
+      "bytes": 817363,
+      "sha256": "03bb9e653b72ab1242c01924c8f32f68602341effe27dca86db58d26bd0b1968"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 707828,
-      "sha256": "19f1be62662b9cb3429bc58f7077cfc0ab0ff18facb655689ee3e36b8a82f11f"
+      "bytes": 716642,
+      "sha256": "077b787739baf97c1d2f077e74139bc01fe1b9f2114beeef1a9d77027ae7d7bd"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -23282,8 +23282,52 @@
       "sha256": "3b3ae634d54610a99e8ee3bddb9fc5e2f36fb64242dd8d7142133b280729addb"
     },
     "docs/world/world-execution.md": {
-      "bytes": 7203,
-      "sha256": "2097caf43d28cdba093d2bfec7d013589b542fce7614a575e639a06a54514a4a"
+      "bytes": 7266,
+      "sha256": "89a56b91ce0f0f08119fade75355a496ffa5145b8b8178a4388422c4d2fc1f55"
+    },
+    "src/world/runtime/activation_entity_execution_internal.h": {
+      "bytes": 1413,
+      "sha256": "9e8a22d52dcfabcf70ff2a8aa64f85111f5a0ecabfa190304d0881304206e460"
+    },
+    "src/world/runtime/activation_tile_execution_internal.h": {
+      "bytes": 1449,
+      "sha256": "04522902519f6cc431aacb7350b38a53e0d2d39fa1db610faee07b93aad6349b"
+    },
+    "src/world/runtime/entity_publication_detailed_execution_internal.h": {
+      "bytes": 1167,
+      "sha256": "76aa266bb50fc5b6792f7fe0230a327e4492ca6421c2f06973adf885bad06bfa"
+    },
+    "src/world/runtime/runtime_execution.c": {
+      "bytes": 8293,
+      "sha256": "2d48de6b0bd64a930a16a5d5f84cbed3757a5c17b241b38ad01770632fc5b5d5"
+    },
+    "src/world/runtime/runtime_execution_internal.h": {
+      "bytes": 5846,
+      "sha256": "3f6bd74884ce52af0fe16b83bf0be434dda0034b21af95dc5216451208bebabc"
+    },
+    "src/world/runtime/tile_entities/execution_internal.h": {
+      "bytes": 4017,
+      "sha256": "87113a203ce7c02a51683061839f96e80d318d4dbea8e2c2c7077e94c4466b9e"
+    },
+    "cmake/tests/world_kernel_execution.cmake": {
+      "bytes": 2204,
+      "sha256": "c5b00325a22ec89728d9c14a38d2709238ac1d89133d3280108c99e7db3fcd12"
+    },
+    "tests/world/runtime/world_access/test_kernel_execution.c": {
+      "bytes": 25462,
+      "sha256": "b0a0cf48ee2f249c7ec3384cd9f5f03648611ba2fa7a9462480f03bf94e181f8"
+    },
+    "tests/tools/world/kernel_execution_bundle.json": {
+      "bytes": 4428,
+      "sha256": "9e6f7b08c5294773f593727c016080c8e7233c858e2aeeb587ff8ed3696ddd6b"
+    },
+    "tests/tools/world/test_kernel_execution.py": {
+      "bytes": 25690,
+      "sha256": "72516a6341f46c9d1031e7b55d823725c22ec37d089b43e0246abbe592400c93"
+    },
+    "docs/world/world-acquisition-execution.md": {
+      "bytes": 6658,
+      "sha256": "baa60e3c78d2f0514c05d95efd9c198a09e61a3a08f488250a91d0e8473ef21c"
     }
   },
   "self_metadata_excluded": true,
@@ -37237,6 +37281,277 @@
             "docs/world/world-execution.md"
           ],
           "current_count": 5821
+        }
+      }
+    },
+    {
+      "from_commit": "daa3158a20bf6f72712edef9ef18cd281bef33a8",
+      "role": "Prospective same-body owned World acquisition, selected loader outcomes, explicit first native ownership status and TileEntity lookup/activation joins. Current native-source admissions only; compilation, actual component controls and remaining caller/Arrow flight qualification stay separate. Historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1635685,
+        "sha256": "e872a08cb4a193e9d61ce0be767ac4af056a386c306b5175f50a18bc4425eff6"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 342795,
+              "sha256": "25869713b015b93fb8ec05728fa6465a57edc4efbba579789c7069feb62c8281"
+            },
+            "src/world/runtime/activation.c": {
+              "bytes": 12479,
+              "sha256": "a1c7e8744754318d15a0d127306ad23d6a513bd7e6b5858373835f315c0fdac5"
+            },
+            "src/world/runtime/entity_publication.c": {
+              "bytes": 43121,
+              "sha256": "2df15e84c6d33930f5e27e342ef20f20474e8b8a43f13e7a61463526aff768a4"
+            },
+            "src/world/runtime/runtime.c": {
+              "bytes": 60626,
+              "sha256": "643a5aff86cfecf4d4158f28174146b534adb2c1c4e67881a40c5d96c3c15faa"
+            },
+            "src/world/runtime/tile_entities/tile_entities.c": {
+              "bytes": 262989,
+              "sha256": "e2c14b39cc82411a1db2955580ea67e4faf0e87e97c21cd20965e427b739c79d"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 710849,
+              "sha256": "08a9f3271a5b62f150014f3c00e60b1ac9608472f3f0f75c277b6aba02664753"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 807803,
+              "sha256": "b9a86853509db1d169686a7df9c3497031962a340175f750233332a7f37a7dce"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 707828,
+              "sha256": "19f1be62662b9cb3429bc58f7077cfc0ab0ff18facb655689ee3e36b8a82f11f"
+            }
+          },
+          "added": [
+            "src/world/runtime/activation_entity_execution_internal.h",
+            "src/world/runtime/activation_tile_execution_internal.h",
+            "src/world/runtime/entity_publication_detailed_execution_internal.h",
+            "src/world/runtime/runtime_execution.c",
+            "src/world/runtime/runtime_execution_internal.h",
+            "src/world/runtime/tile_entities/execution_internal.h"
+          ],
+          "current_count": 5827
+        }
+      }
+    },
+    {
+      "from_commit": "daa3158a20bf6f72712edef9ef18cd281bef33a8",
+      "role": "Prospective same-body owned World acquisition, selected loader outcomes, explicit first native ownership status and TileEntity lookup/activation joins. Current native-source admissions only; compilation, actual component controls and remaining caller/Arrow flight qualification stay separate. Historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1639502,
+        "sha256": "97b61e2a055e68cf1057cd26148c87f2dc8189d8001a2927693e425445ab819b"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 342837,
+              "sha256": "e2c04b76d64ba968db28c6190a094c4fd2e54e1fd899143cb1bfc1b121652283"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 713489,
+              "sha256": "9e9575468572ba561925e4e4ddeaabdf0db0e3391380e8989ffce2675cef9b41"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 811000,
+              "sha256": "1a4d94074407ee283ca24cb6bb596dce920a773168204516bc891d4f58e75f4d"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 710468,
+              "sha256": "fa7821c73332cdbe58b2ccc8afcc42de4a573c82ad0013ce244793eb60bfda29"
+            }
+          },
+          "added": [
+            "cmake/tests/world_kernel_execution.cmake",
+            "tests/world/runtime/world_access/test_kernel_execution.c"
+          ],
+          "current_count": 5829
+        }
+      }
+    },
+    {
+      "from_commit": "daa3158a20bf6f72712edef9ef18cd281bef33a8",
+      "role": "Prospective same-body owned World acquisition, selected loader outcomes, explicit first native ownership status and TileEntity lookup/activation joins. Current native-source admissions only; compilation, actual component controls and remaining caller/Arrow flight qualification stay separate. Historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1641582,
+        "sha256": "62b32e41c8c7361cf55a2b7b089cd9c4da880d34387e9bcfccabf16ae7077d16"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 714768,
+              "sha256": "1b6c7696dd4d7c4c0167ab87d9adf33b3acd1a46285948d3353ffe55e1f43c17"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 812460,
+              "sha256": "3bcd677cb8fd34796b1cf34d9d975cb7560746a8f62dc0500d185bc04668a693"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 711747,
+              "sha256": "393144fad4033c2a64b998c25ba5fb6b5b7984706c9b85d6fd227bc743ee5b87"
+            },
+            "cmake/tests/world_kernel_execution.cmake": {
+              "bytes": 416,
+              "sha256": "140ec7e97bdf88d77e765027bda6b21837614bf6b315257fa2fd2c1107a090c6"
+            },
+            "tests/world/runtime/world_access/test_kernel_execution.c": {
+              "bytes": 24800,
+              "sha256": "38050461ba7449aa50cb0d8409331f198f0cd833c2cc29faa59afec70bc056d5"
+            }
+          },
+          "added": [
+            "tests/tools/world/kernel_execution_bundle.json",
+            "tests/tools/world/test_kernel_execution.py"
+          ],
+          "current_count": 5831
+        }
+      }
+    },
+    {
+      "from_commit": "daa3158a20bf6f72712edef9ef18cd281bef33a8",
+      "role": "Prospective same-body owned World acquisition, selected loader outcomes, explicit first native ownership status and TileEntity lookup/activation joins. Current native-source admissions only; compilation, actual component controls and remaining caller/Arrow flight qualification stay separate. Historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1643881,
+        "sha256": "f6f37d5107a7e45578de0239afc718985e82d17c095396be5ad3418751510c97"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 716216,
+              "sha256": "fb03982192afcc314fec8dd1784d9cb789e2c0f37f72302ed4d6dd614f6ee3d4"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 813910,
+              "sha256": "c047e4a6ae2b27a48cf37322913523114923edc89291f2a807df2649f5a3d5c2"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 713195,
+              "sha256": "bbe8e3b732de2b8f55fffb284a3ec5a3ff2d6955abcac0b27907799f12401b61"
+            },
+            "tests/tools/world/test_kernel_execution.py": {
+              "bytes": 21474,
+              "sha256": "15340c1ed6c9fd28214e585f557c54df8e73ddf32afded749d987f0defdeaf27"
+            }
+          },
+          "added": [],
+          "current_count": 5831
+        }
+      }
+    },
+    {
+      "from_commit": "daa3158a20bf6f72712edef9ef18cd281bef33a8",
+      "role": "Prospective same-body owned World acquisition, selected loader outcomes, explicit first native ownership status and TileEntity lookup/activation joins. Current native-source admissions only; compilation, actual component controls and remaining caller/Arrow flight qualification stay separate. Historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1645512,
+        "sha256": "1fb5799aaa25986ed8892c11f2476b4e13e9f7a4fef897e9bc749af44981c290"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 717225,
+              "sha256": "34f68b219d7fc4e42aa2a841e1823442fb1f5ad1aa13bc794bcb16fd7bc3dd7d"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 814921,
+              "sha256": "fe0c808d47f0841b3c3019555d992ee317bb0e1ec881e1bfba046bb5a6735e18"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 714204,
+              "sha256": "0bbc850227aef6b103e8cc9a6c334856f5caa9bb812555140b0305ac6ad88df6"
+            },
+            "tests/world/runtime/world_access/test_kernel_execution.c": {
+              "bytes": 24806,
+              "sha256": "c09599624955a92247cd7a7091f956b6d7e39b8e5edc4e4897f1a80d80f9a45a"
+            },
+            "tests/tools/world/kernel_execution_bundle.json": {
+              "bytes": 4428,
+              "sha256": "d6cbeb2e4308f2efee1373fcc8fda5092e38a633ac02119eac0140235e045553"
+            },
+            "tests/tools/world/test_kernel_execution.py": {
+              "bytes": 25690,
+              "sha256": "932fc5efd975591066634ceaf7cf0d8194026878c45b5b216f3faa72969b986d"
+            }
+          },
+          "added": [],
+          "current_count": 5831
+        }
+      }
+    },
+    {
+      "from_commit": "daa3158a20bf6f72712edef9ef18cd281bef33a8",
+      "role": "Prospective same-body owned World acquisition, selected loader outcomes, explicit first native ownership status and TileEntity lookup/activation joins. Current native-source admissions only; compilation, actual component controls and remaining caller/Arrow flight qualification stay separate. Historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1647552,
+        "sha256": "4675db0224ae53ec9223931d94977fdf985811703a33cf87ba3c89c9d5adc214"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 718444,
+              "sha256": "6c466d929566680b6f41f9045bf68da88e0585e95f9ece431fbd6886b09c2e48"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 816142,
+              "sha256": "220c84b18ca8759f860848fc2be4a101c92701960926890a3ff6834f1201cd32"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 715423,
+              "sha256": "6183ee9822f45a0865f7e8f11f66d1771b1d76c7b51deda86cd34c18c3aa29ff"
+            },
+            "tests/world/runtime/world_access/test_kernel_execution.c": {
+              "bytes": 25323,
+              "sha256": "6fbce0482ad938a647c95b111dea0348022fcfe80c92a0f89d9d68f90f69223f"
+            },
+            "tests/tools/world/kernel_execution_bundle.json": {
+              "bytes": 4428,
+              "sha256": "8ac2d0fc892658e72689aa2eed64bdebddc0f6dae1d7b7f3d340e846b9841b44"
+            },
+            "tests/tools/world/test_kernel_execution.py": {
+              "bytes": 25690,
+              "sha256": "787a8f703ed51f3d9e40a1cd5fb4f71f64e60d7b1ad6b51ae613781e014c2b12"
+            }
+          },
+          "added": [],
+          "current_count": 5831
+        }
+      }
+    },
+    {
+      "from_commit": "daa3158a20bf6f72712edef9ef18cd281bef33a8",
+      "role": "Prospective same-body owned World acquisition, selected loader outcomes, explicit first native ownership status and TileEntity lookup/activation joins. Current native-source admissions only; compilation, actual component controls and remaining caller/Arrow flight qualification stay separate. Historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1649592,
+        "sha256": "1c43aa928818edb8f439adf558538eb7a1bd23e83af654efc7498cac8a97c8f7"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/parity.md": {
+              "bytes": 221223,
+              "sha256": "8d6891d9f38f2a9ccd5df5a28d8a09f2075218712a0b5d14e91647fbfbb3c28b"
+            },
+            "docs/testing.md": {
+              "bytes": 573481,
+              "sha256": "482d6f35eb8210169ac9c9bab4d8c9f6fb7275e6a0385ba229b726a1dc7fac0f"
+            },
+            "docs/world/world-execution.md": {
+              "bytes": 7203,
+              "sha256": "2097caf43d28cdba093d2bfec7d013589b542fce7614a575e639a06a54514a4a"
+            }
+          },
+          "added": [
+            "docs/world/world-acquisition-execution.md"
+          ],
+          "current_count": 5832
         }
       }
     }

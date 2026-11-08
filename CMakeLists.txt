@@ -663,6 +663,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/saving/saving.c
     src/world/runtime/saving/player_metadata.c
     src/world/runtime/runtime.c
+    src/world/runtime/runtime_execution.c
     src/world/runtime/activation.c
     src/world/runtime/registry.c
     src/world/runtime/construction.c
@@ -5696,6 +5697,7 @@ include(cmake/tests/skeleton_fire.cmake)
 include(cmake/tests/arrow_base.cmake)
 include(cmake/tests/world_access_handoff.cmake)
 include(cmake/tests/world_execution_nested.cmake)
+include(cmake/tests/world_kernel_execution.cmake)
 include(cmake/client_respawn.cmake)
 include(cmake/client_bed_respawn.cmake)
 include(cmake/client_bed_interaction.cmake)
