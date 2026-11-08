@@ -35,6 +35,9 @@ def scalars(value):
 
 def completed_native(child):
     c = child.capture_report
+    P.need(all(type(c.get(key)) is int for key in
+               ('exit', 'timeout_seconds', 'limit', 'stdout_bytes', 'stderr_bytes')),
+           'native capture counts and budgets require actual integers')
     P.need(type(child.returncode) is int and child.returncode == 0 and type(c.get('exit')) is int and c['exit'] == 0 and
            c.get('timed_out') is False and c.get('output_overflow') is False and c.get('pipe_capture_complete') is True and
            c.get('reaped') is True and c.get('reader_errors') == {} and c.get('timeout_seconds') == TIMEOUT and

@@ -10,7 +10,9 @@
  * owns an independent compound containing id plus ten base/Item fields,
  * eight base/FallingSand fields, or8/9/11 base/Minecart fields selected by its
  * actual Type. It contains no retained unknown tags. The eleven client Mobs
- * add id plus their exact base/Living/own fields. Name/dead/d27 order is unchanged.
+ * add id plus their exact base/Living/own fields. Client Arrow emits id plus
+ * its15 base/own fields (16 total), with no shooter/age schema. Name/dead/d27
+ * order is unchanged.
  * Entity, Stack and class owners are borrowed and excluded from tree budgets.
  * Peak allocation includes the intermediate leaf tree while copying the final
  * compound; bounded C-stack views are excluded. Output/count/error must be
@@ -30,6 +32,12 @@ mc_entity_nbt_status mc_entity_save_nbt(mc_entity *entity, const mc_nbt_limits *
  * World remains an explicit dependency until that initializer has genuinely
  * returned. No default Registry, fake constructor or server Mob body is used.
  * Complete Mob child causes use the selected MOB diagnostic detail.
+ * A canonical client Arrow uses its actual SL World-only constructor, then
+ * the whole SN.e/SL.a reader outside the catch at66. It needs no Math or
+ * shooter and starts with genuine constructor defaults c=null and j/k=0.
+ * Its constructor error is a complete value-only ARROW_CALL selection;
+ * later own-tag failures retain distinct base/SL/NU sites under ARROW.
+ * This factory does not infer a shooter from unknown tags or admit server LP.
  * FallingSand has no Item Math draws or Stack substitute. IDs/profile effects
  * survive a later failure; factory-local owners are released on failure.
  * Minecart's array/earlier semantic prefixes remain real until that local

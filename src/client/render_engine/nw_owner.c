@@ -120,7 +120,8 @@ bool mc_client_nw_active_use(mc_client_render_engine_classes *c, mc_client_graph
         candidate->arena.options = c->nw.options;
         candidate->last_store_pc = -1;
         if (construct(candidate, e)) {
-            c->nw.a = candidate; /* actual static a17, only after ctor14 */
+            c->nw.published = candidate; /* Native occurrence; never follows later a stores. */
+            c->nw.a = candidate;         /* actual static a17, only after ctor14 */
             c->nw.candidate = NULL;
             c->nw.phase = MC_CLIENT_RENDER_ENGINE_READY;
             *out = candidate;
@@ -142,11 +143,12 @@ bool mc_client_nw_active_use(mc_client_render_engine_classes *c, mc_client_graph
 bool mc_client_nw_inspect(const mc_client_render_engine_classes *c, mc_client_nw_state *out) {
     if (c == NULL || out == NULL)
         return false;
-    const mc_client_tessellator *o = c->nw.a == NULL ? c->nw.candidate : c->nw.a;
+    const mc_client_tessellator *o = c->nw.published == NULL ? c->nw.candidate : c->nw.published;
     *out = (mc_client_nw_state){.phase = c->nw.phase,
                                 .static_b = c->nw.b,
                                 .static_c = c->nw.c,
                                 .a = c->nw.a,
+                                .published_owner = c->nw.published,
                                 .failed_candidate = c->nw.candidate,
                                 .failure = c->nw.failure,
                                 .last_store_pc = o == NULL ? -1 : o->last_store_pc};
@@ -166,10 +168,17 @@ bool mc_client_nw_fields_get(const mc_client_tessellator *o, mc_client_nw_fields
 }
 
 void mc_client_nw_free_namespace(mc_client_render_engine_classes *c) {
-    mc_client_tessellator *o = c->nw.a == NULL ? c->nw.candidate : c->nw.a;
-    if (o != NULL) {
-        mc_client_render_arena_free(&o->arena);
-        free(o);
+    mc_client_tessellator *published = c->nw.published, *candidate = c->nw.candidate;
+    if (candidate == published)
+        candidate = NULL;
+    if (published != NULL) {
+        mc_client_render_arena_free(&published->arena);
+        free(published);
     }
-    c->nw.a = c->nw.candidate = NULL;
+    if (candidate != NULL) {
+        mc_client_render_arena_free(&candidate->arena);
+        free(candidate);
+    }
+    /* a may name a borrowed replacement. Native destruction never frees it. */
+    c->nw.a = c->nw.published = c->nw.candidate = NULL;
 }

@@ -157,12 +157,13 @@ also compare all three actual Gaussian returns, including zero-speed/spread
 cases. Raw excluded values and the 3,256 source-only JDI events remain in their
 own scope. These finite comparisons do not qualify downstream consumers.
 
-The next callers are still explicit frontiers. GS's direct-Arrow damage branch
-stops before shooter reads117/127; natural SL impact would instead pass current
-shooter c at737 to victim damage741 with literal4. Skeleton firing, Arrow's
-1537-byte tick/collision body, pickup, MC rendering and Arrow NBT hooks are not
-implemented by this package. Existing factory/read/write/tick/render refusals
-remain reached refusals. Future NBT hooks must preserve c/j/k when reading an
-existing Arrow; only a genuinely fresh constructor supplies null/zero defaults.
-Constructor success and World publication provide no natural Skeleton-play,
-returned frame, full-save, audiovisual or FPS qualification.
+The later [NBT and storage](arrow-nbt.md) and [MC renderer](arrow-rendering.md)
+now have their separate evidence. GS's direct-Arrow branch performs the actual
+shooter reads117/127 for the ally-helper local while preserving the original
+Arrow for LS158; its new controls are native, separate from this constructor
+comparison. Natural SL impact would instead pass current shooter c at737 to
+victim damage741 with literal4. Skeleton firing, Arrow's 1537-byte tick/collision
+body and pickup remain reached frontiers. Existing-reader NBT preserves c/j/k;
+only a genuinely fresh constructor supplies null/zero defaults. Constructor
+success and World publication provide no natural Skeleton-play, returned
+World frame, complete source Store, audiovisual or FPS qualification.

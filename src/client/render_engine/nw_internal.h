@@ -5,7 +5,11 @@
 typedef struct mc_client_nw_namespace {
     mc_client_render_engine_phase phase;
     bool b, c;
-    mc_client_tessellator *a, *candidate;
+    mc_client_tessellator *a; /* Actual mutable Source static field. */
+    /* Immutable native successful allocation occurrence, independent of a.
+     * The class namespace owns its lifetime, without a counted owner cycle. */
+    mc_client_tessellator *published;
+    mc_client_tessellator *candidate; /* Only a failed/in-progress constructor. */
     mc_client_render_engine_options options;
     mc_client_graphics_error failure;
 } mc_client_nw_namespace;

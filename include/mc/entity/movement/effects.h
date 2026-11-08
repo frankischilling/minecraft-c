@@ -285,7 +285,8 @@ mc_entity_status mc_entity_effect_contact_portal(mc_entity *entity, mc_entity_ef
  * jl.x statistic, then enters LS with virtual GS armor/remainder/health and
  * inherited random.hurt sound. Full/repeated/remote returns retain their real
  * order. Damage wake and Living ally alerts use their retained actual source
- * calls; Arrow ownership remains an explicit reached dependency. Fatal Player damage executes
+ * calls. A direct Arrow resolves its counted shooter for the ally helper only;
+ * the original Arrow still reaches LS damage. Fatal Player damage executes
  * actual GS/LS death, Inventory scatter, motion and death statistic. Player K stores be through
  * super and executes both actual Container closes, including aliases. Failed
  * child work remains owned by the same Player until checked native cleanup.

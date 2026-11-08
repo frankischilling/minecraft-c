@@ -16,7 +16,7 @@ static bool draw(mc_client_tessellator *, mc_client_display *, mc_client_graphic
 
 static bool enter(mc_client_tessellator *o, mc_client_graphics_error *e) {
     *e = (mc_client_graphics_error){0};
-    if (o == NULL || o->classes->nw.a != o ||
+    if (o == NULL || o->classes == NULL || o->classes->nw.published != o ||
         o->classes->nw.phase != MC_CLIENT_RENDER_ENGINE_READY) {
         mc_client_graphics_fail(
             e, o == NULL ? MC_CLIENT_GRAPHICS_NULL_REFERENCE : MC_CLIENT_GRAPHICS_INVALID_PHASE,

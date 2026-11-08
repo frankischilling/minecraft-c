@@ -9,6 +9,8 @@
  * current successfully read READY Stack through that Stack's provenance owner;
  * missing Item uses an empty Compound. FallingSand owns an independent Entity
  * source only: no Item getter, Stack requirement or Stack attachment occurs.
+ * Client Arrow uses that same independent whole-root attachment. Neither
+ * attachment nor save mutates c, its counted shooter occurrence, j or k.
  * Client Mobs use the same independent whole-input root copy after their
  * actual factory/read returns. Wolf's counted NBT owner String is charged by
  * byte inspection; no source String/watcher field is rewritten by attachment.
@@ -77,7 +79,9 @@ const mc_nbt_tag *mc_entity_storage_source(const mc_entity *entity);
  * NULL h contributes no slots; actual h/header/composite requests already
  * belong to direct Entity bytes. Optional generation/sidecar/tree allocations
  * stay outside the EntityClass constructor ledger. This remains a one-Entity
- * operation scope, not an aggregate World/process allocation inspector. */
+ * operation scope, not an aggregate World/process allocation inspector.
+ * Arrow's actual direct object and source tree are included; its separately
+ * owned Living shooter is another Entity and is excluded from this scope. */
 mc_entity_nbt_status mc_entity_storage_native_bytes(const mc_entity *entity, size_t *out,
                                                     mc_entity_nbt_error *error);
 
@@ -91,6 +95,9 @@ mc_entity_nbt_status mc_entity_storage_native_bytes(const mc_entity *entity, siz
  * Stack overlay; unknown fields remain native preservation, even an unknown
  * field whose name happens to be Item. Replacing an ItemEntity Stack without
  * provenance therefore cannot resurrect the Entity's old Item unknown fields.
+ * Arrow likewise overlays all16 generated id/base/own keys directly over
+ * its retained root. Unknown names, including Item or shooter-like names,
+ * remain opaque preservation and never become Arrow references or ages.
  * Retained positions/root name and unknown fields survive; missing generated
  * names append in generated order. This preservation policy is stronger than
  * original fresh-compound saves, not original byte/order equivalence.

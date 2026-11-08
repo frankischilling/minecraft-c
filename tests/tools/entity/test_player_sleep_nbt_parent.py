@@ -402,6 +402,11 @@ def compare_rows(rows, original, declarations, witnesses):
                 before['info_fields']['Info.seed']==declared['fixture']['world_constructor']['seed'] and
                 [before['info_fields']['Info.spawn_'+axis] for axis in ('x','y','z')]==
                     declared['fixture']['world_spawn'], 'declared actual World inputs')
+        # The producer selects FD's direct-Info overload. Its observed s is
+        # a bootstrap discriminator, independent of constructor clock/Random.
+        scalar_count+=compare_value(before['world_fields']['FD.s'],
+            witness['before']['world_fields']['fd.s'],
+            '$.case'+str(n)+'.source_constructor.FD.s')
         require(exact(before['input_tree'],declared['input_tree']) and
                 exact(before['input_tree'],after['input_tree']) and exact(after,retired),
                 'immutable actual typed input and checked-retirement source preservation')
@@ -612,6 +617,8 @@ def native_controls(payload, original, declarations, witnesses):
     mutation('input/entry-pose',0,[(('before','selected','position',0),'4022000000000000')])
     mutation('input/remote-World-B',0,[((phase,'world_fields','FD.B'),True) for phase in ('before','after','retired')])
     mutation('input/seed',0,[((phase,'info_fields','Info.seed'),5144) for phase in ('before','after','retired')])
+    mutation('input/source-constructor-FD.s',0,[((phase,'world_fields','FD.s'),
+             not raw[0]['before']['world_fields']['FD.s']) for phase in ('before','after','retired')])
     mutation('input/READY',0,[((phase,'actor_fields','native.phase'),0) for phase in ('before','after','retired')])
     mutation('within-call/Random',0,after_changes(('random',0,0),_control_other(raw[0]['after']['random'][0][0])))
     mutation('within-call/rooted-BR',0,after_changes(('rooted_entry_coordinates',1,0),43))

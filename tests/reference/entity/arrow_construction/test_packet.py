@@ -128,7 +128,10 @@ class ProtocolControls(unittest.TestCase):
         rows, checks = N.completed_native(SimpleNamespace(returncode=0, stdout=data, stderr=b'', capture_report=receipt))
         self.assertEqual((len(rows), checks), (40, 123))
         for key, value in (('exit', 1), ('timed_out', True), ('output_overflow', True), ('pipe_capture_complete', False),
-                           ('reaped', False), ('reader_errors', {'stdout': 'lost'}), ('stdout_bytes', len(data) - 1)):
+                           ('reaped', False), ('reader_errors', {'stdout': 'lost'}), ('stdout_bytes', len(data) - 1),
+                           ('stderr_bytes', False), ('stderr_bytes', 0.0),
+                           ('stdout_bytes', float(len(data))),
+                           ('timeout_seconds', float(N.TIMEOUT)), ('limit', float(N.STREAM_LIMIT))):
             changed = copy.deepcopy(receipt); changed[key] = value
             with self.subTest(key=key), self.assertRaises(ValueError):
                 N.completed_native(SimpleNamespace(returncode=0, stdout=data, stderr=b'', capture_report=changed))

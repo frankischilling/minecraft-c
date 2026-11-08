@@ -1,6 +1,7 @@
 #ifndef MC_ENTITY_NBT_ERRORS_H
 #define MC_ENTITY_NBT_ERRORS_H
 
+#include "mc/entity/arrow/construction.h"
 #include "mc/entity/errors.h"
 #include "mc/entity/minecart/inventory_errors.h"
 #include "mc/entity/mob/construction.h"
@@ -55,7 +56,9 @@ typedef enum mc_entity_nbt_late_hook {
     MC_ENTITY_NBT_LATE_CART,
     MC_ENTITY_NBT_LATE_PLAYER,
     MC_ENTITY_NBT_LATE_MOB,
-    MC_ENTITY_NBT_LATE_MOB_CALL
+    MC_ENTITY_NBT_LATE_MOB_CALL,
+    MC_ENTITY_NBT_LATE_ARROW,
+    MC_ENTITY_NBT_LATE_ARROW_CALL
 } mc_entity_nbt_late_hook;
 
 typedef enum mc_entity_mob_nbt_call_kind {
@@ -99,6 +102,11 @@ typedef struct mc_entity_mob_call_detail {
     mc_entity_mob_call_payload payload;
 } mc_entity_mob_call_detail;
 
+typedef struct mc_entity_arrow_nbt_detail {
+    mc_arrow_site site, child;
+    bool returned;
+} mc_entity_arrow_nbt_detail;
+
 /* Passive per-attempt frames. Zero PC normally denotes native admission or
  * unreached work; initializer0 is also the genuine first namespace allocation.
  * Use status/operation and the whole Registry cause to distinguish that site.
@@ -129,10 +137,10 @@ typedef struct mc_entity_nbt_error {
             /* Concrete late hook selections; index is the Items list occurrence,
              * while inventory.slot is meaningful only when slot_selected is true.
              * Complete selected lower errors reuse construction/stack above. */
-            /* NONE exposes the legacy fresh Cart defaults. CART, PLAYER and MOB expose
+            /* NONE exposes the legacy fresh Cart defaults. CART, PLAYER, MOB and ARROW expose
              * only their complete selected arm; check late_hook before reading it.
              * Common/base/namespace/Stack/codec fields above remain independent for
-             * these four selections. MOB_CALL instead selects the complete suffix
+             * these selections. MOB_CALL/ARROW_CALL instead select the complete suffix
              * below; use its passive expansion before inspecting lower causes. */
             union {
                 struct {
@@ -146,10 +154,13 @@ typedef struct mc_entity_nbt_error {
                 };
 
                 mc_entity_mob_nbt_detail mob;
+                mc_entity_arrow_nbt_detail arrow;
             };
         };
 
         mc_entity_mob_call_detail mob_call;
+        /* Value-only constructor receipt; no owner or replay rights. */
+        mc_arrow_error arrow_call;
     };
 
     /* Independent of every late detail arm. An interrupted GS93 owns this
@@ -171,12 +182,15 @@ bool mc_entity_nbt_error_retire(mc_entity_nbt_error *);
 void mc_entity_nbt_error_init(mc_entity_nbt_error *error);
 /* Passive concrete-detail selection. Repeated selection preserves the active
  * child; changing arms initializes that entire selected payload. Common
- * diagnostics remain independent for NONE/CART/PLAYER/MOB. Leaving MOB_CALL
+ * diagnostics remain independent for NONE/CART/PLAYER/MOB/ARROW. Leaving MOB_CALL
  * restores its exact current Entity/Stack and fresh codec/EntityList values
- * before selecting the new arm. NULL is a no-op. No source method is entered. */
+ * before selecting the new arm. Leaving ARROW_CALL restores its current Entity
+ * cause and fresh Stack/codec/EntityList values. NULL is a no-op. No source
+ * method is entered. */
 void mc_entity_nbt_select_cart_detail(mc_entity_nbt_error *error);
 void mc_entity_nbt_select_player_detail(mc_entity_nbt_error *error);
 void mc_entity_nbt_select_mob_detail(mc_entity_nbt_error *error);
+void mc_entity_nbt_select_arrow_detail(mc_entity_nbt_error *error);
 /* Capture a whole actual constructor call by value. The admitted forms are
  * no first failure, a first failure with identical current lower causes, or
  * an erroneous-class use with fresh current lower causes. False preserves
@@ -192,6 +206,11 @@ bool mc_entity_nbt_select_mob_call_detail(mc_entity_nbt_error *, const mc_mob_er
  * codec/EntityList causes are the documented fresh values. Switching back to
  * another late arm restores those current common causes by value. */
 bool mc_entity_nbt_mob_call_error(const mc_entity_nbt_error *, mc_mob_error *out);
+/* Arrow constructor calls preserve their complete independent source, heading,
+ * Math, position and Random receipt. NULL or live sleep work is rejected;
+ * false leaves the destination unchanged. */
+bool mc_entity_nbt_select_arrow_call_detail(mc_entity_nbt_error *, const mc_arrow_error *);
+bool mc_entity_nbt_arrow_call_error(const mc_entity_nbt_error *, mc_arrow_error *out);
 mc_entity_nbt_error mc_entity_nbt_empty_error(void);
 const char *mc_entity_nbt_status_string(mc_entity_nbt_status status);
 

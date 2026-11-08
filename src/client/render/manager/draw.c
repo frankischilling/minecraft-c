@@ -1,4 +1,5 @@
 #include "../../../entity/entity_internal.h"
+#include "../arrow_draw_internal.h"
 #include "../interpolation_internal.h"
 #include "draw_internal.h"
 
@@ -199,6 +200,10 @@ static bool coordinates(mc_client_render_manager_draw_call *c) {
             ? mc_client_item_draw_entered(&c->scope, renderer, c->actor_hold, c->state.x,
                                           c->state.y, c->state.z, c->state.yaw, c->state.partial,
                                           c->error.site, &c->living)
+        : strcmp(renderer->source_class, "mc") == 0
+            ? mc_client_arrow_draw_entered(&c->scope, renderer, c->actor_hold, c->state.x,
+                                           c->state.y, c->state.z, c->state.yaw, c->state.partial,
+                                           c->error.site, &c->living)
             : mc_client_living_draw_entered(&c->scope, renderer, c->actor_hold, c->state.x,
                                             c->state.y, c->state.z, c->state.yaw, c->state.partial,
                                             c->error.site, &c->living);

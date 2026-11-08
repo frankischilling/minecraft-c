@@ -160,13 +160,23 @@ including a genuine absent-Info.Player path with no nested NBT read. A separate
 case publishes the Player and enters sleep through actual calls before reading
 the saved tag; neither fixture assigns the World's sleeping result to prepare it.
 
-Windows MSVC Release and Linux Clang Debug with ASan/UBSan each match all forty
+Earlier Windows MSVC Release and Linux Clang Debug ASan/UBSan products each match all forty
 rows, 9,909 typed scalar comparisons and 58 active source positions. The native
 fixtures complete 670,991 and 670,904 checks respectively. They also check 7,600
 unselected native cells within their actual calls. Coverage includes four Bed
 directions, missing/non-Bed cells, blocked exits, remote Worlds, signed timers,
 Health zero, incomplete and malformed Spawn tags, absent/wrong Score, actual
 World/bounds null failures and retained cleanup refusal followed by repair.
+
+The current fixture selects the same direct-metadata World constructor as
+the sealed producer. Its previous load-or-create selection could run initial
+spawn search and publish Items before the declared-empty setup. A regression
+first rejects retained native BEFORE `FD.s=true` against original `fd.s=false`,
+then the fixture changes only its constructor enum. Current Windows and
+sanitized Linux each match 9,949 scalars across all forty rows, including the
+new constructor discriminator. All 58 active-site and 7,600 unselected-cell
+checks remain. Pure controls reject a consistent wrong-constructor field
+across before/after/retired snapshots, alongside every earlier control.
 
 The observer pins entry coordinates and retains old Stack occurrences.
 Native replaced Inventory backing arrays end at replacement: their old slot

@@ -238,10 +238,20 @@ jobs:
             windows-2022-msvc-x64-sccache-v0.19.0-v1-
       - name: Set up sccache
         id: sccache
+        continue-on-error: true
         uses: Mozilla-Actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
         with:
           version: v0.19.0
           disable_annotations: true
+      - name: Select compiler cache launcher
+        run: |
+          $compilerCacheLauncher = ''
+          if ('${{ steps.sccache.outcome }}' -eq 'success') {
+            $compilerCacheLauncher = 'sccache'
+          } else {
+            Write-Host 'Compiler cache unavailable; build and tests will use MSVC directly.'
+          }
+          "MC_COMPILER_CACHE_LAUNCHER=$compilerCacheLauncher" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       # Cache archive bytes only. URL_HASH and fresh extraction remain required.
       - name: Restore pinned dependency archives
         id: dependency-archives
@@ -260,8 +270,8 @@ jobs:
           python -B scripts/development/configure_with_retry.py -- cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
           -DCMAKE_POLICY_DEFAULT_CMP0141=NEW
           -DCMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded
-          -DCMAKE_C_COMPILER_LAUNCHER=sccache
-          -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
+          "-DCMAKE_C_COMPILER_LAUNCHER=$env:MC_COMPILER_CACHE_LAUNCHER"
+          "-DCMAKE_CXX_COMPILER_LAUNCHER=$env:MC_COMPILER_CACHE_LAUNCHER"
           "-DJava_JAVA_EXECUTABLE=$env:JAVA_HOME/bin/java.exe"
           "-DJava_JAVAC_EXECUTABLE=$env:JAVA_HOME/bin/javac.exe"
           -DMC_ENABLE_JAVA_REFERENCE_TESTS=ON
@@ -281,7 +291,10 @@ jobs:
       - name: Build
         id: build
         run: |
-          sccache --zero-stats
+          if ('${{ steps.sccache.outcome }}' -eq 'success') {
+            sccache --zero-stats
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
           cmake --build build --config Debug --parallel 4
       - name: Report compiler cache
         if: always() && steps.sccache.outcome == 'success' && (steps.build.outcome == 'success' || steps.build.outcome == 'failure')

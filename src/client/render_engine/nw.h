@@ -27,7 +27,11 @@ typedef struct mc_client_nw_fields {
 typedef struct mc_client_nw_state {
     mc_client_render_engine_phase phase;
     bool static_b, static_c;
-    const mc_client_tessellator *a, *failed_candidate;
+    const mc_client_tessellator *a; /* Actual nullable/replaced Source field. */
+    const mc_client_tessellator *published_owner, *failed_candidate;
+    /* Fields/constructor metadata below describe the owned successful
+     * allocation, or the failed constructor candidate before publication.
+     * They never inspect or dereference a borrowed replacement stored in a. */
     mc_client_nw_fields fields;
     size_t constructor_bytes, constructor_allocations;
     int32_t last_store_pc;
@@ -47,7 +51,8 @@ bool mc_client_nw_inspect(const mc_client_render_engine_classes *, mc_client_nw_
  * later singleton field replacement. Caller keeps its class owner live. */
 bool mc_client_nw_fields_get(const mc_client_tessellator *, mc_client_nw_fields *);
 
-/* Actual methods on the genuine singleton. These preserve source stores and
+/* Actual methods on the genuinely owned successful receiver, including a
+ * retained local after Source a changes. These preserve source stores and
  * per-call class holds. Caller keeps that real class context live/exclusive.
  * Default c=false CPU construction and vertex work require no Display. */
 bool mc_client_nw_begin(mc_client_tessellator *, int32_t mode, mc_client_graphics_error *);

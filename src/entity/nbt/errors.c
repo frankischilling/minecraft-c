@@ -49,6 +49,15 @@ static bool empty_first(const mc_mob_class_cause *first) {
 }
 
 static void restore_common(mc_entity_nbt_error *error) {
+    if (error->late_hook == MC_ENTITY_NBT_LATE_ARROW_CALL) {
+        const mc_entity_error entity = error->arrow_call.entity;
+        error->construction = entity;
+        error->stack = (mc_item_stack_error){.status = MC_ITEM_STACK_OK};
+        error->nbt = (mc_nbt_error){0};
+        error->registry = (mc_entity_registry_error){0};
+        error->late_hook = MC_ENTITY_NBT_LATE_NONE;
+        return;
+    }
     if (error->late_hook != MC_ENTITY_NBT_LATE_MOB_CALL)
         return;
     mc_entity_error entity = {0};
@@ -123,8 +132,47 @@ void mc_entity_nbt_select_mob_detail(mc_entity_nbt_error *error) {
     error->late_hook = MC_ENTITY_NBT_LATE_MOB;
 }
 
+void mc_entity_nbt_select_arrow_detail(mc_entity_nbt_error *error) {
+    static const mc_entity_arrow_nbt_detail empty = {.site = {.pc = -1}, .child = {.pc = -1}};
+    if (error == NULL || error->late_hook == MC_ENTITY_NBT_LATE_ARROW)
+        return;
+    restore_common(error);
+    error->arrow = empty;
+    error->late_hook = MC_ENTITY_NBT_LATE_ARROW;
+}
+
+bool mc_entity_nbt_select_arrow_call_detail(mc_entity_nbt_error *error,
+                                            const mc_arrow_error *call) {
+    if (error == NULL || call == NULL || error->sleep_work != NULL)
+        return false;
+    if (error->late_hook != MC_ENTITY_NBT_LATE_ARROW_CALL) {
+        static const mc_entity_error entity = {0};
+        const mc_entity_registry_error *r = &error->registry;
+        if (error->late_hook == MC_ENTITY_NBT_LATE_MOB_CALL ||
+            !same_entity(&error->construction, &entity) ||
+            error->stack.status != MC_ITEM_STACK_OK || error->stack.field != NULL ||
+            error->stack.nbt.status != MC_NBT_OK || error->stack.nbt.offset != 0 ||
+            error->nbt.status != MC_NBT_OK || error->nbt.offset != 0 ||
+            r->status != MC_ENTITY_REGISTRY_OK || r->cause != MC_ENTITY_REGISTRY_OK ||
+            r->operation != NULL || r->initializer_bytecode != 0 || r->registration_bytecode != 0 ||
+            r->class_cause != MC_ENTITY_OK)
+            return false;
+    }
+    error->arrow_call = *call;
+    error->late_hook = MC_ENTITY_NBT_LATE_ARROW_CALL;
+    return true;
+}
+
+bool mc_entity_nbt_arrow_call_error(const mc_entity_nbt_error *error, mc_arrow_error *out) {
+    if (error == NULL || out == NULL || error->late_hook != MC_ENTITY_NBT_LATE_ARROW_CALL)
+        return false;
+    *out = error->arrow_call;
+    return true;
+}
+
 bool mc_entity_nbt_select_mob_call_detail(mc_entity_nbt_error *error, const mc_mob_error *call) {
-    if (error == NULL || call == NULL)
+    if (error == NULL || call == NULL || error->sleep_work != NULL ||
+        error->late_hook == MC_ENTITY_NBT_LATE_ARROW_CALL)
         return false;
     if (error->late_hook != MC_ENTITY_NBT_LATE_MOB_CALL) {
         static const mc_entity_error entity = {0};

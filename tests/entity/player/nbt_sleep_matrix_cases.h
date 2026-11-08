@@ -853,7 +853,7 @@ static bool nsm_prepare(nsm_fixture *s, fixture *f, client_application *app,
           mc_world_provider_create(0, NULL, &s->owner.dimension, NULL) == MC_WORLD_PROVIDER_OK);
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
     limits.max_provider_chunks = 512;
-    CHECK(mc_world_runtime_allocate_world(MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE, f->classes[0],
+    CHECK(mc_world_runtime_allocate_world(MC_WORLD_RUNTIME_CLIENT_DIRECT_METADATA, f->classes[0],
                                           &limits, &s->owner.world, NULL) == MC_WORLD_STORAGE_OK);
     const mc_world_runtime_world_arguments args = {.store = s->owner.store,
                                                    .name = s->owner.name,

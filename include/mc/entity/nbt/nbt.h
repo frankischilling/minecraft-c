@@ -57,6 +57,13 @@
  * counted player-string owner; old/new copies overlap under limits, and its
  * fixed text bound remains native policy, not Java OOM timing. No generic
  * watcher setter, Mob READY gate, server mapping or later-version schema is supplied.
+ * Canonical client Arrow executes the complete SL.a hook: signed Short
+ * xTile/yTile/zTile, unsigned Byte inTile/inData/shake, exact-1 inGround and
+ * nonzero player. Earlier own stores survive a later tag failure. Its c,
+ * independent shooter occurrence and j/k remain unchanged even on failure.
+ * No shooter lookup, age reset, Math or World operation is inserted. A null
+ * Compound fails at its reached getter; native views do not represent a null
+ * Compound Map or a Map-present null named tag.
  * Caller retains exclusive live owners for the call and any retained failure.
  * A failed GS93 child and the independent entry Registry hold transfer into
  * nonnull error; retire it before clearing/reusing it. NULL error remains valid
@@ -91,6 +98,10 @@ mc_entity_nbt_status mc_entity_read_nbt(mc_entity *entity, const mc_nbt_tag *com
  * String). Delegate classes add no other tags. The concrete own-field tree
  * stays charged during final base+own copying. Semantic output excludes all
  * retained native provenance overlays.
+ * Arrow adds its eight actual own fields for15 total: three signed Shorts,
+ * three signed Bytes and two Boolean Bytes. Source int narrowing is preserved;
+ * no shooter or age tag is written. Its separate own-field tree remains
+ * charged during the final15-field copy, and c/its hold/j/k remain unchanged.
  * Minecart Stack records use actual fields in every live phase, with no
  * READY-only/provenance builder, ID validation, count clamp or inventory callback.
  * No id/dead/namespace/Boolean c wrapper or retained unknown tags are supplied.

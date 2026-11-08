@@ -80,10 +80,10 @@ def bits(values, width):
     return [int.from_bytes(struct.pack('>' + width, value), 'big') for value in values]
 
 
-def player_fields(player, health):
+def player_fields(player, health, inventory_type=1):
     require(player['Health'] == [2, health] and player['Dimension'] == [3, 0] and
             player['Sleeping'] == [1, 0] and player['SleepTimer'] == [2, 0] and
-            player['Inventory'] == [9, [10, []]] and player['Score'] == [3, 0] and
+            player['Inventory'] == [9, [inventory_type, []]] and player['Score'] == [3, 0] and
             all(name not in player for name in ('SpawnX', 'SpawnY', 'SpawnZ')),
             'Actual awake unarmored Player, empty Inventory and unchanged spawn/score')
 
@@ -91,7 +91,7 @@ def player_fields(player, health):
 def input_check(nbt, helper, level_path, directory):
     data = nbt.inflate(nbt.read(level_path), 31)['Data'][1]
     player = data['Player'][1]
-    player_fields(player, 20)
+    player_fields(player, 20, inventory_type=10)
     saved_y = 64. + struct.unpack('>f', struct.pack('>f', 1.62))[0]
     require(data['Time'] == [4, 13000] and player['OnGround'] == [1, 1] and
             player['Pos'] == [9, [6, bits((.5, saved_y, .5), 'd')]] and
@@ -185,6 +185,12 @@ def statistics_readback(game, assets):
     return result
 
 
+def saved_zombie(entities):
+    zombies = [entity for entity in entities if entity.get('id') == [8, 'Zombie']]
+    require(len(zombies) == 1, 'Exactly one committed saved Zombie')
+    return zombies[0]
+
+
 def readback(nbt, helper, saves, evidence):
     player = nbt.Nbt(nbt.read(evidence / 'zombie-player-paused.nbt')).root()
     zombie = nbt.Nbt(nbt.read(evidence / 'zombie-npc-paused.nbt')).root()
@@ -198,19 +204,48 @@ def readback(nbt, helper, saves, evidence):
         require(player[name] == saved_player[name], 'Paused Player matches ordinary save: ' + name)
     require(zombie['id'] == [8, 'Zombie'] and zombie['Health'] == [2, 20] and
             zombie['DeathTime'] == [2, 0], 'Actual canonical surviving Zombie snapshot')
-    entities = []
-    for record in helper.region_records(saves / 'alpha/region').values():
-        level = nbt.Nbt(helper.record_raw(record)).root()['Level'][1]
+    entities, chunks = [], []
+    for coordinate, record in helper.region_records(saves / 'alpha/region').items():
+        raw = helper.record_raw(record)
+        level = nbt.Nbt(raw).root()['Level'][1]
         entities.extend(level['Entities'][1][1])
-    require(len(entities) == 1 and entities[0]['id'] == [8, 'Zombie'], 'Exactly one committed saved Zombie')
+        chunks.append(dict(coordinate=list(coordinate), bytes=len(raw),
+                           sha256=hashlib.sha256(raw).hexdigest(), entities=level['Entities'][1][1]))
+    saved = saved_zombie(entities)
     for name in ('id', 'Pos', 'Motion', 'Rotation', 'Health', 'HurtTime', 'DeathTime', 'AttackTime'):
-        require(zombie[name] == entities[0][name], 'Paused Zombie matches ordinary save: ' + name)
+        require(zombie[name] == saved[name], 'Paused Zombie matches ordinary save: ' + name)
     return dict(time=data['Time'][1], player_health=15, zombie_health=20,
-                saved_zombies=1, sleeping=False, inventory=[], snapshots_match_save=True)
+                saved_zombies=1, sleeping=False, inventory=[], snapshots_match_save=True,
+                saved_entities=len(entities), additional_entities=[e for e in entities if e is not saved],
+                saved_chunk_inventory=chunks)
 
 
 def self_test():
     world, nbt, helper = bed.modules()
+    # Parser-only saved-output controls, separate from the authored input tree.
+    written = {'Health': [2, 15], 'Dimension': [3, 0], 'Sleeping': [1, 0],
+               'SleepTimer': [2, 0], 'Inventory': [9, [1, []]], 'Score': [3, 0]}
+    player_fields(written, 15)
+    target = {'id': [8, 'Zombie']}
+    ambient = {'id': [8, 'Pig']}
+    require(saved_zombie([target]) is target and saved_zombie([ambient, target]) is target,
+            'Unique saved target with separately retained ambient population')
+    for entities in ([], [ambient], [target, target], [target, ambient, target]):
+        try:
+            saved_zombie(entities)
+        except ValueError:
+            pass
+        else:
+            raise ValueError('Missing or duplicate saved Zombie accepted')
+    for name, value in (('Inventory', [9, [0, []]]), ('Inventory', [9, [10, []]]),
+                        ('Health', [2, 20]), ('Sleeping', [1, 1]), ('Score', [3, 1]),
+                        ('SpawnX', [3, 0])):
+        try:
+            player_fields({**written, name: value}, 15)
+        except ValueError:
+            pass
+        else:
+            raise ValueError('Corrupted saved Player fields accepted: ' + name)
     with tempfile.TemporaryDirectory(prefix='zombie-damage-input-') as name:
         root = Path(name)
         region = root / 'region'; region.mkdir()

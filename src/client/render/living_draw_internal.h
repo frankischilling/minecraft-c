@@ -219,6 +219,30 @@ typedef struct mc_client_living_fire_state {
     bool last_vertex_returned;
 } mc_client_living_fire_state;
 
+/* Passive MC receipts. These values neither drive Source branches nor own
+ * the captured NW local; its existing reached class hold backs that identity. */
+typedef struct mc_client_arrow_draw_state {
+    bool entered, bridge_cast_returned, previous_yaw_read, previous_pitch_read;
+    bool early_returned, texture_returned, matrix_pushed, position_translated;
+    bool yaw_rotated, pitch_rotated, nw_captured, rescale_enabled, shake_read;
+    bool shake_math_returned, shake_rotated, fixed_rotated, scaled, tail_translated;
+    bool rescale_disabled, matrix_popped, returned;
+    uintptr_t receiver_identity, actor_identity, nw_identity;
+    float guard_yaw, guard_pitch, yaw_reads[3], pitch_reads[3];
+    float position[3], yaw, pitch, scale, shaft_uv[4], end_uv[4];
+    int32_t shake;
+    float shake_remaining, shake_argument, shake_sine, shake_rotation;
+    size_t normals, loop_tests, shaft_rotations, vertex_attempts, vertices;
+    size_t begin_attempts, begins, draw_attempts, draws;
+    bool begin_returned[6], draw_returned[6];
+    uintptr_t nw_words_identity[6];
+    int32_t nw_words_before_draw[6], nw_vertices_before_draw[6], nw_mode[6];
+    bool nw_writing_before_draw[6], nw_writing_after_draw[6];
+    double last_vertex_arguments[5];
+    int32_t last_vertex_pc;
+    bool last_vertex_returned;
+} mc_client_arrow_draw_state;
+
 typedef struct mc_client_living_draw_state {
     bool returned, primary_event_returned, primary_render_returned;
     bool pass_attempted[4], pass_result[4], pass_render_returned[4];
@@ -251,6 +275,7 @@ typedef struct mc_client_living_draw_state {
     mc_client_living_overlay_state hurt_overlay, color_overlay;
     bool overlay_state_restored;
     mc_client_living_fire_state fire;
+    mc_client_arrow_draw_state arrow;
 
     struct {
         bool entered, initial_stack_returned, sneaking_returned, sneaking;

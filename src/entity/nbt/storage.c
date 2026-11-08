@@ -1,5 +1,6 @@
 #include "mc/entity/nbt/storage.h"
 
+#include "../arrow/internal.h"
 #include "../entity_internal.h"
 #include "../minecart/storage_internal.h"
 #include "../mob/internal.h"
@@ -105,7 +106,7 @@ mc_entity_nbt_status mc_entity_preserve_source(mc_entity *entity, const mc_nbt_t
     }
     const bool item_entity = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM);
     if (!item_entity && !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
-        !mc_entity_has_mob(entity)) {
+        !mc_entity_has_mob(entity) && !mc_entity_has_arrow(entity)) {
         fail(&frame, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Entity storage provenance concrete type");
         return publish(frame, error);
     }
@@ -142,7 +143,7 @@ mc_entity_nbt_status mc_entity_preserve_source(mc_entity *entity, const mc_nbt_t
         return publish(frame, error);
     }
     if (!item_entity) {
-        /* FallingSand and Mobs own only this independent source tree. No Item getter,
+        /* FallingSand, Arrow and Mobs own only this independent source tree. No Item getter,
          * Stack admission, Stack attachment or subtype field store is reached. */
         mc_nbt_tree *old_source = entity->storage_source;
         entity->storage_source = source;
@@ -256,10 +257,11 @@ mc_entity_nbt_status mc_entity_save_storage_nbt(mc_entity *entity, const mc_nbt_
     }
     const bool item_entity = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM);
     const bool falling_entity = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND);
+    const bool arrow_entity = mc_entity_has_arrow(entity);
     const mc_nbt_tag *known_item = item_entity ? mc_nbt_compound_get(known, item_units, 4) : NULL;
-    const size_t known_count = item_entity ? 11u : 9u;
-    if ((!item_entity && !falling_entity) || known == NULL || known->type != MC_NBT_COMPOUND ||
-        known->value.compound.length != known_count ||
+    const size_t known_count = item_entity ? 11u : arrow_entity ? 16u : 9u;
+    if ((!item_entity && !falling_entity && !arrow_entity) || known == NULL ||
+        known->type != MC_NBT_COMPOUND || known->value.compound.length != known_count ||
         (item_entity &&
          (known_item == NULL || known_item->type != MC_NBT_COMPOUND || entity->stack == NULL))) {
         fail(&frame, MC_ENTITY_NBT_NBT_FAILED, "Entity storage save semantic result shape");

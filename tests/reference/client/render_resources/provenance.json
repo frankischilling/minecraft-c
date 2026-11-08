@@ -330,8 +330,8 @@
       "sha256": "58339fe3230b4a56ea4f36865ec1e2714bfda0b7a9e5ce66e3474d2e8ed80e76"
     },
     "include/mc/entity/nbt/errors.h": {
-      "bytes": 8725,
-      "sha256": "0eb41f52653c061f70a62380dc8f1de95ea320502e0edbc6447034dc1c53e646"
+      "bytes": 9681,
+      "sha256": "a38be8d12d094780e1bf8ac4bdbaebf67b70648ec179772434ab4061565f0234"
     },
     "include/mc/entity/particles/particle.h": {
       "bytes": 15393,
@@ -998,20 +998,20 @@
       "sha256": "5f66c590611f2f30fa62712244a6ea1d91e8f113413d3db39ec5dd999655baf1"
     },
     "src/client/render_engine/nw.c": {
-      "bytes": 27005,
-      "sha256": "a65dacd205dfb4c34a6fb8d9de29f66005a7f6bd6cee81221f388e3760707777"
+      "bytes": 27035,
+      "sha256": "b06b84d60aa40907632f766dbafe81dd957d4f7569ab92d8f3690d8115f5b6bf"
     },
     "src/client/render_engine/nw.h": {
-      "bytes": 5979,
-      "sha256": "c4306dee4074e80215d11ed9f153388d21aec345ef845e2327e1245853dfaff2"
+      "bytes": 6372,
+      "sha256": "465a9d6df8a5a71e469f9af59179f7da96448230d17e14b0956683c043bc691d"
     },
     "src/client/render_engine/nw_internal.h": {
-      "bytes": 591,
-      "sha256": "3b28e3123a062064fe41228dbc021395839aa0b4ac866f4185764a8ca24a238d"
+      "bytes": 898,
+      "sha256": "478022c71d2c46a53a2e961ee144f64710a8107a5c340e57fbb7f5d95e8ee4dd"
     },
     "src/client/render_engine/nw_owner.c": {
-      "bytes": 6756,
-      "sha256": "92002e609bed87531945ca55e5a04fa26b18c8e86c3178a24165ad7b4a6af115"
+      "bytes": 7250,
+      "sha256": "2af91166d507b91a1c0977b1602166491bd08425533dc6c208b961b1b1809411"
     },
     "src/client/render_engine/owner.c": {
       "bytes": 29233,
@@ -2418,8 +2418,8 @@
       "sha256": "e58ed4483096f8e0f3079374fcb8297102411a6a3048ae19d96298716ad52c23"
     },
     "include/mc/entity/nbt/nbt.h": {
-      "bytes": 8997,
-      "sha256": "353ed68be2a6ddf397a24c7bd79b5ff07bb9da257216f4c6a69496518e56e228"
+      "bytes": 9809,
+      "sha256": "bef7a83ef072e9a9b33cee35d43d9cc0393c1e7c928b987e1093b973c964b81c"
     },
     "include/mc/statistics/keys/keys.h": {
       "bytes": 2399,
@@ -2890,8 +2890,8 @@
       "sha256": "30e61a74b1002cb508665cde8be18118764912ba08c40e4eb06a773e5956c1d9"
     },
     "include/mc/entity/movement/effects.h": {
-      "bytes": 17562,
-      "sha256": "29bea8f2480c0157bff4334d6180f2fcbaef11ef569eab444ca824b2d20e158e"
+      "bytes": 17623,
+      "sha256": "aa06255be6f94d755aa5b375a85b63b3376b36a57e4b0d3071eec8fecc254f86"
     },
     "include/mc/entity/movement/environment.h": {
       "bytes": 5179,
@@ -4970,12 +4970,12 @@
       "sha256": "11705021961392098f305bf25bcbda50d951ec1c75c391c9feb52791958b4b69"
     },
     "src/client/render/living_draw_internal.h": {
-      "bytes": 16278,
-      "sha256": "f85ec45cfbbc03da0cd067e675cf6952df4806e1217aa927fca21d42863af6ed"
+      "bytes": 17655,
+      "sha256": "fe3f8378af389f21c887b0524f9cd32edadadf51987b41b29d3775b4b567848b"
     },
     "src/client/render/manager/draw.c": {
-      "bytes": 17844,
-      "sha256": "ca702f53a542c6ffa3862adf1775693e3cf7d7d567bac60e43948532bee2a04a"
+      "bytes": 18192,
+      "sha256": "daec2a8a0d699ebea501570c388c1a8614d4795caa18281c003a79d8abda2dea"
     },
     "src/client/render/manager/draw_internal.h": {
       "bytes": 4990,
@@ -7898,8 +7898,8 @@
       "sha256": "ae15e8fb904b7fde7d0b92a22beea685aaf1a6ba0ac106c30a54c8c02662f2a2"
     },
     "src/entity/movement/effects.c": {
-      "bytes": 49267,
-      "sha256": "0dfeb2739d5812462b77f8a159e2e9ef7c4194795f00174a2b3358553e5eb01d"
+      "bytes": 50106,
+      "sha256": "a8d127ffa77bdcf135b420a332b0f55d6891960ebe7422e47649c9730fc084c9"
     },
     "src/entity/player/damage.c": {
       "bytes": 4943,
@@ -8614,12 +8614,12 @@
       "sha256": "b44b5b34e5596a96a4187be406fe5c62c85ace30accbd99f6e4a8b266e6387e2"
     },
     "src/entity/nbt/errors.c": {
-      "bytes": 11751,
-      "sha256": "4c7a7ef9b27a6132a5b8e3b9cc78cc090bb15f86c0efc4da6c9a418c60002c5f"
+      "bytes": 14004,
+      "sha256": "970c167c895bfcffacb06c452a5c730082c8110faa1e3ca4cf922ba53378254f"
     },
     "src/entity/nbt/nbt.c": {
-      "bytes": 28013,
-      "sha256": "c41c9db084964e43c9c75f6caa7bd49ab9f9b26f11bb9162dc48cd079969e06a"
+      "bytes": 28875,
+      "sha256": "5586b1dcc527cf39d454868b7067ef240e16065a200b47cc4ffacbe42d9dea3f"
     },
     "src/entity/nbt/read_internal.h": {
       "bytes": 795,
@@ -8642,8 +8642,8 @@
       "sha256": "265437d09c71271f86500b038de0d6461c68a9381fd030c94a71362a9ffe7991"
     },
     "tests/entity/player/nbt_sleep_matrix_cases.h": {
-      "bytes": 57296,
-      "sha256": "edc68db2fbaa84c74ff852984b5cd50a40df14dc30e10579306f87298aea1e93"
+      "bytes": 57297,
+      "sha256": "5c7729db4014b120c0d4915876788a50afd9c13237eae05e8cb47a061ed6d2d0"
     },
     "tests/entity/player/test_nbt.c": {
       "bytes": 28470,
@@ -8686,8 +8686,8 @@
       "sha256": "bc39e30f50918d51c67ea6ae408c268750ea72eace2dab633e413e6f41abaef2"
     },
     "tests/tools/entity/test_player_sleep_nbt_parent.py": {
-      "bytes": 57527,
-      "sha256": "5716106207d01894a5bf09ce19b18f575bcf6d2a33a209ba49016b586e37d7c3"
+      "bytes": 58043,
+      "sha256": "0ed3cd234b94a18836156ea05fdefa80e8675d5e5edb262fe03f8417f799c78f"
     },
     "include/mc/block/registry/step_sound.h": {
       "bytes": 2410,
@@ -8698,8 +8698,8 @@
       "sha256": "dadc75d81348ae505579f7ed25c5dc9ce480f8a75a04bb955e486d84f24885f9"
     },
     "include/mc/entity/nbt/factory.h": {
-      "bytes": 3846,
-      "sha256": "6dd5a33897a8c6155ffee7ff0fdf2bec6843fc90db93b63df3f26465181f6645"
+      "bytes": 4388,
+      "sha256": "cf50219279ce9cdd303add24c37d59ccfb449d9d0f0cf229f4213ec04f1a2330"
     },
     "include/mc/world/runtime/population/dungeon.h": {
       "bytes": 5046,
@@ -9218,8 +9218,8 @@
       "sha256": "181880b4132f86e8cb7c45de44c02dd331754df28903dbcccccc6a50d71a1861"
     },
     "tests/tools/client/test_zombie_damage.py": {
-      "bytes": 19428,
-      "sha256": "f17dc45f67b3b61f833a2197bc9b1d40ad52b946d2de3bb3540a0686cd0e51e4"
+      "bytes": 21159,
+      "sha256": "b5646db105d5895d38214ce4e1d1fec8bb5f5d29f6316053954b98a41daa8a3a"
     },
     "tests/tools/entity/test_monster_hurt.py": {
       "bytes": 6666,
@@ -9310,8 +9310,8 @@
       "sha256": "b4f5866abf17f7852c4052b9ba0eb2fbbfb56df383080294af7a06e97586c8fa"
     },
     "tests/tools/entity/test_arrow_construction.py": {
-      "bytes": 9347,
-      "sha256": "c1821410ede0f978cdacb817984817ffc6c7f9a9b925406f9c2f4ea53c262603"
+      "bytes": 9793,
+      "sha256": "5e1409b31abb055be76521089d2320b3e735b13b9bd68840c6e25e343f2c2bdf"
     },
     "tests/world/runtime/test_arrow_terminal.c": {
       "bytes": 26234,
@@ -9350,16 +9350,104 @@
       "sha256": "b86e23a89887f8f6f3367a5ce54024c0bbfabfeb94bbefd464dd29dcdae2f476"
     },
     "tests/reference/entity/arrow_construction/run_native.py": {
-      "bytes": 6621,
-      "sha256": "c85550a05c861ff488deb0a2723bcda69a597d1b3cf7db7f4eda4d14453d7643"
+      "bytes": 6829,
+      "sha256": "2d39fcef7838eba1298e3bfab88fc69e7f2ffb3f0a9840ddeec80c00bd3d4dc5"
     },
     "tests/reference/entity/arrow_construction/test_packet.py": {
-      "bytes": 8518,
-      "sha256": "24994262270f36fccfae1353c6ac9f57030c6598dbb2285e92345c1bd8dc20de"
+      "bytes": 8756,
+      "sha256": "bbc656e2ce8471408d4e4468a2ae404679230a9bc2871c767b0ef870705ba4cf"
     },
     "tests/tools/entity/test_player_sleep_nbt_parent_diagnostics.py": {
       "bytes": 10842,
       "sha256": "412f1ca1d63d0d8d52338bf57654b93d5c9d6cf18a1fc036c8c8ef2c33a96dee"
+    },
+    "cmake/client_arrow_draw.cmake": {
+      "bytes": 2562,
+      "sha256": "ce071286b7f80a48297cc17ff757f6659989cd4b2bbac4173e1311fb90cce658"
+    },
+    "cmake/tests/arrow_nbt.cmake": {
+      "bytes": 1404,
+      "sha256": "d65d6552d295065394913149c13fc60661ce6a83ad69a64097731a710ca46734"
+    },
+    "cmake/tests/arrow_nbt_reference.cmake": {
+      "bytes": 1444,
+      "sha256": "3965d46365971c0595d0379d14c1ba6f3a106109daaebadc8487d7df9a9dfd68"
+    },
+    "cmake/tests/arrow_player_damage.cmake": {
+      "bytes": 1434,
+      "sha256": "3a13455937185f513587a2766221962ebb311421cbbe9f69528a016f3ce5d67c"
+    },
+    "include/mc/entity/nbt/storage.h": {
+      "bytes": 10127,
+      "sha256": "9ce99d907f66123cf605d367580c8b053275217dfc72c781098c03a228feb657"
+    },
+    "src/client/render/arrow_draw.c": {
+      "bytes": 13321,
+      "sha256": "88bf068236d921b0de2c92a732562c1082c19c450a8a430d99e7337c46925612"
+    },
+    "src/client/render/arrow_draw_internal.h": {
+      "bytes": 916,
+      "sha256": "4d5df528ef4de0613c7f07128c73b1de7b3cf630a9ef4ec66b73ba25249adc27"
+    },
+    "src/entity/arrow/nbt.c": {
+      "bytes": 6542,
+      "sha256": "62b08b755a88d99f9640143311604c6cc7e0ef8d5b3339521757f6a5193f3d89"
+    },
+    "src/entity/arrow/nbt_internal.h": {
+      "bytes": 893,
+      "sha256": "5ed98702179cd0a64e46efded30a0cbacd33286f0c4b676275b6b02925ff3ee8"
+    },
+    "tests/client/render/test_arrow_draw.c": {
+      "bytes": 29409,
+      "sha256": "473b71c006e5c535afe368f54e15e5550881aada7f5909cb492056331c0dc48f"
+    },
+    "tests/entity/test_arrow_nbt.c": {
+      "bytes": 37325,
+      "sha256": "0e1561f4aa6d6f7672f0b5c5f1325a5b3a277609f73d80103233c3b0a8ff9600"
+    },
+    "tests/entity/test_arrow_nbt_reference.c": {
+      "bytes": 25832,
+      "sha256": "cdafbdc192074e0590657cc2fe56144c3af889f4c9041b5c3d1bcf18f8564f58"
+    },
+    "tests/entity/test_arrow_player_damage.c": {
+      "bytes": 6606,
+      "sha256": "eaddd53d03eb78987bc2cdafcb25a1dd9c57b217eee14c2c04a93a663a8b4d90"
+    },
+    "tests/reference/entity/arrow_nbt/capture_reference.py": {
+      "bytes": 9267,
+      "sha256": "9b0189d5e36cd3bca39042db7f3fd1a2e87655148a803725c8aa26483fbf679c"
+    },
+    "tests/reference/entity/arrow_nbt/export_reference.py": {
+      "bytes": 2797,
+      "sha256": "5da1227f9120ecdd53291673b75615d85ba05cf97ba1914d5b484dac7a998fbb"
+    },
+    "tests/reference/entity/arrow_nbt/observation.py": {
+      "bytes": 16480,
+      "sha256": "f43a0dc3a58eab6ea4f880bfccefc54108f2536a9ed51fbd28534c7f358d65e5"
+    },
+    "tests/reference/entity/arrow_nbt/packet.py": {
+      "bytes": 6157,
+      "sha256": "f96fa8bd73a494221deef9a1050ecbe1fbacdbd03d9a4d43f6840dc7b549ff70"
+    },
+    "tests/reference/entity/arrow_nbt/run_native.py": {
+      "bytes": 8497,
+      "sha256": "d139d864e50825bfff897bd6cf87cc153ea7d9b39b9e02b6d48332bc0aa3bec8"
+    },
+    "tests/reference/entity/arrow_nbt/test_packet.py": {
+      "bytes": 11227,
+      "sha256": "2a5e7ebf2085ee1e9accdcb7bfdbd03b05e2a1ee1990cc177ea3c94b3fcb5ddd"
+    },
+    "tests/tools/client/test_arrow_draw.py": {
+      "bytes": 21436,
+      "sha256": "b4d5b2936df6447456aa2e905bd3dc7dff1e83891e9979375980fa9cc9e31478"
+    },
+    "tests/tools/entity/test_arrow_nbt.py": {
+      "bytes": 10138,
+      "sha256": "c03b7ec46b7a24e63dac618de5a61d2575a2c2a126af1d53c973de60b9c21913"
+    },
+    "tests/tools/entity/test_arrow_player_damage.py": {
+      "bytes": 9632,
+      "sha256": "ca15d0d9f1df9798032f596ddb8a2085ebd2c0c8a3338dfd70bd68db392c18a0"
     }
   },
   "source_suppliers": {
@@ -15292,6 +15380,325 @@
             "tests/tools/entity/test_player_sleep_nbt_parent_diagnostics.py"
           ],
           "current_count": 2340
+        }
+      }
+    },
+    {
+      "from_commit": "ffccceb91850ed9e462b1f7a34d4c29ea3d378a2",
+      "role": "Current genuine client Arrow NBT hooks, semantic and Boolean saves, factory and storage joins, the complete MC renderer with retained Tessellator allocation ownership, direct-Arrow Player damage shooter resolution, and Windows compiler-cache download fallback. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 650911,
+        "sha256": "d188a93893c9f2db93a409cb0d0df09b5a1130e9d6f0a3f1969e3ff325cbe920"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "include/mc/entity/nbt/errors.h": {
+              "bytes": 8725,
+              "sha256": "0eb41f52653c061f70a62380dc8f1de95ea320502e0edbc6447034dc1c53e646"
+            },
+            "src/client/render_engine/nw.c": {
+              "bytes": 27005,
+              "sha256": "a65dacd205dfb4c34a6fb8d9de29f66005a7f6bd6cee81221f388e3760707777"
+            },
+            "src/client/render_engine/nw.h": {
+              "bytes": 5979,
+              "sha256": "c4306dee4074e80215d11ed9f153388d21aec345ef845e2327e1245853dfaff2"
+            },
+            "src/client/render_engine/nw_internal.h": {
+              "bytes": 591,
+              "sha256": "3b28e3123a062064fe41228dbc021395839aa0b4ac866f4185764a8ca24a238d"
+            },
+            "src/client/render_engine/nw_owner.c": {
+              "bytes": 6756,
+              "sha256": "92002e609bed87531945ca55e5a04fa26b18c8e86c3178a24165ad7b4a6af115"
+            },
+            "include/mc/entity/nbt/nbt.h": {
+              "bytes": 8997,
+              "sha256": "353ed68be2a6ddf397a24c7bd79b5ff07bb9da257216f4c6a69496518e56e228"
+            },
+            "include/mc/entity/movement/effects.h": {
+              "bytes": 17562,
+              "sha256": "29bea8f2480c0157bff4334d6180f2fcbaef11ef569eab444ca824b2d20e158e"
+            },
+            "src/client/render/living_draw_internal.h": {
+              "bytes": 16278,
+              "sha256": "f85ec45cfbbc03da0cd067e675cf6952df4806e1217aa927fca21d42863af6ed"
+            },
+            "src/client/render/manager/draw.c": {
+              "bytes": 17844,
+              "sha256": "ca702f53a542c6ffa3862adf1775693e3cf7d7d567bac60e43948532bee2a04a"
+            },
+            "src/entity/movement/effects.c": {
+              "bytes": 49267,
+              "sha256": "0dfeb2739d5812462b77f8a159e2e9ef7c4194795f00174a2b3358553e5eb01d"
+            },
+            "src/entity/nbt/errors.c": {
+              "bytes": 11751,
+              "sha256": "4c7a7ef9b27a6132a5b8e3b9cc78cc090bb15f86c0efc4da6c9a418c60002c5f"
+            },
+            "src/entity/nbt/nbt.c": {
+              "bytes": 28013,
+              "sha256": "c41c9db084964e43c9c75f6caa7bd49ab9f9b26f11bb9162dc48cd079969e06a"
+            },
+            "include/mc/entity/nbt/factory.h": {
+              "bytes": 3846,
+              "sha256": "6dd5a33897a8c6155ffee7ff0fdf2bec6843fc90db93b63df3f26465181f6645"
+            }
+          },
+          "added": [
+            "cmake/client_arrow_draw.cmake",
+            "cmake/tests/arrow_nbt.cmake",
+            "cmake/tests/arrow_nbt_reference.cmake",
+            "cmake/tests/arrow_player_damage.cmake",
+            "include/mc/entity/nbt/storage.h",
+            "src/client/render/arrow_draw.c",
+            "src/client/render/arrow_draw_internal.h",
+            "src/entity/arrow/nbt.c",
+            "src/entity/arrow/nbt_internal.h",
+            "tests/client/render/test_arrow_draw.c",
+            "tests/entity/test_arrow_nbt.c",
+            "tests/entity/test_arrow_nbt_reference.c",
+            "tests/entity/test_arrow_player_damage.c",
+            "tests/reference/entity/arrow_nbt/capture_reference.py",
+            "tests/reference/entity/arrow_nbt/export_reference.py",
+            "tests/reference/entity/arrow_nbt/observation.py",
+            "tests/reference/entity/arrow_nbt/packet.py",
+            "tests/reference/entity/arrow_nbt/run_native.py",
+            "tests/reference/entity/arrow_nbt/test_packet.py",
+            "tests/tools/client/test_arrow_draw.py",
+            "tests/tools/entity/test_arrow_nbt.py",
+            "tests/tools/entity/test_arrow_player_damage.py"
+          ],
+          "current_count": 2362
+        }
+      }
+    },
+    {
+      "from_commit": "ffccceb91850ed9e462b1f7a34d4c29ea3d378a2",
+      "role": "Current genuine client Arrow NBT hooks, semantic and Boolean saves, factory and storage joins, the complete MC renderer with retained Tessellator allocation ownership, direct-Arrow Player damage shooter resolution, and Windows compiler-cache download fallback. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 658918,
+        "sha256": "b1dedd65f77f540d199ffb768f4341a2e4190419a0c60df503569f8ffd0cbd77"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/entity/test_arrow_construction.py": {
+              "bytes": 9347,
+              "sha256": "c1821410ede0f978cdacb817984817ffc6c7f9a9b925406f9c2f4ea53c262603"
+            },
+            "tests/reference/entity/arrow_construction/run_native.py": {
+              "bytes": 6621,
+              "sha256": "c85550a05c861ff488deb0a2723bcda69a597d1b3cf7db7f4eda4d14453d7643"
+            },
+            "tests/reference/entity/arrow_construction/test_packet.py": {
+              "bytes": 8518,
+              "sha256": "24994262270f36fccfae1353c6ac9f57030c6598dbb2285e92345c1bd8dc20de"
+            },
+            "tests/entity/test_arrow_nbt_reference.c": {
+              "bytes": 25767,
+              "sha256": "35bdce841fdcb3f37b10d77a2578696f88deef834797a8a799a3c6b3a54f3ee3"
+            },
+            "tests/reference/entity/arrow_nbt/run_native.py": {
+              "bytes": 8289,
+              "sha256": "71f5a2ce1623dacc3d119e0b0942f12930fe0dbc152adabc3587d29bdb3cff66"
+            },
+            "tests/reference/entity/arrow_nbt/test_packet.py": {
+              "bytes": 10989,
+              "sha256": "5ea102139b86cba8e459a7b565635dc05e5f8c1ec4e49a73ed48642eded8e8fb"
+            },
+            "tests/tools/entity/test_arrow_player_damage.py": {
+              "bytes": 9186,
+              "sha256": "992d152957c6ce04deff7d23d735a5119e870ee3fc83d7c4cd10d13044818492"
+            }
+          },
+          "added": [],
+          "current_count": 2362
+        }
+      }
+    },
+    {
+      "from_commit": "ffccceb91850ed9e462b1f7a34d4c29ea3d378a2",
+      "role": "Current genuine client Arrow NBT hooks, semantic and Boolean saves, factory and storage joins, the complete MC renderer with retained Tessellator allocation ownership, direct-Arrow Player damage shooter resolution, and Windows compiler-cache download fallback. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 661241,
+        "sha256": "c98145cac02e74d8215bc53a33bcb54efb5ebc27aaf6bfaf2f313716d534ee0b"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "cmake/client_arrow_draw.cmake": {
+              "bytes": 2331,
+              "sha256": "f5f2c300be6fe1f3ee94539cc483cb654400d1762562a74612800f418b55303d"
+            }
+          },
+          "added": [],
+          "current_count": 2362
+        }
+      }
+    },
+    {
+      "from_commit": "ffccceb91850ed9e462b1f7a34d4c29ea3d378a2",
+      "role": "Current genuine client Arrow NBT hooks, semantic and Boolean saves, factory and storage joins, the complete MC renderer with retained Tessellator allocation ownership, direct-Arrow Player damage shooter resolution, and Windows compiler-cache download fallback. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 662339,
+        "sha256": "7eb48eaa060f85b4c9eb4743787a77b11d9dc96b6f6e4b695f4b436583c9d5d4"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "cmake/client_arrow_draw.cmake": {
+              "bytes": 2327,
+              "sha256": "557351972b25815b67a32aa76edcf3c92a08a56de14d560390634ef22c9f50e8"
+            }
+          },
+          "added": [],
+          "current_count": 2362
+        }
+      }
+    },
+    {
+      "from_commit": "ffccceb91850ed9e462b1f7a34d4c29ea3d378a2",
+      "role": "Current genuine client Arrow NBT hooks, semantic and Boolean saves, factory and storage joins, the complete MC renderer with retained Tessellator allocation ownership, direct-Arrow Player damage shooter resolution, and Windows compiler-cache download fallback. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 663437,
+        "sha256": "152e7d3f4fad6dab23ad4133dfa186048c3c965f2ad2e9d6709ad9bc778bd5dd"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/client/render/test_arrow_draw.c": {
+              "bytes": 28218,
+              "sha256": "b10af77b28178ff5a24532624803c06464fe261ca10143c0c3f037eb79abc3c7"
+            }
+          },
+          "added": [],
+          "current_count": 2362
+        }
+      }
+    },
+    {
+      "from_commit": "ffccceb91850ed9e462b1f7a34d4c29ea3d378a2",
+      "role": "Current genuine client Arrow NBT hooks, semantic and Boolean saves, factory and storage joins, the complete MC renderer with retained Tessellator allocation ownership, direct-Arrow Player damage shooter resolution, and Windows compiler-cache download fallback. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 664544,
+        "sha256": "2876b9f33e97396028e18e946aaa0a744d74a533ac377f5e094829a4c0aa3f78"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/client/render/test_arrow_draw.c": {
+              "bytes": 29160,
+              "sha256": "5493877e5d128bcb3770090769b62f205f663886d9da60fd5cc40feecb88b824"
+            }
+          },
+          "added": [],
+          "current_count": 2362
+        }
+      }
+    },
+    {
+      "from_commit": "ffccceb91850ed9e462b1f7a34d4c29ea3d378a2",
+      "role": "Current genuine client Arrow NBT hooks, semantic and Boolean saves, factory and storage joins, the complete MC renderer with retained Tessellator allocation ownership, direct-Arrow Player damage shooter resolution, and Windows compiler-cache download fallback. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 665651,
+        "sha256": "2518f6b8d252874846bd530d9bf92cecab81f1c3c9a7bc72a54a766ac95d5881"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/client/render/test_arrow_draw.c": {
+              "bytes": 29154,
+              "sha256": "15cb199f0c262829fb532c19d14cd25565133d4a7df1adf508cd008e2c611617"
+            }
+          },
+          "added": [],
+          "current_count": 2362
+        }
+      }
+    },
+    {
+      "from_commit": "ffccceb91850ed9e462b1f7a34d4c29ea3d378a2",
+      "role": "Current genuine client Arrow NBT hooks, semantic and Boolean saves, factory and storage joins, the complete MC renderer with retained Tessellator allocation ownership, direct-Arrow Player damage shooter resolution, and Windows compiler-cache download fallback. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 666758,
+        "sha256": "4f88326bbad0a65308c7c3f020050ce063b51b3f6f5aab538dfbe5b11bd08992"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/client/test_arrow_draw.py": {
+              "bytes": 18462,
+              "sha256": "9a08983676015150e7947ef3e805f05b473084d4983a3feea19c9c039597d13f"
+            }
+          },
+          "added": [],
+          "current_count": 2362
+        }
+      }
+    },
+    {
+      "from_commit": "ffccceb91850ed9e462b1f7a34d4c29ea3d378a2",
+      "role": "Current genuine client Arrow NBT hooks, semantic and Boolean saves, factory and storage joins, the complete MC renderer with retained Tessellator allocation ownership, direct-Arrow Player damage shooter resolution, Windows compiler-cache download fallback, and passive failure-only Player NBT preparation boundary diagnostics. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 667865,
+        "sha256": "a39c5f3dc0cb8f15687ffd29503e3faf6a33213a2abb9f0f38c8adb7241665d2"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/entity/player/nbt_sleep_matrix_cases.h": {
+              "bytes": 57296,
+              "sha256": "edc68db2fbaa84c74ff852984b5cd50a40df14dc30e10579306f87298aea1e93"
+            }
+          },
+          "added": [],
+          "current_count": 2362
+        }
+      }
+    },
+    {
+      "from_commit": "ffccceb91850ed9e462b1f7a34d4c29ea3d378a2",
+      "role": "Current genuine client Arrow NBT hooks, semantic and Boolean saves, factory and storage joins, the complete MC renderer with retained Tessellator allocation ownership, direct-Arrow Player damage shooter resolution, Windows compiler-cache download fallback, and source-paired Player NBT constructor-overload regression with the direct-metadata fixture correction. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 669045,
+        "sha256": "5cd3223da387df8050d6a79cfba049789fef54478eb9fb34debf3324462a79f7"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/entity/player/nbt_sleep_matrix_cases.h": {
+              "bytes": 68945,
+              "sha256": "2d69cacfe1cebb3c02b879a0e02c74897ed4974e60513ed8e2898917f9bcaee4"
+            },
+            "tests/tools/entity/test_player_sleep_nbt_parent.py": {
+              "bytes": 57527,
+              "sha256": "5716106207d01894a5bf09ce19b18f575bcf6d2a33a209ba49016b586e37d7c3"
+            }
+          },
+          "added": [],
+          "current_count": 2362
+        }
+      }
+    },
+    {
+      "from_commit": "ffccceb91850ed9e462b1f7a34d4c29ea3d378a2",
+      "role": "Current genuine client Arrow NBT hooks, semantic and Boolean saves, factory and storage joins, the complete MC renderer with retained Tessellator allocation ownership, direct-Arrow Player damage shooter resolution, Windows compiler-cache download fallback, and source-paired Player NBT constructor-overload regression with the direct-metadata fixture correction, plus saved-Zombie output-phase and unique-target readback controls retaining ambient Entities and complete saved Chunk inventories. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 670465,
+        "sha256": "7af5e78bedba3e42185ba21c6322c5b63036a5ad1451f020cb53d13236b39238"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/client/test_zombie_damage.py": {
+              "bytes": 19428,
+              "sha256": "f17dc45f67b3b61f833a2197bc9b1d40ad52b946d2de3bb3540a0686cd0e51e4"
+            }
+          },
+          "added": [],
+          "current_count": 2362
         }
       }
     }

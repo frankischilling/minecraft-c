@@ -47,6 +47,21 @@ Chunks before startup, then observes ordinary Timer, loaded Entity, AI and
 damage work. It requires returned terrain/HUD, SDK Escape and Save and Quit,
 independent saved NBT/statistics and checked cleanup. Its first visible
 opportunity places both windows on monitor 2 but stops before World selection
-because the Remote Desktop client retains foreground focus. It supplies no
-loaded encounter qualification. No sustained FPS or original audiovisual
-equality is claimed.
+because the Remote Desktop client retains foreground focus. That failure
+remains retained. After the desktop is idle, a fresh native process completes
+the hit/frame/pause/save/cleanup path; two independent readback assumptions in
+its controller fail. Source-backed regressions distinguish authored empty
+Inventory type 10 from serialized type 1, and require exactly one saved Zombie
+while retaining ambient Entity and Chunk inventories.
+
+The corrected fresh monitor-2 opportunity passes 509 native checks and every
+independent readback. Actual creature behavior deals 5 damage, health 20 becomes 15 and
+statistic2021 increases by 5. Time advances naturally to 13004, the surviving Zombie
+has health 20, and paused Entity tags match the committed save. Actual hit,
+pause and title screenshots pass; both windows close after checked cleanup.
+The native product is unchanged from the complete Windows suite. The
+[testing record](../testing.md#saved-zombie-monitor-2-encounter) preserves the
+failed controller, processing-only revalidation and fresh execution separately.
+This qualifies the prepared saved hostile encounter. Natural spawning,
+unrestricted combat, sustained FPS and original audiovisual equality remain
+unqualified.

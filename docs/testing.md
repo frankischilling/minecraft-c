@@ -1,5 +1,121 @@
 # Test scope and reproduction
 
+## Arrow persistence, rendering and direct damage
+
+The [Arrow NBT packet](../tests/reference/entity/arrow_nbt/README.md) retains
+four unchanged original VMs with 48 calls each: 44 representable profiles and
+four source-only Map/setter faults. Its 192 actual calls contain 108 returns
+and 84 exceptions. Both passive journals preserve 3,107 ordered events and
+38 live Code pins. Windows and sanitized Linux each match 7,659 selected
+scalar positions. Independent constructor entropy, raw exclusions, mutable
+Java writer destinations and immutable native outputs remain explicit. Eight
+native groups pass 166 persistence checks per host, including real legacy
+Chunk load/adoption and committed save with independent decoding. The source
+Store transport remains a separate qualification boundary.
+
+Direct-Arrow Player damage passes 77 native checks on each host. It performs
+separate shooter reads at GS117/127 for the ally-helper local, keeps the
+original Arrow for LS158, preserves difficulty-zero/health early returns and
+retains owner failures at their reached sites. This is separate from natural
+SL tick damage, which passes its stored Living shooter directly.
+
+The [renderer contracts](entity/arrow-rendering.md) use authored textures and
+real MC/NW/Display owners. Fifteen fresh Windows processes pass 3,087 checks,
+covering six actual source quads, raw Tessellator words, current normals,
+matrices, texture work, active receiver replacement and failure prefixes.
+The recorded device is NVIDIA RTX 3060, OpenGL 3.3, driver 581.42. Hidden
+windows use the requested monitor-2 bounds. The 53-check CPU path passes
+Windows and a separate Clang Debug Linux client with ASan/UBSan and leak
+checking. Thirty-seven pure receipt/geometry/transport corruptions are refused.
+No executed original MC draw, pixel equality, natural encounter or FPS follows
+from this authored native coverage.
+
+The initial renderer CPU fixture reached TH494 with a cold Block prerequisite;
+the retained typed cause is the Item constructor's null receiver. Setup now
+runs the genuine Block initializer outside the observed Arrow body. Its next
+native capture returned normally with 53 checks, but the controller expected
+the device bootstrap print order. The exact CPU order was corrected, with raw
+failure and processing-only receipt retained. Test-only secure temporary-file
+and OpenGL link failures are also retained. Four other Arrow wrappers now
+reject Boolean/float count and budget receipts; the new controls first fail,
+then pass normally and under optimized Python without changing source inputs.
+
+The first frozen execution delta contains 57 files and six separately frozen
+admission tables. The complete configured Linux headless suite passes all
+626 tests in 299.20 seconds under ASan/UBSan, leak detection and halt-on-error,
+without skips. Windows passes 770 of 771 in 331.93 seconds. Its Player
+sleep-NBT parent exits1 during case27 preparation at the World entity/player
+count assertion, before NBT entry. Complete native streams and receipt identify
+that boundary. Seven isolated replays pass. A subsequent fixed twelve-run
+instrumented cohort retains two preparation failures and ten passes. Both
+failures first contain genuine ItemEntities immediately after World
+construction, before explicit Chunk acquisition or Player construction.
+
+The sealed producer calls the 320-byte direct-metadata World constructor
+`fd(WT,String,XA,long)`. The fixture instead selected the 427-byte
+load-or-create overload `fd(WT,String,long,XA)`, whose new-world spawn search
+can generate and populate distant Chunks. The existing native direct-metadata
+overload matches the producer. A regression now pairs actual native BEFORE
+`FD.s` with unchanged original BEFORE `fd.s`, in addition to every existing
+within-call guard. Processing retained successful native output first rejects
+the wrong constructor at case0 (`true` versus original `false`). A pure control
+also changes that field consistently across before/after/retired snapshots so
+within-call preservation alone cannot conceal the wrong bootstrap. The fixture
+correction removes all temporary instrumentation and changes only the selected
+constructor overload. Fresh complete configured suites then pass Windows
+771/771 in 580.30 seconds and Clang Debug Linux headless 626/626 in 578.32
+seconds, without registered skips. Both use parallelism 2; Linux retains
+ASan/UBSan, leak detection and halt-on-error. The exact 66-file execution delta
+and six admission tables stay frozen through both terminal results. Both
+complete builds pass; clang-format 18 checks 2,254 files, and strict GCC C17
+syntax checks cover 15 units, including the affected Player fixture. The
+corrected forty-row parent matches 9,949 source scalars, 58 active sites and
+7,600 within-call unselected cells. Normal and optimized Python on both hosts
+reject 350 authored corruptions and accept five declared scope controls.
+
+Earlier hosted c0d4589e has no native detail in its retained Clang log and
+remains independently unclassified.
+
+## Saved Zombie monitor-2 encounter
+
+After the desktop becomes idle, the saved-Zombie scene reaches a real GZ61
+hit, health 20 to 15 and statistic2021 plus 5. Its first native process completes
+448 checks, returned terrain/HUD, SDK pause/save/title and checked cleanup on
+monitor 2. The controller then rejects the independent NBT readback. Its raw
+failure, process output, screenshots and World remain retained.
+
+Two controller assumptions were wrong. Authored empty Inventory input uses
+Compound element type 10, but the [original List serializer](reference/nbt.md)
+forces empty wire lists to type 1; both the paused snapshot and committed save
+correctly contain type 1. A separate final-World assertion counted all saved
+Entities when it claimed to require one saved Zombie. That World also contains
+a Pig above natural grass in Chunk (8,-9), outside the authored Glowstone ring.
+The source's cumulative spawning offsets permit such a boundary crossing;
+the successful Pig candidate and Random history were not observed. Initial
+one-Zombie input and the native Player-plus-Zombie load assertion remain strict.
+
+Both regressions go red before their corrections. Saved output now requires
+exact empty type 1 while authored input still requires 10. Final readback requires
+one matching Zombie and compares all its paused tags; missing or duplicate
+Zombies fail. Every additional Entity and saved Chunk remains inventoried,
+including its raw digest. No population or Random state is suppressed. Pure
+fixture tests pass normally and under optimized Python on Windows and Linux.
+Processing the unchanged first native capture then passes every NBT, statistic,
+unrelated-file and screenshot check; it supplies no new process execution.
+
+One fresh corrected opportunity passes the complete controller and 509 native
+checks. Both frame/canvas windows are 854x480 at (-1387,280), inside physical
+monitor 2's usable (-1920,0,1920,1040) bounds. Independent NBT confirms time13004,
+awake Player health 15, empty Inventory, one surviving Zombie health 20 and
+exact paused-to-committed tags. Statistics independently confirm 2021=5. All
+385 saved Chunks are inventoried; this opportunity has no additional Entities.
+Actual hit, pause and title screenshots pass, and both windows are absent
+after checked cleanup. Source, product and imported-resource hashes remain
+unchanged throughout. The native product is unchanged from the full-suite
+cohort; only the controller and its admission records change afterward.
+This is a prepared saved hostile encounter, without natural-spawn, original
+whole-frame/audio, unrestricted play or FPS qualification.
+
 ## Arrow constructors, heading and terminal ownership
 
 The [complete original packet](../tests/reference/entity/arrow_construction/README.md)
@@ -330,7 +446,7 @@ source-loader execution or original-runtime comparison.
 The [earlier retirement CPU cohort](performance/player-ally-retire.md) retains all
 2,520 measured calls from 12 serial processes on one compiled observer and
 identical ordered core archive graph. Distinct/repeated 1,024-entry Lists fall
-from median 4,695.9/4,868.65 µs to 21.05/9.4 µs. Tiny Lists, insufficient-hold
+from median 4,695.9/4,868.65 Ã‚Âµs to 21.05/9.4 Ã‚Âµs. Tiny Lists, insufficient-hold
 refusal/retry, source fields and Random preservation pass. Forced optional
 allocation failure keeps the previous scan and cleanup result. All 1,901
 source/product/resource/region guards remain unchanged. This measures checked
@@ -882,7 +998,7 @@ under `-Wconversion -Werror`. Integer promotion makes the byte operand an
 `int` before the unsigned mask. No GCC runtime test executes. The local
 GCC 13.3 strict, sanitizer-enabled syntax check reproduces both diagnostics.
 Each fixture now explicitly promotes its byte to `unsigned int` before the
-shift. Byte values remain 0–255 and decoded nibbles remain 0–15; production
+shift. Byte values remain 0Ã¢â‚¬â€œ255 and decoded nibbles remain 0Ã¢â‚¬â€œ15; production
 code, original data and assertions are unchanged. The same strict GCC check
 then passes, as do the native Windows and Clang fixture builds. The hosted
 failure retains its exact-checkpoint scope; follow-up results are separate.
@@ -1566,7 +1682,7 @@ The private Linux phase observation reaches a 36.165-second random-Chunk body,
 including 33.716 seconds in 32 actual population callbacks. All 1,235,464 GETs
 are generic. Its inherited Food observer unconditionally exports the provider
 before admission; snapshots show raw_exports=1, owned=false and cache counts
-310–362, with a whole-capture maximum of 382. This establishes that observer
+310Ã¢â‚¬â€œ362, with a whole-capture maximum of 382. This establishes that observer
 escape, not that the generic validator accounts for all population time. The
 larger-map optimization is not exercised. The [performance notes](performance/world-queries.md#retained-linux-phase-diagnosis)
 keep overlapping intervals and the separate Source-progress exposure explicit.

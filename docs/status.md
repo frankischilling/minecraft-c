@@ -1,6 +1,38 @@
 # Development status
 
-The client now has genuine [Arrow construction and heading](entity/arrow-construction.md),
+The client now has [Arrow NBT and storage](entity/arrow-nbt.md), the complete
+[MC Arrow renderer](entity/arrow-rendering.md), and direct-Arrow Player damage
+shooter resolution. All eight own tags join the complete Entity parent, genuine
+factory, 15-field semantic and 16-field Boolean saves, provenance and actual
+Chunk adoption. Existing reads preserve the counted shooter and both ages.
+Four original VMs retain 192 calls; Windows and sanitized Linux each match
+7,659 selected NBT scalars. Both hosts pass 166 focused persistence and
+77 direct-Arrow damage checks. The latter resolves the shooter only for the
+ally helper; the original Arrow still reaches LivingEntity damage.
+
+The renderer keeps the original zero-angle guard, fresh field reads, captured
+Tessellator local and six source quads. Its authored native contracts pass
+15 Windows processes and 3,087 checks on the recorded RTX 3060 driver. CPU
+lifetime/guard controls also pass on a separately built Clang Debug Linux
+client with ASan/UBSan and leak detection. This is not an executed original
+renderer or pixel comparison. Complete configured suites pass Windows 771/771
+in 580.30 seconds and sanitized Linux headless 626/626 in 578.32 seconds,
+without skips. Both complete builds, formatting of 2,254 files and strict GCC
+syntax checks of 15 C units pass. The earlier Windows preparation failure is
+retained. Its fixture selected load-or-create instead of the original producer's
+direct-metadata World constructor; the independent source-paired regression
+goes red before the one-enum correction.
+
+A fresh [saved-Zombie encounter](entity/monster-melee.md) passes 509 native
+checks on monitor 2: ordinary creature behavior deals 5 damage, Player health changes 20 to 15,
+statistic2021 increases by 5, and actual terrain/HUD returns before SDK pause,
+save and checked cleanup. Independent NBT/statistics and all three screenshots
+pass. The preceding controller failure remains retained with its unchanged
+native capture and processing-only correction. This prepared native scene
+does not establish original audiovisual equality, unrestricted play or FPS.
+Skeleton firing and Arrow flight/collision/pickup remain unfinished.
+
+The preceding constructor increment supplies genuine [Arrow construction and heading](entity/arrow-construction.md),
 including all three constructors, the nullable counted Living shooter and complete
 World terminal graph/publication admission. Four original VMs each complete
 40 calls: 37 normal returns and three actual null-reference exceptions. Windows
@@ -11,10 +43,13 @@ configured suites pass Windows 760/760 in 379.36 seconds and sanitized Linux
 617/617 in 397.26 seconds, without registered skips. Both complete builds pass;
 formatting covers 2,246 files and strict GCC syntax checks cover all nine changed
 C translation units. The 53-file execution delta and six admission tables
-retain their prelaunch hashes. Hosted qualification of this Arrow increment
-is pending. Skeleton firing, Arrow
-tick/collision/pickup, MC rendering, Arrow NBT, direct-Arrow Player damage,
-unrestricted play and FPS remain unfinished or unqualified.
+retain their prelaunch hashes for that earlier increment. Its hosted ffccceb9
+checks pass formatting and 828/828 tests each on GCC and Clang. Windows stops
+before build/tests on an HTTP 504 compiler-cache tool download in both the
+first attempt and one targeted retry; both logs remain retained. The current
+workflow makes only that cache setup optional and selects the direct MSVC
+launcher fallback. Build flags and test checks remain unchanged; hosted
+fallback execution is pending.
 
 Hosted checks of published `8e2b9b3c` found a benchmark-readiness path alias
 failure in [run 42457904291](https://github.com/frankischilling/minecraft-c/actions/runs/42457904291).
@@ -99,7 +134,8 @@ hurt at GZ61 and returns at 65 after either Boolean result. Windows and sanitize
 Linux each match 46,828 shared scalar positions across 32 original calls, with
 75 message/stack positions unpaired. Nine direct ownership/failure controls and
 two actual World tick controls pass 916 checks. The first separate visible monitor-2 opportunity stops before
-World selection on external Remote Desktop focus; loaded combat remains pending.
+World selection on external Remote Desktop focus. The prepared saved encounter
+now has the separate passing result above; unrestricted combat remains open.
 
 The helper's [checked retirement](performance/player-ally-retire.md) now counts
 held pointer occurrences with a bounded optional workspace. A controlled
@@ -345,8 +381,8 @@ general focus reliability, unrestricted play and FPS remain unfinished.
 have new bounded Windows CPU comparisons. The 96-name public Block getter
 falls from 168.526 to 28.962 ns/get in four alternating rounds and eight fresh
 processes, with 1,011 native controls per process. The selected cache validator
-reduces mixed-key median cost by 93.703–97.323% for 513–4,096 entries; deliberately
-colliding keys remain 2.592–7.552% slower. Earlier candidates and unfavorable
+reduces mixed-key median cost by 93.703Ã¢â‚¬â€œ97.323% for 513Ã¢â‚¬â€œ4,096 entries; deliberately
+colliding keys remain 2.592Ã¢â‚¬â€œ7.552% slower. Earlier candidates and unfavorable
 results remain retained. These are frozen CPU workloads, not scene-FPS results.
 
 The [Source save progress join](world/saving.md#source-progress-ownership) now

@@ -1,6 +1,7 @@
 #include "mc/entity/nbt/factory.h"
 
 #include "../../platform/text/stdout.h"
+#include "../arrow/internal.h"
 #include "../entity_internal.h"
 #include "../mob/internal.h"
 #include "mc/entity/minecart/minecart.h"
@@ -98,6 +99,8 @@ mc_entity_nbt_status mc_entity_save_nbt(mc_entity *entity, const mc_nbt_limits *
         field_count = 10;
     else if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND))
         field_count = 8;
+    else if (mc_entity_has_arrow(entity))
+        field_count = 15;
     else if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART) && root != NULL &&
              root->type == MC_NBT_COMPOUND &&
              (root->value.compound.length == 8 || root->value.compound.length == 9 ||
@@ -130,7 +133,7 @@ mc_entity_nbt_status mc_entity_save_nbt(mc_entity *entity, const mc_nbt_limits *
         fail(&frame, MC_ENTITY_NBT_NBT_FAILED, "Entity NBT Boolean save semantic shape");
         goto done;
     }
-    const mc_nbt_tag *items[15] = {&id};
+    const mc_nbt_tag *items[16] = {&id};
     for (size_t index = 0; index < field_count; ++index)
         items[index + 1] = root->value.compound.items[index];
     const mc_nbt_tag compound = {.type = MC_NBT_COMPOUND,
@@ -283,9 +286,10 @@ mc_entity_nbt_status mc_entity_factory_nbt(mc_entity_classes *classes, mc_world_
     }
     frame.factory_bytecode = 45;
     const bool mob = type->source == MC_ENTITY_CLIENT && mc_entity_is_mob_kind(type->kind);
+    const bool arrow = type->source == MC_ENTITY_CLIENT && type->kind == MC_ENTITY_CLASS_KIND_ARROW;
     if (type->kind != MC_ENTITY_CLASS_KIND_ITEM &&
         type->kind != MC_ENTITY_CLASS_KIND_FALLING_SAND &&
-        type->kind != MC_ENTITY_CLASS_KIND_MINECART && !mob) {
+        type->kind != MC_ENTITY_CLASS_KIND_MINECART && !mob && !arrow) {
         fail(&frame, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Entity NBT factory concrete constructor");
         return finish(frame, error);
     }
@@ -297,6 +301,27 @@ mc_entity_nbt_status mc_entity_factory_nbt(mc_entity_classes *classes, mc_world_
             return finish(frame, error);
         }
         constructed = MC_ENTITY_OK;
+    } else if (arrow) {
+        constructed = mc_arrow_allocate(classes, &entity, &frame.construction);
+        if (constructed == MC_ENTITY_OK) {
+            mc_arrow_error call;
+            constructed = mc_arrow_construct_world(entity, world, &call);
+            if (constructed != MC_ENTITY_OK) {
+                if (!mc_entity_nbt_select_arrow_call_detail(&frame, &call))
+                    fail(&frame, MC_ENTITY_NBT_UNSUPPORTED_TYPE,
+                         "Arrow factory native diagnostic representation");
+                else
+                    fail(&frame,
+                         constructed == MC_ENTITY_LIMIT ? MC_ENTITY_NBT_LIMIT
+                         : constructed == MC_ENTITY_ALLOCATION_FAILED
+                             ? MC_ENTITY_NBT_ALLOCATION_FAILED
+                         : constructed == MC_ENTITY_UNSUPPORTED_FP ? MC_ENTITY_NBT_UNSUPPORTED_FP
+                                                                   : MC_ENTITY_NBT_ENTITY_FAILED,
+                         "Entity NBT actual client Arrow factory constructor");
+                mc_entity_release(entity);
+                return finish(frame, error);
+            }
+        }
     } else if (type->kind == MC_ENTITY_CLASS_KIND_FALLING_SAND) {
         constructed = mc_falling_entity_allocate(classes, &entity, &frame.construction);
         if (constructed == MC_ENTITY_OK)

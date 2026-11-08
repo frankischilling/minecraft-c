@@ -1,4 +1,5 @@
 #include "mc/entity/movement/effects.h"
+#include "../arrow/references_internal.h"
 #include "../watcher_payload_internal.h"
 
 #include "../mob/damage_internal.h"
@@ -786,13 +787,29 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_clas
             *out = false;
             return true;
         }
-        if (instance_of(source, entity->classes, MC_ENTITY_CLASS_KIND_ARROW)) {
-            fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_RELATIONSHIP,
-                 "Player damage actual Arrow.c Living attacker", 117);
-            return false;
+        mc_entity *attacker = source; /* The source local3 is separate from argument1. */
+        if (instance_of(attacker, entity->classes, MC_ENTITY_CLASS_KIND_ARROW)) {
+            mc_entity *shooter = NULL;
+            mc_entity_status read = mc_arrow_shooter_get(attacker, &shooter, &error->entity);
+            if (read != MC_ENTITY_OK) {
+                fail(error, read, MC_ENTITY_EFFECT_CAUSE_OWNER, "Player damage first Arrow.c read",
+                     117);
+                return false;
+            }
+            if (shooter != NULL) {
+                /* The source performs another field read at127, rather than
+                 * using the nonnull value tested by its first read117. */
+                read = mc_arrow_shooter_get(attacker, &shooter, &error->entity);
+                if (read != MC_ENTITY_OK) {
+                    fail(error, read, MC_ENTITY_EFFECT_CAUSE_OWNER,
+                         "Player damage second Arrow.c read", 127);
+                    return false;
+                }
+                attacker = shooter;
+            }
         }
-        if (instance_of(source, entity->classes, MC_ENTITY_CLASS_KIND_LIVING_ENTITY) &&
-            !mc_player_damage_alert_entered(entity, source, error))
+        if (instance_of(attacker, entity->classes, MC_ENTITY_CLASS_KIND_LIVING_ENTITY) &&
+            !mc_player_damage_alert_entered(entity, attacker, error))
             return false;
         /* Every Living attacker enters the actual helper, including Player's
          * literal F=false return63. Null/non-Living skips the source call. */

@@ -60,6 +60,9 @@ def protected_inputs(executable, resources):
 
 def completed_native(child):
     capture = child.capture_report
+    require(all(type(capture.get(key)) is int for key in
+                ('exit', 'timeout_seconds', 'limit', 'stdout_bytes', 'stderr_bytes')),
+            'Native capture counts and budgets require actual integers')
     require(type(child.returncode) is int and child.returncode == 0 and
             type(capture.get('exit')) is int and capture['exit'] == child.returncode and
             capture.get('timed_out') is False and capture.get('output_overflow') is False and
@@ -108,7 +111,10 @@ def self_test():
                       ('output_overflow', True), ('pipe_capture_complete', False),
                       ('reaped', False), ('reader_errors', {'stdout': []}),
                       ('timeout_seconds', 1), ('limit', 0), ('stdout_bytes', 0),
-                      ('stderr_bytes', 1)):
+                      ('stderr_bytes', 1), ('stderr_bytes', False), ('stderr_bytes', 0.0),
+                      ('stdout_bytes', float(len(stdout))),
+                      ('timeout_seconds', float(TIMEOUT_SECONDS)),
+                      ('limit', float(STREAM_LIMIT))):
         child = copy.deepcopy(positive); child.capture_report[name] = bad; reject(child)
     for name, bad in (('returncode', 1), ('returncode', False), ('stderr', b'failure\n')):
         child = copy.deepcopy(positive); setattr(child, name, bad)
