@@ -54,6 +54,8 @@ typedef struct mc_entity_living_damage_state {
     double shared_value;
     float private_values[2];
     bool status_returned, attacked_returned;
+    bool health_stored;
+    int32_t health_before, health_after;
     bool sound_arguments_stored, sound_returned, death_invoke_reached;
     bool sound_world_captured, sound_name_returned, volume_returned;
     uintptr_t sound_world_identity, sound_name_identity;
@@ -133,6 +135,8 @@ typedef struct mc_entity_effect_error {
     uint16_t player_bytecode, living_bytecode, statistic_bytecode, close_bytecode;
     const mc_statistic *statistic;
     int32_t statistic_amount;
+    bool damage_statistic_returned;
+    int32_t damage_statistic_amount;
     mc_registry_error registry;
     int32_t watcher_index;
     mc_entity_error entity;

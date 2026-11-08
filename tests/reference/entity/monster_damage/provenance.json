@@ -1,0 +1,118 @@
+{
+  "schema": "MONSTER_DAMAGE_PROVENANCE_V1",
+  "scope": "32 prepared complete unchanged-original GZ.a(Entity,float) calls on a canonical Zombie and genuine Player/App/statistics/World owners; parent guards, damage5, false child results and reached failures; one declared damage0 control; no ticks, frames, loaded combat, original presentation or FPS qualification.",
+  "archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "original_sources": {
+    "MonsterDamageObservation.java": "aa1ec1e0af5d4a542e47612a7126a1533e09f66ac1d55fb12cfc45cd8133079c",
+    "MonsterDamageJdi.java": "5d0b1730d1c359b56479f27cfb8297a6054f4a31fef23d238f55bbb7a9ab53de",
+    "capture_reference.py": "125114e392f0537bd661f974c5f6e36ea6b1ea919aa5cdb8089d168873ffdab4",
+    "profiles.tsv": "eae7e95e193ced8544b8cc2070823b01a6af74a174ea5f08528a43cae67262bc",
+    "class-names.txt": "e0e068e72b28a4598d89091ef69e8381b3c96085bb998d5ff8f8801419bd132d",
+    "source-pins.json": "ba5f9a4abc0cacc5ea39a10747e489e699ffc394f869102566a1145f2f60d525"
+  },
+  "processing_sources": {
+    "observation.py": "90d04973c903fd934b1e15ec57a7ab2b19a3ea336c33d1595fbb839dd63c19e1",
+    "packet.py": "cc7579414fe923604882571ac00fa9ade101e0fb4bd37ce07f261176562bc53e",
+    "export_reference.py": "9676cf70f9bd8b5607619eee16f59e5f601198e6899e2635f819291f7ee1de95"
+  },
+  "finite_sha256": "4214a5fdd56db2ee93437e9ef0270d9bd906c5add98d5a62364504d59642c663",
+  "capture_sha256": "166814853dacff8def8cd04085eaa3c64b63a5c2592ce43547100703a013b855",
+  "runs": [
+    {
+      "kind": "ordinary",
+      "stdout": {
+        "name": "ordinary-0.stdout",
+        "bytes": 2137552,
+        "sha256": "da35b25af80b9fef700e6299796bab113d55204e0f60c423aa2250e2a1d1f2e6"
+      },
+      "calls": 32,
+      "summary": {
+        "calls": 32,
+        "normal_returns": 19,
+        "exceptions": 13,
+        "hurt_invocations": 19,
+        "hurt_returns": 9,
+        "hurt_true": 4,
+        "hurt_false": 5,
+        "selected_scalars": 46903
+      }
+    },
+    {
+      "kind": "ordinary",
+      "stdout": {
+        "name": "ordinary-1.stdout",
+        "bytes": 2137552,
+        "sha256": "00ea2ca1099f1ba7345f986ddc8ab048b159b453f09c280e4d16335d062ba46e"
+      },
+      "calls": 32,
+      "summary": {
+        "calls": 32,
+        "normal_returns": 19,
+        "exceptions": 13,
+        "hurt_invocations": 19,
+        "hurt_returns": 9,
+        "hurt_true": 4,
+        "hurt_false": 5,
+        "selected_scalars": 46903
+      }
+    },
+    {
+      "kind": "debugger",
+      "stdout": {
+        "name": "debugger-0/target.stdout",
+        "bytes": 2137552,
+        "sha256": "d364102b5412eac4697e2eff9e5b086cca70e43899faa3ade526a02175f387d7"
+      },
+      "calls": 32,
+      "summary": {
+        "calls": 32,
+        "normal_returns": 19,
+        "exceptions": 13,
+        "hurt_invocations": 19,
+        "hurt_returns": 9,
+        "hurt_true": 4,
+        "hurt_false": 5,
+        "selected_scalars": 46903
+      },
+      "journal": {
+        "name": "debugger-0/journal.jsonl",
+        "bytes": 300367,
+        "sha256": "63d2e3802a9b5c20ac28b35ca1d48c9d8d6522e623e89a340c35109b319a10fb"
+      }
+    },
+    {
+      "kind": "debugger",
+      "stdout": {
+        "name": "debugger-1/target.stdout",
+        "bytes": 2137552,
+        "sha256": "fd35d554ccd4d7d99329a5b380900bc1d753b6f40aed1b333a423edb6b357dce"
+      },
+      "calls": 32,
+      "summary": {
+        "calls": 32,
+        "normal_returns": 19,
+        "exceptions": 13,
+        "hurt_invocations": 19,
+        "hurt_returns": 9,
+        "hurt_true": 4,
+        "hurt_false": 5,
+        "selected_scalars": 46903
+      },
+      "journal": {
+        "name": "debugger-1/journal.jsonl",
+        "bytes": 300367,
+        "sha256": "ff170e800b334654aa997ddb9c86bc0879cd358eb90917ef4a8f771ebe6b9a7a"
+      }
+    }
+  ],
+  "summary": {
+    "calls": 32,
+    "normal_returns": 19,
+    "exceptions": 13,
+    "hurt_invocations": 19,
+    "hurt_returns": 9,
+    "hurt_true": 4,
+    "hurt_false": 5,
+    "selected_scalars": 46903
+  }
+}

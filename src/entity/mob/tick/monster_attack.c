@@ -7,12 +7,12 @@ static void at(mc_mob_tick_scope *s, unsigned int pc) {
 static bool returned(mc_mob_tick_scope *s) {
     at(s, 65);
     s->error->state.attack.returned = true;
+    s->error->state.attack.caller_return_site = s->error->site;
     return true;
 }
 
-/* The enclosing real Mob runner owns actor/target occurrences. This prefix
- * invokes no child or callback and acquires no substitute World/Math service.
- * Nullable target/bounds fields are read only at their actual GZ operations. */
+/* The enclosing real Mob runner and actual damage producer protect reached
+ * actor/target occurrences. Nullable fields are read at their GZ operations. */
 bool mt_monster_attack(mc_mob_tick_scope *s, mc_entity *target, float distance) {
     s->error->state.attack = (mc_mob_tick_attack_arguments){
         .stored = true, .target_identity = (uintptr_t)target, .distance = distance};
@@ -59,18 +59,8 @@ bool mt_monster_attack(mc_mob_tick_scope *s, mc_entity *target, float distance) 
     mt_fields(s)->ae = 20; /* Actual putfield52, before hurt operands. */
     const int32_t amount = s->entity->mob->monster_damage; /* Fresh GZ.c58. */
     at(s, 61);
-    s->error->child = MC_MOB_TICK_CHILD_EFFECT;
-    mc_entity_effect_error *child = &s->error->detail.effect;
-    mc_entity_effect_error_init(child);
-    child->status = MC_ENTITY_STATE_ERROR;
-    child->cause = MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL;
-    child->operation = "Monster actual target hurt invocation dependency";
-    child->source_class = "sn";
-    child->damage_arguments_stored = true;
-    child->damage_source_identity = (uintptr_t)s->entity;
-    child->damage_amount = amount;
-    s->error->child_site = (mc_mob_site){"sn", "a", "(Lsn;I)Z", 0};
-    /* Invocation operands are complete. No hurt body, boolean result, pop64
-     * or return65 is credited while the concrete damage producer is absent. */
-    return mt_fail(s, MC_ENTITY_STATE_ERROR, child->operation);
+    if (!mt_attack_hurt(s, target, amount))
+        return false;
+    at(s, 64); /* Source pop discards either actual Boolean result. */
+    return returned(s);
 }

@@ -19,6 +19,45 @@ static const char *mob_tick_class(mc_entity_class_kind kind) {
     }
 }
 
+static void hurt_count(uint64_t *value, bool *saturated) {
+    if (*value == UINT64_MAX)
+        *saturated = true;
+    else
+        ++*value;
+}
+
+static void observe_hurt(wt_scope *s, const mc_entity *actor) {
+    const mc_mob_tick_attack_arguments *attack = &s->error.child_error.mob.state.attack;
+    if (!attack->hurt_invoked)
+        return;
+    mc_world_mob_hurt_observation *value = &s->error.mob_hurt;
+    hurt_count(&value->reached_calls, &value->saturated);
+    if (attack->hurt_returned) {
+        hurt_count(&value->returned_calls, &value->saturated);
+        if (attack->hurt_result)
+            hurt_count(&value->true_returns, &value->saturated);
+    }
+    value->last = (mc_world_mob_hurt_receipt){.present = true,
+                                              .returned = attack->hurt_returned,
+                                              .result = attack->hurt_result,
+                                              .parent_returned = attack->returned,
+                                              .health_stored = attack->hurt_health_stored,
+                                              .statistic_returned = attack->hurt_statistic_returned,
+                                              .prior_pending = attack->hurt_prior_pending,
+                                              .actor_identity = (uintptr_t)actor,
+                                              .target_identity = attack->target_identity,
+                                              .actor_kind = actor->class_literal->kind,
+                                              .damage = attack->hurt_damage,
+                                              .health_before = attack->hurt_health_before,
+                                              .health_after = attack->hurt_health_after,
+                                              .statistic_amount = attack->hurt_statistic_amount,
+                                              .caller_class = attack->hurt_caller.class_name,
+                                              .caller_method = attack->hurt_caller.method,
+                                              .caller_descriptor = attack->hurt_caller.descriptor,
+                                              .caller_pc = attack->hurt_caller.pc,
+                                              .return_pc = attack->caller_return_site.pc};
+}
+
 bool wt_tick(wt_scope *s, mc_entity *p, unsigned int pc) {
     s->error.bytecode = pc;
     s->error.virtual_method = "w_()V";
@@ -49,6 +88,7 @@ bool wt_tick(wt_scope *s, mc_entity *p, unsigned int pc) {
                              s->context == NULL ? NULL : s->context->math,
                              s->context == NULL ? NULL : s->context->mob_limits,
                              &s->error.child_error.mob);
+        observe_hurt(s, p);
     } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_FALLING_SAND)) {
         s->error.virtual_class = "ju";
         if (!s->has_error_output)

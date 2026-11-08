@@ -41,6 +41,83 @@ bool mt_null(mc_mob_tick_scope *s, const char *op) {
     return false;
 }
 
+static void attack_throwable(mc_mob_tick_scope *s, bool native, bool exception, bool error,
+                             const char *name) {
+    if (!native && (exception || error) && name != NULL) {
+        s->error->source_exception = true;
+        s->error->exception_class = name;
+    }
+}
+
+bool mt_attack_hurt(mc_mob_tick_scope *s, mc_entity *target, int32_t amount) {
+    mc_mob_tick_attack_arguments *receipt = &s->error->state.attack;
+    receipt->hurt_invoked = true;
+    receipt->hurt_caller = s->error->site;
+    receipt->hurt_damage = amount;
+    receipt->hurt_prior_pending = mc_entity_effect_has_pending(target);
+    s->error->child = MC_MOB_TICK_CHILD_EFFECT;
+    bool answer = false;
+    const mc_entity_status status = mc_entity_effect_damage_with_math(
+        target, s->registry, s->math, s->entity, amount, &answer, &s->error->detail.effect);
+    const mc_entity_effect_error *e = &s->error->detail.effect;
+    receipt->hurt_health_stored = e->living_damage.health_stored;
+    receipt->hurt_health_before = e->living_damage.health_before;
+    receipt->hurt_health_after = e->living_damage.health_after;
+    receipt->hurt_statistic_returned = e->damage_statistic_returned;
+    if (receipt->hurt_statistic_returned)
+        receipt->hurt_statistic_amount = e->damage_statistic_amount;
+    if (status == MC_ENTITY_OK) {
+        receipt->hurt_returned = true;
+        receipt->hurt_result = answer;
+        s->error->child = MC_MOB_TICK_CHILD_NONE;
+        s->error->child_site = (mc_mob_site){0};
+        return true;
+    }
+    s->error->source_exception = false;
+    s->error->exception_class = NULL;
+    s->error->child_site =
+        (mc_mob_site){e->source_class, "a", "(Lsn;I)Z", (int32_t)e->source_bytecode};
+    /* Pending guards expose old borrowed receipts but produce a new native
+     * refusal. Only this invocation's failed selected child may classify it. */
+    if (e->status == status && e->cause != MC_ENTITY_EFFECT_CAUSE_OWNER &&
+        !receipt->hurt_prior_pending) {
+        if (e->player_alert.entered && !e->player_alert.returned &&
+            e->player_alert.status == status)
+            attack_throwable(s, e->player_alert.native_policy, e->player_alert.source_exception,
+                             e->player_alert.source_error, e->player_alert.exception_class);
+        else if (e->player_wake.entered && !e->player_wake.returned &&
+                 e->player_wake.status == status)
+            attack_throwable(s, e->player_wake.native_policy, e->player_wake.source_exception,
+                             e->player_wake.source_error, e->player_wake.exception_class);
+        else if (e->player_death.entered && !e->player_death.returned &&
+                 e->player_death.status == status)
+            attack_throwable(s, e->player_death.native_policy, e->player_death.source_exception,
+                             e->player_death.source_error, e->player_death.exception_class);
+        else if (e->death.entered && !e->death.returned && e->death.status == status)
+            attack_throwable(s, e->death.native_policy, e->death.source_exception, false,
+                             e->death.exception_class);
+        else if (e->living_damage.entered && !e->living_damage.returned)
+            attack_throwable(s, e->living_damage.native_policy, e->living_damage.source_exception,
+                             e->living_damage.source_error, e->living_damage.exception_class);
+        else if (e->cause == MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE ||
+                 e->cause == MC_ENTITY_EFFECT_CAUSE_CLASS_CAST) {
+            s->error->source_exception = true;
+            s->error->exception_class = e->cause == MC_ENTITY_EFFECT_CAUSE_CLASS_CAST
+                                            ? "java/lang/ClassCastException"
+                                            : "java/lang/NullPointerException";
+        } else if (e->cause == MC_ENTITY_EFFECT_CAUSE_REGISTRY)
+            mt_registry_classify(s, &e->registry);
+        else if (e->cause == MC_ENTITY_EFFECT_CAUSE_STATISTIC &&
+                 e->statistic_error.status == MC_PLAYER_STATISTIC_WRITER_FAILED &&
+                 e->statistic_error.writer.status == MC_CLIENT_STATS_SOURCE_EXCEPTION &&
+                 e->statistic_error.writer.exception == MC_CLIENT_STATS_NULL_REFERENCE) {
+            s->error->source_exception = true;
+            s->error->exception_class = "java/lang/NullPointerException";
+        }
+    }
+    return mt_fail(s, status, e->operation);
+}
+
 static const char *registry_source(mc_registry_status status) {
     switch (status) {
         case MC_REGISTRY_NULL_REFERENCE:

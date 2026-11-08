@@ -233,6 +233,15 @@ bool mc_mob_tick_error_retire(mc_mob_tick_error *error) {
         return false;
     switch (error->child) {
         case MC_MOB_TICK_CHILD_EFFECT:
+            if (error->state.attack.hurt_invoked && error->state.attack.hurt_prior_pending) {
+                /* The rejected call owns no old victim work. End only its
+                 * copied diagnostic borrows, without consuming that producer. */
+                error->detail.effect.death = (mc_mob_death_state){0};
+                error->detail.effect.player_death = (mc_player_death_state){0};
+                error->detail.effect.player_wake = (mc_entity_player_wake_state){0};
+                error->detail.effect.player_alert = (mc_entity_player_alert_state){0};
+                return true;
+            }
             return mc_entity_effect_error_retire(&error->detail.effect);
         case MC_MOB_TICK_CHILD_ENVIRONMENT:
             return mc_entity_effect_error_retire(&error->detail.environment.effect);

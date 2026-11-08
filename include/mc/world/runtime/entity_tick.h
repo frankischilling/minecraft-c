@@ -7,6 +7,7 @@
 #include "mc/entity/player/tick.h"
 #include "mc/world/chunk/entity_errors.h"
 #include "mc/world/runtime/acquisition_error.h"
+#include "mc/world/runtime/mob_hurt_observation.h"
 #include "mc/world/runtime/tile_entities/piston.h"
 #include "mc/world/runtime/world_access_error.h"
 
@@ -81,6 +82,9 @@ typedef struct mc_world_entity_tick_error {
     } child_error;
 
     mc_world_access_failure world_access_failure;
+    /* Completed value observations survive successful child/whole-call
+     * diagnostic clearing. They contain no owning or borrowed work views. */
+    mc_world_mob_hurt_observation mob_hurt;
 } mc_world_entity_tick_error;
 
 void mc_world_entity_tick_error_init(mc_world_entity_tick_error *);

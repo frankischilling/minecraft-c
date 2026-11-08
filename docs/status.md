@@ -1,13 +1,28 @@
 # Development status
 
-The final configured suites pass Windows 736/736 in 331.75 seconds and
+The Monster melee configured suites pass Windows 742/742 in 373.84 seconds and
+sanitized Linux headless 599/599 in 368.16 seconds, without registered skips.
+Both complete builds pass; formatting covers 2,228 files and GCC strict syntax
+checks cover 12 changed headless translation units. The six admission tables
+retain their prelaunch hashes and all 5,678 declared Linux files match the
+frozen execution source. The new Python wrapper is then published with LF
+instead of CRLF: its full AST, positions and compiled code remain identical,
+and its 916 native controls pass again on both hosts. Runtime/CMake/native
+fixture bytes remain unchanged by that publication step.
+
+The preceding ally-alert configured suites pass Windows 736/736 in 331.75 seconds and
 sanitized Linux headless 593/593 in 290.07 seconds, without registered skips.
 Both use four CTest workers. Windows builds the Release client with display
 tests disabled and CPU benchmarks enabled. Linux uses Clang Debug, ASan/UBSan,
 leak detection and halt-on-error with `MC_BUILD_CLIENT=OFF`. All six admission
-tables match their recorded prelaunch hashes; all 5,654 declared Linux inputs
-match the working source. The separate hidden hand controls retain their own
+tables matched their recorded prelaunch hashes; all 5,654 declared Linux inputs
+matched that cohort's source. The separate hidden hand controls retain their own
 finite graphics scope. Full loaded combat and sustained FPS remain unqualified.
+
+The published `7162b57d` ally-alert tree passes all four jobs in
+[hosted run 42447313464](https://github.com/frankischilling/minecraft-c/actions/runs/42447313464):
+Windows 750 tests, GCC and Clang 808 each, plus formatting. Its tested merge
+tree equals the published commit tree. This qualifies that preceding increment.
 
 Incoming Living damage now reaches the shared
 [Player ally-alert body](entity/player-ally-alert.md), including eligible
@@ -18,8 +33,12 @@ sanitized Linux each match 57,580 shared scalar values across all 40 outcomes;
 Watcher payload kind is independent of the record's declared type, preserving
 null unboxing and class-cast behavior.
 
-Natural Monster attacks still stop at GZ61 before invoking target hurt. Joining
-that caller and qualifying a loaded encounter remain the next client work.
+The [Monster melee parent](entity/monster-melee.md) now invokes actual target
+hurt at GZ61 and returns at 65 after either Boolean result. Windows and sanitized
+Linux each match 46,828 shared scalar positions across 32 original calls, with
+75 message/stack positions unpaired. Nine direct ownership/failure controls and
+two actual World tick controls pass 916 checks. The first separate visible monitor-2 opportunity stops before
+World selection on external Remote Desktop focus; loaded combat remains pending.
 
 The helper's [checked retirement](performance/player-ally-retire.md) now counts
 held pointer occurrences with a bounded optional workspace. A controlled

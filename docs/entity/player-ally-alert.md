@@ -76,10 +76,10 @@ each native call's own stream consumption and sound arithmetic are checked
 separately. The [retirement measurements](../performance/player-ally-retire.md)
 retain their separate CPU-only source and product scope.
 
-The natural Monster attack parent still stops at `GZ.a(Entity,float):61`,
-after committing cooldown and damage operands but before invoking target hurt.
-Joining that caller is required before a naturally attacking Zombie can use
-this completed damage component in loaded play.
+The [Monster melee parent](monster-melee.md) now invokes actual target hurt at
+`GZ.a(Entity,float):61` after the cooldown store and fresh damage read. Its
+protected-body comparison includes normal and failed Player damage. A separate
+loaded encounter must still qualify the natural AI and World caller chain.
 
 The overlay's entered Byte getter uses a compact diagnostic. Its successful
 path writes only the selected scalar output; failure materializes the full

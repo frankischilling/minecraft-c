@@ -31,6 +31,7 @@ typedef struct mc_client_world_tick_close_access {
 typedef struct mc_client_world_tick {
     bool active, failed, returned, counter_stored, counter_reset, difficulty_stored;
     bool renderer_returned, render_global_returned, entities_returned, spawn_flags_stored;
+    bool mob_hurt_observed; /* Passive receipt consumed once, including cleanup retry. */
     const char *operation;
     mc_client_graphics_site site;
     mc_world_refresh_entity_call *refresh;

@@ -1,4 +1,5 @@
-/* GZ prefix through the closed real Mob runner; genuine GAME fixture owners. */
+/* GZ guards and completed hurt through the closed real Mob runner. Historical
+ * original producers remain unchanged in tests/reference/entity/monster_attack. */
 int mc_monster_world_fixture_main(int argc, char **argv);
 #define main mc_monster_world_fixture_main
 #include "../world/runtime/test_world_random_tick.c"
@@ -149,9 +150,9 @@ static bool monster_one(random_fixture *f, const monster_input *p, FILE *out) {
     mc_mob_entity_state actor_expected, target_expected;
     memcpy(&actor_expected, actor->mob, sizeof(actor_expected));
     memcpy(&target_expected, target->mob, sizeof(target_expected));
-    const bool returned = strcmp(p->projection, "returned") == 0;
     const bool hurt = strcmp(p->projection, "hurt-prefix61") == 0;
-    const int32_t pc = returned ? 65 : hurt ? 61 : p->id == 8 ? 14 : p->id == 9 ? 17 : 24;
+    const bool returned = strcmp(p->projection, "returned") == 0 || hurt;
+    const int32_t pc = returned ? 65 : p->id == 8 ? 14 : p->id == 9 ? 17 : 24;
     if (hurt)
         actor_expected.living.ae = 20;
     const uint64_t actor_seed = actor->random->state, target_seed = target->random->state;
@@ -181,15 +182,15 @@ static bool monster_one(random_fixture *f, const monster_input *p, FILE *out) {
             e->state.concrete_random_calls == 0 && e->state.concrete_world_random_calls == 0 &&
             e->state.sounds == 0 && e->state.particles == 0 && e->state.path_calls == 0);
     if (hurt) {
-        REQUIRE(e->native_policy && !e->source_exception && e->exception_class == NULL &&
-                e->child == MC_MOB_TICK_CHILD_EFFECT && e->child_site.pc == 0 &&
-                strcmp(e->child_site.class_name, "sn") == 0 &&
-                strcmp(e->child_site.descriptor, "(Lsn;I)Z") == 0 &&
-                e->detail.effect.cause == MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL &&
-                e->detail.effect.damage_arguments_stored &&
-                e->detail.effect.damage_source_identity == (uintptr_t)actor &&
-                e->detail.effect.damage_amount == 5 && actor->mob->living.ae == 20 &&
-                target->mob->living.Y == 10);
+        REQUIRE(!e->native_policy && !e->source_exception && e->exception_class == NULL &&
+                e->child == MC_MOB_TICK_CHILD_NONE && e->state.attack.hurt_invoked &&
+                e->state.attack.hurt_returned && e->state.attack.hurt_result &&
+                e->state.attack.hurt_damage == 5 && actor->mob->living.ae == 20 &&
+                target->mob->living.Y == 5 && target->base.by == 20 &&
+                target->mob->living.au == 5 && target->mob->living.aa == 10 &&
+                target->mob->living.ab == 10 && target->mob->living.F == target_expected.living.F &&
+                target->mob->living.G == target_expected.living.G &&
+                target->mob->living.aj == target_expected.living.aj);
     } else if (!returned) {
         REQUIRE(!e->native_policy && e->source_exception && e->exception_class &&
                 strcmp(e->exception_class, "java/lang/NullPointerException") == 0);
@@ -199,16 +200,22 @@ static bool monster_one(random_fixture *f, const monster_input *p, FILE *out) {
             actor->bounds == (p->actor_bounds_null ? NULL : actor_owned) &&
             target->bounds == (p->target_bounds_null ? NULL : target_owned));
     REQUIRE(mc_mob_tick_cleanup(actor, cleanup) == MC_ENTITY_OK && !cleanup->state.cleanup_pending);
+    uint64_t target_after_seed = target_seed;
+    if (hurt)
+        for (unsigned int draw = 0; draw < 2; ++draw)
+            target_after_seed =
+                (target_after_seed * UINT64_C(0x5deece66d) + 11) & UINT64_C(0xffffffffffff);
     REQUIRE(actor->bounds == (p->actor_bounds_null ? NULL : actor_owned) &&
             target->bounds == (p->target_bounds_null ? NULL : target_owned) &&
-            actor->random->state == actor_seed && target->random->state == target_seed &&
+            actor->random->state == actor_seed && target->random->state == target_after_seed &&
             f->world->fields.r->state == world_seed &&
             atomic_load(&f->profile->math->state) == math_seed &&
             atomic_load(&f->profile->uniquifier) == u && actor->holds == 1 && target->holds == 1);
     REQUIRE(memcmp(&actor_base, &actor->base, sizeof(actor_base)) == 0 &&
-            memcmp(&target_base, &target->base, sizeof(target_base)) == 0 &&
-            memcmp(&actor_expected, actor->mob, sizeof(actor_expected)) == 0 &&
-            memcmp(&target_expected, target->mob, sizeof(target_expected)) == 0);
+            memcmp(&actor_expected, actor->mob, sizeof(actor_expected)) == 0);
+    if (!hurt)
+        REQUIRE(memcmp(&target_base, &target->base, sizeof(target_base)) == 0 &&
+                memcmp(&target_expected, target->mob, sizeof(target_expected)) == 0);
     REQUIRE(mc_entity_classes_get_snapshot(f->entities, &classes_after) == MC_ENTITY_OK &&
             mc_math_classes_state(f->math, &math_after, NULL) == MC_MATH_CLASS_OK &&
             classes_before.bounds_pool_cursor == classes_after.bounds_pool_cursor &&
@@ -218,8 +225,7 @@ static bool monster_one(random_fixture *f, const monster_input *p, FILE *out) {
             math_before.holds == math_after.holds);
     fputs(",\"after\":", out);
     monster_state(out, f, actor, target);
-    const bool hurt_stored =
-        e->child == MC_MOB_TICK_CHILD_EFFECT && e->detail.effect.damage_arguments_stored;
+    const bool hurt_stored = e->state.attack.hurt_invoked;
     fprintf(
         out,
         ",\"returned\":%s,\"native_policy\":%s,\"source_exception\":%s,\"pc\":%" PRId32
@@ -229,7 +235,7 @@ static bool monster_one(random_fixture *f, const monster_input *p, FILE *out) {
         "\"cleanup_returned\":true,\"null_fields_preserved\":true,\"entropy_unchanged\":true}\n",
         e->state.returned ? "true" : "false", e->native_policy ? "true" : "false",
         e->source_exception ? "true" : "false", e->site.pc, hurt_stored ? "true" : "false",
-        hurt_stored ? e->detail.effect.damage_amount : 0, (uintptr_t)actor, (uintptr_t)target,
+        hurt_stored ? e->state.attack.hurt_damage : 0, (uintptr_t)actor, (uintptr_t)target,
         (uintptr_t)argument, hurt_stored ? e->detail.effect.damage_source_identity : 0);
     passed = true;
 done:

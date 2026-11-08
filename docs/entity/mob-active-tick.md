@@ -50,7 +50,7 @@ These are reached dependencies, not successful empty implementations:
 
 | Source boundary | Pending work |
 |---|---|
-| `ii.f_:97/109` | Creeper attack and unseen-target bodies and Wolf pounce/bite routing now run; other concrete attacks retain their own limits. |
+| `ii.f_:97/109` | Creeper attack and unseen-target bodies, Wolf pounce/bite routing and the inherited [Monster melee parent](monster-melee.md) now run; other concrete attacks retain their own limits. |
 | `gb.a:108/134` | Actual World explosion, including QX rays, damage, drops and block effects. |
 | `ww.o:217` | Actual Item drop after egg sound and Egg static-field access. |
 | Living/Monster/Sheep/Wolf hurt entries | [Animal damage](animal-damage.md) runs for Sheep/Pig/Cow/Chicken; [Zombie](living-damage.md) and [Skeleton](skeleton-damage.md) retain their NULL-attacker qualification. Other concrete overrides, death and drop work remain unfinished. |

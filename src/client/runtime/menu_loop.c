@@ -388,6 +388,25 @@ static bool tick(mc_client_menu_loop *loop) {
     if (app->active_world != NULL) {
         const bool returned = mc_client_world_tick_run(app, loop->math, &loop->world_tick);
         loop->state.world_tick = &loop->world_tick;
+        if (!loop->world_tick.mob_hurt_observed) {
+            const mc_world_mob_hurt_observation *observed = &loop->world_tick.entities.mob_hurt;
+            mc_world_mob_hurt_observation *total = &loop->state.mob_hurt;
+            const uint64_t increments[] = {observed->reached_calls, observed->returned_calls,
+                                           observed->true_returns};
+            uint64_t *counts[] = {&total->reached_calls, &total->returned_calls,
+                                  &total->true_returns};
+            for (size_t i = 0; i < sizeof(increments) / sizeof(*increments); ++i) {
+                if (increments[i] > UINT64_MAX - *counts[i]) {
+                    *counts[i] = UINT64_MAX;
+                    total->saturated = true;
+                } else
+                    *counts[i] += increments[i];
+            }
+            total->saturated = total->saturated || observed->saturated;
+            if (observed->last.present)
+                total->last = observed->last;
+            loop->world_tick.mob_hurt_observed = true;
+        }
         if (returned) {
             ++loop->state.world_tick_returns;
             const mc_world_tick_state *scheduler = &loop->world_tick.scheduler_state;

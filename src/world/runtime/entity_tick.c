@@ -220,8 +220,11 @@ static mc_world_storage_status run(mc_world_runtime *world, mc_entity *entity, b
     const mc_world_storage_status status = s->error.status;
     world->last_error =
         status == MC_WORLD_STORAGE_OK ? (mc_world_storage_error){0} : s->error.cause;
-    if (status == MC_WORLD_STORAGE_OK)
+    if (status == MC_WORLD_STORAGE_OK) {
+        const mc_world_mob_hurt_observation observed = s->error.mob_hurt;
         mc_world_entity_tick_error_init(&s->error);
+        s->error.mob_hurt = observed;
+    }
     if (out != NULL) {
         *out = s->error;
         /* Transfer any retained child work; the scratch no longer owns it. */

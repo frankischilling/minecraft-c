@@ -47,6 +47,17 @@ typedef struct mc_mob_tick_attack_arguments {
     bool stored, unseen, returned;
     uintptr_t target_identity;
     float distance;
+    /* Reached caller invocation (GZ61/GI195), distinct from entry into a
+     * concrete hurt body. Both Boolean results are ordinary source returns. */
+    bool hurt_invoked, hurt_returned, hurt_result;
+    mc_mob_site hurt_caller;
+    mc_mob_site caller_return_site;
+    int32_t hurt_damage;
+    bool hurt_health_stored, hurt_statistic_returned;
+    int32_t hurt_health_before, hurt_health_after, hurt_statistic_amount;
+    /* Native cleanup bookkeeping: this invocation must not consume an older
+     * pending producer merely borrowed by the rejected hurt call. */
+    bool hurt_prior_pending;
 } mc_mob_tick_attack_arguments;
 
 typedef struct mc_mob_tick_explosion_arguments {

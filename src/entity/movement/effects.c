@@ -357,8 +357,13 @@ static bool statistic_dispatch(mc_entity *entity, mc_entity_effect_error *error,
     const mc_player_statistic_status status =
         mc_local_player_add_statistic(entity, error->statistic, amount, &error->statistic_error);
     error->statistic_bytecode = (uint16_t)error->statistic_error.site.pc;
-    if (status == MC_PLAYER_STATISTIC_OK)
+    if (status == MC_PLAYER_STATISTIC_OK) {
+        if (pc == 152) {
+            error->damage_statistic_returned = true;
+            error->damage_statistic_amount = amount;
+        }
         return true;
+    }
     fail(error, mc_player_statistic_entity_status(&error->statistic_error),
          status == MC_PLAYER_STATISTIC_NULL_REFERENCE ? MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE
                                                       : MC_ENTITY_EFFECT_CAUSE_STATISTIC,

@@ -374,7 +374,12 @@ static bool health_damage(mc_entity *p, mc_registry_classes *registry, int32_t a
         return mc_player_health_damage_entered(p, registry, amount, e);
     child_at(e, "ls", "b", "(I)V", 7);
     mc_living_entity_fields *v = mc_entity_living_fields(p);
-    v->Y = mc_java_i32_sub(v->Y, amount);
+    const int32_t before = v->Y;
+    const int32_t after = mc_java_i32_sub(before, amount);
+    v->Y = after;
+    e->living_damage.health_before = before;
+    e->living_damage.health_after = after;
+    e->living_damage.health_stored = true;
     e->living_damage.health_pc = 10;
     return true;
 }

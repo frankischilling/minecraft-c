@@ -2022,12 +2022,12 @@
       "sha256": "f94228a30a9409f9df8756c8e796d0a37a6aa23a1066799ac1b1f2c966e8622b"
     },
     "src/client/runtime/menu_loop.c": {
-      "bytes": 65625,
-      "sha256": "dffe6f57aebd5b6a2b475600e5c1d00c539912e4f0387995829f841aae08369c"
+      "bytes": 66693,
+      "sha256": "f426a9788628fbc3981236930996b3de93688961b88a8993bee0711b4a23eb4d"
     },
     "src/client/runtime/menu_loop.h": {
-      "bytes": 7607,
-      "sha256": "525e557d43121276513c0cfae70ceb7ab6c12a04d7b3e0155c039d5816f433dc"
+      "bytes": 7702,
+      "sha256": "498a735a4808d54dff96ff2b3883e522f2ba5686cc8178ca98d7a7615de6810f"
     },
     "src/client/texture_packs/image_io.h": {
       "bytes": 482,
@@ -2890,8 +2890,8 @@
       "sha256": "30e61a74b1002cb508665cde8be18118764912ba08c40e4eb06a773e5956c1d9"
     },
     "include/mc/entity/movement/effects.h": {
-      "bytes": 17424,
-      "sha256": "9bc911f0fb5ce8b415fdcecaf919451d7319459149d4f3fffe4eec314bef6d28"
+      "bytes": 17562,
+      "sha256": "29bea8f2480c0157bff4334d6180f2fcbaef11ef569eab444ca824b2d20e158e"
     },
     "include/mc/entity/movement/environment.h": {
       "bytes": 5179,
@@ -2950,8 +2950,8 @@
       "sha256": "c70dca4488ec681b6c830a6762e397b680bec426f3002fa5706228c112ea479a"
     },
     "include/mc/world/runtime/entity_tick.h": {
-      "bytes": 7087,
-      "sha256": "ae137b49a822de535c2d0d6b8eb6d4c0bd9168a8a182b73278d7a8680c628df4"
+      "bytes": 7332,
+      "sha256": "80ba4fc9b3fd2d6b1dea6161dfaef4f2f310a84973a78f0c4589efe501f5d8aa"
     },
     "include/mc/world/runtime/material_movement.h": {
       "bytes": 3911,
@@ -2978,8 +2978,8 @@
       "sha256": "7c401e27b46efa5a5ee1407ca84f88cc5c6f3d139ff3bb4a5fc4f9aa4f2d13b2"
     },
     "src/client/runtime/world_tick.h": {
-      "bytes": 5711,
-      "sha256": "d46e3738387be2a00ba7f68b291b73bb6690b1ee6ef16a6aba356cd68252ec2e"
+      "bytes": 5801,
+      "sha256": "7a7cabe7596288976faa776c5497895ecf943cc367315bee30bdd7684f68dbd3"
     },
     "src/client/view_slot.h": {
       "bytes": 946,
@@ -4750,12 +4750,12 @@
       "sha256": "0776d9186908e10a50937f5fce43c0ab216a15284a732394e2e0b04b043d25e7"
     },
     "cmake/mob_tick.cmake": {
-      "bytes": 7797,
-      "sha256": "0d1f8005a32bfa8536852f86c8be3917ecbffb8e460f9c4d561ce6f1ea2f9ab5"
+      "bytes": 9924,
+      "sha256": "b59ffc5550e0c6037637c1ac6b4368bb74bc8bb13a9a7daecd9df9e59901f56a"
     },
     "include/mc/entity/mob/tick.h": {
-      "bytes": 8824,
-      "sha256": "4ad386a1d6b7d0355c65222ece1d14daf5067a969c8ffa578cffa2bd5d25280c"
+      "bytes": 9423,
+      "sha256": "25572182d66b081260d87b44173864ff7b8bdcbe5dedce987339542d83e4aa1c"
     },
     "src/entity/living/fields.c": {
       "bytes": 947,
@@ -4782,24 +4782,24 @@
       "sha256": "e28c51781e7e28f15f3a6d40b888d6058baa6c2bed1c17f546cba6f5b26d19a2"
     },
     "src/entity/mob/tick/common.c": {
-      "bytes": 19469,
-      "sha256": "f1640f38008fb2c22e10e3262dab2935fd492f1d7f9f20f3ffab4c1beb1e2898"
+      "bytes": 23950,
+      "sha256": "a2ba3e2e04b63fc7016d28959448b1a7917df76bdc32bb33202280ff08498de9"
     },
     "src/entity/mob/tick/helpers.c": {
       "bytes": 5239,
       "sha256": "3a6bc5e5e0a2201bbda57688372ca919442fcf9f6d87d17c4954719d46039028"
     },
     "src/entity/mob/tick/internal.h": {
-      "bytes": 6356,
-      "sha256": "9d0a8141c355d4b2d49339cd4eefa774987947ddcce915b0d56ac3d83975a610"
+      "bytes": 6433,
+      "sha256": "14ca4863fa34688e54d1822d6f6e65b6d36b80d3c830cb282ea5862bf7705f5f"
     },
     "src/entity/mob/tick/living.c": {
       "bytes": 8429,
       "sha256": "2c7fb0839b581b2d5e0cd4471b4d46a7edcf33f43f49a4f3695acf584fff92b3"
     },
     "src/entity/mob/tick/ray.c": {
-      "bytes": 12541,
-      "sha256": "79d5b070a67bd7a0bd2e4acdd451fa4c37e46bdbeda7b114f6ec54970bf4eff8"
+      "bytes": 13157,
+      "sha256": "7c4870492202105d95c4fa816a571e7c568a359e8dedf51eeead68928eec29da"
     },
     "src/entity/mob/tick/slime_squid.c": {
       "bytes": 7270,
@@ -5190,8 +5190,8 @@
       "sha256": "280369a50329726ad7befbc0a91e17123b9407609a12e18af53c7adc5719fe06"
     },
     "src/entity/mob/tick/monster_attack.c": {
-      "bytes": 3203,
-      "sha256": "f17906b1291eefdb87b3f64290370111a323ecf55eb7c9e5f6b545bda0746002"
+      "bytes": 2561,
+      "sha256": "bd9d476a8ed11a5d9b3bea724f4200103598632333766683c1f78667b215c20d"
     },
     "src/item/render/internal.h": {
       "bytes": 3390,
@@ -5206,8 +5206,8 @@
       "sha256": "8310c5e7e114adadba7f7c527aa7292184ab19946c8757ef98d2906781fe7904"
     },
     "tests/entity/test_monster_attack.c": {
-      "bytes": 15936,
-      "sha256": "7d105b1dcd4882fabf0b17325ff1cfff9b71fda5ba9a98b1e80da4e1d4f3417b"
+      "bytes": 16286,
+      "sha256": "2c633d3e3557ec27bb58adf07e93133689f6d9a479b15da5ad29eb31818a2c71"
     },
     "tests/reference/client/mob_draw_remaining/native_device_audit.py": {
       "bytes": 11974,
@@ -5226,8 +5226,8 @@
       "sha256": "703833e7ee00bf1440b93ef64b9157fd2f10e293b4287ad3e2da52b8ec856aae"
     },
     "tests/tools/entity/test_monster_attack.py": {
-      "bytes": 41995,
-      "sha256": "5b39ac6c32a44985516bf1e069b75df5d505dccdecc6158b4a427f0bf512b546"
+      "bytes": 42624,
+      "sha256": "3f6328dbb0838e70638a0b643f77c40d2c7c61f519c77d1676614fc65d70902e"
     },
     "tests/reference/entity/monster_attack/capture_reference.py": {
       "bytes": 8933,
@@ -5258,8 +5258,8 @@
       "sha256": "83fa124aab5972e55bb827ed95dbb5b1d239e16d18f55001b7a1024810a9768f"
     },
     "src/entity/mob/damage.c": {
-      "bytes": 28452,
-      "sha256": "5062b7388e53f5eb9e7a344fbdb24600f16a7ad1e646dcfa650f8e75a554721b"
+      "bytes": 28651,
+      "sha256": "ad80b25b28cb3bb908848bff466fbf1396766418a768aa83dfa2be94cde1e1f4"
     },
     "src/entity/mob/damage_internal.h": {
       "bytes": 1708,
@@ -6154,8 +6154,8 @@
       "sha256": "ff6a4ee28d84ef567d9d4605d146b38b9b1a650369818ed7ea90ea84c09dac17"
     },
     "src/entity/mob/tick/wolf_attack.c": {
-      "bytes": 7496,
-      "sha256": "0b43535f8f3ac2687133db99655232640a513e2140f79f28026a9605e058d0b9"
+      "bytes": 5895,
+      "sha256": "914d5286a1627217421f3e82bea2169c2ea18f0f932c27fba1815491e43369dd"
     },
     "tests/client/gameplay/test_create_world.c": {
       "bytes": 37952,
@@ -7898,12 +7898,12 @@
       "sha256": "ae15e8fb904b7fde7d0b92a22beea685aaf1a6ba0ac106c30a54c8c02662f2a2"
     },
     "src/entity/movement/effects.c": {
-      "bytes": 49118,
-      "sha256": "c98c1ccc337b4f79ab0f0e91c263c253439309f7e2c502801dcaa8f999dcfe72"
+      "bytes": 49267,
+      "sha256": "0dfeb2739d5812462b77f8a159e2e9ef7c4194795f00174a2b3358553e5eb01d"
     },
     "src/entity/player/damage.c": {
-      "bytes": 4744,
-      "sha256": "5c8144c98ea43aa8174f22299a28644de68b773fa234149c9b94cc92b0d79187"
+      "bytes": 4943,
+      "sha256": "0a317555543d474a69a61e86257f0d717419f46424e4ead12b821955749d9205"
     },
     "src/entity/player/damage_internal.h": {
       "bytes": 1127,
@@ -8558,12 +8558,12 @@
       "sha256": "7beadfaf96b2a1096c960a1030f1e998568eba08a4f4114f333316d597a1faf1"
     },
     "src/world/runtime/entity_tick.c": {
-      "bytes": 10881,
-      "sha256": "e17ce005b6b2c1ac63f3a03d8e0ce0d6655f1e138d8c4206938be72e44cd4dda"
+      "bytes": 11001,
+      "sha256": "8c774abc57c3343a0bf3139b7e2640bf1c6669b6fd8ca633b4d1cde1c94962e8"
     },
     "src/world/runtime/entity_tick_dispatch.c": {
-      "bytes": 11625,
-      "sha256": "0c364971776d199adc75c36c7d671630f18cea1c3c7e6c3a506a97b579db8c58"
+      "bytes": 13982,
+      "sha256": "05b94acbfbe5f4b0da8527b512829378a2d2bb2a5175a7170159887e3ff19daf"
     },
     "tests/client/gameplay/test_player_sleep_tick_cleanup.c": {
       "bytes": 16149,
@@ -9172,6 +9172,58 @@
     "tests/tools/entity/test_player_mob_attacker.py": {
       "bytes": 6228,
       "sha256": "02ec52cddf6aa757cbc374092219bb1dc3eb0e14588727ca44f67a8562d0c463"
+    },
+    "cmake/client_zombie_damage.cmake": {
+      "bytes": 2678,
+      "sha256": "85388f16d7ae12ef4024ba8030a5a1875e4ed93042a6bbe43b29fc77856de319"
+    },
+    "include/mc/world/runtime/mob_hurt_observation.h": {
+      "bytes": 1147,
+      "sha256": "9d75f71d134115439ad49e9a459334d3530120da3f911596dec56daff90d0d25"
+    },
+    "tests/client/gameplay/test_zombie_damage.c": {
+      "bytes": 18530,
+      "sha256": "be41054da799a2d22b8842c398f2777db647274b36551e8b03f90d225fc5ce8a"
+    },
+    "tests/entity/player/test_monster_damage_original.c": {
+      "bytes": 36415,
+      "sha256": "3c28f980be86e6372af2f4e6e2a03872d14a52a6ecc2714433d3e8e30b76bb62"
+    },
+    "tests/entity/test_monster_hurt.c": {
+      "bytes": 25567,
+      "sha256": "c79c945b8f7f10aaa4d1b6095ccf71dd29673c1e32a6aab3c285459478553c28"
+    },
+    "tests/reference/entity/monster_damage/capture_reference.py": {
+      "bytes": 9708,
+      "sha256": "125114e392f0537bd661f974c5f6e36ea6b1ea919aa5cdb8089d168873ffdab4"
+    },
+    "tests/reference/entity/monster_damage/export_reference.py": {
+      "bytes": 4718,
+      "sha256": "9676cf70f9bd8b5607619eee16f59e5f601198e6899e2635f819291f7ee1de95"
+    },
+    "tests/reference/entity/monster_damage/observation.py": {
+      "bytes": 5534,
+      "sha256": "90d04973c903fd934b1e15ec57a7ab2b19a3ea336c33d1595fbb839dd63c19e1"
+    },
+    "tests/reference/entity/monster_damage/packet.py": {
+      "bytes": 6690,
+      "sha256": "cc7579414fe923604882571ac00fa9ade101e0fb4bd37ce07f261176562bc53e"
+    },
+    "tests/reference/entity/monster_damage/run_native.py": {
+      "bytes": 12274,
+      "sha256": "1a69d4df89fda37e92933bdd4df8884c20d6c4d4dd6fa7a3ad223c50b95e90d6"
+    },
+    "tests/reference/entity/monster_damage/test_packet.py": {
+      "bytes": 11756,
+      "sha256": "181880b4132f86e8cb7c45de44c02dd331754df28903dbcccccc6a50d71a1861"
+    },
+    "tests/tools/client/test_zombie_damage.py": {
+      "bytes": 19428,
+      "sha256": "f17dc45f67b3b61f833a2197bc9b1d40ad52b946d2de3bb3540a0686cd0e51e4"
+    },
+    "tests/tools/entity/test_monster_hurt.py": {
+      "bytes": 6666,
+      "sha256": "4c08992bb61b4beeab5c33eb5d485a559dfc8cc7c123a750b50598b6c12ead7d"
     }
   },
   "source_suppliers": {
@@ -14674,6 +14726,132 @@
           },
           "added": [],
           "current_count": 2293
+        }
+      }
+    },
+    {
+      "from_commit": "7162b57d3de9fbf1fc644234c8804abde69cea17",
+      "role": "Current actual Monster melee target damage, shared Wolf damage adapter, retained failed wake ownership, passive World/client hurt observations, original parent comparison and saved-Zombie fixture. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 620922,
+        "sha256": "0d17f7a8bb8688cfd1064d02bc44ac6f985398a7601e014f4a3604c1f587b825"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "src/client/runtime/menu_loop.c": {
+              "bytes": 65625,
+              "sha256": "dffe6f57aebd5b6a2b475600e5c1d00c539912e4f0387995829f841aae08369c"
+            },
+            "src/client/runtime/menu_loop.h": {
+              "bytes": 7607,
+              "sha256": "525e557d43121276513c0cfae70ceb7ab6c12a04d7b3e0155c039d5816f433dc"
+            },
+            "include/mc/entity/movement/effects.h": {
+              "bytes": 17424,
+              "sha256": "9bc911f0fb5ce8b415fdcecaf919451d7319459149d4f3fffe4eec314bef6d28"
+            },
+            "include/mc/world/runtime/entity_tick.h": {
+              "bytes": 7087,
+              "sha256": "ae137b49a822de535c2d0d6b8eb6d4c0bd9168a8a182b73278d7a8680c628df4"
+            },
+            "src/client/runtime/world_tick.h": {
+              "bytes": 5711,
+              "sha256": "d46e3738387be2a00ba7f68b291b73bb6690b1ee6ef16a6aba356cd68252ec2e"
+            },
+            "cmake/mob_tick.cmake": {
+              "bytes": 7797,
+              "sha256": "0d1f8005a32bfa8536852f86c8be3917ecbffb8e460f9c4d561ce6f1ea2f9ab5"
+            },
+            "include/mc/entity/mob/tick.h": {
+              "bytes": 8824,
+              "sha256": "4ad386a1d6b7d0355c65222ece1d14daf5067a969c8ffa578cffa2bd5d25280c"
+            },
+            "src/entity/mob/tick/common.c": {
+              "bytes": 19469,
+              "sha256": "f1640f38008fb2c22e10e3262dab2935fd492f1d7f9f20f3ffab4c1beb1e2898"
+            },
+            "src/entity/mob/tick/internal.h": {
+              "bytes": 6356,
+              "sha256": "9d0a8141c355d4b2d49339cd4eefa774987947ddcce915b0d56ac3d83975a610"
+            },
+            "src/entity/mob/tick/ray.c": {
+              "bytes": 12541,
+              "sha256": "79d5b070a67bd7a0bd2e4acdd451fa4c37e46bdbeda7b114f6ec54970bf4eff8"
+            },
+            "src/entity/mob/tick/monster_attack.c": {
+              "bytes": 3203,
+              "sha256": "f17906b1291eefdb87b3f64290370111a323ecf55eb7c9e5f6b545bda0746002"
+            },
+            "tests/entity/test_monster_attack.c": {
+              "bytes": 15936,
+              "sha256": "7d105b1dcd4882fabf0b17325ff1cfff9b71fda5ba9a98b1e80da4e1d4f3417b"
+            },
+            "tests/tools/entity/test_monster_attack.py": {
+              "bytes": 41995,
+              "sha256": "5b39ac6c32a44985516bf1e069b75df5d505dccdecc6158b4a427f0bf512b546"
+            },
+            "src/entity/mob/damage.c": {
+              "bytes": 28452,
+              "sha256": "5062b7388e53f5eb9e7a344fbdb24600f16a7ad1e646dcfa650f8e75a554721b"
+            },
+            "src/entity/mob/tick/wolf_attack.c": {
+              "bytes": 7496,
+              "sha256": "0b43535f8f3ac2687133db99655232640a513e2140f79f28026a9605e058d0b9"
+            },
+            "src/entity/movement/effects.c": {
+              "bytes": 49118,
+              "sha256": "c98c1ccc337b4f79ab0f0e91c263c253439309f7e2c502801dcaa8f999dcfe72"
+            },
+            "src/entity/player/damage.c": {
+              "bytes": 4744,
+              "sha256": "5c8144c98ea43aa8174f22299a28644de68b773fa234149c9b94cc92b0d79187"
+            },
+            "src/world/runtime/entity_tick.c": {
+              "bytes": 10881,
+              "sha256": "e17ce005b6b2c1ac63f3a03d8e0ce0d6655f1e138d8c4206938be72e44cd4dda"
+            },
+            "src/world/runtime/entity_tick_dispatch.c": {
+              "bytes": 11625,
+              "sha256": "0c364971776d199adc75c36c7d671630f18cea1c3c7e6c3a506a97b579db8c58"
+            }
+          },
+          "added": [
+            "cmake/client_zombie_damage.cmake",
+            "include/mc/world/runtime/mob_hurt_observation.h",
+            "tests/client/gameplay/test_zombie_damage.c",
+            "tests/entity/player/test_monster_damage_original.c",
+            "tests/entity/test_monster_hurt.c",
+            "tests/reference/entity/monster_damage/capture_reference.py",
+            "tests/reference/entity/monster_damage/export_reference.py",
+            "tests/reference/entity/monster_damage/observation.py",
+            "tests/reference/entity/monster_damage/packet.py",
+            "tests/reference/entity/monster_damage/run_native.py",
+            "tests/reference/entity/monster_damage/test_packet.py",
+            "tests/tools/client/test_zombie_damage.py",
+            "tests/tools/entity/test_monster_hurt.py"
+          ],
+          "current_count": 2306
+        }
+      }
+    },
+    {
+      "from_commit": "7162b57d3de9fbf1fc644234c8804abde69cea17",
+      "role": "Current actual Monster melee target damage, shared Wolf damage adapter, retained failed wake ownership, passive World/client hurt observations, original parent comparison and saved-Zombie fixture. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 628275,
+        "sha256": "217d43d7160ddd6dbf6fbb37a7fd4ce5bb8fa9ceaed7c3db816de6dc9e91d824"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/entity/test_monster_hurt.py": {
+              "bytes": 6808,
+              "sha256": "554e24041dd0fe2b6e8287c539b203bed1301b00af86a9fcb0fdcce24c6e796d"
+            }
+          },
+          "added": [],
+          "current_count": 2306
         }
       }
     }

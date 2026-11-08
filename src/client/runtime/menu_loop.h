@@ -2,6 +2,7 @@
 #define MC_CLIENT_RUNTIME_MENU_LOOP_H
 
 #include "bootstrap.h"
+#include "mc/world/runtime/mob_hurt_observation.h"
 
 typedef struct mc_client_menu_loop mc_client_menu_loop;
 typedef struct mc_world_storage_error mc_world_storage_error;
@@ -36,6 +37,7 @@ typedef struct mc_client_menu_loop_state {
     uint64_t world_tick_returns, random_chunk_calls, random_chunk_samples;
     uint64_t nightmare_calls, nightmare_returns, nightmare_true_returns, nightmare_wake_returns;
     uint64_t sleep_wake_calls, sleep_wake_returns;
+    mc_world_mob_hurt_observation mob_hurt;
     uint64_t random_display_calls, random_display_samples, random_display_random_calls;
     size_t last_random_chunk_count;
     bool render_clock_stored, render_returned;

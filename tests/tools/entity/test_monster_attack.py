@@ -1,4 +1,4 @@
-"""Twelve authored GZ contracts, with optional strict Original/build prefix pairing."""
+"""Twelve current GZ contracts; historical original producers remain unchanged."""
 import argparse
 import csv
 import copy
@@ -158,17 +158,19 @@ def audit_original(directory, replacement=None):
                    r["site"]["class"] == "gz" and r["site"]["descriptor"] == "(Lsn;F)V"]
         if i in HURTS:
             need(len(prefixes) == 1, "one actual hurt entry")
-            selected = prefixes[0]["state"]
+            prefix = prefixes[0]["state"]
+            selected = a["after"]
             need(prefixes[0]["frames"][1] == {"class": "gz", "method": "a", "descriptor": "(Lsn;F)V", "pc": 61},
                  "actual GZ61 caller")
             need(prefixes[0]["receiver"] == {"class": "wh", "role": "target"} and
                  prefixes[0]["arguments"] == [{"class": "uz", "role": "actor"}, 5],
                  "actual hurt receiver/source/amount")
-            need(selected["actor"]["ls.ae"] == 20 and selected["target"]["ls.Y"] == 10,
+            need(prefix["actor"]["ls.ae"] == 20 and prefix["target"]["ls.Y"] == 10,
                  "actual pre-hurt state")
             need(len(returns) == 1 and returns[0]["phase"] == "after-native-frontier" and
-                 a["after"]["target"]["ls.Y"] == b["after"]["target"]["ls.Y"] == 5,
-                 "later Original hurt/return kept separate")
+                 a["after"]["target"]["ls.Y"] == b["after"]["target"]["ls.Y"] == 5 and
+                 returns[0]["site"]["pc"] == 65,
+                 "historical original actual whole hurt/return observation")
         else:
             selected = a["after"]
             need(a["before"] == a["after"] and b["before"] == b["after"] and entry == finish,
@@ -213,20 +215,21 @@ def compare(native, original):
             expect = projection(values)
             need({k: row[phase][k] for k in expect} == expect, "actual selected Source state: " + str(i))
             checks += len(expect)
-        need(row["returned"] == (i in RETURNS) and row["pc"] == (65 if i in RETURNS else 61 if i in HURTS else NULLS[i]),
-             "returned body versus unreturned source/native boundary")
+        need(row["returned"] == (i in RETURNS | HURTS) and row["pc"] == (65 if i in RETURNS | HURTS else NULLS[i]),
+             "actual current whole return versus source failure")
         need(row["guard_released"] and row["cleanup_returned"] and row["null_fields_preserved"] and
              row["entropy_unchanged"], "actual checked cleanup/prefix receipts")
         for key in ["actor_seed", "target_seed", "world_seed", "math_seed", "U"]:
-            need(row["before"][key] == row["after"][key], "same actual Native stream untouched: " + key)
+            expected_seed = advance(row["before"][key], 2) if i in HURTS and key == "target_seed" else row["before"][key]
+            need(expected_seed == row["after"][key], "actual native private consumption/preservation: " + key)
         actor = row["attacker_identity"]
         need(actor != "0000000000000000" and row["target_identity"] != actor,
              "actual distinct actor/target identities")
         need(row["argument_identity"] == ("0000000000000000" if source["input"][4] == "1" else row["target_identity"]),
              "actual nullable argument role")
         if i in HURTS:
-            need(row["hurt"] and row["damage"] == 5 and row["native_policy"] and not row["source_exception"] and
-                 row["effect_source_identity"] == actor and not row["returned"], "unreturned hurt61 operands")
+            need(row["hurt"] and row["damage"] == 5 and not row["native_policy"] and not row["source_exception"] and
+                 row["effect_source_identity"] == actor and row["returned"], "actual completed hurt61 and parent65")
         elif i in NULLS:
             need(not row["hurt"] and row["source_exception"] and not row["native_policy"], "actual Source NULL")
         else:
@@ -466,6 +469,13 @@ def expected_pin_negative(pins, label, suffix):
     raise AssertionError("intervening drift was accepted")
 
 
+def advance(seed, count):
+    state = int(seed, 16)
+    for _ in range(count):
+        state = (state * 0x5DEECE66D + 11) & ((1 << 48) - 1)
+    return f"{state:012x}"
+
+
 def verify_native(native, profiles):
     need(len(native) == 12, "all twelve actual Native rows")
     checks = 0
@@ -492,7 +502,9 @@ def verify_native(native, profiles):
         expected = dict(a)
         if i in HURTS:
             expected["cooldown"] = 20
-        need(b == expected, "exact native prefix mutation and all untouched fields/streams")
+            expected["target_health"] = 5
+            expected["target_seed"] = advance(a["target_seed"], 2)
+        need(b == expected, "exact selected current mutation and private stream consumption")
         for name, flag, low, high in (("actor_bounds", "actor_bounds_null", "64", "66"),
                                       ("target_bounds", "target_bounds_null", p["target_min_y"], p["target_max_y"])):
             box = a[name]
@@ -504,12 +516,13 @@ def verify_native(native, profiles):
                 as_bits = lambda v: "7ff8000000000000" if v == "NaN" else struct.pack(">d", float(v)).hex()
                 need(box[1] == as_bits(low) and box[4] == as_bits(high), "actual authored vertical operands")
         for name in ("actor_seed", "target_seed", "world_seed", "math_seed", "U"):
-            need(re.fullmatch(r"[0-9a-f]{16}" if name == "U" else r"[0-9a-f]{12}", a[name]) and a[name] == b[name],
-                 "same actual Native stream preserved: " + name)
-        expected_pc = 65 if i in RETURNS else 61 if i in HURTS else NULLS[i]
-        need(row["returned"] is (i in RETURNS) and row["pc"] == expected_pc and
-             row["hurt"] is (i in HURTS) and row["native_policy"] is (i in HURTS) and
-             row["source_exception"] is (i in NULLS), "exact authored return/failure prefix class")
+            expected_seed = advance(a[name], 2) if i in HURTS and name == "target_seed" else a[name]
+            need(re.fullmatch(r"[0-9a-f]{16}" if name == "U" else r"[0-9a-f]{12}", a[name]) and expected_seed == b[name],
+                 "actual native private consumption/preservation: " + name)
+        expected_pc = 65 if i in RETURNS | HURTS else NULLS[i]
+        need(row["returned"] is (i in RETURNS | HURTS) and row["pc"] == expected_pc and
+             row["hurt"] is (i in HURTS) and row["native_policy"] is False and
+             row["source_exception"] is (i in NULLS), "exact authored current return/failure class")
         need(row["damage"] == (5 if i in HURTS else 0), "reached actual hurt amount")
         for name in ("attacker_identity", "target_identity", "argument_identity", "effect_source_identity"):
             need(re.fullmatch(r"[0-9a-f]{16}", row[name]), "actual value-only identity")
@@ -527,7 +540,7 @@ def verify_native(native, profiles):
 def authored_negatives(native, profiles):
     results = []
     for name, index, key, value in (("wrong_canonical_target", 0, "target_class", "bx"),
-                                     ("false_hurt_return", 6, "returned", True),
+                                     ("lost_hurt_return", 6, "returned", False),
                                      ("wrong_effect_role", 6, "effect_source_identity", native[6]["target_identity"]),
                                      ("wrong_null_pc", 9, "pc", 14)):
         changed = copy.deepcopy(native)
@@ -551,7 +564,7 @@ def main():
     need(bool(args.original) == bool(args.build_receipt), "Original pairing requires both explicit Original and actual build receipt")
     args.work_dir.mkdir(parents=True, exist_ok=True)
     work = Path(tempfile.mkdtemp(prefix="monster-attack-", dir=args.work_dir.resolve()))
-    report = dict(status="FAIL", scope="FINITE_ORIGINAL_PREFIX_PAIR" if args.original else "AUTHORED_NATIVE_ONLY",
+    report = dict(status="FAIL", scope="FINITE_ORIGINAL_SELECTED_PAIR" if args.original else "AUTHORED_NATIVE_ONLY",
                   pre_execution_audits_complete=False, native_execution_started=False)
     before, failed, completed, process = None, None, False, None
     build_pins, source_pins, controls = {}, {}, []
@@ -573,7 +586,7 @@ def main():
             report["build_binding"] = binding
             report["source_code_binding"] = original_code_bindings(directory, data)
             report["historical_Original_status"] = data["status"]
-            report["Original_scope"] = "7 actual gate returns/3 source NULLs;2 Native unreturned hurt61 prefixes only; later Original hurt/return retained independently"
+            report["Original_scope"] = "Historical unqualified capture unchanged; current finite comparator selects7gate returns,3sourceNULLs and2actual whole Pig hurt/return65 after-states"
             for name, mutate in [("failed_build_status", lambda b: b.update(status="FAIL")),
                                  ("failed_build_phase", lambda b: b["phases"][-1].update(exit=1)),
                                  ("missing_target_build", lambda b: b.update(phases=[]))]:
@@ -663,7 +676,7 @@ def main():
         report["authored_negative_controls"] = authored_negatives(native, profiles_data)
         if original is not None:
             report["comparisons"] = compare(native, original)
-            for name, index, key, value in [("false_hurt_return", 6, "returned", True),
+            for name, index, key, value in [("lost_hurt_return", 6, "returned", False),
                                            ("wrong_effect_role", 6, "effect_source_identity", native[6]["target_identity"]),
                                            ("wrong_null_pc", 9, "pc", 14)]:
                 bad = copy.deepcopy(native)
@@ -682,7 +695,7 @@ def main():
                 controls.append("bad_original_artifact")
             else:
                 raise AssertionError("negative manifest accepted")
-        report.update(controls=controls, cases=12, returned=7, source_null=3, hurt_prefix=2)
+        report.update(controls=controls, cases=12, returned=9, source_null=3, completed_hurt=2)
         completed = True
     except BaseException as error:
         failed = error

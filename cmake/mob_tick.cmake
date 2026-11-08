@@ -124,4 +124,35 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/monster-attack-contracts")
     set_tests_properties(entity.monster_attack PROPERTIES
         LABELS "public;integration;entity;ownership;replay" TIMEOUT 180)
+    add_executable(mc_test_monster_hurt tests/entity/test_monster_hurt.c)
+    target_include_directories(mc_test_monster_hurt PRIVATE src src/platform/time)
+    target_link_libraries(mc_test_monster_hurt PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_math_classes mc_build_options)
+    add_test(NAME entity.monster_hurt COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_monster_hurt.py"
+        --executable "$<TARGET_FILE:mc_test_monster_hurt>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/monster-hurt-contracts")
+    set_tests_properties(entity.monster_hurt PROPERTIES
+        LABELS "public;integration;entity;ownership" TIMEOUT 180)
+    add_executable(mc_test_monster_damage_original tests/entity/player/test_monster_damage_original.c)
+    target_include_directories(mc_test_monster_damage_original PRIVATE src src/platform/time)
+    target_link_libraries(mc_test_monster_damage_original PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_math_classes mc_build_options)
+    add_test(NAME entity.monster_damage_reference COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/monster_damage/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_monster_damage_original>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/monster-damage-original")
+    set_tests_properties(entity.monster_damage_reference PROPERTIES
+        LABELS "public;integration;entity;world;ownership;reference;replay" TIMEOUT 600)
+    foreach(mode IN ITEMS normal optimized)
+        set(_mc_monster_damage_python_options -B)
+        if(mode STREQUAL "optimized")
+            list(APPEND _mc_monster_damage_python_options -O)
+        endif()
+        add_test(NAME "tools.monster_damage_packet_${mode}" COMMAND Python3::Interpreter
+            ${_mc_monster_damage_python_options}
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/monster_damage/test_packet.py")
+        set_tests_properties("tools.monster_damage_packet_${mode}" PROPERTIES
+            LABELS "public;unit;entity;world;reference;tools" TIMEOUT 90)
+    endforeach()
 endif()

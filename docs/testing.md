@@ -1,5 +1,80 @@
 # Test scope and reproduction
 
+## Monster melee damage
+
+The [32-row original packet](../tests/reference/entity/monster_damage/README.md)
+and [source map](reference/monster-damage.md) qualify the entered
+`GZ.a(Entity,float)V` parent independently of the loaded AI caller. Four unchanged
+original VMs agree on 46,903 selected scalars, 19 normal parent returns and 13
+exceptions across 32 calls. Windows and Clang Debug ASan/UBSan Linux each match
+46,828 shared positions; 75 original message/stack positions remain unpaired.
+The actual parent discards both true and false child results and reaches 65.
+Native fixture checks total 10,026; portable normal and optimized readers each
+pass 713 stream checks, 2,718 passive events and 1,025 corruption refusals.
+
+The initial Windows comparison failed because the observer's exact-class
+Monster predicate omitted inherited damage on genuine Zombies. Its 64 missing
+before/after positions and all raw output remain retained. Correcting only the
+finite observer predicate and rebuilding produces the passing fresh comparison.
+Original producer/data bytes and runtime behavior are unchanged by that fix.
+
+Nine real caller/producer controls cover normal and false returns,
+source/native post-health failures, failed-wake ownership, null diagnostic
+output, prior-pending rejection and cleanup refusal/retry. With two actual World
+controls, the fixture passes 916 checks on both hosts. Those controls load 25
+normal terrain Chunks, publish both genuine entities and execute the actual
+World Entity tick. Success preserves GZ61/65 health/stat values after the top
+diagnostic reset; failed wake preserves its first cause and observations across
+native retirement refusal and retry without replay. The initial fixture
+retained its external Zombie occurrence during World disposal; the runtime
+correctly refused terminal cleanup. Both failures remain retained, including
+the Linux capture's two-MiB stderr limit after the consequent leak report.
+Releasing the caller occurrence before checked World disposal fixes only the
+fixture. Fresh complete controls pass Windows in 2.53 seconds and sanitized
+Linux in 1.17 seconds with empty stderr.
+
+The complete configured suites pass Windows 742/742 in 373.84 seconds and
+sanitized Linux headless 599/599 in 368.16 seconds, without registered skips.
+Both use four workers. Windows builds the Release client with display tests
+disabled and CPU benchmarks enabled; Linux uses Clang Debug with client
+disabled, ASan/UBSan, leak detection and halt-on-error. Both full builds pass.
+Formatting covers 2,228 source/header/fragment files. Strict GCC syntax checks
+pass 12 changed headless translation units; client menu-loop and visible-fixture
+translation units are covered by the Windows build, not that GCC check.
+
+Before either suite launches, the full 5,678-file Linux source audit, both
+source-binding checks and the 54-file execution delta verify successfully.
+All six frozen admission tables retain their prelaunch hashes through both
+terminal runs. A first PowerShell guard falsely interprets an empty mismatch
+collection as failure and correctly stops before tests; the Python audit then
+enforces a nonzero exit only for actual mismatches. No full suite starts on a
+failed preflight.
+
+The exact executed source and six admission tables remain retained separately
+from result-summary publication. After both suites finish, the new native
+wrapper alone changes CRLF to LF. Its full AST including source positions and
+its compiled code at optimization levels 0/1/2 compare equal. The original
+CRLF file remains retained. Both hosts then rerun all 916 controls successfully
+with the LF wrapper, Windows in 2.49 seconds and sanitized Linux in 1.46 seconds.
+Runtime, CMake and native fixture bytes are unchanged; publication admission is
+refreshed separately for the wrapper and these result summaries.
+
+All seven earlier focused
+Linux tests pass under ASan/UBSan with leak detection and halt-on-error in
+4.34 seconds. The later sections retain the exact scopes of earlier completed
+increments.
+
+The separate visible fixture uses `mc_test_client_zombie_damage` and
+`tests/tools/client/test_zombie_damage.py`, with imported local assets. Its
+normal and optimized input controls independently validate 289 lit stored
+Chunks, exactly one canonical saved Zombie and the awake unarmored Player.
+The first native opportunity opens both windows within physical monitor 2,
+then stops before World selection: the Remote Desktop client owns foreground
+focus and SDL reports no keyboard focus. The failed opportunity remains at
+`build-windows/zombie-damage-scenes/zombie-damage-jzpnsb_h`; it receives no
+loaded-combat, presentation or FPS credit. No focus recovery or source repair
+is added to turn that failure into a success.
+
 ## Incoming Mob damage and Player ally alerts
 
 The final complete configured cohorts, including the compact Byte diagnostic,

@@ -1,4 +1,4 @@
-# Protected Monster attack gates and hurt prefix
+# Protected Monster attack gates and hurt
 
 This authored twelve-profile packet targets `GZ.a(SN,F)V` in the unchanged
 archive. Its receiver is a genuine canonical `uz` Zombie and its target is a
@@ -20,12 +20,15 @@ python -B tests/tools/entity/test_monster_attack.py --executable PATH_TO_mc_test
 Bare mode reports `AUTHORED_NATIVE_ONLY` and reads the public authored profile
 table. It requires no Original archive, capture, build receipt, or ignored
 directory. It checks all twelve actual rows, exact setup stdout/footer,
-canonical roles, untouched fields/bounds/streams, actual nullable argument and
-attacker identities, checked cleanup and the two unreturned hurt prefixes.
+canonical roles, actual nullable argument and attacker identities, checked
+cleanup and two completed Pig hurt calls. Those calls change health10 to5 and
+return at GZ65 with damage5. Their actual target private stream consumes two
+float draws; actor, World and shared Math streams remain unchanged.
 Four intentional native-transport corruptions must be rejected.
 
-The C fixture checks full actual base/Mob storage, balanced guards/occurrences,
-class IDs/bytes/live counts, pool cursors and Math holds. Declared NULL source
+The C fixture checks full actual base/Mob preservation for quiet and NULL rows,
+selected hurt effects and preserved constructor entropy for completed hits,
+balanced guards/occurrences, class IDs/bytes/live counts, pool cursors and Math holds. Declared NULL source
 fields survive the actual call and native cleanup. Only final allocator
 disposal restores the fixture's independently protected permanent box pointers.
 Neither call retirement nor an alleged successful method return is credited
@@ -58,14 +61,19 @@ build or Source hash. In-memory controls specifically demonstrate that a stable
 but wrong intervening compiled-input or Original-artifact digest is rejected.
 Optional mode also retains the previous complete C/header/inc source baseline.
 
-The historical capture remains `PROTOTYPE_RECORDED_UNQUALIFIED`; rehoming this
-packet does not rewrite that status. The optional wrapper reports its finite
-selection separately: seven actual Original returns at65, three actual Source
-NPE gates at14/17/24, and two actual entries at hurt61. At those two entries,
-cooldown is20, target health is10, the attacker is the actual `uz`, and the
-damage operand is5. Native hurt does **not** return. Original later health5
-and GZ return65 remain retained independent evidence and are not compared as
-the failed native prefix or claimed as completed native melee/World behavior.
+The historical capture remains `PROTOTYPE_RECORDED_UNQUALIFIED`; rehoming or
+updating current native tests does not rewrite that status or its producer
+identities. The original native implementation stopped at two actual hurt61
+entries with cooldown20, target health10, the actual `uz` attacker and damage5.
+That earlier failed prefix history remains separate.
+
+The current optional comparator selects seven actual Original gate returns65,
+three Source NPE gates at14/17/24 and the two already-retained whole Pig hurt
+after-states with health5/GZ return65. It requires current native completion
+and exact private consumption for those two calls. Its current report does not
+relabel the historical capture as a newly qualified producer. The separately
+captured [complete Player-target packet](../monster_damage/README.md) has its
+own original opportunity and native comparison.
 
 Independent raw constructor entropy and shared/private streams are retained;
 only within-process preservation is compared. No observed seed, constructor
@@ -94,5 +102,5 @@ but a new receipt needs its own reviewed provenance before optional pairing
 will admit it. The observer reads fields/bytecodes/entries/returns and actual
 cooldown writes without invoking target methods or changing target state.
 
-This packet does not qualify a full active Mob tick, damage completion,
+This packet does not qualify a full active Mob tick, Player damage,
 non-Zombie overrides, loaded-client frame return, or server behavior.
