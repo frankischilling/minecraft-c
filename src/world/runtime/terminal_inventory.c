@@ -264,6 +264,9 @@ static mc_world_storage_status collect_entity(void *context, const void *slot, m
         if (value->local_player != NULL && value->local_player->pending_damage_wake != NULL)
             return result(error, MC_WORLD_STORAGE_BUSY,
                           "World terminal Player damage wake cleanup pending");
+        if (value->local_player != NULL && value->local_player->pending_damage_alert != NULL)
+            return result(error, MC_WORLD_STORAGE_BUSY,
+                          "World terminal Player damage ally alert cleanup pending");
         if (value->base.world != NULL && value->base.world != c->world)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "World terminal Entity bound outside admitted World");
@@ -653,7 +656,8 @@ static mc_world_storage_status scan_mob(void *context, const void *slot, mc_enti
     if (entity != NULL &&
         (entity->mount_hold != NULL || entity->passenger_hold != NULL ||
          (entity->local_player != NULL && (entity->local_player->pending_death != NULL ||
-                                           entity->local_player->pending_damage_wake != NULL)) ||
+                                           entity->local_player->pending_damage_wake != NULL ||
+                                           entity->local_player->pending_damage_alert != NULL)) ||
          (entity->mob != NULL &&
           (entity->mob->tick_active || entity->mob->pending_ray != NULL ||
            entity->mob->pending_path != NULL || entity->mob->pending_death != NULL ||

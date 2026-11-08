@@ -1,3 +1,4 @@
+#include "../../watcher_payload_internal.h"
 #include "internal.h"
 
 /* Actual GI.d(Z)V and its existing typed UD Byte projection. This helper is
@@ -35,14 +36,15 @@ static mc_entity_watch_record *tame_record(mc_mob_tick_scope *s, bool setter,
         mt_null(s, "Wolf tame null watcher record receiver");
         return NULL;
     }
-    if (record->type != 0) {
+    if (setter ? !mc_entity_watch_payload_known(record)
+               : mc_entity_watch_payload_kind_of(record) != MC_ENTITY_WATCH_PAYLOAD_BYTE) {
         s->error->child_site.pc = setter ? 22 : 19;
         if (setter)
             mt_fail(s, MC_ENTITY_STATE_ERROR, "Wolf tame setter old boxed type representation");
-        else if (record->type == 4 && record->string_value == NULL) {
+        else if (mc_entity_watch_payload_kind_of(record) == MC_ENTITY_WATCH_PAYLOAD_NULL) {
             s->error->child_site.pc = 22;
             mt_null(s, "Wolf tame null Byte unbox receiver");
-        } else if (record->type == 2 || record->type == 4) {
+        } else if (mc_entity_watch_payload_known(record)) {
             s->error->source_exception = true;
             s->error->exception_class = "java/lang/ClassCastException";
             mt_fail(s, MC_ENTITY_STATE_ERROR, "Wolf tame actual non-Byte cast");
@@ -73,11 +75,8 @@ bool mt_wolf_tame_entered(mc_mob_tick_scope *s, bool value) {
         return false;
     /* Real Byte.equals controls both dirty stores. It is not a blanket flag
      * reset or a direct fixture mutation of the watcher record. */
-    if (current->byte_value != next) {
-        current->byte_value = next;
-        current->dirty = true;
+    if (mc_entity_watch_byte_replace(current, next))
         s->entity->watcher->dirty = true;
-    }
     mt_at(s, "gi", "d", "(Z)V", 50);
     r->returned = true;
     s->error->child_site = (mc_mob_site){.pc = -1};

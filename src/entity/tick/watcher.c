@@ -1,8 +1,7 @@
+#include "../watcher_payload_internal.h"
 #include "tick_internal.h"
 
-/* The existing native projection owns typed Byte values. Protocol metadata is
- * not invented as another Object class. Other represented/nonrepresented value
- * domains fail at the reached Object-value boundary rather than mutating them. */
+/* UD.b compares the new Byte with the independent old Object payload. */
 static bool update(mc_entity *entity, int8_t value, mc_entity_tick_error *e) {
     mc_entity_watcher *watcher = entity->watcher; /* Reload at sn13/33. */
     e->watcher_index = 0;
@@ -26,13 +25,11 @@ static bool update(mc_entity *entity, int8_t value, mc_entity_tick_error *e) {
     if (record == NULL)
         return mc_tick_null(e, "Watcher setter null record b() receiver", 19);
     e->watcher_bytecode = 22;
-    if (record->type != 0)
+    if (!mc_entity_watch_payload_known(record))
         return mc_tick_fail(e, MC_ENTITY_STATE_ERROR,
                             "Watcher setter unsupported current Object value projection", 22);
-    if (record->byte_value != value) {
-        record->byte_value = value; /* ud.b30 -> ma.a(Object) source field. */
-        record->dirty = true;       /* ud.b35 -> ma.a(Z). */
-        watcher->dirty = true;      /* ud.b40. */
+    if (mc_entity_watch_byte_replace(record, value)) {
+        watcher->dirty = true; /* ud.b40. */
     }
     return true;
 }

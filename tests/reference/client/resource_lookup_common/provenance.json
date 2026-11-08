@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 210124,
-      "sha256": "495abf9ef428dcf9625913f82330c8141cdd8144002298a74efeafa0b9fb6345"
+      "bytes": 211726,
+      "sha256": "8d7352598ef9d846f16a8f52e60af8623bd39181bbe4cd01b3d76e0c8596dcd9"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 122707,
-      "sha256": "81a43f60e648342b0843dc137ecae3e02234c728e6ad4be2957a7da56bd40d15"
+      "bytes": 125264,
+      "sha256": "2aea38eecb406679b70c87a39f5096270d2003c9974d936a620581881b18449d"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 529140,
-      "sha256": "145a0bfb6fc29f2314630c352b9eb211f62e8644c19770b48d593be16b2a03f5"
+      "bytes": 536955,
+      "sha256": "8a015d464d977bad56f3765de27c77d9099a7df55167541ec93b04f1a7740584"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
@@ -1338,8 +1338,8 @@
       "sha256": "e77454c2bb0a5070c5ef6a632dd044f91b0003b6cdc9fae568e86b225fd2ebf3"
     },
     "include/mc/entity/entity.h": {
-      "bytes": 8923,
-      "sha256": "99ed142cabfc9ebd714f9eabcbe389f0c992941f921d593415ac9fa2a8f41b7a"
+      "bytes": 9411,
+      "sha256": "a9364b4510947cab8ed1348ec9e0d1f8f8af5caf2123e309ece887a0614cec7d"
     },
     "include/mc/entity/errors.h": {
       "bytes": 1058,
@@ -1378,8 +1378,8 @@
       "sha256": "58339fe3230b4a56ea4f36865ec1e2714bfda0b7a9e5ce66e3474d2e8ed80e76"
     },
     "include/mc/entity/movement/effects.h": {
-      "bytes": 16437,
-      "sha256": "3c91b70d38345d624bb8cb778b49960feec733ca0aca6b39db940c082a03456e"
+      "bytes": 17424,
+      "sha256": "9bc911f0fb5ce8b415fdcecaf919451d7319459149d4f3fffe4eec314bef6d28"
     },
     "include/mc/entity/movement/environment.h": {
       "bytes": 5179,
@@ -3926,16 +3926,16 @@
       "sha256": "638d0783dd4bb951e42c552174c852731ef502481d1635de1085f7b9ada01207"
     },
     "src/entity/construction_internal.h": {
-      "bytes": 4643,
-      "sha256": "08eb54324ac75acec97dbdbf68c231b63541841e6bbae2e1a8aedc1500b220f1"
+      "bytes": 4646,
+      "sha256": "c83b644171fef9ad69a4846155d50c89684e6faabf988a5aa03d6f920b3812a2"
     },
     "src/entity/entity.c": {
-      "bytes": 35735,
-      "sha256": "650dbd9c896f066a8206be2d51a50e5dc50a4ba5f78760e96dd2a0e4386b5072"
+      "bytes": 35956,
+      "sha256": "e785c7d9e71a59608e5d1090c0b556453cd1354d99c1253614dc5ad95d5e3eec"
     },
     "src/entity/entity_internal.h": {
-      "bytes": 5035,
-      "sha256": "5898f91eac2f6d83e4cafce4f0ecf7a3de4cfc0bbe66010eefa079400573dfd1"
+      "bytes": 5082,
+      "sha256": "a724645b0d4db78d86a5d3ac363f49ed395cb3f32fcb7eb1d558837e6d30731b"
     },
     "src/entity/item/pickup.c": {
       "bytes": 11161,
@@ -4006,8 +4006,8 @@
       "sha256": "ffeff1e593667e16efd2d0ec820aac3de624807991fc709fee291826f05b09e8"
     },
     "src/entity/movement/effects.c": {
-      "bytes": 44997,
-      "sha256": "dabace651b5d160a4beeb91afa74034b4493c11b4df64daa18997b8e030c4744"
+      "bytes": 49118,
+      "sha256": "c98c1ccc337b4f79ab0f0e91c263c253439309f7e2c502801dcaa8f999dcfe72"
     },
     "src/entity/movement/environment.c": {
       "bytes": 18491,
@@ -4090,8 +4090,8 @@
       "sha256": "91c9a62ca84f989c1cab42f7b4fcf09b4aecd6e2074f2166d537db4979bdd1a1"
     },
     "src/entity/player/player_internal.h": {
-      "bytes": 2231,
-      "sha256": "0793cc6946a30ce9da49438418efb6c8a493302cb16717446dff11e5b0dfa2d0"
+      "bytes": 2325,
+      "sha256": "321911c1a93cea62e43b179ff501890460b40c073f2754ad131ae5bc64f4c50a"
     },
     "src/entity/player/player_tick.c": {
       "bytes": 11409,
@@ -4122,8 +4122,8 @@
       "sha256": "d7e204b9fc456d5a9d82c4859dd421b51756f817779c0c59ab318ad61e9af559"
     },
     "src/entity/player/tick.c": {
-      "bytes": 14711,
-      "sha256": "351f678d4881c7f6b53b32a811626538ebc98f523502cdbdad1e2df4c0dc482f"
+      "bytes": 14894,
+      "sha256": "3c106b244ae9d80c8044e0f720596896596a9dd4b7a80626ad22265e118f1409"
     },
     "src/entity/player/tick_math_internal.h": {
       "bytes": 2505,
@@ -4146,12 +4146,12 @@
       "sha256": "b1b7604e84a809e2cdd5406b357808474a2ec880f177dd13e2ed795d91388cff"
     },
     "src/entity/tick/common.c": {
-      "bytes": 5782,
-      "sha256": "ce73fbb394e4b9ac590db299bb67fd86433cad783bff09b9fafaac4d2deca1c9"
+      "bytes": 6688,
+      "sha256": "7dc6dd74180c1abec9035a3b2ac3b9e26059df9597de7c829fe859c8f4e76913"
     },
     "src/entity/tick/environment.c": {
-      "bytes": 27948,
-      "sha256": "fb350f00919650a52f4b0a6be65f555f2300b2da308fbcf28e51f0e57c7506de"
+      "bytes": 28341,
+      "sha256": "d0be519d2efe4003a23dc59243675cf619b3b33782edf2ca118113fdcc99ce5c"
     },
     "src/entity/tick/suffocation.c": {
       "bytes": 3016,
@@ -4162,8 +4162,8 @@
       "sha256": "468c30d3b352e1461977ad55627fdc9c5206811ac14fc73189bf29fcd49e17bc"
     },
     "src/entity/tick/watcher.c": {
-      "bytes": 2694,
-      "sha256": "52bb7990e244cfea9325340fedbb781cafc0552f5e254395b0e6aaa84a090875"
+      "bytes": 2459,
+      "sha256": "8b74ac448e8622c4bfc4de3ff79c2072beb1b41bfc8c2364ff195b0ddca98f9e"
     },
     "src/entity/vector/vector.c": {
       "bytes": 28104,
@@ -6002,8 +6002,8 @@
       "sha256": "d41613da222f61554f29e72a3ab523bab94fdafdeb93015798f47ec86d3f709d"
     },
     "tests/entity/movement/test_effects.c": {
-      "bytes": 6394,
-      "sha256": "e69a85f42fa590734b424c327eb8aa32981387452541f061fc36ac4987a093f8"
+      "bytes": 14761,
+      "sha256": "eb5ac51a10cb30f2ca0c57f4593b2bcb6674e607ba9ad85cf4918277acae9073"
     },
     "tests/entity/movement/test_environment.c": {
       "bytes": 22441,
@@ -6274,8 +6274,8 @@
       "sha256": "83d63c19220a30869cc1a79c9c7ec9ad05b188ed4d12aeadde86be254e2a1db0"
     },
     "tests/reference/client/application_owner/provenance.json": {
-      "bytes": 37363,
-      "sha256": "63980d7c8c42b14664e0b71984e59eecf93287726037bda1574b50c507c4b591"
+      "bytes": 38737,
+      "sha256": "13a94adfc541c5f57e2303d33e4d8a14bc3b270aaa73b89ce00bd1f6da9e7577"
     },
     "tests/reference/client/application_owner/run_native.py": {
       "bytes": 2027,
@@ -6306,8 +6306,8 @@
       "sha256": "a84476874a75591bba353f7590376c59c29e123687966ddc4fa41925d9b7f910"
     },
     "tests/reference/client/biped/provenance.json": {
-      "bytes": 35062,
-      "sha256": "f9fbbbbc2f9f93725b6a60bffe5a555e1f86a635fa00d444709c526f136d78ac"
+      "bytes": 36946,
+      "sha256": "9dceab34f3b007a1caf2acc0a329ed064974c4631e20891766c875cd4a3f8193"
     },
     "tests/reference/client/biped/run_native.py": {
       "bytes": 2290,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 609594,
-      "sha256": "6ab80bf9c132606853429598c4b49c4ee0cccf1f112d435c7b1c6cfb54a8d8d5"
+      "bytes": 624497,
+      "sha256": "eb7c910242236065992ff5a348ff8e8f02000987afbe94df477735d708677af9"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 701464,
-      "sha256": "7601b96c7de765297c4e7a8915a64ba92f6c93f94f9f5fe1078ca264a5b5229e"
+      "bytes": 716728,
+      "sha256": "60cd6a4f154968efb5ec3e91e2d05f6f85c595141b2728a2fc3f304be2e14886"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 606019,
-      "sha256": "9100945f1f313d99e87ebec9bc8b9a855ccdd181ee23351849faa6a8a4e0e7f4"
+      "bytes": 620922,
+      "sha256": "0d17f7a8bb8688cfd1064d02bc44ac6f985398a7601e014f4a3604c1f587b825"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -12726,8 +12726,8 @@
       "sha256": "46e308716a3082cdf3d3f3497335ac0d9be601b7b2d4e314560bc1925c0846b4"
     },
     "src/world/runtime/terminal_inventory.c": {
-      "bytes": 41103,
-      "sha256": "be9682598e97c7b6b23061eedc3d753c2e3521cfae79c99f46db1f277d72f7ff"
+      "bytes": 41436,
+      "sha256": "605f358cafe43820e52223bfdfa2fd19457319e718ceb06aee346fd90c628114"
     },
     "src/world/runtime/terminal_inventory_internal.h": {
       "bytes": 6907,
@@ -13026,8 +13026,8 @@
       "sha256": "eb5ab3b1cbb831ae07689979ece538dc612584bd154da4f1ab9de2488d755dd9"
     },
     "src/client/world/entity_renderer/held_item_draw.c": {
-      "bytes": 35687,
-      "sha256": "6afb8ab5774f70dd8b63bc4e07ccb62fffffde1090d3c7a4fe38ccfbded9c14e"
+      "bytes": 36783,
+      "sha256": "11f063427b08c92569da80f9df35bbb1426c8e0b7ac32c4ebe3581b901a005cb"
     },
     "src/client/world/entity_renderer/held_item_draw_internal.h": {
       "bytes": 1412,
@@ -13154,8 +13154,8 @@
       "sha256": "47c1e7f1caf37f94cb6b672f487eb24053578f9ed0bfac25c02d348738c9bf38"
     },
     "include/mc/entity/mob/construction.h": {
-      "bytes": 5620,
-      "sha256": "ad32bea4fbe39ff66482b434fd5cde5c9813677efaf3d3910d42f9ede0dbd13c"
+      "bytes": 5800,
+      "sha256": "4bf5a9a44cc403ee8a7c91f2889b1275e9e4bd29ae378a76009aec94c5a783dc"
     },
     "src/entity/living/construction.c": {
       "bytes": 2909,
@@ -13166,12 +13166,12 @@
       "sha256": "fc84465ea32817c3672a58bbd91b86c79e0a2805d6a21bc39004eac93cfbdc2a"
     },
     "src/entity/mob/construction.c": {
-      "bytes": 37935,
-      "sha256": "747667ed873d86a08b75147c7ce23062669e8dc6881c767e57352b9bb15b5de1"
+      "bytes": 40125,
+      "sha256": "fcc0313a135eb7da9b88d9a535a74bf6316bf6afebdee1b63d187b8d9f37f866"
     },
     "src/entity/mob/internal.h": {
-      "bytes": 2398,
-      "sha256": "d341620803e40029c3cc61f1567dbd63f65279acdd48b1d788639fba49d6d9f4"
+      "bytes": 2440,
+      "sha256": "42336fd6bc59ce482c65b1c51a8a5fc797b7db60493ae20b821011228c52119c"
     },
     "tests/entity/test_mob_construction.c": {
       "bytes": 53791,
@@ -13238,8 +13238,8 @@
       "sha256": "7ed2efa2008f302a05d97dcef45f5cf870a2f7446005083e74a1cdc903fd1317"
     },
     "src/entity/mob/spawning.c": {
-      "bytes": 31529,
-      "sha256": "a976d92dc2969649a77ee42f91014ec5dd8ccd948a38710a04e8aa4c724afa92"
+      "bytes": 32140,
+      "sha256": "4f29bc182ae0b3806168927315924f61ecb3546fb9a8d3db8a6ef2a43facb8dc"
     },
     "src/world/runtime/chunk_random.c": {
       "bytes": 5764,
@@ -13558,8 +13558,8 @@
       "sha256": "e28c51781e7e28f15f3a6d40b888d6058baa6c2bed1c17f546cba6f5b26d19a2"
     },
     "src/entity/mob/tick/common.c": {
-      "bytes": 17448,
-      "sha256": "d111e18efe1abf88ed779033337329ccd49b6ab1023658a7f0ffa42dcf7ebb9e"
+      "bytes": 19469,
+      "sha256": "f1640f38008fb2c22e10e3262dab2935fd492f1d7f9f20f3ffab4c1beb1e2898"
     },
     "src/entity/mob/tick/helpers.c": {
       "bytes": 5239,
@@ -13590,8 +13590,8 @@
       "sha256": "64862ebdaecb2eeb69ea920f272516d4ce1a010906f26a9b887816b520ab11c4"
     },
     "src/entity/mob/tick/wrappers.c": {
-      "bytes": 8773,
-      "sha256": "6ff2cdb9b217afe224f54ff503640b4f376c94407c4bb1d78546dc90935deb2d"
+      "bytes": 8976,
+      "sha256": "027cc8739d4f005628b98f2f9e8236c9ed1d7fbccff9685a99fb9ce71ffb6227"
     },
     "tests/entity/test_mob_tick.c": {
       "bytes": 94408,
@@ -13878,8 +13878,8 @@
       "sha256": "3c673d89983d6fca0326e027f2b77f0c03f31f1efe29b1bf1cc2fad053d7e7d5"
     },
     "src/entity/render/leaves.c": {
-      "bytes": 36685,
-      "sha256": "3e684d2f6d2c81baf1a3d402b913b7974f421ae6cf60c040ec92fc977ee0b9fc"
+      "bytes": 36905,
+      "sha256": "1f2f8cb8288c8831b158266cbc087a57cf9c2257b633e4dda1111597a29a3aed"
     },
     "src/world/runtime/block_normal_internal.h": {
       "bytes": 3982,
@@ -14038,12 +14038,12 @@
       "sha256": "fa790b1718280da27a367b793527f58b9a5813e4ad1aac4528300024e4a56a42"
     },
     "src/entity/mob/tick/creeper.c": {
-      "bytes": 8236,
-      "sha256": "d8264c4980041081baf9bc308e0c731dca2a95e129b39d1cf61cccef7b3e5fbd"
+      "bytes": 8362,
+      "sha256": "0ce16a2acead3ffd2fdb6edb267578730e60cca3fd36a5da0c38799745fec30a"
     },
     "src/entity/particles/item.c": {
-      "bytes": 18401,
-      "sha256": "734b2e231280adf549444f5987563f70a91c2a4d23107e7469641c818df093a5"
+      "bytes": 18619,
+      "sha256": "c61dffe480aa5f0cf92d53605b64af67fba0ca524f6b6330fd46b324de2653dc"
     },
     "tests/client/render/test_creature_draw.c": {
       "bytes": 82665,
@@ -14350,8 +14350,8 @@
       "sha256": "631719a57b3bec7aa972bd3f7d807a41422f238cf50f74af0fa5a22fc833ac43"
     },
     "src/entity/mob/tick/wolf_setter.c": {
-      "bytes": 3454,
-      "sha256": "7e542bf7d4289fa1674c6ffb012688743498f3d80121f159cdf820c409e8f60a"
+      "bytes": 3579,
+      "sha256": "6be7a3d5692cce753880befc20e565f7aa545292097c4a048ddfdb7c61bb5811"
     },
     "tests/entity/test_wolf_interest.c": {
       "bytes": 18315,
@@ -14430,8 +14430,8 @@
       "sha256": "3bbff5f9640902ceaaa6e5cc4c2388f22f6a2c6cb90f5beb81e9d56da11ad189"
     },
     "src/entity/movement/effects_internal.h": {
-      "bytes": 341,
-      "sha256": "d08df50f54a8b34f02c0849db6a94e8789372d5507d6eefc874f1084a0e1d8e6"
+      "bytes": 2047,
+      "sha256": "5295f36d8f9d11ff799d09a64489d3b6f989de1f19bf8e51f8e4fa6dceb88698"
     },
     "tests/entity/test_zombie_null_damage.c": {
       "bytes": 29229,
@@ -14914,8 +14914,8 @@
       "sha256": "07d5008e9a1bb85e717519c5afd9fc6b71ff48a4a3fd7e748cfa645189753314"
     },
     "src/entity/mob/nbt.c": {
-      "bytes": 20561,
-      "sha256": "375b8bcd4309062fdaf65bf3754b881f938457e154cbe461f292bb1e9eec2bfe"
+      "bytes": 21154,
+      "sha256": "e272cea2387ba090157e2e00d04734ac384624b2483d8cd3171c4c152c57648e"
     },
     "src/entity/mob/nbt_internal.h": {
       "bytes": 636,
@@ -15734,8 +15734,8 @@
       "sha256": "ff6a4ee28d84ef567d9d4605d146b38b9b1a650369818ed7ea90ea84c09dac17"
     },
     "src/entity/mob/tick/wolf_attack.c": {
-      "bytes": 6685,
-      "sha256": "0eab8872005664aa34a06390f01db9e7aa81825f7be2faafaee3aa5e12045642"
+      "bytes": 7496,
+      "sha256": "0b43535f8f3ac2687133db99655232640a513e2140f79f28026a9605e058d0b9"
     },
     "tests/client/gameplay/test_create_world.c": {
       "bytes": 37952,
@@ -15762,8 +15762,8 @@
       "sha256": "c19a8e15a9d642d0a2e42fcecb6357a682edeb84c494e64d1ac5aad621df704d"
     },
     "tests/entity/test_wolf_attack.c": {
-      "bytes": 24009,
-      "sha256": "acf86a848c8bcd71054f201fb6ed7e2b72adca5e9d02ff498a45637b7ee3865f"
+      "bytes": 24084,
+      "sha256": "0130def90799d17979d4e77823833b3171109a7f3d8a648ff275e5ca868329bd"
     },
     "tests/reference/client/create_world/README.md": {
       "bytes": 2845,
@@ -15954,8 +15954,8 @@
       "sha256": "846baad9b46c780e58508989ac2dbdc13835383cecc7ba44e2b0dfa203df299c"
     },
     "src/entity/mob/death.c": {
-      "bytes": 28093,
-      "sha256": "29ec5f340be7cd735b1b3277c786f747a9abdf65cbc206744f398a9a6770474b"
+      "bytes": 28209,
+      "sha256": "5019ca114acbf83865096ef5da99bda641aa8e11dbece04ddcf7b0635544e460"
     },
     "src/entity/mob/death_internal.h": {
       "bytes": 1811,
@@ -16026,8 +16026,8 @@
       "sha256": "1481b597ea894db9c33d6aa812e8fdb77ce228e6e48bbe478f9be67731829dba"
     },
     "cmake/player_attack.cmake": {
-      "bytes": 9056,
-      "sha256": "5b8d4a21c9362fd8ded8bddc8b961e188746f25fc5d2ef62e1a306fab2afc0ac"
+      "bytes": 9138,
+      "sha256": "0de4a5f3e928176c7b74801a2f080fd56d1ac16e25dbbae165aae9e742f7a1d6"
     },
     "cmake/tests/explosion_draw.cmake": {
       "bytes": 1010,
@@ -16058,8 +16058,8 @@
       "sha256": "f5e3fa8e9f296f1043b995766a592b71addb659590c2bb42bd8d66f03fe805ec"
     },
     "src/entity/player/attack.c": {
-      "bytes": 29721,
-      "sha256": "43d555c23e0c817c985c2aa7914f6e0e202e81b0667f97aeef69903620956e3b"
+      "bytes": 23469,
+      "sha256": "efe0ea7b2d351e0ffdea0a74f705494502cb142cdb1f66258a6b105a6485204c"
     },
     "src/entity/player/combat_callbacks.c": {
       "bytes": 4451,
@@ -16214,8 +16214,8 @@
       "sha256": "68ad401587468e3d79a28a427f0f6d8e7de1ee22dd3e8c94db02ec55dd66f85a"
     },
     "src/item/combat/combat.c": {
-      "bytes": 28637,
-      "sha256": "39b90dfa27d2e31fd581e0cc24fc96d59d877089b9d2bdf81029fcfe205921a3"
+      "bytes": 28885,
+      "sha256": "bdd4b5335b9038ffe642b9531629639847e4519638c38e68c4a137d4a6d92da2"
     },
     "tests/client/render/test_held_item_geometry.c": {
       "bytes": 11276,
@@ -16230,8 +16230,8 @@
       "sha256": "a8728e61c367c02810c7e5045f7285d5f6391695b91b26648d99b7111cef4c03"
     },
     "tests/item/combat/test_combat.c": {
-      "bytes": 19997,
-      "sha256": "d2af934861764a447ae21ff8ec2a7f4f6aa028c975e270d2e25314cfca760aa3"
+      "bytes": 21294,
+      "sha256": "5d492fa03be61243b661c02ba9e343f864a3a7aab4e75fd71c1556cd23baf35c"
     },
     "tests/reference/client/held_item_geometry/ConstructorJson.java": {
       "bytes": 1571,
@@ -21158,16 +21158,16 @@
       "sha256": "eb477a22925eb83fe2d2a0d7662dd0a437832ad2dcf619e8dbc465081e1f80d2"
     },
     "cmake/player_damage.cmake": {
-      "bytes": 4572,
-      "sha256": "8bf0af9346cb1216e92a8eb1ca6d0c5ce032b5df386c60ccdaf4adf6960bf6bb"
+      "bytes": 9068,
+      "sha256": "484c1812bcc1764b4439ecbead4b5d781ad75d6ba77f3ac72450a8b429df3637"
     },
     "cmake/tests/armor.cmake": {
       "bytes": 739,
       "sha256": "f6ee9e1725cbae75cafd8716e6d2362bda6e9ad2f63dcf2d78bc011122a1b4ba"
     },
     "docs/entity/player-damage.md": {
-      "bytes": 7734,
-      "sha256": "56c4490e8376a7d169c8d42492a472ef237921e97402c341038569f0ef40b262"
+      "bytes": 7903,
+      "sha256": "b740aba13c2a1be493bab02e7a78f3f35c369867940318e5e991d4de9b75b251"
     },
     "include/mc/inventory/runtime/armor.h": {
       "bytes": 3127,
@@ -22448,6 +22448,174 @@
     "tests/reference/client/bed_sleep/receipt-current.json": {
       "bytes": 256206,
       "sha256": "7e89309cc237f71a46da75bda583a1f66cc6f0513863ef5b6ee2207360aa301c"
+    },
+    "docs/entity/ghast.md": {
+      "bytes": 1754,
+      "sha256": "3e13774647a6806d2ec2e1a756f4083bc173c4f58c03278fee1087e6e2fceced"
+    },
+    "docs/entity/player-ally-alert.md": {
+      "bytes": 5533,
+      "sha256": "9c5b4bd5af90b5eadf363042adeac84950e06388c99c4ad4bf8ada5b4faa33f6"
+    },
+    "docs/performance/player-ally-retire.md": {
+      "bytes": 7196,
+      "sha256": "7e660af4283d2263585084c88c96d65bd635fddc1987da40dad043c89c02189c"
+    },
+    "docs/reference/player-ally-alert.md": {
+      "bytes": 6204,
+      "sha256": "33635ff7107ff4c0b75af5cb1fa20b6b4bafc5ab1824ebd45cec64cf965715c4"
+    },
+    "include/mc/entity/player/ally_alert.h": {
+      "bytes": 2729,
+      "sha256": "e532cdab794162dbea92317dfc992f8922f9933d38da10d1b373500d5d58f102"
+    },
+    "src/entity/player/ally_alert.c": {
+      "bytes": 23211,
+      "sha256": "23d60832fc491edefd282bdec3ad493d6a061523ac4e19bd48a50e9e6a6cf508"
+    },
+    "src/entity/player/ally_alert_occurrences.c": {
+      "bytes": 3850,
+      "sha256": "8f6c932eb9f8717139f7e4ad966d80515d7f9345850a5bd0de143361531157f2"
+    },
+    "src/entity/player/ally_alert_occurrences_internal.h": {
+      "bytes": 715,
+      "sha256": "80cfc9d4e0708ca17a3b766709375a1436cbc418226db34b6000e28ce3259d4c"
+    },
+    "src/entity/player/damage_alert.c": {
+      "bytes": 4685,
+      "sha256": "19e949c99c9837faf946e4e35611f3bb989f4509e9bb1de42a2b5f50ce82511d"
+    },
+    "src/entity/player/damage_alert_internal.h": {
+      "bytes": 413,
+      "sha256": "b09b26f74ceb00903965ace832d9964934e287188a4418fd28495238e3531401"
+    },
+    "src/entity/watcher_payload_internal.h": {
+      "bytes": 3166,
+      "sha256": "eeca2bd2dff0ae2b5c716e2e34ffcc4a64a62c793b11a6d58033115494a5745e"
+    },
+    "tests/benchmarks/player_ally_retire.c": {
+      "bytes": 10990,
+      "sha256": "1ac76e88d23879f1c194b0a9bec7b09a68e130a296b76b227a862b762fbb1b3e"
+    },
+    "tests/benchmarks/player_ally_retire_adapter.h": {
+      "bytes": 240,
+      "sha256": "e601e00ab67a57d8eeb73955e1712dbf20cce47ad883237a00b0cb77fe2fe27e"
+    },
+    "tests/benchmarks/player_ally_retire_candidate.c": {
+      "bytes": 200,
+      "sha256": "dacb51fac6a84576f17fc8a21f420c9a1307a2f57ee7145e88aad511783df45b"
+    },
+    "tests/benchmarks/player_ally_retire_fallback.c": {
+      "bytes": 763,
+      "sha256": "cf77559fe91475370232b966c93c25b60f1f3cb5f6d330ed448dc4ee8ca79e8f"
+    },
+    "tests/benchmarks/player_ally_retire_quadratic.c": {
+      "bytes": 1775,
+      "sha256": "ffe9a08cef31838c57ba494c1248bb3a7a6ac9f619abd4809b4d5d1ef5ed24a6"
+    },
+    "tests/benchmarks/player_ally_retire_windows.json": {
+      "bytes": 1503570,
+      "sha256": "5d10b9dbd55b1fd8b1b5d590fcfc5f1fea9923f7ed201c8e94e7cadf3b274775"
+    },
+    "tests/entity/player/test_ally_alert_original.c": {
+      "bytes": 33939,
+      "sha256": "7f0b054111bfb9bf9564e8edca8b6c0ee3afca3483f1e761dc3afa6c8de599ac"
+    },
+    "tests/entity/player/test_ally_alert_ownership.c": {
+      "bytes": 10795,
+      "sha256": "c61d4240326e26de6d8014e7ab9255ec86e5cec46eaf3a9cc51bb97d593d66ac"
+    },
+    "tests/entity/player/test_mob_attacker.c": {
+      "bytes": 8409,
+      "sha256": "6e505795abc3d61d26d8d27699798d9d73c6e7409e3d110b274e4c9fff0069ba"
+    },
+    "tests/reference/entity/player_ally_alert/.gitattributes": {
+      "bytes": 76,
+      "sha256": "188cee975ec88679ece72273ac515fe139622fa954cf5c723fda60b384cd0a9c"
+    },
+    "tests/reference/entity/player_ally_alert/PlayerAllyAlertJdi.java": {
+      "bytes": 11593,
+      "sha256": "0e2688828e796caef0d4dcb44709f0212e3acf62fb1f943a736251fa392f1c0c"
+    },
+    "tests/reference/entity/player_ally_alert/PlayerAllyAlertObservation.java": {
+      "bytes": 16827,
+      "sha256": "389229e14e387309fdd9bc8adf9690b24256a905a45ca6a76f0f022011a3209e"
+    },
+    "tests/reference/entity/player_ally_alert/README.md": {
+      "bytes": 6832,
+      "sha256": "50b1470cc3886c447be6b780df247f70230b77497cae9fa393ea0e96e8b80c43"
+    },
+    "tests/reference/entity/player_ally_alert/capture-receipt.json": {
+      "bytes": 19897,
+      "sha256": "5d7d178d79b04c7de730ecca258fb2b55219c580a251b3326194c1680e68eb95"
+    },
+    "tests/reference/entity/player_ally_alert/capture_reference.py": {
+      "bytes": 9658,
+      "sha256": "dd4aecf321a6645e495ee2a9e045ebc1ace4295fc67b094e0cb8f656260bc490"
+    },
+    "tests/reference/entity/player_ally_alert/class-names.txt": {
+      "bytes": 160,
+      "sha256": "9e664fc0ffe41ed68c3d5c1da70ce6c87ea00740d46cd366630e3d2add825cae"
+    },
+    "tests/reference/entity/player_ally_alert/export_reference.py": {
+      "bytes": 4391,
+      "sha256": "e68f59656140adafebff840668daf7122be1db916e7ee419642110105935eccb"
+    },
+    "tests/reference/entity/player_ally_alert/finite.json": {
+      "bytes": 2213941,
+      "sha256": "9ec77dc96ffda8fd0b07b748e4b7c8337c36dee6cf3ed80343a1693509384d73"
+    },
+    "tests/reference/entity/player_ally_alert/ghast-construction-pins.json": {
+      "bytes": 90747,
+      "sha256": "1e5a8cd82a7b85fd2f469c294f886a6ed0e699b63410f8c54c3f754f055a27c1"
+    },
+    "tests/reference/entity/player_ally_alert/observation.py": {
+      "bytes": 4266,
+      "sha256": "85383b8d0ec8860969d540aa8143889b1a3566c80983c389b00599137032a1ca"
+    },
+    "tests/reference/entity/player_ally_alert/packet.py": {
+      "bytes": 6366,
+      "sha256": "402f177b3409fbdea963ccfbb2161cbcb8da3a308600e243b65a22629d56e3a0"
+    },
+    "tests/reference/entity/player_ally_alert/profiles.tsv": {
+      "bytes": 724,
+      "sha256": "0c801c74e3c4d360a95c7610b31c01cbd34d43e40a22802c8de3298d234c6493"
+    },
+    "tests/reference/entity/player_ally_alert/provenance.json": {
+      "bytes": 3927,
+      "sha256": "3922347fab9a9c726a02cc8ecb2fa0eb7d193e324c7ece42f3d837034a4aef42"
+    },
+    "tests/reference/entity/player_ally_alert/run_native.py": {
+      "bytes": 12237,
+      "sha256": "e66050c203a52be72cc2b74eba51bb9b4269f855320290116c39a6e7851a41f6"
+    },
+    "tests/reference/entity/player_ally_alert/source-pins.json": {
+      "bytes": 409905,
+      "sha256": "ba5f9a4abc0cacc5ea39a10747e489e699ffc394f869102566a1145f2f60d525"
+    },
+    "tests/reference/entity/player_ally_alert/test_packet.py": {
+      "bytes": 11237,
+      "sha256": "2881f3fafce1956a2e364d3f7ec775386ab4a6e54274ca5751a329429eaff3fe"
+    },
+    "tests/tools/entity/benchmark_player_ally_retire.py": {
+      "bytes": 13591,
+      "sha256": "83f225f8726f23c3b07c912b9b3206a201381c150a127f9cac50cc1ce5d31e44"
+    },
+    "tests/tools/entity/test_benchmark_player_ally_retire.py": {
+      "bytes": 3824,
+      "sha256": "8638aee446b857c484c1be1e9a0b4ebb5ab9ed8ea570f5f809bb2d3ebb7b2b11"
+    },
+    "tests/tools/entity/test_player_ally_alert_ownership.py": {
+      "bytes": 5184,
+      "sha256": "f03b6354b16133708cb7a2833773ef159ec65f54efe6d8e927e2be9eb295a48a"
+    },
+    "tests/tools/entity/test_player_mob_attacker.py": {
+      "bytes": 6228,
+      "sha256": "02ec52cddf6aa757cbc374092219bb1dc3eb0e14588727ca44f67a8562d0c463"
+    },
+    "tests/benchmarks/player_ally_retire_windows_current.json": {
+      "bytes": 1503048,
+      "sha256": "a446220b63e5356e728b68d2548376ea234978bee098387abb53fa95f4bd137a"
     }
   },
   "self_metadata_excluded": true,
@@ -33480,6 +33648,398 @@
           },
           "added": [],
           "current_count": 5612
+        }
+      }
+    },
+    {
+      "from_commit": "372230b47e34770dc84a2999d950297726b06a62",
+      "role": "Current Player incoming/outgoing ally alerts, independently typed watcher payloads, genuine Ghast construction, retained damage cleanup and checked Wolf-query retirement. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1452189,
+        "sha256": "63f2b5bd7bd01c9061cec11fd477839fb97e638705b597264268112b373e6492"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/parity.md": {
+              "bytes": 210124,
+              "sha256": "495abf9ef428dcf9625913f82330c8141cdd8144002298a74efeafa0b9fb6345"
+            },
+            "docs/status.md": {
+              "bytes": 122707,
+              "sha256": "81a43f60e648342b0843dc137ecae3e02234c728e6ad4be2957a7da56bd40d15"
+            },
+            "docs/testing.md": {
+              "bytes": 529140,
+              "sha256": "145a0bfb6fc29f2314630c352b9eb211f62e8644c19770b48d593be16b2a03f5"
+            },
+            "include/mc/entity/entity.h": {
+              "bytes": 8923,
+              "sha256": "99ed142cabfc9ebd714f9eabcbe389f0c992941f921d593415ac9fa2a8f41b7a"
+            },
+            "include/mc/entity/movement/effects.h": {
+              "bytes": 16437,
+              "sha256": "3c91b70d38345d624bb8cb778b49960feec733ca0aca6b39db940c082a03456e"
+            },
+            "src/entity/construction_internal.h": {
+              "bytes": 4643,
+              "sha256": "08eb54324ac75acec97dbdbf68c231b63541841e6bbae2e1a8aedc1500b220f1"
+            },
+            "src/entity/entity.c": {
+              "bytes": 35735,
+              "sha256": "650dbd9c896f066a8206be2d51a50e5dc50a4ba5f78760e96dd2a0e4386b5072"
+            },
+            "src/entity/entity_internal.h": {
+              "bytes": 5035,
+              "sha256": "5898f91eac2f6d83e4cafce4f0ecf7a3de4cfc0bbe66010eefa079400573dfd1"
+            },
+            "src/entity/movement/effects.c": {
+              "bytes": 44997,
+              "sha256": "dabace651b5d160a4beeb91afa74034b4493c11b4df64daa18997b8e030c4744"
+            },
+            "src/entity/player/player_internal.h": {
+              "bytes": 2231,
+              "sha256": "0793cc6946a30ce9da49438418efb6c8a493302cb16717446dff11e5b0dfa2d0"
+            },
+            "src/entity/player/tick.c": {
+              "bytes": 14711,
+              "sha256": "351f678d4881c7f6b53b32a811626538ebc98f523502cdbdad1e2df4c0dc482f"
+            },
+            "src/entity/tick/common.c": {
+              "bytes": 5782,
+              "sha256": "ce73fbb394e4b9ac590db299bb67fd86433cad783bff09b9fafaac4d2deca1c9"
+            },
+            "src/entity/tick/environment.c": {
+              "bytes": 27948,
+              "sha256": "fb350f00919650a52f4b0a6be65f555f2300b2da308fbcf28e51f0e57c7506de"
+            },
+            "src/entity/tick/watcher.c": {
+              "bytes": 2694,
+              "sha256": "52bb7990e244cfea9325340fedbb781cafc0552f5e254395b0e6aaa84a090875"
+            },
+            "tests/entity/movement/test_effects.c": {
+              "bytes": 6394,
+              "sha256": "e69a85f42fa590734b424c327eb8aa32981387452541f061fc36ac4987a093f8"
+            },
+            "tests/reference/client/application_owner/provenance.json": {
+              "bytes": 37363,
+              "sha256": "63980d7c8c42b14664e0b71984e59eecf93287726037bda1574b50c507c4b591"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 609594,
+              "sha256": "6ab80bf9c132606853429598c4b49c4ee0cccf1f112d435c7b1c6cfb54a8d8d5"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 701464,
+              "sha256": "7601b96c7de765297c4e7a8915a64ba92f6c93f94f9f5fe1078ca264a5b5229e"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 606019,
+              "sha256": "9100945f1f313d99e87ebec9bc8b9a855ccdd181ee23351849faa6a8a4e0e7f4"
+            },
+            "src/world/runtime/terminal_inventory.c": {
+              "bytes": 41103,
+              "sha256": "be9682598e97c7b6b23061eedc3d753c2e3521cfae79c99f46db1f277d72f7ff"
+            },
+            "src/client/world/entity_renderer/held_item_draw.c": {
+              "bytes": 35687,
+              "sha256": "6afb8ab5774f70dd8b63bc4e07ccb62fffffde1090d3c7a4fe38ccfbded9c14e"
+            },
+            "include/mc/entity/mob/construction.h": {
+              "bytes": 5620,
+              "sha256": "ad32bea4fbe39ff66482b434fd5cde5c9813677efaf3d3910d42f9ede0dbd13c"
+            },
+            "src/entity/mob/construction.c": {
+              "bytes": 37935,
+              "sha256": "747667ed873d86a08b75147c7ce23062669e8dc6881c767e57352b9bb15b5de1"
+            },
+            "src/entity/mob/internal.h": {
+              "bytes": 2398,
+              "sha256": "d341620803e40029c3cc61f1567dbd63f65279acdd48b1d788639fba49d6d9f4"
+            },
+            "src/entity/mob/spawning.c": {
+              "bytes": 31529,
+              "sha256": "a976d92dc2969649a77ee42f91014ec5dd8ccd948a38710a04e8aa4c724afa92"
+            },
+            "src/entity/mob/tick/common.c": {
+              "bytes": 17448,
+              "sha256": "d111e18efe1abf88ed779033337329ccd49b6ab1023658a7f0ffa42dcf7ebb9e"
+            },
+            "src/entity/mob/tick/wrappers.c": {
+              "bytes": 8773,
+              "sha256": "6ff2cdb9b217afe224f54ff503640b4f376c94407c4bb1d78546dc90935deb2d"
+            },
+            "src/entity/render/leaves.c": {
+              "bytes": 36685,
+              "sha256": "3e684d2f6d2c81baf1a3d402b913b7974f421ae6cf60c040ec92fc977ee0b9fc"
+            },
+            "src/entity/mob/tick/creeper.c": {
+              "bytes": 8236,
+              "sha256": "d8264c4980041081baf9bc308e0c731dca2a95e129b39d1cf61cccef7b3e5fbd"
+            },
+            "src/entity/particles/item.c": {
+              "bytes": 18401,
+              "sha256": "734b2e231280adf549444f5987563f70a91c2a4d23107e7469641c818df093a5"
+            },
+            "src/entity/mob/tick/wolf_setter.c": {
+              "bytes": 3454,
+              "sha256": "7e542bf7d4289fa1674c6ffb012688743498f3d80121f159cdf820c409e8f60a"
+            },
+            "src/entity/movement/effects_internal.h": {
+              "bytes": 341,
+              "sha256": "d08df50f54a8b34f02c0849db6a94e8789372d5507d6eefc874f1084a0e1d8e6"
+            },
+            "src/entity/mob/nbt.c": {
+              "bytes": 20561,
+              "sha256": "375b8bcd4309062fdaf65bf3754b881f938457e154cbe461f292bb1e9eec2bfe"
+            },
+            "src/entity/mob/tick/wolf_attack.c": {
+              "bytes": 6685,
+              "sha256": "0eab8872005664aa34a06390f01db9e7aa81825f7be2faafaee3aa5e12045642"
+            },
+            "tests/entity/test_wolf_attack.c": {
+              "bytes": 24009,
+              "sha256": "acf86a848c8bcd71054f201fb6ed7e2b72adca5e9d02ff498a45637b7ee3865f"
+            },
+            "src/entity/mob/death.c": {
+              "bytes": 28093,
+              "sha256": "29ec5f340be7cd735b1b3277c786f747a9abdf65cbc206744f398a9a6770474b"
+            },
+            "cmake/player_attack.cmake": {
+              "bytes": 9056,
+              "sha256": "5b8d4a21c9362fd8ded8bddc8b961e188746f25fc5d2ef62e1a306fab2afc0ac"
+            },
+            "src/entity/player/attack.c": {
+              "bytes": 29721,
+              "sha256": "43d555c23e0c817c985c2aa7914f6e0e202e81b0667f97aeef69903620956e3b"
+            },
+            "src/item/combat/combat.c": {
+              "bytes": 28637,
+              "sha256": "39b90dfa27d2e31fd581e0cc24fc96d59d877089b9d2bdf81029fcfe205921a3"
+            },
+            "cmake/player_damage.cmake": {
+              "bytes": 4572,
+              "sha256": "8bf0af9346cb1216e92a8eb1ca6d0c5ce032b5df386c60ccdaf4adf6960bf6bb"
+            },
+            "docs/entity/player-damage.md": {
+              "bytes": 7734,
+              "sha256": "56c4490e8376a7d169c8d42492a472ef237921e97402c341038569f0ef40b262"
+            }
+          },
+          "added": [
+            "docs/entity/ghast.md",
+            "docs/entity/player-ally-alert.md",
+            "docs/performance/player-ally-retire.md",
+            "docs/reference/player-ally-alert.md",
+            "include/mc/entity/player/ally_alert.h",
+            "src/entity/player/ally_alert.c",
+            "src/entity/player/ally_alert_occurrences.c",
+            "src/entity/player/ally_alert_occurrences_internal.h",
+            "src/entity/player/damage_alert.c",
+            "src/entity/player/damage_alert_internal.h",
+            "src/entity/watcher_payload_internal.h",
+            "tests/benchmarks/player_ally_retire.c",
+            "tests/benchmarks/player_ally_retire_adapter.h",
+            "tests/benchmarks/player_ally_retire_candidate.c",
+            "tests/benchmarks/player_ally_retire_fallback.c",
+            "tests/benchmarks/player_ally_retire_quadratic.c",
+            "tests/benchmarks/player_ally_retire_windows.json",
+            "tests/entity/player/test_ally_alert_original.c",
+            "tests/entity/player/test_ally_alert_ownership.c",
+            "tests/entity/player/test_mob_attacker.c",
+            "tests/reference/entity/player_ally_alert/.gitattributes",
+            "tests/reference/entity/player_ally_alert/PlayerAllyAlertJdi.java",
+            "tests/reference/entity/player_ally_alert/PlayerAllyAlertObservation.java",
+            "tests/reference/entity/player_ally_alert/README.md",
+            "tests/reference/entity/player_ally_alert/capture-receipt.json",
+            "tests/reference/entity/player_ally_alert/capture_reference.py",
+            "tests/reference/entity/player_ally_alert/class-names.txt",
+            "tests/reference/entity/player_ally_alert/export_reference.py",
+            "tests/reference/entity/player_ally_alert/finite.json",
+            "tests/reference/entity/player_ally_alert/ghast-construction-pins.json",
+            "tests/reference/entity/player_ally_alert/observation.py",
+            "tests/reference/entity/player_ally_alert/packet.py",
+            "tests/reference/entity/player_ally_alert/profiles.tsv",
+            "tests/reference/entity/player_ally_alert/provenance.json",
+            "tests/reference/entity/player_ally_alert/run_native.py",
+            "tests/reference/entity/player_ally_alert/source-pins.json",
+            "tests/reference/entity/player_ally_alert/test_packet.py",
+            "tests/tools/entity/benchmark_player_ally_retire.py",
+            "tests/tools/entity/test_benchmark_player_ally_retire.py",
+            "tests/tools/entity/test_player_ally_alert_ownership.py",
+            "tests/tools/entity/test_player_mob_attacker.py"
+          ],
+          "current_count": 5653
+        }
+      }
+    },
+    {
+      "from_commit": "372230b47e34770dc84a2999d950297726b06a62",
+      "role": "Current Player incoming/outgoing ally alerts, independently typed watcher payloads, genuine Ghast construction, retained damage cleanup and checked Wolf-query retirement. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1470166,
+        "sha256": "d1083144091b7ba25573b437e988f4e39b4ab0bdb5c0deaccd4c910856c61738"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/biped/provenance.json": {
+              "bytes": 35062,
+              "sha256": "f9fbbbbc2f9f93725b6a60bffe5a555e1f86a635fa00d444709c526f136d78ac"
+            }
+          },
+          "added": [],
+          "current_count": 5653
+        }
+      }
+    },
+    {
+      "from_commit": "372230b47e34770dc84a2999d950297726b06a62",
+      "role": "Current Player incoming/outgoing ally alerts, independently typed watcher payloads, genuine Ghast construction, retained damage cleanup and checked Wolf-query retirement. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1471191,
+        "sha256": "3fb4b62a1b19b02cce994e0e7665c116c65bb17aeb580c3549d0f7c8ce367864"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/testing.md": {
+              "bytes": 533406,
+              "sha256": "99dda5b57b689cc76ec36caadaf73288835a43d114759c194e0f2f461edae28c"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 621859,
+              "sha256": "b99dc0873cee3cfd3b9d0a1aab84dbdf83e7af2b0c16b186cf1ad5c1efe6a1e1"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 714086,
+              "sha256": "20e3aae5476c19e2b7e586eb5dc56100f857560aa20e8830a5a29d49daeb8ae0"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 618284,
+              "sha256": "e77a3e2d498a5b147cd01e2ffcfc8562606865c36f9902a27fdbb776d838b78b"
+            },
+            "tests/item/combat/test_combat.c": {
+              "bytes": 19997,
+              "sha256": "d2af934861764a447ae21ff8ec2a7f4f6aa028c975e270d2e25314cfca760aa3"
+            },
+            "tests/benchmarks/player_ally_retire_windows.json": {
+              "bytes": 1541194,
+              "sha256": "1bb475d1ecff7e0af8f6069fef06e7787fd97db36ce0b9c96b240b0ead516c8d"
+            }
+          },
+          "added": [],
+          "current_count": 5653
+        }
+      }
+    },
+    {
+      "from_commit": "372230b47e34770dc84a2999d950297726b06a62",
+      "role": "Current Player incoming/outgoing ally alerts, independently typed watcher payloads, compact entered Byte diagnostics, genuine Ghast construction, retained damage cleanup and checked Wolf-query retirement. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1473198,
+        "sha256": "a33324800ab1bcf0473f04c48ed4de09c1fde743a2e8f0d6277c1e063049442c"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/parity.md": {
+              "bytes": 210650,
+              "sha256": "e6db91da8130e99272972635161cedeefec38d5313dc5ba8ef6db86e81d2bc70"
+            },
+            "docs/status.md": {
+              "bytes": 124128,
+              "sha256": "4e3faed153576174770ec86dacd03fc8f73c4554327ce385ce38d99de4eb8f69"
+            },
+            "docs/testing.md": {
+              "bytes": 534007,
+              "sha256": "44d0ae96908eddce46bc9f01aaf1b3fb3adf74fb781f36ebe4237137a07f30d6"
+            },
+            "src/entity/movement/effects.c": {
+              "bytes": 47931,
+              "sha256": "c79c28b62b6b488794d6558c66f9da5a96bc786786e8aa719eab27024c466249"
+            },
+            "tests/entity/movement/test_effects.c": {
+              "bytes": 7693,
+              "sha256": "2f506299e9ff95bb5897451c265065d5b0f7371738b54b71996911a87f73f80b"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 622870,
+              "sha256": "952dffb67f748626eb6dfb17f7ad77cb4f76e6a0bf631e386fc62e2439ee974c"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 715099,
+              "sha256": "e5edb36de32d0b4dc4a197c6130e6c88c595b92fa848351f13c5dc79e38d97db"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 619295,
+              "sha256": "db95c6b5446d54f84d15078566291d850a427ed20ea98af31f367ceac3fafc97"
+            },
+            "src/client/world/entity_renderer/held_item_draw.c": {
+              "bytes": 36458,
+              "sha256": "e1c867c998e7f90450492f2b6459ecbcc6b098fe3cde7733e695f78c7fd7aade"
+            },
+            "src/entity/movement/effects_internal.h": {
+              "bytes": 663,
+              "sha256": "f82312fc5e630c1fffb0aeb4b9f482782ad0240bf26d7817b774568e4bb0f8b0"
+            },
+            "docs/entity/player-ally-alert.md": {
+              "bytes": 4897,
+              "sha256": "ee2c5361715f7a950721668ed100f10a623a080f4fc5f911e30cdfa1c6359db7"
+            },
+            "docs/performance/player-ally-retire.md": {
+              "bytes": 5928,
+              "sha256": "8e8e7c412ad34f80fbd4a2082d9ee8f61494120e0097e7644c279f9c4f05cc8d"
+            }
+          },
+          "added": [
+            "tests/benchmarks/player_ally_retire_windows_current.json"
+          ],
+          "current_count": 5654
+        }
+      }
+    },
+    {
+      "from_commit": "372230b47e34770dc84a2999d950297726b06a62",
+      "role": "Current Player incoming/outgoing ally alerts, independently typed watcher payloads, compact entered Byte diagnostics, genuine Ghast construction, retained damage cleanup and checked Wolf-query retirement. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1476593,
+        "sha256": "deba9d3d7dca5543fa75275107273023949e0a62e13c4bb408c880005373ef2c"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/entity/player_ally_alert/.gitattributes": {
+              "bytes": 23,
+              "sha256": "76fe88ee28b493ec0adaa977e5ebdfa7375d6b8b193bf48749286ff49da8f2f0"
+            }
+          },
+          "added": [],
+          "current_count": 5654
+        }
+      }
+    },
+    {
+      "from_commit": "372230b47e34770dc84a2999d950297726b06a62",
+      "role": "Current Player incoming/outgoing ally alerts, independently typed watcher payloads, compact entered Byte diagnostics, genuine Ghast construction, retained damage cleanup and checked Wolf-query retirement. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1477660,
+        "sha256": "b54e67d8504eaa9f6d4811e08b777d49985024186a869177eb00915615e11d03"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/status.md": {
+              "bytes": 124645,
+              "sha256": "42974689b274a2c5ad66a6d35b226d0146001af032f8f19a0e180f905400ccfd"
+            },
+            "docs/testing.md": {
+              "bytes": 535741,
+              "sha256": "bbd1806381b4a960f935a9d690bf255f419c7555253aad085a5dcadd6bc51e5c"
+            }
+          },
+          "added": [],
+          "current_count": 5654
         }
       }
     }

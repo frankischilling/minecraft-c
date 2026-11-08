@@ -86,8 +86,8 @@
       "sha256": "e77454c2bb0a5070c5ef6a632dd044f91b0003b6cdc9fae568e86b225fd2ebf3"
     },
     "include/mc/entity/entity.h": {
-      "bytes": 8923,
-      "sha256": "99ed142cabfc9ebd714f9eabcbe389f0c992941f921d593415ac9fa2a8f41b7a"
+      "bytes": 9411,
+      "sha256": "a9364b4510947cab8ed1348ec9e0d1f8f8af5caf2123e309ece887a0614cec7d"
     },
     "include/mc/entity/errors.h": {
       "bytes": 1058,
@@ -398,12 +398,12 @@
       "sha256": "df82a84481ba16f4e4d47d6409140a4b6a70ec11d9794e0c8481d3987649e09e"
     },
     "src/entity/entity_internal.h": {
-      "bytes": 5035,
-      "sha256": "5898f91eac2f6d83e4cafce4f0ecf7a3de4cfc0bbe66010eefa079400573dfd1"
+      "bytes": 5082,
+      "sha256": "a724645b0d4db78d86a5d3ac363f49ed395cb3f32fcb7eb1d558837e6d30731b"
     },
     "src/entity/player/player_internal.h": {
-      "bytes": 2231,
-      "sha256": "0793cc6946a30ce9da49438418efb6c8a493302cb16717446dff11e5b0dfa2d0"
+      "bytes": 2325,
+      "sha256": "321911c1a93cea62e43b179ff501890460b40c073f2754ad131ae5bc64f4c50a"
     },
     "src/entity/player/strings.c": {
       "bytes": 5409,
@@ -917,6 +917,34 @@
             "include/mc/world/dimension/world_provider.h",
             "src/inventory/player/terminal_internal.h"
           ],
+          "current_count": 119
+        }
+      }
+    },
+    {
+      "from_commit": "372230b47e34770dc84a2999d950297726b06a62",
+      "role": "Current Player incoming/outgoing ally alerts, independently typed watcher payloads, genuine Ghast construction, retained damage cleanup and checked Wolf-query retirement. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 37363,
+        "sha256": "63980d7c8c42b14664e0b71984e59eecf93287726037bda1574b50c507c4b591"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "include/mc/entity/entity.h": {
+              "bytes": 8923,
+              "sha256": "99ed142cabfc9ebd714f9eabcbe389f0c992941f921d593415ac9fa2a8f41b7a"
+            },
+            "src/entity/entity_internal.h": {
+              "bytes": 5035,
+              "sha256": "5898f91eac2f6d83e4cafce4f0ecf7a3de4cfc0bbe66010eefa079400573dfd1"
+            },
+            "src/entity/player/player_internal.h": {
+              "bytes": 2231,
+              "sha256": "0793cc6946a30ce9da49438418efb6c8a493302cb16717446dff11e5b0dfa2d0"
+            }
+          },
+          "added": [],
           "current_count": 119
         }
       }

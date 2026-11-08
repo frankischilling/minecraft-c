@@ -1,4 +1,5 @@
 #include "mc/entity/mob/spawning.h"
+#include "../watcher_payload_internal.h"
 #include "spawn_failure_internal.h"
 
 #include "../../world/runtime/chunk_provider_internal.h"
@@ -557,10 +558,18 @@ static bool slime_size(spawn_frame *f, int32_t *out) {
             f->error->child = location("ud", "a", "(I)B", 16);
             return null_receiver(f, "Slime size null watcher record receiver");
         }
-        if (node->record->type != 0) {
-            f->error->child = location("ud", "a", "(I)B", 19);
+        const mc_entity_watch_payload_result payload =
+            mc_entity_watch_payload_check(node->record, MC_ENTITY_WATCH_PAYLOAD_BYTE);
+        if (payload != MC_ENTITY_WATCH_PAYLOAD_OK) {
+            f->error->child = location("ud", "a", "(I)B",
+                                       payload == MC_ENTITY_WATCH_PAYLOAD_NULL_UNBOX ? 22 : 19);
+            if (payload == MC_ENTITY_WATCH_PAYLOAD_NULL_UNBOX)
+                return null_receiver(f, "Slime size null Byte unbox receiver");
             return fail(f, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Slime size watcher Byte cast",
-                        false, "java/lang/ClassCastException");
+                        payload == MC_ENTITY_WATCH_PAYLOAD_UNREPRESENTED,
+                        payload == MC_ENTITY_WATCH_PAYLOAD_WRONG_CLASS
+                            ? "java/lang/ClassCastException"
+                            : NULL);
         }
         *out = node->record->byte_value;
         return true;

@@ -6,6 +6,7 @@
 #include "../particles/particle_internal.h"
 #include "../player/player_internal.h"
 #include "../player/tick_math_internal.h"
+#include "../watcher_payload_internal.h"
 #include "internal.h"
 #include "mc/client/input/movement_input.h"
 #include "mc/core/java/java.h"
@@ -202,16 +203,16 @@ static bool watch(mc_entity *p, int32_t key, int32_t outer_pc, int8_t *out,
         e->child.pc = 16;
         return exception(e, "java/lang/NullPointerException", "Entity render null watcher record");
     }
-    if (r->type != 0) {
+    if (mc_entity_watch_payload_kind_of(r) != MC_ENTITY_WATCH_PAYLOAD_BYTE) {
         e->watcher_pc = 19;
         e->child.pc = 19;
-        if (r->type == 4 && r->string_value == NULL) {
+        if (mc_entity_watch_payload_kind_of(r) == MC_ENTITY_WATCH_PAYLOAD_NULL) {
             e->watcher_pc = 22;
             e->child.pc = 22;
             return exception(e, "java/lang/NullPointerException",
                              "Entity render null watcher Byte unbox");
         }
-        if (r->type == 2 || r->type == 4)
+        if (mc_entity_watch_payload_known(r))
             return exception(e, "java/lang/ClassCastException",
                              "Entity render actual non-Byte watcher value");
         return fail(e, MC_ENTITY_STATE_ERROR, "Entity render unrepresented watcher value");
@@ -437,16 +438,17 @@ static bool wolf_watch(mc_entity *p, int32_t key, int32_t type, int32_t outer_pc
         e->child.pc = 16;
         return exception(e, "java/lang/NullPointerException", "Wolf null watcher record receiver");
     }
-    if (value->type != type) {
+    if (mc_entity_watch_payload_check(value, (mc_entity_watch_payload_kind)type) !=
+        MC_ENTITY_WATCH_PAYLOAD_OK) {
         e->watcher_pc = 19;
         e->child.pc = 19;
-        if (value->type == 4 && value->string_value == NULL) {
+        if (mc_entity_watch_payload_kind_of(value) == MC_ENTITY_WATCH_PAYLOAD_NULL) {
             e->watcher_pc = 22;
             e->child.pc = 22;
             return exception(e, "java/lang/NullPointerException",
                              "Wolf null watcher unbox receiver");
         }
-        if (value->type == 0 || value->type == 2 || value->type == 4)
+        if (mc_entity_watch_payload_known(value))
             return exception(e, "java/lang/ClassCastException",
                              "Wolf actual wrong boxed watcher value");
         return fail(e, MC_ENTITY_STATE_ERROR, "Wolf watcher boxed value representation boundary");

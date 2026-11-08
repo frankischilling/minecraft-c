@@ -1,3 +1,4 @@
+#include "../../watcher_payload_internal.h"
 #include "internal.h"
 
 static void at(mc_mob_tick_scope *s, bool unseen, unsigned int pc) {
@@ -45,15 +46,16 @@ static mc_entity_watch_record *record(mc_mob_tick_scope *s, int32_t key, bool se
         mt_null(s, "Creeper null watcher record receiver");
         return NULL;
     }
-    if (value->type != 0) {
+    if (setter ? !mc_entity_watch_payload_known(value)
+               : mc_entity_watch_payload_kind_of(value) != MC_ENTITY_WATCH_PAYLOAD_BYTE) {
         s->error->child_site.pc = setter ? 22 : 19;
         if (setter) {
             mt_fail(s, MC_ENTITY_STATE_ERROR,
                     "Creeper watcher setter old boxed type representation");
-        } else if (value->type == 4 && value->string_value == NULL) {
+        } else if (mc_entity_watch_payload_kind_of(value) == MC_ENTITY_WATCH_PAYLOAD_NULL) {
             s->error->child_site.pc = 22;
             mt_null(s, "Creeper null watcher Byte unbox receiver");
-        } else if (value->type == 2 || value->type == 4) {
+        } else if (mc_entity_watch_payload_known(value)) {
             s->error->source_exception = true;
             s->error->exception_class = "java/lang/ClassCastException";
             mt_fail(s, MC_ENTITY_STATE_ERROR, "Creeper watcher actual non-Byte value cast");
@@ -79,11 +81,8 @@ static bool direction_set(mc_mob_tick_scope *s, int32_t input) {
     if (value == NULL)
         return false;
     const int8_t narrowed = mc_java_i8_narrow(input); /* Actual GB.e i2b7. */
-    if (value->byte_value != narrowed) {
-        value->byte_value = narrowed;
-        value->dirty = true;
+    if (mc_entity_watch_byte_replace(value, narrowed))
         s->entity->watcher->dirty = true;
-    }
     s->error->child_site = (mc_mob_site){.pc = -1};
     return true;
 }

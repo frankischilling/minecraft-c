@@ -8,6 +8,7 @@
 /* Actual production layouts, shared only with native invariant tests. */
 struct mc_entity_watch_record {
     int32_t index, type;
+    mc_entity_watch_payload_kind payload_kind;
     int8_t byte_value;
     int32_t integer_value;
     const struct mc_player_string *string_value;

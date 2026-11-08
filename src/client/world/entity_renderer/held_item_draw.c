@@ -1,4 +1,5 @@
 #include "../../../entity/entity_internal.h"
+#include "../../../entity/movement/effects_internal.h"
 #include "../../../entity/player/tick_math_internal.h"
 #include "../../application_state.h"
 #include "../../display/camera_surface.h"
@@ -592,12 +593,28 @@ static bool overlays(mc_client_held_item_draw_call *c) {
         return false;
     c->state.burning = p->base.bv > 0;
     if (!c->state.burning) {
-        mc_entity_watcher_snapshot w;
-        c->failure.entity = mc_entity_watcher_get_snapshot(p->watcher, &w);
-        if (c->failure.entity != MC_ENTITY_OK)
+        int8_t value;
+        mc_entity_watcher_byte_error leaf;
+        if (!mc_entity_watcher_byte_read_entered(p, 0, &value, &leaf)) {
+            mc_entity_effect_error *effect = &c->failure.tick.effect;
+            mc_entity_effect_error_init(effect);
+            mc_entity_effect_watcher_byte_apply(&leaf, effect);
+            const bool native = effect->cause != MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE &&
+                                effect->cause != MC_ENTITY_EFFECT_CAUSE_CLASS_CAST;
+            c->failure.tick.status = effect->status;
+            c->failure.tick.native_policy = native;
+            c->failure.tick.source_exception = !native;
+            c->failure.tick.exception_class = native ? NULL
+                                              : effect->cause == MC_ENTITY_EFFECT_CAUSE_CLASS_CAST
+                                                  ? "java/lang/ClassCastException"
+                                                  : "java/lang/NullPointerException";
             return fail(c, MC_CLIENT_HELD_ITEM_DRAW_CHILD_FAILED, "actual sn.ak watcher flag read",
-                        13, true);
-        c->state.burning = (w.byte_value & 1) != 0;
+                        13, native);
+        }
+        /* Preserve the healthy getter's sole diagnostic write; the full
+         * unselected effect tree is not initialized on a returned Byte read. */
+        c->failure.tick.effect.watcher_index = leaf.index;
+        c->state.burning = (value & 1) != 0;
     }
     c->state.burning_read = true;
     if (c->state.burning)

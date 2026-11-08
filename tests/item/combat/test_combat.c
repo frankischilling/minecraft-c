@@ -358,11 +358,31 @@ static bool saddle_controls(fixture *f) {
           record->byte_value == 1);
     record->byte_value = 0;
     record->type = 1;
+    CHECK(stack_create(329, 2, 0, &stack) &&
+          mc_item_combat_hit(f->app.registry, item, stack, pig, NULL, &result, &e) ==
+              MC_ENTITY_OK &&
+          result && e.saddle_stored && e.count_stored && fields(stack, 1, 0) && record->type == 1 &&
+          record->payload_kind == MC_ENTITY_WATCH_PAYLOAD_BYTE && record->byte_value == 1);
+    mc_item_stack_release(stack);
+    record->type = 0;
+    record->payload_kind = MC_ENTITY_WATCH_PAYLOAD_INTEGER;
+    record->integer_value = 7;
+    record->byte_value = 0;
+    record->dirty = pig->watcher->dirty = false;
     CHECK(mc_item_combat_hit(f->app.registry, item, NULL, pig, NULL, &result, &e) ==
               MC_ENTITY_STATE_ERROR &&
           e.source_exception && strcmp(e.exception_class, "java/lang/ClassCastException") == 0 &&
-          e.child.pc == 13 && e.dependency.pc == 6 && e.watcher.pc == 19 && !e.saddle_stored);
-    record->type = 0;
+          e.child.pc == 13 && e.dependency.pc == 6 && e.watcher.pc == 19 && !e.saddle_stored &&
+          record->type == 0 && record->payload_kind == MC_ENTITY_WATCH_PAYLOAD_INTEGER &&
+          record->byte_value == 0 && !record->dirty && !pig->watcher->dirty);
+    record->payload_kind = MC_ENTITY_WATCH_PAYLOAD_NULL;
+    CHECK(mc_item_combat_hit(f->app.registry, item, NULL, pig, NULL, &result, &e) ==
+              MC_ENTITY_STATE_ERROR &&
+          e.source_exception && strcmp(e.exception_class, "java/lang/NullPointerException") == 0 &&
+          e.child.pc == 13 && e.dependency.pc == 6 && e.watcher.pc == 22 && !e.saddle_stored &&
+          record->type == 0 && record->payload_kind == MC_ENTITY_WATCH_PAYLOAD_NULL &&
+          !record->dirty && !pig->watcher->dirty);
+    record->payload_kind = MC_ENTITY_WATCH_PAYLOAD_BYTE;
     mc_entity_watcher *watcher = pig->watcher;
     pig->watcher = NULL;
     const mc_entity_status missing =

@@ -157,6 +157,10 @@ static bool slime(mc_mob_tick_scope *s) {
 }
 
 bool mt_concrete_w(mc_mob_tick_scope *s) {
+    if (mc_entity_is_kind(s->entity, MC_ENTITY_CLASS_KIND_GHAST)) {
+        mt_at(s, "bp", "w_", "()V", 1);
+        return mt_fail(s, MC_ENTITY_STATE_ERROR, "Ghast actual flying tick dependency");
+    }
     if (mc_entity_is_kind(s->entity, MC_ENTITY_CLASS_KIND_CREEPER))
         return creeper(s);
     if (mc_entity_is_kind(s->entity, MC_ENTITY_CLASS_KIND_SLIME))

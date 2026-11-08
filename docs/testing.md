@@ -1,6 +1,125 @@
 # Test scope and reproduction
 
+## Incoming Mob damage and Player ally alerts
+
+The final complete configured cohorts, including the compact Byte diagnostic,
+pass Windows 736/736 in 331.75 seconds and sanitized Linux headless 593/593 in
+290.07 seconds, without registered skips. Both use four workers. Windows is
+Release with client and CPU benchmarks enabled, display tests disabled. Linux
+is Clang Debug with client disabled, ASan/UBSan, leak detection and halt-on-error.
+All six admission tables retain their prelaunch byte hashes. Their frozen copies
+were saved after the Windows launch and verified against the already recorded
+prelaunch refresh hashes; Linux relaunched after complete input validation.
+Result-summary publication admission is updated separately afterward.
+
+An earlier Linux attempt started despite a failed preflight and was stopped
+after twelve completed tests. Its partial log receives no full-cohort credit.
+The complete 5,654-file audit found exactly one stale copied file,
+`docs/wiki/Home.md`, and no runtime mismatch. Its old bytes remain retained;
+repairing that documentation copy permits both the whole declared-source audit
+and source-binding checker to pass before the accepted Linux run. Windows source
+inputs remained unchanged throughout its accepted run.
+
+The [shared ally-alert body](entity/player-ally-alert.md) now serves incoming
+Living damage and outgoing attack. Four unchanged original VMs each complete
+40 prepared calls: 32 damage calls and eight direct helper calls. Each retains
+19 normal returns, 17 null exceptions and four class-cast exceptions. The
+[packet](../tests/reference/entity/player_ally_alert/README.md) preserves the
+declared watcher type separately from null or Integer payloads and includes
+genuine Ghast construction. No World tick executes in these components.
+
+Fresh Windows and sanitized Linux opportunities each match 57,580 shared
+scalars across all 40 outcomes and pass 11,382 native fixture checks. Another
+111 original exception-message/stack positions remain unpaired. Independent
+constructor entropy is retained; each call's own stream consumption and sound
+arithmetic are checked separately. Windows retains
+`ally-alert-comparison-p5_i7eny`; Linux retains
+`ally-alert-comparison-940r_fxe`. Their complete output hashes differ and are
+recorded in the [source notes](reference/player-ally-alert.md). Portable normal
+and optimized Python controls each pass 895 stream checks, 4,134 passive events
+and 1,201 corruption refusals. The bounded native transport requires exact
+constructor/case/footer output, empty stderr, complete pipe capture and checked
+cleanup; snapshots have an 8 MiB extent limit.
+
+The first real incoming-Skeleton regression stopped at the missing GS144 body
+with health 20. Its implemented route uses the actual full application,
+session, World and statistics writer, reaches health 16 and records damage 4.
+Native controls retain a failed child without an error output, reject another
+damage invocation, refuse damaged native bounds metadata, retry cleanup and
+clear a copied error view after another sink consumes the child. BUSY and
+cleanup refusals remain native while the original helper exception survives.
+The migrated Windows selection passes ten tests in 4.97 seconds. Sanitized
+Linux passes eleven, including the original comparison, in 7.72 seconds with
+ASan, UBSan, leak detection and halt-on-error.
+
+The first complete configured cohorts retain one failed authored Saddle control
+on each host: Windows passes 735/736 in 396.34 seconds and sanitized Linux
+592/593 in 385.35 seconds. That control changed only the declared watcher type
+to simulate a wrong boxed value. The corrected control supplies an actual
+Integer payload while retaining the declared type, and keeps its original
+class-cast/source-site expectations. Added metadata-only and null-payload
+controls distinguish successful Byte use from null unboxing. The focused
+correction passes on both hosts; the earlier complete cohorts remain failed.
+
+The corrected complete cohorts pass Windows 736/736 in 387.87 seconds and
+sanitized Linux 593/593 in 392.29 seconds without registered skips, with four
+workers each. Their six admission tables remain byte-identical to the saved
+pre-cohort copies. These cohorts precede the subsequent compact Byte diagnostic
+change; they do not qualify later source changes by inheritance.
+
+That later refactor removes the successful overlay's full effect-tree clear.
+One compact entered Byte read reports its exact written scalars and failure
+stage; only failure materializes the full diagnostic, without another getter.
+Eleven actual Item/Falling watcher controls cover metadata-only changes, null
+receivers/Map/record/payload, Integer and unknown payloads, absent keys and
+bounded malformed metadata. Focused five-test selections pass Windows in
+5.81 seconds and sanitized Linux in 5.59 seconds, including the 57,580-scalar
+original comparison. Hidden native GPU hand controls pass 1,547 outer and 194
+arm checks, 64 original matrix profiles with maximum error
+`1.1920928955078125e-07`, plus the existing arm/pixel observations. These surfaces
+request `hidden=true`; physical monitor2 is enumerated and supplies the startup
+hint. This is no visible-frame or loaded-encounter qualification.
+
+Separate classification controls pass 277 checks over 19 authored returned-child
+envelopes on Windows. Their World/App and 16 WorldAccess receipt invocations are
+genuine; the loader/query envelopes are declared component inputs. These cover
+current versus stale status/operation pairs, all four callback receipt slots,
+capture refusal/repair and retained first causes. They establish no complete
+source-loader execution or original-runtime comparison.
+
+The [earlier retirement CPU cohort](performance/player-ally-retire.md) retains all
+2,520 measured calls from 12 serial processes on one compiled observer and
+identical ordered core archive graph. Distinct/repeated 1,024-entry Lists fall
+from median 4,695.9/4,868.65 µs to 21.05/9.4 µs. Tiny Lists, insufficient-hold
+refusal/retry, source fields and Random preservation pass. Forced optional
+allocation failure keeps the previous scan and cleanup result. All 1,901
+source/product/resource/region guards remain unchanged. This measures checked
+native cleanup, with no loaded-frame or FPS qualification.
+
+A fresh final-core cohort after the compact Byte refactor retains another
+2,520 measurements and 48 raw artifact hashes. All 1,902 guards remain unchanged.
+Distinct/repeated 1,024-entry medians are 4,559.8/4,723.45 microseconds for the
+former scan and 16.2/9.3 microseconds for pointer counting. Both cohorts retain
+their separate source/product bindings and complete raw values; no cross-cohort
+change is attributed to the overlay refactor.
+
+Earlier failed opportunities remain retained: missing fixture declarations,
+the ownership wrapper's old two-banner contract, the comparison observer's
+buffered marker order, and benchmark compilation/loaded-Chunk cleanup. The
+first forty-row process exits 0 with 11,342 checks but receives no scalar credit
+because its output order is refused. Checked observer flushes fix that transport
+without changing original expectations. A stale executable invoked after a
+failed prototype build receives no credit for the new ownership control.
+
 ## Nightmare spawning and loaded night
+
+The exact `372230b4` source passes all four jobs in
+[hosted run 42438935164](https://github.com/frankischilling/minecraft-c/actions/runs/42438935164).
+Windows passes 743/743 in 470.73 seconds, Clang 801/801 in 520.67 seconds and
+GCC 801/801 in 691.85 seconds; formatting also passes. The checked-out synthetic
+merge `7939cb9a` and development commit have the same tree,
+`39f00591797b71ace61b7ef31d1f59e9b1faf62a`. These jobs qualify that exact
+nightmare-spawning tree; later working changes retain separate validation.
 
 The final complete configured cohorts pass Windows 729/729 in 485.57 seconds
 and Linux headless 586/586 in 450.24 seconds, without registered skips. Both

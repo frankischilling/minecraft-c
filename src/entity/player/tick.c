@@ -104,6 +104,9 @@ static bool tick_effect_retire(mc_player_tick_error *e, mc_entity_effect_error *
     if (effect->player_wake.pending) {
         e->cleanup.status = effect->player_wake.cleanup_status;
         e->cleanup.operation = effect->player_wake.cleanup_operation;
+    } else if (effect->player_alert.pending) {
+        e->cleanup.status = effect->player_alert.cleanup_status;
+        e->cleanup.operation = effect->player_alert.cleanup_operation;
     } else if (effect->player_death.pending) {
         e->cleanup.status = effect->player_death.cleanup_status;
         e->cleanup.operation = effect->player_death.cleanup_operation;

@@ -214,15 +214,15 @@ static bool wolf_attack_bites(random_fixture *f, mc_entity *p, mc_entity *sheep,
     /* The source attack cooldown store also precedes a failed tame getter. */
     mc_entity_watch_record *flags = wolf_attack_flags(p);
     CHECK(flags != NULL);
-    const int32_t type = flags->type;
-    flags->type = 2;
+    const mc_entity_watch_payload_kind kind = flags->payload_kind;
+    flags->payload_kind = MC_ENTITY_WATCH_PAYLOAD_INTEGER;
     const mc_entity_status wrong =
         mt_wolf_attack_component(p, f->registry, f->math, NULL, sheep, 1.f, e);
     const bool wrong_prefix =
         wrong == MC_ENTITY_STATE_ERROR && e->source_exception && e->site.pc == 184 &&
         !strcmp(e->exception_class, "java/lang/ClassCastException") && e->child_site.pc == 19 &&
         p->mob->living.ae == 20 && sheep->mob->living.Y == health - 2;
-    flags->type = type;
+    flags->payload_kind = kind;
     CHECK(wrong_prefix);
     passed = true;
 done:

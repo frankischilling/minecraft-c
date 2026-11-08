@@ -119,12 +119,15 @@ separates those results from incomplete local suites and unresolved GUI failures
 
 ## Remaining work
 
-Sleeping wake, Arrow attacker resolution and selected Living ally-alert paths
-remain unfinished. Original runtime comparisons for broader fatal inputs and
+The [sleeping wake](player-damage-wake.md) and
+[Living ally-alert body](player-ally-alert.md) have separate finite source,
+ownership and comparison scopes. Arrow attacker resolution remains unfinished.
+Original runtime comparisons for broader fatal inputs and
 scattered Inventories remain separate work. The supported loaded Overworld
 respawn route has its [declared scope](../client/death-respawn.md), including
-saved-Bed validation, exact placement and missing-Bed notification. Bed use and
-sleep/wake gameplay remain separate work. Nether transition and centered
+saved-Bed validation, exact placement and missing-Bed notification. Prepared
+[Bed use and sleep/wake scenes](../client/bed-sleep.md) retain their own scope.
+Unrestricted sleep gameplay, Nether transition and centered
 ChunkProvider branches remain unavailable.
 These results do not establish full combat, unrestricted survival, audio output
 equality or a frame-rate improvement.

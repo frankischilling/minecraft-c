@@ -90,8 +90,8 @@
       "sha256": "e77454c2bb0a5070c5ef6a632dd044f91b0003b6cdc9fae568e86b225fd2ebf3"
     },
     "include/mc/entity/entity.h": {
-      "bytes": 8923,
-      "sha256": "99ed142cabfc9ebd714f9eabcbe389f0c992941f921d593415ac9fa2a8f41b7a"
+      "bytes": 9411,
+      "sha256": "a9364b4510947cab8ed1348ec9e0d1f8f8af5caf2123e309ece887a0614cec7d"
     },
     "include/mc/entity/errors.h": {
       "bytes": 1058,
@@ -492,6 +492,22 @@
     "include/mc/entity/particles/origin.h": {
       "bytes": 1566,
       "sha256": "ffefa3b621365264d9c82e1a494d8ecdaaa442002adaefdfe3be7fe1c629f11a"
+    },
+    "include/mc/entity/player/sleep.h": {
+      "bytes": 7976,
+      "sha256": "e0751fa7493800016c7ad95f7b95c5916addf35c94ba2853fab84adf58e4fc63"
+    },
+    "include/mc/world/dimension/world_provider.h": {
+      "bytes": 11500,
+      "sha256": "07ec44899ca0d7a46f563d237ce35d5807d021209a84aa7f5b32ab84332581b2"
+    },
+    "src/client/gui/achievement_notice_internal.h": {
+      "bytes": 587,
+      "sha256": "18cedcc498c59c3f64d9a652d7c5e1d4c04abb0e44fb2232ede5a2a4f0b75f4a"
+    },
+    "src/client/render/item_renderer_internal.h": {
+      "bytes": 603,
+      "sha256": "8018a6b9e9b6dce25bd651f48905b849176590e7a92ca57a9046fe041a533faf"
     }
   },
   "reference_files": {
@@ -878,6 +894,31 @@
           },
           "added": [],
           "current_count": 123
+        }
+      }
+    },
+    {
+      "from_commit": "372230b47e34770dc84a2999d950297726b06a62",
+      "role": "Current Player incoming/outgoing ally alerts, independently typed watcher payloads, genuine Ghast construction, retained damage cleanup and checked Wolf-query retirement. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 35062,
+        "sha256": "f9fbbbbc2f9f93725b6a60bffe5a555e1f86a635fa00d444709c526f136d78ac"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "include/mc/entity/entity.h": {
+              "bytes": 8923,
+              "sha256": "99ed142cabfc9ebd714f9eabcbe389f0c992941f921d593415ac9fa2a8f41b7a"
+            }
+          },
+          "added": [
+            "include/mc/entity/player/sleep.h",
+            "include/mc/world/dimension/world_provider.h",
+            "src/client/gui/achievement_notice_internal.h",
+            "src/client/render/item_renderer_internal.h"
+          ],
+          "current_count": 127
         }
       }
     }

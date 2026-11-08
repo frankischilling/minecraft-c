@@ -10,6 +10,17 @@ Statuses: Not started; Under research; Partially implemented; Implemented but
 unverified; Verified for specified scenarios; Blocked (with a named dependency).
 The inventory expands the broad gameplay rows into concrete child behaviors.
 
+The shared [Player ally alert](entity/player-ally-alert.md) now serves incoming
+Living damage and outgoing attack. Windows and sanitized Linux each match
+57,580 shared scalar values across 40 original calls, with 111 message/stack
+fields unpaired. Independent watcher payload tags preserve actual null and
+wrong-class values while retaining declared record types. The
+[retirement CPU comparison](performance/player-ally-retire.md) has its own
+fixed-work scope; loaded hostile encounters and sustained FPS remain unqualified.
+
+The natural Monster attack parent still stops at GZ61 before target hurt;
+the new damage/helper comparisons do not qualify that loaded caller.
+
 Default-hostile [nightmare spawning](world/nightmare.md) now reaches the full
 construction, reusable pathfinding, publication, postspawn, wake and ambient
 route. Its original component comparison and the separate historical
@@ -84,6 +95,7 @@ Hosted qualification applies to its exact tested commit.
 
 | Feature | Evidence | Implementation | Verification and result | Status / limits |
 | --- | --- | --- | --- | --- |
+| Player incoming Living damage and shared ally alerts | [Behavior/ownership](entity/player-ally-alert.md), [source and packet](reference/player-ally-alert.md), [CPU receipt](performance/player-ally-retire.md) | Actual GS144 false-mode and GS93 true-mode helper, independent watcher payload tags, genuine Ghast constructor, retained failure cleanup and bounded occurrence validation | Four original VMs each complete 40 calls. Windows and sanitized Linux each match 57,580 shared scalars; 111 Java message/stack positions remain unpaired. The final-core CPU cohort retains 2,520 measurements; compact Byte diagnostics have authored watcher and hidden hand-rendering checks | Verified for the specified prepared components. Natural Monster hurt still stops at GZ61; loaded hostile encounters, generic watcher serialization, Arrow shooter resolution, original audiovisual equality and sustained FPS remain unfinished or unqualified |
 | Damage wakes a sleeping Player | [Source and retained ownership](entity/player-damage-wake.md), [original packet](../tests/reference/entity/player_damage_wake/README.md) | Actual GS35 wake before difficulty, zero damage, statistics and health; actor-owned failure and checked environment/travel/movement cleanup | Two original VMs each complete 32 calls. Windows and sanitized Linux match 4,748 shared scalars and 537,253 fixture checks; 335,423 authored checks per host and 241 Windows client cleanup checks have separate scope | Verified for prepared null-attacker components and native ownership controls. Forty-six Java schema/stack positions remain unpaired. Natural night, broader combat, loaded gameplay, original pixels/audio and sustained FPS remain unqualified |
 | Player damage, armor and fall landing | [Source behavior and limits](entity/player-damage.md), [original hurt observations](../tests/reference/entity/player_hurt/README.md) | Actual statistic, shared LivingEntity hurt, virtual armor value/wear, health/remainder stores, resistance, sound and post-hit landing Block/StepSound | Two unchanged original VMs retain 28 calls across 22 profiles. Native replay checks 21,247 scalar values including retained empty-Inventory fatal completion; 529 native controls and 64 reader corruption controls remain separate | Verified for specified hurt observations and native controls. Broader attackers, loaded combat, original landing runtime output, audio output and FPS remain unfinished or unqualified |
 | Player death, death screen and respawn | [Source order, ownership and test scope](client/death-respawn.md), [original death-screen packet](../tests/reference/client/death_screen/README.md) | Actual Player death/scatter and K Container closes; CH construction, input and drawing; World spawn/cleanup/removal and Minecraft replacement coordinator with fresh input, preserved ID and terrain preparation | Authored death and World controls pass on Windows and sanitized Linux. Two original VMs retain 72 CH component rows; Windows replay passes. First monitor-2 loaded scene passes 1,049 checks through two real Respawn clicks and one partial-publication cleanup | Verified for specified component inputs and bounded native Windows integration. Full Inventory drops lack an original runtime comparison; prepared original App is not full startup/drawing. Loaded Bed sleep has a separate historical scene below. Nether transition, ordinary hazard encounters, Linux loaded play, general focus reliability, original pixels/audio and FPS remain unfinished or unqualified |

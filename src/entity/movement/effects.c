@@ -1,7 +1,9 @@
 #include "mc/entity/movement/effects.h"
+#include "../watcher_payload_internal.h"
 
 #include "../mob/damage_internal.h"
 #include "../mob/death_internal.h"
+#include "../player/damage_alert_internal.h"
 #include "../player/damage_internal.h"
 #include "../player/damage_wake_internal.h"
 #include "../player/death_internal.h"
@@ -119,63 +121,92 @@ static bool fp(mc_entity_effect_error *error, const char *operation, uint16_t pc
     return false;
 }
 
-static bool watcher_byte(mc_entity *entity, int32_t index, int8_t *out,
-                         mc_entity_effect_error *error) {
-    error->watcher_index = index;
+static bool watcher_byte_failure(mc_entity_watcher_byte_error *error, mc_entity_effect_cause cause,
+                                 const char *operation, uint16_t pc,
+                                 mc_entity_watcher_byte_stage stage) {
+    error->status = MC_ENTITY_STATE_ERROR;
+    error->cause = cause;
+    error->operation = operation;
+    error->pc = pc;
+    error->stage = stage;
+    return false;
+}
+
+bool mc_entity_watcher_byte_read_entered(mc_entity *entity, int32_t index, int8_t *out,
+                                         mc_entity_watcher_byte_error *error) {
+    *error = (mc_entity_watcher_byte_error){.index = index};
     const mc_entity_watcher *watcher = entity->watcher;
-    if (watcher == NULL) {
-        fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE,
-             "Entity flag null watcher", 5);
-        error->flag_bytecode = 5;
-        return false;
-    }
+    if (watcher == NULL)
+        return watcher_byte_failure(error, MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE,
+                                    "Entity flag null watcher", 5,
+                                    MC_ENTITY_WATCHER_BYTE_STAGE_FLAG);
     const mc_entity_watch_map *map = watcher->map;
-    if (map == NULL) {
-        fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE,
-             "Watcher null Map receiver", 8);
-        error->watcher_bytecode = 8;
-        return false;
-    }
+    if (map == NULL)
+        return watcher_byte_failure(error, MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE,
+                                    "Watcher null Map receiver", 8,
+                                    MC_ENTITY_WATCHER_BYTE_STAGE_WATCHER);
     const mc_entity_watch_node *node = map->head;
     size_t visited = 0;
     while (node != NULL) {
-        /* Native typed Map invariant guard at the reached Map.get. This bounds
-         * malformed private projections without inventing missing entries. */
-        if (visited == map->size) {
-            fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_OWNER,
-                 "Watcher Map node ownership invariant", 8);
-            error->watcher_bytecode = 8;
-            return false;
-        }
+        /* Same native guard at the reached Map.get; no extra source read. */
+        if (visited == map->size)
+            return watcher_byte_failure(error, MC_ENTITY_EFFECT_CAUSE_OWNER,
+                                        "Watcher Map node ownership invariant", 8,
+                                        MC_ENTITY_WATCHER_BYTE_STAGE_WATCHER);
         ++visited;
         if (node->key == index)
             break;
         node = node->next;
     }
-    /* checkcast13 preserves null; only record.b()16 dereferences it. */
     const mc_entity_watch_record *record = node == NULL ? NULL : node->record;
-    if (record == NULL) {
-        fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE,
-             "Watcher null record value receiver", 16);
-        error->watcher_bytecode = 16;
-        return false;
+    if (record == NULL)
+        return watcher_byte_failure(error, MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE,
+                                    "Watcher null record value receiver", 16,
+                                    MC_ENTITY_WATCHER_BYTE_STAGE_WATCHER);
+    const mc_entity_watch_payload_result payload =
+        mc_entity_watch_payload_check(record, MC_ENTITY_WATCH_PAYLOAD_BYTE);
+    if (payload != MC_ENTITY_WATCH_PAYLOAD_OK) {
+        const uint16_t pc = payload == MC_ENTITY_WATCH_PAYLOAD_NULL_UNBOX ? 22 : 19;
+        return watcher_byte_failure(
+            error,
+            payload == MC_ENTITY_WATCH_PAYLOAD_NULL_UNBOX ? MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE
+            : payload == MC_ENTITY_WATCH_PAYLOAD_WRONG_CLASS
+                ? MC_ENTITY_EFFECT_CAUSE_CLASS_CAST
+                : MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_WATCHER_VALUE,
+            payload == MC_ENTITY_WATCH_PAYLOAD_NULL_UNBOX ? "Watcher null boxed Byte unbox receiver"
+            : payload == MC_ENTITY_WATCH_PAYLOAD_WRONG_CLASS
+                ? "Watcher actual boxed Byte cast"
+                : "Watcher unsupported typed Byte value projection",
+            pc, MC_ENTITY_WATCHER_BYTE_STAGE_WATCHER);
     }
-    if (record->type != 0) {
-        fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_WATCHER_VALUE,
-             "Watcher unsupported typed Byte value projection", 19);
-        error->watcher_bytecode = 19;
-        return false;
-    }
-    /* Actual inline typed Byte value; no generic Object or nullable Byte box is
-     * represented by this native owner. The successful unbox returns at25. */
     *out = record->byte_value;
-    error->watcher_index = -1;
+    error->index = -1;
     return true;
+}
+
+void mc_entity_effect_watcher_byte_apply(const mc_entity_watcher_byte_error *leaf,
+                                         mc_entity_effect_error *error) {
+    error->watcher_index = leaf->index;
+    if (leaf->status == MC_ENTITY_OK)
+        return;
+    (void)fail(error, leaf->status, leaf->cause, leaf->operation, leaf->pc);
+    if (leaf->stage == MC_ENTITY_WATCHER_BYTE_STAGE_FLAG)
+        error->flag_bytecode = leaf->pc;
+    else if (leaf->stage == MC_ENTITY_WATCHER_BYTE_STAGE_WATCHER)
+        error->watcher_bytecode = leaf->pc;
+}
+
+bool mc_entity_effect_watcher_byte_entered(mc_entity *entity, int32_t index, int8_t *out,
+                                           mc_entity_effect_error *error) {
+    mc_entity_watcher_byte_error leaf;
+    const bool result = mc_entity_watcher_byte_read_entered(entity, index, out, &leaf);
+    mc_entity_effect_watcher_byte_apply(&leaf, error);
+    return result;
 }
 
 static bool flag(mc_entity *entity, int32_t bit, bool *out, mc_entity_effect_error *error) {
     int8_t value;
-    if (!watcher_byte(entity, 0, &value, error)) {
+    if (!mc_entity_effect_watcher_byte_entered(entity, 0, &value, error)) {
         error->flag_bytecode = 5;
         error->source_bytecode = 5;
         return false;
@@ -195,7 +226,7 @@ mc_entity_status mc_entity_effect_watcher_byte(mc_entity *entity, int32_t index,
              "Watcher Byte output", 0);
     else if (enter(entity, &frame)) {
         int8_t value;
-        if (watcher_byte(entity, index, &value, &frame))
+        if (mc_entity_effect_watcher_byte_entered(entity, index, &value, &frame))
             *out = value;
         mc_entity_release(entity);
     }
@@ -598,6 +629,7 @@ static bool dead_in_context(mc_entity *entity, mc_registry_classes *registry, mc
         error->source_class = "gs";
         if (mc_entity_effect_has_pending(entity)) {
             (void)mc_player_damage_wake_inspect(entity, &error->player_wake);
+            (void)mc_player_damage_alert_inspect(entity, &error->player_alert);
             (void)mc_player_death_inspect(entity, &error->player_death);
             fail(error, MC_ENTITY_BUSY, MC_ENTITY_EFFECT_CAUSE_OWNER,
                  "Player K pending native child cleanup", 0);
@@ -664,6 +696,7 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_clas
         (void)mc_mob_death_inspect(entity, &error->death);
         (void)mc_player_death_inspect(entity, &error->player_death);
         (void)mc_player_damage_wake_inspect(entity, &error->player_wake);
+        (void)mc_player_damage_alert_inspect(entity, &error->player_alert);
         fail(error, MC_ENTITY_BUSY, MC_ENTITY_EFFECT_CAUSE_OWNER,
              "Entity damage pending native child cleanup", 0);
         return false;
@@ -754,13 +787,10 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_clas
             return false;
         }
         if (instance_of(source, entity->classes, MC_ENTITY_CLASS_KIND_LIVING_ENTITY) &&
-            !instance_of(source, entity->classes, MC_ENTITY_CLASS_KIND_PLAYER)) {
-            fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
-                 "Player damage actual Living ally alert", 144);
+            !mc_player_damage_alert_entered(entity, source, error))
             return false;
-        }
-        /* Player attacker reaches gs.a(Living,Z), then its literal F=false
-         * branch returns63. Null/non-Living skips that call altogether. */
+        /* Every Living attacker enters the actual helper, including Player's
+         * literal F=false return63. Null/non-Living skips the source call. */
         if (!statistic_get(entity, classes, 18, 148, error))
             return false;
         if (!statistic_dispatch(entity, error, amount, 152))
@@ -800,7 +830,8 @@ bool mc_entity_effect_has_pending(const mc_entity *entity) {
     return (mc_entity_has_mob(entity) && entity->mob->pending_death != NULL) ||
            (entity != NULL && entity->local_player != NULL &&
             (entity->local_player->pending_death != NULL ||
-             entity->local_player->pending_damage_wake != NULL));
+             entity->local_player->pending_damage_wake != NULL ||
+             entity->local_player->pending_damage_alert != NULL));
 }
 
 mc_entity_status mc_entity_effect_cleanup(mc_entity *entity, mc_entity_effect_error *error) {
@@ -810,42 +841,91 @@ mc_entity_status mc_entity_effect_cleanup(mc_entity *entity, mc_entity_effect_er
         if (mc_entity_has_mob(entity))
             (void)mc_mob_death_cleanup(entity, &frame);
         else if (entity->local_player != NULL &&
-                 mc_player_damage_wake_cleanup(entity, &frame) == MC_ENTITY_OK)
+                 mc_player_damage_wake_cleanup(entity, &frame) == MC_ENTITY_OK &&
+                 mc_player_damage_alert_cleanup(entity, &frame) == MC_ENTITY_OK)
             (void)mc_player_death_cleanup(entity, &frame);
         mc_entity_release(entity);
     }
     return finish(&frame, error);
 }
 
+static void clear_wake_borrows(mc_entity_player_wake_state *state) {
+    state->pending = state->active = false;
+    state->receiver = NULL;
+    state->error = NULL;
+    state->cleanup = NULL;
+    state->cleanup_status = MC_ENTITY_OK;
+    state->cleanup_operation = NULL;
+}
+
+static void clear_alert_borrows(mc_entity_player_alert_state *state) {
+    state->pending = state->active = false;
+    state->receiver = NULL;
+    state->error = NULL;
+    state->cleanup = NULL;
+    state->cleanup_status = MC_ENTITY_OK;
+    state->cleanup_operation = NULL;
+}
+
+static void refresh_player_borrows(mc_entity_effect_error *error,
+                                   const mc_entity_effect_error *cleanup, const mc_entity *receiver,
+                                   mc_entity_status status) {
+    if (error->player_wake.pending && error->player_wake.receiver == receiver) {
+        if (cleanup->player_wake.entered)
+            error->player_wake = cleanup->player_wake;
+        if (status == MC_ENTITY_OK)
+            clear_wake_borrows(&error->player_wake);
+        else if (error->player_wake.pending) {
+            error->player_wake.cleanup_status = status;
+            error->player_wake.cleanup_operation = cleanup->operation;
+        }
+    }
+    if (error->player_alert.pending && error->player_alert.receiver == receiver) {
+        if (cleanup->player_alert.entered)
+            error->player_alert = cleanup->player_alert;
+        if (status == MC_ENTITY_OK)
+            clear_alert_borrows(&error->player_alert);
+        else if (error->player_alert.pending) {
+            error->player_alert.cleanup_status = status;
+            error->player_alert.cleanup_operation = cleanup->operation;
+        }
+    }
+}
+
 bool mc_entity_effect_error_retire(mc_entity_effect_error *error) {
     if (error == NULL)
         return false;
+    if (!error->player_wake.pending && !error->player_alert.pending && !error->death.pending &&
+        !error->player_death.pending)
+        return true;
+    mc_entity_effect_error cleanup;
     if (error->player_wake.pending) {
-        mc_entity_effect_error wake_cleanup;
-        mc_entity_effect_error_init(&wake_cleanup);
-        const mc_entity_status status =
-            mc_entity_effect_cleanup(error->player_wake.receiver, &wake_cleanup);
-        if (wake_cleanup.player_wake.entered)
-            error->player_wake = wake_cleanup.player_wake;
-        else if (status != MC_ENTITY_OK) {
-            /* Native effect admission can fail before the pending work is
-             * inspected. Keep that original child reachable for the retry. */
-            error->player_wake.cleanup_status = status;
-            error->player_wake.cleanup_operation = wake_cleanup.operation;
-        }
+        mc_entity_effect_error_init(&cleanup);
+        mc_entity *receiver = error->player_wake.receiver;
+        const mc_entity_status status = mc_entity_effect_cleanup(receiver, &cleanup);
+        refresh_player_borrows(error, &cleanup, receiver, status);
+        if (status != MC_ENTITY_OK)
+            return false;
+    }
+    if (error->player_alert.pending) {
+        mc_entity_effect_error_init(&cleanup);
+        mc_entity *receiver = error->player_alert.receiver;
+        const mc_entity_status status = mc_entity_effect_cleanup(receiver, &cleanup);
+        refresh_player_borrows(error, &cleanup, receiver, status);
         if (status != MC_ENTITY_OK)
             return false;
     }
     if (!error->death.pending && !error->player_death.pending)
         return true;
-    mc_entity_effect_error cleanup;
     mc_entity_effect_error_init(&cleanup);
     mc_entity *receiver =
         error->player_death.pending ? error->player_death.receiver : error->death.receiver;
-    if (mc_entity_effect_cleanup(receiver, &cleanup) != MC_ENTITY_OK) {
-        error->player_death.cleanup_status = cleanup.status;
+    const mc_entity_status status = mc_entity_effect_cleanup(receiver, &cleanup);
+    refresh_player_borrows(error, &cleanup, receiver, status);
+    if (status != MC_ENTITY_OK) {
+        error->player_death.cleanup_status = status;
         error->player_death.cleanup_operation = cleanup.operation;
-        error->death.cleanup_status = cleanup.status;
+        error->death.cleanup_status = status;
         error->death.cleanup_operation = cleanup.operation;
         return false;
     }
@@ -874,6 +954,7 @@ mc_entity_status mc_entity_effect_death_with_math(mc_entity *entity, mc_registry
             (void)mc_mob_death_inspect(entity, &frame.death);
             (void)mc_player_death_inspect(entity, &frame.player_death);
             (void)mc_player_damage_wake_inspect(entity, &frame.player_wake);
+            (void)mc_player_damage_alert_inspect(entity, &frame.player_alert);
             fail(&frame, MC_ENTITY_BUSY, MC_ENTITY_EFFECT_CAUSE_OWNER,
                  "Entity death pending native child cleanup", 0);
         } else if (entity->local_player != NULL) {

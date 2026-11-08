@@ -1,12 +1,140 @@
 /* Included by test_movement.c after the real fixture and input helper.
  * Every target is a genuinely constructed canonical Item/Falling owner.
  * Temporary watcher/hold/relationship/FP faults are restored before CHECK. */
+#include "../../../src/entity/movement/effects_internal.h"
+
+/* These are fresh authored native reads on the real constructed watcher.
+ * The independent expectations describe the former getter's exact writes;
+ * materialization below never invokes the source getter a second time. */
+static bool movement_watcher_leaf(mc_entity *entity, mc_entity_effect_error *error) {
+    bool ok = false;
+    mc_entity_watcher *const watcher = entity->watcher;
+    mc_entity_watch_map *const map = watcher->map;
+    mc_entity_watch_node *const node = map->head;
+    mc_entity_watch_record *const record = node->record;
+    const mc_entity_watch_record saved = *record;
+    const size_t map_size = map->size, holds = entity->holds;
+    const mc_java_random random = *entity->random;
+    static const char sentinel[] = "watcher leaf unrelated diagnostic sentinel";
+
+    static const struct {
+        bool returned;
+        uint16_t pc;
+        mc_entity_watcher_byte_stage stage;
+        mc_entity_effect_cause cause;
+        const char *operation;
+    } cases[] = {{true, 0, MC_ENTITY_WATCHER_BYTE_STAGE_NONE, MC_ENTITY_EFFECT_CAUSE_NONE, NULL},
+                 {true, 0, MC_ENTITY_WATCHER_BYTE_STAGE_NONE, MC_ENTITY_EFFECT_CAUSE_NONE, NULL},
+                 {false, 5, MC_ENTITY_WATCHER_BYTE_STAGE_FLAG,
+                  MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE, "Entity flag null watcher"},
+                 {false, 8, MC_ENTITY_WATCHER_BYTE_STAGE_WATCHER,
+                  MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE, "Watcher null Map receiver"},
+                 {false, 16, MC_ENTITY_WATCHER_BYTE_STAGE_WATCHER,
+                  MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE, "Watcher null record value receiver"},
+                 {false, 22, MC_ENTITY_WATCHER_BYTE_STAGE_WATCHER,
+                  MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE, "Watcher null boxed Byte unbox receiver"},
+                 {false, 19, MC_ENTITY_WATCHER_BYTE_STAGE_WATCHER,
+                  MC_ENTITY_EFFECT_CAUSE_CLASS_CAST, "Watcher actual boxed Byte cast"},
+                 {false, 19, MC_ENTITY_WATCHER_BYTE_STAGE_WATCHER,
+                  MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_WATCHER_VALUE,
+                  "Watcher unsupported typed Byte value projection"},
+                 {false, 22, MC_ENTITY_WATCHER_BYTE_STAGE_WATCHER,
+                  MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE, "Watcher null boxed Byte unbox receiver"},
+                 {false, 16, MC_ENTITY_WATCHER_BYTE_STAGE_WATCHER,
+                  MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE, "Watcher null record value receiver"},
+                 {false, 8, MC_ENTITY_WATCHER_BYTE_STAGE_WATCHER, MC_ENTITY_EFFECT_CAUSE_OWNER,
+                  "Watcher Map node ownership invariant"}};
+
+    CHECK(saved.payload_kind == MC_ENTITY_WATCH_PAYLOAD_BYTE && map_size != 0);
+    for (size_t i = 0; i < COUNT(cases); ++i) {
+        mc_entity_effect_error_init(error); /* Reuse the existing fixture output. */
+        error->status = MC_ENTITY_LIMIT;
+        error->cause = MC_ENTITY_EFFECT_CAUSE_OWNER;
+        error->operation = sentinel;
+        error->source_class = sentinel;
+        error->source_bytecode = 611;
+        error->flag_bytecode = 612;
+        error->watcher_bytecode = 613;
+        error->watcher_index = 614;
+        error->entity.status = MC_ENTITY_BUSY;
+        record->byte_value = -37;
+        if (i == 1)
+            record->type = 2; /* Metadata changes no actual Object class. */
+        else if (i == 2)
+            entity->watcher = NULL;
+        else if (i == 3)
+            watcher->map = NULL;
+        else if (i == 4)
+            node->record = NULL;
+        else if (i == 5)
+            record->payload_kind = MC_ENTITY_WATCH_PAYLOAD_NULL;
+        else if (i == 6)
+            record->payload_kind = MC_ENTITY_WATCH_PAYLOAD_INTEGER;
+        else if (i == 7)
+            record->payload_kind = (mc_entity_watch_payload_kind)1;
+        else if (i == 8) {
+            record->payload_kind = MC_ENTITY_WATCH_PAYLOAD_STRING;
+            record->string_value = NULL;
+        } else if (i == 10)
+            map->size = 0;
+        const mc_entity_watch_record input_record = *record;
+        const int32_t index = i == 9 ? 91 : 0;
+        int8_t value = 37;
+        mc_entity_watcher_byte_error leaf;
+        const bool returned = mc_entity_watcher_byte_read_entered(entity, index, &value, &leaf);
+        mc_entity_effect_watcher_byte_apply(&leaf, error);
+        const bool source_unchanged = entity->holds == holds &&
+                                      memcmp(record, &input_record, sizeof(input_record)) == 0 &&
+                                      memcmp(entity->random, &random, sizeof(random)) == 0;
+        /* End every declared fault before any assertion/fixture exit. */
+        entity->watcher = watcher;
+        watcher->map = map;
+        node->record = record;
+        map->size = map_size;
+        *record = saved;
+        CHECK(
+            returned == cases[i].returned && source_unchanged && value == (returned ? -37 : 37) &&
+            leaf.index == (returned ? -1 : index) &&
+            leaf.status == (returned ? MC_ENTITY_OK : MC_ENTITY_STATE_ERROR) &&
+            leaf.stage == cases[i].stage && leaf.pc == cases[i].pc &&
+            leaf.cause == cases[i].cause &&
+            (returned ? leaf.operation == NULL : strcmp(leaf.operation, cases[i].operation) == 0));
+        CHECK(error->watcher_index == (returned ? -1 : index) &&
+              error->status == (returned ? MC_ENTITY_LIMIT : MC_ENTITY_STATE_ERROR) &&
+              error->cause == (returned ? MC_ENTITY_EFFECT_CAUSE_OWNER : cases[i].cause) &&
+              error->source_class == sentinel && error->entity.status == MC_ENTITY_BUSY &&
+              error->source_bytecode == (returned ? 611 : cases[i].pc) &&
+              error->flag_bytecode ==
+                  (cases[i].stage == MC_ENTITY_WATCHER_BYTE_STAGE_FLAG ? cases[i].pc : 612) &&
+              error->watcher_bytecode ==
+                  (cases[i].stage == MC_ENTITY_WATCHER_BYTE_STAGE_WATCHER ? cases[i].pc : 613) &&
+              (returned ? error->operation == sentinel
+                        : strcmp(error->operation, cases[i].operation) == 0));
+        /* Overlay failure materialization uses the same already-returned
+         * leaf, with all full diagnostic defaults explicitly initialized. */
+        mc_entity_effect_error_init(error);
+        mc_entity_effect_watcher_byte_apply(&leaf, error);
+        CHECK(error->watcher_index == leaf.index && error->status == leaf.status &&
+              error->cause == leaf.cause && error->source_bytecode == leaf.pc &&
+              error->flag_bytecode ==
+                  (leaf.stage == MC_ENTITY_WATCHER_BYTE_STAGE_FLAG ? leaf.pc : 0) &&
+              error->watcher_bytecode ==
+                  (leaf.stage == MC_ENTITY_WATCHER_BYTE_STAGE_WATCHER ? leaf.pc : 0) &&
+              error->math.source_pc == -1 && error->statistic_error.writer.index == SIZE_MAX &&
+              error->entity.status == MC_ENTITY_OK);
+    }
+    ok = true;
+cleanup:
+    return ok;
+}
+
 static bool movement_effects(mc_entity *entity, mc_entity *other, bool item) {
     bool ok = false;
     mc_entity_effect_error error;
     CHECK(movement_input(entity, 8.5, 8.0, 8.5));
     CHECK(entity->base.world == NULL && entity->watcher != NULL && entity->watcher->map != NULL &&
           entity->watcher->map->head != NULL && entity->watcher->map->head->record != NULL);
+    CHECK(movement_watcher_leaf(entity, &error));
     mc_entity_watch_record *const record = entity->watcher->map->head->record;
     const int8_t saved_byte = record->byte_value;
     const int32_t bits[] = {-1, 0, 1, 7, 8, 31, 32, 39};
@@ -28,12 +156,31 @@ static bool movement_effects(mc_entity *entity, mc_entity *other, bool item) {
     node->record = record;
     CHECK(missing == MC_ENTITY_STATE_ERROR && byte == 37 && error.watcher_bytecode == 16 &&
           error.cause == MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE);
-    const int32_t saved_type = record->type;
-    record->type = 1;
+    const mc_entity_watch_payload_kind saved_kind = record->payload_kind;
+    record->payload_kind = (mc_entity_watch_payload_kind)1; /* Unrepresented native alternative. */
     const mc_entity_status wrong_type = mc_entity_effect_watcher_byte(entity, 0, &byte, &error);
-    record->type = saved_type;
+    record->payload_kind = saved_kind;
     CHECK(wrong_type == MC_ENTITY_STATE_ERROR && byte == 37 && error.watcher_bytecode == 19 &&
           error.cause == MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_WATCHER_VALUE);
+    /* Declared wire metadata does not select the Object returned by ma.b(). */
+    const int32_t declared = record->type;
+    record->type = 2;
+    const mc_entity_status metadata_only = mc_entity_effect_watcher_byte(entity, 0, &byte, &error);
+    record->type = declared;
+    CHECK(metadata_only == MC_ENTITY_OK && byte == saved_byte &&
+          record->payload_kind == saved_kind);
+    byte = 37;
+    record->payload_kind = MC_ENTITY_WATCH_PAYLOAD_NULL;
+    const mc_entity_status null_payload = mc_entity_effect_watcher_byte(entity, 0, &byte, &error);
+    record->payload_kind = saved_kind;
+    CHECK(null_payload == MC_ENTITY_STATE_ERROR && byte == 37 && error.watcher_bytecode == 22 &&
+          error.cause == MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE && record->type == declared);
+    record->payload_kind = MC_ENTITY_WATCH_PAYLOAD_INTEGER;
+    const mc_entity_status integer_payload =
+        mc_entity_effect_watcher_byte(entity, 0, &byte, &error);
+    record->payload_kind = saved_kind;
+    CHECK(integer_payload == MC_ENTITY_STATE_ERROR && byte == 37 && error.watcher_bytecode == 19 &&
+          error.cause == MC_ENTITY_EFFECT_CAUSE_CLASS_CAST && record->type == declared);
     mc_entity_watch_map *const map = entity->watcher->map;
     entity->watcher->map = NULL;
     const mc_entity_status no_map = mc_entity_effect_watcher_byte(entity, 0, &byte, &error);

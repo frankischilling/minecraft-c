@@ -1,3 +1,4 @@
+#include "../watcher_payload_internal.h"
 #include "death_internal.h"
 
 #include "../../block/registry/registry_internal.h"
@@ -306,12 +307,12 @@ static bool sheep_byte(struct mc_mob_death_work *w, const char *method, int8_t *
     if (record == NULL)
         return null_reference(w, e, "Sheep death null watcher record receiver");
     w->state.watcher_pc = e->watcher_bytecode = 19;
-    if (record->type != 0) {
-        if (record->type == 4 && record->string_value == NULL) {
+    if (mc_entity_watch_payload_kind_of(record) != MC_ENTITY_WATCH_PAYLOAD_BYTE) {
+        if (mc_entity_watch_payload_kind_of(record) == MC_ENTITY_WATCH_PAYLOAD_NULL) {
             w->state.watcher_pc = e->watcher_bytecode = 22;
             return null_reference(w, e, "Sheep death null boxed Byte unbox receiver");
         }
-        if (record->type == 2 || record->type == 4)
+        if (mc_entity_watch_payload_known(record))
             return exception(w, e, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_WATCHER_VALUE,
                              "java/lang/ClassCastException", "Sheep death actual Byte cast");
         return failure(w, e, MC_ENTITY_STATE_ERROR,

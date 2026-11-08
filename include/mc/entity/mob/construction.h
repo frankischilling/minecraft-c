@@ -65,6 +65,13 @@ typedef struct mc_mob_squid_fields {
     float a, b, c, f, g, h, i, j, k, l, m, n, o, p;
 } mc_mob_squid_fields;
 
+typedef struct mc_mob_ghast_fields {
+    int32_t a;
+    double b, c, d;
+    mc_entity *g;
+    int32_t h, e, f;
+} mc_mob_ghast_fields;
+
 /* Actual DL.a outer array and its independently allocated float[3] rows.
  * Inspection borrows these identities; callers must not modify them. */
 typedef struct mc_mob_sheep_color_row {
@@ -90,8 +97,9 @@ typedef struct mc_mob_state {
     mc_mob_chicken_fields chicken;
     mc_mob_wolf_fields wolf;
     mc_mob_squid_fields squid;
+    mc_mob_ghast_fields ghast;
     unsigned int living_pc, creature_pc, monster_pc, constructor_pc, watcher_hook_pc;
-    unsigned int animal_pc, water_creature_pc;
+    unsigned int animal_pc, water_creature_pc, flying_pc;
     bool watcher_16_present, watcher_17_present;
     int8_t watcher_16, watcher_17;
     bool watcher_16_dirty, watcher_17_dirty, watcher_dirty;
@@ -116,7 +124,7 @@ typedef struct mc_mob_class_state {
     const mc_mob_error *sheep_failure;
 } mc_mob_class_state;
 
-/* Genuine client CN/UZ/FR/GB/UW/WH/DL/BX/WW/GI/XT constructors. The literal must be the SAME
+/* Genuine client CN/UZ/FR/GB/UW/WH/DL/BX/WW/GI/XT/BP constructors. The literal must be the SAME
  * Entity namespace's canonical concrete Class. FR initializes its actual static
  * Bow Stack before Entity allocation; Registry is required only on that first
  * active use and is borrowed throughout the call, never retained as a cycle.

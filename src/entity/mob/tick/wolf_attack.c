@@ -1,3 +1,4 @@
+#include "../../watcher_payload_internal.h"
 #include "internal.h"
 
 static void at(mc_mob_tick_scope *s, unsigned int pc) {
@@ -36,13 +37,13 @@ static bool tame(mc_mob_tick_scope *s, bool *out) {
         s->error->child_site.pc = 16;
         return mt_null(s, "Wolf attack null tame watcher record receiver");
     }
-    if (record->type != 0) {
+    if (mc_entity_watch_payload_kind_of(record) != MC_ENTITY_WATCH_PAYLOAD_BYTE) {
         s->error->child_site.pc = 19;
-        if (record->type == 4 && record->string_value == NULL) {
+        if (mc_entity_watch_payload_kind_of(record) == MC_ENTITY_WATCH_PAYLOAD_NULL) {
             s->error->child_site.pc = 22;
             return mt_null(s, "Wolf attack null tame Byte unbox receiver");
         }
-        if (record->type == 2 || record->type == 4) {
+        if (mc_entity_watch_payload_known(record)) {
             s->error->source_exception = true;
             s->error->exception_class = "java/lang/ClassCastException";
         }
@@ -141,12 +142,21 @@ bool mt_wolf_attack(mc_mob_tick_scope *s, mc_entity *target, float distance) {
         const mc_entity_effect_error *child = &s->error->detail.effect;
         s->error->child_site =
             (mc_mob_site){child->source_class, "a", "(Lsn;I)Z", (int32_t)child->source_bytecode};
-        if (child->living_damage.entered && child->living_damage.source_exception) {
+        if (child->cause != MC_ENTITY_EFFECT_CAUSE_OWNER && child->player_alert.entered &&
+            !child->player_alert.returned && child->player_alert.status == status &&
+            !child->player_alert.native_policy &&
+            (child->player_alert.source_exception || child->player_alert.source_error)) {
+            s->error->source_exception = true;
+            s->error->exception_class = child->player_alert.exception_class;
+        } else if (child->living_damage.entered && child->living_damage.source_exception) {
             s->error->source_exception = true;
             s->error->exception_class = child->living_damage.exception_class;
-        } else if (child->cause == MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE) {
+        } else if (child->cause == MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE ||
+                   child->cause == MC_ENTITY_EFFECT_CAUSE_CLASS_CAST) {
             s->error->source_exception = true;
-            s->error->exception_class = "java/lang/NullPointerException";
+            s->error->exception_class = child->cause == MC_ENTITY_EFFECT_CAUSE_CLASS_CAST
+                                            ? "java/lang/ClassCastException"
+                                            : "java/lang/NullPointerException";
         }
         return mt_fail(s, status, child->operation);
     }

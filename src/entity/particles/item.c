@@ -262,11 +262,14 @@ void mc_particle_movement_exception(mc_particle_error *e, const mc_entity_move_e
             e->native_policy = false;
             return;
         }
-    if (m->effect.cause == MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE) {
+    if (m->effect.cause == MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE ||
+        m->effect.cause == MC_ENTITY_EFFECT_CAUSE_CLASS_CAST) {
         e->throwable = MC_PARTICLE_SOURCE_EXCEPTION;
         e->source_exception = true;
         e->native_policy = false;
-        e->exception_class = "java/lang/NullPointerException";
+        e->exception_class = m->effect.cause == MC_ENTITY_EFFECT_CAUSE_CLASS_CAST
+                                 ? "java/lang/ClassCastException"
+                                 : "java/lang/NullPointerException";
         return;
     }
     const mc_registry_error *causes[] = {&m->registry, &m->effect.registry, &m->world.registry,

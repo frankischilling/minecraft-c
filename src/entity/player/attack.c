@@ -1,4 +1,5 @@
 #include "mc/entity/player/attack.h"
+#include "mc/entity/player/ally_alert.h"
 
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
@@ -8,7 +9,6 @@
 #include "../../item/stack/source_internal.h"
 #include "../living/fields_internal.h"
 #include "../mob/internal.h"
-#include "../mob/references_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
 #include "mc/item/registry/runtime.h"
@@ -25,10 +25,9 @@ struct mc_player_attack_call {
     mc_registry_classes *registry;
     mc_math_classes *math;
     mc_item_stack *first_stack, *fresh_stack;
-    mc_world_runtime *alert_world;
-    mc_entity_bounds *bounds, *expanded;
-    mc_world_class_entity_list *wolves;
-    bool player_held, target_held, registry_held, world_held, damage_entered;
+    mc_player_ally_alert_call *alert;
+    mc_player_ally_alert_cleanup alert_cleanup;
+    bool player_held, target_held, registry_held, damage_entered;
 };
 
 static void at(mc_player_attack_call *c, unsigned int pc) {
@@ -312,188 +311,26 @@ static bool fresh_stack(mc_player_attack_call *c) {
     return true;
 }
 
-static mc_entity_watch_record *watch(mc_player_attack_call *c, mc_entity *wolf, int32_t key,
-                                     int32_t type) {
-    if (wolf->watcher == NULL || wolf->watcher->map == NULL) {
-        (void)null_reference(c, "Player ally alert null Wolf watcher/Map receiver");
-        return NULL;
-    }
-    size_t seen = 0;
-    for (mc_entity_watch_node *n = wolf->watcher->map->head; n != NULL; n = n->next) {
-        if (seen++ >= wolf->watcher->map->size) {
-            (void)fail(c, MC_ENTITY_STATE_ERROR, "Player ally alert watcher Map ownership");
-            return NULL;
-        }
-        if (n->key != key)
-            continue;
-        if (n->record == NULL) {
-            (void)null_reference(c, "Player ally alert null Wolf watcher record receiver");
-            return NULL;
-        }
-        if (n->record->type != type) {
-            (void)source_exception(c, "java/lang/ClassCastException",
-                                   "Player ally alert typed Wolf watcher value");
-            return NULL;
-        }
-        return n->record;
-    }
-    (void)null_reference(c, "Player ally alert absent Wolf watcher record receiver");
-    return NULL;
-}
-
-static bool flag(mc_player_attack_call *c, mc_entity *wolf, const char *method, int mask,
-                 bool *out) {
-    child(c, "gi", method, "()Z", 6);
-    mc_entity_watch_record *r = watch(c, wolf, 16, 0);
-    if (r == NULL)
-        return false;
-    *out = (r->byte_value & mask) != 0;
-    return true;
-}
-
-static bool owner(mc_player_attack_call *c, mc_entity *wolf, bool *out) {
-    const mc_player_string *name = c->state.player->local_player->fields.player.l;
-    child(c, "gi", "A", "()Ljava/lang/String;", 6);
-    mc_entity_watch_record *r = watch(c, wolf, 17, 4);
-    if (r == NULL)
-        return false;
-    child(c, "java/lang/String", "equals", "(Ljava/lang/Object;)Z", 0);
-    if (name == NULL)
-        return null_reference(c, "Player ally alert null name equals receiver");
-    mc_player_string_view a = {0}, b = {0};
-    if (!mc_player_string_read(name, &a) ||
-        (r->string_value != NULL && !mc_player_string_read(r->string_value, &b)))
-        return fail(c, MC_ENTITY_STATE_ERROR, "Player ally alert actual String ownership");
-    *out = r->string_value != NULL && a.length == b.length &&
-           (a.length == 0 || memcmp(a.units, b.units, a.length * sizeof(*a.units)) == 0);
-    return true;
-}
-
-static void alert_at(mc_player_attack_call *c, unsigned int pc) {
-    c->error.child = (mc_player_site){"gs", "a", "(Lls;Z)V", pc};
-}
-
 static bool alert(mc_player_attack_call *c) {
     c->state.alert_entered = true;
-    mc_entity *target = c->state.target;
-    bool excluded;
-    alert_at(c, 0);
-    if (!instance(c, target, MC_ENTITY_CLASS_KIND_CREEPER, &excluded))
-        return false;
-    if (excluded)
-        goto returned;
-    if (!instance(c, target, MC_ENTITY_CLASS_KIND_GHAST, &excluded))
-        return false;
-    if (excluded)
-        goto returned;
-    if (mc_entity_is_kind(target, MC_ENTITY_CLASS_KIND_WOLF)) {
-        bool tame, same;
-        alert_at(c, 28);
-        if (!flag(c, target, "D", 4, &tame))
-            return false;
-        if (tame) {
-            alert_at(c, 42);
-            if (!owner(c, target, &same))
-                return false;
-            if (same)
-                goto returned;
-        }
-    }
-    bool player;
-    if (!instance(c, target, MC_ENTITY_CLASS_KIND_PLAYER, &player))
-        return false;
-    /* Canonical GS.F is the actual literal false body. */
-    if (player)
-        goto returned;
-    mc_entity *p = c->state.player;
-    c->alert_world = p->base.world; /* Captured field65 precedes all box work. */
-    const mc_entity_class_literal *wolf_class = NULL;
-    if (mc_entity_class_literal_get(p->classes, MC_ENTITY_CLASS_KIND_WOLF, &wolf_class) !=
-        MC_ENTITY_OK)
-        return fail(c, MC_ENTITY_STATE_ERROR, "Player ally alert actual Wolf Class");
-    alert_at(c, 100);
-    if (!fp(c))
-        return false;
-    const double x1 = _mm_cvtsd_f64(_mm_add_sd(_mm_set_sd(p->base.x), _mm_set_sd(1.0)));
-    const double y1 = _mm_cvtsd_f64(_mm_add_sd(_mm_set_sd(p->base.y), _mm_set_sd(1.0)));
-    const double z1 = _mm_cvtsd_f64(_mm_add_sd(_mm_set_sd(p->base.z), _mm_set_sd(1.0)));
-    mc_entity_status status = mc_entity_bounds_pool_get(p->classes, p->base.x, p->base.y, p->base.z,
-                                                        x1, y1, z1, &c->bounds, &c->error.bounds);
-    if (status != MC_ENTITY_OK)
-        return fail(c, status, "Player ally alert actual pooled bounds");
-    alert_at(c, 112);
-    status = mc_entity_bounds_expand(p->classes, c->bounds, 16.0, 4.0, 16.0, &c->expanded,
-                                     &c->error.bounds);
-    if (status != MC_ENTITY_OK)
-        return fail(c, status, "Player ally alert actual bounds expansion");
-    alert_at(c, 115);
-    if (c->alert_world == NULL)
-        return null_reference(c, "Player ally alert null captured World receiver");
-    if (!mc_world_runtime_binding_retain(c->alert_world))
-        return fail(c, MC_ENTITY_BUSY, "Player ally alert actual World occurrence");
-    c->world_held = true;
-    if (mc_world_runtime_class_entities(c->alert_world, wolf_class, c->expanded, &c->wolves,
-                                        &c->error.nearby) != MC_WORLD_STORAGE_OK)
-        return fail(c, MC_ENTITY_WORLD_FAILED, "Player ally alert actual Wolf query");
-    size_t count;
-    if (mc_world_class_entity_list_count(c->wolves, &count) != MC_WORLD_STORAGE_OK)
-        return fail(c, MC_ENTITY_STATE_ERROR, "Player ally alert actual List iterator");
-    for (size_t i = 0; i < count; ++i) {
-        mc_entity *wolf = NULL, *present = NULL;
-        alert_at(c, 139);
-        if (mc_world_class_entity_list_get(c->wolves, i, &wolf) != MC_WORLD_STORAGE_OK ||
-            !mc_entity_is_kind(wolf, MC_ENTITY_CLASS_KIND_WOLF))
-            return fail(c, MC_ENTITY_STATE_ERROR, "Player ally alert actual Wolf List occurrence");
-        if (c->state.wolves_examined != SIZE_MAX)
-            ++c->state.wolves_examined;
-        bool tame, same, sitting;
-        alert_at(c, 158);
-        if (!flag(c, wolf, "D", 4, &tame))
-            return false;
-        if (!tame)
-            continue;
-        alert_at(c, 166);
-        child(c, "ii", "G", "()Lsn;", 1);
-        if (mc_mob_creature_target_get(wolf, &present, &c->error.entity) != MC_ENTITY_OK)
-            return fail(c, MC_ENTITY_STATE_ERROR, "Player ally alert actual Wolf target read");
-        if (present != NULL)
-            continue;
-        alert_at(c, 181);
-        if (!owner(c, wolf, &same))
-            return false;
-        if (!same)
-            continue;
-        alert_at(c, 193);
-        if (!flag(c, wolf, "B", 1, &sitting))
-            return false;
-        if (sitting)
-            continue; /* GS.a's attack=true excludes sitting Wolves. */
-        alert_at(c, 202);
-        child(c, "gi", "b", "(Z)V", 6);
-        mc_entity_watch_record *old = watch(c, wolf, 16, 0);
-        if (old == NULL)
-            return false;
-        const int8_t value = mc_java_i8_narrow(old->byte_value & -2);
-        child(c, "gi", "b", "(Z)V", 46);
-        mc_entity_watch_record *fresh = watch(c, wolf, 16, 0);
-        if (fresh == NULL)
-            return false;
-        if (fresh->byte_value != value) {
-            fresh->byte_value = value;
-            fresh->dirty = wolf->watcher->dirty = true;
-        }
-        alert_at(c, 208);
-        child(c, "ii", "c", "(Lsn;)V", 2);
-        status = mc_mob_creature_target_store(wolf, target, &c->error.entity);
-        if (status != MC_ENTITY_OK)
-            return fail(c, status, "Player ally alert actual Wolf owning target store");
-        if (c->state.wolves_alerted != SIZE_MAX)
-            ++c->state.wolves_alerted;
-    }
-returned:
-    c->state.alert_returned = true;
-    alert_at(c, 214);
-    return true;
+    const mc_entity_status status =
+        mc_player_ally_alert_begin(c->state.player, c->state.target, true, &c->alert);
+    mc_player_ally_alert_state state;
+    if (!mc_player_ally_alert_inspect(c->alert, &state))
+        return fail(c, status, "Player ally alert retained invocation admission");
+    c->state.alert_returned = state.returned;
+    c->state.wolves_examined = state.wolves_examined;
+    c->state.wolves_alerted = state.wolves_alerted;
+    const mc_player_ally_alert_error *e = state.error;
+    c->error.child = e->child.class_name == NULL ? e->site : e->child;
+    if (status == MC_ENTITY_OK)
+        return true;
+    c->error.source_exception = e->source_exception || e->source_error;
+    c->error.exception_class = e->exception_class;
+    c->error.entity = e->entity;
+    c->error.bounds = e->bounds;
+    c->error.nearby = e->nearby;
+    return fail(c, status, e->operation);
 }
 
 static bool damage_statistic(mc_player_attack_call *c) {
@@ -562,11 +399,14 @@ static bool body(mc_player_attack_call *c) {
                                                &c->state.damage_result, &c->error.effect);
     if (status != MC_ENTITY_OK) {
         const mc_entity_effect_error *e = &c->error.effect;
-        c->error.source_exception =
-            e->living_damage.source_exception || e->cause == MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE;
+        c->error.source_exception = e->living_damage.source_exception ||
+                                    e->cause == MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE ||
+                                    e->cause == MC_ENTITY_EFFECT_CAUSE_CLASS_CAST;
         c->error.exception_class = e->living_damage.exception_class;
         if (c->error.source_exception && c->error.exception_class == NULL)
-            c->error.exception_class = "java/lang/NullPointerException";
+            c->error.exception_class = e->cause == MC_ENTITY_EFFECT_CAUSE_CLASS_CAST
+                                           ? "java/lang/ClassCastException"
+                                           : "java/lang/NullPointerException";
         child(c, e->source_class, "a", "(Lsn;I)Z", e->source_bytecode);
         return fail(c, status, e->operation);
     }
@@ -662,13 +502,23 @@ mc_entity_status mc_local_player_attack_retire(mc_player_attack_call **slot,
         return MC_ENTITY_BUSY;
     }
     c->registry_held = false;
-    mc_world_class_entity_list_release(c->wolves);
-    if (c->expanded != NULL)
-        (void)mc_entity_bounds_release(c->state.player->classes, c->expanded);
-    if (c->bounds != NULL)
-        (void)mc_entity_bounds_release(c->state.player->classes, c->bounds);
-    if (c->world_held)
-        mc_world_runtime_binding_release(c->alert_world);
+    if (c->alert != NULL) {
+        const mc_entity_status status = mc_player_ally_alert_retire(&c->alert, &c->alert_cleanup);
+        if (status != MC_ENTITY_OK) {
+            if (error != NULL) {
+                *error = c->error;
+                if (error->status == MC_ENTITY_OK) {
+                    error->status = status;
+                    error->operation = c->alert_cleanup.operation;
+                    error->native_policy = true;
+                }
+            }
+            return status;
+        }
+        /* The nested call owned copied loader diagnostics and source receipt
+         * views. End those borrows immediately when its owner is consumed. */
+        mc_world_nearby_error_init(&c->error.nearby);
+    }
     mc_item_stack_release(c->first_stack);
     mc_item_stack_release(c->fresh_stack);
     if (c->target_held)

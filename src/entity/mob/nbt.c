@@ -1,4 +1,5 @@
 #include "../player/player_internal.h"
+#include "../watcher_payload_internal.h"
 #include "internal.h"
 #include "mc/core/java/java.h"
 #include "nbt_internal.h"
@@ -46,6 +47,9 @@ static void hook(mc_entity *entity, bool write, mc_entity_nbt_error *e) {
     const char *cl = entity->class_literal->client_name;
     const char *parent = NULL;
     switch (entity->class_literal->kind) {
+        case MC_ENTITY_CLASS_KIND_GHAST:
+            cl = "ls";
+            break; /* BP/WQ inherit the actual Living NBT hooks. */
         case MC_ENTITY_CLASS_KIND_ZOMBIE:
             cl = "gz";
             break; /* inherited actual hook */
@@ -138,17 +142,22 @@ static mc_entity_watch_record *watch(mc_entity *entity, int index, int type, boo
         return NULL;
     }
     e->mob.watcher.pc = setter ? 22 : 19;
-    if (record->type != type) {
+    const mc_entity_watch_payload_result payload =
+        mc_entity_watch_payload_check(record, (mc_entity_watch_payload_kind)type);
+    if (setter ? !mc_entity_watch_payload_known(record) : payload != MC_ENTITY_WATCH_PAYLOAD_OK) {
         if (setter)
             fail(e, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Mob NBT setter boxed native representation",
                  NULL);
-        else if (type == 0 && record->type == 4 && record->string_value == NULL) {
+        else if (payload == MC_ENTITY_WATCH_PAYLOAD_NULL_UNBOX) {
             e->mob.watcher.pc = 22;
             fail(e, MC_ENTITY_NBT_NULL_REFERENCE, "Mob NBT null Byte unbox receiver",
                  "java/lang/NullPointerException");
-        } else
+        } else if (payload == MC_ENTITY_WATCH_PAYLOAD_WRONG_CLASS)
             fail(e, MC_ENTITY_NBT_WRONG_TAG, "Mob NBT watcher actual boxed cast",
                  "java/lang/ClassCastException");
+        else
+            fail(e, MC_ENTITY_NBT_UNSUPPORTED_TYPE, "Mob NBT getter boxed native representation",
+                 NULL);
         return NULL;
     }
     return record;
@@ -166,11 +175,8 @@ static bool store_byte(mc_entity *entity, int index, int8_t value, mc_entity_nbt
     mc_entity_watch_record *record = watch(entity, index, 0, true, e);
     if (record == NULL)
         return false;
-    if (record->byte_value != value) {
-        record->byte_value = value;
-        record->dirty = true;
+    if (mc_entity_watch_byte_replace(record, value))
         entity->watcher->dirty = true;
-    }
     return true;
 }
 
@@ -239,7 +245,7 @@ static bool owner_store(mc_entity *entity, mc_nbt_string input, const mc_nbt_lim
     if (input.length != 0 && input.units == NULL)
         return fail(e, MC_ENTITY_NBT_INVALID_ARGUMENT, "Wolf NBT source String span", NULL);
     mc_player_string_view old = {0};
-    const bool present = mc_player_string_read(record->string_value, &old);
+    const bool present = mc_player_string_read(mc_entity_watch_string_value(record), &old);
     /* The actual new String.equals(old) controls both field and dirty stores. */
     if (present && old.length == input.length &&
         (input.length == 0 || memcmp(old.units, input.units, input.length * sizeof(uint16_t)) == 0))
@@ -261,6 +267,7 @@ static bool owner_store(mc_entity *entity, mc_nbt_string input, const mc_nbt_lim
                         : MC_ENTITY_NBT_INVALID_ARGUMENT,
                     "Wolf NBT native owner String copy", NULL);
     mc_player_string *previous = entity->mob->nbt_owner_hold;
+    record->payload_kind = MC_ENTITY_WATCH_PAYLOAD_STRING;
     record->string_value = replacement;
     entity->mob->nbt_owner_hold = replacement;
     entity->mob->nbt_owner_bytes = bytes;
@@ -446,7 +453,7 @@ bool mc_mob_nbt_build_fields_held(mc_entity *entity, const mc_nbt_limits *limits
         if (record == NULL)
             return false;
         mc_player_string_view text = {0};
-        if (record->string_value == NULL)
+        if (mc_entity_watch_string_value(record) == NULL)
             concrete_at(e, 37);
         else {
             concrete_at(e, 47);
@@ -454,7 +461,7 @@ bool mc_mob_nbt_build_fields_held(mc_entity *entity, const mc_nbt_limits *limits
             record = watch(entity, 17, 4, false, e); /* Actual second A() read. */
             if (record == NULL)
                 return false;
-            if (!mc_player_string_read(record->string_value, &text))
+            if (!mc_player_string_read(mc_entity_watch_string_value(record), &text))
                 return fail(e, MC_ENTITY_NBT_NULL_REFERENCE,
                             "Wolf NBT actual String setter null value",
                             "java/lang/NullPointerException");

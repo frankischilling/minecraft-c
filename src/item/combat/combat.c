@@ -1,4 +1,5 @@
 #include "mc/item/combat/combat.h"
+#include "../../entity/watcher_payload_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/item/mining/destroy.h"
 
@@ -534,15 +535,18 @@ static mc_entity_watch_record *pig_watch(mc_entity *pig, bool setter, mc_item_co
         (void)null_reference(e, "Saddle Pig watcher null record receiver");
         return NULL;
     }
-    if (record->type != 0) {
+    if (setter ? !mc_entity_watch_payload_known(record)
+               : mc_entity_watch_payload_kind_of(record) != MC_ENTITY_WATCH_PAYLOAD_BYTE) {
         e->watcher.pc = setter ? 22 : 19;
         if (setter)
             (void)fail(e, MC_ENTITY_STATE_ERROR, "Saddle Pig setter boxed native representation");
-        else if (record->type == 4 && record->string_value == NULL) {
+        else if (mc_entity_watch_payload_kind_of(record) == MC_ENTITY_WATCH_PAYLOAD_NULL) {
             e->watcher.pc = 22;
             (void)null_reference(e, "Saddle Pig watcher null Byte unbox receiver");
-        } else
+        } else if (mc_entity_watch_payload_known(record))
             (void)source(e, "java/lang/ClassCastException", "Saddle Pig watcher boxed Byte cast");
+        else
+            (void)fail(e, MC_ENTITY_STATE_ERROR, "Saddle Pig getter boxed native representation");
         return NULL;
     }
     return record;
@@ -572,11 +576,8 @@ static bool saddle(mc_registry_classes *classes, mc_item_stack *stack, mc_entity
     record = pig_watch(target, true, e);
     if (record == NULL)
         return false;
-    if (record->byte_value != 1) {
-        record->byte_value = 1; /* WH.a(true) replaces the complete Byte. */
-        record->dirty = true;
+    if (mc_entity_watch_byte_replace(record, 1))
         target->watcher->dirty = true;
-    }
     e->saddle_stored = true;
     e->child = site("sa", "a", "(Liz;Lls;)V", 26);
     e->dependency = (mc_item_combat_site){.pc = -1};

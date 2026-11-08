@@ -11,6 +11,7 @@
 #include "particles/particle_internal.h"
 #include "player/player_internal.h"
 #include "position_internal.h"
+#include "watcher_payload_internal.h"
 
 #include <float.h>
 #include <limits.h>
@@ -212,6 +213,7 @@ mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_ent
         case MC_ENTITY_CLASS_KIND_CHICKEN:
         case MC_ENTITY_CLASS_KIND_WOLF:
         case MC_ENTITY_CLASS_KIND_SQUID:
+        case MC_ENTITY_CLASS_KIND_GHAST:
             if (classes->source != MC_ENTITY_CLIENT)
                 return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
             bytes = sizeof(mc_mob_entity_object);
@@ -366,6 +368,7 @@ static mc_entity_status construct_watch(mc_entity *entity, int32_t index, int32_
     record->byte_value = byte_value;
     record->integer_value = integer_value;
     record->string_value = string_value;
+    record->payload_kind = (mc_entity_watch_payload_kind)kind;
     record->type = type->value;
     record->dirty = true;
     mc_entity_watch_node *node =
@@ -786,6 +789,7 @@ mc_entity_status mc_entity_watcher_get_snapshot(const mc_entity_watcher *watcher
         snapshot.record = node->record;
         snapshot.index = node->record->index;
         snapshot.type = node->record->type;
+        snapshot.payload_kind = mc_entity_watch_payload_kind_of(node->record);
         snapshot.byte_value = node->record->byte_value;
         snapshot.record_dirty = node->record->dirty;
     }

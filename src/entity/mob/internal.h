@@ -22,8 +22,9 @@ typedef struct mc_mob_entity_state {
     mc_mob_chicken_fields chicken;
     mc_mob_wolf_fields wolf;
     mc_mob_squid_fields squid;
+    mc_mob_ghast_fields ghast;
     unsigned int living_pc, creature_pc, monster_pc, constructor_pc, watcher_hook_pc;
-    unsigned int animal_pc, water_creature_pc;
+    unsigned int animal_pc, water_creature_pc, flying_pc;
     mc_mob_error failure;
     /* Counted native String occurrence backing the actual Wolf watcher17
      * after semantic NBT replacement. It is separate from source fields and

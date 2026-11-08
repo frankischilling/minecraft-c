@@ -54,7 +54,16 @@ bool mc_tick_effect(mc_entity_tick_error *e, mc_entity_status status, const char
                               e->effect.cause != MC_ENTITY_EFFECT_CAUSE_OWNER &&
                               e->effect.player_wake.status == status &&
                               e->effect.player_wake.entered && !e->effect.player_wake.returned;
-    if (wake_failure) {
+    const bool alert_failure = status != MC_ENTITY_OK && e->effect.status == status &&
+                               e->effect.cause != MC_ENTITY_EFFECT_CAUSE_OWNER &&
+                               e->effect.player_alert.status == status &&
+                               e->effect.player_alert.entered && !e->effect.player_alert.returned;
+    if (alert_failure) {
+        e->source_exception =
+            !e->effect.player_alert.native_policy &&
+            (e->effect.player_alert.source_exception || e->effect.player_alert.source_error);
+        e->exception_class = e->source_exception ? e->effect.player_alert.exception_class : NULL;
+    } else if (wake_failure) {
         e->source_exception =
             e->effect.player_wake.source_exception && !e->effect.player_wake.native_policy;
         e->exception_class = e->source_exception ? e->effect.player_wake.exception_class : NULL;
@@ -64,6 +73,10 @@ bool mc_tick_effect(mc_entity_tick_error *e, mc_entity_status status, const char
         e->source_exception =
             e->effect.living_damage.source_exception && !e->effect.living_damage.native_policy;
         e->exception_class = e->source_exception ? e->effect.living_damage.exception_class : NULL;
+    } else if (status != MC_ENTITY_OK && e->effect.status == status &&
+               e->effect.cause == MC_ENTITY_EFFECT_CAUSE_CLASS_CAST) {
+        e->source_exception = true;
+        e->exception_class = "java/lang/ClassCastException";
     } else if (status != MC_ENTITY_OK &&
                ((e->effect.status == status &&
                  e->effect.cause == MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE) ||
@@ -72,7 +85,7 @@ bool mc_tick_effect(mc_entity_tick_error *e, mc_entity_status status, const char
         e->source_exception = true;
         e->exception_class = "java/lang/NullPointerException";
     }
-    if (status != MC_ENTITY_OK && !damage_failure && !wake_failure &&
+    if (status != MC_ENTITY_OK && !damage_failure && !wake_failure && !alert_failure &&
         e->material.status == status && e->material.source_exception) {
         e->source_exception = true;
         e->exception_class = e->material.exception_class;

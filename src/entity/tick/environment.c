@@ -1,4 +1,5 @@
 #include "../mob/tick/internal.h"
+#include "../watcher_payload_internal.h"
 #include "tick_internal.h"
 
 static void base_at(mc_entity_tick_error *e, unsigned int pc) {
@@ -381,8 +382,14 @@ static bool wolf_health(mc_entity *entity, int32_t *out, mc_entity_tick_error *e
     if (record == NULL)
         return mc_tick_null(e, "Wolf ambient null Integer record", 34);
     e->watcher_bytecode = 19;
-    if (record->type != 2) {
-        if (record->type == 0 || record->type == 4) {
+    const mc_entity_watch_payload_result payload =
+        mc_entity_watch_payload_check(record, MC_ENTITY_WATCH_PAYLOAD_INTEGER);
+    if (payload != MC_ENTITY_WATCH_PAYLOAD_OK) {
+        if (payload == MC_ENTITY_WATCH_PAYLOAD_NULL_UNBOX) {
+            e->watcher_bytecode = 22;
+            return mc_tick_null(e, "Wolf ambient null Integer unbox receiver", 34);
+        }
+        if (payload == MC_ENTITY_WATCH_PAYLOAD_WRONG_CLASS) {
             e->source_exception = true;
             e->exception_class = "java/lang/ClassCastException";
         }

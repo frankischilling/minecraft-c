@@ -5,6 +5,8 @@
 #include "../living/construction_internal.h"
 #include "../player/player_internal.h"
 #include "../player/tick_math_internal.h"
+#include "../position_internal.h"
+#include "../watcher_payload_internal.h"
 #include "internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/world/runtime/entities.h"
@@ -39,6 +41,8 @@ static const char *source_class(mc_entity_class_kind kind) {
             return "gi";
         case MC_ENTITY_CLASS_KIND_SQUID:
             return "xt";
+        case MC_ENTITY_CLASS_KIND_GHAST:
+            return "bp";
         default:
             return NULL;
     }
@@ -367,10 +371,12 @@ mc_entity_status mc_mob_watcher_initialize(mc_entity *entity, mc_entity_error *e
     const char *cl = source_class(kind);
     const bool byte_hook = kind == MC_ENTITY_CLASS_KIND_CREEPER ||
                            kind == MC_ENTITY_CLASS_KIND_SLIME || kind == MC_ENTITY_CLASS_KIND_PIG ||
-                           kind == MC_ENTITY_CLASS_KIND_SHEEP || kind == MC_ENTITY_CLASS_KIND_WOLF;
+                           kind == MC_ENTITY_CLASS_KIND_SHEEP ||
+                           kind == MC_ENTITY_CLASS_KIND_WOLF || kind == MC_ENTITY_CLASS_KIND_GHAST;
     s->watcher_hook_pc =
         kind == MC_ENTITY_CLASS_KIND_CREEPER || kind == MC_ENTITY_CLASS_KIND_SLIME ||
-                kind == MC_ENTITY_CLASS_KIND_SHEEP || kind == MC_ENTITY_CLASS_KIND_WOLF
+                kind == MC_ENTITY_CLASS_KIND_SHEEP || kind == MC_ENTITY_CLASS_KIND_WOLF ||
+                kind == MC_ENTITY_CLASS_KIND_GHAST
             ? 1u
             : 0u;
     if (!byte_hook)
@@ -379,7 +385,9 @@ mc_entity_status mc_mob_watcher_initialize(mc_entity *entity, mc_entity_error *e
                          : kind == MC_ENTITY_CLASS_KIND_SLIME ? 1
                                                               : 0;
     mc_entity_status status = mc_entity_construct_watch_byte(entity, 16, value, error);
-    unsigned int caller = kind == MC_ENTITY_CLASS_KIND_CREEPER || kind == MC_ENTITY_CLASS_KIND_WOLF
+    unsigned int caller = kind == MC_ENTITY_CLASS_KIND_CREEPER ||
+                                  kind == MC_ENTITY_CLASS_KIND_WOLF ||
+                                  kind == MC_ENTITY_CLASS_KIND_GHAST
                               ? 14u
                           : kind == MC_ENTITY_CLASS_KIND_PIG ? 10u
                                                              : 18u;
@@ -408,6 +416,7 @@ mc_entity_status mc_mob_watcher_initialize(mc_entity *entity, mc_entity_error *e
         s->watcher_hook_pc = kind == MC_ENTITY_CLASS_KIND_CREEPER ? 30u
                              : kind == MC_ENTITY_CLASS_KIND_PIG   ? 13u
                              : kind == MC_ENTITY_CLASS_KIND_WOLF  ? 48u
+                             : kind == MC_ENTITY_CLASS_KIND_GHAST ? 17u
                                                                   : 21u;
     }
     return status;
@@ -433,6 +442,8 @@ static const uint16_t wolf_units[] = {'/', 'm', 'o', 'b', '/', 'w', 'o',
                                       'l', 'f', '.', 'p', 'n', 'g'};
 static const uint16_t squid_units[] = {'/', 'm', 'o', 'b', '/', 's', 'q',
                                        'u', 'i', 'd', '.', 'p', 'n', 'g'};
+static const uint16_t ghast_units[] = {'/', 'm', 'o', 'b', '/', 'g', 'h',
+                                       'a', 's', 't', '.', 'p', 'n', 'g'};
 #define LITERAL(name)                                                                              \
     { SIZE_MAX, sizeof(name##_units) / sizeof(*name##_units), name##_units }
 static const mc_player_string spider_texture = LITERAL(spider);
@@ -446,6 +457,7 @@ static const mc_player_string cow_texture = LITERAL(cow);
 static const mc_player_string chicken_texture = LITERAL(chicken);
 static const mc_player_string wolf_texture = LITERAL(wolf);
 static const mc_player_string squid_texture = LITERAL(squid);
+static const mc_player_string ghast_texture = LITERAL(ghast);
 #undef LITERAL
 
 static bool fp(mc_mob_error *e, const char *cl, const char *method, const char *descriptor,
@@ -460,16 +472,14 @@ static bool fp(mc_mob_error *e, const char *cl, const char *method, const char *
 bool mc_mob_slime_size_held(mc_entity *entity, int32_t size, mc_mob_error *e) {
     mc_mob_entity_state *s = entity->mob;
     mc_entity_watch_record *record = watch_record(entity, 16);
-    if (record == NULL || record->type != 0) {
+    if (record == NULL || !mc_entity_watch_payload_known(record)) {
         e->child = location("ud", "b", "(ILjava/lang/Object;)V", record == NULL ? 19 : 22);
         fail(e, MC_MOB_ENTITY_FAILED, "actual Slime watcher Byte16 setter", "uw", "e", "(I)V", 15,
              true);
         return false;
     }
     const int8_t value = mc_java_i8_narrow(size);
-    if (record->byte_value != value) {
-        record->byte_value = value;
-        record->dirty = true;
+    if (mc_entity_watch_byte_replace(record, value)) {
         entity->watcher->dirty = true;
     }
     if (!fp(e, "uw", "e", "(I)V", 23)) {
@@ -507,19 +517,28 @@ mc_mob_status mc_mob_sheep_set_color(mc_entity *entity, int32_t color, mc_mob_er
                "Sheep constructed color receiver");
     } else {
         mc_entity_watch_record *record = watch_record(entity, 16);
-        if (record == NULL || record->type != 0) {
+        const mc_entity_watch_payload_result payload =
+            record == NULL ? MC_ENTITY_WATCH_PAYLOAD_OK
+                           : mc_entity_watch_payload_check(record, MC_ENTITY_WATCH_PAYLOAD_BYTE);
+        if (record == NULL || payload != MC_ENTITY_WATCH_PAYLOAD_OK) {
             const int32_t child = entity->watcher == NULL || entity->watcher->map == NULL ? 8
                                   : record == NULL                                        ? 16
+                                  : payload == MC_ENTITY_WATCH_PAYLOAD_NULL_UNBOX         ? 22
                                                                                           : 19;
             local.child = location("ud", "a", "(I)B", child);
             fail(&local, MC_MOB_ENTITY_FAILED, "actual Sheep watcher Byte16 getter", "dl", "e_",
-                 "(I)V", 6, true);
+                 "(I)V", 6, record != NULL && payload == MC_ENTITY_WATCH_PAYLOAD_UNREPRESENTED);
+            if (record == NULL || payload != MC_ENTITY_WATCH_PAYLOAD_UNREPRESENTED) {
+                local.source_exception = true;
+                local.exception_class =
+                    record == NULL || payload == MC_ENTITY_WATCH_PAYLOAD_NULL_UNBOX
+                        ? "java/lang/NullPointerException"
+                        : "java/lang/ClassCastException";
+            }
         } else {
             const int32_t masked = ((int32_t)record->byte_value & 240) | (color & 15);
             const int8_t value = mc_java_i8_narrow(masked);
-            if (record->byte_value != value) {
-                record->byte_value = value;
-                record->dirty = true;
+            if (mc_entity_watch_byte_replace(record, value)) {
                 entity->watcher->dirty = true;
             }
         }
@@ -549,7 +568,9 @@ static bool body(mc_entity *entity, mc_world_runtime *world) {
              e->entity.operation, "ls", "<init>", "(Lfd;)V", e->entity.bytecode, true);
         return false;
     }
-    if (kind != MC_ENTITY_CLASS_KIND_SLIME) {
+    if (kind == MC_ENTITY_CLASS_KIND_GHAST) {
+        s->flying_pc = 5; /* WQ invokes LS2, then return5; no II state stores. */
+    } else if (kind != MC_ENTITY_CLASS_KIND_SLIME) {
         s->creature_attacking = false;
         s->creature_pc = 10; /* II.e7 / return10. */
         if (kind == MC_ENTITY_CLASS_KIND_SPIDER || kind == MC_ENTITY_CLASS_KIND_ZOMBIE ||
@@ -565,6 +586,24 @@ static bool body(mc_entity *entity, mc_world_runtime *world) {
         }
     }
     switch (kind) {
+        case MC_ENTITY_CLASS_KIND_GHAST:
+            s->ghast.a = 0;
+            s->constructor_pc = 7;
+            s->ghast.g = NULL;
+            s->constructor_pc = 12;
+            s->ghast.h = 0;
+            s->constructor_pc = 17;
+            s->ghast.e = 0;
+            s->constructor_pc = 22;
+            s->ghast.f = 0;
+            s->constructor_pc = 27;
+            s->living.O = &ghast_texture;
+            s->constructor_pc = 33;
+            mc_entity_source_size(entity, 4.0f, 4.0f);
+            s->constructor_pc = 41;
+            entity->base.bC = true;
+            s->constructor_pc = 49;
+            return true;
         case MC_ENTITY_CLASS_KIND_SPIDER:
             s->living.O = &spider_texture;
             s->constructor_pc = 8;
@@ -749,6 +788,7 @@ bool mc_mob_inspect(const mc_entity *entity, mc_mob_state *out) {
                           .chicken = s->chicken,
                           .wolf = s->wolf,
                           .squid = s->squid,
+                          .ghast = s->ghast,
                           .living_pc = s->living_pc,
                           .creature_pc = s->creature_pc,
                           .monster_pc = s->monster_pc,
@@ -756,6 +796,7 @@ bool mc_mob_inspect(const mc_entity *entity, mc_mob_state *out) {
                           .watcher_hook_pc = s->watcher_hook_pc,
                           .animal_pc = s->animal_pc,
                           .water_creature_pc = s->water_creature_pc,
+                          .flying_pc = s->flying_pc,
                           .failure = &s->failure};
     const mc_entity_watch_record *a = watch_record(entity, 16), *b = watch_record(entity, 17),
                                  *c = watch_record(entity, 18);

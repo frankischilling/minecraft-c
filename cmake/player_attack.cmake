@@ -2,6 +2,8 @@ include_guard(GLOBAL)
 option(MC_ENABLE_CLIENT_ATTACK_TESTS "Run native saved-World picking and Player attack" OFF)
 
 target_sources(mc_simulation PRIVATE src/entity/player/attack.c
+    src/entity/player/ally_alert.c
+    src/entity/player/ally_alert_occurrences.c
     src/entity/player/combat_callbacks.c src/item/combat/combat.c)
 if(TARGET mc_client_singleplayer_controller)
     target_sources(mc_client_singleplayer_controller PRIVATE src/client/controller/attack.c)

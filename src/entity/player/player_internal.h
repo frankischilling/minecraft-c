@@ -19,12 +19,14 @@ struct mc_player_session {
 struct mc_player_nbt_coordinate;
 struct mc_player_death_work;
 struct mc_player_damage_wake_work;
+struct mc_player_ally_alert_call;
 
 typedef struct mc_local_player_state {
     mc_local_player_snapshot fields;
     struct mc_player_nbt_coordinate *nbt_coordinates;
     struct mc_player_death_work *pending_death;
     struct mc_player_damage_wake_work *pending_damage_wake;
+    struct mc_player_ally_alert_call *pending_damage_alert;
     mc_inventory_player_terminal terminal_inventory;
 } mc_local_player_state;
 

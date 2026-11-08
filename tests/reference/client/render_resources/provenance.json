@@ -314,8 +314,8 @@
       "sha256": "e77454c2bb0a5070c5ef6a632dd044f91b0003b6cdc9fae568e86b225fd2ebf3"
     },
     "include/mc/entity/entity.h": {
-      "bytes": 8923,
-      "sha256": "99ed142cabfc9ebd714f9eabcbe389f0c992941f921d593415ac9fa2a8f41b7a"
+      "bytes": 9411,
+      "sha256": "a9364b4510947cab8ed1348ec9e0d1f8f8af5caf2123e309ece887a0614cec7d"
     },
     "include/mc/entity/errors.h": {
       "bytes": 1058,
@@ -1318,12 +1318,12 @@
       "sha256": "df82a84481ba16f4e4d47d6409140a4b6a70ec11d9794e0c8481d3987649e09e"
     },
     "src/entity/construction_internal.h": {
-      "bytes": 4643,
-      "sha256": "08eb54324ac75acec97dbdbf68c231b63541841e6bbae2e1a8aedc1500b220f1"
+      "bytes": 4646,
+      "sha256": "c83b644171fef9ad69a4846155d50c89684e6faabf988a5aa03d6f920b3812a2"
     },
     "src/entity/entity_internal.h": {
-      "bytes": 5035,
-      "sha256": "5898f91eac2f6d83e4cafce4f0ecf7a3de4cfc0bbe66010eefa079400573dfd1"
+      "bytes": 5082,
+      "sha256": "a724645b0d4db78d86a5d3ac363f49ed395cb3f32fcb7eb1d558837e6d30731b"
     },
     "src/entity/player/construction.c": {
       "bytes": 18894,
@@ -1334,8 +1334,8 @@
       "sha256": "91033bae137865525978c88f35de7440c2633049d112c45492b3bfd267ff0078"
     },
     "src/entity/player/player_internal.h": {
-      "bytes": 2231,
-      "sha256": "0793cc6946a30ce9da49438418efb6c8a493302cb16717446dff11e5b0dfa2d0"
+      "bytes": 2325,
+      "sha256": "321911c1a93cea62e43b179ff501890460b40c073f2754ad131ae5bc64f4c50a"
     },
     "src/entity/player/strings.c": {
       "bytes": 5409,
@@ -2890,8 +2890,8 @@
       "sha256": "30e61a74b1002cb508665cde8be18118764912ba08c40e4eb06a773e5956c1d9"
     },
     "include/mc/entity/movement/effects.h": {
-      "bytes": 16437,
-      "sha256": "3c91b70d38345d624bb8cb778b49960feec733ca0aca6b39db940c082a03456e"
+      "bytes": 17424,
+      "sha256": "9bc911f0fb5ce8b415fdcecaf919451d7319459149d4f3fffe4eec314bef6d28"
     },
     "include/mc/entity/movement/environment.h": {
       "bytes": 5179,
@@ -4210,8 +4210,8 @@
       "sha256": "2eb7b5f1bbd8639d0abfd43745668c79b43e852df44a66309ff107b85e2bf312"
     },
     "src/world/runtime/terminal_inventory.c": {
-      "bytes": 41103,
-      "sha256": "be9682598e97c7b6b23061eedc3d753c2e3521cfae79c99f46db1f277d72f7ff"
+      "bytes": 41436,
+      "sha256": "605f358cafe43820e52223bfdfa2fd19457319e718ceb06aee346fd90c628114"
     },
     "src/world/runtime/terminal_inventory_internal.h": {
       "bytes": 6907,
@@ -4482,8 +4482,8 @@
       "sha256": "eb5ab3b1cbb831ae07689979ece538dc612584bd154da4f1ab9de2488d755dd9"
     },
     "src/client/world/entity_renderer/held_item_draw.c": {
-      "bytes": 35687,
-      "sha256": "6afb8ab5774f70dd8b63bc4e07ccb62fffffde1090d3c7a4fe38ccfbded9c14e"
+      "bytes": 36783,
+      "sha256": "11f063427b08c92569da80f9df35bbb1426c8e0b7ac32c4ebe3581b901a005cb"
     },
     "src/client/world/entity_renderer/held_item_draw_internal.h": {
       "bytes": 1412,
@@ -4542,8 +4542,8 @@
       "sha256": "9c4f31197e732e79512c52a615d88594b381a9c80dd15daec7d654727892101f"
     },
     "include/mc/entity/mob/construction.h": {
-      "bytes": 5620,
-      "sha256": "ad32bea4fbe39ff66482b434fd5cde5c9813677efaf3d3910d42f9ede0dbd13c"
+      "bytes": 5800,
+      "sha256": "4bf5a9a44cc403ee8a7c91f2889b1275e9e4bd29ae378a76009aec94c5a783dc"
     },
     "src/entity/living/construction.c": {
       "bytes": 2909,
@@ -4554,12 +4554,12 @@
       "sha256": "fc84465ea32817c3672a58bbd91b86c79e0a2805d6a21bc39004eac93cfbdc2a"
     },
     "src/entity/mob/construction.c": {
-      "bytes": 37935,
-      "sha256": "747667ed873d86a08b75147c7ce23062669e8dc6881c767e57352b9bb15b5de1"
+      "bytes": 40125,
+      "sha256": "fcc0313a135eb7da9b88d9a535a74bf6316bf6afebdee1b63d187b8d9f37f866"
     },
     "src/entity/mob/internal.h": {
-      "bytes": 2398,
-      "sha256": "d341620803e40029c3cc61f1567dbd63f65279acdd48b1d788639fba49d6d9f4"
+      "bytes": 2440,
+      "sha256": "42336fd6bc59ce482c65b1c51a8a5fc797b7db60493ae20b821011228c52119c"
     },
     "tests/entity/test_mob_construction.c": {
       "bytes": 53791,
@@ -4594,8 +4594,8 @@
       "sha256": "7ed2efa2008f302a05d97dcef45f5cf870a2f7446005083e74a1cdc903fd1317"
     },
     "src/entity/mob/spawning.c": {
-      "bytes": 31529,
-      "sha256": "a976d92dc2969649a77ee42f91014ec5dd8ccd948a38710a04e8aa4c724afa92"
+      "bytes": 32140,
+      "sha256": "4f29bc182ae0b3806168927315924f61ecb3546fb9a8d3db8a6ef2a43facb8dc"
     },
     "src/world/runtime/chunk_random.c": {
       "bytes": 5764,
@@ -4782,8 +4782,8 @@
       "sha256": "e28c51781e7e28f15f3a6d40b888d6058baa6c2bed1c17f546cba6f5b26d19a2"
     },
     "src/entity/mob/tick/common.c": {
-      "bytes": 17448,
-      "sha256": "d111e18efe1abf88ed779033337329ccd49b6ab1023658a7f0ffa42dcf7ebb9e"
+      "bytes": 19469,
+      "sha256": "f1640f38008fb2c22e10e3262dab2935fd492f1d7f9f20f3ffab4c1beb1e2898"
     },
     "src/entity/mob/tick/helpers.c": {
       "bytes": 5239,
@@ -4814,8 +4814,8 @@
       "sha256": "64862ebdaecb2eeb69ea920f272516d4ce1a010906f26a9b887816b520ab11c4"
     },
     "src/entity/mob/tick/wrappers.c": {
-      "bytes": 8773,
-      "sha256": "6ff2cdb9b217afe224f54ff503640b4f376c94407c4bb1d78546dc90935deb2d"
+      "bytes": 8976,
+      "sha256": "027cc8739d4f005628b98f2f9e8236c9ed1d7fbccff9685a99fb9ce71ffb6227"
     },
     "tests/entity/test_mob_tick.c": {
       "bytes": 94408,
@@ -5006,8 +5006,8 @@
       "sha256": "3c673d89983d6fca0326e027f2b77f0c03f31f1efe29b1bf1cc2fad053d7e7d5"
     },
     "src/entity/render/leaves.c": {
-      "bytes": 36685,
-      "sha256": "3e684d2f6d2c81baf1a3d402b913b7974f421ae6cf60c040ec92fc977ee0b9fc"
+      "bytes": 36905,
+      "sha256": "1f2f8cb8288c8831b158266cbc087a57cf9c2257b633e4dda1111597a29a3aed"
     },
     "src/world/runtime/block_normal_internal.h": {
       "bytes": 3982,
@@ -5094,12 +5094,12 @@
       "sha256": "fa790b1718280da27a367b793527f58b9a5813e4ad1aac4528300024e4a56a42"
     },
     "src/entity/mob/tick/creeper.c": {
-      "bytes": 8236,
-      "sha256": "d8264c4980041081baf9bc308e0c731dca2a95e129b39d1cf61cccef7b3e5fbd"
+      "bytes": 8362,
+      "sha256": "0ce16a2acead3ffd2fdb6edb267578730e60cca3fd36a5da0c38799745fec30a"
     },
     "src/entity/particles/item.c": {
-      "bytes": 18401,
-      "sha256": "734b2e231280adf549444f5987563f70a91c2a4d23107e7469641c818df093a5"
+      "bytes": 18619,
+      "sha256": "c61dffe480aa5f0cf92d53605b64af67fba0ca524f6b6330fd46b324de2653dc"
     },
     "tests/client/render/test_creature_draw.c": {
       "bytes": 82665,
@@ -5234,8 +5234,8 @@
       "sha256": "d2a3eb6e822d45d6c20080785e1c5caa6df3dc7fe6c4f59883c03b19d829a915"
     },
     "src/entity/mob/tick/wolf_setter.c": {
-      "bytes": 3454,
-      "sha256": "7e542bf7d4289fa1674c6ffb012688743498f3d80121f159cdf820c409e8f60a"
+      "bytes": 3579,
+      "sha256": "6be7a3d5692cce753880befc20e565f7aa545292097c4a048ddfdb7c61bb5811"
     },
     "tests/entity/test_wolf_interest.c": {
       "bytes": 18315,
@@ -5266,8 +5266,8 @@
       "sha256": "3bbff5f9640902ceaaa6e5cc4c2388f22f6a2c6cb90f5beb81e9d56da11ad189"
     },
     "src/entity/movement/effects_internal.h": {
-      "bytes": 341,
-      "sha256": "d08df50f54a8b34f02c0849db6a94e8789372d5507d6eefc874f1084a0e1d8e6"
+      "bytes": 2047,
+      "sha256": "5295f36d8f9d11ff799d09a64489d3b6f989de1f19bf8e51f8e4fa6dceb88698"
     },
     "tests/entity/test_zombie_null_damage.c": {
       "bytes": 29229,
@@ -5574,8 +5574,8 @@
       "sha256": "07d5008e9a1bb85e717519c5afd9fc6b71ff48a4a3fd7e748cfa645189753314"
     },
     "src/entity/mob/nbt.c": {
-      "bytes": 20561,
-      "sha256": "375b8bcd4309062fdaf65bf3754b881f938457e154cbe461f292bb1e9eec2bfe"
+      "bytes": 21154,
+      "sha256": "e272cea2387ba090157e2e00d04734ac384624b2483d8cd3171c4c152c57648e"
     },
     "src/entity/mob/nbt_internal.h": {
       "bytes": 636,
@@ -6154,8 +6154,8 @@
       "sha256": "ff6a4ee28d84ef567d9d4605d146b38b9b1a650369818ed7ea90ea84c09dac17"
     },
     "src/entity/mob/tick/wolf_attack.c": {
-      "bytes": 6685,
-      "sha256": "0eab8872005664aa34a06390f01db9e7aa81825f7be2faafaee3aa5e12045642"
+      "bytes": 7496,
+      "sha256": "0b43535f8f3ac2687133db99655232640a513e2140f79f28026a9605e058d0b9"
     },
     "tests/client/gameplay/test_create_world.c": {
       "bytes": 37952,
@@ -6182,8 +6182,8 @@
       "sha256": "c19a8e15a9d642d0a2e42fcecb6357a682edeb84c494e64d1ac5aad621df704d"
     },
     "tests/entity/test_wolf_attack.c": {
-      "bytes": 24009,
-      "sha256": "acf86a848c8bcd71054f201fb6ed7e2b72adca5e9d02ff498a45637b7ee3865f"
+      "bytes": 24084,
+      "sha256": "0130def90799d17979d4e77823833b3171109a7f3d8a648ff275e5ca868329bd"
     },
     "tests/reference/client/create_world/test_verify.py": {
       "bytes": 5973,
@@ -6282,8 +6282,8 @@
       "sha256": "846baad9b46c780e58508989ac2dbdc13835383cecc7ba44e2b0dfa203df299c"
     },
     "src/entity/mob/death.c": {
-      "bytes": 28093,
-      "sha256": "29ec5f340be7cd735b1b3277c786f747a9abdf65cbc206744f398a9a6770474b"
+      "bytes": 28209,
+      "sha256": "5019ca114acbf83865096ef5da99bda641aa8e11dbece04ddcf7b0635544e460"
     },
     "src/entity/mob/death_internal.h": {
       "bytes": 1811,
@@ -6326,8 +6326,8 @@
       "sha256": "1481b597ea894db9c33d6aa812e8fdb77ce228e6e48bbe478f9be67731829dba"
     },
     "cmake/player_attack.cmake": {
-      "bytes": 9056,
-      "sha256": "5b8d4a21c9362fd8ded8bddc8b961e188746f25fc5d2ef62e1a306fab2afc0ac"
+      "bytes": 9138,
+      "sha256": "0de4a5f3e928176c7b74801a2f080fd56d1ac16e25dbbae165aae9e742f7a1d6"
     },
     "cmake/tests/explosion_draw.cmake": {
       "bytes": 1010,
@@ -6350,8 +6350,8 @@
       "sha256": "f5e3fa8e9f296f1043b995766a592b71addb659590c2bb42bd8d66f03fe805ec"
     },
     "src/entity/player/attack.c": {
-      "bytes": 29721,
-      "sha256": "43d555c23e0c817c985c2aa7914f6e0e202e81b0667f97aeef69903620956e3b"
+      "bytes": 23469,
+      "sha256": "efe0ea7b2d351e0ffdea0a74f705494502cb142cdb1f66258a6b105a6485204c"
     },
     "src/entity/player/combat_callbacks.c": {
       "bytes": 4451,
@@ -6446,8 +6446,8 @@
       "sha256": "68ad401587468e3d79a28a427f0f6d8e7de1ee22dd3e8c94db02ec55dd66f85a"
     },
     "src/item/combat/combat.c": {
-      "bytes": 28637,
-      "sha256": "39b90dfa27d2e31fd581e0cc24fc96d59d877089b9d2bdf81029fcfe205921a3"
+      "bytes": 28885,
+      "sha256": "bdd4b5335b9038ffe642b9531629639847e4519638c38e68c4a137d4a6d92da2"
     },
     "tests/client/render/test_held_item_geometry.c": {
       "bytes": 11276,
@@ -6462,8 +6462,8 @@
       "sha256": "a8728e61c367c02810c7e5045f7285d5f6391695b91b26648d99b7111cef4c03"
     },
     "tests/item/combat/test_combat.c": {
-      "bytes": 19997,
-      "sha256": "d2af934861764a447ae21ff8ec2a7f4f6aa028c975e270d2e25314cfca760aa3"
+      "bytes": 21294,
+      "sha256": "5d492fa03be61243b661c02ba9e343f864a3a7aab4e75fd71c1556cd23baf35c"
     },
     "tests/reference/client/held_item_geometry/audit.py": {
       "bytes": 6335,
@@ -7886,8 +7886,8 @@
       "sha256": "eb477a22925eb83fe2d2a0d7662dd0a437832ad2dcf619e8dbc465081e1f80d2"
     },
     "cmake/player_damage.cmake": {
-      "bytes": 4572,
-      "sha256": "8bf0af9346cb1216e92a8eb1ca6d0c5ce032b5df386c60ccdaf4adf6960bf6bb"
+      "bytes": 9068,
+      "sha256": "484c1812bcc1764b4439ecbead4b5d781ad75d6ba77f3ac72450a8b429df3637"
     },
     "cmake/tests/armor.cmake": {
       "bytes": 739,
@@ -7898,8 +7898,8 @@
       "sha256": "ae15e8fb904b7fde7d0b92a22beea685aaf1a6ba0ac106c30a54c8c02662f2a2"
     },
     "src/entity/movement/effects.c": {
-      "bytes": 44997,
-      "sha256": "dabace651b5d160a4beeb91afa74034b4493c11b4df64daa18997b8e030c4744"
+      "bytes": 49118,
+      "sha256": "c98c1ccc337b4f79ab0f0e91c263c253439309f7e2c502801dcaa8f999dcfe72"
     },
     "src/entity/player/damage.c": {
       "bytes": 4744,
@@ -8010,8 +8010,8 @@
       "sha256": "6c04ddcd89c64aaff3db755e60399a64fee045861c599a222c8dbae4c9121165"
     },
     "src/entity/tick/environment.c": {
-      "bytes": 27948,
-      "sha256": "fb350f00919650a52f4b0a6be65f555f2300b2da308fbcf28e51f0e57c7506de"
+      "bytes": 28341,
+      "sha256": "d0be519d2efe4003a23dc59243675cf619b3b33782edf2ca118113fdcc99ce5c"
     },
     "src/inventory/runtime/scatter.c": {
       "bytes": 5030,
@@ -8446,8 +8446,8 @@
       "sha256": "3137781ce5f65bb4f3384c90017a798ccc3e4dd5ac449c0779b6448b73ed7942"
     },
     "src/entity/entity.c": {
-      "bytes": 35735,
-      "sha256": "650dbd9c896f066a8206be2d51a50e5dc50a4ba5f78760e96dd2a0e4386b5072"
+      "bytes": 35956,
+      "sha256": "e785c7d9e71a59608e5d1090c0b556453cd1354d99c1253614dc5ad95d5e3eec"
     },
     "src/entity/player/spawn.c": {
       "bytes": 7806,
@@ -8550,8 +8550,8 @@
       "sha256": "3bd0f0f40ba4185ec5a6837a0e61f7792671d6d0bdd0a28b781b0b090c70498a"
     },
     "src/entity/player/tick.c": {
-      "bytes": 14711,
-      "sha256": "351f678d4881c7f6b53b32a811626538ebc98f523502cdbdad1e2df4c0dc482f"
+      "bytes": 14894,
+      "sha256": "3c106b244ae9d80c8044e0f720596896596a9dd4b7a80626ad22265e118f1409"
     },
     "src/entity/player/tick_internal.h": {
       "bytes": 861,
@@ -8902,8 +8902,8 @@
       "sha256": "2de97fd7d0a7282a9faf005357a97ed9eaa48c875eb8f5591d6a5eae8d9a2b9c"
     },
     "tests/entity/movement/test_effects.c": {
-      "bytes": 6394,
-      "sha256": "e69a85f42fa590734b424c327eb8aa32981387452541f061fc36ac4987a093f8"
+      "bytes": 14761,
+      "sha256": "eb5ac51a10cb30f2ca0c57f4593b2bcb6674e607ba9ad85cf4918277acae9073"
     },
     "tests/entity/player/nbt_metadata_cases.h": {
       "bytes": 17223,
@@ -9072,6 +9072,106 @@
     "tests/world/runtime/test_spawn_postspawn.c": {
       "bytes": 12778,
       "sha256": "c52a370728b7a1f81f8a4e15a6b2bcc9872f17ee053d508821eff95313435381"
+    },
+    "include/mc/entity/player/ally_alert.h": {
+      "bytes": 2729,
+      "sha256": "e532cdab794162dbea92317dfc992f8922f9933d38da10d1b373500d5d58f102"
+    },
+    "src/entity/player/ally_alert.c": {
+      "bytes": 23211,
+      "sha256": "23d60832fc491edefd282bdec3ad493d6a061523ac4e19bd48a50e9e6a6cf508"
+    },
+    "src/entity/player/ally_alert_occurrences.c": {
+      "bytes": 3850,
+      "sha256": "8f6c932eb9f8717139f7e4ad966d80515d7f9345850a5bd0de143361531157f2"
+    },
+    "src/entity/player/ally_alert_occurrences_internal.h": {
+      "bytes": 715,
+      "sha256": "80cfc9d4e0708ca17a3b766709375a1436cbc418226db34b6000e28ce3259d4c"
+    },
+    "src/entity/player/damage_alert.c": {
+      "bytes": 4685,
+      "sha256": "19e949c99c9837faf946e4e35611f3bb989f4509e9bb1de42a2b5f50ce82511d"
+    },
+    "src/entity/player/damage_alert_internal.h": {
+      "bytes": 413,
+      "sha256": "b09b26f74ceb00903965ace832d9964934e287188a4418fd28495238e3531401"
+    },
+    "src/entity/watcher_payload_internal.h": {
+      "bytes": 3166,
+      "sha256": "eeca2bd2dff0ae2b5c716e2e34ffcc4a64a62c793b11a6d58033115494a5745e"
+    },
+    "tests/benchmarks/player_ally_retire.c": {
+      "bytes": 10990,
+      "sha256": "1ac76e88d23879f1c194b0a9bec7b09a68e130a296b76b227a862b762fbb1b3e"
+    },
+    "tests/benchmarks/player_ally_retire_adapter.h": {
+      "bytes": 240,
+      "sha256": "e601e00ab67a57d8eeb73955e1712dbf20cce47ad883237a00b0cb77fe2fe27e"
+    },
+    "tests/benchmarks/player_ally_retire_candidate.c": {
+      "bytes": 200,
+      "sha256": "dacb51fac6a84576f17fc8a21f420c9a1307a2f57ee7145e88aad511783df45b"
+    },
+    "tests/benchmarks/player_ally_retire_fallback.c": {
+      "bytes": 763,
+      "sha256": "cf77559fe91475370232b966c93c25b60f1f3cb5f6d330ed448dc4ee8ca79e8f"
+    },
+    "tests/benchmarks/player_ally_retire_quadratic.c": {
+      "bytes": 1775,
+      "sha256": "ffe9a08cef31838c57ba494c1248bb3a7a6ac9f619abd4809b4d5d1ef5ed24a6"
+    },
+    "tests/entity/player/test_ally_alert_original.c": {
+      "bytes": 33939,
+      "sha256": "7f0b054111bfb9bf9564e8edca8b6c0ee3afca3483f1e761dc3afa6c8de599ac"
+    },
+    "tests/entity/player/test_ally_alert_ownership.c": {
+      "bytes": 10795,
+      "sha256": "c61d4240326e26de6d8014e7ab9255ec86e5cec46eaf3a9cc51bb97d593d66ac"
+    },
+    "tests/entity/player/test_mob_attacker.c": {
+      "bytes": 8409,
+      "sha256": "6e505795abc3d61d26d8d27699798d9d73c6e7409e3d110b274e4c9fff0069ba"
+    },
+    "tests/reference/entity/player_ally_alert/capture_reference.py": {
+      "bytes": 9658,
+      "sha256": "dd4aecf321a6645e495ee2a9e045ebc1ace4295fc67b094e0cb8f656260bc490"
+    },
+    "tests/reference/entity/player_ally_alert/export_reference.py": {
+      "bytes": 4391,
+      "sha256": "e68f59656140adafebff840668daf7122be1db916e7ee419642110105935eccb"
+    },
+    "tests/reference/entity/player_ally_alert/observation.py": {
+      "bytes": 4266,
+      "sha256": "85383b8d0ec8860969d540aa8143889b1a3566c80983c389b00599137032a1ca"
+    },
+    "tests/reference/entity/player_ally_alert/packet.py": {
+      "bytes": 6366,
+      "sha256": "402f177b3409fbdea963ccfbb2161cbcb8da3a308600e243b65a22629d56e3a0"
+    },
+    "tests/reference/entity/player_ally_alert/run_native.py": {
+      "bytes": 12237,
+      "sha256": "e66050c203a52be72cc2b74eba51bb9b4269f855320290116c39a6e7851a41f6"
+    },
+    "tests/reference/entity/player_ally_alert/test_packet.py": {
+      "bytes": 11237,
+      "sha256": "2881f3fafce1956a2e364d3f7ec775386ab4a6e54274ca5751a329429eaff3fe"
+    },
+    "tests/tools/entity/benchmark_player_ally_retire.py": {
+      "bytes": 13591,
+      "sha256": "83f225f8726f23c3b07c912b9b3206a201381c150a127f9cac50cc1ce5d31e44"
+    },
+    "tests/tools/entity/test_benchmark_player_ally_retire.py": {
+      "bytes": 3824,
+      "sha256": "8638aee446b857c484c1be1e9a0b4ebb5ab9ed8ea570f5f809bb2d3ebb7b2b11"
+    },
+    "tests/tools/entity/test_player_ally_alert_ownership.py": {
+      "bytes": 5184,
+      "sha256": "f03b6354b16133708cb7a2833773ef159ec65f54efe6d8e927e2be9eb295a48a"
+    },
+    "tests/tools/entity/test_player_mob_attacker.py": {
+      "bytes": 6228,
+      "sha256": "02ec52cddf6aa757cbc374092219bb1dc3eb0e14588727ca44f67a8562d0c463"
     }
   },
   "source_suppliers": {
@@ -14356,6 +14456,224 @@
           },
           "added": [],
           "current_count": 2268
+        }
+      }
+    },
+    {
+      "from_commit": "372230b47e34770dc84a2999d950297726b06a62",
+      "role": "Current Player incoming/outgoing ally alerts, independently typed watcher payloads, genuine Ghast construction, retained damage cleanup and checked Wolf-query retirement. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 606019,
+        "sha256": "9100945f1f313d99e87ebec9bc8b9a855ccdd181ee23351849faa6a8a4e0e7f4"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "include/mc/entity/entity.h": {
+              "bytes": 8923,
+              "sha256": "99ed142cabfc9ebd714f9eabcbe389f0c992941f921d593415ac9fa2a8f41b7a"
+            },
+            "src/entity/construction_internal.h": {
+              "bytes": 4643,
+              "sha256": "08eb54324ac75acec97dbdbf68c231b63541841e6bbae2e1a8aedc1500b220f1"
+            },
+            "src/entity/entity_internal.h": {
+              "bytes": 5035,
+              "sha256": "5898f91eac2f6d83e4cafce4f0ecf7a3de4cfc0bbe66010eefa079400573dfd1"
+            },
+            "src/entity/player/player_internal.h": {
+              "bytes": 2231,
+              "sha256": "0793cc6946a30ce9da49438418efb6c8a493302cb16717446dff11e5b0dfa2d0"
+            },
+            "include/mc/entity/movement/effects.h": {
+              "bytes": 16437,
+              "sha256": "3c91b70d38345d624bb8cb778b49960feec733ca0aca6b39db940c082a03456e"
+            },
+            "src/world/runtime/terminal_inventory.c": {
+              "bytes": 41103,
+              "sha256": "be9682598e97c7b6b23061eedc3d753c2e3521cfae79c99f46db1f277d72f7ff"
+            },
+            "src/client/world/entity_renderer/held_item_draw.c": {
+              "bytes": 35687,
+              "sha256": "6afb8ab5774f70dd8b63bc4e07ccb62fffffde1090d3c7a4fe38ccfbded9c14e"
+            },
+            "include/mc/entity/mob/construction.h": {
+              "bytes": 5620,
+              "sha256": "ad32bea4fbe39ff66482b434fd5cde5c9813677efaf3d3910d42f9ede0dbd13c"
+            },
+            "src/entity/mob/construction.c": {
+              "bytes": 37935,
+              "sha256": "747667ed873d86a08b75147c7ce23062669e8dc6881c767e57352b9bb15b5de1"
+            },
+            "src/entity/mob/internal.h": {
+              "bytes": 2398,
+              "sha256": "d341620803e40029c3cc61f1567dbd63f65279acdd48b1d788639fba49d6d9f4"
+            },
+            "src/entity/mob/spawning.c": {
+              "bytes": 31529,
+              "sha256": "a976d92dc2969649a77ee42f91014ec5dd8ccd948a38710a04e8aa4c724afa92"
+            },
+            "src/entity/mob/tick/common.c": {
+              "bytes": 17448,
+              "sha256": "d111e18efe1abf88ed779033337329ccd49b6ab1023658a7f0ffa42dcf7ebb9e"
+            },
+            "src/entity/mob/tick/wrappers.c": {
+              "bytes": 8773,
+              "sha256": "6ff2cdb9b217afe224f54ff503640b4f376c94407c4bb1d78546dc90935deb2d"
+            },
+            "src/entity/render/leaves.c": {
+              "bytes": 36685,
+              "sha256": "3e684d2f6d2c81baf1a3d402b913b7974f421ae6cf60c040ec92fc977ee0b9fc"
+            },
+            "src/entity/mob/tick/creeper.c": {
+              "bytes": 8236,
+              "sha256": "d8264c4980041081baf9bc308e0c731dca2a95e129b39d1cf61cccef7b3e5fbd"
+            },
+            "src/entity/particles/item.c": {
+              "bytes": 18401,
+              "sha256": "734b2e231280adf549444f5987563f70a91c2a4d23107e7469641c818df093a5"
+            },
+            "src/entity/mob/tick/wolf_setter.c": {
+              "bytes": 3454,
+              "sha256": "7e542bf7d4289fa1674c6ffb012688743498f3d80121f159cdf820c409e8f60a"
+            },
+            "src/entity/movement/effects_internal.h": {
+              "bytes": 341,
+              "sha256": "d08df50f54a8b34f02c0849db6a94e8789372d5507d6eefc874f1084a0e1d8e6"
+            },
+            "src/entity/mob/nbt.c": {
+              "bytes": 20561,
+              "sha256": "375b8bcd4309062fdaf65bf3754b881f938457e154cbe461f292bb1e9eec2bfe"
+            },
+            "src/entity/mob/tick/wolf_attack.c": {
+              "bytes": 6685,
+              "sha256": "0eab8872005664aa34a06390f01db9e7aa81825f7be2faafaee3aa5e12045642"
+            },
+            "tests/entity/test_wolf_attack.c": {
+              "bytes": 24009,
+              "sha256": "acf86a848c8bcd71054f201fb6ed7e2b72adca5e9d02ff498a45637b7ee3865f"
+            },
+            "src/entity/mob/death.c": {
+              "bytes": 28093,
+              "sha256": "29ec5f340be7cd735b1b3277c786f747a9abdf65cbc206744f398a9a6770474b"
+            },
+            "cmake/player_attack.cmake": {
+              "bytes": 9056,
+              "sha256": "5b8d4a21c9362fd8ded8bddc8b961e188746f25fc5d2ef62e1a306fab2afc0ac"
+            },
+            "src/entity/player/attack.c": {
+              "bytes": 29721,
+              "sha256": "43d555c23e0c817c985c2aa7914f6e0e202e81b0667f97aeef69903620956e3b"
+            },
+            "src/item/combat/combat.c": {
+              "bytes": 28637,
+              "sha256": "39b90dfa27d2e31fd581e0cc24fc96d59d877089b9d2bdf81029fcfe205921a3"
+            },
+            "cmake/player_damage.cmake": {
+              "bytes": 4572,
+              "sha256": "8bf0af9346cb1216e92a8eb1ca6d0c5ce032b5df386c60ccdaf4adf6960bf6bb"
+            },
+            "src/entity/movement/effects.c": {
+              "bytes": 44997,
+              "sha256": "dabace651b5d160a4beeb91afa74034b4493c11b4df64daa18997b8e030c4744"
+            },
+            "src/entity/tick/environment.c": {
+              "bytes": 27948,
+              "sha256": "fb350f00919650a52f4b0a6be65f555f2300b2da308fbcf28e51f0e57c7506de"
+            },
+            "src/entity/entity.c": {
+              "bytes": 35735,
+              "sha256": "650dbd9c896f066a8206be2d51a50e5dc50a4ba5f78760e96dd2a0e4386b5072"
+            },
+            "src/entity/player/tick.c": {
+              "bytes": 14711,
+              "sha256": "351f678d4881c7f6b53b32a811626538ebc98f523502cdbdad1e2df4c0dc482f"
+            },
+            "tests/entity/movement/test_effects.c": {
+              "bytes": 6394,
+              "sha256": "e69a85f42fa590734b424c327eb8aa32981387452541f061fc36ac4987a093f8"
+            }
+          },
+          "added": [
+            "include/mc/entity/player/ally_alert.h",
+            "src/entity/player/ally_alert.c",
+            "src/entity/player/ally_alert_occurrences.c",
+            "src/entity/player/ally_alert_occurrences_internal.h",
+            "src/entity/player/damage_alert.c",
+            "src/entity/player/damage_alert_internal.h",
+            "src/entity/watcher_payload_internal.h",
+            "tests/benchmarks/player_ally_retire.c",
+            "tests/benchmarks/player_ally_retire_adapter.h",
+            "tests/benchmarks/player_ally_retire_candidate.c",
+            "tests/benchmarks/player_ally_retire_fallback.c",
+            "tests/benchmarks/player_ally_retire_quadratic.c",
+            "tests/entity/player/test_ally_alert_original.c",
+            "tests/entity/player/test_ally_alert_ownership.c",
+            "tests/entity/player/test_mob_attacker.c",
+            "tests/reference/entity/player_ally_alert/capture_reference.py",
+            "tests/reference/entity/player_ally_alert/export_reference.py",
+            "tests/reference/entity/player_ally_alert/observation.py",
+            "tests/reference/entity/player_ally_alert/packet.py",
+            "tests/reference/entity/player_ally_alert/run_native.py",
+            "tests/reference/entity/player_ally_alert/test_packet.py",
+            "tests/tools/entity/benchmark_player_ally_retire.py",
+            "tests/tools/entity/test_benchmark_player_ally_retire.py",
+            "tests/tools/entity/test_player_ally_alert_ownership.py",
+            "tests/tools/entity/test_player_mob_attacker.py"
+          ],
+          "current_count": 2293
+        }
+      }
+    },
+    {
+      "from_commit": "372230b47e34770dc84a2999d950297726b06a62",
+      "role": "Current Player incoming/outgoing ally alerts, independently typed watcher payloads, genuine Ghast construction, retained damage cleanup and checked Wolf-query retirement. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 618284,
+        "sha256": "e77a3e2d498a5b147cd01e2ffcfc8562606865c36f9902a27fdbb776d838b78b"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/item/combat/test_combat.c": {
+              "bytes": 19997,
+              "sha256": "d2af934861764a447ae21ff8ec2a7f4f6aa028c975e270d2e25314cfca760aa3"
+            }
+          },
+          "added": [],
+          "current_count": 2293
+        }
+      }
+    },
+    {
+      "from_commit": "372230b47e34770dc84a2999d950297726b06a62",
+      "role": "Current Player incoming/outgoing ally alerts, independently typed watcher payloads, compact entered Byte diagnostics, genuine Ghast construction, retained damage cleanup and checked Wolf-query retirement. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 619295,
+        "sha256": "db95c6b5446d54f84d15078566291d850a427ed20ea98af31f367ceac3fafc97"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "src/client/world/entity_renderer/held_item_draw.c": {
+              "bytes": 36458,
+              "sha256": "e1c867c998e7f90450492f2b6459ecbcc6b098fe3cde7733e695f78c7fd7aade"
+            },
+            "src/entity/movement/effects_internal.h": {
+              "bytes": 663,
+              "sha256": "f82312fc5e630c1fffb0aeb4b9f482782ad0240bf26d7817b774568e4bb0f8b0"
+            },
+            "src/entity/movement/effects.c": {
+              "bytes": 47931,
+              "sha256": "c79c28b62b6b488794d6558c66f9da5a96bc786786e8aa719eab27024c466249"
+            },
+            "tests/entity/movement/test_effects.c": {
+              "bytes": 7693,
+              "sha256": "2f506299e9ff95bb5897451c265065d5b0f7371738b54b71996911a87f73f80b"
+            }
+          },
+          "added": [],
+          "current_count": 2293
         }
       }
     }

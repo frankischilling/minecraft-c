@@ -23,7 +23,8 @@ typedef enum mc_entity_effect_cause {
     MC_ENTITY_EFFECT_CAUSE_RANDOM,
     MC_ENTITY_EFFECT_CAUSE_REGISTRY,
     MC_ENTITY_EFFECT_CAUSE_MATH,
-    MC_ENTITY_EFFECT_CAUSE_INVENTORY
+    MC_ENTITY_EFFECT_CAUSE_INVENTORY,
+    MC_ENTITY_EFFECT_CAUSE_CLASS_CAST
 } mc_entity_effect_cause;
 
 /* Value-only receipt of an actually entered canonical Living damage body.
@@ -75,6 +76,8 @@ typedef struct mc_entity_living_damage_state {
 
 struct mc_player_sleep_error;
 struct mc_player_sleep_cleanup;
+struct mc_player_ally_alert_error;
+struct mc_player_ally_alert_cleanup;
 
 /* The damaged Player owns an interrupted wake, including NULL-error calls.
  * These typed views borrow that one invocation; copying a receipt acquires no
@@ -92,6 +95,24 @@ typedef struct mc_entity_player_wake_state {
     mc_entity_status cleanup_status;
     const char *cleanup_operation;
 } mc_entity_player_wake_state;
+
+/* The actual Player owns this one interrupted GS.a(Living,false) call. These
+ * compact scalars survive cleanup; typed views and receiver borrow its owner
+ * only while pending. A copied value acquires no independent occurrence. */
+typedef struct mc_entity_player_alert_state {
+    bool entered, returned, pending, active;
+    mc_entity_status status;
+    const char *operation;
+    mc_player_site site, child;
+    bool native_policy, source_exception, source_error;
+    const char *exception_class;
+    size_t wolves_examined, wolves_alerted;
+    mc_entity *receiver;
+    const struct mc_player_ally_alert_error *error;
+    const struct mc_player_ally_alert_cleanup *cleanup;
+    mc_entity_status cleanup_status;
+    const char *cleanup_operation;
+} mc_entity_player_alert_state;
 
 /* Passive reached-operation frames, independent of constructor diagnostics.
  * source_bytecode belongs to the requested effect; child fields name its
@@ -127,6 +148,7 @@ typedef struct mc_entity_effect_error {
     mc_mob_death_state death;
     mc_player_death_state player_death;
     mc_entity_player_wake_state player_wake;
+    mc_entity_player_alert_state player_alert;
     /* Complete last reached IX child cause, including any actual IZ wear and
      * broken-Item statistic. The compact GS receipt keeps preceding arithmetic.
      * This value owns no Inventory, Stack, Entity or pending work. */
@@ -185,7 +207,7 @@ mc_entity_status mc_entity_effect_death_with_math(mc_entity *, mc_registry_class
                                                   mc_entity_effect_error *);
 bool mc_entity_effect_has_pending(const mc_entity *);
 mc_entity_status mc_entity_effect_cleanup(mc_entity *, mc_entity_effect_error *);
-/* Consume the borrowed pending death or damage wake named by this value receipt while its
+/* Consume the borrowed pending death, damage wake or ally alert named by this receipt while its
  * graph is live. Success clears expired borrows and preserves the source cause.
  * False leaves the remaining producer and cleanup cause available for retry.
  * Copied receipts acquire no independent owner; their borrows expire together. */
@@ -258,9 +280,9 @@ mc_entity_status mc_entity_effect_contact_portal(mc_entity *entity, mc_entity_ef
  * Player damage preserves av/health/sleep/type/difficulty prefixes and actual
  * jl.x statistic, then enters LS with virtual GS armor/remainder/health and
  * inherited random.hurt sound. Full/repeated/remote returns retain their real
- * order. Wake, Arrow ownership and other Living ally handling remain explicit
- * reached dependencies. Fatal Player damage executes actual GS/LS death,
- * Inventory scatter, motion and death statistic. Player K stores be through
+ * order. Damage wake and Living ally alerts use their retained actual source
+ * calls; Arrow ownership remains an explicit reached dependency. Fatal Player damage executes
+ * actual GS/LS death, Inventory scatter, motion and death statistic. Player K stores be through
  * super and executes both actual Container closes, including aliases. Failed
  * child work remains owned by the same Player until checked native cleanup.
  * Context arguments borrow the same actual Registry namespace independently

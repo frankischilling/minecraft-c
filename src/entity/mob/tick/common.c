@@ -1,3 +1,4 @@
+#include "../../watcher_payload_internal.h"
 #include "../references_internal.h"
 #include "internal.h"
 #include "mc/world/runtime/presentation.h"
@@ -341,9 +342,24 @@ bool mt_lava(mc_mob_tick_scope *s, bool *out) {
     return true;
 }
 
-static mc_entity_watch_record *watch(mc_mob_tick_scope *s, int32_t key, int32_t type) {
+static mc_entity_watch_record *watch(mc_mob_tick_scope *s, int32_t key,
+                                     mc_entity_watch_payload_kind expected, bool setter) {
+    const mc_mob_site previous_child = s->error->child_site;
     mc_entity_watcher *w = s->entity->watcher;
-    if (w == NULL || w->map == NULL) {
+    if (w == NULL) {
+        mt_null(s, "Mob watcher or Map null receiver");
+        return NULL;
+    }
+    const char *method = setter                                        ? "b"
+                         : expected == MC_ENTITY_WATCH_PAYLOAD_STRING  ? "c"
+                         : expected == MC_ENTITY_WATCH_PAYLOAD_INTEGER ? "b"
+                                                                       : "a";
+    const char *descriptor = setter                                       ? "(ILjava/lang/Object;)V"
+                             : expected == MC_ENTITY_WATCH_PAYLOAD_STRING ? "(I)Ljava/lang/String;"
+                             : expected == MC_ENTITY_WATCH_PAYLOAD_INTEGER ? "(I)I"
+                                                                           : "(I)B";
+    s->error->child_site = (mc_mob_site){"ud", method, descriptor, 8};
+    if (w->map == NULL) {
         mt_null(s, "Mob watcher or Map null receiver");
         return NULL;
     }
@@ -353,22 +369,39 @@ static mc_entity_watch_record *watch(mc_mob_tick_scope *s, int32_t key, int32_t 
             mt_fail(s, MC_ENTITY_STATE_ERROR, "Mob watcher Map ownership");
             return NULL;
         }
-        if (n->key == key) {
-            if (n->record == NULL)
-                mt_null(s, "Mob null watcher record");
-            else if (n->record->type != type)
-                mt_fail(s, MC_ENTITY_STATE_ERROR, "Mob watcher actual value type");
-            else
-                return n->record;
+        if (n->key != key)
+            continue;
+        s->error->child_site.pc = setter ? 19 : 16;
+        if (n->record == NULL) {
+            mt_null(s, "Mob null watcher record");
             return NULL;
         }
+        const mc_entity_watch_payload_result result =
+            mc_entity_watch_payload_check(n->record, expected);
+        if (setter ? !mc_entity_watch_payload_known(n->record)
+                   : result != MC_ENTITY_WATCH_PAYLOAD_OK) {
+            s->error->child_site.pc =
+                setter || result == MC_ENTITY_WATCH_PAYLOAD_NULL_UNBOX ? 22 : 19;
+            if (!setter && result == MC_ENTITY_WATCH_PAYLOAD_NULL_UNBOX)
+                mt_null(s, "Mob null watcher primitive unbox receiver");
+            else if (!setter && result == MC_ENTITY_WATCH_PAYLOAD_WRONG_CLASS) {
+                s->error->source_exception = true;
+                s->error->exception_class = "java/lang/ClassCastException";
+                mt_fail(s, MC_ENTITY_STATE_ERROR, "Mob watcher actual boxed cast");
+            } else
+                mt_fail(s, MC_ENTITY_STATE_ERROR, "Mob watcher actual value type");
+            return NULL;
+        }
+        s->error->child_site = previous_child;
+        return n->record;
     }
+    s->error->child_site.pc = setter ? 19 : 16;
     mt_null(s, "Mob absent watcher record");
     return NULL;
 }
 
 bool mt_watch_byte(mc_mob_tick_scope *s, int32_t key, int8_t *out) {
-    mc_entity_watch_record *r = watch(s, key, 0);
+    mc_entity_watch_record *r = watch(s, key, MC_ENTITY_WATCH_PAYLOAD_BYTE, false);
     if (r == NULL)
         return false;
     *out = r->byte_value;
@@ -376,34 +409,28 @@ bool mt_watch_byte(mc_mob_tick_scope *s, int32_t key, int8_t *out) {
 }
 
 bool mt_watch_byte_set(mc_mob_tick_scope *s, int32_t key, int8_t value) {
-    mc_entity_watch_record *r = watch(s, key, 0);
+    mc_entity_watch_record *r = watch(s, key, MC_ENTITY_WATCH_PAYLOAD_BYTE, true);
     if (r == NULL)
         return false;
-    if (r->byte_value != value) {
-        r->byte_value = value;
-        r->dirty = true;
+    if (mc_entity_watch_byte_replace(r, value))
         s->entity->watcher->dirty = true;
-    }
     return true;
 }
 
 bool mt_watch_int_set(mc_mob_tick_scope *s, int32_t key, int32_t value) {
-    mc_entity_watch_record *r = watch(s, key, 2);
+    mc_entity_watch_record *r = watch(s, key, MC_ENTITY_WATCH_PAYLOAD_INTEGER, true);
     if (r == NULL)
         return false;
-    if (r->integer_value != value) {
-        r->integer_value = value;
-        r->dirty = true;
+    if (mc_entity_watch_integer_replace(r, value))
         s->entity->watcher->dirty = true;
-    }
     return true;
 }
 
 bool mt_watch_string(mc_mob_tick_scope *s, int32_t key, const mc_player_string **out) {
-    mc_entity_watch_record *r = watch(s, key, 4);
+    mc_entity_watch_record *r = watch(s, key, MC_ENTITY_WATCH_PAYLOAD_STRING, false);
     if (r == NULL)
         return false;
-    *out = r->string_value;
+    *out = mc_entity_watch_string_value(r);
     return true;
 }
 

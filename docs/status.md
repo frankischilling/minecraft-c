@@ -1,5 +1,46 @@
 # Development status
 
+The final configured suites pass Windows 736/736 in 331.75 seconds and
+sanitized Linux headless 593/593 in 290.07 seconds, without registered skips.
+Both use four CTest workers. Windows builds the Release client with display
+tests disabled and CPU benchmarks enabled. Linux uses Clang Debug, ASan/UBSan,
+leak detection and halt-on-error with `MC_BUILD_CLIENT=OFF`. All six admission
+tables match their recorded prelaunch hashes; all 5,654 declared Linux inputs
+match the working source. The separate hidden hand controls retain their own
+finite graphics scope. Full loaded combat and sustained FPS remain unqualified.
+
+Incoming Living damage now reaches the shared
+[Player ally-alert body](entity/player-ally-alert.md), including eligible
+sitting Wolves. Four original VMs each execute 40 prepared calls. Windows and
+sanitized Linux each match 57,580 shared scalar values across all 40 outcomes;
+111 original exception-message/stack fields remain unpaired. Genuine
+[Ghast construction](entity/ghast.md) supports its early-return inputs.
+Watcher payload kind is independent of the record's declared type, preserving
+null unboxing and class-cast behavior.
+
+Natural Monster attacks still stop at GZ61 before invoking target hurt. Joining
+that caller and qualifying a loaded encounter remain the next client work.
+
+The helper's [checked retirement](performance/player-ally-retire.md) now counts
+held pointer occurrences with a bounded optional workspace. A controlled
+Windows cohort retains 2,520 measurements on one core/archive graph. At 1,024
+entries, median cleanup falls from 4,559.8 to 16.2 microseconds for distinct Wolves
+and from 4,723.45 to 9.3 microseconds for repeated occurrences. Small Lists retain
+the same allocation-free algorithm;
+allocation refusal preserves the previous cleanup path. These component CPU
+results do not establish gameplay FPS or loaded hostile encounters.
+
+The first-person overlay uses a compact watcher Byte diagnostic and materializes
+its full effect record only on failure. Eleven authored getter controls preserve
+the exact diagnostic writes without replay. Separate hidden GPU hand controls
+pass 1,547 outer and 194 arm checks, including 64 original matrix comparisons.
+
+The exact `372230b4` tree passes all four jobs in
+[hosted run 42438935164](https://github.com/frankischilling/minecraft-c/actions/runs/42438935164):
+Windows 743/743, GCC and Clang 801/801, plus formatting. The tested synthetic
+merge tree equals the pushed development tree. These results qualify the
+nightmare-spawning increment described below.
+
 The complete configured suites pass Windows 729/729 in 485.57 seconds and
 sanitized Linux headless 586/586 in 450.24 seconds, without registered skips.
 Windows uses the Release client build with display tests disabled and CPU

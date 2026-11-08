@@ -12,6 +12,16 @@ typedef struct mc_entity mc_entity;
 typedef struct mc_entity_watcher mc_entity_watcher;
 typedef struct mc_entity_watch_record mc_entity_watch_record;
 
+/* Actual supported Object payload alternatives, separate from a watch
+ * record's declared wire type. Values are inline native projections; no Java
+ * box identity or generic Object pointer is invented. */
+typedef enum mc_entity_watch_payload_kind {
+    MC_ENTITY_WATCH_PAYLOAD_NULL = -1,
+    MC_ENTITY_WATCH_PAYLOAD_BYTE = 0,
+    MC_ENTITY_WATCH_PAYLOAD_INTEGER = 2,
+    MC_ENTITY_WATCH_PAYLOAD_STRING = 4
+} mc_entity_watch_payload_kind;
+
 typedef enum mc_entity_phase {
     MC_ENTITY_RAW = 0,
     MC_ENTITY_CONSTRUCTING,
@@ -90,6 +100,7 @@ typedef struct mc_entity_watcher_snapshot {
     size_t size;
     const mc_entity_watch_record *record;
     int32_t index, type;
+    mc_entity_watch_payload_kind payload_kind;
     int8_t byte_value;
     bool record_dirty;
 } mc_entity_watcher_snapshot;
