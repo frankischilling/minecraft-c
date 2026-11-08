@@ -1,5 +1,27 @@
 # Test scope and reproduction
 
+## Protected World callback ownership
+
+The [ownership component](world/world-access-ownership.md) transfers an actual
+active callback right into precharged storage before dispatcher release. The
+single evaluated-World owner and real Entity-sound/particle joins preserve
+borrowed failures through diagnostics; complete Arrow flight and nested World
+acquisition remain unfinished.
+
+Both hosts pass 326 native handoff checks and 148 execution-child checks. The
+same reentry fixture fails before the release preflight fix and passes after it.
+Normal and optimized Python each reject 34 corrupt transport envelopes. The
+frozen regression selection passes Windows 78/78 in 96.77 seconds and sanitized
+Linux 76/76 in 84.74 seconds, without skips or NotRun. Linux's minimal client
+graph does not register the two CPU Arrow drawing cases and receives no credit
+for them. Both builds, formatting of 2,267 files with clang-format 18.1.3 and
+six-unit GCC syntax checks pass. Actual RenderGlobal baseline controls pass
+342 checks and eight unchanged finite sky-change rows on both hosts.
+
+The Linux client dependency graph and the full Windows Create World graph were
+exercised. These controls add no original JVM replay, completed graphics
+constructor, returned game frame or sustained FPS measurement.
+
 ## Arrow inherited base and lazy Math
 
 The [base component](entity/arrow-base.md) reuses the actual inherited body and

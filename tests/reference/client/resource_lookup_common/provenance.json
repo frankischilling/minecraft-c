@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 342665,
-      "sha256": "7b60e4a1f66b2ae6d60dab9f3e01754bd5cc324579508aff6852f97e6f703152"
+      "bytes": 342745,
+      "sha256": "815142d58e5df4bc5788d07d13e03ba7bde984a7505c4ac5cc1db7fd82dc830c"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 219349,
-      "sha256": "5c916742e8e0042f0491b2a682699338b46c74dd7639a4bbc4c569ce7ca13f4c"
+      "bytes": 220292,
+      "sha256": "a940b26cc2ee6dc70c5738345b5b72472627563cf8a581f1f4b828425c8ccf6e"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 570732,
-      "sha256": "908a56f996cb104d831bdbab09082fd6c2d4aca818c02a5f75a8e11c9eb9e952"
+      "bytes": 572024,
+      "sha256": "92b36cb426add27f2e49a5bc75c88a64032499f876f47b6c94dbcc4b47355819"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
@@ -4782,8 +4782,8 @@
       "sha256": "80ed38038b2db86cd108e35fa61714f5b7119d7cb270f9e9f96c8d7f37d3c5fd"
     },
     "src/world/runtime/movement.c": {
-      "bytes": 20450,
-      "sha256": "c5c0cc8e0ac0ce3c081631dbb8f0497e65735caf3b4f152dc2759dd1d6945e87"
+      "bytes": 22632,
+      "sha256": "80e53a8ca1a042a26229cbc83e86a3b23b980d18721b3ede0f1adf337f8c1642"
     },
     "src/world/runtime/mutation/chunk.c": {
       "bytes": 9838,
@@ -4990,8 +4990,8 @@
       "sha256": "5e1f353806f8030c36e3b1e5b7d7348287430a877b9ebb89912d5c590dec3a28"
     },
     "src/world/runtime/presentation.c": {
-      "bytes": 6895,
-      "sha256": "53e8377783f936df68058171a6d24ed521fea5d4a778d201fe3e324e2b719b7a"
+      "bytes": 9897,
+      "sha256": "76cd8c3db9fadb9690b178f6f4ba3f4b2d1c60ee9df8c86183c271126d013153"
     },
     "src/world/runtime/propagation.c": {
       "bytes": 33028,
@@ -5102,12 +5102,12 @@
       "sha256": "44d6a5b439f86b9c9962525107eb3b554ebae75918d8f38bc7b2a8f77c15af5d"
     },
     "src/world/runtime/world_access.c": {
-      "bytes": 34319,
-      "sha256": "89d3b1ae277a6ba40ad2c5d69fd655f6868ed1215074df265d69d8a4f9ed1b93"
+      "bytes": 58529,
+      "sha256": "889ced439238d4d8e656bdaebb8f4922deecc91d9083a4a05c8bc17fd7497815"
     },
     "src/world/runtime/world_access_internal.h": {
-      "bytes": 7579,
-      "sha256": "2f59968df83970a3db57d604f16ec93d451d12c1ab2508b1d82b42c4094eca4e"
+      "bytes": 7817,
+      "sha256": "f0e45ba85d5edb563566fea75841410e7103825eacc2dd1241f4ddff8bde4fcf"
     },
     "src/world/saved_data/storage.c": {
       "bytes": 39867,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 694262,
-      "sha256": "95d01add253f04577441aab7170734cfa8260da943e2f2c3820364278144df0b"
+      "bytes": 702879,
+      "sha256": "678abc3d3f8c76cd9f0b704836d6e14ea77cf8e16e02a12f5775d55a6328bb06"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 790109,
-      "sha256": "8f9d54e5ea8410234c7bb78bcf98c284df17a96aa789c8a921a1f9beb3ea94a9"
+      "bytes": 799460,
+      "sha256": "f38f85d7bbfecad726eb05e0d62d1d7b55f567050cc756cb26ecac2a8f69297e"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 691241,
-      "sha256": "1405960fa3557160cda1b1277f739f6760d7fa7714e7de9444510b368a52cc1f"
+      "bytes": 699858,
+      "sha256": "0b637b0776e020527056a4195fca6d8473f450462735c48316ba4566879b1649"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -15646,8 +15646,8 @@
       "sha256": "41a344d3c867a9967ea97698cfdb87e412bbd884ae68810accb98f5d3c53d949"
     },
     "cmake/client_create_world.cmake": {
-      "bytes": 4299,
-      "sha256": "bc115e0eb56f378c4f67d12ff8786dc3d2e68e74af380ee37b73fa51bf14688a"
+      "bytes": 4602,
+      "sha256": "17368d7c049739a4f0903cc5bf1bb4c73731c86e6c62ab2c0cd7fe85e697a8b7"
     },
     "cmake/entity_falling_tick.cmake": {
       "bytes": 868,
@@ -23208,6 +23208,42 @@
     "tests/tools/entity/test_arrow_base.py": {
       "bytes": 6326,
       "sha256": "42d9d93daf10cc5fc472292e21d4dd944c4f8dd93c2ec5c482ace148f4edaa4f"
+    },
+    "cmake/tests/world_access_handoff.cmake": {
+      "bytes": 2504,
+      "sha256": "6bf1d0c806c19fad9e53daaf34b4018115b3edd987005991e36cd6304740171e"
+    },
+    "src/entity/tick/execution.c": {
+      "bytes": 16390,
+      "sha256": "5eee267ec7b46a78946371ba20adae2b5204c8b2f3ec78696b3f9b35899dae2a"
+    },
+    "src/entity/tick/execution_internal.h": {
+      "bytes": 6066,
+      "sha256": "363fe58684c713cf26d5b6645c5ba31925d1b7a5abb6c8162a7d41b092681b56"
+    },
+    "src/world/runtime/world_access_lease_internal.h": {
+      "bytes": 6338,
+      "sha256": "00a015fae9fb9fd4524bdc4ca3a003ae3ec649f4cab10bced2b5f3f7b53e2d8e"
+    },
+    "tests/tools/world/test_execution_ownership.py": {
+      "bytes": 8205,
+      "sha256": "e00db5dca070917b62c6903ef2e40c06338439c889fc58234974610417c9c2fd"
+    },
+    "tests/world/runtime/world_access/test_handoff.c": {
+      "bytes": 47009,
+      "sha256": "3e3e07e39c7a6a92fff0ed75b5380208a3f8ba21051586e544ed244b7beb3272"
+    },
+    "src/world/runtime/execution_children_internal.h": {
+      "bytes": 3970,
+      "sha256": "6c6806ac5317027a2802c4d94b7bb3fc70aa173965d0ee4de9e6a81d46b55fa9"
+    },
+    "tests/world/runtime/world_access/test_execution_children.c": {
+      "bytes": 44522,
+      "sha256": "c85c6a9cd276bff5d61f3d8d2a19cf8d85a68547b13903f56052f651573cc2af"
+    },
+    "docs/world/world-access-ownership.md": {
+      "bytes": 6417,
+      "sha256": "ba8cee048e7e5a0ede125bd73f62b913423c3e0b65855fbbd9dd9c44f77151f3"
     }
   },
   "self_metadata_excluded": true,
@@ -36666,6 +36702,289 @@
           "current_count": 5802
         }
       }
+    },
+    {
+      "from_commit": "3d16ff283a033ac35fd8a449191ecfe49ecc27dc",
+      "role": "Private contextual Math activation at reached material/base calls, narrow inherited Arrow base/effect admissions and genuine native ownership/base controls. Full Arrow flight and protected WorldAccess producer integration remain separate. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1606835,
+        "sha256": "2305fb5319fa02c090c8bd56ecc1b6d0be6c21904a7df5fe38a6691ba32b0a51"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 694262,
+              "sha256": "95d01add253f04577441aab7170734cfa8260da943e2f2c3820364278144df0b"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 790109,
+              "sha256": "8f9d54e5ea8410234c7bb78bcf98c284df17a96aa789c8a921a1f9beb3ea94a9"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 691241,
+              "sha256": "1405960fa3557160cda1b1277f739f6760d7fa7714e7de9444510b368a52cc1f"
+            },
+            "cmake/client_create_world.cmake": {
+              "bytes": 4299,
+              "sha256": "bc115e0eb56f378c4f67d12ff8786dc3d2e68e74af380ee37b73fa51bf14688a"
+            }
+          },
+          "added": [],
+          "current_count": 5802
+        }
+      }
+    },
+    {
+      "from_commit": "3d16ff283a033ac35fd8a449191ecfe49ecc27dc",
+      "role": "Private contextual Math activation at reached material/base calls, narrow inherited Arrow base/effect admissions and genuine native ownership/base controls. Full Arrow flight and protected WorldAccess producer integration remain separate. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1608443,
+        "sha256": "cdd4747d44d15e6f91960791c3a45adc69b93d8f8de756c52aa2b036e89ab22d"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 342665,
+              "sha256": "7b60e4a1f66b2ae6d60dab9f3e01754bd5cc324579508aff6852f97e6f703152"
+            },
+            "src/world/runtime/world_access.c": {
+              "bytes": 34319,
+              "sha256": "89d3b1ae277a6ba40ad2c5d69fd655f6868ed1215074df265d69d8a4f9ed1b93"
+            },
+            "src/world/runtime/world_access_internal.h": {
+              "bytes": 7579,
+              "sha256": "2f59968df83970a3db57d604f16ec93d451d12c1ab2508b1d82b42c4094eca4e"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 695248,
+              "sha256": "7f02e14b737a79d24b3b871431a21b7a59bd4b623285ca0ba5a6cfee3a5f5459"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 791097,
+              "sha256": "c62935e1bcb4594c7e7402768926e7ef195dcaa74d328b3a1ec35fea061be462"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 692227,
+              "sha256": "eff5c9caa6fe9b21f81a17828f379fdcbaf5f29cbed696210c3429b9449fc050"
+            }
+          },
+          "added": [
+            "cmake/tests/world_access_handoff.cmake",
+            "src/entity/tick/execution.c",
+            "src/entity/tick/execution_internal.h",
+            "src/world/runtime/world_access_lease_internal.h",
+            "tests/tools/world/test_execution_ownership.py",
+            "tests/world/runtime/world_access/test_handoff.c"
+          ],
+          "current_count": 5808
+        }
+      }
+    },
+    {
+      "from_commit": "3d16ff283a033ac35fd8a449191ecfe49ecc27dc",
+      "role": "Private contextual Math activation at reached material/base calls, narrow inherited Arrow base/effect admissions and genuine native ownership/base controls. Full Arrow flight and protected WorldAccess producer integration remain separate. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1611730,
+        "sha256": "85c68d05ccc5df525de3d1a887ca8cd95264700570f29534d1af80c81ce6f6e3"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 697558,
+              "sha256": "d75220a5e53d7341bbe7ac96c83f21e4fdfa6d7b551461b167c4bef2f2386d20"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 793764,
+              "sha256": "a47da8bdd49cbf3444ff01d88aa7a0150646799450d008480860424d17c4b0b2"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 694537,
+              "sha256": "488299f5f993b8c9417fecce2673f70ff2aa724f7e32001bd1d4ae3a759e3978"
+            },
+            "tests/world/runtime/world_access/test_handoff.c": {
+              "bytes": 46937,
+              "sha256": "a6202e36a5bd4ea8cff2b577fe71a5ad561482201cb471d432910d6166be395d"
+            }
+          },
+          "added": [],
+          "current_count": 5808
+        }
+      }
+    },
+    {
+      "from_commit": "3d16ff283a033ac35fd8a449191ecfe49ecc27dc",
+      "role": "Private contextual Math activation at reached material/base calls, narrow inherited Arrow base/effect admissions and genuine native ownership/base controls. Full Arrow flight and protected WorldAccess producer integration remain separate. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1613355,
+        "sha256": "7b284992385b8ab0046aa61e4deba1ce6baa8ccb67f3bfad507cfba4386daad6"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 698561,
+              "sha256": "3c568d364f366e6834169b2f380474ed90264bb7530c4a2d39c974fe346f0572"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 794769,
+              "sha256": "3d982649e3f9e2fc9fb2e6262486f9d567c1369a4eb1d17f5bc31df532d08eca"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 695540,
+              "sha256": "388e2ca7c18d477732749dd7bf9a886a53b3997dfa97d80bacc6a5cbfedd4cb8"
+            },
+            "tests/world/runtime/world_access/test_handoff.c": {
+              "bytes": 46969,
+              "sha256": "6b5fe54146ff490e23dc02f5fba00a1b71720ad4c966d848885a4a04c6ee14a3"
+            }
+          },
+          "added": [],
+          "current_count": 5808
+        }
+      }
+    },
+    {
+      "from_commit": "3d16ff283a033ac35fd8a449191ecfe49ecc27dc",
+      "role": "Private contextual Math activation at reached material/base calls, narrow inherited Arrow base/effect admissions and genuine native ownership/base controls. Full Arrow flight and protected WorldAccess producer integration remain separate. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1614980,
+        "sha256": "5a19a84425f87349da591b12b688bc87647045970e39e14fbd7005b98a295bd1"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 699564,
+              "sha256": "29db7aa842e3876fd044fbc0a9fadef3e27836402d7837bdc61b441d76286d85"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 795774,
+              "sha256": "3da3c12efdb0f4b7085181face4c1742dba3208509846fcbd92627252cc0b7f9"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 696543,
+              "sha256": "effdd93d6a23dc04d53edd0ae27cda567d0c8cd9e26bd01028417b5e0d6e61a4"
+            },
+            "src/entity/tick/execution.c": {
+              "bytes": 16316,
+              "sha256": "a603aa21d8a00c637f618a4bc33504848648a5ea05ab0f4504ecf1a9f443c236"
+            }
+          },
+          "added": [],
+          "current_count": 5808
+        }
+      }
+    },
+    {
+      "from_commit": "3d16ff283a033ac35fd8a449191ecfe49ecc27dc",
+      "role": "Private contextual Math activation at reached material/base calls, narrow inherited Arrow base/effect admissions and genuine native ownership/base controls. Full Arrow flight and protected WorldAccess producer integration remain separate. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1616585,
+        "sha256": "3ab05551d81c9c0d8aeef023830520b892736478cdc3798e97796e36e82d5c07"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "src/world/runtime/movement.c": {
+              "bytes": 20450,
+              "sha256": "c5c0cc8e0ac0ce3c081631dbb8f0497e65735caf3b4f152dc2759dd1d6945e87"
+            },
+            "src/world/runtime/presentation.c": {
+              "bytes": 6895,
+              "sha256": "53e8377783f936df68058171a6d24ed521fea5d4a778d201fe3e324e2b719b7a"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 700547,
+              "sha256": "ddd40b0b74e5fb9698a81bd338a649c89c5a8ea34f5d8446c8200c07e9564006"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 796759,
+              "sha256": "bb8cfbc7d156902b9fdcaf930e31d1a316f148f52e32c41f33c53578f4abd6d5"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 697526,
+              "sha256": "d4e5d285e4500d8e35cab7f78bfe31c7813ddd56291b2b2976c7453808200472"
+            },
+            "cmake/tests/world_access_handoff.cmake": {
+              "bytes": 1554,
+              "sha256": "f3345396ec94c7eba6ab375223a7eb494b8558ee62e07f8fd3b924d18f7f9e7d"
+            },
+            "tests/tools/world/test_execution_ownership.py": {
+              "bytes": 8115,
+              "sha256": "36c0262e10157b31c8332d29433d1a09501b7cbef88027151a87c33efef40be6"
+            }
+          },
+          "added": [
+            "src/world/runtime/execution_children_internal.h",
+            "tests/world/runtime/world_access/test_execution_children.c"
+          ],
+          "current_count": 5810
+        }
+      }
+    },
+    {
+      "from_commit": "3d16ff283a033ac35fd8a449191ecfe49ecc27dc",
+      "role": "Private contextual Math activation at reached material/base calls, narrow inherited Arrow base/effect admissions and genuine native ownership/base controls. Full Arrow flight and protected WorldAccess producer integration remain separate. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1619260,
+        "sha256": "4039c83d95624eef15fe4356e43ec18df6936501a4a027b92b2a9524d64b8e6d"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/parity.md": {
+              "bytes": 219349,
+              "sha256": "5c916742e8e0042f0491b2a682699338b46c74dd7639a4bbc4c569ce7ca13f4c"
+            },
+            "docs/testing.md": {
+              "bytes": 570732,
+              "sha256": "908a56f996cb104d831bdbab09082fd6c2d4aca818c02a5f75a8e11c9eb9e952"
+            }
+          },
+          "added": [
+            "docs/world/world-access-ownership.md"
+          ],
+          "current_count": 5811
+        }
+      }
+    },
+    {
+      "from_commit": "3d16ff283a033ac35fd8a449191ecfe49ecc27dc",
+      "role": "Protected WorldAccess active-right handoff, single evaluated-World ownership and actual Entity-sound/particle child joins. Complete Arrow flight, nested World acquisition and loader forwarding remain unfinished. Current admission/publication inputs only; historical captured suppliers and observations remain unchanged. No historical native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1621268,
+        "sha256": "b1842d22d0a56bfed15f190714e4c3e8f8bd2afa1d56e3a857fc1a82fe2d90c7"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 702233,
+              "sha256": "d2b9910c68f86a2eb3a6f15dabb0224d4af3863601f3e400315f5557a014d069"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 798814,
+              "sha256": "2259fa1d28a8e8762b3450968928d40ce3cfb49c1204b1a01b79133456ae17f3"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 699212,
+              "sha256": "17154928a34fa42aaa5207ba8c40648cf1f88fd37b939ea44b5f3ec3918723e1"
+            }
+          },
+          "added": [],
+          "current_count": 5811
+        }
+      }
     }
-  ]
+  ],
+  "world_execution_publication_scope": {
+    "previous_metadata": {
+      "bytes": 1620621,
+      "sha256": "ade3630fe92a298091c4e96ff7f076b9af4d9fa3c2d05ce77e03abaeadb522bd"
+    },
+    "scope": "Protected WorldAccess active-right handoff, one evaluated-World execution scope, and actual Entity-sound/particle children. Current source admissions only. Earlier update role labels retain the Math wording of the reused refresh helper; their raw historical records remain unchanged. Native qualification belongs to the separately frozen execution cohort. Complete Arrow flight, nested World acquisition and loader forwarding remain unfinished."
+  }
 }

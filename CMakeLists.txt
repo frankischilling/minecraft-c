@@ -642,6 +642,7 @@ add_library(mc_simulation STATIC
     src/entity/living/travel.c
     src/entity/tick/common.c
     src/entity/tick/environment.c
+    src/entity/tick/execution.c
     src/entity/tick/suffocation.c
     src/entity/tick/watcher.c
     src/inventory/runtime/tick.c
@@ -5693,6 +5694,7 @@ include(cmake/tests/arrow_nbt_reference.cmake)
 include(cmake/tests/arrow_player_damage.cmake)
 include(cmake/tests/skeleton_fire.cmake)
 include(cmake/tests/arrow_base.cmake)
+include(cmake/tests/world_access_handoff.cmake)
 include(cmake/client_respawn.cmake)
 include(cmake/client_bed_respawn.cmake)
 include(cmake/client_bed_interaction.cmake)

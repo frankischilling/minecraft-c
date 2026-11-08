@@ -10,6 +10,7 @@ struct mc_world_access {
     mc_world_access_source_callbacks source_callbacks;
     void *context;
     size_t memberships, active_holds, receipt_holds;
+    struct mc_world_access_receipt *receipts; /* Actual producer-owned identities. */
 };
 
 struct mc_world_access_receipt {
@@ -17,6 +18,8 @@ struct mc_world_access_receipt {
     const mc_client_render_global_error *render_global;
     const char *exception_class;
     size_t holds;
+    struct mc_world_access_receipt *owner_previous, *owner_next;
+    struct mc_world_access_failure_lease *leases; /* Independent real-right guards. */
 };
 
 /* A generic source callback may have no RenderGlobal child. The independently
