@@ -9542,8 +9542,8 @@
       "sha256": "bbc656e2ce8471408d4e4468a2ae404679230a9bc2871c767b0ef870705ba4cf"
     },
     "tests/tools/entity/test_player_sleep_nbt_parent_diagnostics.py": {
-      "bytes": 10842,
-      "sha256": "412f1ca1d63d0d8d52338bf57654b93d5c9d6cf18a1fc036c8c8ef2c33a96dee"
+      "bytes": 11970,
+      "sha256": "81dfbe42ecb6f5979cc3ed20547c270c94f2e0c89c36f574f242448fdc36bd01"
     },
     "cmake/client_arrow_draw.cmake": {
       "bytes": 2562,
@@ -15849,6 +15849,26 @@
             "tests/tools/client/test_zombie_damage.py": {
               "bytes": 19428,
               "sha256": "f17dc45f67b3b61f833a2197bc9b1d40ad52b946d2de3bb3540a0686cd0e51e4"
+            }
+          },
+          "added": [],
+          "current_count": 2408
+        }
+      }
+    },
+    {
+      "from_commit": "9401be4b8c02fec9724d2e334071f0eaf434509b",
+      "role": "Canonical temporary paths in the pure Player NBT failure-diagnostic fixture, with a cross-platform lexical-path regression. Current admission/publication inputs only; game runtime, native wrapper, original producers and retained observations are unchanged. No native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 675013,
+        "sha256": "88b837fb8c9706fb8b42e2c65ed665031ac936718e688fa95563d22af26a398a"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/entity/test_player_sleep_nbt_parent_diagnostics.py": {
+              "bytes": 10842,
+              "sha256": "412f1ca1d63d0d8d52338bf57654b93d5c9d6cf18a1fc036c8c8ef2c33a96dee"
             }
           },
           "added": [],

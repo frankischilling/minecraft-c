@@ -32,6 +32,15 @@ native capture and processing-only correction. This prepared native scene
 does not establish original audiovisual equality, unrestricted play or FPS.
 Skeleton firing and Arrow flight/collision/pickup remain unfinished.
 
+Hosted [run 42476294517](https://github.com/frankischilling/minecraft-c/actions/runs/42476294517)
+of `9401be4b` passes formatting and all 840 tests each on GCC and Clang.
+Windows passes 779/781; only the two pure diagnostics modes fail before their
+mocked process call. The actual forty-row Player parent passes. A temporary-path
+regression reproduces the fixture mismatch on both hosts, then all nine controls
+pass normally and under optimized Python after canonicalizing its root.
+Runtime code and the native results above remain unchanged; hosted repair
+validation is pending.
+
 The preceding constructor increment supplies genuine [Arrow construction and heading](entity/arrow-construction.md),
 including all three constructors, the nullable counted Living shooter and complete
 World terminal graph/publication admission. Four original VMs each complete
@@ -68,7 +77,7 @@ passes 818/819 in [run 42460583281](https://github.com/frankischilling/minecraft
 failing the existing Player sleep-NBT parent's generic native-completion guard.
 The old log does not expose the native cause. Bounded failure diagnostics and
 failure-only artifact retention now preserve the necessary process details;
-their hosted execution remains pending. Earlier local execution results retain
+their first hosted upload is recorded above. Earlier local execution results retain
 their separate frozen source scope.
 
 World Mob ticks now use a private working diagnostic and one optional child

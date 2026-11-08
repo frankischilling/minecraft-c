@@ -28,7 +28,7 @@ def receipt(stdout, stderr, code=0):
 class FailureDiagnostics(unittest.TestCase):
     def exercise(self, result, exception=None, successful=False):
         with tempfile.TemporaryDirectory(prefix='sleep-nbt-diagnostic-control-') as name:
-            root = Path(name)
+            root = Path(name).resolve()
             executable = root / 'declared-native-file'
             executable.write_bytes(b'pure control; never executed')
             work = root / 'runs'
@@ -107,6 +107,27 @@ class FailureDiagnostics(unittest.TestCase):
         self.assertIn('native exit: 17', text)
         self.assertIn('declared native failure sentinel', text)
         self.assertIn('"exit": 17', text)
+
+    def test_lexical_temporary_path_reaches_capture_and_preserves_diagnostics(self):
+        temporary = tempfile.TemporaryDirectory
+
+        @contextlib.contextmanager
+        def lexical_directory(*args, **kwargs):
+            with temporary(*args, **kwargs) as name:
+                component = Path(name) / 'lexical-component'
+                component.mkdir()
+                yield str(component / '..')
+
+        stdout, stderr = b'declared partial stdout\n', b'declared alias failure sentinel\n'
+        capture = receipt(stdout, stderr, 17)
+        result = SimpleNamespace(returncode=17, stdout=stdout, stderr=stderr,
+                                 capture_report=capture)
+        with mock.patch.object(tempfile, 'TemporaryDirectory', side_effect=lexical_directory):
+            error, text, report, output = self.exercise(result)
+        self.assertIsInstance(error, ValueError)
+        self.assertEqual(str(error), 'complete successful native process/stream inventory')
+        self.assert_retained_diagnostic(text, report, output, capture)
+        self.assertIn('declared alias failure sentinel', text)
 
     def test_every_existing_completion_guard_still_rejects(self):
         stdout = b'declared stdout\n'

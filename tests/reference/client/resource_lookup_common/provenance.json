@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 133413,
-      "sha256": "3bc085d68d317eb43a942b38375a4cd87d70f642088ee083b603b306693570bb"
+      "bytes": 133999,
+      "sha256": "2a13cd337bd1c8784576b47e11ce25f3858562105f24f4587169747537e781d8"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 559856,
-      "sha256": "9c1afb05bc1836a4e98aee872a69762a306e761d51dadeddcbf2444f3d5b6b2d"
+      "bytes": 561228,
+      "sha256": "ce882b7bb4b53a0c370103e755a063d3105ec4cbb70d12a5b12a24416c49931e"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 675013,
-      "sha256": "88b837fb8c9706fb8b42e2c65ed665031ac936718e688fa95563d22af26a398a"
+      "bytes": 675930,
+      "sha256": "0fdfcb3cea94ebf9c6a173ae933b7929897f34acd3c6e122d8dc4ae3d1738acc"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 768829,
-      "sha256": "3f070790e4c0de226c680a2a65e53f9faf77bdb65b76de908d7fcc1bc7000ff0"
+      "bytes": 769748,
+      "sha256": "8e6b47fbb1572656651fa7a5652e6f20c2e35fe445f5fada08521a4438791766"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 671809,
-      "sha256": "f6edb126c8e00c2aec05593d3f57cf25d280a3a2029471070205f7fc8aae065f"
+      "bytes": 672726,
+      "sha256": "507a74e3384772ef37f38197b284cdd2b7090e93345a4e93146c3b3318983386"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -22906,8 +22906,8 @@
       "sha256": "bbc656e2ce8471408d4e4468a2ae404679230a9bc2871c767b0ef870705ba4cf"
     },
     "tests/tools/entity/test_player_sleep_nbt_parent_diagnostics.py": {
-      "bytes": 10842,
-      "sha256": "412f1ca1d63d0d8d52338bf57654b93d5c9d6cf18a1fc036c8c8ef2c33a96dee"
+      "bytes": 11970,
+      "sha256": "81dfbe42ecb6f5979cc3ed20547c270c94f2e0c89c36f574f242448fdc36bd01"
     },
     "cmake/client_arrow_draw.cmake": {
       "bytes": 2562,
@@ -35834,6 +35834,46 @@
             "docs/entity/monster-melee.md": {
               "bytes": 3356,
               "sha256": "8f0ae3af873a277e150f21cd9202324a01a53840a454979c1a61894bd0c5ed3a"
+            }
+          },
+          "added": [],
+          "current_count": 5762
+        }
+      }
+    },
+    {
+      "from_commit": "9401be4b8c02fec9724d2e334071f0eaf434509b",
+      "role": "Canonical temporary paths in the pure Player NBT failure-diagnostic fixture, with a cross-platform lexical-path regression. Current admission/publication inputs only; game runtime, native wrapper, original producers and retained observations are unchanged. No native execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1567679,
+        "sha256": "74b15fde7b8f2d532cb836eab7f015201d1c83c006daee94bd36837c4ac73a60"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/status.md": {
+              "bytes": 133413,
+              "sha256": "3bc085d68d317eb43a942b38375a4cd87d70f642088ee083b603b306693570bb"
+            },
+            "docs/testing.md": {
+              "bytes": 559856,
+              "sha256": "9c1afb05bc1836a4e98aee872a69762a306e761d51dadeddcbf2444f3d5b6b2d"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 675013,
+              "sha256": "88b837fb8c9706fb8b42e2c65ed665031ac936718e688fa95563d22af26a398a"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 768829,
+              "sha256": "3f070790e4c0de226c680a2a65e53f9faf77bdb65b76de908d7fcc1bc7000ff0"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 671809,
+              "sha256": "f6edb126c8e00c2aec05593d3f57cf25d280a3a2029471070205f7fc8aae065f"
+            },
+            "tests/tools/entity/test_player_sleep_nbt_parent_diagnostics.py": {
+              "bytes": 10842,
+              "sha256": "412f1ca1d63d0d8d52338bf57654b93d5c9d6cf18a1fc036c8c8ef2c33a96dee"
             }
           },
           "added": [],

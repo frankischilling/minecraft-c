@@ -154,6 +154,25 @@ Skeleton encounter, Arrow save/load, frame or FPS qualification follows.
 
 ## Retained native process failures
 
+Hosted [run 42476294517](https://github.com/frankischilling/minecraft-c/actions/runs/42476294517)
+of `9401be4b` passes formatting and 840/840 tests each on GCC and Clang. Windows
+passes 779/781. Its real Player sleep-NBT replay passes all forty rows; only
+`tools.player_sleep_nbt_parent_diagnostics_normal` and its optimized counterpart
+fail, both before their mocked process is invoked. The failure-only artifact
+upload now executes successfully and retains complete CTest logs and the native
+parent's report, capture and streams, with no copied Worlds, resources or binaries.
+The actual tested merge tree matches the published tree. Windows successfully
+downloads and selects sccache; the hosted failure-fallback branch remains unexecuted.
+
+The pure diagnostic fixture kept its temporary root's lexical spelling while
+the wrapper resolved the reference directory before mocked module dispatch.
+A valid alternate path spelling reproduces the same zero-process-call failure
+on both hosts. The regression goes red before canonicalizing the fixture root;
+all nine controls then pass normally and under optimized Python on Windows and
+Linux. Existing completion, diagnostic-output and retained-receipt checks remain.
+The wrapper, game runtime, original producers and recorded native outputs are
+unchanged. Hosted validation of this fixture-only repair remains pending.
+
 The repaired readiness head `c0d4589e` passes hosted formatting, Windows 761/761
 and GCC 819/819. Clang passes 818/819 in
 [run 42460583281](https://github.com/frankischilling/minecraft-c/actions/runs/42460583281),
@@ -175,7 +194,7 @@ unknown native cause.
 Failed hosted test jobs now retain the complete CTest logs and the sleep-NBT
 parent's report, bounded-process receipt and stdout/stderr files for 14 days.
 The pinned upload step excludes copied resources, World files and binaries.
-Its hosted execution remains pending. The first Arrow configured cohort passes
+Its first hosted upload is recorded above. The first Arrow configured cohort passes
 Windows 758/758 in 416.37 seconds and sanitized Linux 615/615 in 395.51 seconds,
 with every registered test passing and the exact 49-file/six-table freeze intact.
 The additional failure-reporting controls and workflow changes follow that frozen
