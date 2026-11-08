@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 128319,
-      "sha256": "907feed4d8d2bb1fa73ebb34f6200750e135645c13b0d031462c534f1f900115"
+      "bytes": 129278,
+      "sha256": "0cbb523eaf9ffc81ccd8f5cc9043884901591af8e8190d0e0968f10b23d85f1e"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 546308,
-      "sha256": "18b314b36e95bb6c234fb689161e76d0ac516d0ace8a9d96bc52859eb19b3fbb"
+      "bytes": 547808,
+      "sha256": "9ddca59de940f1909f3a4ac1ae28f782daa913e4b005daa40612c0619d86e741"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 639482,
-      "sha256": "b254e519bd0e46a8ff1340d7c2abe53fa1ec1bf6e91873451fef7865cd3631c1"
+      "bytes": 640726,
+      "sha256": "fcf076466cc6ab78eac0b298972d6dca305727567a38da7317bfb44d0f456e49"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 731864,
-      "sha256": "4a589899c80c930bff0925f347363a67763dd15be920e243d1cac452d9f502c0"
+      "bytes": 733110,
+      "sha256": "127cf3c611ba13a099f8f9605e0042d4c6fd5ec4b81cda87e15cd7383e6f488e"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 635907,
-      "sha256": "8202075448c0c21047bb7ebd244dc310d58ac1815563fe32347ed96c1e37787c"
+      "bytes": 637151,
+      "sha256": "8de1b34cf1fbad661ae66339575a187c72a62d8c75726b1f67453aa33eadc79c"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -22774,12 +22774,12 @@
       "sha256": "d67645a7cad8d33c5ab16dcd48cd8c649a42bb9152ce9d2e868486cfb1a97362"
     },
     "tests/tools/entity/benchmark_mob_tick_diagnostics.py": {
-      "bytes": 48864,
-      "sha256": "dcd2131ff7716f1e82ddb13166df3e645ebfe82b52b754e741eb532c5c33173d"
+      "bytes": 48971,
+      "sha256": "144138d801b4ea2bb9abe5343cc9b4a6be75ed76bdd5af831ea6b7dacf73be2c"
     },
     "tests/tools/entity/test_benchmark_mob_tick_diagnostics.py": {
-      "bytes": 30004,
-      "sha256": "72d2386772759b48b93c4ef60a4e6577ee73b723e95c5e5bf6818f107b591334"
+      "bytes": 31316,
+      "sha256": "bd444433f99c00604ae9ff4e6dd7f12d23f3d1bba10d58d0750603df3863c2f8"
     },
     "tests/tools/entity/test_mob_workspace.py": {
       "bytes": 9375,
@@ -34572,6 +34572,66 @@
             "docs/testing.md": {
               "bytes": 545848,
               "sha256": "3c06b783636f54e15961a017911a44dd0906489f357fed85d1101694b7ebb1c3"
+            }
+          },
+          "added": [],
+          "current_count": 5696
+        }
+      }
+    },
+    {
+      "from_commit": "8e2b9b3c41a8246e67dd3c5b04966adcec0ab736",
+      "role": "Canonical glob script/stamp path identity for the current Mob diagnostic benchmark readiness verifier, with an equivalent lexical build-path regression. Current admission pins only. Earlier original and native observations, historical producers, supplier records, sealed receipts and the retained native CPU cohort keep their recorded scope. No runtime execution or performance qualification is inherited by this path-only repair.",
+      "previous_metadata": {
+        "bytes": 1504277,
+        "sha256": "569fff430d28febd057e3162b4ad67e2f25f55dd867b575154e625dbceeaeb3c"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/entity/benchmark_mob_tick_diagnostics.py": {
+              "bytes": 48864,
+              "sha256": "dcd2131ff7716f1e82ddb13166df3e645ebfe82b52b754e741eb532c5c33173d"
+            },
+            "tests/tools/entity/test_benchmark_mob_tick_diagnostics.py": {
+              "bytes": 30004,
+              "sha256": "72d2386772759b48b93c4ef60a4e6577ee73b723e95c5e5bf6818f107b591334"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 635907,
+              "sha256": "8202075448c0c21047bb7ebd244dc310d58ac1815563fe32347ed96c1e37787c"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 639482,
+              "sha256": "b254e519bd0e46a8ff1340d7c2abe53fa1ec1bf6e91873451fef7865cd3631c1"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 731864,
+              "sha256": "4a589899c80c930bff0925f347363a67763dd15be920e243d1cac452d9f502c0"
+            }
+          },
+          "added": [],
+          "current_count": 5696
+        }
+      }
+    },
+    {
+      "from_commit": "8e2b9b3c41a8246e67dd3c5b04966adcec0ab736",
+      "role": "Resource-publication admission for the terminal hosted 8e2 CI failure and the isolated canonical-path repair red/green pure-test scope. Existing runtime, original/historical producers, suppliers, sealed receipts and the retained CPU cohort remain unchanged. This documentation update grants no new native execution, timing or repaired-head hosted qualification.",
+      "previous_metadata": {
+        "bytes": 1506143,
+        "sha256": "94f1935d0adb57a904b046e61f8df370b7f3594f1ac2d117af5e31a15cba0dfd"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/status.md": {
+              "bytes": 128319,
+              "sha256": "907feed4d8d2bb1fa73ebb34f6200750e135645c13b0d031462c534f1f900115"
+            },
+            "docs/testing.md": {
+              "bytes": 546308,
+              "sha256": "18b314b36e95bb6c234fb689161e76d0ac516d0ace8a9d96bc52859eb19b3fbb"
             }
           },
           "added": [],

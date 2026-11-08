@@ -9270,12 +9270,12 @@
       "sha256": "d67645a7cad8d33c5ab16dcd48cd8c649a42bb9152ce9d2e868486cfb1a97362"
     },
     "tests/tools/entity/benchmark_mob_tick_diagnostics.py": {
-      "bytes": 48864,
-      "sha256": "dcd2131ff7716f1e82ddb13166df3e645ebfe82b52b754e741eb532c5c33173d"
+      "bytes": 48971,
+      "sha256": "144138d801b4ea2bb9abe5343cc9b4a6be75ed76bdd5af831ea6b7dacf73be2c"
     },
     "tests/tools/entity/test_benchmark_mob_tick_diagnostics.py": {
-      "bytes": 30004,
-      "sha256": "72d2386772759b48b93c4ef60a4e6577ee73b723e95c5e5bf6818f107b591334"
+      "bytes": 31316,
+      "sha256": "bd444433f99c00604ae9ff4e6dd7f12d23f3d1bba10d58d0750603df3863c2f8"
     },
     "tests/tools/entity/test_mob_workspace.py": {
       "bytes": 9375,
@@ -14987,6 +14987,30 @@
             "tests/entity/mount/test_mount.c": {
               "bytes": 11453,
               "sha256": "22d69ea3aa3a0879a588608333aa175992e9bb67642ad97f175c143122fd659e"
+            }
+          },
+          "added": [],
+          "current_count": 2320
+        }
+      }
+    },
+    {
+      "from_commit": "8e2b9b3c41a8246e67dd3c5b04966adcec0ab736",
+      "role": "Canonical glob script/stamp path identity for the current Mob diagnostic benchmark readiness verifier, with an equivalent lexical build-path regression. Current admission pins only. Earlier original and native observations, historical producers, supplier records, sealed receipts and the retained native CPU cohort keep their recorded scope. No runtime execution or performance qualification is inherited by this path-only repair.",
+      "previous_metadata": {
+        "bytes": 635907,
+        "sha256": "8202075448c0c21047bb7ebd244dc310d58ac1815563fe32347ed96c1e37787c"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/entity/benchmark_mob_tick_diagnostics.py": {
+              "bytes": 48864,
+              "sha256": "dcd2131ff7716f1e82ddb13166df3e645ebfe82b52b754e741eb532c5c33173d"
+            },
+            "tests/tools/entity/test_benchmark_mob_tick_diagnostics.py": {
+              "bytes": 30004,
+              "sha256": "72d2386772759b48b93c4ef60a4e6577ee73b723e95c5e5bf6818f107b591334"
             }
           },
           "added": [],

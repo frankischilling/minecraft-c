@@ -370,6 +370,25 @@ class BuildReadiness(unittest.TestCase):
             self.assertIn(artifacts / 'readiness/readiness.json', paths)
             self.assertIn('-f', result['commands'][-1]['command'])
 
+    def test_equivalent_lexical_build_path_preserves_glob_input_identity(self):
+        with tempfile.TemporaryDirectory(prefix='mob-readiness-alias-') as name:
+            build, artifacts, executables, _ = self.fixture(Path(name))
+            alias = build / '..' / build.name
+            self.assertEqual(alias.resolve(), build.resolve())
+            with mock.patch.object(B.subprocess, 'run', side_effect=self.query) as query:
+                result, paths = B.verify_readiness(alias, executables, artifacts)
+            self.assertEqual(result['status'], 'PASS')
+            self.assertEqual(query.call_count, 2)
+            copied = artifacts / 'readiness/actual-build.ninja'
+            self.assertEqual(copied.read_bytes(), (build / 'build.ninja').read_bytes())
+            self.assertEqual(result['graph_before']['sha256'], result['copied_graph']['sha256'])
+            self.assertIn(artifacts / 'readiness/readiness.json', paths)
+            for field, relative in (('script', 'CMakeFiles/VerifyGlobs.cmake'),
+                                    ('stamp', 'CMakeFiles/cmake.verify_globs')):
+                identity = str((build / relative).resolve())
+                self.assertEqual(result['cmake']['glob_check'][field], identity)
+                self.assertIn(identity, result['cmake']['inputs'])
+
     def test_stale_configuration_refuses_before_any_query(self):
         for mode in ('input_mtime', 'cache_mode'):
             with self.subTest(mode=mode), tempfile.TemporaryDirectory(prefix='mob-stale-config-') as name:

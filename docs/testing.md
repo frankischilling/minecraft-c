@@ -1,5 +1,33 @@
 # Test scope and reproduction
 
+## Mob benchmark readiness path identity
+
+The hosted `8e2b9b3c` run
+[42457904291](https://github.com/frankischilling/minecraft-c/actions/runs/42457904291)
+passed formatting and all 819 GCC and 819 Clang tests. Windows passed 759/761;
+both Mob diagnostic benchmark parser modes failed at the glob-stamp input lookup.
+Dependency keys expanded the Windows short path while the stored script/stamp
+names retained its lexical spelling.
+
+The regression uses the existing complete BuildReadiness fixture and calls
+`verify_readiness` with the equivalent `build/../build` path. It reproduced the
+same KeyError on Windows and Linux before the production fix. The verifier now
+uses `native_path` for the glob script and stamp, matching dependency/input keys.
+It still checks the exact generated command, input hashes/timestamps, untouched
+graph copy, glob output and actual no-work dry-run result.
+
+```text
+python -B -m unittest discover -s tests/tools/entity -p test_benchmark_mob_tick_diagnostics.py
+python -B -O -m unittest discover -s tests/tools/entity -p test_benchmark_mob_tick_diagnostics.py
+```
+
+Both commands pass all 31 pure tests on Windows and Linux. The targeted
+regression also verifies canonical script/stamp keys and the byte-identical
+retained graph. These synthetic tests mock tool queries; no native build,
+benchmark process, original JVM or new timing cohort runs. Earlier benchmark
+producers and the lossless report remain unchanged. Hosted qualification of the
+repaired head is pending.
+
 ## World and Mob diagnostic storage
 
 The World success path writes the same fully initialized output directly,

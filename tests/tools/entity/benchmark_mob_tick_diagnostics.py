@@ -495,8 +495,9 @@ def cmake_configuration(directory, lines, rules, source_root=ROOT):
                   glob_check=None)
     require(len(globs) <= 1, 'At most one generated CMake glob verification edge')
     if globs:
-        script = directory / 'CMakeFiles/VerifyGlobs.cmake'
-        stamp = directory / 'CMakeFiles/cmake.verify_globs'
+        # Share the dependency/input-key identity even when directory is an alias.
+        script = native_path(directory, 'CMakeFiles/VerifyGlobs.cmake')
+        stamp = native_path(directory, 'CMakeFiles/cmake.verify_globs')
         glob_outputs = [native_path(directory, name) for name in ninja_words(globs[0][0][6:])]
         require(glob_outputs == [stamp.resolve()] and script.resolve() in dependencies and
                 stamp.resolve() in dependencies, 'Generated glob script/stamp are actual configuration inputs')

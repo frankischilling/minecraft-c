@@ -1,5 +1,20 @@
 # Development status
 
+Hosted checks of published `8e2b9b3c` found a benchmark-readiness path alias
+failure in [run 42457904291](https://github.com/frankischilling/minecraft-c/actions/runs/42457904291).
+Formatting passed, GCC and Clang each passed 819/819 tests, and Windows passed
+759/761. Only the normal and optimized Mob diagnostic benchmark parser suites
+failed: canonical dependency keys did not match a retained lexical glob-stamp
+path under the hosted Windows short-path alias.
+
+The isolated repair gives the glob script and stamp the same canonical identity
+as other configuration inputs. Its lexical `build/../build` regression first
+reproduced the exact KeyError on Windows and Linux; the regression and all
+31 pure tests now pass on both hosts, normally and under `-O`. Runtime, native
+products and the retained CPU cohort are unchanged. Hosted revalidation of the
+repaired head is pending; the following local execution results retain their
+separate historical scope.
+
 World Mob ticks now use a private working diagnostic and one optional child
 workspace per outer World call. Successful World returns initialize the actual
 output directly. Environment/action storage remains separate from the parent's
