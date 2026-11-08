@@ -50,7 +50,8 @@ static bool previous(mc_mob_tick_scope *s, float current, float *old, bool negat
 
 bool mt_living_w(mc_mob_tick_scope *s) {
     mt_at(s, "ls", "w_", "()V", 1);
-    mc_entity_tick_error *child = malloc(sizeof(*child));
+    mc_entity_tick_error *child =
+        s->child_workspace == NULL ? malloc(sizeof(*child)) : &s->child_workspace->environment;
     if (child == NULL)
         return mt_fail(s, MC_ENTITY_ALLOCATION_FAILED, "Mob environment diagnostic workspace");
     mc_entity_tick_error_init(child);
@@ -64,7 +65,8 @@ bool mt_living_w(mc_mob_tick_scope *s) {
         s->error->source_exception = child->source_exception;
         s->error->exception_class = child->exception_class;
     }
-    free(child);
+    if (s->child_workspace == NULL)
+        free(child);
     if (!environment)
         return false;
     s->error->state.environment_returned = true;
@@ -123,7 +125,8 @@ bool mt_living_w(mc_mob_tick_scope *s) {
 }
 
 static bool action(mc_mob_tick_scope *s) {
-    mc_player_action_error *child = malloc(sizeof(*child));
+    mc_player_action_error *child =
+        s->child_workspace == NULL ? malloc(sizeof(*child)) : &s->child_workspace->action;
     if (child == NULL)
         return mt_fail(s, MC_ENTITY_ALLOCATION_FAILED, "Mob action diagnostic workspace");
     mc_player_action_error_init(child);
@@ -135,7 +138,8 @@ static bool action(mc_mob_tick_scope *s) {
               child->living_bytecode);
         mt_fail(s, child->status, child->operation);
     }
-    free(child);
+    if (s->child_workspace == NULL)
+        free(child);
     if (ok)
         s->error->state.action_returned = true;
     return ok;

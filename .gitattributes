@@ -8,6 +8,8 @@
 *.yml text eol=lf
 *.json text eol=lf
 *.jsonl text eol=lf
+# Preserve the exact compressed native benchmark report bytes.
+/tests/benchmarks/mob_tick_diagnostics_windows.json.gz binary
 *.tsv text eol=lf
 *.commands text eol=lf
 *.cmake text eol=lf

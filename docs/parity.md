@@ -10,6 +10,14 @@ Statuses: Not started; Under research; Partially implemented; Implemented but
 unverified; Verified for specified scenarios; Blocked (with a named dependency).
 The inventory expands the broad gameplay rows into concrete child behaviors.
 
+World Mob diagnostics now reuse invocation-owned storage while retaining the
+same source work and selected failures. Production and all four diagnostic
+algorithm combinations pass 943 checks each on Windows and sanitized Linux,
+including nested failure, rejected cleanup and fallback state. The
+[four-way CPU comparison](performance/mob-tick-diagnostics.md) preserves its
+prepared World scope and all observed values; it establishes neither original
+presentation nor a uniform busy-world/FPS improvement.
+
 The shared [Player ally alert](entity/player-ally-alert.md) now serves incoming
 Living damage and outgoing attack. Windows and sanitized Linux each match
 57,580 shared scalar values across 40 original calls, with 111 message/stack

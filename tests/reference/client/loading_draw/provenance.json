@@ -2,8 +2,8 @@
   "scope": "Current authored real-owner loading draw/update/yield/retirement controls; native results are recorded separately for their exact tested snapshots.",
   "native_sources": {
     "CMakeLists.txt": {
-      "bytes": 342156,
-      "sha256": "2b1521fe2b806ef4bb8a460954bbb3ad64685d54620228c7632216ed6973bcae"
+      "bytes": 342198,
+      "sha256": "caa54f3ce30691456d7b912eb92e6fc4f1918b0d35ae6ad8a561092a7d27fcbe"
     },
     "cmake/client_controllers.cmake": {
       "bytes": 1093,
@@ -3202,20 +3202,20 @@
       "sha256": "93fc7fed8d27f252685e13f59243d7195c98686e54fd8b86520ae8212657b748"
     },
     "src/world/runtime/entity_tick.c": {
-      "bytes": 11001,
-      "sha256": "8c774abc57c3343a0bf3139b7e2640bf1c6669b6fd8ca633b4d1cde1c94962e8"
+      "bytes": 12137,
+      "sha256": "4ab9706dcfc82f4477720ff6e4fa697576ba58b74cbf360d16870d86c9cc8920"
     },
     "src/world/runtime/entity_tick_chunks.c": {
       "bytes": 4205,
       "sha256": "c66a18a5450adcd99a188717b5be6be696206e954bb499cc0c0698a4fcd7fb6c"
     },
     "src/world/runtime/entity_tick_dispatch.c": {
-      "bytes": 13982,
-      "sha256": "05b94acbfbe5f4b0da8527b512829378a2d2bb2a5175a7170159887e3ff19daf"
+      "bytes": 14538,
+      "sha256": "87271e6bb0cdd04daf131e3ff8b0cf6f4ebc7a08b240d59ec6c49aacdf7863ee"
     },
     "src/world/runtime/entity_tick_internal.h": {
-      "bytes": 2671,
-      "sha256": "2927cdcc78536c72e1105d1e78a79e1f2d2e5362fb978f145dc3baece4c7d2af"
+      "bytes": 3748,
+      "sha256": "f0f95d0ff03d743eced0d53a1ca38542e1155425e469f3cd72021190d012b2ab"
     },
     "src/world/runtime/entity_tick_lists.c": {
       "bytes": 7575,
@@ -5118,8 +5118,8 @@
       "sha256": "6c6e5c53dd9fad4f5cea30b19c0f8dc6e38cf653a259b50a154e3df03b03dd1a"
     },
     "tests/world/runtime/test_entity_tick.c": {
-      "bytes": 54627,
-      "sha256": "b6c5147f2ca65986f03d84a8a712982635cf682250a4dff3cf7d78a2ceb23193"
+      "bytes": 55874,
+      "sha256": "b392ffae8aa9a4c20a09bc2007c9830c7c8abb421817f98c938ce938feb1f3c6"
     },
     "tests/world/runtime/test_entity_tick_abi.c": {
       "bytes": 3892,
@@ -7426,12 +7426,12 @@
       "sha256": "3a6bc5e5e0a2201bbda57688372ca919442fcf9f6d87d17c4954719d46039028"
     },
     "src/entity/mob/tick/internal.h": {
-      "bytes": 6433,
-      "sha256": "14ca4863fa34688e54d1822d6f6e65b6d36b80d3c830cb282ea5862bf7705f5f"
+      "bytes": 6515,
+      "sha256": "f1c67cb443824a14bfc9a3a050bff2fecc7e05827c1d46d00de4ba9de92e101a"
     },
     "src/entity/mob/tick/living.c": {
-      "bytes": 8429,
-      "sha256": "2c7fb0839b581b2d5e0cd4471b4d46a7edcf33f43f49a4f3695acf584fff92b3"
+      "bytes": 8648,
+      "sha256": "da5d263b8785e21f32de98f09584f763380b137a60bad2ee17f0bf1f5e8ab187"
     },
     "src/entity/mob/tick/ray.c": {
       "bytes": 13157,
@@ -7442,8 +7442,8 @@
       "sha256": "c9d2b86bc1468399ad9341259cd33a0059c6d3a455a73138de07716410c1135a"
     },
     "src/entity/mob/tick/tick.c": {
-      "bytes": 10228,
-      "sha256": "ea3d9c1bf958069c7279772347916c589e74ca4caf942ab93487b90263323da1"
+      "bytes": 11596,
+      "sha256": "b8d57249e0a4a3f06f2bb4606c1ce1c7d4a087ff239f56cd947de5416102266d"
     },
     "src/entity/mob/tick/wolf.c": {
       "bytes": 26597,
@@ -8458,8 +8458,8 @@
       "sha256": "4a2f7ac9940b4b4d80ebfc2c3e65b1e2571b773d171dfbab292b1bb9927cab5f"
     },
     "tests/entity/mount/test_mount.c": {
-      "bytes": 11453,
-      "sha256": "22d69ea3aa3a0879a588608333aa175992e9bb67642ad97f175c143122fd659e"
+      "bytes": 11639,
+      "sha256": "47526b04bbdec71147492020c9913efbcd9ed8338c3682bbe1be1b566cdea8b8"
     },
     "tests/entity/player/test_drop.c": {
       "bytes": 21715,
@@ -11262,8 +11262,8 @@
       "sha256": "3c28f980be86e6372af2f4e6e2a03872d14a52a6ecc2714433d3e8e30b76bb62"
     },
     "tests/entity/test_monster_hurt.c": {
-      "bytes": 25567,
-      "sha256": "c79c945b8f7f10aaa4d1b6095ccf71dd29673c1e32a6aab3c285459478553c28"
+      "bytes": 26422,
+      "sha256": "ccfe3c0e893968a792355f5aba384cb26db82618e9242feb5204f7cadbaf2559"
     },
     "tests/reference/entity/monster_damage/capture_reference.py": {
       "bytes": 9708,
@@ -11296,6 +11296,62 @@
     "tests/tools/entity/test_monster_hurt.py": {
       "bytes": 6666,
       "sha256": "4c08992bb61b4beeab5c33eb5d485a559dfc8cc7c123a750b50598b6c12ead7d"
+    },
+    "cmake/mob_tick_diagnostics.cmake": {
+      "bytes": 5463,
+      "sha256": "a713dcbfe1c1dc85f9bb98f663871ba74a0b30595bdf239dc5a116f3789c3650"
+    },
+    "src/entity/mob/tick/workspace_internal.h": {
+      "bytes": 1738,
+      "sha256": "fe4d73fd44309114e999d9735e903992e51c72daf48b8525b31f40f02f2e8120"
+    },
+    "tests/benchmarks/mob_tick/control_observer.c": {
+      "bytes": 286,
+      "sha256": "a0e54bdd16387cb4fdf18dfffca02e3637e32f03d7385bcb92630c130265a309"
+    },
+    "tests/benchmarks/mob_tick/dispatch_candidate.c": {
+      "bytes": 14861,
+      "sha256": "024e2843bfc1c9522cc6abdbda698161e9b80a4c31705d90889217be5d5f79ee"
+    },
+    "tests/benchmarks/mob_tick/dispatch_legacy.c": {
+      "bytes": 14358,
+      "sha256": "e872511d34fcc2615469529d83f31769ae43c17e84db12631372c161079431d4"
+    },
+    "tests/benchmarks/mob_tick/world_candidate.c": {
+      "bytes": 249,
+      "sha256": "a407a4eb41b1f0108cae5baf4bf5bf7fc778783e8f78363f99b7742d29e469cd"
+    },
+    "tests/benchmarks/mob_tick/world_legacy.c": {
+      "bytes": 12222,
+      "sha256": "41a12a33552f7d428b993fbc42cafa234a3187c6ba103448d51cb98efc63cf9f"
+    },
+    "tests/benchmarks/mob_tick_diagnostics.c": {
+      "bytes": 19663,
+      "sha256": "4cd475170920951c7c8c22ea99180b48f1be9d3a5ac6e7027b736f9c74835d7f"
+    },
+    "tests/benchmarks/mob_tick_diagnostics_adapter.h": {
+      "bytes": 605,
+      "sha256": "8f9e957fe7ca06640938a3b1045ee40aa3b35c19a6216fdbb4d6fc2f7aeeab30"
+    },
+    "tests/benchmarks/mob_tick_diagnostics_support.h": {
+      "bytes": 27408,
+      "sha256": "22baeaf7b3a5c5654a4ec2d649927167bd73b8eed9bef6dcd43bffd8863a2559"
+    },
+    "tests/entity/test_mob_workspace.c": {
+      "bytes": 27821,
+      "sha256": "d67645a7cad8d33c5ab16dcd48cd8c649a42bb9152ce9d2e868486cfb1a97362"
+    },
+    "tests/tools/entity/benchmark_mob_tick_diagnostics.py": {
+      "bytes": 48864,
+      "sha256": "dcd2131ff7716f1e82ddb13166df3e645ebfe82b52b754e741eb532c5c33173d"
+    },
+    "tests/tools/entity/test_benchmark_mob_tick_diagnostics.py": {
+      "bytes": 30004,
+      "sha256": "72d2386772759b48b93c4ef60a4e6577ee73b723e95c5e5bf6818f107b591334"
+    },
+    "tests/tools/entity/test_mob_workspace.py": {
+      "bytes": 9375,
+      "sha256": "252efbe936e0475ca2723cdbcec73f73c2f3e6b399a7a1d3d31568fe70861b55"
     }
   },
   "actual_source_method": {
@@ -17404,6 +17460,93 @@
           },
           "added": [],
           "current_count": 2824
+        }
+      }
+    },
+    {
+      "from_commit": "2d9ea870c8be4566d02328e46813cc020743f78e",
+      "role": "Current invocation-owned World/Mob diagnostic storage, direct successful output finalization, retained failures and reentry/fallback controls, and the source-guarded four-way native CPU comparison with lossless compressed report. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 725103,
+        "sha256": "755b86fcc67903d9e508311590091245400e8d5b13b7c4314489b9df5de5f066"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 342156,
+              "sha256": "2b1521fe2b806ef4bb8a460954bbb3ad64685d54620228c7632216ed6973bcae"
+            },
+            "src/world/runtime/entity_tick.c": {
+              "bytes": 11001,
+              "sha256": "8c774abc57c3343a0bf3139b7e2640bf1c6669b6fd8ca633b4d1cde1c94962e8"
+            },
+            "src/world/runtime/entity_tick_dispatch.c": {
+              "bytes": 13982,
+              "sha256": "05b94acbfbe5f4b0da8527b512829378a2d2bb2a5175a7170159887e3ff19daf"
+            },
+            "src/world/runtime/entity_tick_internal.h": {
+              "bytes": 2671,
+              "sha256": "2927cdcc78536c72e1105d1e78a79e1f2d2e5362fb978f145dc3baece4c7d2af"
+            },
+            "tests/world/runtime/test_entity_tick.c": {
+              "bytes": 54627,
+              "sha256": "b6c5147f2ca65986f03d84a8a712982635cf682250a4dff3cf7d78a2ceb23193"
+            },
+            "src/entity/mob/tick/internal.h": {
+              "bytes": 6433,
+              "sha256": "14ca4863fa34688e54d1822d6f6e65b6d36b80d3c830cb282ea5862bf7705f5f"
+            },
+            "src/entity/mob/tick/living.c": {
+              "bytes": 8429,
+              "sha256": "2c7fb0839b581b2d5e0cd4471b4d46a7edcf33f43f49a4f3695acf584fff92b3"
+            },
+            "src/entity/mob/tick/tick.c": {
+              "bytes": 10228,
+              "sha256": "ea3d9c1bf958069c7279772347916c589e74ca4caf942ab93487b90263323da1"
+            },
+            "tests/entity/test_monster_hurt.c": {
+              "bytes": 25567,
+              "sha256": "c79c945b8f7f10aaa4d1b6095ccf71dd29673c1e32a6aab3c285459478553c28"
+            }
+          },
+          "added": [
+            "cmake/mob_tick_diagnostics.cmake",
+            "src/entity/mob/tick/workspace_internal.h",
+            "tests/benchmarks/mob_tick/control_observer.c",
+            "tests/benchmarks/mob_tick/dispatch_candidate.c",
+            "tests/benchmarks/mob_tick/dispatch_legacy.c",
+            "tests/benchmarks/mob_tick/world_candidate.c",
+            "tests/benchmarks/mob_tick/world_legacy.c",
+            "tests/benchmarks/mob_tick_diagnostics.c",
+            "tests/benchmarks/mob_tick_diagnostics_adapter.h",
+            "tests/benchmarks/mob_tick_diagnostics_support.h",
+            "tests/entity/test_mob_workspace.c",
+            "tests/tools/entity/benchmark_mob_tick_diagnostics.py",
+            "tests/tools/entity/test_benchmark_mob_tick_diagnostics.py",
+            "tests/tools/entity/test_mob_workspace.py"
+          ],
+          "current_count": 2838
+        }
+      }
+    },
+    {
+      "from_commit": "2d9ea870c8be4566d02328e46813cc020743f78e",
+      "role": "Current invocation-owned World/Mob diagnostic storage, direct successful output finalization, retained failures and reentry/fallback controls, and the source-guarded four-way native CPU comparison with lossless compressed report. This entry binds current admission/publication inputs only. Earlier original and native observations, historical producers, supplier roles, sealed receipts and compiled products retain their separately recorded scope. No execution qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 730792,
+        "sha256": "40e342d85b6680e1847ef8ea9ecc861f962c73227408a47ff410bc0bef8eee7e"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "tests/entity/mount/test_mount.c": {
+              "bytes": 11453,
+              "sha256": "22d69ea3aa3a0879a588608333aa175992e9bb67642ad97f175c143122fd659e"
+            }
+          },
+          "added": [],
+          "current_count": 2838
         }
       }
     }

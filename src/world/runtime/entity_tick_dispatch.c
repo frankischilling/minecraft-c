@@ -1,4 +1,5 @@
 #include "../../entity/mob/internal.h"
+#include "../../entity/mob/tick/workspace_internal.h"
 #include "../../entity/player/tick_internal.h"
 #include "entity_tick_internal.h"
 
@@ -84,10 +85,19 @@ bool wt_tick(wt_scope *s, mc_entity *p, unsigned int pc) {
     } else if (mc_entity_has_mob(p) && mc_entity_is_kind(p, p->class_literal->kind)) {
         s->error.virtual_class = mob_tick_class(p->class_literal->kind);
         s->error.child = MC_WORLD_ENTITY_TICK_CHILD_MOB;
-        status = mc_mob_tick(p, s->context == NULL ? NULL : s->context->player.travel.code_registry,
+        /* At most one fixed diagnostic reservation per outer invocation.
+         * Like the old Mob diagnostic allocations it does not spend the
+         * independent relationship-array temporary budget. Optional malloc
+         * refusal introduces no new failure; the child runner falls back. */
+        if (!s->mob_workspace_attempted) {
+            s->mob_workspace_attempted = true;
+            s->mob_workspace = malloc(sizeof(*s->mob_workspace));
+        }
+        status =
+            mt_tick_in_place(p, s->context == NULL ? NULL : s->context->player.travel.code_registry,
                              s->context == NULL ? NULL : s->context->math,
                              s->context == NULL ? NULL : s->context->mob_limits,
-                             &s->error.child_error.mob);
+                             &s->error.child_error.mob, s->mob_workspace);
         observe_hurt(s, p);
     } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_FALLING_SAND)) {
         s->error.virtual_class = "ju";

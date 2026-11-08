@@ -1,5 +1,76 @@
 # Test scope and reproduction
 
+## World and Mob diagnostic storage
+
+The World success path writes the same fully initialized output directly,
+retaining only its actual value observation. The internal Mob path uses the
+World's working cell and an optional fixed environment/action workspace. Public
+Mob entries retain independent diagnostics. No Source getter, simulation step,
+callback, hold or selected failure is removed to obtain these storage changes.
+
+Production and each of four independently linked algorithm combinations pass
+the same six actual owner profiles, 943 native checks each, on Windows and
+Clang Debug Linux with ASan/UBSan, leak detection and halt-on-error. Profiles
+cover fresh poisoned attempts, native admission, environment/action and parent
+failure precedence, actual damage, pending wake cleanup refusal/retry, null
+outputs and whole FD.g reserve-bypass state. The bypass models a missing
+reservation; it is not an injected malloc-failure opportunity.
+
+An actual action callback rejects same-Mob reentry, enters another Mob and a
+nested World update, and retains the outer action bytes. A nested Pig update
+with action budget zero reaches its genuine selected failure; the outer action
+continues with its original positive budget. A World hit followed by a quiet
+Pig verifies that a fresh Mob cell cannot carry prior hurt credit. The earlier
+original Monster comparison and genuine World cleanup tests pass on the new
+runtime as well. Normal and optimized reader controls cover malformed native
+transport, source manifests, configuration freshness, stale products and input
+copy corruption.
+
+The [CPU document](performance/mob-tick-diagnostics.md) and its lossless report
+retain all sixteen balanced serial processes: 2,352 measured intervals,
+224 warmups and 41,216 actual FD.g returns. The build graph binds one identical
+workload object, crossed World/dispatch objects and identical ordered common
+archives. Actual linker maps reject accidental production-object extraction.
+Both dispatch algorithms use the same passive benchmark counter, and workspace
+rows require the real nonnull reservation. All 14,557 input guards and 422
+retained product/build-metadata identities pass independent verification.
+
+The first native CPU attempt fails before interval zero because its fixture
+mistakes serialized HeightMap 64 for nonserialized minimum height 64. A copied
+input probe finds actual zero, matching the original constructor/load path.
+Only that expectation is corrected; every plane and HeightMap check remains.
+The failed attempt and all raw inputs remain retained. Input preparation then
+authors one canonical terrain template and copies exact bytes into separate
+files for every fresh World, with template/producer/copy checks; no hardlinks
+are used. Every completed process compares source semantics with the first
+immediately, and all sixteen remain mandatory for an accepted result.
+
+Pooled busy medians and per-round differences remain observational. The
+identical empty legacy/workspace-only path exposes process/layout variation;
+it is not a universal error bar or correction. No original runtime elapsed,
+full Minecraft frame, loaded combat or FPS qualification follows.
+
+The final complete configured suites pass Windows 751/751 in 371.48 seconds
+and Clang Debug Linux 608/608 in 374.32 seconds with ASan/UBSan, leak detection
+and halt-on-error. Neither suite skips registered tests. Both complete builds
+pass; clang-format 18 covers 2,238 source/header/fragment files and strict GCC
+syntax checks pass all 14 changed C translation units. The exact 37-file
+execution delta and six admission tables retain their prelaunch hashes through
+both terminal results. Publication summaries and their admission refresh remain
+separate from the frozen execution archive.
+
+The first complete diagnostic cohorts pass Windows 751/751 in 382.29 seconds
+and Linux 607/608 in 371.65 seconds. Linux LeakSanitizer finds one 296,600-byte
+reservation in the mount fixture's direct internal World scope. That fixture
+called the genuine update body and freed the scope/parent ledger, but omitted
+the new optional child allocation. Production World runners already free it.
+An audit of all scope constructors and active-Mob callers finds no other
+allocating direct owner. The fixture now frees its own reservation after the
+source calls return. No runtime, source input or benchmark adapter changes.
+Focused mount checks then pass Windows and sanitized Linux; the failed cohort
+and leak trace remain retained. Fresh complete cohorts qualify the repaired
+fixture and its separately refreshed admission tables.
+
 ## Monster melee damage
 
 The [32-row original packet](../tests/reference/entity/monster_damage/README.md)

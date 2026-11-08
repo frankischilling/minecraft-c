@@ -15,19 +15,13 @@ typedef enum mob_entry {
 
 /* Closed native entries share the exact same admission and lifetime guard.
  * Selecting a protected component executes no enclosing Source tick body. */
-static mc_entity_status run(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
-                            const mc_mob_tick_limits *limits, mob_entry entry, mc_entity *target,
-                            float distance, mc_mob_tick_error *out) {
-    mc_mob_tick_error *e = malloc(sizeof(*e));
-    if (e == NULL) {
-        mc_mob_tick_error_init(out);
-        if (out != NULL) {
-            out->status = MC_ENTITY_ALLOCATION_FAILED;
-            out->operation = "Mob tick diagnostic workspace";
-            out->native_policy = true;
-        }
-        return MC_ENTITY_ALLOCATION_FAILED;
-    }
+static mc_entity_status run_entered(mc_entity *p, mc_registry_classes *registry,
+                                    mc_math_classes *math, const mc_mob_tick_limits *limits,
+                                    mob_entry entry, mc_entity *target, float distance,
+                                    mc_mob_tick_error *e,
+                                    mc_mob_tick_child_workspace *child_workspace) {
+    /* In-place World output must never expose a preceding Entity's state or
+     * hurt receipt on any new attempt, even a rejected admission. */
     mc_mob_tick_error_init(e);
     mc_player_action_context context = {0};
     context.travel.code_registry = registry;
@@ -39,6 +33,7 @@ static mc_entity_status run(mc_entity *p, mc_registry_classes *registry, mc_math
                            .registry = registry,
                            .math = math,
                            .error = e,
+                           .child_workspace = child_workspace,
                            .environment_limits = limits == NULL ? NULL : &limits->environment,
                            .action_context = &context,
                            .action_limits = limits == NULL ? NULL : &limits->action,
@@ -145,11 +140,39 @@ static mc_entity_status run(mc_entity *p, mc_registry_classes *registry, mc_math
         mc_entity_release(target);
     if (held && !s.hold_transferred)
         mc_entity_release(p);
-    const mc_entity_status status = e->status;
+    return e->status;
+}
+
+/* Public/protected callers retain the previous independent heap/output
+ * contract, including NULL output and allocation-refusal diagnostics. */
+static mc_entity_status run(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
+                            const mc_mob_tick_limits *limits, mob_entry entry, mc_entity *target,
+                            float distance, mc_mob_tick_error *out) {
+    mc_mob_tick_error *e = malloc(sizeof(*e));
+    if (e == NULL) {
+        mc_mob_tick_error_init(out);
+        if (out != NULL) {
+            out->status = MC_ENTITY_ALLOCATION_FAILED;
+            out->operation = "Mob tick diagnostic workspace";
+            out->native_policy = true;
+        }
+        return MC_ENTITY_ALLOCATION_FAILED;
+    }
+    const mc_entity_status status =
+        run_entered(p, registry, math, limits, entry, target, distance, e, NULL);
     if (out != NULL)
         *out = *e;
     free(e);
     return status;
+}
+
+mc_entity_status mt_tick_in_place(mc_entity *p, mc_registry_classes *registry,
+                                  mc_math_classes *math, const mc_mob_tick_limits *limits,
+                                  mc_mob_tick_error *working,
+                                  mc_mob_tick_child_workspace *scratch) {
+    if (working == NULL)
+        return run(p, registry, math, limits, MOB_ENTRY_TICK, NULL, 0.0f, NULL);
+    return run_entered(p, registry, math, limits, MOB_ENTRY_TICK, NULL, 0.0f, working, scratch);
 }
 
 mc_entity_status mc_mob_tick(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,

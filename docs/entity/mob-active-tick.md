@@ -63,6 +63,33 @@ entered World/PathFinder body; a failed search is not a returned null Path.
 Remaining drop and hurt boundaries preserve their evaluated operands.
 Constructor diagnostics remain unchanged by ticking.
 
+## Native diagnostic storage
+
+The World dispatcher supplies its existing Mob child cell as the working
+diagnostic. Every new attempt initializes it before owner/phase/active/pending
+admission, so a rejected Entity cannot inherit an earlier hurt receipt. Public
+Mob and protected-component entries retain their independent heap/output and
+null-output behavior.
+
+One outer World invocation may reserve a fixed child union on its first Mob.
+Environment and action use that union sequentially and keep their complete
+initializers. This union is separate from the parent detail: concrete behavior
+can write a selected ray, path or hurt failure while the action is still live.
+Selected failures copy into the parent before reuse; no producer owns a pointer
+into this scratch. The World frees it after output transfer, before retiring its
+own scope. Optional allocation refusal uses the existing child-allocation path
+without adding a source failure or spending the relationship-array budget.
+Nested World calls own separate scopes and reservations.
+
+On success the World initializes its actual caller output directly and copies
+the value-only Mob hurt observation. Failure transfers the same complete tagged
+diagnostic and retained producer work. The discarded private scratch needs no
+final erase before free. Five actual production/counterfactual profiles cover
+fresh attempts, selected failures, same-Mob refusal, different-Mob and nested
+World calls, active outer action storage, null outputs and checked cleanup.
+The [CPU record](../performance/mob-tick-diagnostics.md) reports the separate
+finite measurement and its process/layout limits.
+
 Creeper attack uses the actual signed watcher16 direction, fuse counter and
 remote-World field. Ignition starts below distance3; an already positive
 direction continues below7. The first fuse sound occurs at55 before watcher60

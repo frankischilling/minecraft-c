@@ -1,5 +1,30 @@
 # Development status
 
+World Mob ticks now use a private working diagnostic and one optional child
+workspace per outer World call. Successful World returns initialize the actual
+output directly. Environment/action storage remains separate from the parent's
+live failure union; nested calls get independent storage and native reserve
+refusal retains the existing fallback. Five production/counterfactual profiles
+each pass 943 ownership, failure and reentry checks on Windows and sanitized
+Linux. Complete configured suites pass Windows 751/751 in 371.48 seconds and
+sanitized Linux headless 608/608 in 374.32 seconds, without registered skips.
+Both complete builds pass; formatting covers 2,238 files and strict GCC syntax
+checks cover all 14 changed C translation units. The 37-file execution delta
+and six admission tables retain their prelaunch hashes.
+
+The [finite CPU comparison](performance/mob-tick-diagnostics.md) retains all
+16 processes, 2,352 measured intervals and 224 warmups with matching source
+state, Random, Chunk and ownership guards. Output finalization has a consistent
+empty-call benefit. Pig1 workspace timings improve in all four rounds; larger
+busy-cell differences are small or mixed, and an identical-path control exposes
+process/layout sensitivity. The workspace is retained for its bounded allocation
+and copy reduction, with no uniform busy-world or FPS claim.
+
+The published `2d9ea870` melee tree passes all four jobs in
+[hosted run 42450531488](https://github.com/frankischilling/minecraft-c/actions/runs/42450531488):
+Windows 756 tests, GCC and Clang 814 each, plus formatting. Its tested merge
+tree equals that published tree; it does not qualify the newer diagnostic work.
+
 The Monster melee configured suites pass Windows 742/742 in 373.84 seconds and
 sanitized Linux headless 599/599 in 368.16 seconds, without registered skips.
 Both complete builds pass; formatting covers 2,228 files and GCC strict syntax

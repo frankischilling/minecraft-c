@@ -13,12 +13,14 @@
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/environment.h"
 #include "mc/world/runtime/queries.h"
+#include "workspace_internal.h"
 
 typedef struct mc_mob_tick_scope {
     mc_entity *entity;
     mc_registry_classes *registry;
     mc_math_classes *math;
     mc_mob_tick_error *error;
+    mc_mob_tick_child_workspace *child_workspace;
     const mc_entity_tick_limits *environment_limits;
     const mc_player_action_context *action_context;
     const mc_player_action_limits *action_limits;

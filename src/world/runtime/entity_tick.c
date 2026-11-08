@@ -171,7 +171,7 @@ static mc_world_storage_status run(mc_world_runtime *world, mc_entity *entity, b
                                    bool wrapper, bool loops,
                                    const mc_world_entity_tick_context *context,
                                    const mc_world_entity_tick_limits *limits,
-                                   mc_world_entity_tick_error *out) {
+                                   mc_world_entity_tick_error *out, bool allow_mob_workspace) {
     if (world == NULL)
         return rejected(out, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World update receiver");
     if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
@@ -203,6 +203,9 @@ static mc_world_storage_status run(mc_world_runtime *world, mc_entity *entity, b
     s->world = world;
     s->context = context;
     s->has_error_output = out != NULL;
+    /* Native diagnostic choice only. The private control starts in the exact
+     * reserve-miss state without changing any source World/Entity input. */
+    s->mob_workspace_attempted = !allow_mob_workspace;
     s->error.max_loop_work =
         limits == NULL ? MC_WORLD_ENTITY_TICK_DEFAULT_LOOP_WORK : limits->max_loop_work;
     s->error.max_passenger_calls =
@@ -220,16 +223,21 @@ static mc_world_storage_status run(mc_world_runtime *world, mc_entity *entity, b
     const mc_world_storage_status status = s->error.status;
     world->last_error =
         status == MC_WORLD_STORAGE_OK ? (mc_world_storage_error){0} : s->error.cause;
-    if (status == MC_WORLD_STORAGE_OK) {
-        const mc_world_mob_hurt_observation observed = s->error.mob_hurt;
-        mc_world_entity_tick_error_init(&s->error);
-        s->error.mob_hurt = observed;
-    }
     if (out != NULL) {
-        *out = s->error;
-        /* Transfer any retained child work; the scratch no longer owns it. */
-        mc_world_entity_tick_error_init(&s->error);
+        if (status == MC_WORLD_STORAGE_OK) {
+            /* Source success publishes the same complete empty diagnostic,
+             * retaining only copied observations from this actual call. */
+            mc_world_entity_tick_error_init(out);
+            out->mob_hurt = s->error.mob_hurt;
+        } else {
+            /* Transfer the exact failed child and its retained work. The
+             * private scratch is freed below; it is never reused or retired. */
+            *out = s->error;
+        }
     }
+    /* Entered children have returned and any selected failure has been
+     * copied/transferred above; no diagnostic borrows this union's storage. */
+    free(s->mob_workspace);
     free(s);
     mc_world_runtime_call_leave(world);
     return status;
@@ -239,19 +247,29 @@ mc_world_storage_status mc_world_runtime_tick_entity(mc_world_runtime *w, mc_ent
                                                      const mc_world_entity_tick_context *c,
                                                      const mc_world_entity_tick_limits *l,
                                                      mc_world_entity_tick_error *e) {
-    return run(w, p, true, true, false, c, l, e);
+    return run(w, p, true, true, false, c, l, e, true);
 }
 
 mc_world_storage_status mc_world_runtime_update_entity(mc_world_runtime *w, mc_entity *p, bool flag,
                                                        const mc_world_entity_tick_context *c,
                                                        const mc_world_entity_tick_limits *l,
                                                        mc_world_entity_tick_error *e) {
-    return run(w, p, flag, false, false, c, l, e);
+    return run(w, p, flag, false, false, c, l, e, true);
 }
 
 mc_world_storage_status mc_world_runtime_tick_entities(mc_world_runtime *w,
                                                        const mc_world_entity_tick_context *c,
                                                        const mc_world_entity_tick_limits *l,
                                                        mc_world_entity_tick_error *e) {
-    return run(w, NULL, false, false, true, c, l, e);
+    return run(w, NULL, false, false, true, c, l, e, true);
+}
+
+/* Native-only functional control: actual complete FD.g with the optional
+ * diagnostic reserve bypassed. This is not an authored malloc failure and
+ * is not the timed default caller. Existing public entries remain default. */
+mc_world_storage_status
+wt_tick_entities_without_mob_workspace(mc_world_runtime *w, const mc_world_entity_tick_context *c,
+                                       const mc_world_entity_tick_limits *l,
+                                       mc_world_entity_tick_error *e) {
+    return run(w, NULL, false, false, true, c, l, e, false);
 }

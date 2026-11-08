@@ -333,6 +333,20 @@ static bool hurt_world_observation(const mc_world_mob_hurt_observation *value, m
     return true;
 }
 
+/* The actual returned hurt observation is checked independently above. All
+ * earlier bytes must still be the complete old success initializer, including
+ * every scalar, sentinel, producer view and inactive child byte. Heap-only. */
+static bool hurt_world_success_defaults(const mc_world_entity_tick_error *actual) {
+    mc_world_entity_tick_error *expected = malloc(sizeof(*expected));
+    if (expected == NULL)
+        return false;
+    mc_world_entity_tick_error_init(expected);
+    const bool equal =
+        memcmp(actual, expected, offsetof(mc_world_entity_tick_error, mob_hurt)) == 0;
+    free(expected);
+    return equal;
+}
+
 static bool hurt_world(const char *resources, bool fail_wake) {
     fixture *f = calloc(1, sizeof(*f));
     mc_world_entity_tick_error *e = calloc(1, sizeof(*e));
@@ -370,6 +384,9 @@ static bool hurt_world(const char *resources, bool fail_wake) {
     context.player.travel.trig = mc_math_classes_table(math);
     context.player.travel.math = math;
     context.math = math;
+    /* This fresh output owns no producer. Success must clear all old bytes;
+     * failure must replace them with the exact selected retained child. */
+    memset(e, 0xa5, sizeof(*e));
     const mc_world_storage_status status =
         mc_world_runtime_tick_entity(f->world, actor, &context, NULL, e);
     CHECK(hurt_world_observation(&e->mob_hurt, actor, f->player, !fail_wake));
@@ -379,8 +396,8 @@ static bool hurt_world(const char *resources, bool fail_wake) {
         /* Success has really reset the top diagnostic; only the value-only
          * receipt survives, independently of its former Mob/Effect union. */
         CHECK(status == MC_WORLD_STORAGE_OK && e->status == MC_WORLD_STORAGE_OK &&
-              e->child == MC_WORLD_ENTITY_TICK_CHILD_NONE && e->operation == NULL &&
-              e->source_class == NULL && e->bytecode == 0 &&
+              hurt_world_success_defaults(e) && e->child == MC_WORLD_ENTITY_TICK_CHILD_NONE &&
+              e->operation == NULL && e->source_class == NULL && e->bytecode == 0 &&
               f->player->local_player->fields.living.Y == 15 &&
               !mc_entity_effect_has_pending(f->player) && f->player->holds >= player_holds);
     } else {

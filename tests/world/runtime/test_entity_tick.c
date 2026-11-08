@@ -481,6 +481,19 @@ cleanup:
     return ok;
 }
 
+/* Native output-representation control: fresh successful FD.g publishes the
+ * complete initializer defaults, including its inactive child storage. No
+ * inactive child is interpreted as a source diagnostic or ownership right. */
+static bool tick_success_initialized(const mc_world_entity_tick_error *actual) {
+    mc_world_entity_tick_error *expected = malloc(sizeof(*expected));
+    if (expected == NULL)
+        return false;
+    mc_world_entity_tick_error_init(expected);
+    const bool equal = memcmp(actual, expected, sizeof(*expected)) == 0;
+    free(expected);
+    return equal;
+}
+
 static bool world_native_ownership(fixture *f, mc_entity *p, mc_entity *q) {
     bool ok = false, inserted = false;
     mc_world_runtime *w = f->worlds[0];
@@ -492,8 +505,17 @@ static bool world_native_ownership(fixture *f, mc_entity *p, mc_entity *q) {
     scope->error.max_loop_work = 1048576;
     scope->error.max_temporary_bytes = 16u * 1024u * 1024u;
     CHECK(tick_clear(f));
+    /* The previous diagnostic owns no work after tick_clear. Poison only the
+     * writable native output, so every success default must be replaced. */
+    memset(tick_error, 0xa5, sizeof(*tick_error));
     CHECK(mc_world_runtime_tick_entities(w, NULL, NULL, tick_error) == MC_WORLD_STORAGE_OK);
-    CHECK(tick_error->weather_index == -1 && tick_error->child == MC_WORLD_ENTITY_TICK_CHILD_NONE);
+    CHECK(tick_success_initialized(tick_error));
+    const size_t active_before = w->active_calls, bindings_before = w->persistent_bindings;
+    const uint64_t random_before = w->fields.r->state;
+    CHECK(mc_world_runtime_tick_entities(w, NULL, NULL, NULL) == MC_WORLD_STORAGE_OK &&
+          w->active_calls == active_before && w->persistent_bindings == bindings_before &&
+          w->fields.r->state == random_before && w->last_error.status == MC_WORLD_STORAGE_OK &&
+          w->last_error.operation == NULL && w->last_error.system_error == 0);
     const unsigned int csr = _mm_getcsr();
     _mm_setcsr((csr & ~0x6000u) | 0x6000u);
     const mc_world_storage_status empty_fp =

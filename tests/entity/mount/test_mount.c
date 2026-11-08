@@ -171,6 +171,9 @@ static bool jockey_tick(random_fixture *f, mc_entity *rider, mc_entity *spider) 
     (void)mc_entity_mount_passenger_store(spider, NULL);
     spider->base.be = false;
     CHECK(mc_entity_mount(rider, spider, NULL, 0, NULL) == MC_ENTITY_OK);
+    /* This direct internal caller owns the optional diagnostic reservation,
+     * just as the public World runner owns its own invocation's scratch. */
+    free(scope->mob_workspace);
     free(scope->parents);
     free(scope);
     free(e);

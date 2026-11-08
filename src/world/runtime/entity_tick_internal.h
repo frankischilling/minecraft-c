@@ -23,7 +23,22 @@ typedef struct wt_scope {
     mc_entity **parents;
     size_t parent_count, parent_capacity, temporary_bytes;
     bool has_error_output;
+    /* Optional fixed diagnostic reservation, owned by THIS outer invocation.
+     * It is separate from the parent/child error and from the bounded dynamic
+     * relationship array. A failed reservation keeps legacy child allocation.
+     * Nested World calls allocate their own scope; no World/Mob cache exists. */
+    union mc_mob_tick_child_workspace *mob_workspace;
+    bool mob_workspace_attempted;
 } wt_scope;
+
+/* Native functional control for the same complete FD.g run. It disables only
+ * the optional diagnostic reservation, making reached Mob children use the
+ * scratch-NULL fallback. No gameplay input or public default is changed; this
+ * control does not claim that a real allocator failed. */
+mc_world_storage_status wt_tick_entities_without_mob_workspace(mc_world_runtime *,
+                                                               const mc_world_entity_tick_context *,
+                                                               const mc_world_entity_tick_limits *,
+                                                               mc_world_entity_tick_error *);
 
 bool wt_fail(wt_scope *, mc_world_storage_status, const char *);
 bool wt_cause(wt_scope *, mc_world_storage_error);
