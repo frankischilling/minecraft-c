@@ -1,6 +1,7 @@
 include_guard(GLOBAL)
 
-# Single-interval CPU workload only. No CTest/driver, Source overlay or allocator probe.
+# Uninstrumented CPU workload: one interval or a fixed fresh-fixture cohort.
+# No CTest, Source overlay or allocator probe.
 if(MC_BUILD_BENCHMARKS AND BUILD_TESTING)
     add_library(mc_benchmark_arrow_world_tick_workload OBJECT
         tests/benchmarks/arrow_world_tick_baseline.c)

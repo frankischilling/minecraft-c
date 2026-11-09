@@ -1,4 +1,4 @@
-/* Uninstrumented fixed FD.g baseline: one fresh cell, eight real World calls.
+/* Uninstrumented FD.g baseline: one interval or a fixed fresh-fixture cohort.
  * Setup, snapshots, checks, output and checked retirement are outside clock. */
 #if !defined(_WIN32)
 #define _POSIX_C_SOURCE 200809L
@@ -23,7 +23,15 @@ int am_unused_natural_flight_main(int, char **);
 
 #include <inttypes.h>
 
-enum { AM_ARROWS = 8, AM_CHUNKS = 30, AM_TICKS = 8 };
+enum {
+    AM_ARROWS = 8,
+    AM_CHUNKS = 30,
+    AM_TICKS = 8,
+    AM_WARMUPS = 2,
+    AM_MEASUREMENTS = 21,
+    AM_INTERVALS = AM_WARMUPS + AM_MEASUREMENTS,
+    AM_CLOCK_PAIRS = 64
+};
 
 typedef struct am_actor {
     mc_entity_snapshot entity;
@@ -357,6 +365,13 @@ static bool am_cleanup(am_run *r) {
         r->actors[i] = NULL; /* Consume only the caller occurrence, not Source membership. */
     }
     r->cleanup = nf_cleanup(&r->setup); /* Real terminal containers; never World.R source clear. */
+    if (r->cleanup) {
+        /* nf_cleanup completed real error/World/class/Math retirement first.
+         * These globals are only borrowed native fixture observations. They
+         * must not retain freed owners into the next independent setup. */
+        tick_context = (mc_world_entity_tick_context){0};
+        tick_chunk = NULL;
+    }
     return r->cleanup;
 }
 
@@ -549,31 +564,29 @@ static bool am_constructor_json(FILE *out, const am_run *r, size_t i) {
     return fputs("}\n", out) != EOF;
 }
 
-int main(int argc, char **argv) {
-    char root[8192];
-    size_t count = 0;
-    if (argc != 4 || !decode_path(argv[2], root, sizeof(root)))
-        return 2;
-    if (strcmp(argv[1], "arrow1") == 0)
-        count = 1;
-    else if (strcmp(argv[1], "arrow8") == 0)
-        count = 8;
-    else if (strcmp(argv[1], "empty") != 0)
-        return 2;
+static bool am_run_interval(FILE *out, const char *cell, const char *root, size_t count) {
+    /* No old owning error or borrowed Chunk may survive checked retirement.
+     * A failed previous interval never calls this routine again. */
+    if (out == NULL || tick_error != NULL || tick_chunk != NULL)
+        return false;
+    const unsigned int checks_before = checks;
 #if defined(_WIN32)
     const char *clock_name = "qpc";
 #else
     const char *clock_name = "monotonic";
 #endif
-    FILE *out = fopen(argv[3], "wx");
     am_run *r = calloc(1, sizeof(*r));
-    if (out == NULL || r == NULL)
-        return 1;
+    if (r == NULL)
+        return false;
     r->count = count;
     r->errors = calloc(AM_TICKS, sizeof(*r->errors));
     r->observations = calloc(2, sizeof(*r->observations));
-    if (r->errors == NULL || r->observations == NULL)
-        return 1;
+    if (r->errors == NULL || r->observations == NULL) {
+        free(r->errors);
+        free(r->observations);
+        free(r);
+        return false;
+    }
     for (size_t tick = 0; tick < AM_TICKS; ++tick)
         mc_world_entity_tick_error_init(&r->errors[tick]);
     bool ok = am_frequency(&r->frequency) && am_setup(r, root);
@@ -624,8 +637,7 @@ int main(int argc, char **argv) {
                 ",\"clock\":\"%s\",\"clock_ok\":%s,\"validated\":%s,"
                 "\"dispatch_path_proofs\":%s,\"allocator_observed\":false,"
                 "\"attribution\":false,\"statuses\":[",
-                argv[1], count, r->attempted, r->returned, r->begin, r->end, r->frequency,
-                clock_name,
+                cell, count, r->attempted, r->returned, r->begin, r->end, r->frequency, clock_name,
                 r->clock_started && r->clock_ended && r->end >= r->begin ? "true" : "false",
                 r->validated ? "true" : "false", proofs) > 0;
     for (size_t tick = 0; written && tick < r->attempted; ++tick)
@@ -646,8 +658,9 @@ int main(int argc, char **argv) {
         fprintf(out,
                 "{\"event\":\"footer\",\"complete\":%s,\"cleanup\":%s,"
                 "\"checks\":%u,\"scope\":\"uninstrumented-single-interval-no-attribution-FPS\"}\n",
-                ok && cleaned ? "true" : "false", cleaned ? "true" : "false", checks) > 0;
-    written = fclose(out) == 0 && written;
+                ok && cleaned ? "true" : "false", cleaned ? "true" : "false",
+                checks - checks_before) > 0;
+    written = fflush(out) == 0 && written;
     const bool passed = ok && cleaned && written;
     if (cleaned) {
         free(r->observations);
@@ -656,8 +669,117 @@ int main(int argc, char **argv) {
     }
     if (!passed) {
         fputs("Arrow baseline failed; retain inputs/raw row/actual unfinished owners\n", stderr);
-        return 1;
+        return false;
     }
-    printf("Arrow World baseline: cell=%s eight actual FD.g returns; checked cleanup\n", argv[1]);
-    return 0;
+    printf("Arrow World baseline: cell=%s eight actual FD.g returns; checked cleanup\n", cell);
+    return true;
+}
+
+/* Clock observations are outside every fixture and World interval. Keep the
+ * actual pairs; never subtract or normalize these deltas into Source timing. */
+static bool am_clock_pairs(FILE *out) {
+    struct {
+        int64_t start, end;
+        bool started, ended;
+    } pairs[AM_CLOCK_PAIRS] = {{0}};
+
+    int64_t frequency = 0;
+    if (!am_frequency(&frequency))
+        return false;
+    size_t attempted = 0;
+    bool ok = true;
+    for (size_t i = 0; i < AM_CLOCK_PAIRS; ++i) {
+        ++attempted;
+        pairs[i].started = am_clock(&pairs[i].start);
+        pairs[i].ended = am_clock(&pairs[i].end);
+        if (!pairs[i].started || !pairs[i].ended || pairs[i].end < pairs[i].start) {
+            ok = false;
+            break;
+        }
+    }
+    bool written = true;
+    for (size_t i = 0; written && i < attempted; ++i)
+        written = fprintf(out,
+                          "{\"event\":\"clock_pair\",\"schema\":2,\"index\":%zu,"
+                          "\"start\":%" PRId64 ",\"end\":%" PRId64 ",\"frequency\":%" PRId64
+                          ",\"ok\":%s}\n",
+                          i, pairs[i].start, pairs[i].end, frequency,
+                          pairs[i].started && pairs[i].ended && pairs[i].end >= pairs[i].start
+                              ? "true"
+                              : "false") > 0;
+    return fflush(out) == 0 && written && ok;
+}
+
+static bool am_cohort(FILE *out, const char *cell, const char *parent, size_t count) {
+    bool written = fprintf(out,
+                           "{\"event\":\"cohort_header\",\"schema\":2,"
+                           "\"variant\":\"uninstrumented\",\"cell\":\"%s\","
+                           "\"warmups\":2,\"measurements\":21,\"intervals\":23,"
+                           "\"requested_calls\":8,\"clock_pairs\":64}\n",
+                           cell) > 0;
+    if (fflush(out) != 0 || !written)
+        return false;
+    const bool calibrated = am_clock_pairs(out);
+    size_t attempted = 0, completed = 0;
+    for (size_t index = 0; calibrated && index < AM_INTERVALS; ++index) {
+        char root[8192];
+        const int length = snprintf(root, sizeof(root), "%s/interval-%02zu", parent, index);
+        if (length <= 0 || (size_t)length >= sizeof(root)) {
+            written = false;
+            break;
+        }
+        const char *const kind = index < AM_WARMUPS ? "warmup" : "measure";
+        const size_t ordinal = index < AM_WARMUPS ? index : index - AM_WARMUPS;
+        written = fprintf(out,
+                          "{\"event\":\"cohort_interval_begin\",\"schema\":2,"
+                          "\"index\":%zu,\"kind\":\"%s\",\"ordinal\":%zu}\n",
+                          index, kind, ordinal) > 0;
+        if (fflush(out) != 0 || !written) {
+            written = false;
+            break;
+        }
+        ++attempted;
+        const bool passed = am_run_interval(out, cell, root, count);
+        written = fprintf(out,
+                          "{\"event\":\"cohort_interval_end\",\"schema\":2,"
+                          "\"index\":%zu,\"kind\":\"%s\",\"ordinal\":%zu,"
+                          "\"passed\":%s}\n",
+                          index, kind, ordinal, passed ? "true" : "false") > 0;
+        /* Even a failed opportunity is flushed. Never enter another fixture
+         * after any failed Source call, report write or checked retirement. */
+        if (fflush(out) != 0 || !written || !passed) {
+            written = false;
+            break;
+        }
+        ++completed;
+    }
+    const bool complete = calibrated && written && completed == AM_INTERVALS;
+    written = fprintf(out,
+                      "{\"event\":\"cohort_footer\",\"schema\":2,\"complete\":%s,"
+                      "\"attempted\":%zu,\"completed\":%zu,\"checks\":%u}\n",
+                      complete ? "true" : "false", attempted, completed, checks) > 0;
+    return fflush(out) == 0 && written && complete;
+}
+
+int main(int argc, char **argv) {
+    char root[8192];
+    size_t count = 0;
+    const bool cohort = argc == 5 && strcmp(argv[4], "--cohort") == 0;
+    if ((argc != 4 && !cohort) || !decode_path(argv[2], root, sizeof(root)))
+        return 2;
+    if (strcmp(argv[1], "arrow1") == 0)
+        count = 1;
+    else if (strcmp(argv[1], "arrow8") == 0)
+        count = 8;
+    else if (strcmp(argv[1], "empty") != 0)
+        return 2;
+    /* Caller prepares all fresh interval-00..22 directories before this call.
+     * No fixture retry, reuse, recursive deletion or filesystem reset occurs. */
+    FILE *out = fopen(argv[3], "wx");
+    if (out == NULL)
+        return 1;
+    const bool passed =
+        cohort ? am_cohort(out, argv[1], root, count) : am_run_interval(out, argv[1], root, count);
+    const bool closed = fclose(out) == 0;
+    return passed && closed ? 0 : 1;
 }

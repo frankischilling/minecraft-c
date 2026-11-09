@@ -9862,12 +9862,12 @@
       "sha256": "2871f208485700afc6d6411cfe05a41fd00fedafa876d01c92a00a17f2ad8a4b"
     },
     "cmake/arrow_world_tick_baseline.cmake": {
-      "bytes": 1374,
-      "sha256": "2d695abc988d6fea1ae0b8c5758256080c8a0705255787c46258582e12dce2fd"
+      "bytes": 1409,
+      "sha256": "1f6b7998f455f3efb6f113598dca2fe09a94520337455a6e0809cd1ec97ac338"
     },
     "tests/benchmarks/arrow_world_tick_baseline.c": {
-      "bytes": 32854,
-      "sha256": "dc1564f4c5fea9519f00c2fc08efbee92e42fd1705419f191fe05296a386b9ea"
+      "bytes": 38188,
+      "sha256": "562becd3fe8ad0afba11e9ab0f6a2c19b877b99a9b7c74e28ad6a991c269cd2a"
     }
   },
   "source_suppliers": {
@@ -17654,6 +17654,30 @@
             "tests/tools/entity/test_damage_native_close.py": {
               "bytes": 17605,
               "sha256": "69256eb3e8db0a8b0b6a6a0fbaffa6940d8c835c81b295a49e98f2f82207354c"
+            }
+          },
+          "added": [],
+          "current_count": 2467
+        }
+      }
+    },
+    {
+      "from_commit": "446fc86af727cb99278d727e01d3f5069f561b14",
+      "role": "Current source admissions for an optional uninstrumented Arrow World tick baseline and its registration. Production runtime and headers remain unchanged. Historical suppliers and observations stay separate. Actual compilation, qualification, timing, attribution and FPS require separate evidence.",
+      "previous_metadata": {
+        "bytes": 765082,
+        "sha256": "f6c403fd59c6d93dcda4c07ab6b55e5278cb85cc77807d241e46943b928a5301"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "cmake/arrow_world_tick_baseline.cmake": {
+              "bytes": 1374,
+              "sha256": "2d695abc988d6fea1ae0b8c5758256080c8a0705255787c46258582e12dce2fd"
+            },
+            "tests/benchmarks/arrow_world_tick_baseline.c": {
+              "bytes": 32854,
+              "sha256": "dc1564f4c5fea9519f00c2fc08efbee92e42fd1705419f191fe05296a386b9ea"
             }
           },
           "added": [],

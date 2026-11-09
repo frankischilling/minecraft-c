@@ -4,17 +4,39 @@
 
 The optional [World tick baseline](performance/arrow-world-tick-baseline.md)
 qualifies empty, one-Arrow and eight-Arrow inputs using thirty real loaded air
-Chunks and eight actual World calls per process. Three fresh Windows x64 MSVC
-Release processes pass 4,752 checks and ordinary checked cleanup; all raw clock,
+Chunks and eight actual World calls per interval. The initial three Windows x64
+MSVC Release processes pass 4,752 checks and ordinary checked cleanup; all raw clock,
 constructor, Random, cache, context and ownership observations remain retained.
 The source/path proofs0/8/64 are not observed allocator counts. These single
 cold intervals provide no allocation attribution, repeated-cohort or FPS result.
 The workload's Linux clock branch remains unqualified by this local run.
 
-Eighteen affected Windows regressions pass in 27.81 seconds after exact current
-SDK and close-control CMake supplier updates. The first strict compiler failure
-and four earlier preflight refusals remain recorded. No assertion, production
+The initial eighteen affected Windows regressions pass in 27.81 seconds after
+exact current SDK and close-control CMake supplier updates. The first strict
+compiler failure and four earlier preflight refusals remain recorded. No assertion, production
 body or warning setting is weakened.
+
+The workload also supports final `--cohort` after its existing cell/root-hex/output
+operands. The caller prepares 23 fresh `interval-00`..`interval-22` directories
+below the decoded parent; each interval constructs its own World and retains the
+full schema1 group. Schema2 envelopes identify two warmups and 21 measured
+intervals, with 64 separate raw clock pairs before the first fixture. Output is
+flushed before another setup, and native borrowed context is detached only after
+full checked cleanup. The external cohort uses four independent serial
+processes per cell. The interval unit remains eight whole `FD.g` calls.
+
+All twelve Windows x64 i9-10900F/strict MSVC Release processes pass complete,
+reaped capture, empty stderr, the full reader, source/product guards and checked
+cleanup. The independent retained-data audit covers 276 intervals (24 warmups,
+252 measured), 2,208 OK World returns and 437,184 checks. All 828 constructors,
+2,484 Gaussian calls, 552 snapshots, 16,560 Chunk records and 768 separate raw
+clock pairs remain retained. No cohort opportunity failed or was retried.
+The [workload guide](performance/arrow-world-tick-baseline.md) gives the four
+process medians and observed ranges for each cell. These establish a local repeated
+baseline, with no allocation attribution, bottleneck, optimization or FPS claim.
+The three cold qualifications and their earlier failures remain historical.
+The same eighteen affected regressions pass the updated source in 26.42 seconds
+with no skips; complete JUnit, LastTest and raw captures are retained.
 
 ## Recorded Living sound and Player ally close
 
