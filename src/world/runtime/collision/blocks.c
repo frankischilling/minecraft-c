@@ -1,4 +1,7 @@
+#include "blocks_execution_internal.h"
 #include "blocks_internal.h"
+
+#include "../execution_children_internal.h"
 
 #include "../../../block/registry/registry_internal.h"
 #include "../../../block/registry/runtime_internal.h"
@@ -93,10 +96,44 @@ static mc_world_storage_status bounds_status(mc_entity_status status) {
     }
 }
 
+/* Borrowed stack descriptor only. The same actual value body is used by the
+ * legacy held entry and the explicit owned entry. The caller owns every World,
+ * defining code/Registry/resources and required result; no permanent World
+ * context, second getter, manual loader API or ambient owner selection. */
+typedef struct block_value_execution {
+    mc_entity_tick_execution *execution;
+    mc_world_runtime_execution_code code;
+    mc_world_runtime_execution_result *owned;
+} block_value_execution;
+
+static bool block_value_pending(const mc_world_runtime_execution_result *owned) {
+    if (owned->root_pending)
+        return true;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (owned->pending[i].used)
+            return true;
+    return false;
+}
+
+/* Native preflight diagnostics preserve the same outer collision frame as the
+ * held body, without reading source World/provider/Chunk fields or touching out. */
+static mc_world_storage_status block_value_refused(int32_t x, int32_t y, int32_t z,
+                                                   mc_world_collision_error *error,
+                                                   mc_world_storage_error refused) {
+    if (error != NULL) {
+        mc_world_nearby_error_init(&error->nearby);
+        error->x = x;
+        error->y = y;
+        error->z = z;
+        (void)cause(error, refused);
+    }
+    return refused.status;
+}
+
 /* A separate per-attempt record prevents a later getter from inheriting an
  * unrelated World diagnostic, including during synchronous acquisition. */
 static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk_state **out,
-                    mc_world_collision_error *error) {
+                    mc_world_collision_error *error, const block_value_execution *query) {
     mc_world_nearby_error *lower = &error->nearby;
     lower->query.provider_bytecode = 6;
     if (world->fields.v == NULL) {
@@ -116,10 +153,33 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk_stat
         return false;
     }
     mc_world_runtime_acquisition_error child;
-    lower->query.acquisition = mc_world_runtime_get_detailed(world, mc_java_i32_shr(x, 4),
-                                                             mc_java_i32_shr(z, 4), out, &child);
+    lower->query.acquisition =
+        query == NULL
+            ? mc_world_runtime_get_detailed(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4),
+                                            out, &child)
+            : mc_world_runtime_get_in_execution(query->execution, world, query->code,
+                                                mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), out,
+                                                &child, query->owned);
     if (lower->query.acquisition != MC_CHUNK_ACQUIRE_OK) {
         lower->query.source_chunk = child.source_chunk;
+        /* Kernel already selected/retained the ACTUAL returned attempt before
+         * its local frame left. Read only that explicit completed failure;
+         * forwarded child status need not equal the enclosing acquire status. */
+        if (query != NULL && query->owned->selection_ready) {
+            mc_entity_tick_execution_loader_view selected;
+            if (mc_entity_tick_execution_loader_read(query->execution, &query->owned->selection,
+                                                     &selected) &&
+                selected.status != MC_CHUNK_ACQUIRE_OK) {
+                lower->query.source_chunk = selected.failure;
+            } else {
+                /* Do not publish an unvalidated raw selected borrow. The
+                 * actual Source cause below and the result/token remain. */
+                lower->query.source_chunk = NULL;
+                mc_world_runtime_execution_result_note(
+                    query->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                    "Collision block value selected loader view", query->execution->site);
+            }
+        }
         lower->query.registry = child.registry;
         lower->query.population = child.population;
         lower->tile_entity = child.tile_entity;
@@ -140,14 +200,36 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk_stat
                  "Collision Chunk acquisition");
         return false;
     }
+    if (query != NULL) {
+        /* Actual GET success is distinct from checked bookkeeping success.
+         * Preserve the entire pending result and stop before Chunk/payload
+         * work. Native continuation retry never resumes this Source body. */
+        if (query->owned->ownership_status != MC_WORLD_STORAGE_OK) {
+            fail(error, query->owned->ownership_status,
+                 "Collision block value owned acquisition completion");
+            return false;
+        }
+        if (query->owned->selection_ready &&
+            query->owned->selection.status == MC_CHUNK_ACQUIRE_OK &&
+            !block_value_pending(query->owned)) {
+            query->owned->selection_ready = false;
+        } else {
+            mc_world_runtime_execution_result_note(
+                query->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                "Collision block value completed acquisition outcome", query->execution->site);
+            fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                 "Collision block value completed acquisition outcome");
+            return false;
+        }
+    }
     lower->query.provider_bytecode = 0;
     return true;
 }
 
-mc_world_storage_status mc_world_collision_block_value_held(mc_world_runtime *world, int32_t x,
-                                                            int32_t y, int32_t z, bool metadata,
-                                                            int32_t *out,
-                                                            mc_world_collision_error *error) {
+static mc_world_storage_status block_value_run(mc_world_runtime *world, int32_t x, int32_t y,
+                                               int32_t z, bool metadata, int32_t *out,
+                                               mc_world_collision_error *error,
+                                               const block_value_execution *query) {
     mc_world_collision_error frame;
     if (error == NULL)
         mc_world_collision_error_init(&frame);
@@ -169,7 +251,7 @@ mc_world_storage_status mc_world_collision_block_value_held(mc_world_runtime *wo
     } else {
         frame.nearby.query.bytecode = 48;
         mc_chunk_state *state = NULL;
-        if (!acquire(world, x, z, &state, &frame))
+        if (!acquire(world, x, z, &state, &frame, query))
             status = frame.nearby.query.status;
         else {
             frame.nearby.query.bytecode = metadata ? 68u : 60u;
@@ -230,6 +312,59 @@ mc_world_storage_status mc_world_collision_block_value_held(mc_world_runtime *wo
     }
     if (error != NULL)
         *error = frame;
+    return status;
+}
+
+mc_world_storage_status mc_world_collision_block_value_held(mc_world_runtime *world, int32_t x,
+                                                            int32_t y, int32_t z, bool metadata,
+                                                            int32_t *out,
+                                                            mc_world_collision_error *error) {
+    return block_value_run(world, x, y, z, metadata, out, error, NULL);
+}
+
+mc_world_storage_status mc_world_collision_block_value_in_execution(
+    mc_entity_tick_execution *execution, mc_world_runtime *world,
+    mc_world_runtime_execution_code code, int32_t x, int32_t y, int32_t z, bool metadata,
+    int32_t *out, mc_world_collision_error *error, mc_world_runtime_execution_result *owned) {
+    if (owned != NULL)
+        mc_world_runtime_execution_result_init(owned);
+    const mc_entity_tick_execution_site site =
+        execution != NULL && execution->identity == execution
+            ? execution->site
+            : (mc_entity_tick_execution_site){NULL, NULL, NULL, -1};
+    if (execution == NULL || owned == NULL) {
+        mc_world_runtime_execution_result_note(owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "Collision block value execution/result required",
+                                               site);
+        return block_value_refused(
+            x, y, z, error,
+            (mc_world_storage_error){MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                     "Collision block value execution/result required", 0});
+    }
+    mc_world_access_failure_lease *unused = NULL;
+    const mc_world_storage_status admitted =
+        mc_world_execution_child_lease(execution, world, &unused);
+    if (admitted != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(
+            owned, admitted, "Collision block value evaluated World ownership", site);
+        return block_value_refused(
+            x, y, z, error,
+            (mc_world_storage_error){admitted, "Collision block value evaluated World ownership",
+                                     0});
+    }
+    mc_world_storage_error native = {0};
+    const mc_world_storage_status entered = mc_world_runtime_call_enter(world, &native);
+    if (entered != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(owned, entered,
+                                               "Collision block value World call admission", site);
+        return block_value_refused(x, y, z, error, native);
+    }
+    const block_value_execution query = {execution, code, owned};
+    const mc_world_storage_status status =
+        block_value_run(world, x, y, z, metadata, out, error, &query);
+    /* Leave the exact evaluated/entered World even if a genuine nested child
+     * left another neutral scope current after checked cleanup refused. */
+    mc_world_runtime_call_leave(world);
     return status;
 }
 

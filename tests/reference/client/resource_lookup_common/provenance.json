@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 223179,
-      "sha256": "12d3f3d78a28bcc040c963ba570b5dbb95a0717622075efa04eacfcd1258eb9c"
+      "bytes": 224145,
+      "sha256": "78a6c33f781a08b11169d2f464dce09d21ebf1ae24b0092140fe0f276f13a12e"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 577656,
-      "sha256": "419f91fa358093fe2d2cdd43b84c49217e1465fc426bf461ceae22399196bb05"
+      "bytes": 579408,
+      "sha256": "d43a39d4216c5da40965d8a331d7c8975a34b9e13431b023a2636b0a9676d0a2"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
@@ -4622,8 +4622,8 @@
       "sha256": "a5508eef58b78dc8f3626b4871d55380883ba13882e105af3c6bc811897a0a2f"
     },
     "src/world/runtime/collision/blocks.c": {
-      "bytes": 79838,
-      "sha256": "6c97f81293280e19f2748dcd942c577acf4f24c533d1b4a639736fe68b49398d"
+      "bytes": 86765,
+      "sha256": "01ebef6359ebc53f5936360039a69287510f957a8d220241fa9f037243f22546"
     },
     "src/world/runtime/collision/blocks_internal.h": {
       "bytes": 8777,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 723842,
-      "sha256": "aeaaa9dcb7ffb386c8ada734f0ef1d940c7b6d5712bb2b4de9b206c23a713aff"
+      "bytes": 725841,
+      "sha256": "0117559bed021ec0fa81df7d748644f97befe63661b08a12d968a434ed1fb6f3"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 821727,
-      "sha256": "03b1672986a96230f2f043713920a02ee7dfc97644d31e5dc71ba543c3a43bdc"
+      "bytes": 823918,
+      "sha256": "d6289e6c758685546826f1216af8c1399b2f55da908827e9827fa6b48c768ec2"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 720821,
-      "sha256": "efda0dd50b2e4ec448ce734ebd8a178558661c9f9ace16b8a2eedd0c8e3e6fc9"
+      "bytes": 722820,
+      "sha256": "331040b76760697f2c0c215563716cb57ac48b902bbb237acd01bf68e87010d3"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -23326,12 +23326,12 @@
       "sha256": "72516a6341f46c9d1031e7b55d823725c22ec37d089b43e0246abbe592400c93"
     },
     "docs/world/world-acquisition-execution.md": {
-      "bytes": 10584,
-      "sha256": "d3dbac0fa0b05250039fe45ba383312ca89d20c8269b94b433928e21cd2a2a92"
+      "bytes": 11758,
+      "sha256": "4eb870975d6233388ea2f16fc0dac79e961598e1adbfbfd2b5c9232299e8c100"
     },
     "cmake/tests/world_query_controls.cmake": {
-      "bytes": 3377,
-      "sha256": "3788a7ce3aecbb94b129668645f1a0016782aba7ae0bd7816c6f9d24618b36d5"
+      "bytes": 4111,
+      "sha256": "f87af84ad903c50a42f38cb0109e22f504c174e295ffb423f7a72b3a514c9131"
     },
     "tests/world/runtime/world_access/test_kernel_loader_execution.c": {
       "bytes": 23441,
@@ -23342,20 +23342,36 @@
       "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
     },
     "tests/tools/world/test_world_query_controls.py": {
-      "bytes": 34301,
-      "sha256": "dc997619e5d710d2734599df9c0e77ad71dd21195d5311faf86c2e0d32f079ce"
+      "bytes": 45186,
+      "sha256": "dc6b37750c62d8585361e6ae1fd7d357bcca631baf349148eb39ca5ec304ba4d"
     },
     "tests/tools/world/world_query_controls_bundle.json": {
-      "bytes": 9536,
-      "sha256": "6ebc2937b4f23303e02ea362fab4dc8566a3f98a0b4ffda0da8354ac192089a1"
+      "bytes": 12474,
+      "sha256": "5dda4c47e7add8cb462473ff8e218e049c3541babbb1632685a6630581cd9e24"
     },
     "tests/tools/world/world_query_controls_protocol.json": {
-      "bytes": 4565,
-      "sha256": "37773fe1ce8534fad724edb1b9b17a39971bb49118e80f4596de0f72dbfdb93b"
+      "bytes": 8253,
+      "sha256": "a62f474eb1a7ebad04e0755814765d2caad5bc33a3a7de78974c6a06a7c48197"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
       "sha256": "877551f32b09cd29ec4c62f79a0e90ba1c12291ad01a13a977b7aa097dd41e69"
+    },
+    "src/world/runtime/collision/blocks_execution_internal.h": {
+      "bytes": 3408,
+      "sha256": "4baf31792425107c53a3b80fe7079b12b8d2964d690672119baacb922888d9f5"
+    },
+    "tests/tools/world/collision_query_inputs.py": {
+      "bytes": 2883,
+      "sha256": "139792707ccb921e3cae9abe3da8e6cbc2cdf3fc555780b8d70613ad76a36e55"
+    },
+    "tests/world/runtime/world_access/test_collision_query_execution.c": {
+      "bytes": 39905,
+      "sha256": "8032d0b673620aea1f1cce08685ff751509878c707a53f45b6f8098361702938"
+    },
+    "docs/world/collision/block-values.md": {
+      "bytes": 7680,
+      "sha256": "43cf7578ae61167b03ecdac4c49cf1c446e9e7f380e330910ba11cf3dd63d4bd"
     }
   },
   "self_metadata_excluded": true,
@@ -37745,6 +37761,88 @@
           },
           "added": [],
           "current_count": 5839
+        }
+      }
+    },
+    {
+      "from_commit": "e6abac400ffbac817cd9d74a46c27fe1d3f62006",
+      "role": "Prospective collision scalar ID/metadata ownership through the same concrete query body and owned kernel, with genuine native source-loader, cold/cache, domain and callback-admission controls. Current source admissions only; compilation and each actual runtime outcome require separate execution. Historical captured suppliers and observations remain unchanged. No historical native execution, parent Arrow composition or full gameplay qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1660525,
+        "sha256": "d8faa13714423ac48ba893704428419184e89427f00f50d0d894aaa7d273cd29"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "src/world/runtime/collision/blocks.c": {
+              "bytes": 79838,
+              "sha256": "6c97f81293280e19f2748dcd942c577acf4f24c533d1b4a639736fe68b49398d"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 723842,
+              "sha256": "aeaaa9dcb7ffb386c8ada734f0ef1d940c7b6d5712bb2b4de9b206c23a713aff"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 821727,
+              "sha256": "03b1672986a96230f2f043713920a02ee7dfc97644d31e5dc71ba543c3a43bdc"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 720821,
+              "sha256": "efda0dd50b2e4ec448ce734ebd8a178558661c9f9ace16b8a2eedd0c8e3e6fc9"
+            },
+            "cmake/tests/world_query_controls.cmake": {
+              "bytes": 3377,
+              "sha256": "3788a7ce3aecbb94b129668645f1a0016782aba7ae0bd7816c6f9d24618b36d5"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 34301,
+              "sha256": "dc997619e5d710d2734599df9c0e77ad71dd21195d5311faf86c2e0d32f079ce"
+            },
+            "tests/tools/world/world_query_controls_bundle.json": {
+              "bytes": 9536,
+              "sha256": "6ebc2937b4f23303e02ea362fab4dc8566a3f98a0b4ffda0da8354ac192089a1"
+            },
+            "tests/tools/world/world_query_controls_protocol.json": {
+              "bytes": 4565,
+              "sha256": "37773fe1ce8534fad724edb1b9b17a39971bb49118e80f4596de0f72dbfdb93b"
+            }
+          },
+          "added": [
+            "src/world/runtime/collision/blocks_execution_internal.h",
+            "tests/tools/world/collision_query_inputs.py",
+            "tests/world/runtime/world_access/test_collision_query_execution.c"
+          ],
+          "current_count": 5842
+        }
+      }
+    },
+    {
+      "from_commit": "e6abac400ffbac817cd9d74a46c27fe1d3f62006",
+      "role": "Prospective collision scalar ID/metadata ownership through the same concrete query body and owned kernel, with genuine native source-loader, cold/cache, domain and callback-admission controls. Current source admissions only; compilation and each actual runtime outcome require separate execution. Historical captured suppliers and observations remain unchanged. No historical native execution, parent Arrow composition or full gameplay qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1663745,
+        "sha256": "4c8b93126fc898edf0a52bbb90ca6e5c5d126419aeea9315e00a7069d8d32a3a"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/parity.md": {
+              "bytes": 223179,
+              "sha256": "12d3f3d78a28bcc040c963ba570b5dbb95a0717622075efa04eacfcd1258eb9c"
+            },
+            "docs/testing.md": {
+              "bytes": 577656,
+              "sha256": "419f91fa358093fe2d2cdd43b84c49217e1465fc426bf461ceae22399196bb05"
+            },
+            "docs/world/world-acquisition-execution.md": {
+              "bytes": 10584,
+              "sha256": "d3dbac0fa0b05250039fe45ba383312ca89d20c8269b94b433928e21cd2a2a92"
+            }
+          },
+          "added": [
+            "docs/world/collision/block-values.md"
+          ],
+          "current_count": 5843
         }
       }
     }

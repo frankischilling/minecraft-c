@@ -1,6 +1,6 @@
 {
   "schema": "EXPLICIT_WORLD_QUERY_CONTROLS_BUNDLE_V1",
-  "selection": "a97:nested3+Entity2+kernel2+Tile2;loader1+lookup1-nbt-capacity-fix1",
+  "selection": "a97:nested3+Entity2+kernel2+Tile2;loader1+lookup1-nbt-capacity-fix1;collision-owner1+collision-fixture1",
   "published_supplier": "a97 (Parent-provided revision label; actual bytes pinned below, no Git run)",
   "dependencies": {
     "sl-nested-owner-candidates-3": {
@@ -18,6 +18,10 @@
     "sl-tile-execution-candidates-2": {
       "bytes": 14964,
       "sha256": "1d49624fa1066b96ef69c4bffb1678b8ab3b07257b2da75a104d08eb9b65eea2"
+    },
+    "sl-collision-query-owner-candidates-1": {
+      "bytes": 15626,
+      "sha256": "7ac6e2149d4d21282c15a8d8ed5757d18ae5055249b68ace757965c6ca3cedc7"
     }
   },
   "fixtures": {
@@ -49,6 +53,21 @@
       "source_pin": {
         "bytes": 34102,
         "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
+      }
+    },
+    "collision": {
+      "manifest": {
+        "bytes": 43579,
+        "sha256": "8881737d8b31805c0f43fd25e99ef274509125bda65fa1e4b3cc583261bccc9c"
+      },
+      "protocol": {
+        "bytes": 3875,
+        "sha256": "6fd0849ab48f9b3741756f160f022c003e24bdcdbe94fec36996fb7980acad0f"
+      },
+      "source": "tests/world/runtime/world_access/test_collision_query_execution.c",
+      "source_pin": {
+        "bytes": 39905,
+        "sha256": "8032d0b673620aea1f1cce08685ff751509878c707a53f45b6f8098361702938"
       }
     }
   },
@@ -186,8 +205,20 @@
       "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
     },
     "cmake/tests/world_query_controls.cmake": {
-      "bytes": 3377,
-      "sha256": "3788a7ce3aecbb94b129668645f1a0016782aba7ae0bd7816c6f9d24618b36d5"
+      "bytes": 4111,
+      "sha256": "f87af84ad903c50a42f38cb0109e22f504c174e295ffb423f7a72b3a514c9131"
+    },
+    "src/world/runtime/collision/blocks.c": {
+      "bytes": 86765,
+      "sha256": "01ebef6359ebc53f5936360039a69287510f957a8d220241fa9f037243f22546"
+    },
+    "src/world/runtime/collision/blocks_execution_internal.h": {
+      "bytes": 3408,
+      "sha256": "4baf31792425107c53a3b80fe7079b12b8d2964d690672119baacb922888d9f5"
+    },
+    "tests/world/runtime/world_access/test_collision_query_execution.c": {
+      "bytes": 39905,
+      "sha256": "8032d0b673620aea1f1cce08685ff751509878c707a53f45b6f8098361702938"
     }
   },
   "helpers": {
@@ -212,8 +243,12 @@
       "sha256": "877551f32b09cd29ec4c62f79a0e90ba1c12291ad01a13a977b7aa097dd41e69"
     },
     "tests/tools/world/world_query_controls_protocol.json": {
-      "bytes": 4565,
-      "sha256": "37773fe1ce8534fad724edb1b9b17a39971bb49118e80f4596de0f72dbfdb93b"
+      "bytes": 8253,
+      "sha256": "a62f474eb1a7ebad04e0755814765d2caad5bc33a3a7de78974c6a06a7c48197"
+    },
+    "tests/tools/world/collision_query_inputs.py": {
+      "bytes": 2883,
+      "sha256": "139792707ccb921e3cae9abe3da8e6cbc2cdf3fc555780b8d70613ad76a36e55"
     }
   },
   "inputs": {
@@ -227,7 +262,51 @@
       "world/level.dat",
       "world/region/r.0.0.mcr",
       "world/preserve.bin"
-    ]
+    ],
+    "collision": {
+      "id-first": [
+        "world/level.dat",
+        "world/data/idcounts.dat",
+        "world/region/r.0.0.mcr",
+        "world/preserve.bin"
+      ],
+      "metadata-first": [
+        "world/level.dat",
+        "world/data/idcounts.dat",
+        "world/region/r.0.0.mcr",
+        "world/preserve.bin"
+      ],
+      "domain": [
+        "world/level.dat",
+        "world/data/idcounts.dat",
+        "world/region/r.0.0.mcr",
+        "world/preserve.bin"
+      ],
+      "loader-error": [
+        "world/level.dat",
+        "world/data/idcounts.dat",
+        "world/region/r.0.0.mcr",
+        "world/preserve.bin"
+      ],
+      "loader-null-error": [
+        "world/level.dat",
+        "world/data/idcounts.dat",
+        "world/region/r.0.0.mcr",
+        "world/preserve.bin"
+      ],
+      "armed": [
+        "world/level.dat",
+        "world/data/idcounts.dat",
+        "world/region/r.0.0.mcr",
+        "world/preserve.bin"
+      ],
+      "held": [
+        "world/level.dat",
+        "world/data/idcounts.dat",
+        "world/region/r.0.0.mcr",
+        "world/preserve.bin"
+      ]
+    }
   },
   "only_permitted_addition": {
     "path": "world/session.lock",
@@ -251,5 +330,11 @@
       "bytes": 34102,
       "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
     }
+  },
+  "prospective_collision": {
+    "source": "Exact frozen two-file owner candidate, unapplied when prepared",
+    "native_execution": "UNKNOWN_NOT_RUN; no inherited qualification",
+    "recipe": "Exact frozen recipe; all four input values are immutable bytes in every collision mode",
+    "external_graph": "Same World source graph; parent Arrow unwind, Blank, foreign Store, arbitrary source arms and full SL OPEN"
   }
 }

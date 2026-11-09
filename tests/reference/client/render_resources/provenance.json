@@ -9654,8 +9654,8 @@
       "sha256": "72516a6341f46c9d1031e7b55d823725c22ec37d089b43e0246abbe592400c93"
     },
     "cmake/tests/world_query_controls.cmake": {
-      "bytes": 3377,
-      "sha256": "3788a7ce3aecbb94b129668645f1a0016782aba7ae0bd7816c6f9d24618b36d5"
+      "bytes": 4111,
+      "sha256": "f87af84ad903c50a42f38cb0109e22f504c174e295ffb423f7a72b3a514c9131"
     },
     "tests/world/runtime/world_access/test_kernel_loader_execution.c": {
       "bytes": 23441,
@@ -9666,12 +9666,24 @@
       "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
     },
     "tests/tools/world/test_world_query_controls.py": {
-      "bytes": 34301,
-      "sha256": "dc997619e5d710d2734599df9c0e77ad71dd21195d5311faf86c2e0d32f079ce"
+      "bytes": 45186,
+      "sha256": "dc6b37750c62d8585361e6ae1fd7d357bcca631baf349148eb39ca5ec304ba4d"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
       "sha256": "877551f32b09cd29ec4c62f79a0e90ba1c12291ad01a13a977b7aa097dd41e69"
+    },
+    "src/world/runtime/collision/blocks_execution_internal.h": {
+      "bytes": 3408,
+      "sha256": "4baf31792425107c53a3b80fe7079b12b8d2964d690672119baacb922888d9f5"
+    },
+    "tests/tools/world/collision_query_inputs.py": {
+      "bytes": 2883,
+      "sha256": "139792707ccb921e3cae9abe3da8e6cbc2cdf3fc555780b8d70613ad76a36e55"
+    },
+    "tests/world/runtime/world_access/test_collision_query_execution.c": {
+      "bytes": 39905,
+      "sha256": "8032d0b673620aea1f1cce08685ff751509878c707a53f45b6f8098361702938"
     }
   },
   "source_suppliers": {
@@ -16707,6 +16719,34 @@
           },
           "added": [],
           "current_count": 2418
+        }
+      }
+    },
+    {
+      "from_commit": "e6abac400ffbac817cd9d74a46c27fe1d3f62006",
+      "role": "Prospective collision scalar ID/metadata ownership through the same concrete query body and owned kernel, with genuine native source-loader, cold/cache, domain and callback-admission controls. Current source admissions only; compilation and each actual runtime outcome require separate execution. Historical captured suppliers and observations remain unchanged. No historical native execution, parent Arrow composition or full gameplay qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 720821,
+        "sha256": "efda0dd50b2e4ec448ce734ebd8a178558661c9f9ace16b8a2eedd0c8e3e6fc9"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "cmake/tests/world_query_controls.cmake": {
+              "bytes": 3377,
+              "sha256": "3788a7ce3aecbb94b129668645f1a0016782aba7ae0bd7816c6f9d24618b36d5"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 34301,
+              "sha256": "dc997619e5d710d2734599df9c0e77ad71dd21195d5311faf86c2e0d32f079ce"
+            }
+          },
+          "added": [
+            "src/world/runtime/collision/blocks_execution_internal.h",
+            "tests/tools/world/collision_query_inputs.py",
+            "tests/world/runtime/world_access/test_collision_query_execution.c"
+          ],
+          "current_count": 2421
         }
       }
     }

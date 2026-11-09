@@ -13,19 +13,29 @@ if(BUILD_TESTING AND TARGET mc_simulation)
     target_include_directories(mc_test_world_tile_lookup_execution PRIVATE src src/platform/time)
     target_link_libraries(mc_test_world_tile_lookup_execution PRIVATE
         mc_simulation mc_persistence mc_c_atomics mc_build_options)
+    add_executable(mc_test_world_collision_query_execution
+        tests/world/runtime/world_access/test_collision_query_execution.c)
+    target_include_directories(mc_test_world_collision_query_execution PRIVATE src src/platform/time)
+    target_link_libraries(mc_test_world_collision_query_execution PRIVATE
+        mc_simulation mc_persistence mc_c_atomics mc_build_options)
 endif()
 
 if(BUILD_TESTING AND TARGET mc_test_world_kernel_loader_execution
-        AND TARGET mc_test_world_tile_lookup_execution AND Python3_Interpreter_FOUND)
-    foreach(_mc_query_kind IN ITEMS loader lookup)
+        AND TARGET mc_test_world_tile_lookup_execution
+        AND TARGET mc_test_world_collision_query_execution AND Python3_Interpreter_FOUND)
+    foreach(_mc_query_kind IN ITEMS loader lookup collision)
         if(_mc_query_kind STREQUAL "loader")
             set(_mc_query_target mc_test_world_kernel_loader_execution)
             set(_mc_query_modes error null-error)
             set(_mc_query_name kernel_loader_execution)
-        else()
+        elseif(_mc_query_kind STREQUAL "lookup")
             set(_mc_query_target mc_test_world_tile_lookup_execution)
             set(_mc_query_modes map lazy armed held nested)
             set(_mc_query_name tile_lookup_execution)
+        else()
+            set(_mc_query_target mc_test_world_collision_query_execution)
+            set(_mc_query_modes id-first metadata-first domain loader-error loader-null-error armed held)
+            set(_mc_query_name collision_query_execution)
         endif()
         foreach(_mc_query_mode IN LISTS _mc_query_modes)
             add_test(NAME "world.${_mc_query_name}_${_mc_query_mode}" COMMAND

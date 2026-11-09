@@ -152,17 +152,37 @@ seconds, with 424 native checks per host. Broader frozen regressions pass Window
 103/103 in 206.96 seconds and Linux 101/101 in 127.93 seconds, without skipped or
 unrun tests. Both builds, exact formatting of 2,283 files and GCC syntax for both
 new C units pass; the sole changed lookup fixture passes its recipe again.
-Production runtime bodies remain byte-identical to the earlier component.
+At that query-control checkpoint, production runtime bodies remained byte-identical
+to the earlier component.
 
 ```text
 ctest --test-dir <build> -C Release --output-on-failure -R "^(world\.(kernel_loader_execution_(error|null-error)|tile_lookup_execution_(map|lazy|armed|held|nested))|tools\.world_query_controls_(normal|optimized))$"
 ```
 
+## Collision ID and metadata reads
+
+The [owned collision reader](collision/block-values.md) now shares its existing
+complete scalar body with the held entry. It carries the actual selected loader
+outcome and pending native continuations before diagnostic projection, preserves
+the source cause separately from native ownership errors, and stops before
+scalar payload work when native completion refuses. The caller still owns its
+exact evaluated World and defining code/resources.
+
+Seven new native modes pass 375 checks per host over real cold/cache reads,
+outside-domain guards, one-query malformed loading and genuine ARMED/HELD
+admission. With the earlier loader/Tile controls, the 16-test selection passes 799
+native checks per host. Disjoint broader runs preserve all preceding coverage:
+110 unique Windows and 108 sanitized Linux tests pass, without skips or unrun
+names. Both builds, formatting of 2,285 files and two actual GCC recipes pass.
+Parent Arrow result/classifier/checked-unwind composition, structural native
+completion refusal and whole gameplay remain open; this is no frame/FPS result.
+
 ## Remaining composition
 
-The finite query controls cover direct malformed loading and cold owned Tile
-lookup/lazy construction through their actual entered bodies. Loading/import,
-generation/population and captured-provider descendants still retain an explicit
+The finite query controls cover direct malformed loading, cold owned Tile
+lookup/lazy construction and owned collision ID/metadata through their actual
+entered bodies. Loading/import, generation/population and captured-provider
+descendants still retain an explicit
 external caller graph lifetime contract. General caller unwind propagation,
 foreign A-query/Chunk.d B joint Store teardown, complete Arrow flight, pickup and
 World-tick dispatch remain unfinished. No new original JVM, visible game,

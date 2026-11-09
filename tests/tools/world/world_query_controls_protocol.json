@@ -19,6 +19,15 @@
       "armed",
       "held",
       "nested"
+    ],
+    "collision": [
+      "id-first",
+      "metadata-first",
+      "domain",
+      "loader-error",
+      "loader-null-error",
+      "armed",
+      "held"
     ]
   },
   "supplier_protocols": {
@@ -29,6 +38,10 @@
     "lookup": {
       "bytes": 3083,
       "sha256": "4ee2be5a82fee5e27e7301cee3aff67a4d3583323b55d4fa42d296ea6c98a395"
+    },
+    "collision": {
+      "bytes": 3875,
+      "sha256": "6fd0849ab48f9b3741756f160f022c003e24bdcdbe94fec36996fb7980acad0f"
     }
   },
   "stdout_contract": "Exact global BEGIN, one genuine setup banner pair, ordered actual case markers, explicit lookup OPEN line, literal positive uint32 mode footer, terminal newline; only LF or CRLF",
@@ -117,6 +130,82 @@
       "TILE_LOOKUP_CASE callback END",
       "TILE_LOOKUP_OPEN foreign-Store/null-Chunk-world/caller-unwind/full-SL",
       "PASS: <positive canonical uint32> actual Tile lookup checks;mode=nested"
+    ],
+    "collision/id-first": [
+      "COLLISION_QUERY_BEGIN schema=1 mode=id-first",
+      "16 achievements",
+      "151 recipes",
+      "COLLISION_QUERY_CASE cold BEGIN",
+      "COLLISION_QUERY_CASE cold END",
+      "COLLISION_QUERY_CASE cache BEGIN",
+      "COLLISION_QUERY_CASE cache END",
+      "COLLISION_QUERY_OPEN Blank/foreign-Store/structural-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual owned collision scalar checks;mode=id-first"
+    ],
+    "collision/metadata-first": [
+      "COLLISION_QUERY_BEGIN schema=1 mode=metadata-first",
+      "16 achievements",
+      "151 recipes",
+      "COLLISION_QUERY_CASE cold BEGIN",
+      "COLLISION_QUERY_CASE cold END",
+      "COLLISION_QUERY_CASE cache BEGIN",
+      "COLLISION_QUERY_CASE cache END",
+      "COLLISION_QUERY_OPEN Blank/foreign-Store/structural-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual owned collision scalar checks;mode=metadata-first"
+    ],
+    "collision/domain": [
+      "COLLISION_QUERY_BEGIN schema=1 mode=domain",
+      "16 achievements",
+      "151 recipes",
+      "COLLISION_QUERY_CASE domain BEGIN",
+      "COLLISION_QUERY_CASE domain END",
+      "COLLISION_QUERY_OPEN Blank/foreign-Store/structural-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual owned collision scalar checks;mode=domain"
+    ],
+    "collision/loader-error": [
+      "COLLISION_QUERY_BEGIN schema=1 mode=loader-error",
+      "16 achievements",
+      "151 recipes",
+      "COLLISION_QUERY_CASE loader entered",
+      "COLLISION_QUERY_CASE loader selected",
+      "COLLISION_QUERY_CASE loader retained",
+      "COLLISION_QUERY_CASE loader retired",
+      "COLLISION_QUERY_OPEN Blank/foreign-Store/structural-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual owned collision scalar checks;mode=loader-error"
+    ],
+    "collision/loader-null-error": [
+      "COLLISION_QUERY_BEGIN schema=1 mode=loader-null-error",
+      "16 achievements",
+      "151 recipes",
+      "COLLISION_QUERY_CASE loader entered",
+      "COLLISION_QUERY_CASE loader selected",
+      "COLLISION_QUERY_CASE loader retained",
+      "COLLISION_QUERY_CASE loader retired",
+      "COLLISION_QUERY_OPEN Blank/foreign-Store/structural-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual owned collision scalar checks;mode=loader-null-error"
+    ],
+    "collision/armed": [
+      "COLLISION_QUERY_BEGIN schema=1 mode=armed",
+      "16 achievements",
+      "151 recipes",
+      "COLLISION_QUERY_CASE cold BEGIN",
+      "COLLISION_QUERY_CASE cold END",
+      "COLLISION_QUERY_CASE callback BEGIN",
+      "COLLISION_QUERY_CASE callback END",
+      "COLLISION_QUERY_OPEN Blank/foreign-Store/structural-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual owned collision scalar checks;mode=armed"
+    ],
+    "collision/held": [
+      "COLLISION_QUERY_BEGIN schema=1 mode=held",
+      "16 achievements",
+      "151 recipes",
+      "COLLISION_QUERY_CASE cold BEGIN",
+      "COLLISION_QUERY_CASE cold END",
+      "COLLISION_QUERY_CASE callback BEGIN",
+      "COLLISION_QUERY_CASE callback END",
+      "COLLISION_QUERY_OPEN Blank/foreign-Store/structural-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual owned collision scalar checks;mode=held"
     ]
-  }
+  },
+  "collision_scope": "Prospective component and native fixture; no inherited native result; old loader/lookup contract unchanged"
 }

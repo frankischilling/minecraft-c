@@ -1,5 +1,32 @@
 # Test scope and reproduction
 
+## Owned collision block values
+
+The [shared collision reader and controls](world/collision/block-values.md)
+add seven genuine native modes: cold ID-first and metadata-first/cache reads,
+six true domain guards, one-query loader failures with ordinary/NULL diagnostics,
+and real current ARMED/HELD admission. Each host passes 375 new checks. The common
+16-test selection includes all earlier query modes and passes 799 native checks
+in fourteen fresh processes plus normal/optimized Python controls: Windows
+121.83 seconds, sanitized Linux 55.71 seconds.
+
+Additional disjoint regressions pass Windows 94/94 in 144.03 seconds and Linux 92/92
+in 97.43 seconds. Together the selections preserve every previous test and add the
+seven collision cases, for 110 unique Windows Passed names and 108 on Linux.
+Neither run contains skips or unrun tests. Both builds, exact clang-format 18.1.3
+over 2,285 files and two actual GCC recipes pass. The production C/header, fixture,
+input recipe, controller and bundle remain unchanged through both runs.
+
+Every native child retains exact raw streams/typed capture JSON, all authored
+input files and full source/product/helper/six-table guards. Only its genuine
+eight-byte session.lock addition is allowed. Normal and optimized Python each
+reject 798 corrupt transports, 280 altered retained-red payload sets, seven literal
+mutations, four changed bundles, three real root loss/replacements and 62 filename/
+idcounts corruptions; first failure stays primary. Each also passes 97 pure
+byte/NBT recipe checks. Original JVM, visible game, full Arrow/SL and FPS receive
+no new qualification. Parent result/classifier/unwind, Blank/foreign-Store and
+structural native continuation remain open.
+
 ## Owned loader diagnostics and Tile lookup
 
 The [query controls](world/world-acquisition-execution.md#direct-loader-errors-and-cold-tile-lookup)
@@ -15,7 +42,7 @@ Chests. Both hosts fail the same cold prefix; those callback branches receive no
 execution credit. Original client/server Code, existing native implementation and
 the final unchanged input recipes establish the correct imported capacity 27.
 Only that fixture expectation and its explicit source pins change; all other
-ownership checks remain. The production runtime is unchanged.
+ownership checks remain. At that earlier checkpoint, the production runtime was unchanged.
 
 The final nine-test selection passes Windows in 60.17 seconds and sanitized Linux
 in 25.84 seconds. Frozen broader regressions pass **Windows 103/103 in 206.96
