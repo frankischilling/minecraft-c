@@ -9847,7 +9847,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 16782,
-      "sha256": "a95348eadc77b058a62d2232e287a0df1bd60ec10ede951fc8656c87c08c43e3"
+      "sha256": "4c3c63fc2f35ce4a7920c774cbd798ae0426d0b1c335c3ff1473800a7e5b65ae"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,
@@ -9855,11 +9855,19 @@
     },
     "tests/tools/entity/test_damage_native_close.py": {
       "bytes": 17605,
-      "sha256": "69256eb3e8db0a8b0b6a6a0fbaffa6940d8c835c81b295a49e98f2f82207354c"
+      "sha256": "1afa34018c2e81be6ba025ee086fd121af5ae28d895787ff4cb66b2250c65c21"
     },
     "tests/world/runtime/world_access/test_damage_close_execution.c": {
       "bytes": 28929,
       "sha256": "2871f208485700afc6d6411cfe05a41fd00fedafa876d01c92a00a17f2ad8a4b"
+    },
+    "cmake/arrow_world_tick_baseline.cmake": {
+      "bytes": 1374,
+      "sha256": "2d695abc988d6fea1ae0b8c5758256080c8a0705255787c46258582e12dce2fd"
+    },
+    "tests/benchmarks/arrow_world_tick_baseline.c": {
+      "bytes": 32854,
+      "sha256": "dc1564f4c5fea9519f00c2fc08efbee92e42fd1705419f191fe05296a386b9ea"
     }
   },
   "source_suppliers": {
@@ -17587,6 +17595,69 @@
           },
           "added": [],
           "current_count": 2465
+        }
+      }
+    },
+    {
+      "from_commit": "c72316cb3c02b16f1cb1f8e79f289f09badaceb7",
+      "role": "Current source admissions for an optional uninstrumented Arrow World tick baseline and its registration. Production runtime and headers remain unchanged. Historical suppliers and observations stay separate. Actual compilation, qualification, timing, attribution and FPS require separate evidence.",
+      "previous_metadata": {
+        "bytes": 761953,
+        "sha256": "106d30668e9ef6ec4f6deb1fb10f4d1393742f344ae199a703bb5472a3315a06"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/client/test_arrow_world_tick_cleanup.py": {
+              "bytes": 16782,
+              "sha256": "a95348eadc77b058a62d2232e287a0df1bd60ec10ede951fc8656c87c08c43e3"
+            }
+          },
+          "added": [
+            "cmake/arrow_world_tick_baseline.cmake",
+            "tests/benchmarks/arrow_world_tick_baseline.c"
+          ],
+          "current_count": 2467
+        }
+      }
+    },
+    {
+      "from_commit": "c72316cb3c02b16f1cb1f8e79f289f09badaceb7",
+      "role": "Current source admissions for an optional uninstrumented Arrow World tick baseline and its registration. Production runtime and headers remain unchanged. Historical suppliers and observations stay separate. Actual compilation, qualification, timing, attribution and FPS require separate evidence.",
+      "previous_metadata": {
+        "bytes": 763298,
+        "sha256": "fe49c9de8ad5cd8007a20764533b0262b105216fff95cb46f380d8593c22279f"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/benchmarks/arrow_world_tick_baseline.c": {
+              "bytes": 32859,
+              "sha256": "82935bf8a7dde45a167be79e413a867cf01dcf10ad28045a8d1a9b00ae09b247"
+            }
+          },
+          "added": [],
+          "current_count": 2467
+        }
+      }
+    },
+    {
+      "from_commit": "c72316cb3c02b16f1cb1f8e79f289f09badaceb7",
+      "role": "Current source admissions for an optional uninstrumented Arrow World tick baseline and its registration. Production runtime and headers remain unchanged. Historical suppliers and observations stay separate. Actual compilation, qualification, timing, attribution and FPS require separate evidence.",
+      "previous_metadata": {
+        "bytes": 764189,
+        "sha256": "6842ff3573c9610b92cc4413c27574a7b286e82407c26eb91b9b3b7b5708dcfa"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/entity/test_damage_native_close.py": {
+              "bytes": 17605,
+              "sha256": "69256eb3e8db0a8b0b6a6a0fbaffa6940d8c835c81b295a49e98f2f82207354c"
+            }
+          },
+          "added": [],
+          "current_count": 2467
         }
       }
     }

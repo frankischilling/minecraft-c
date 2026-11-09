@@ -1,5 +1,21 @@
 # Test scope and reproduction
 
+## Uninstrumented Arrow World workload
+
+The optional [World tick baseline](performance/arrow-world-tick-baseline.md)
+qualifies empty, one-Arrow and eight-Arrow inputs using thirty real loaded air
+Chunks and eight actual World calls per process. Three fresh Windows x64 MSVC
+Release processes pass 4,752 checks and ordinary checked cleanup; all raw clock,
+constructor, Random, cache, context and ownership observations remain retained.
+The source/path proofs0/8/64 are not observed allocator counts. These single
+cold intervals provide no allocation attribution, repeated-cohort or FPS result.
+The workload's Linux clock branch remains unqualified by this local run.
+
+Eighteen affected Windows regressions pass in 27.81 seconds after exact current
+SDK and close-control CMake supplier updates. The first strict compiler failure
+and four earlier preflight refusals remain recorded. No assertion, production
+body or warning setting is weakened.
+
 ## Recorded Living sound and Player ally close
 
 The [Living sound](entity/living-damage.md#recorded-native-close) and

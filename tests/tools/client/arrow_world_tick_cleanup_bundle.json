@@ -66,8 +66,8 @@
       "sha256": "80d866a4df85af27011535b381728a1cae45bfbd24da103b2b453d5ed5056042"
     },
     "CMakeLists.txt": {
-      "bytes": 343259,
-      "sha256": "252b58ba4c94191fcd76ed24c74d8aff275815ab4ee71db96b0e584d1547093a"
+      "bytes": 343306,
+      "sha256": "f8bf4c53e0367f47ed8918cf7a25f4ddbdab632d96315986c02591e3f97fbbe7"
     },
     "cmake/tests/arrow_world_tick_cleanup.cmake": {
       "bytes": 2831,

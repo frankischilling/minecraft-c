@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 343259,
-      "sha256": "252b58ba4c94191fcd76ed24c74d8aff275815ab4ee71db96b0e584d1547093a"
+      "bytes": 343306,
+      "sha256": "f8bf4c53e0367f47ed8918cf7a25f4ddbdab632d96315986c02591e3f97fbbe7"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 592898,
-      "sha256": "bad23334bcafbe71002656b9c9fa014e72600419d9016e2dcdd0338013d90bd9"
+      "bytes": 593841,
+      "sha256": "f100d2cd242685b53ef4846fd6f9a381974469258c617bf48b5591b73518a424"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 764974,
-      "sha256": "59be5394c20b161fe6339afc490fc2d946219970fb58932e395629ac5be91509"
+      "bytes": 768103,
+      "sha256": "9150efa6891c44f824c7d5ad44a17ff9dc9a19ef8af411b0df72cfb05bcbc7f9"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 866649,
-      "sha256": "1b5db389d2ea9a584d3eed5533b2a65b8931aa6802eec91d7a37fbbd4ec0813f"
+      "bytes": 869953,
+      "sha256": "0c92ca7411fed1321707d84f2039e0ae13a5d61baea079b5eb21300fbb5421f3"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 761953,
-      "sha256": "106d30668e9ef6ec4f6deb1fb10f4d1393742f344ae199a703bb5472a3315a06"
+      "bytes": 765082,
+      "sha256": "f6c403fd59c6d93dcda4c07ab6b55e5278cb85cc77807d241e46943b928a5301"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -23547,11 +23547,11 @@
     },
     "tests/tools/client/arrow_world_tick_cleanup_bundle.json": {
       "bytes": 3533,
-      "sha256": "4002b090320186502e5801fccc6e29fd3efd83bc59e70f0f805e5994455e03df"
+      "sha256": "ecc4c709e6bfcdebe5d46f172b07412397bcf5a22ca3d103d3a1a1f756a4f57b"
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 16782,
-      "sha256": "a95348eadc77b058a62d2232e287a0df1bd60ec10ede951fc8656c87c08c43e3"
+      "sha256": "4c3c63fc2f35ce4a7920c774cbd798ae0426d0b1c335c3ff1473800a7e5b65ae"
     },
     "docs/entity/arrow-flight.md": {
       "bytes": 7312,
@@ -23563,15 +23563,27 @@
     },
     "tests/tools/entity/damage_native_close_bundle.json": {
       "bytes": 4312,
-      "sha256": "9dcd524cfc4afa98d1dea00e19a1cc802bd71166b0b52db91d843d9974d819a9"
+      "sha256": "fcc8689d7219e1ee5387181d6b36eb27fb3c5e0d1ae81fcdaba99f1d43e5750c"
     },
     "tests/tools/entity/test_damage_native_close.py": {
       "bytes": 17605,
-      "sha256": "69256eb3e8db0a8b0b6a6a0fbaffa6940d8c835c81b295a49e98f2f82207354c"
+      "sha256": "1afa34018c2e81be6ba025ee086fd121af5ae28d895787ff4cb66b2250c65c21"
     },
     "tests/world/runtime/world_access/test_damage_close_execution.c": {
       "bytes": 28929,
       "sha256": "2871f208485700afc6d6411cfe05a41fd00fedafa876d01c92a00a17f2ad8a4b"
+    },
+    "cmake/arrow_world_tick_baseline.cmake": {
+      "bytes": 1374,
+      "sha256": "2d695abc988d6fea1ae0b8c5758256080c8a0705255787c46258582e12dce2fd"
+    },
+    "tests/benchmarks/arrow_world_tick_baseline.c": {
+      "bytes": 32854,
+      "sha256": "dc1564f4c5fea9519f00c2fc08efbee92e42fd1705419f191fe05296a386b9ea"
+    },
+    "docs/performance/arrow-world-tick-baseline.md": {
+      "bytes": 3071,
+      "sha256": "6f4bc62e9a19ccc0f2be49135ad5d2647582c72fd6df89154ac16cd4df7b11f0"
     }
   },
   "self_metadata_excluded": true,
@@ -39460,6 +39472,139 @@
           },
           "added": [],
           "current_count": 5893
+        }
+      }
+    },
+    {
+      "from_commit": "c72316cb3c02b16f1cb1f8e79f289f09badaceb7",
+      "role": "Current source admissions for an optional uninstrumented Arrow World tick baseline and its registration. Production runtime and headers remain unchanged. Historical suppliers and observations stay separate. Actual compilation, qualification, timing, attribution and FPS require separate evidence.",
+      "previous_metadata": {
+        "bytes": 1741443,
+        "sha256": "73d7b403dbcaecd416fa51e0e3c85123771e023324c5f82ba742ddbf4db421da"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 343259,
+              "sha256": "252b58ba4c94191fcd76ed24c74d8aff275815ab4ee71db96b0e584d1547093a"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 764974,
+              "sha256": "59be5394c20b161fe6339afc490fc2d946219970fb58932e395629ac5be91509"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 866649,
+              "sha256": "1b5db389d2ea9a584d3eed5533b2a65b8931aa6802eec91d7a37fbbd4ec0813f"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 761953,
+              "sha256": "106d30668e9ef6ec4f6deb1fb10f4d1393742f344ae199a703bb5472a3315a06"
+            },
+            "tests/tools/client/arrow_world_tick_cleanup_bundle.json": {
+              "bytes": 3533,
+              "sha256": "4002b090320186502e5801fccc6e29fd3efd83bc59e70f0f805e5994455e03df"
+            },
+            "tests/tools/client/test_arrow_world_tick_cleanup.py": {
+              "bytes": 16782,
+              "sha256": "a95348eadc77b058a62d2232e287a0df1bd60ec10ede951fc8656c87c08c43e3"
+            }
+          },
+          "added": [
+            "cmake/arrow_world_tick_baseline.cmake",
+            "tests/benchmarks/arrow_world_tick_baseline.c"
+          ],
+          "current_count": 5895
+        }
+      }
+    },
+    {
+      "from_commit": "c72316cb3c02b16f1cb1f8e79f289f09badaceb7",
+      "role": "Current source admissions for an optional uninstrumented Arrow World tick baseline and its registration. Production runtime and headers remain unchanged. Historical suppliers and observations stay separate. Actual compilation, qualification, timing, attribution and FPS require separate evidence.",
+      "previous_metadata": {
+        "bytes": 1743787,
+        "sha256": "32ba640defea5384c12783430f10be9634fb05c97f88ee07f7853c76c4684d79"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 766319,
+              "sha256": "7f84ce9115149fc7663c11f7385fd25ac730a0871dea1f4fccb62a11b7105fc7"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 868165,
+              "sha256": "dc5239840aadb7aad9e2b06c7a340ec43be993b536fc5cd81bba2d5fe1b61f09"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 763298,
+              "sha256": "fe49c9de8ad5cd8007a20764533b0262b105216fff95cb46f380d8593c22279f"
+            },
+            "tests/benchmarks/arrow_world_tick_baseline.c": {
+              "bytes": 32859,
+              "sha256": "82935bf8a7dde45a167be79e413a867cf01dcf10ad28045a8d1a9b00ae09b247"
+            }
+          },
+          "added": [],
+          "current_count": 5895
+        }
+      }
+    },
+    {
+      "from_commit": "c72316cb3c02b16f1cb1f8e79f289f09badaceb7",
+      "role": "Current source admissions for an optional uninstrumented Arrow World tick baseline and its registration. Production runtime and headers remain unchanged. Historical suppliers and observations stay separate. Actual compilation, qualification, timing, attribution and FPS require separate evidence.",
+      "previous_metadata": {
+        "bytes": 1745300,
+        "sha256": "f52e1c8722f87c3c338e8fe3392d027463e0ec36caadb956a4ab3782120224d5"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 767210,
+              "sha256": "f03956ab57110df6764593ca86b1a931cffdf42aa047db59e117d6d8b771449a"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 869058,
+              "sha256": "8f618cbfd00e1792957413eec71114e8e138fe69690492a4efc5e5821be06cd5"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 764189,
+              "sha256": "6842ff3573c9610b92cc4413c27574a7b286e82407c26eb91b9b3b7b5708dcfa"
+            },
+            "tests/tools/entity/damage_native_close_bundle.json": {
+              "bytes": 4312,
+              "sha256": "9dcd524cfc4afa98d1dea00e19a1cc802bd71166b0b52db91d843d9974d819a9"
+            },
+            "tests/tools/entity/test_damage_native_close.py": {
+              "bytes": 17605,
+              "sha256": "69256eb3e8db0a8b0b6a6a0fbaffa6940d8c835c81b295a49e98f2f82207354c"
+            }
+          },
+          "added": [],
+          "current_count": 5895
+        }
+      }
+    },
+    {
+      "from_commit": "c72316cb3c02b16f1cb1f8e79f289f09badaceb7",
+      "role": "Current source admissions for an optional uninstrumented Arrow World tick baseline and its registration. Production runtime and headers remain unchanged. Historical suppliers and observations stay separate. Actual compilation, qualification, timing, attribution and FPS require separate evidence.",
+      "previous_metadata": {
+        "bytes": 1747018,
+        "sha256": "ea4113e56e6c1613cd1e5739f276efb17f9f28790060376451622123f1762e45"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/testing.md": {
+              "bytes": 592898,
+              "sha256": "bad23334bcafbe71002656b9c9fa014e72600419d9016e2dcdd0338013d90bd9"
+            }
+          },
+          "added": [
+            "docs/performance/arrow-world-tick-baseline.md"
+          ],
+          "current_count": 5896
         }
       }
     }
