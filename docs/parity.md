@@ -43,6 +43,13 @@ now passes 509 native checks plus independent NBT/statistics, returned World/HUD
 SDK save and checked cleanup. Its earlier focus and controller failures remain
 retained. Unrestricted combat and original audiovisual/FPS equality remain open.
 
+Recorded [Living sound](entity/living-damage.md#recorded-native-close) and
+[Player ally](entity/player-ally-alert.md#recorded-native-close) World-token
+close operations pass 175 direct ownership checks on Windows and sanitized
+Linux. Each host passes the same eighteen-test selection, including 390
+World-to-SDK cleanup checks. This verifies the selected Native close paths;
+unreached ally fault branches, full Arrow victim741 and FPS remain open.
+
 Default-hostile [nightmare spawning](world/nightmare.md) now reaches the full
 construction, reusable pathfinding, publication, postspawn, wake and ambient
 route. Its original component comparison and the separate historical

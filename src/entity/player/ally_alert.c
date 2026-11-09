@@ -42,6 +42,9 @@ struct mc_player_ally_alert_call {
     bool execution_owned, scope_created, scope_open, query_returned, completed;
     mc_entity_tick_execution_world_token world_token;
     mc_world_storage_status query_status;
+    mc_world_storage_status initial_close_status, native_close_status;
+    bool close_attempted, close_locals_drained, close_failed, close_consumed;
+    bool native_close_attempted;
     ally_execution owned;
 };
 
@@ -53,6 +56,22 @@ static bool ally_scope_open(const mc_player_ally_alert_call *c) {
            c->world_token.slot < MC_ENTITY_TICK_EXECUTION_WORLDS &&
            execution->world_slots[c->world_token.slot].generation == c->world_token.generation &&
            execution->world_slots[c->world_token.slot].phase == MC_ENTITY_TICK_EXECUTION_WORLD_OPEN;
+}
+
+/* A mismatched generation is NOT proof that this token was consumed. A
+ * positive observation remains valid if that already-consumed slot is reused. */
+static bool ally_scope_consumed(const mc_player_ally_alert_call *c) {
+    if (!c->execution_owned || !c->scope_created)
+        return false;
+    const mc_entity_tick_execution *execution = c->owned.execution;
+    if (c->world_token.owner != execution ||
+        c->world_token.slot >= MC_ENTITY_TICK_EXECUTION_WORLDS || c->world_token.generation == 0 ||
+        execution->world_slots[c->world_token.slot].generation != c->world_token.generation)
+        return false;
+    const mc_entity_tick_execution_world_slot_phase phase =
+        execution->world_slots[c->world_token.slot].phase;
+    return phase == MC_ENTITY_TICK_EXECUTION_WORLD_FREE ||
+           phase == MC_ENTITY_TICK_EXECUTION_WORLD_RETAINED;
 }
 
 static bool ally_result_quiet(const mc_world_runtime_execution_result *owned) {
@@ -78,11 +97,18 @@ static bool ally_close(mc_player_ally_alert_call *c, bool completed) {
             (mc_entity_tick_execution_site){"gs", "a", "(Lls;Z)V", 65});
         completed = false;
     }
-    /* Exactly ONE real close after the shared body. A consumed non-OK pop is
-     * distinguished only by this created token's Native VALUE phase. */
+    /* The SAME body returned: any reached query/Math/World calls and their
+     * ordinary temporary calls have drained. Player/target/World/bounds/List
+     * and producer rights intentionally remain owned by this retained call.
+     * Record the actual original operand before the ONE initial checked pop. */
+    c->close_locals_drained = true;
+    c->close_failed = !completed;
+    c->close_attempted = true;
     const mc_world_storage_status closed =
-        mc_entity_tick_execution_pop_world(c->owned.execution, &c->world_token, !completed);
+        mc_entity_tick_execution_pop_world(c->owned.execution, &c->world_token, c->close_failed);
+    c->initial_close_status = closed;
     c->scope_open = ally_scope_open(c);
+    c->close_consumed = ally_scope_consumed(c);
     if (closed != MC_WORLD_STORAGE_OK) {
         mc_world_runtime_execution_result_note(
             c->owned.owned, closed, "Player ally alert actual World checked close",
@@ -90,6 +116,89 @@ static bool ally_close(mc_player_ally_alert_call *c, bool completed) {
         return false;
     }
     return completed;
+}
+
+static mc_world_storage_status ally_native_close_refused(mc_player_ally_alert_call *c,
+                                                         mc_world_storage_status status,
+                                                         const char *operation) {
+    mc_world_runtime_execution_result_note(
+        c->owned.owned, status, operation,
+        (mc_entity_tick_execution_site){"gs", "a", "(Lls;Z)V", 65});
+    return status;
+}
+
+static bool ally_native_close_records_pending(const mc_world_runtime_execution_result *owned) {
+    if (owned->root_pending)
+        return true;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (owned->pending[i].used)
+            return true;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (owned->closes[i].used)
+            return true;
+    return false;
+}
+
+mc_world_storage_status mc_player_ally_alert_native_close(mc_player_ally_alert_call *c) {
+    if (c == NULL)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    if (!c->execution_owned || c->owned.execution == NULL ||
+        c->owned.execution->identity != c->owned.execution || c->owned.owned == NULL ||
+        c->world_token.owner != c->owned.execution ||
+        c->world_token.slot >= MC_ENTITY_TICK_EXECUTION_WORLDS || c->world_token.generation == 0 ||
+        !c->scope_created || !c->close_attempted)
+        return ally_native_close_refused(c, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                         "Player ally alert actual recorded close/call required");
+    if (c->state.active || !c->close_locals_drained)
+        return ally_native_close_refused(c, MC_WORLD_STORAGE_BUSY,
+                                         "Player ally alert actual locals not drained");
+
+    /* No repeat pop after positive consumption, including a consumed non-OK
+     * initial/Native close. This is only this token's completion, not proof
+     * that Source, a result ledger, Math or the entire context is quiescent. */
+    if (c->close_consumed)
+        return MC_WORLD_STORAGE_OK;
+    if (ally_scope_consumed(c)) {
+        c->scope_open = false;
+        c->close_consumed = true;
+        return MC_WORLD_STORAGE_OK;
+    }
+    if (!c->scope_open || !ally_scope_open(c))
+        return ally_native_close_refused(
+            c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+            "Player ally alert recorded token is neither matching OPEN nor proved consumed");
+
+    mc_entity_tick_execution_world_token current;
+    if (!mc_entity_tick_execution_current_world(c->owned.execution, &current))
+        return ally_native_close_refused(
+            c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+            "Player ally alert checked current World for recorded close");
+    if (current.owner != c->world_token.owner || current.slot != c->world_token.slot ||
+        current.generation != c->world_token.generation)
+        return ally_native_close_refused(
+            c, MC_WORLD_STORAGE_BUSY,
+            "Player ally alert recorded close awaits exact current token");
+    if (ally_native_close_records_pending(c->owned.owned))
+        return ally_native_close_refused(
+            c, MC_WORLD_STORAGE_BUSY,
+            "Player ally alert recorded close awaits explicit pending/child close completion");
+
+    c->native_close_attempted = true;
+    const mc_world_storage_status closed =
+        mc_entity_tick_execution_pop_world(c->owned.execution, &c->world_token, c->close_failed);
+    mc_world_runtime_execution_result_note(
+        c->owned.owned, closed, "Player ally alert recorded Native checked close",
+        (mc_entity_tick_execution_site){"gs", "a", "(Lls;Z)V", 65});
+    c->native_close_status = closed;
+    c->scope_open = ally_scope_open(c);
+    c->close_consumed = ally_scope_consumed(c);
+    if (closed != MC_WORLD_STORAGE_OK)
+        return closed;
+    if (!c->close_consumed)
+        return ally_native_close_refused(
+            c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+            "Player ally alert successful Native close lacks exact consumed token proof");
+    return MC_WORLD_STORAGE_OK;
 }
 
 static void at(mc_player_ally_alert_call *c, unsigned int pc) {
@@ -586,9 +695,21 @@ bool mc_player_ally_alert_execution_inspect(const mc_player_ally_alert_call *c,
                                             mc_player_ally_alert_execution_view *out) {
     if (c == NULL || !c->execution_owned || out == NULL)
         return false;
-    *out = (mc_player_ally_alert_execution_view){
-        c->owned.execution, c->owned.owned,    c->world_token, c->scope_created,
-        ally_scope_open(c), c->query_returned, c->completed,   c->query_status};
+    *out = (mc_player_ally_alert_execution_view){c->owned.execution,
+                                                 c->owned.owned,
+                                                 c->world_token,
+                                                 c->scope_created,
+                                                 ally_scope_open(c),
+                                                 c->query_returned,
+                                                 c->completed,
+                                                 c->query_status,
+                                                 c->close_attempted,
+                                                 c->close_locals_drained,
+                                                 c->close_failed,
+                                                 c->close_consumed,
+                                                 c->native_close_attempted,
+                                                 c->initial_close_status,
+                                                 c->native_close_status};
     return true;
 }
 

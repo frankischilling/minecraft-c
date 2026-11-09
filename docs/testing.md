@@ -1,5 +1,38 @@
 # Test scope and reproduction
 
+## Recorded Living sound and Player ally close
+
+The [Living sound](entity/living-damage.md#recorded-native-close) and
+[Player ally](entity/player-ally-alert.md#recorded-native-close) operations retain
+the original checked-close operand and exact World token. Native cleanup uses
+that record, preserves Source/Math/first-failure observations, and refuses an
+unrelated current scope. Positive consumption prevents another pop after slot
+reuse. Retained-call retirement remains a separate checked operation.
+
+Windows x64 MSVC Release passes eighteen selected tests in 25.74 seconds;
+Linux Clang 18 Debug with ASan, UBSan and leak detection passes the same eighteen
+in 19.20 seconds. Both build seven real executables. Each host's four new direct
+modes perform 175 checks across four leaf entries and four setup GETs. The two
+existing World-to-SDK modes add 390 checks and six World C entries. Six pure
+controls and six existing Living, incoming damage, ally and Arrow regressions
+complete the selection. There are no failed, skipped or unrun cases.
+
+The first strict Windows build rejects an uninitialized callback string-view
+local in the test fixture. An explicit zero initializer corrects that observer
+scratch; production bodies, assertions and warning settings stay unchanged.
+That failed build remains recorded. Earlier twelve- and six-test cohorts retain
+their JUnit and full captures, but their temporary LastTest logs were overwritten.
+The later coherent eighteen-test run retains its raw LastTest log immediately;
+Linux retains its complete log too.
+
+Current query and SDK bundle bindings preserve old supplier identities while
+binding the four changed production files, registration and required helper.
+Only bundle digests change in the two existing runners. Complete captures,
+current Source, actual products, dependency inputs and applicable ownership
+guards pass. The eighteen tests cover these finite paths; canonical ally pop
+and capture faults, consumed-nonOK, full victim741, unrestricted gameplay and
+FPS remain unqualified.
+
 ## Default Arrow flight and SDK cleanup
 
 The [flight guide](entity/arrow-flight.md) records the new real World dispatch and

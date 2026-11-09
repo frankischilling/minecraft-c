@@ -1,0 +1,111 @@
+{
+  "schema": "DAMAGE_NATIVE_CLOSE_DIRECT_CONTROLS_V2",
+  "scope": "Real direct lower APIs only; no full damage facade or Parent741 execution.",
+  "modes": [
+    "sound-pop",
+    "sound-capture",
+    "ally-success",
+    "ally-unreached"
+  ],
+  "files": {
+    "cmake/tests/damage_native_close.cmake": {
+      "bytes": 2115,
+      "sha256": "54d9f163904767d003b962ccfe478992a31d255983a802df10cd653b035aadc9"
+    },
+    "CMakeLists.txt": {
+      "bytes": 343259,
+      "sha256": "252b58ba4c94191fcd76ed24c74d8aff275815ab4ee71db96b0e584d1547093a"
+    },
+    "tests/entity/player/test_ally_alert_ownership.c": {
+      "bytes": 11240,
+      "sha256": "b0165be7f920b2ae387e85c00dd4803101b21f86ea5992087e2d2fef7a5b2c6b"
+    },
+    "tests/world/runtime/world_access/test_damage_close_execution.c": {
+      "bytes": 28929,
+      "sha256": "2871f208485700afc6d6411cfe05a41fd00fedafa876d01c92a00a17f2ad8a4b"
+    },
+    "src/entity/mob/damage.c": {
+      "bytes": 41983,
+      "sha256": "a534c282f30981790a2f03dd51a037a2d06c78d745a02724d9ee35c0ed67b6c6"
+    },
+    "src/entity/mob/damage_execution_internal.h": {
+      "bytes": 6121,
+      "sha256": "73d0b58e7d6fdde6d63580c61fbeb84b20157aeaca5dad8fcd4be879ce3b38e4"
+    },
+    "src/entity/player/ally_alert.c": {
+      "bytes": 37303,
+      "sha256": "79937fbfb6cc3d4806922b5ded359e8bbe079028b16b589edf50b1f931bc245b"
+    },
+    "src/entity/player/ally_alert_execution_internal.h": {
+      "bytes": 5426,
+      "sha256": "dd0122d5e9366a17df0cfa04b242095a978415b96f6916c61e71244c6c11f02d"
+    },
+    "tests/world/runtime/test_entity_publication.c": {
+      "bytes": 47086,
+      "sha256": "6c6e5c53dd9fad4f5cea30b19c0f8dc6e38cf653a259b50a154e3df03b03dd1a"
+    },
+    "src/entity/tick/execution.c": {
+      "bytes": 33359,
+      "sha256": "d5847a88ac1a8db50d1576f2340e17536004a39e997e28ea4f701d0fb3def3e1"
+    },
+    "src/entity/tick/execution_internal.h": {
+      "bytes": 11697,
+      "sha256": "e2c1f7124c70b1878a25efbb2265671102b564280a037739c12b45b27e0f1f6a"
+    },
+    "src/world/runtime/world_access.c": {
+      "bytes": 58529,
+      "sha256": "889ced439238d4d8e656bdaebb8f4922deecc91d9083a4a05c8bc17fd7497815"
+    },
+    "src/world/runtime/world_access_lease_internal.h": {
+      "bytes": 6338,
+      "sha256": "00a015fae9fb9fd4524bdc4ca3a003ae3ec649f4cab10bced2b5f3f7b53e2d8e"
+    },
+    "src/world/runtime/movement.c": {
+      "bytes": 25505,
+      "sha256": "78f3c32efeb46dfe1ef637d7356187477aa6c88261b6a34f72440dc88639500f"
+    },
+    "src/world/runtime/runtime.c": {
+      "bytes": 71947,
+      "sha256": "4e43b01f389d611486563938963f4b609f16ca1fbed6015c9a1c7e8da4eb0539"
+    },
+    "src/world/runtime/runtime_execution.c": {
+      "bytes": 17733,
+      "sha256": "1beb31d4f21902c8bd6a0eccbaf982629fe4d171d06ed133eff7b58dbcc535fa"
+    },
+    "src/world/runtime/collision/class_entities.c": {
+      "bytes": 25924,
+      "sha256": "ccfcae6c3116da0544c2a2f32d35e9803c3eef5d8b75848e947dc664429ec323"
+    },
+    "src/world/runtime/collision/entities.c": {
+      "bytes": 34990,
+      "sha256": "1117c8c216bbab76f4f89f1e2184ebc31fce5e66daeb9809e0d45be0329b671e"
+    },
+    "src/world/cache/acquire.c": {
+      "bytes": 17523,
+      "sha256": "d823bdbbbcc5011aa3f97e3d5e90f48d79363b5bddfe05e697e7869390311ffa"
+    },
+    "tests/reference/client/statistics/support.py": {
+      "bytes": 7123,
+      "sha256": "1ac10e26456a6a8c9ba21751f49499549ec8ed322874c0d5c07be74c5fed4fa1"
+    }
+  },
+  "open": [
+    "ally initial-pop/capture callback fault under same canonical provider",
+    "consumed nonOK after actual leaf close",
+    "full victim damage741/original parity/FPS"
+  ],
+  "target": "mc_test_damage_native_close_execution",
+  "compiler_fixture_projection": {
+    "reason": "MSVC C4701 under W4/WX: explicitly initialize callback observer string-view scratch.",
+    "previous_fixture": {
+      "bytes": 28923,
+      "sha256": "ee1667df87b210283294302bfbb37c287b2e0424ed114f505be1156e7f600570"
+    },
+    "current_fixture": {
+      "bytes": 28929,
+      "sha256": "2871f208485700afc6d6411cfe05a41fd00fedafa876d01c92a00a17f2ad8a4b"
+    },
+    "scope": "One native test local initializer only; production bodies, read gate and assertions unchanged.",
+    "qualification": "Original failed strict build retained; corrected compilation and native controls pending."
+  }
+}

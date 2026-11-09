@@ -64,6 +64,20 @@ static bool living_created_scope_open(const mc_living_damage_execution *state) {
            execution->world_slots[state->world.slot].phase == MC_ENTITY_TICK_EXECUTION_WORLD_OPEN;
 }
 
+/* Positive Native VALUE proof only. A generation mismatch is NOT evidence
+ * that this token was consumed; a later reused slot must never be popped. */
+static bool living_created_scope_consumed(const mc_living_damage_execution *state) {
+    const mc_entity_tick_execution *execution = state->execution;
+    if (!state->scope_created || state->world.owner != execution ||
+        state->world.slot >= MC_ENTITY_TICK_EXECUTION_WORLDS || state->world.generation == 0 ||
+        execution->world_slots[state->world.slot].generation != state->world.generation)
+        return false;
+    const mc_entity_tick_execution_world_slot_phase phase =
+        execution->world_slots[state->world.slot].phase;
+    return phase == MC_ENTITY_TICK_EXECUTION_WORLD_FREE ||
+           phase == MC_ENTITY_TICK_EXECUTION_WORLD_RETAINED;
+}
+
 static bool living_world_begin(mc_living_damage_execution *state, mc_world_runtime *world,
                                bool fatal) {
     if (state == NULL)
@@ -93,16 +107,104 @@ static bool living_world_end(mc_living_damage_execution *state, bool completed) 
                                                state->receiver_site);
         completed = false;
     }
+    /* Reached only after the SAME sound body has returned: its owned SDK
+     * call (if reached) and ordinary Entity/WA/World temporaries have drained. Retained
+     * producer rights deliberately remain in the shared execution owner. */
+    state->close_locals_drained = true;
+    state->close_failed = !completed; /* Exact original operand, never reconstructed. */
     state->close_attempted = true;
     const mc_world_storage_status closed =
-        mc_entity_tick_execution_pop_world(state->execution, &state->world, !completed);
+        mc_entity_tick_execution_pop_world(state->execution, &state->world, state->close_failed);
+    state->initial_close_status = closed;
     state->scope_open = living_created_scope_open(state);
+    state->close_consumed = living_created_scope_consumed(state);
     if (closed != MC_WORLD_STORAGE_OK) {
         mc_world_runtime_execution_result_note(
             state->owned, closed, "Living sound actual World checked close", state->receiver_site);
         return false;
     }
     return completed;
+}
+
+static mc_world_storage_status living_native_close_refused(mc_living_damage_execution *state,
+                                                           mc_world_storage_status status,
+                                                           const char *operation) {
+    mc_world_runtime_execution_result_note(state->owned, status, operation, state->receiver_site);
+    return status;
+}
+
+static bool living_native_close_records_pending(const mc_world_runtime_execution_result *owned) {
+    if (owned->root_pending)
+        return true;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (owned->pending[i].used)
+            return true;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (owned->closes[i].used)
+            return true;
+    return false;
+}
+
+mc_world_storage_status mc_living_damage_sound_native_close(mc_living_damage_execution *state) {
+    if (state == NULL)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    if (state->execution == NULL || state->execution->identity != state->execution ||
+        state->owned == NULL || state->world.owner != state->execution ||
+        state->world.slot >= MC_ENTITY_TICK_EXECUTION_WORLDS || state->world.generation == 0 ||
+        state->operation != MC_LIVING_DAMAGE_SOUND || !state->entered || !state->scope_created ||
+        !state->close_attempted)
+        return living_native_close_refused(state, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                           "Living sound actual recorded close/frame required");
+    if (!state->close_locals_drained)
+        return living_native_close_refused(state, MC_WORLD_STORAGE_BUSY,
+                                           "Living sound actual locals not drained");
+
+    /* This positive observation was recorded at an actual close return (or
+     * an exact same-generation consumed observation below). It stays valid
+     * after slot reuse. Never perform a second pop for that consumed token,
+     * including an initial or Native close that returned non-OK. */
+    if (state->close_consumed)
+        return MC_WORLD_STORAGE_OK; /* Own token only, not Source/result quiescence. */
+    if (living_created_scope_consumed(state)) {
+        state->scope_open = false;
+        state->close_consumed = true;
+        return MC_WORLD_STORAGE_OK;
+    }
+    if (!state->scope_open || !living_created_scope_open(state))
+        return living_native_close_refused(
+            state, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+            "Living sound recorded token is neither matching OPEN nor proved consumed");
+
+    mc_entity_tick_execution_world_token current;
+    if (!mc_entity_tick_execution_current_world(state->execution, &current))
+        return living_native_close_refused(state, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                           "Living sound checked current World for recorded close");
+    if (current.owner != state->world.owner || current.slot != state->world.slot ||
+        current.generation != state->world.generation)
+        return living_native_close_refused(
+            state, MC_WORLD_STORAGE_BUSY, "Living sound recorded close awaits exact current token");
+    if (living_native_close_records_pending(state->owned))
+        return living_native_close_refused(
+            state, MC_WORLD_STORAGE_BUSY,
+            "Living sound recorded close awaits explicit pending/child close completion");
+
+    state->native_close_attempted = true;
+    const mc_world_storage_status closed =
+        mc_entity_tick_execution_pop_world(state->execution, &state->world, state->close_failed);
+    /* The immediate returned Native VALUE is independent from Source status,
+     * Math and the original checked-close result. Never clear first failure. */
+    mc_world_runtime_execution_result_note(
+        state->owned, closed, "Living sound recorded Native checked close", state->receiver_site);
+    state->native_close_status = closed;
+    state->scope_open = living_created_scope_open(state);
+    state->close_consumed = living_created_scope_consumed(state);
+    if (closed != MC_WORLD_STORAGE_OK)
+        return closed;
+    if (!state->close_consumed)
+        return living_native_close_refused(
+            state, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+            "Living sound successful Native close lacks exact consumed token proof");
+    return MC_WORLD_STORAGE_OK;
 }
 
 static bool living_leaf_admit(mc_entity *p, mc_living_damage_execution *state,

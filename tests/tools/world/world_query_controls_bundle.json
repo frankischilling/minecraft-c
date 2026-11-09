@@ -435,20 +435,20 @@
       "sha256": "2580d9bb2cae09d9f4e85aa44a55eb06d0ab88b0280a1802df26bd465637f14c"
     },
     "src/entity/mob/damage.c": {
-      "bytes": 36297,
-      "sha256": "c0e963e4178fe62eeb8d00f13d8d6354196bbe5dcd26aad5abfb54d5ba68ca3e"
+      "bytes": 41983,
+      "sha256": "a534c282f30981790a2f03dd51a037a2d06c78d745a02724d9ee35c0ed67b6c6"
     },
     "src/entity/mob/damage_execution_internal.h": {
-      "bytes": 3917,
-      "sha256": "7baddd5b7978d7566aebedeb087bd94b9e9e812e917410735c8739746173c093"
+      "bytes": 6121,
+      "sha256": "73d0b58e7d6fdde6d63580c61fbeb84b20157aeaca5dad8fcd4be879ce3b38e4"
     },
     "src/entity/player/ally_alert.c": {
-      "bytes": 31009,
-      "sha256": "39a87de82a4e357275c02c95dba40d6106d07dedc79f0576c2b4ee1e70207b7c"
+      "bytes": 37303,
+      "sha256": "79937fbfb6cc3d4806922b5ded359e8bbe079028b16b589edf50b1f931bc245b"
     },
     "src/entity/player/ally_alert_execution_internal.h": {
-      "bytes": 2757,
-      "sha256": "2de2d33aa3022edbae139c156532b10f374932d611a554ed42f695cfa1fa8582"
+      "bytes": 5426,
+      "sha256": "dd0122d5e9366a17df0cfa04b242095a978415b96f6916c61e71244c6c11f02d"
     },
     "src/entity/player/damage_alert.c": {
       "bytes": 7260,
@@ -1362,5 +1362,57 @@
     },
     "scope": "Three new native targets and seventeen controls in the existing query family",
     "qualification": "Source identity only; actual compilation and native results are separate evidence"
+  },
+  "recorded_native_close_source_projection": {
+    "scope": "Selected recorded Native-close Source identities only; historical supplier identities and results remain unchanged.",
+    "integration_manifest": {
+      "bytes": 10947,
+      "sha256": "bbeb66965e763132c1bebe9a691e252e211dce04f34f95bcb7585a3e3008b6e9"
+    },
+    "previous_source_pins": {
+      "src/entity/mob/damage.c": {
+        "bytes": 36297,
+        "sha256": "c0e963e4178fe62eeb8d00f13d8d6354196bbe5dcd26aad5abfb54d5ba68ca3e"
+      },
+      "src/entity/mob/damage_execution_internal.h": {
+        "bytes": 3917,
+        "sha256": "7baddd5b7978d7566aebedeb087bd94b9e9e812e917410735c8739746173c093"
+      },
+      "src/entity/player/ally_alert.c": {
+        "bytes": 31009,
+        "sha256": "39a87de82a4e357275c02c95dba40d6106d07dedc79f0576c2b4ee1e70207b7c"
+      },
+      "src/entity/player/ally_alert_execution_internal.h": {
+        "bytes": 2757,
+        "sha256": "2de2d33aa3022edbae139c156532b10f374932d611a554ed42f695cfa1fa8582"
+      }
+    },
+    "selected_source_pins": {
+      "src/entity/mob/damage.c": {
+        "bytes": 41983,
+        "sha256": "a534c282f30981790a2f03dd51a037a2d06c78d745a02724d9ee35c0ed67b6c6"
+      },
+      "src/entity/mob/damage_execution_internal.h": {
+        "bytes": 6121,
+        "sha256": "73d0b58e7d6fdde6d63580c61fbeb84b20157aeaca5dad8fcd4be879ce3b38e4"
+      },
+      "src/entity/player/ally_alert.c": {
+        "bytes": 37303,
+        "sha256": "79937fbfb6cc3d4806922b5ded359e8bbe079028b16b589edf50b1f931bc245b"
+      },
+      "src/entity/player/ally_alert_execution_internal.h": {
+        "bytes": 5426,
+        "sha256": "dd0122d5e9366a17df0cfa04b242095a978415b96f6916c61e71244c6c11f02d"
+      }
+    },
+    "previous_sdk_helper_pin": {
+      "source": "tests/tools/world/test_world_query_controls.py",
+      "pin": {
+        "bytes": 76712,
+        "sha256": "91f1c35e0f7d3dd0190ff937b27b8e008341f75fdc079ef7d9dc8692b36bcf97"
+      }
+    },
+    "selected_sdk_helper_role": "The literal-only query-controller derivative is pinned in the SDK bundle helpers map. Its old pin is preserved here; the new pin is outside this query bundle to avoid a circular self-binding.",
+    "qualification": "Source identity only. No compilation, Native execution, prior runtime result, full victim741, original audiovisual or FPS qualification is inherited. Existing results retain their earlier supplier scopes."
   }
 }

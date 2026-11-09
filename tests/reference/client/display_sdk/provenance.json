@@ -5450,8 +5450,8 @@
       "sha256": "83fa124aab5972e55bb827ed95dbb5b1d239e16d18f55001b7a1024810a9768f"
     },
     "src/entity/mob/damage.c": {
-      "bytes": 36297,
-      "sha256": "c0e963e4178fe62eeb8d00f13d8d6354196bbe5dcd26aad5abfb54d5ba68ca3e"
+      "bytes": 41983,
+      "sha256": "a534c282f30981790a2f03dd51a037a2d06c78d745a02724d9ee35c0ed67b6c6"
     },
     "src/entity/mob/damage_internal.h": {
       "bytes": 1708,
@@ -9262,8 +9262,8 @@
       "sha256": "e532cdab794162dbea92317dfc992f8922f9933d38da10d1b373500d5d58f102"
     },
     "src/entity/player/ally_alert.c": {
-      "bytes": 31009,
-      "sha256": "39a87de82a4e357275c02c95dba40d6106d07dedc79f0576c2b4ee1e70207b7c"
+      "bytes": 37303,
+      "sha256": "79937fbfb6cc3d4806922b5ded359e8bbe079028b16b589edf50b1f931bc245b"
     },
     "src/entity/player/ally_alert_occurrences.c": {
       "bytes": 3850,
@@ -9310,8 +9310,8 @@
       "sha256": "7f0b054111bfb9bf9564e8edca8b6c0ee3afca3483f1e761dc3afa6c8de599ac"
     },
     "tests/entity/player/test_ally_alert_ownership.c": {
-      "bytes": 11126,
-      "sha256": "d029b5fba1dc1f3ff092f9d7e76136a0250ead9680ddae1b69de18ff43669dc7"
+      "bytes": 11240,
+      "sha256": "b0165be7f920b2ae387e85c00dd4803101b21f86ea5992087e2d2fef7a5b2c6b"
     },
     "tests/entity/player/test_mob_attacker.c": {
       "bytes": 8409,
@@ -9847,7 +9847,7 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76712,
-      "sha256": "91f1c35e0f7d3dd0190ff937b27b8e008341f75fdc079ef7d9dc8692b36bcf97"
+      "sha256": "c2c0a0f694202a5d186da18abe4353db0ac5a6287cf7ab8a7b08030019e4b7ec"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -9910,12 +9910,12 @@
       "sha256": "de1645d2d89f27f6975ec7bdda43167b25532df96d7b121123ce67e22422a89c"
     },
     "src/entity/mob/damage_execution_internal.h": {
-      "bytes": 3917,
-      "sha256": "7baddd5b7978d7566aebedeb087bd94b9e9e812e917410735c8739746173c093"
+      "bytes": 6121,
+      "sha256": "73d0b58e7d6fdde6d63580c61fbeb84b20157aeaca5dad8fcd4be879ce3b38e4"
     },
     "src/entity/player/ally_alert_execution_internal.h": {
-      "bytes": 2757,
-      "sha256": "2de2d33aa3022edbae139c156532b10f374932d611a554ed42f695cfa1fa8582"
+      "bytes": 5426,
+      "sha256": "dd0122d5e9366a17df0cfa04b242095a978415b96f6916c61e71244c6c11f02d"
     },
     "src/entity/player/damage_alert_execution_internal.h": {
       "bytes": 1163,
@@ -10027,7 +10027,19 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 16782,
-      "sha256": "dbf865075a34bb9c5a6501cae095188f38e281e01b43beed0ec3ee1327338c40"
+      "sha256": "a95348eadc77b058a62d2232e287a0df1bd60ec10ede951fc8656c87c08c43e3"
+    },
+    "cmake/tests/damage_native_close.cmake": {
+      "bytes": 2115,
+      "sha256": "54d9f163904767d003b962ccfe478992a31d255983a802df10cd653b035aadc9"
+    },
+    "tests/tools/entity/test_damage_native_close.py": {
+      "bytes": 17605,
+      "sha256": "69256eb3e8db0a8b0b6a6a0fbaffa6940d8c835c81b295a49e98f2f82207354c"
+    },
+    "tests/world/runtime/world_access/test_damage_close_execution.c": {
+      "bytes": 28929,
+      "sha256": "2871f208485700afc6d6411cfe05a41fd00fedafa876d01c92a00a17f2ad8a4b"
     }
   },
   "authorities": {
@@ -17636,6 +17648,94 @@
           },
           "added": [],
           "current_count": 2507
+        }
+      }
+    },
+    {
+      "from_commit": "809b9637a99a1d7d8fc917060f4ac7b29cef0307",
+      "role": "Current source admissions for recorded Living sound and Player ally World-token Native close, with finite direct ownership and transport controls. Historical suppliers and observations remain unchanged. Compilation, native outcomes, full victim damage and performance require separate qualification.",
+      "previous_metadata": {
+        "bytes": 760393,
+        "sha256": "364c45cc9105b64e9af0ea99adad68f966681d32fc61c63a2f40fca68f884188"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "src/entity/mob/damage.c": {
+              "bytes": 36297,
+              "sha256": "c0e963e4178fe62eeb8d00f13d8d6354196bbe5dcd26aad5abfb54d5ba68ca3e"
+            },
+            "src/entity/player/ally_alert.c": {
+              "bytes": 31009,
+              "sha256": "39a87de82a4e357275c02c95dba40d6106d07dedc79f0576c2b4ee1e70207b7c"
+            },
+            "tests/entity/player/test_ally_alert_ownership.c": {
+              "bytes": 11126,
+              "sha256": "d029b5fba1dc1f3ff092f9d7e76136a0250ead9680ddae1b69de18ff43669dc7"
+            },
+            "src/entity/mob/damage_execution_internal.h": {
+              "bytes": 3917,
+              "sha256": "7baddd5b7978d7566aebedeb087bd94b9e9e812e917410735c8739746173c093"
+            },
+            "src/entity/player/ally_alert_execution_internal.h": {
+              "bytes": 2757,
+              "sha256": "2de2d33aa3022edbae139c156532b10f374932d611a554ed42f695cfa1fa8582"
+            }
+          },
+          "added": [
+            "cmake/tests/damage_native_close.cmake",
+            "tests/tools/entity/test_damage_native_close.py",
+            "tests/world/runtime/world_access/test_damage_close_execution.c"
+          ],
+          "current_count": 2510
+        }
+      }
+    },
+    {
+      "from_commit": "809b9637a99a1d7d8fc917060f4ac7b29cef0307",
+      "role": "Current source admissions for recorded Living sound and Player ally World-token Native close, with finite direct ownership and transport controls. Historical suppliers and observations remain unchanged. Compilation, native outcomes, full victim damage and performance require separate qualification.",
+      "previous_metadata": {
+        "bytes": 762761,
+        "sha256": "5a3a162887aba97e846099d2a5722669a6182f5399be99a5e15b01591304b2ae"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/entity/test_damage_native_close.py": {
+              "bytes": 17605,
+              "sha256": "828edd574a673df6bd943923eb7190e58975907bac750abf5c94830721c75f92"
+            },
+            "tests/world/runtime/world_access/test_damage_close_execution.c": {
+              "bytes": 28923,
+              "sha256": "ee1667df87b210283294302bfbb37c287b2e0424ed114f505be1156e7f600570"
+            }
+          },
+          "added": [],
+          "current_count": 2510
+        }
+      }
+    },
+    {
+      "from_commit": "809b9637a99a1d7d8fc917060f4ac7b29cef0307",
+      "role": "Current source admissions for recorded Living sound and Player ally World-token Native close, with finite direct ownership and transport controls. Historical suppliers and observations remain unchanged. Compilation, native outcomes, full victim damage and performance require separate qualification.",
+      "previous_metadata": {
+        "bytes": 763873,
+        "sha256": "081a7b130a0b919c658d2ba540b8e3eec46155639a4ec922e82a36dd6bb861b7"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 76712,
+              "sha256": "91f1c35e0f7d3dd0190ff937b27b8e008341f75fdc079ef7d9dc8692b36bcf97"
+            },
+            "tests/tools/client/test_arrow_world_tick_cleanup.py": {
+              "bytes": 16782,
+              "sha256": "dbf865075a34bb9c5a6501cae095188f38e281e01b43beed0ec3ee1327338c40"
+            }
+          },
+          "added": [],
+          "current_count": 2510
         }
       }
     }

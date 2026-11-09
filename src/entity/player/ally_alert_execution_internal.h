@@ -14,6 +14,9 @@ typedef struct mc_player_ally_alert_execution_view {
     mc_entity_tick_execution_world_token world;
     bool scope_created, scope_open, query_returned, completed;
     mc_world_storage_status query_status;
+    bool close_attempted, close_locals_drained, close_failed, close_consumed;
+    bool native_close_attempted;
+    mc_world_storage_status initial_close_status, native_close_status;
 } mc_player_ally_alert_execution_view;
 
 /* SAME GS.a(Living,Z), including its actual early returns and Wolf List loop.
@@ -40,5 +43,42 @@ bool mc_player_ally_alert_begin_in_execution(mc_entity_tick_execution *, mc_worl
                                              mc_world_runtime_execution_result *);
 bool mc_player_ally_alert_execution_inspect(const mc_player_ally_alert_call *,
                                             mc_player_ally_alert_execution_view *);
+
+/* Close ONLY this retained call's actual recorded World65 token, without any
+ * Source execution or retained-call retirement. Require the original stable,
+ * exclusive execution-owned call/result/code/owner graph until completion.
+ * Early-return/unreached-World calls have no such record: retire them normally,
+ * do not invent a close or require World/Math just to clean up that path.
+ *
+ * The actual initial ally_close saves locals-drained and its exact failed
+ * operand immediately before pop, after the SAME body returned. This proves
+ * only its Source/query/Math/World temporary calls ended, not that retained
+ * Player/target/World/bounds/List/producer rights were released. No active call
+ * may use this operation. initial_close_status is that actual initial return.
+ * native_close_status is assigned only after an actual Native cleanup pop;
+ * admission/no-op does not fabricate an event. Original query_status,
+ * query_returned, completed, Source state/error/Bool, attack and Math remain
+ * independent and unchanged. Native OK never promotes a previous false begin.
+ *
+ * Matching OPEN must be the exact checked current token. An unrelated current
+ * descendant or any explicit pending/root/child-close record refuses; caller
+ * resolves only its real recorded continuations first. A completed selection
+ * is retained, neither reset nor interpreted as pending. At most ONE actual
+ * pop occurs per eligible call, always with the saved original failed operand.
+ * Immediate Native return is noted without clearing the first owned failure.
+ * Positive same-generation FREE/RETAINED proves consumption; consumed non-OK
+ * is never popped again, including after slot reuse. A generation mismatch by
+ * itself proves nothing. Native OK means only this own token is already/now
+ * closed, not that Source/result/Math/shared execution is quiescent.
+ *
+ * No raw diagnostic/ambient admission inference, other-scope pop, capture,
+ * producer release, owner release, result reset, Source retry/resume, field
+ * repair, Math/execution retirement or automatic effect cleanup occurs. The
+ * actual retained call and all typed borrows stay live; only after closure may
+ * the caller use its existing checked ally_alert_retire and later outer
+ * producer/Math/context retirement. This is a future victim dependency seam,
+ * not full damage dispatch or current flight runtime qualification.
+ */
+mc_world_storage_status mc_player_ally_alert_native_close(mc_player_ally_alert_call *);
 
 #endif

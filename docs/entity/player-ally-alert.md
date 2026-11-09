@@ -57,6 +57,30 @@ extent or allocation refusal falls back to the same scan. The workspace adds
 no new cleanup failure and does not change World allocation budgets. Source
 List order, duplicate occurrences and target/Player aliases remain intact.
 
+## Recorded Native close
+
+The owned call records the actual World65 token, original
+initial-pop failed operand and proved local-call drain at the existing close
+site. Native-only close uses that retained call's recorded token. While it is
+open, unrelated current scopes and explicit pending children refuse. The failed
+operand is never inferred from raw status or completion. Positive same-generation consumption
+prevents a repeated pop even after non-OK or later slot reuse. Source entry and
+return, raw status, Native failure and Math remain independent.
+
+The enclosing owner must finish that exact close before checked ally retirement
+can clear its matching Player slot and release retained actors, bounds and List.
+Neither step replays the query, watcher writes or target assignment, retires the
+shared execution/Math, or clears an outer effect-cleanup guard. The helper is
+void; Native cleanup does not supply a GS hurt Boolean.
+
+The [four direct controls](living-damage.md#recorded-native-close)
+include real query success and an actual early return. Windows x64 MSVC Release
+and Linux Clang 18 Debug ASan/UBSan with leak detection each pass all four
+modes and 175 checks. The complete eighteen-test selection passes on each
+host. These results qualify the selected Native ownership paths. Canonical
+ally initial-pop/capture callback faults, consumed-nonOK and full victim741
+remain OPEN; retained GS144 composition has separate future scope.
+
 ## Evidence and remaining scope
 
 The [source map](../reference/player-ally-alert.md) and

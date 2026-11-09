@@ -21,6 +21,40 @@ the Zombie died or that an Item dropped. [Animal damage](animal-damage.md) now
 executes the inherited NULL and non-NULL-attacker body for client Sheep, Pig,
 Cow and Chicken. Other concrete overrides retain their explicit dependencies.
 
+## Recorded Native close
+
+The owned Living sound leaf records its actual World
+token, the initial checked pop's exact failed operand and the point where its
+ordinary local calls have drained. Native-only close uses that same token and
+operand. An open token must be the checked current token; pending children and
+unrelated scopes refuse. Positive same-generation consumption prevents another
+pop, including after a non-OK close or later slot reuse. Source completion, raw
+status, first Native failure and Math remain separate; cleanup never promotes a
+previous false continuation or reruns sound.
+
+Four direct controls use genuine constructors and one actual setup GET:
+
+- `sound-pop`: real Skeleton sound and an entered callback's Native binding fault
+  retain the original token with a recorded failed operand of false.
+- `sound-capture`: a real callback IO/Throwable and immediate Native capture
+  refusal preserve their separate causes and the actual protected handoff.
+- `ally-success`: a real Player/Skeleton and loaded Class/Wolf query return an
+  empty List, followed by recorded cleanup and genuine token reuse.
+- `ally-unreached`: a real Player target takes the helper's F=false return63;
+  World/query/Math work remains unreached and no close is invented.
+
+Windows x64 MSVC Release and Linux Clang 18 Debug with ASan, UBSan and leak
+detection each pass all four modes: 175 checks, four leaf entries and four
+setup GETs. Their two sound callbacks and one protected capture use the real
+WorldAccess and receipt paths. Both hosts also pass the affected eighteen-test
+selection, with no failures or skips.
+
+Canonical ally initial-pop/capture callback faults and consumed-nonOK remain
+dynamically untested. Full victim damage741, original full-method comparison
+and FPS remain OPEN.
+The [Player ally ownership contract](player-ally-alert.md#recorded-native-close)
+keeps retained-call retirement separate from its World-token close.
+
 ## Verification
 
 Twelve authored CPU profiles use genuine Worlds, 25 stored Chunks, Registry

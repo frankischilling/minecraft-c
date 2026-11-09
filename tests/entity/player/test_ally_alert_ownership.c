@@ -18,6 +18,7 @@ mc_entity_status mc_ally_ownership_retire(mc_player_ally_alert_call **,
 #define mc_player_ally_alert_retire mc_ally_ownership_retire
 #define mc_player_ally_alert_begin_in_execution mc_ally_ownership_begin_in_execution
 #define mc_player_ally_alert_execution_inspect mc_ally_ownership_execution_inspect
+#define mc_player_ally_alert_native_close mc_ally_ownership_native_close
 #include "../../../src/entity/player/ally_alert.c"
 #include "../../../src/entity/player/ally_alert_execution_internal.h"
 #undef mc_player_ally_alert_begin
@@ -25,6 +26,7 @@ mc_entity_status mc_ally_ownership_retire(mc_player_ally_alert_call **,
 #undef mc_player_ally_alert_retire
 #undef mc_player_ally_alert_begin_in_execution
 #undef mc_player_ally_alert_execution_inspect
+#undef mc_player_ally_alert_native_close
 
 typedef struct component_producer {
     mc_world_access *receiver;
