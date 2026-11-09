@@ -84,7 +84,8 @@ function(mc_add_openal_dependencies)
     file(MAKE_DIRECTORY "${compat_source}")
     # Keep the corrected files' timestamps stable on a no-change reconfigure.
     file(COPY "${openal_source}/" DESTINATION "${compat_source}"
-        REGEX "/alc/effects/(chorus|distortion|fshifter|pshifter)\\.cpp$" EXCLUDE)
+        REGEX "/alc/effects/(chorus|distortion|fshifter|pshifter)\\.cpp$" EXCLUDE
+        REGEX "/al/auxeffectslot\\.cpp$" EXCLUDE)
     foreach(effect_pin IN ITEMS
         "chorus.cpp,0eed1eb01b6bf4486d6cc8f8303c50cf9a3a7ef32c7ceb627fa67a4b6cbc3fc8"
         "distortion.cpp,a7a9d764f49332348ae49852a8b94b6b2498179f938515c6ac6a2ed60a59d445"
@@ -108,6 +109,27 @@ function(mc_add_openal_dependencies)
         file(CONFIGURE OUTPUT "${compat_source}/alc/effects/${effect_file}" CONTENT "${effect}"
             @ONLY NEWLINE_STYLE LF)
     endforeach()
+    # Clang 18 with libstdc++ 15 probes global operator<=> templates
+    # while checking ranges::less for EffectSlotBase*. Name the standard
+    # pointer total-order comparator explicitly at this one pointer-array sort.
+    # Keep original sources/operators and all other range algorithms unchanged.
+    file(SHA256 "${openal_source}/al/auxeffectslot.cpp" aux_slot_sha256)
+    if(NOT aux_slot_sha256 STREQUAL
+        "5a82552c4e69c619160c5d20a9682107153dbf4a624ca24271e1aed17f228a92")
+        message(FATAL_ERROR "Pinned OpenAL Soft auxiliary-slot pointer sort differs from the reviewed source")
+    endif()
+    file(READ "${openal_source}/al/auxeffectslot.cpp" aux_slot)
+    set(old_pointer_sort "    std::ranges::sort(*newarray | std::views::take(newcount));")
+    set(new_pointer_sort
+        "    std::ranges::sort(*newarray | std::views::take(newcount), std::less<EffectSlotBase*>{});")
+    string(FIND "${aux_slot}" "${old_pointer_sort}" pointer_sort_offset)
+    if(pointer_sort_offset EQUAL -1)
+        message(FATAL_ERROR "Pinned OpenAL Soft auxiliary-slot pointer sort is missing")
+    endif()
+    string(REPLACE "#include <algorithm>" "#include <algorithm>\n#include <functional>" aux_slot "${aux_slot}")
+    string(REPLACE "${old_pointer_sort}" "${new_pointer_sort}" aux_slot "${aux_slot}")
+    file(CONFIGURE OUTPUT "${compat_source}/al/auxeffectslot.cpp" CONTENT "${aux_slot}"
+        @ONLY NEWLINE_STYLE LF)
     add_subdirectory("${compat_source}" "${openal_binary}/build" EXCLUDE_FROM_ALL)
     get_target_property(openal_type OpenAL TYPE)
     if(NOT openal_type STREQUAL "SHARED_LIBRARY")

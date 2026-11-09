@@ -1,5 +1,42 @@
 # Test scope and reproduction
 
+## Default Arrow flight and SDK cleanup
+
+The [flight guide](entity/arrow-flight.md) records the new real World dispatch and
+retained-call controls. Windows x64 MSVC Release and Linux Clang 18 Debug with
+ASan, UBSan and leak detection each pass fifteen selected tests: six flight and
+protocol tests, four SDK cleanup and protocol tests, and five affected regressions.
+Times are 42.31 and 21.32 seconds, with no failures or skips. Each host's six new
+native modes perform 1,170 checks across 21 World C entries. The SDK pair is a
+headless production-cleanup component, not the full App or frame loop.
+
+Separate unchanged-original and native observations pair seventeen snapshots and
+retain all 126 fields. Exactly 1,615 of 1,666 primitive cells match. Differences
+in three World clock/entropy fields, Random states, reference representations,
+setup data and six unpaired original stages remain explicit in the flight guide.
+These observations do not establish whole-method, visible-frame or FPS parity.
+Earlier victim-hold and bundle-transport refusals remain recorded.
+
+The Pig hold correction accounts only for the measured World-owned nearby list
+occurrences and preserves Source `World.R`. It does not clear the list, weaken
+the frame/code/World-binding assertions or repair Source/Random state. Public
+SDK JSON and its strict digest use canonical LF for checkout compatibility.
+
+The genuine Linux SDK/audio build first failed in OpenAL Soft 1.25.2's
+auxiliary-slot pointer sort with Clang 18 and libstdc++ 15. The build helper now
+adds `<functional>` and uses explicit `std::less<EffectSlotBase*>` in the private
+configured copy. Original dependency inputs, comparison operators, diagnostics
+and sanitizers remain unchanged. The actual failing translation unit reproduces
+the error unchanged and compiles with that comparator; the complete SDK and
+selected Linux tests then pass.
+
+The Windows SDK cleanup target stages the current OpenAL DLL through an ordered
+copy target, including builds that do not relink the executable. A real incremental
+build verifies that path and matching built/staged DLL bytes. The private native
+observer also refused an unbound Microsoft C17 threads runtime before any native
+launch; a separately reviewed continuation uses the exact retained executable
+with its two already-sealed runtime DLLs. That refused attempt remains unchanged.
+
 ## Constructor recording and owned material lookup
 
 The [Random recorder](core/random-recording.md) captures actual committed

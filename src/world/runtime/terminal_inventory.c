@@ -263,6 +263,9 @@ static mc_world_storage_status collect_entity(void *context, const void *slot, m
                 value->particle != NULL)
                 return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                               "World terminal canonical Arrow child storage");
+            if (value->arrow->tick_call != NULL)
+                return result(error, MC_WORLD_STORAGE_BUSY,
+                              "World terminal Arrow active/pending tick call");
             if (value->arrow->constructor_active)
                 return result(error, MC_WORLD_STORAGE_BUSY,
                               "World terminal Arrow constructor still entered");
@@ -698,8 +701,9 @@ static mc_world_storage_status scan_mob(void *context, const void *slot, mc_enti
         (entity->arrow != NULL || mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ARROW))) {
         if (!mc_entity_has_arrow(entity) || entity->phase == MC_ENTITY_CONSTRUCTING ||
             entity->mob != NULL || entity->local_player != NULL || entity->particle != NULL ||
-            entity->arrow->constructor_active || entity->arrow->heading_active ||
-            entity->arrow->fields.c != NULL || entity->arrow->shooter_hold != NULL)
+            entity->arrow->tick_call != NULL || entity->arrow->constructor_active ||
+            entity->arrow->heading_active || entity->arrow->fields.c != NULL ||
+            entity->arrow->shooter_hold != NULL)
             scan->needed = true;
     }
     if (entity != NULL &&

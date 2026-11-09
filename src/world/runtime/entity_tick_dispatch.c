@@ -59,6 +59,39 @@ static void observe_hurt(wt_scope *s, const mc_entity *actor) {
                                               .return_pc = attack->caller_return_site.pc};
 }
 
+static mc_world_storage_status arrow_status(mc_arrow_tick_status status) {
+    return status == MC_ARROW_TICK_OK           ? MC_WORLD_STORAGE_OK
+           : status == MC_ARROW_TICK_LIMIT      ? MC_WORLD_STORAGE_LIMIT
+           : status == MC_ARROW_TICK_ALLOCATION ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+           : status == MC_ARROW_TICK_BUSY       ? MC_WORLD_STORAGE_BUSY
+           : status == MC_ARROW_TICK_ARGUMENT   ? MC_WORLD_STORAGE_INVALID_ARGUMENT
+                                                : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+}
+
+static bool arrow_tick(wt_scope *s, mc_entity *p) {
+    s->error.virtual_class = "sl";
+    if (!s->has_error_output)
+        return wt_fail(s, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                       "World Arrow tick requires retained error output");
+    if (s->context == NULL || s->context->arrow_code_classes == NULL)
+        return wt_fail(s, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                       "World Arrow tick requires explicit defining code context");
+    s->error.child = MC_WORLD_ENTITY_TICK_CHILD_ARROW;
+    memset(&s->error.child_error.arrow, 0, sizeof(s->error.child_error.arrow));
+    const mc_arrow_tick_status status = mc_arrow_tick_begin(
+        p, s->context->arrow_code_classes, s->context->math, s->context->arrow_limits,
+        &s->error.child_error.arrow.call, &s->error.child_error.arrow.admission);
+    s->error.child_error.arrow.status = status;
+    if (status != MC_ARROW_TICK_OK)
+        return wt_fail(s, arrow_status(status), "World actual Arrow active tick child");
+    const mc_arrow_tick_status cleanup = mc_arrow_tick_retire(&s->error.child_error.arrow.call);
+    s->error.child_error.arrow.cleanup_status = cleanup;
+    if (cleanup != MC_ARROW_TICK_OK)
+        return wt_fail(s, arrow_status(cleanup), "World Arrow completed child checked retirement");
+    s->error.child = MC_WORLD_ENTITY_TICK_CHILD_NONE;
+    return true;
+}
+
 bool wt_tick(wt_scope *s, mc_entity *p, unsigned int pc) {
     s->error.bytecode = pc;
     s->error.virtual_method = "w_()V";
@@ -82,6 +115,8 @@ bool wt_tick(wt_scope *s, mc_entity *p, unsigned int pc) {
         status = mc_item_entity_tick_in_context(
             p, s->context == NULL ? NULL : s->context->player.travel.code_registry,
             s->context == NULL ? NULL : s->context->item_limits, &s->error.child_error.item);
+    } else if (mc_entity_has_arrow(p)) {
+        return arrow_tick(s, p);
     } else if (mc_entity_has_mob(p) && mc_entity_is_kind(p, p->class_literal->kind)) {
         s->error.virtual_class = mob_tick_class(p->class_literal->kind);
         s->error.child = MC_WORLD_ENTITY_TICK_CHILD_MOB;

@@ -20,6 +20,12 @@ bool mc_world_entity_tick_error_retire(mc_world_entity_tick_error *e) {
     if (e->child == MC_WORLD_ENTITY_TICK_CHILD_MOB &&
         !mc_mob_tick_error_retire(&e->child_error.mob))
         return false;
+    if (e->child == MC_WORLD_ENTITY_TICK_CHILD_ARROW) {
+        const mc_arrow_tick_status cleanup = mc_arrow_tick_retire(&e->child_error.arrow.call);
+        e->child_error.arrow.cleanup_status = cleanup;
+        if (cleanup != MC_ARROW_TICK_OK)
+            return false; /* First World failure remains; actual child is still owned. */
+    }
     mc_world_entity_tick_error_init(e);
     return true;
 }

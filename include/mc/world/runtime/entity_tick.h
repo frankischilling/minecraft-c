@@ -1,6 +1,7 @@
 #ifndef MC_WORLD_RUNTIME_ENTITY_TICK_H
 #define MC_WORLD_RUNTIME_ENTITY_TICK_H
 
+#include "mc/entity/arrow/tick.h"
 #include "mc/entity/falling_sand/tick.h"
 #include "mc/entity/item/tick.h"
 #include "mc/entity/mob/tick.h"
@@ -24,6 +25,11 @@ typedef struct mc_world_entity_tick_context {
     mc_math_classes *math;
     const mc_mob_tick_limits *mob_limits;
     const mc_entity_move_limits *falling_limits;
+    /* Explicit defining client code, independent of nullable/mutable Arrow.world.
+     * Caller holds its complete Registry/Entity/provider/import graph through
+     * synchronous Source and any retained failure. NULL selects no fallback. */
+    mc_world_runtime_classes *arrow_code_classes;
+    const mc_arrow_tick_limits *arrow_limits;
 } mc_world_entity_tick_context;
 
 typedef struct mc_world_entity_tick_limits {
@@ -46,7 +52,8 @@ typedef enum mc_world_entity_tick_child {
     MC_WORLD_ENTITY_TICK_CHILD_PRESENTATION,
     MC_WORLD_ENTITY_TICK_CHILD_REGISTRY,
     MC_WORLD_ENTITY_TICK_CHILD_MOB,
-    MC_WORLD_ENTITY_TICK_CHILD_FALLING_SAND
+    MC_WORLD_ENTITY_TICK_CHILD_FALLING_SAND,
+    MC_WORLD_ENTITY_TICK_CHILD_ARROW
 } mc_world_entity_tick_child;
 
 typedef struct mc_world_entity_tick_error {
@@ -79,6 +86,13 @@ typedef struct mc_world_entity_tick_error {
         mc_registry_error registry;
         mc_mob_tick_error mob;
         mc_falling_entity_tick_error falling;
+
+        struct {
+            /* Owning call occurrence; copying this error is transfer only. */
+            mc_arrow_tick_call *call;
+            mc_arrow_tick_error admission;
+            mc_arrow_tick_status status, cleanup_status;
+        } arrow;
     } child_error;
 
     mc_world_access_failure world_access_failure;
@@ -88,7 +102,7 @@ typedef struct mc_world_entity_tick_error {
 } mc_world_entity_tick_error;
 
 void mc_world_entity_tick_error_init(mc_world_entity_tick_error *);
-/* End owned Player, Mob and FallingSand failure work before reusing this
+/* End owned Player, Mob, FallingSand and Arrow failure work before reusing this
  * record or retiring its graph. An owning child transfers its occurrences
  * into the output; it must not be copied or cleared. Other child projections
  * are borrowed. False preserves remaining work and its cleanup cause.
@@ -109,7 +123,7 @@ bool mc_world_entity_tick_error_retire(mc_world_entity_tick_error *);
  * not a synthetic Java exception. Base/dedicated SERVER updates remain a
  * separate unfinished dependency. Admission preserves World/Entity state and
  * earlier World diagnostics; optional caller error is fresh for this attempt. */
-/* The reached FallingSand child requires a nonnull error output to own any
+/* The reached FallingSand and Arrow children require a nonnull error output to own any
  * failed constructor/publication/placement prefix. A reached Player wake
  * invocation likewise requires an actual outer ownership destination.
  * With NULL output these stop before that child; earlier source effects

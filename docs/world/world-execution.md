@@ -126,10 +126,10 @@ The [material controls](material-execution.md) describe the scanner scenarios.
 
 Owned Class queries, Player ally alerts and Living sound/knockback joins compile
 and retain their separate caller contracts. The selected legacy regressions do
-not establish every new owned entry path. Full victim damage, default Arrow
-dispatch, caller classification across every failure, foreign owner graphs and
-complete flight remain unfinished. These controls execute neither a new original
-Arrow method comparison nor a game-frame/FPS benchmark.
+not establish every new owned entry path. At that component checkpoint, full victim
+damage, default Arrow dispatch, caller classification across every failure, foreign
+owner graphs and complete flight remained unfinished. These controls execute
+neither a new original Arrow method comparison nor a game-frame/FPS benchmark.
 Native fixtures cover [nested calls](../../tests/world/runtime/world_access/test_execution_nested.c),
 [actual activation](../../tests/world/runtime/world_access/test_activation_execution.c),
 [loader failure](../../tests/world/runtime/world_access/test_execution_nested_loader.c)
@@ -148,9 +148,10 @@ activation fixtures independently exercise UTF8 paths transported as hex.
 
 ## Remaining composition
 
-The complete Arrow flight parent, full victim damage/effect composition and
-actual World-tick dispatch remain unfinished. The entered Base, block shape,
-raytrace and nearby components have the separate executed scope above.
+The [default Arrow parent and World dispatch](../entity/arrow-flight.md) now have
+separate finite native air, block-impact, victim-frontier and SDK cleanup controls.
+Full victim damage/effect composition remains unfinished. The entered Base, block
+shape, raytrace and nearby components retain their separate executed scope above.
 Source pickup, natural encounters, original audiovisual/whole-frame
 equality and sustained FPS remain unqualified. The separate
 [owned acquisition and TileEntity component](world-acquisition-execution.md)

@@ -223,6 +223,7 @@ static bool body(client_application *app, mc_math_classes *math, mc_client_world
         world_close_context close = {app, call};
         context.player.close = (mc_player_close_host){&close, player_close};
         context.math = math;
+        context.arrow_code_classes = app->world_classes;
         if (mc_world_runtime_tick_entities(app->active_world, &context, NULL, &call->entities) !=
             MC_WORLD_STORAGE_OK)
             return stop(call, call->entities.operation, 1216);
@@ -328,7 +329,8 @@ bool mc_client_world_tick_cleanup(mc_client_world_tick *call) {
         return false;
     if ((call->entities.child == MC_WORLD_ENTITY_TICK_CHILD_FALLING_SAND ||
          call->entities.child == MC_WORLD_ENTITY_TICK_CHILD_MOB ||
-         call->entities.child == MC_WORLD_ENTITY_TICK_CHILD_PLAYER) &&
+         call->entities.child == MC_WORLD_ENTITY_TICK_CHILD_PLAYER ||
+         call->entities.child == MC_WORLD_ENTITY_TICK_CHILD_ARROW) &&
         !mc_world_entity_tick_error_retire(&call->entities))
         return false;
     if (call->effects_owner != NULL) {

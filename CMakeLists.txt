@@ -760,6 +760,9 @@ add_library(mc_simulation STATIC
     src/entity/entity.c
     src/entity/arrow/construction.c
     src/entity/arrow/references.c
+    src/entity/arrow/tick.c
+    src/entity/arrow/tick_body.c
+    src/entity/arrow/tick_children.c
     src/entity/living/construction.c
     src/entity/mob/construction.c
     src/entity/mob/nbt.c
@@ -5702,6 +5705,8 @@ include(cmake/tests/world_access_handoff.cmake)
 include(cmake/tests/world_execution_nested.cmake)
 include(cmake/tests/world_kernel_execution.cmake)
 include(cmake/tests/world_query_controls.cmake)
+include(cmake/tests/arrow_natural_flight.cmake)
+include(cmake/tests/arrow_world_tick_cleanup.cmake)
 include(cmake/client_respawn.cmake)
 include(cmake/client_bed_respawn.cmake)
 include(cmake/client_bed_interaction.cmake)

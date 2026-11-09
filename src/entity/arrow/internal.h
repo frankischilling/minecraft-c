@@ -4,10 +4,14 @@
 #include "../entity_internal.h"
 #include "mc/entity/arrow/construction.h"
 
+struct mc_arrow_tick_call;
+
 typedef struct mc_arrow_entity_state {
     mc_arrow_fields fields;
     /* Independent counted occurrence backing actual source SL.c. */
     mc_entity *shooter_hold;
+    /* Borrowed backlink; the independently owned call keeps this Arrow alive. */
+    struct mc_arrow_tick_call *tick_call;
     unsigned int constructor_pc, heading_pc;
     bool constructor_active, heading_active;
     mc_arrow_error failure;

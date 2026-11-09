@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 343014,
-      "sha256": "0e13e25ca7bef841c3baeed3002d3004e71ae20d3e8cbca9246cad0286093e54"
+      "bytes": 343212,
+      "sha256": "15578817a902799f421588c8d9e3fb3fed481861bc747f326e1c63f502436fc0"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -94,8 +94,8 @@
       "sha256": "c7915e4b6cdce3a0338dc01594026d1d0f1fc976d32f71f5f2a5dc938cd82d1a"
     },
     "cmake/openal_dependencies.cmake": {
-      "bytes": 6450,
-      "sha256": "2961f2ad15c4986ca6d77235be0fa1dc06452169f38e353942026b52951aeda7"
+      "bytes": 7923,
+      "sha256": "454136d4b5675483f447e5b833b3a64d01e978360274abb26df31d10bf95c7ee"
     },
     "cmake/sound_dependencies.cmake": {
       "bytes": 10114,
@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 227296,
-      "sha256": "4d0d05bde770ee7f7f176e6daaa11de29e70ebbab8d019925e16f18cc1c9f0ee"
+      "bytes": 228342,
+      "sha256": "9096ae4070426effada5446394deb8aed9d471c721197003530cf7a03812bc53"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 586905,
-      "sha256": "6c16b8fb9804a0189159a638c840137501af060bc5cd4dd0b55467c759fbccd5"
+      "bytes": 589276,
+      "sha256": "03ab3295febb152947545f1c2f0cdc9c9a88336d58a6ed99b17cf3fce54ec1ca"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
@@ -1702,8 +1702,8 @@
       "sha256": "6153adc874e9d7f38a09290040ffc2fdc7d6bfd33ad907b6131d67c186c36fb8"
     },
     "include/mc/world/runtime/entity_tick.h": {
-      "bytes": 7332,
-      "sha256": "80ba4fc9b3fd2d6b1dea6161dfaef4f2f310a84973a78f0c4589efe501f5d8aa"
+      "bytes": 8014,
+      "sha256": "a5e341ee59b1f3b1dcb75ab01ab481e01d145299d5636c8010dc76a427020b38"
     },
     "include/mc/world/runtime/environment.h": {
       "bytes": 2390,
@@ -4682,16 +4682,16 @@
       "sha256": "93fc7fed8d27f252685e13f59243d7195c98686e54fd8b86520ae8212657b748"
     },
     "src/world/runtime/entity_tick.c": {
-      "bytes": 12137,
-      "sha256": "4ab9706dcfc82f4477720ff6e4fa697576ba58b74cbf360d16870d86c9cc8920"
+      "bytes": 12480,
+      "sha256": "2e22aadf1a418e0eebe4729eee2196c4742f4d01eaf70d3d23c5277299aec90b"
     },
     "src/world/runtime/entity_tick_chunks.c": {
       "bytes": 4205,
       "sha256": "c66a18a5450adcd99a188717b5be6be696206e954bb499cc0c0698a4fcd7fb6c"
     },
     "src/world/runtime/entity_tick_dispatch.c": {
-      "bytes": 14538,
-      "sha256": "87271e6bb0cdd04daf131e3ff8b0cf6f4ebc7a08b240d59ec6c49aacdf7863ee"
+      "bytes": 16532,
+      "sha256": "c2bc52972d5cabdf108f5694672a9814de129f9a002731cd146b6d066363666b"
     },
     "src/world/runtime/entity_tick_internal.h": {
       "bytes": 3748,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 749724,
-      "sha256": "4ba553a59c4fa7277b6977828b4641ab9cd1a80a8ffc99361ce875cda50c340f"
+      "bytes": 759552,
+      "sha256": "7a539b178b0dccb3b8ed8f52a34dae5d4826ce8d6c85b5a75b92228a8b52312d"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 850003,
-      "sha256": "4af0055f7368ff97f67026bdb1fa0d7a261a9c40d5282c082b1e7c5b56b18e8e"
+      "bytes": 861050,
+      "sha256": "d22452c11384f444ba21121d7d919778a9777a22f98a17a8e8c4e52867db338d"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 746703,
-      "sha256": "b1f3b76e2debc524c2273d4cbeaed9ae0a51d8444bfe03cd60a71ecb422aecac"
+      "bytes": 756531,
+      "sha256": "6b1774cbc474b737108880abaacfc41fe56c2ad0f8b699dc4582a54e3c84e998"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -10594,8 +10594,8 @@
       "sha256": "44c04d7f465a6fbdbea456db236456ca9a6fc4dcb586951a007d796234a2e412"
     },
     "src/client/runtime/world_tick.c": {
-      "bytes": 20406,
-      "sha256": "7c401e27b46efa5a5ee1407ca84f88cc5c6f3d139ff3bb4a5fc4f9aa4f2d13b2"
+      "bytes": 20532,
+      "sha256": "8526f85902e7cfb75ee2ec1f4b12b038cb0e9b059c80f6de5dd794440ceba8b4"
     },
     "src/client/runtime/world_tick.h": {
       "bytes": 5801,
@@ -12726,8 +12726,8 @@
       "sha256": "46e308716a3082cdf3d3f3497335ac0d9be601b7b2d4e314560bc1925c0846b4"
     },
     "src/world/runtime/terminal_inventory.c": {
-      "bytes": 44802,
-      "sha256": "7a1d07685f8b7c705bdb7b02adcca7b89f4fad808fbc92c971f48a174c7db363"
+      "bytes": 45039,
+      "sha256": "907ce3a4efa5a878f73732b489a3edc21f9add84a99a9493126e6ad49b3e23a6"
     },
     "src/world/runtime/terminal_inventory_internal.h": {
       "bytes": 6928,
@@ -22798,8 +22798,8 @@
       "sha256": "05f163fdcd177576472e7feb3cb1cba8ad8285b595fe54be5a46014ed90267f5"
     },
     "src/entity/arrow/internal.h": {
-      "bytes": 1933,
-      "sha256": "630640bfc263ce987807c3534b5f13f2f83fd18862a839d80d8ad06cb008047b"
+      "bytes": 2085,
+      "sha256": "ba74e695188cdf04de5cf52e12f59e82cc6439c6d9153c95580443eb52b1e9e2"
     },
     "src/entity/arrow/references.c": {
       "bytes": 2582,
@@ -23282,8 +23282,8 @@
       "sha256": "3b3ae634d54610a99e8ee3bddb9fc5e2f36fb64242dd8d7142133b280729addb"
     },
     "docs/world/world-execution.md": {
-      "bytes": 10601,
-      "sha256": "cea7a21fc2f50318297d93280653e325340bd51838d9ffd5da129a5a8f397a48"
+      "bytes": 10739,
+      "sha256": "90874c237dc8c5fcc1d3827836c7f556d671519a5505876ac9c1f94b62b704ba"
     },
     "src/world/runtime/activation_entity_execution_internal.h": {
       "bytes": 1645,
@@ -23496,6 +23496,66 @@
     "tests/world/runtime/world_access/test_raytrace_execution.c": {
       "bytes": 20205,
       "sha256": "7a95b98e2ad1fbcc7a28d0fe203636576e575cb53e4664557d8bdf2d237c9a22"
+    },
+    "cmake/tests/arrow_natural_flight.cmake": {
+      "bytes": 2051,
+      "sha256": "9663e593c7c0fc6af8dde1d10ee9d403eb29ceadaf42596c3b68256ff3d8e1f1"
+    },
+    "include/mc/entity/arrow/tick.h": {
+      "bytes": 9555,
+      "sha256": "f85088f318142c78dd87792dc8b291631734e5791cc896ec541551339b3c3b37"
+    },
+    "src/entity/arrow/tick.c": {
+      "bytes": 25119,
+      "sha256": "36a375ebccf7ca444df43c22263c178eb4cc4199127a892f507c7148d7e74c9b"
+    },
+    "src/entity/arrow/tick_body.c": {
+      "bytes": 29442,
+      "sha256": "f1827a6f4becd64bf634363c7fd4442c1a77bf5b71a7e66731a277136c6f92ee"
+    },
+    "src/entity/arrow/tick_children.c": {
+      "bytes": 46309,
+      "sha256": "c718b2a31e90693982199c7e98f077126839a457b85fb977204c76661265f12e"
+    },
+    "src/entity/arrow/tick_execution_dependencies.h": {
+      "bytes": 1712,
+      "sha256": "f6e35a1aeea69e34c968de68f3dae97224a0a06f1eb49825b70e3e6b90ddacf3"
+    },
+    "src/entity/arrow/tick_internal.h": {
+      "bytes": 7940,
+      "sha256": "fbb1fcdca32b7546adf70a1139be91a77188e2e0db6d938f43eb4cf164ba36e3"
+    },
+    "tests/tools/world/arrow_natural_flight_bundle.json": {
+      "bytes": 2227,
+      "sha256": "c7d3f55d3fa0ea6f6d69e121f8c4c8dcf86b84fde244e5e2c87fdd04eab5f087"
+    },
+    "tests/tools/world/test_arrow_natural_flight.py": {
+      "bytes": 13011,
+      "sha256": "90662b4832e43f3577f3ff930331b51c3d615a1a95eb2c108539a5e83f4fa497"
+    },
+    "tests/world/runtime/test_arrow_natural_flight.c": {
+      "bytes": 16439,
+      "sha256": "98b70cd9dc84c51558e1fc3e937abd0a4fc471440e355cac2e022086e555491d"
+    },
+    "cmake/tests/arrow_world_tick_cleanup.cmake": {
+      "bytes": 2831,
+      "sha256": "ff5e2737be85e20ddb162217da97669bd620bb827ed7380b137620a36d10f7b3"
+    },
+    "tests/client/gameplay/test_arrow_world_tick_cleanup.c": {
+      "bytes": 13403,
+      "sha256": "80d866a4df85af27011535b381728a1cae45bfbd24da103b2b453d5ed5056042"
+    },
+    "tests/tools/client/arrow_world_tick_cleanup_bundle.json": {
+      "bytes": 3533,
+      "sha256": "6c4ce503205864074e6c455c0a4efa7e0647b41c86f8f6987421cc2c083359e6"
+    },
+    "tests/tools/client/test_arrow_world_tick_cleanup.py": {
+      "bytes": 16782,
+      "sha256": "dbf865075a34bb9c5a6501cae095188f38e281e01b43beed0ec3ee1327338c40"
+    },
+    "docs/entity/arrow-flight.md": {
+      "bytes": 7312,
+      "sha256": "f14f43b35f01142d16a865eb73b7b1a1dcc9ab8c2bbef8890fb54989c3e7a90a"
     }
   },
   "self_metadata_excluded": true,
@@ -38761,6 +38821,404 @@
           },
           "added": [],
           "current_count": 5874
+        }
+      }
+    },
+    {
+      "from_commit": "1a1ce139fd851c8c8404a20b3a504a8c8a1a9453",
+      "role": "Current source admissions for actual default Arrow dispatch, retained parent cleanup and fresh natural flight controls. Historical suppliers and executed observations remain unchanged. Compilation, native outcomes, original comparison and FPS require separate qualification.",
+      "previous_metadata": {
+        "bytes": 1709576,
+        "sha256": "7db30b0197a0fb86ca85d9253570c2edba478209fe721b4e5028db49e4813287"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 343014,
+              "sha256": "0e13e25ca7bef841c3baeed3002d3004e71ae20d3e8cbca9246cad0286093e54"
+            },
+            "include/mc/world/runtime/entity_tick.h": {
+              "bytes": 7332,
+              "sha256": "80ba4fc9b3fd2d6b1dea6161dfaef4f2f310a84973a78f0c4589efe501f5d8aa"
+            },
+            "src/world/runtime/entity_tick.c": {
+              "bytes": 12137,
+              "sha256": "4ab9706dcfc82f4477720ff6e4fa697576ba58b74cbf360d16870d86c9cc8920"
+            },
+            "src/world/runtime/entity_tick_dispatch.c": {
+              "bytes": 14538,
+              "sha256": "87271e6bb0cdd04daf131e3ff8b0cf6f4ebc7a08b240d59ec6c49aacdf7863ee"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 749724,
+              "sha256": "4ba553a59c4fa7277b6977828b4641ab9cd1a80a8ffc99361ce875cda50c340f"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 850003,
+              "sha256": "4af0055f7368ff97f67026bdb1fa0d7a261a9c40d5282c082b1e7c5b56b18e8e"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 746703,
+              "sha256": "b1f3b76e2debc524c2273d4cbeaed9ae0a51d8444bfe03cd60a71ecb422aecac"
+            },
+            "src/client/runtime/world_tick.c": {
+              "bytes": 20406,
+              "sha256": "7c401e27b46efa5a5ee1407ca84f88cc5c6f3d139ff3bb4a5fc4f9aa4f2d13b2"
+            },
+            "src/world/runtime/terminal_inventory.c": {
+              "bytes": 44802,
+              "sha256": "7a1d07685f8b7c705bdb7b02adcca7b89f4fad808fbc92c971f48a174c7db363"
+            },
+            "src/entity/arrow/internal.h": {
+              "bytes": 1933,
+              "sha256": "630640bfc263ce987807c3534b5f13f2f83fd18862a839d80d8ad06cb008047b"
+            }
+          },
+          "added": [
+            "cmake/tests/arrow_natural_flight.cmake",
+            "include/mc/entity/arrow/tick.h",
+            "src/entity/arrow/tick.c",
+            "src/entity/arrow/tick_body.c",
+            "src/entity/arrow/tick_children.c",
+            "src/entity/arrow/tick_execution_dependencies.h",
+            "src/entity/arrow/tick_internal.h",
+            "tests/tools/world/arrow_natural_flight_bundle.json",
+            "tests/tools/world/test_arrow_natural_flight.py",
+            "tests/world/runtime/test_arrow_natural_flight.c"
+          ],
+          "current_count": 5884
+        }
+      }
+    },
+    {
+      "from_commit": "1a1ce139fd851c8c8404a20b3a504a8c8a1a9453",
+      "role": "Current source admissions for actual default Arrow dispatch, retained parent cleanup and fresh natural flight controls. Historical suppliers and executed observations remain unchanged. Compilation, native outcomes, original comparison and FPS require separate qualification.",
+      "previous_metadata": {
+        "bytes": 1714294,
+        "sha256": "5408139c010b6b809780d2a02a0f82b5b480d45b9b0331591cea85dad7d81cbf"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 753414,
+              "sha256": "989be25f16ffa12ecc579e7a64db8d386dc8935abb827bd3482f7953f8444195"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 853864,
+              "sha256": "541559cda851a35112ccebd52f6cbdc8d30e7427371fad6edd68e4b2b0516f25"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 750393,
+              "sha256": "87f1c42643074fb10bf81c7aa09f409a53dec52aa31de6738f9458585ec859c9"
+            },
+            "tests/tools/world/arrow_natural_flight_bundle.json": {
+              "bytes": 2227,
+              "sha256": "23a020da6f733c8772c02f74b1f84853f86595b41c7513bee81a6f2372410981"
+            },
+            "tests/world/runtime/test_arrow_natural_flight.c": {
+              "bytes": 14952,
+              "sha256": "0b8944899c4a877d9431e4e8b7365da54feb5f524056b88f73738c198b940bfc"
+            }
+          },
+          "added": [],
+          "current_count": 5884
+        }
+      }
+    },
+    {
+      "from_commit": "1a1ce139fd851c8c8404a20b3a504a8c8a1a9453",
+      "role": "Current source admissions for actual default Arrow dispatch, retained parent cleanup and fresh natural flight controls. Historical suppliers and executed observations remain unchanged. Compilation, native outcomes, original comparison and FPS require separate qualification.",
+      "previous_metadata": {
+        "bytes": 1715991,
+        "sha256": "3f9be7733f188c71d312528dfdd9a4f46101bae898028cf3774c65f26aa072e8"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 754286,
+              "sha256": "91e26bcb8381925f351d63ad378ec24a9d010532d9c710d6b4929ac20c888946"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 854738,
+              "sha256": "b54c5fc77e38ca87944ddeaf3fef2c84f79ad476545a7640ed21b98e18f72d3a"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 751265,
+              "sha256": "31150968ddac77a24b93575cfab8dce305f43e874695da4741a4179095120da2"
+            },
+            "tests/tools/world/test_arrow_natural_flight.py": {
+              "bytes": 13011,
+              "sha256": "25afbdd22d0444b9dd84c4e7ee9f8715c053d323abad2b38de203404280b1c18"
+            }
+          },
+          "added": [],
+          "current_count": 5884
+        }
+      }
+    },
+    {
+      "from_commit": "1a1ce139fd851c8c8404a20b3a504a8c8a1a9453",
+      "role": "Current source admissions for actual default Arrow dispatch, retained parent cleanup and fresh natural flight controls. Historical suppliers and executed observations remain unchanged. Compilation, native outcomes, original comparison and FPS require separate qualification.",
+      "previous_metadata": {
+        "bytes": 1717484,
+        "sha256": "7c3eaab00d84117cae471ed811e1aa8389cfad6ee9d2ecb6bbba4b3b33ba61a6"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 755157,
+              "sha256": "ef048846e17ea2a3f4a0af3c2561df09009debd3d75c77bf21c5b4ef38826ea4"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 855611,
+              "sha256": "862a6e9db94370c0073bb066639e3c18ffdfb5e2b6aac489f079c1f02d0ef5d0"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 752136,
+              "sha256": "4b4a92f14f82bdde1e0a7e32156b577105753d3b3c3c5ad6fd141f00feb804bf"
+            },
+            "tests/tools/world/arrow_natural_flight_bundle.json": {
+              "bytes": 2227,
+              "sha256": "1504c9bc55c54abc4cb162c510152300dc4458f512b47261bb6d2ee9c79b7341"
+            },
+            "tests/tools/world/test_arrow_natural_flight.py": {
+              "bytes": 13011,
+              "sha256": "2c88231c550346cdb1d3c65d058efdc14e3ce85a09cf9c4484e3b44017fa8403"
+            },
+            "tests/world/runtime/test_arrow_natural_flight.c": {
+              "bytes": 15871,
+              "sha256": "b2d816a5bf6c779808acb21abc33075b0da5a5ffca96973d13ab86729db16d7b"
+            }
+          },
+          "added": [],
+          "current_count": 5884
+        }
+      }
+    },
+    {
+      "from_commit": "1a1ce139fd851c8c8404a20b3a504a8c8a1a9453",
+      "role": "Current source admissions for actual default Arrow dispatch, retained parent cleanup and fresh natural flight controls. Historical suppliers and executed observations remain unchanged. Compilation, native outcomes, original comparison and FPS require separate qualification.",
+      "previous_metadata": {
+        "bytes": 1719381,
+        "sha256": "d5514d46647b47b77947c9ba7869dd09f67e25eb0aab17984c6dbbc6abe806d4"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 343160,
+              "sha256": "d46ad4e9cfcc8ce192eb8a4fd57f8c183b3a25d576cf37ead3b202a7e1fc9fa5"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 756229,
+              "sha256": "d4c8b4569fcca382df99bdfb58b5af6c548965e1c5b2f552607b477bbd6bb653"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 856685,
+              "sha256": "1936745962ab13694a08cd3bdc3baf0a745d88216b3c91ca02d9816aefa41ad8"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 753208,
+              "sha256": "2dc1a277495fa2c6e6b6d09a7f81a25e93e0161781ecec13a939c9d406709e1e"
+            }
+          },
+          "added": [
+            "cmake/tests/arrow_world_tick_cleanup.cmake",
+            "tests/client/gameplay/test_arrow_world_tick_cleanup.c",
+            "tests/tools/client/arrow_world_tick_cleanup_bundle.json",
+            "tests/tools/client/test_arrow_world_tick_cleanup.py"
+          ],
+          "current_count": 5888
+        }
+      }
+    },
+    {
+      "from_commit": "1a1ce139fd851c8c8404a20b3a504a8c8a1a9453",
+      "role": "Current source admissions for actual default Arrow dispatch, retained parent cleanup and fresh natural flight controls. Historical suppliers and executed observations remain unchanged. Compilation, native outcomes, original comparison and FPS require separate qualification.",
+      "previous_metadata": {
+        "bytes": 1721805,
+        "sha256": "394f343331f79b6d3cd014ebf287283f8f126d827f2857e23ef9ad775080547a"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/client/arrow_world_tick_cleanup_bundle.json": {
+              "bytes": 3533,
+              "sha256": "ca88c0c8a5a021d6ecdb42db868f789c95287e63dceb4ce9098cca9aed44a86f"
+            }
+          },
+          "added": [],
+          "current_count": 5888
+        }
+      }
+    },
+    {
+      "from_commit": "1a1ce139fd851c8c8404a20b3a504a8c8a1a9453",
+      "role": "Current source admissions for actual default Arrow dispatch, retained parent cleanup and fresh natural flight controls. Historical suppliers and executed observations remain unchanged. Compilation, native outcomes, original comparison and FPS require separate qualification.",
+      "previous_metadata": {
+        "bytes": 1722685,
+        "sha256": "c04820459ad31d844d16f4a876ae8336859c06eb0002e24a735105fc0c0bbf5e"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/parity.md": {
+              "bytes": 227296,
+              "sha256": "4d0d05bde770ee7f7f176e6daaa11de29e70ebbab8d019925e16f18cc1c9f0ee"
+            },
+            "docs/testing.md": {
+              "bytes": 586905,
+              "sha256": "6c16b8fb9804a0189159a638c840137501af060bc5cd4dd0b55467c759fbccd5"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 757605,
+              "sha256": "e5c618d65f0f05f8afdac5dfcb53ad2ed6bb72803419730593835341b4362bf7"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 858242,
+              "sha256": "c8841eafd3d218499e3720a4e44c8ffe204de8e5c6749509ed977cc9687c3ed9"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 754584,
+              "sha256": "868da461cf694aec9ceee37ac75981abb6e742f83296fb9ea7bfdc184e5ad09e"
+            },
+            "docs/world/world-execution.md": {
+              "bytes": 10601,
+              "sha256": "cea7a21fc2f50318297d93280653e325340bd51838d9ffd5da129a5a8f397a48"
+            },
+            "tests/tools/client/arrow_world_tick_cleanup_bundle.json": {
+              "bytes": 3624,
+              "sha256": "038b2374b0ff6bd19deb9216cbaeca52dfc05a1e66d4a117dcb495954ba594bd"
+            },
+            "tests/tools/client/test_arrow_world_tick_cleanup.py": {
+              "bytes": 16782,
+              "sha256": "8000e43515f927ab2515a79a94fe3bbe04af543310a31b863ff50d834b8bfd02"
+            }
+          },
+          "added": [
+            "docs/entity/arrow-flight.md"
+          ],
+          "current_count": 5889
+        }
+      }
+    },
+    {
+      "from_commit": "1a1ce139fd851c8c8404a20b3a504a8c8a1a9453",
+      "role": "Current source admissions for actual default Arrow dispatch, retained parent cleanup and fresh natural flight controls. Historical suppliers and executed observations remain unchanged. Compilation, native outcomes, original comparison and FPS require separate qualification.",
+      "previous_metadata": {
+        "bytes": 1725114,
+        "sha256": "835e25c702978a35c0193dd2db27ab1d8968be473607b4bf4c78fbc29a99a323"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/parity.md": {
+              "bytes": 228085,
+              "sha256": "ec917cf51a19d1284fed0d6c5ba04178e3e6f75150c82007704b152eddebce2c"
+            },
+            "docs/world/world-execution.md": {
+              "bytes": 10739,
+              "sha256": "cc30da729fbb78662409aed0f2b046b2688343546c90982edc866b8fcb8113e2"
+            }
+          },
+          "added": [],
+          "current_count": 5889
+        }
+      }
+    },
+    {
+      "from_commit": "1a1ce139fd851c8c8404a20b3a504a8c8a1a9453",
+      "role": "Current source admissions for actual default Arrow dispatch, retained parent cleanup and fresh natural flight controls. Historical suppliers and executed observations remain unchanged. Compilation, native outcomes, original comparison and FPS require separate qualification.",
+      "previous_metadata": {
+        "bytes": 1726138,
+        "sha256": "f9c7e32a64eb57db48c64b8b97e3db9180cb946854b361b9d78fc5940f04fa47"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "cmake/openal_dependencies.cmake": {
+              "bytes": 6450,
+              "sha256": "2961f2ad15c4986ca6d77235be0fa1dc06452169f38e353942026b52951aeda7"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 859120,
+              "sha256": "03166748fbb262bb9b95bc4786bb1ed7bf1421b076cab8c470457fdce7a6d4bf"
+            }
+          },
+          "added": [],
+          "current_count": 5889
+        }
+      }
+    },
+    {
+      "from_commit": "1a1ce139fd851c8c8404a20b3a504a8c8a1a9453",
+      "role": "Current source admissions for actual default Arrow dispatch, retained parent cleanup and fresh natural flight controls. Historical suppliers and executed observations remain unchanged. Compilation, native outcomes, original comparison and FPS require separate qualification.",
+      "previous_metadata": {
+        "bytes": 1727200,
+        "sha256": "9c4ec4b099364afefbcfd526735cf9b6181fab5ab845cbbe16764711bc9229d5"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 758481,
+              "sha256": "8db7965250a19eac99e9105d1fa9c955523fed99d406b05243bb7ce81f4dbc94"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 859977,
+              "sha256": "5f4a8471add6cb00316784796db8f5150752d76cded28d86c15fec0d82469bff"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 755460,
+              "sha256": "a0d1311ab5e090a5afef756232d3059830d536ee829ce1057c91b9c7dbc05159"
+            },
+            "cmake/tests/arrow_world_tick_cleanup.cmake": {
+              "bytes": 2547,
+              "sha256": "c5e95e5e59e72ae37d52121f9a7cdcf14c3a293ad69ff3545488b986720c407b"
+            },
+            "tests/tools/client/arrow_world_tick_cleanup_bundle.json": {
+              "bytes": 3533,
+              "sha256": "ca88c0c8a5a021d6ecdb42db868f789c95287e63dceb4ce9098cca9aed44a86f"
+            },
+            "tests/tools/client/test_arrow_world_tick_cleanup.py": {
+              "bytes": 16782,
+              "sha256": "033197941f06c878c02985761c5522d178491312e4ad5a6d00942d3d21c567d1"
+            }
+          },
+          "added": [],
+          "current_count": 5889
+        }
+      }
+    },
+    {
+      "from_commit": "1a1ce139fd851c8c8404a20b3a504a8c8a1a9453",
+      "role": "Current source admissions for actual default Arrow dispatch, retained parent cleanup and fresh natural flight controls. Historical suppliers and executed observations remain unchanged. Compilation, native outcomes, original comparison and FPS require separate qualification.",
+      "previous_metadata": {
+        "bytes": 1729101,
+        "sha256": "90963c90913cab9d0886b0ac3ee713a6bc53b75e3eb700f2da9b155e319d855e"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/parity.md": {
+              "bytes": 228168,
+              "sha256": "33c0b8ebcfecc6709494b064be056c07a2f3c4a9bc71ff1f1dd080bfe5226bfd"
+            },
+            "docs/testing.md": {
+              "bytes": 587808,
+              "sha256": "40f3bef2b29c54e6c6ae10a500a9fd1b158a9a2fd30a41ccdc7aa750138fc1c2"
+            },
+            "docs/entity/arrow-flight.md": {
+              "bytes": 5107,
+              "sha256": "13160053a6f659a6342a386649af67f6c1c48b276d6e95c7a2a66514b1f84858"
+            }
+          },
+          "added": [],
+          "current_count": 5889
         }
       }
     }
