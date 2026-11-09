@@ -1905,3 +1905,14 @@ The [former build page](https://github.com/frankischilling/minecraft-c/blob/feat
 [normal-generation checks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-builds.md#normal-generation-checks),
 retains older commands, counts and their original scope. Current reproduction
 commands and finite comparison limits are in the [test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md).
+
+## Arrow early-failure regressions
+
+Six retained-parent modes now cover nullable World/code/Math, failed and cold
+Math, and admission/FP refusal with real construction, typed inspection and
+checked retirement. Local Windows MSVC Release and Linux Clang18 Debug with
+ASan, UBSan and leak detection each pass the same 32 selected tests without
+skips, in 55.24 and 34.04 seconds. The six new native modes pass 1,194 checks
+per host; each normal/optimized Python protocol control passes twelve synthetic
+positives and 205 refusals. The [testing record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#arrow-early-failure-controls)
+retains the exact scope. These are targeted tests, not a full-suite or FPS result.

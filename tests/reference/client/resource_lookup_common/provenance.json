@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 343306,
-      "sha256": "f8bf4c53e0367f47ed8918cf7a25f4ddbdab632d96315986c02591e3f97fbbe7"
+      "bytes": 343353,
+      "sha256": "f1dc60365fa546f33590b9fda6635595cde7058e0480670b172fd38cb37f5f05"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 228791,
-      "sha256": "290cbae844bf65d06590585e570dfca7737ed1b057523065aef8986c6d7f4e4a"
+      "bytes": 229530,
+      "sha256": "7045c6fe6fbdbac3e5e8ced06c3ce46d9ad455317bf7e543cb42a6642993adc0"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -826,16 +826,16 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 595427,
-      "sha256": "f95cb5a417448978451239c562caf409922a9d5f2d71a2cbd4b48fa2bd25dbc0"
+      "bytes": 597512,
+      "sha256": "cad45b13a0a21d41f8ccea4a8dafdda2a4855de243a8e8c390c58dd2f37a059e"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
       "sha256": "2266d5edd099003b4b3fe304ecf79cf86bbfcab026ef1480936c04a391024957"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 133816,
-      "sha256": "16300d3fafc690232e5cb0b9788401c82069b350d2ab395a8afcf670c6a7d26b"
+      "bytes": 134573,
+      "sha256": "43db68a7e8b05c599e8f369ab21f9959088292c1bf9b0e973e4a27dbdb7978ac"
     },
     "docs/wiki/History.md": {
       "bytes": 72750,
@@ -854,8 +854,8 @@
       "sha256": "82cef3806c626dd62a9d870040b4731dfcfd5916232dec21afdc8efbff5f13dd"
     },
     "docs/wiki/World-simulation.md": {
-      "bytes": 56465,
-      "sha256": "aa2933add7c83b164000a277ff8b5161bfec7ccedbcb2deec8739050f1dd72f5"
+      "bytes": 57337,
+      "sha256": "b8403b4bffa8ea7221d342e11ab7b13d812654fe4500aaa03d6f556b46dec7c2"
     },
     "docs/wiki/_Sidebar.md": {
       "bytes": 3239,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 769184,
-      "sha256": "10db0afd7a53ab0649bfecb66dbea7767a3ed7601c3f7a45c037a3a7f7e17875"
+      "bytes": 770950,
+      "sha256": "382f9bf0197056351dbfaa4d0af8540e4cc8ddc80d6627f5e34ea73d74b9b699"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 871036,
-      "sha256": "1f580dc04c8df6057b89be440f55b59df349dfc5d6492a910421154ffbf46b20"
+      "bytes": 872973,
+      "sha256": "25393d5443cc312606e594bf19c26a3a365bcc1c7ba251b8d3ace8780a8074de"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 766163,
-      "sha256": "a606e89087e63f0f6621911ca80b6955d2817b7dc036bdc1e448903241087102"
+      "bytes": 767929,
+      "sha256": "77d89b2bf46fc912a1188dac1b95b340f1c9e08b7812534e85a693aaeef2498b"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -23547,15 +23547,15 @@
     },
     "tests/tools/client/arrow_world_tick_cleanup_bundle.json": {
       "bytes": 3533,
-      "sha256": "ecc4c709e6bfcdebe5d46f172b07412397bcf5a22ca3d103d3a1a1f756a4f57b"
+      "sha256": "be0494e8e5f501ebf15299e5c816629eca9126f34d07342efce2c5d052e0a48c"
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 16782,
-      "sha256": "4c3c63fc2f35ce4a7920c774cbd798ae0426d0b1c335c3ff1473800a7e5b65ae"
+      "sha256": "731ebd85507640c1e851eb2befbe3829d0aa408b11e9a2f4377aee3229f7bee7"
     },
     "docs/entity/arrow-flight.md": {
-      "bytes": 7312,
-      "sha256": "f14f43b35f01142d16a865eb73b7b1a1dcc9ab8c2bbef8890fb54989c3e7a90a"
+      "bytes": 8565,
+      "sha256": "cbffc0f90f2ece4070463b52797720a44d738e3a335d301cc3626a4134088c23"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,
@@ -23563,11 +23563,11 @@
     },
     "tests/tools/entity/damage_native_close_bundle.json": {
       "bytes": 4312,
-      "sha256": "fcc8689d7219e1ee5387181d6b36eb27fb3c5e0d1ae81fcdaba99f1d43e5750c"
+      "sha256": "1a889592ff6293c924112e946a093157ff077400ee5e584e41a6ecd55a55ea44"
     },
     "tests/tools/entity/test_damage_native_close.py": {
       "bytes": 17605,
-      "sha256": "1afa34018c2e81be6ba025ee086fd121af5ae28d895787ff4cb66b2250c65c21"
+      "sha256": "b15c7e7d2957dc6ade8e36ed2cee09628fd192b49f3bfbd9ece964d9ebbe6ee9"
     },
     "tests/world/runtime/world_access/test_damage_close_execution.c": {
       "bytes": 28929,
@@ -23582,8 +23582,20 @@
       "sha256": "562becd3fe8ad0afba11e9ab0f6a2c19b877b99a9b7c74e28ad6a991c269cd2a"
     },
     "docs/performance/arrow-world-tick-baseline.md": {
-      "bytes": 7533,
-      "sha256": "d2cc180b4920f747de856860ece28684bc80e678a4a33c1bfdc4b43c6afe138a"
+      "bytes": 11402,
+      "sha256": "58fad51a995a94d2c5b8f92c762214df9ea62506542ef4efef57e302e8c9a574"
+    },
+    "cmake/tests/arrow_tick_failures.cmake": {
+      "bytes": 1980,
+      "sha256": "2abfff7fb4e138f4431520cd298bff015f8c3a34aed622aa7606d85cea1c2379"
+    },
+    "tests/tools/entity/test_arrow_tick_failures.py": {
+      "bytes": 16654,
+      "sha256": "93fc90d88edb82382704d39cf24d9fdcecc8daf93d305bc668e00e51f04f1438"
+    },
+    "tests/world/runtime/test_arrow_tick_failures.c": {
+      "bytes": 17869,
+      "sha256": "13ffd37e68a1e9fafbbab04a254a1f9df295e690a1b2eb55a4a5e420bc9d6f68"
     }
   },
   "self_metadata_excluded": true,
@@ -39689,6 +39701,102 @@
           },
           "added": [],
           "current_count": 5896
+        }
+      }
+    },
+    {
+      "from_commit": "67a8dfe8cf6c5f1bd4980551fb2e03fa34445ad5",
+      "role": "Current source admissions for six direct Arrow early-failure regressions and transport checks. Production runtime remains unchanged; the measured allocation-family candidate was rejected. Historical observations stay separate. New native test qualification requires actual execution.",
+      "previous_metadata": {
+        "bytes": 1751946,
+        "sha256": "daff161a330322b3e4b8f5bc89b6ec0b84ee643056dbe6c91be9073b5bf5ca0f"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 343306,
+              "sha256": "f8bf4c53e0367f47ed8918cf7a25f4ddbdab632d96315986c02591e3f97fbbe7"
+            },
+            "docs/testing.md": {
+              "bytes": 595427,
+              "sha256": "f95cb5a417448978451239c562caf409922a9d5f2d71a2cbd4b48fa2bd25dbc0"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 769184,
+              "sha256": "10db0afd7a53ab0649bfecb66dbea7767a3ed7601c3f7a45c037a3a7f7e17875"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 871036,
+              "sha256": "1f580dc04c8df6057b89be440f55b59df349dfc5d6492a910421154ffbf46b20"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 766163,
+              "sha256": "a606e89087e63f0f6621911ca80b6955d2817b7dc036bdc1e448903241087102"
+            },
+            "tests/tools/client/arrow_world_tick_cleanup_bundle.json": {
+              "bytes": 3533,
+              "sha256": "ecc4c709e6bfcdebe5d46f172b07412397bcf5a22ca3d103d3a1a1f756a4f57b"
+            },
+            "tests/tools/client/test_arrow_world_tick_cleanup.py": {
+              "bytes": 16782,
+              "sha256": "4c3c63fc2f35ce4a7920c774cbd798ae0426d0b1c335c3ff1473800a7e5b65ae"
+            },
+            "docs/entity/arrow-flight.md": {
+              "bytes": 7312,
+              "sha256": "f14f43b35f01142d16a865eb73b7b1a1dcc9ab8c2bbef8890fb54989c3e7a90a"
+            },
+            "tests/tools/entity/damage_native_close_bundle.json": {
+              "bytes": 4312,
+              "sha256": "fcc8689d7219e1ee5387181d6b36eb27fb3c5e0d1ae81fcdaba99f1d43e5750c"
+            },
+            "tests/tools/entity/test_damage_native_close.py": {
+              "bytes": 17605,
+              "sha256": "1afa34018c2e81be6ba025ee086fd121af5ae28d895787ff4cb66b2250c65c21"
+            },
+            "docs/performance/arrow-world-tick-baseline.md": {
+              "bytes": 7533,
+              "sha256": "d2cc180b4920f747de856860ece28684bc80e678a4a33c1bfdc4b43c6afe138a"
+            }
+          },
+          "added": [
+            "cmake/tests/arrow_tick_failures.cmake",
+            "tests/tools/entity/test_arrow_tick_failures.py",
+            "tests/world/runtime/test_arrow_tick_failures.c"
+          ],
+          "current_count": 5899
+        }
+      }
+    },
+    {
+      "from_commit": "67a8dfe8cf6c5f1bd4980551fb2e03fa34445ad5",
+      "role": "Current source admissions after local Windows and Linux Arrow early-failure regression qualification and retained allocation-strategy measurements. Production runtime and headers remain unchanged. Historical suppliers and observations stay separate; finite executed coverage is documented separately.",
+      "previous_metadata": {
+        "bytes": 1755463,
+        "sha256": "41f6c404ca1f63f4b733d6eb0facf93e44b39e5368302208b0384bf90ba45858"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/parity.md": {
+              "bytes": 228791,
+              "sha256": "290cbae844bf65d06590585e570dfca7737ed1b057523065aef8986c6d7f4e4a"
+            },
+            "docs/testing.md": {
+              "bytes": 596813,
+              "sha256": "e302170708e1a073c34c4b10b39b4a6c91a0455defd8be925a9ab0ce9058e653"
+            },
+            "docs/wiki/Build-and-tests.md": {
+              "bytes": 133816,
+              "sha256": "16300d3fafc690232e5cb0b9788401c82069b350d2ab395a8afcf670c6a7d26b"
+            },
+            "docs/wiki/World-simulation.md": {
+              "bytes": 56465,
+              "sha256": "aa2933add7c83b164000a277ff8b5161bfec7ccedbcb2deec8739050f1dd72f5"
+            }
+          },
+          "added": [],
+          "current_count": 5899
         }
       }
     }

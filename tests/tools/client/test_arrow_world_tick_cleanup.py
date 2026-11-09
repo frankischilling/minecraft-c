@@ -17,7 +17,7 @@ TIMEOUT = 240
 LIMIT = 1024 ** 2
 MODES = ('source-failure', 'counter-retry')
 TARGET = 'mc_test_arrow_world_tick_cleanup'
-BUNDLE_SHA = 'ecc4c709e6bfcdebe5d46f172b07412397bcf5a22ca3d103d3a1a1f756a4f57b'
+BUNDLE_SHA = 'be0494e8e5f501ebf15299e5c816629eca9126f34d07342efce2c5d052e0a48c'
 TABLES = ('application_owner', 'biped', 'render_resources', 'display_sdk',
           'loading_draw', 'resource_lookup_common')
 

@@ -121,3 +121,67 @@ build evidence binds the actual workload object, ordered libraries, link map
 and import closure. It also records `vcruntime140.dll` and
 `vcruntime140_threads.dll` from their installed MSVC 14.51.36231 compiler-directory
 owners and the exact bytes staged into `build-windows` for these runs.
+
+## Rejected frame initialization experiment
+
+A separate Windows x64 strict MSVC Release experiment compared the existing
+`calloc(1, sizeof(*call))` with `malloc(sizeof(*call))` followed by zeroing every
+byte outside the work union. Both retained the mandatory first Base initializer,
+which clears the complete work span, and the same layout, limits, Source body
+and checked retirement. The candidate changed allocation family as well as
+zeroing strategy. It did not isolate the cost of either operation.
+
+Both products linked the same workload OBJECT and ordered production archives;
+only the complete Arrow `tick.c` object differed. Link maps verified the selected
+implementation. Before timing, 36 private controls passed 7,092 checks across the
+baseline, candidate and a separate work-poison variant. These covered the four
+natural-flight modes, two real World-to-SDK cleanup modes and six direct-parent
+modes: nullable World, absent defining code, absent/failed/cold Math and native
+admission/FP refusal. The four pre-allocation refusals in the last mode were
+admission checks, not coverage of omitted work zeroing. The poison variant was
+used only for qualification and was never timed. This private qualification does
+not claim that the new six-mode fixture has passed its later public CI wiring.
+
+The comparison used 24 new serial processes: four per cell and variant. Each
+retained two fresh warmups and 21 fresh measured intervals, with 64 separate
+clock pairs. Baseline ran first in rounds 0 and 2; candidate ran first in rounds
+1 and 3, with a declared cell order. The earlier twelve-process baseline was not
+reused. Every new process exited zero with complete, reaped captures, empty
+stderr, full-record validation and unchanged source/product guards.
+
+The table contains all 24 process medians. Values are milliseconds for the
+entire eight-World-call interval. A means baseline `calloc`; B means the
+`malloc` candidate. Positive change means the candidate was slower.
+
+| Cell | Round | Order | Baseline ms | Candidate ms | Change |
+| --- | ---: | --- | ---: | ---: | ---: |
+| empty | 0 | AB | 0.4157 | 0.3489 | -16.07% |
+| empty | 1 | BA | 0.3830 | 0.3582 | -6.48% |
+| empty | 2 | AB | 0.3734 | 0.3669 | -1.74% |
+| empty | 3 | BA | 0.3419 | 0.3419 | 0.00% |
+| arrow1 | 0 | AB | 1.4254 | 1.3894 | -2.53% |
+| arrow1 | 1 | BA | 1.3794 | 1.4293 | +3.62% |
+| arrow1 | 2 | AB | 1.5358 | 1.5886 | +3.44% |
+| arrow1 | 3 | BA | 1.3795 | 1.4019 | +1.62% |
+| arrow8 | 0 | AB | 8.0606 | 8.4407 | +4.72% |
+| arrow8 | 1 | BA | 8.1344 | 8.1607 | +0.32% |
+| arrow8 | 2 | AB | 8.7563 | 8.4998 | -2.93% |
+| arrow8 | 3 | BA | 7.9671 | 9.1095 | +14.34% |
+
+There was no consistent gain. The candidate was slower in three of four pairs
+for both one and eight Arrows, so production adoption was rejected. The parent
+continues to use `calloc`. The empty cell enters no Arrow parent, yet its paired
+medians also differed. That variation is retained as a whole-path control;
+it is neither an error bound for the Arrow cells nor a subtraction from them.
+
+The retained data contains 552 intervals (48 warmups and 504 measured), 4,416 OK
+World returns, 874,368 checks, 1,656 constructor records with 4,968 reported heading
+Gaussian calls, 1,104 observations and 33,120 Chunk records. An independent
+data-only review recomputed every median and paired ratio from the raw JSONL.
+The retained analysis report is bound by SHA-256
+`f31e87601e7549fa9bf537d957cfe8f9bd585ffdcbbedd88ed59ce66e032af33`.
+Independent constructor entropy and process-local contexts remain in the full
+records. The comparison unit is four process pairs per cell, not 84 independent
+interval samples. No samples or outliers were excluded, and neither clock nor
+empty values were subtracted. These results establish no allocation-event count,
+isolated allocation/zeroing cost, general bottleneck or FPS improvement.

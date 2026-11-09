@@ -10027,7 +10027,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 16782,
-      "sha256": "4c3c63fc2f35ce4a7920c774cbd798ae0426d0b1c335c3ff1473800a7e5b65ae"
+      "sha256": "731ebd85507640c1e851eb2befbe3829d0aa408b11e9a2f4377aee3229f7bee7"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,
@@ -10035,7 +10035,7 @@
     },
     "tests/tools/entity/test_damage_native_close.py": {
       "bytes": 17605,
-      "sha256": "1afa34018c2e81be6ba025ee086fd121af5ae28d895787ff4cb66b2250c65c21"
+      "sha256": "b15c7e7d2957dc6ade8e36ed2cee09628fd192b49f3bfbd9ece964d9ebbe6ee9"
     },
     "tests/world/runtime/world_access/test_damage_close_execution.c": {
       "bytes": 28929,
@@ -10048,6 +10048,18 @@
     "tests/benchmarks/arrow_world_tick_baseline.c": {
       "bytes": 38188,
       "sha256": "562becd3fe8ad0afba11e9ab0f6a2c19b877b99a9b7c74e28ad6a991c269cd2a"
+    },
+    "cmake/tests/arrow_tick_failures.cmake": {
+      "bytes": 1980,
+      "sha256": "2abfff7fb4e138f4431520cd298bff015f8c3a34aed622aa7606d85cea1c2379"
+    },
+    "tests/tools/entity/test_arrow_tick_failures.py": {
+      "bytes": 16654,
+      "sha256": "93fc90d88edb82382704d39cf24d9fdcecc8daf93d305bc668e00e51f04f1438"
+    },
+    "tests/world/runtime/test_arrow_tick_failures.c": {
+      "bytes": 17869,
+      "sha256": "13ffd37e68a1e9fafbbab04a254a1f9df295e690a1b2eb55a4a5e420bc9d6f68"
     }
   },
   "authorities": {
@@ -17831,6 +17843,34 @@
           },
           "added": [],
           "current_count": 2512
+        }
+      }
+    },
+    {
+      "from_commit": "67a8dfe8cf6c5f1bd4980551fb2e03fa34445ad5",
+      "role": "Current source admissions for six direct Arrow early-failure regressions and transport checks. Production runtime remains unchanged; the measured allocation-family candidate was rejected. Historical observations stay separate. New native test qualification requires actual execution.",
+      "previous_metadata": {
+        "bytes": 769184,
+        "sha256": "10db0afd7a53ab0649bfecb66dbea7767a3ed7601c3f7a45c037a3a7f7e17875"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/client/test_arrow_world_tick_cleanup.py": {
+              "bytes": 16782,
+              "sha256": "4c3c63fc2f35ce4a7920c774cbd798ae0426d0b1c335c3ff1473800a7e5b65ae"
+            },
+            "tests/tools/entity/test_damage_native_close.py": {
+              "bytes": 17605,
+              "sha256": "1afa34018c2e81be6ba025ee086fd121af5ae28d895787ff4cb66b2250c65c21"
+            }
+          },
+          "added": [
+            "cmake/tests/arrow_tick_failures.cmake",
+            "tests/tools/entity/test_arrow_tick_failures.py",
+            "tests/world/runtime/test_arrow_tick_failures.c"
+          ],
+          "current_count": 2515
         }
       }
     }

@@ -784,3 +784,15 @@ for current validation. Detailed past counts and source checkpoints are retained
 in the [population and runtime history](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/population.md).
 The [architecture](Architecture), [build](Build-and-tests) and
 [storage/reference](Storage-and-reference) wiki pages provide further navigation.
+
+## Arrow frame initialization measurement
+
+A 24-process Windows comparison tested a private `malloc` plus partial-clear
+strategy against the existing `calloc` frame allocation. All 36 semantic and
+cleanup controls passed 7,092 checks before timing. The complete timing cohort
+passed 874,368 checks, but the candidate was slower in three of four pairs for
+both one and eight Arrows. Adoption was rejected; production keeps `calloc`.
+The [full process table and method](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/arrow-world-tick-baseline.md#rejected-frame-initialization-experiment)
+retains all samples and empty-control variation. This establishes no isolated
+allocation cost or application FPS improvement. Six useful early-failure cases
+are now local Windows/Linux regressions; full victim damage remains unfinished.

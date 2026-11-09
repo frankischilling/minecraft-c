@@ -118,3 +118,24 @@ remain unfinished or unqualified. The existing leaf controls have their own scop
 The finite observations and native lifetime controls do not establish whole-method
 equality, visible-game qualification, sustained play or FPS. The refused
 whole-frame replay remains unchanged and is not retried.
+
+## Retained frame allocation experiment
+
+The parent still allocates its retained frame with `calloc`. A private
+`malloc` candidate zeroed the surrounding frame while leaving the work union
+to its unchanged mandatory Base initializer. The layout, 2 MiB ceiling, Source
+body, owning occurrences and checked cleanup remained the same.
+
+Before timing, all three variants (baseline, candidate and qualification-only
+work poison) passed 36 private controls with 7,092 checks. These included the
+real World-to-SDK failure/retry paths and six direct-parent code/Math/nullable
+World/admission/FP modes. Inspection retained the actual typed causes; FP was
+observed as an unresolved parent classification with a selected lower FP cause.
+The private results do not qualify later public test registration.
+
+In a new 24-process comparison, the candidate was slower in three of four pairs
+for both one and eight Arrows. Production adoption was rejected. The
+[complete process table and method](../performance/arrow-world-tick-baseline.md#rejected-frame-initialization-experiment)
+retain all warmups, measurements and empty-control variation. This comparison
+does not isolate allocation cost or establish an FPS result; the flight and
+victim limitations above remain.

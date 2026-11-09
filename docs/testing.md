@@ -38,6 +38,42 @@ The three cold qualifications and their earlier failures remain historical.
 The same eighteen affected regressions pass the updated source in 26.42 seconds
 with no skips; complete JUnit, LastTest and raw captures are retained.
 
+## Arrow early-failure controls
+
+The `mc_test_arrow_tick_failures` fixture exercises six real retained-parent
+paths: nullable World, absent defining code, absent Math, failed Math, cold Math,
+and admission/unsupported-FP refusal. It uses genuine Arrow construction and
+the ordinary begin, inspection and checked-retirement APIs. Each mode checks
+typed diagnostic defaults, retained receiver/code/World rights and cleanup;
+the FP case restores the actual incoming control word immediately after begin.
+Four refusals before frame publication are admission coverage only.
+
+The Python runner supplies a fresh root for each native process and retains
+complete bounded stdout, stderr and capture metadata. It validates the mode,
+observation and completion protocol. Normal and optimized Python controls
+exercise malformed and incomplete transport without launching the game.
+
+Windows x64 strict MSVC Release and Linux Clang 18 Debug with ASan, UBSan and
+leak detection each pass the same 32 selected tests, without skips. CTest wall
+times are 55.24 and 34.04 seconds. The selection combines eight new cases, six
+natural-flight cases and eighteen existing cleanup, ownership and damage
+regressions. Each host's six new native modes pass 1,194 checks; each Python
+protocol mode passes twelve synthetic positives and 205 refusals. These pure
+controls validate the parser and returned-capture gate, not injected failures
+through every branch of the runner. Complete JUnit, LastTest, native output and
+capture metadata are retained. Production runtime and headers are unchanged.
+
+```sh
+cmake --build build --target mc_test_arrow_tick_failures
+ctest --test-dir build --output-on-failure -R 'arrow_tick_'
+```
+
+These are finite native diagnostic and ownership regressions. Allocation
+failure, diagnostic OOM, complete victim damage, original whole-method equality
+and application FPS require separate evidence. The measured private allocator
+experiment and its rejected result are recorded in the
+[workload guide](performance/arrow-world-tick-baseline.md#rejected-frame-initialization-experiment).
+
 ## Recorded Living sound and Player ally close
 
 The [Living sound](entity/living-damage.md#recorded-native-close) and
