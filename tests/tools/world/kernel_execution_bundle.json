@@ -1,6 +1,6 @@
 {
   "schema": "EXPLICIT_KERNEL_EXECUTION_TILE2_BUNDLE_V1",
-  "selection": "nested3+Entity2+kernel2+Tile2",
+  "selection": "nested3+Entity2+kernel2+Tile2;activation-close1",
   "dependencies": {
     "sl-nested-owner-candidates-3": {
       "bytes": 7824,
@@ -17,6 +17,10 @@
     "sl-tile-execution-candidates-2": {
       "bytes": 14964,
       "sha256": "1d49624fa1066b96ef69c4bffb1678b8ab3b07257b2da75a104d08eb9b65eea2"
+    },
+    "sl-activation-close-result-candidates-1": {
+      "bytes": 105354,
+      "sha256": "99f663dbebcd4bf863d0b56c8fb139769546cee866d67fc2ec763c9e4739c33c"
     }
   },
   "sources": {
@@ -29,20 +33,20 @@
       "sha256": "379777c714021593f9605bf6dbfe69e35373e0c8898269583568f0b2fe8086b7"
     },
     "src/world/runtime/activation.c": {
-      "bytes": 19603,
-      "sha256": "84e562c66b8e477e134ab199cb91355b3a4da6205801b8b75742a6e41bacd9a6"
+      "bytes": 19542,
+      "sha256": "9bd3706802a4a529ee863f892de41364e30929f91a34bf28f9b49ef60a333d6a"
     },
     "src/world/runtime/activation_entity_execution_internal.h": {
-      "bytes": 1413,
-      "sha256": "9e8a22d52dcfabcf70ff2a8aa64f85111f5a0ecabfa190304d0881304206e460"
+      "bytes": 1645,
+      "sha256": "9772ec138b576acdc1d2f91c502a15e4e3decccb2e95c386874b24219d64805e"
     },
     "src/world/runtime/activation_execution_internal.h": {
       "bytes": 1752,
       "sha256": "56057b04af9216634d6cb60fae3869255526ab39aa8ebd1e5a4d2f8f836ad300"
     },
     "src/world/runtime/activation_tile_execution_internal.h": {
-      "bytes": 1449,
-      "sha256": "04522902519f6cc431aacb7350b38a53e0d2d39fa1db610faee07b93aad6349b"
+      "bytes": 1605,
+      "sha256": "27c630007d453a0c1bdb3e81f3630bf1137dcd49b933066fdc114a2e02bcdaa9"
     },
     "src/world/runtime/entity_publication.c": {
       "bytes": 45422,
@@ -65,12 +69,12 @@
       "sha256": "4e43b01f389d611486563938963f4b609f16ca1fbed6015c9a1c7e8da4eb0539"
     },
     "src/world/runtime/runtime_execution.c": {
-      "bytes": 8293,
-      "sha256": "2d48de6b0bd64a930a16a5d5f84cbed3757a5c17b241b38ad01770632fc5b5d5"
+      "bytes": 17733,
+      "sha256": "1beb31d4f21902c8bd6a0eccbaf982629fe4d171d06ed133eff7b58dbcc535fa"
     },
     "src/world/runtime/runtime_execution_internal.h": {
-      "bytes": 5846,
-      "sha256": "3f6bd74884ce52af0fe16b83bf0be434dda0034b21af95dc5216451208bebabc"
+      "bytes": 10285,
+      "sha256": "3e0e5e44bb29a55373c0ed071d6425525a3421bd9affd0c429c05caa8f685084"
     },
     "src/world/runtime/tile_entities/execution_internal.h": {
       "bytes": 4017,
@@ -112,5 +116,61 @@
   "historical_fixture_tile1": {
     "manifest_sha256": "ed6ac60e283551c72077747e4d0bbf03d68bad792a51dfe3eef4eca23493c701",
     "role": "Preserved fixture1 preparation supplier, not selected adopted runtime"
+  },
+  "current_source_projection": {
+    "from_selection": "nested3+Entity2+kernel2+Tile2",
+    "role": "Explicit reviewed activation close-result source projection. Existing native fixture/input/protocol assertions remain unchanged; runtime credit requires a new actual execution. Historical supplier manifests are unchanged.",
+    "source_changes": {
+      "src/world/runtime/activation.c": {
+        "previous": {
+          "bytes": 19603,
+          "sha256": "84e562c66b8e477e134ab199cb91355b3a4da6205801b8b75742a6e41bacd9a6"
+        },
+        "current": {
+          "bytes": 19542,
+          "sha256": "9bd3706802a4a529ee863f892de41364e30929f91a34bf28f9b49ef60a333d6a"
+        }
+      },
+      "src/world/runtime/runtime_execution.c": {
+        "previous": {
+          "bytes": 8293,
+          "sha256": "2d48de6b0bd64a930a16a5d5f84cbed3757a5c17b241b38ad01770632fc5b5d5"
+        },
+        "current": {
+          "bytes": 17733,
+          "sha256": "1beb31d4f21902c8bd6a0eccbaf982629fe4d171d06ed133eff7b58dbcc535fa"
+        }
+      },
+      "src/world/runtime/runtime_execution_internal.h": {
+        "previous": {
+          "bytes": 5846,
+          "sha256": "3f6bd74884ce52af0fe16b83bf0be434dda0034b21af95dc5216451208bebabc"
+        },
+        "current": {
+          "bytes": 10285,
+          "sha256": "3e0e5e44bb29a55373c0ed071d6425525a3421bd9affd0c429c05caa8f685084"
+        }
+      },
+      "src/world/runtime/activation_entity_execution_internal.h": {
+        "previous": {
+          "bytes": 1413,
+          "sha256": "9e8a22d52dcfabcf70ff2a8aa64f85111f5a0ecabfa190304d0881304206e460"
+        },
+        "current": {
+          "bytes": 1645,
+          "sha256": "9772ec138b576acdc1d2f91c502a15e4e3decccb2e95c386874b24219d64805e"
+        }
+      },
+      "src/world/runtime/activation_tile_execution_internal.h": {
+        "previous": {
+          "bytes": 1449,
+          "sha256": "04522902519f6cc431aacb7350b38a53e0d2d39fa1db610faee07b93aad6349b"
+        },
+        "current": {
+          "bytes": 1605,
+          "sha256": "27c630007d453a0c1bdb3e81f3630bf1137dcd49b933066fdc114a2e02bcdaa9"
+        }
+      }
+    }
   }
 }

@@ -18,12 +18,18 @@ if(BUILD_TESTING AND TARGET mc_simulation)
     target_include_directories(mc_test_world_collision_query_execution PRIVATE src src/platform/time)
     target_link_libraries(mc_test_world_collision_query_execution PRIVATE
         mc_simulation mc_persistence mc_c_atomics mc_build_options)
+    add_executable(mc_test_world_activation_close_execution
+        tests/world/runtime/world_access/test_activation_close_execution.c)
+    target_include_directories(mc_test_world_activation_close_execution PRIVATE src src/platform/time)
+    target_link_libraries(mc_test_world_activation_close_execution PRIVATE
+        mc_simulation mc_persistence mc_c_atomics mc_build_options)
 endif()
 
 if(BUILD_TESTING AND TARGET mc_test_world_kernel_loader_execution
         AND TARGET mc_test_world_tile_lookup_execution
-        AND TARGET mc_test_world_collision_query_execution AND Python3_Interpreter_FOUND)
-    foreach(_mc_query_kind IN ITEMS loader lookup collision)
+        AND TARGET mc_test_world_collision_query_execution
+        AND TARGET mc_test_world_activation_close_execution AND Python3_Interpreter_FOUND)
+    foreach(_mc_query_kind IN ITEMS loader lookup collision close)
         if(_mc_query_kind STREQUAL "loader")
             set(_mc_query_target mc_test_world_kernel_loader_execution)
             set(_mc_query_modes error null-error)
@@ -32,10 +38,14 @@ if(BUILD_TESTING AND TARGET mc_test_world_kernel_loader_execution
             set(_mc_query_target mc_test_world_tile_lookup_execution)
             set(_mc_query_modes map lazy armed held nested)
             set(_mc_query_name tile_lookup_execution)
-        else()
+        elseif(_mc_query_kind STREQUAL "collision")
             set(_mc_query_target mc_test_world_collision_query_execution)
             set(_mc_query_modes id-first metadata-first domain loader-error loader-null-error armed held)
             set(_mc_query_name collision_query_execution)
+        else()
+            set(_mc_query_target mc_test_world_activation_close_execution)
+            set(_mc_query_modes error null-error)
+            set(_mc_query_name activation_close_execution)
         endif()
         foreach(_mc_query_mode IN LISTS _mc_query_modes)
             add_test(NAME "world.${_mc_query_name}_${_mc_query_mode}" COMMAND

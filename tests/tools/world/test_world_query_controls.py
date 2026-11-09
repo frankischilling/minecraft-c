@@ -16,7 +16,7 @@ sys.dont_write_bytecode = True
 TIMEOUT = 240
 LIMIT = 1024**2
 MAX_CHECKS = 2**32 - 1
-BUNDLE_SHA = '5dda4c47e7add8cb462473ff8e218e049c3541babbb1632685a6630581cd9e24'
+BUNDLE_SHA = 'bf88043c69513aac617e1b41a9cb31b04af15aa3840355b761e2cfa6489e3259'
 MODES = {'loader': ('error', 'null-error'),
  'lookup': ('map', 'lazy', 'armed', 'held', 'nested'),
  'collision': ('id-first',
@@ -25,7 +25,8 @@ MODES = {'loader': ('error', 'null-error'),
                'loader-error',
                'loader-null-error',
                'armed',
-               'held')}
+               'held'),
+ 'close': ('error', 'null-error')}
 SUPPLIERS = {'loader': {'manifest': '01e30de5a0245269259815a878ffd059768858b79b1cf11fc06bfcba93f9685b',
             'protocol': 'fc0b553cf1b23449001bf22a95f943c053a6cc58122eab4d42f408c0548f59f5',
             'source': 'tests/world/runtime/world_access/test_kernel_loader_execution.c',
@@ -40,7 +41,12 @@ SUPPLIERS = {'loader': {'manifest': '01e30de5a0245269259815a878ffd059768858b79b1
                'protocol': '6fd0849ab48f9b3741756f160f022c003e24bdcdbe94fec36996fb7980acad0f',
                'source': 'tests/world/runtime/world_access/test_collision_query_execution.c',
                'source_pin': {'bytes': 39905,
-                              'sha256': '8032d0b673620aea1f1cce08685ff751509878c707a53f45b6f8098361702938'}}}
+                              'sha256': '8032d0b673620aea1f1cce08685ff751509878c707a53f45b6f8098361702938'}},
+ 'close': {'manifest': '8d880e0ea00573319e4ba758e1baecc9af5ac97f0fa3a6008192a6949c7b94d4',
+           'protocol': '4727e921d329f66b33ee93f8e32cd9397257d78e87721a373446758873fcd8c0',
+           'source': 'tests/world/runtime/world_access/test_activation_close_execution.c',
+           'source_pin': {'bytes': 30572,
+                          'sha256': '72cd515c4007b9251e6b3cd6daebdb9d8b936f139f2ae45ccbda26e8ef4750ad'}}}
 
 
 COLLISION_MARKERS = {'id-first': ('cold BEGIN', 'cold END', 'cache BEGIN', 'cache END'),
@@ -58,6 +64,17 @@ COLLISION_MARKERS = {'id-first': ('cold BEGIN', 'cold END', 'cache BEGIN', 'cach
  'held': ('cold BEGIN', 'cold END', 'callback BEGIN', 'callback END')}
 
 
+CLOSE_MARKERS = ('get entered',
+ 'get returned',
+ 'capsule selected',
+ 'receipt selected',
+ 'token rejected',
+ 'close retried',
+ 'capsule consumed',
+ 'get finished',
+ 'owner retired')
+
+
 def require(value, message):
     if not value:
         raise ValueError(message)
@@ -72,6 +89,10 @@ def record_failure(report, key, error):
 
 def protocol_lines(kind, mode):
     require(kind in MODES and mode in MODES[kind], 'Unknown literal query control mode')
+    if kind == 'close':
+        return [b'ACTIVATION_CLOSE_BEGIN schema=1 mode=' + mode.encode('ascii'), b'16 achievements', b'151 recipes'] + [
+            b'ACTIVATION_CLOSE_CASE ' + marker.encode('ascii') for marker in CLOSE_MARKERS] + [
+                b'ACTIVATION_CLOSE_OPEN Tile-refusal/consumed-nonOK/direct-close-wrong-current/full-SL']
     if kind == 'collision':
         return [b'COLLISION_QUERY_BEGIN schema=1 mode=' + mode.encode('ascii'), b'16 achievements', b'151 recipes'] + [
             b'COLLISION_QUERY_CASE ' + marker.encode('ascii') for marker in COLLISION_MARKERS[mode]] + [
@@ -91,8 +112,9 @@ def protocol_lines(kind, mode):
 
 def footer_pattern(kind, mode):
     require(kind in MODES and mode in MODES[kind], 'Unknown footer mode')
-    scope = b'owned collision scalar' if kind == 'collision' else (
-        b'kernel direct-loader' if kind == 'loader' else b'Tile lookup')
+    scope = b'activation close-result' if kind == 'close' else (
+        b'owned collision scalar' if kind == 'collision' else (
+            b'kernel direct-loader' if kind == 'loader' else b'Tile lookup'))
     return rb'PASS: ([1-9][0-9]{0,9}) actual ' + scope + b' checks;mode=' + mode.encode('ascii')
 
 
@@ -138,7 +160,7 @@ def bundle_payload(data):
             hashlib.sha256(data).hexdigest() == BUNDLE_SHA, 'Unapproved explicit dependency bundle')
     bundle = json.loads(data.decode('utf-8'))
     require(type(bundle) is dict and bundle.get('schema') == 'EXPLICIT_WORLD_QUERY_CONTROLS_BUNDLE_V1' and
-            bundle.get('selection') == 'a97:nested3+Entity2+kernel2+Tile2;loader1+lookup1-nbt-capacity-fix1;collision-owner1+collision-fixture1',
+            bundle.get('selection') == 'a97:nested3+Entity2+kernel2+Tile2;loader1+lookup1-nbt-capacity-fix1;collision-owner1+collision-fixture1;activation-close-owner1+fixture1',
             'Wrong selected dependency schema')
     for kind, expected in SUPPLIERS.items():
         actual = bundle['fixtures'][kind]
@@ -305,8 +327,9 @@ def self_test():
     for kind, modes in MODES.items():
         for mode in modes:
             command = ['actual-native', mode, 'fresh-root']
-            footer = b'PASS: 1 actual ' + (b'owned collision scalar' if kind == 'collision' else
-                (b'kernel direct-loader' if kind == 'loader' else b'Tile lookup')) + b' checks;mode=' + mode.encode('ascii')
+            footer = b'PASS: 1 actual ' + (b'activation close-result' if kind == 'close' else (
+                b'owned collision scalar' if kind == 'collision' else
+                (b'kernel direct-loader' if kind == 'loader' else b'Tile lookup'))) + b' checks;mode=' + mode.encode('ascii')
             lines = protocol_lines(kind, mode)
             stdout = b'\n'.join(lines + [footer]) + b'\n'
             report = dict(command=command.copy(), exit=0, reaped=True, pipe_capture_complete=True,
@@ -481,7 +504,7 @@ def self_test():
             bundles += 1
             continue
         raise ValueError('Unapproved bundle accepted')
-    require((rejected, retention, literals, bundles) == (798, 280, 7, 4),
+    require((rejected, retention, literals, bundles) == (944, 320, 7, 4),
             'Every declared pure corruption refused')
     roots = literal_root_self_test()
     primary = {'status': 'RUNNING'}
@@ -517,12 +540,12 @@ def expected_input_names(bundle, kind, mode):
 def input_mapping_self_test():
     four = ['world/level.dat', 'world/data/idcounts.dat', 'world/region/r.0.0.mcr', 'world/preserve.bin']
     three = ['world/level.dat', 'world/region/r.0.0.mcr', 'world/preserve.bin']
-    good = {'inputs': {'loader': four, 'lookup': three,
+    good = {'inputs': {'loader': four, 'lookup': three, 'close': three.copy(),
                        'collision': {mode: four.copy() for mode in MODES['collision']}}}
     refused = 0
     for kind, modes in MODES.items():
         for mode in modes:
-            require(expected_input_names(good, kind, mode) == tuple(four if kind != 'lookup' else three),
+            require(expected_input_names(good, kind, mode) == tuple(four if kind in ('loader', 'collision') else three),
                     'Exact input mapping positive')
             for replacement in ([], four + ['world/extra'], tuple(four),
                                 ['world/level.dat', 'world/region/r.0.0.mcr']):
@@ -562,7 +585,7 @@ def input_mapping_self_test():
             refused += 1
             continue
         raise ValueError('Removed/changed canonical saved-data input admitted')
-    require(refused == 62, 'All per-mode/saved-data literal mapping corruptions refused')
+    require(refused == 70, 'All per-mode/saved-data literal mapping corruptions refused')
     return refused
 
 
@@ -649,6 +672,94 @@ def collision_recipe_self_test(project_root):
     return checked
 
 
+def close_input_mapping_self_test():
+    """The close recipe has exactly three files, independently of prior kinds."""
+    three = ['world/level.dat', 'world/region/r.0.0.mcr', 'world/preserve.bin']
+    four = ['world/level.dat', 'world/data/idcounts.dat', 'world/region/r.0.0.mcr', 'world/preserve.bin']
+    refused = 0
+    for mode in MODES['close']:
+        good = {'inputs': {'close': three.copy()}}
+        require(expected_input_names(good, 'close', mode) == tuple(three), 'Close three-file mapping positive')
+        changed = copy.deepcopy(good)
+        changed['inputs']['close'] = four.copy()
+        try:
+            expected_input_names(changed, 'close', mode)
+        except ValueError:
+            refused += 1
+        else:
+            raise ValueError('Unexpected close saved-data file admitted')
+    require(refused == 2, 'Both close fourth-file corruptions refused')
+    return refused
+
+
+def close_recipe_self_test(project_root):
+    """Compare canonical authored bytes/NBT only; no fixture bootstrap or child."""
+    import struct
+    import zlib
+
+    here = Path(__file__).resolve().parent
+    root = (project_root if project_root is not None else here.parents[2]).resolve(strict=True)
+    bundle = bundle_payload((here / 'world_query_controls_bundle.json').read_bytes())
+    checked = 0
+
+    def check(value, message):
+        nonlocal checked
+        require(value, message)
+        checked += 1
+
+    def load(name, path, relative):
+        check(pin(path) == bundle['helpers'][relative], 'Exact pure close input supplier: ' + relative)
+        spec = importlib.util.spec_from_file_location(name, path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    saving = load('query_pure_close_saving', root / 'tests/tools/world/test_source_saving.py',
+                  'tests/tools/world/test_source_saving.py')
+    recipe = load('query_pure_close_inputs', here / 'activation_close_inputs.py',
+                  'tests/tools/world/activation_close_inputs.py')
+    base_info, base_region = saving.seed('item-chest')
+    base_region = bytes(base_region)
+
+    def unpack(region):
+        check(type(region) is bytes and len(region) == 12288, 'Exact canonical close MCR extent/type')
+        check(struct.unpack_from('>I', region, 0)[0] == ((2 << 8) | 1), 'Actual selected canonical region descriptor')
+        length = struct.unpack_from('>i', region, 8192)[0]
+        check(1 < length < 4092 and region[8196] == 2, 'Actual canonical selector2 record')
+        decoder = zlib.decompressobj()
+        raw = decoder.decompress(region[8197:8196 + length], saving.BOUND + 1)
+        check(len(raw) <= saving.BOUND and decoder.eof and not decoder.unused_data and
+              not decoder.unconsumed_tail, 'One complete bounded canonical close NBT stream')
+        return raw
+
+    base_raw = unpack(base_region)
+    base_level = saving.Nbt(base_raw).root()['Level'][1]
+    check(base_level['Entities'][0] == 9 and base_level['Entities'][1][0] == 10 and
+          len(base_level['Entities'][1][1]) > 0, 'Actual canonical stored Entity graph present')
+    check(base_level['TileEntities'][0] == 9 and base_level['TileEntities'][1][0] == 10 and
+          len(base_level['TileEntities'][1][1]) > 0, 'Actual canonical stored Tile graph present')
+    for mode in MODES['close']:
+        values = recipe.prepared(mode, saving)
+        check(type(values) is dict and set(values) == set(expected_input_names(bundle, 'close', mode)),
+              'Exactly three canonical close files: ' + mode)
+        check(all(type(value) is bytes for value in values.values()), 'All close inputs immutable bytes: ' + mode)
+        check(values['world/level.dat'] == base_info, 'Canonical World metadata unchanged: ' + mode)
+        check(values['world/region/r.0.0.mcr'] == base_region, 'Whole actual canonical region unchanged: ' + mode)
+        check(values['world/preserve.bin'] == b'activation close unrelated data\0\xff', 'Exact independent close sentinel: ' + mode)
+        raw = unpack(values['world/region/r.0.0.mcr'])
+        check(raw == base_raw and saving.Nbt(raw).root()['Level'][1] == base_level,
+              'All canonical NBT fields/lists retained before bootstrap: ' + mode)
+    for mode in ('', 'ERROR', 'loader-error'):
+        try:
+            recipe.prepared(mode, saving)
+        except ValueError:
+            checked += 1
+            continue
+        raise ValueError('Unknown close input mode admitted')
+    print('PASS:', checked, 'pure activation close recipe byte/NBT checks;no bootstrap/native execution')
+    return checked
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--self-test', action='store_true')
@@ -664,6 +775,9 @@ def main():
         mapping_refusals = input_mapping_self_test()
         print('PASS:', mapping_refusals, 'per-mode/saved-data filename refusals')
         collision_recipe_self_test(args.project_root)
+        close_mapping = close_input_mapping_self_test()
+        print('PASS:', close_mapping, 'close fourth-file refusals')
+        close_recipe_self_test(args.project_root)
         return 0
     if (args.kind not in MODES or args.mode not in MODES[args.kind] or args.executable is None or
             args.work_dir is None or args.bundle is None):
@@ -721,7 +835,9 @@ def main():
         report['tables'] = list(ownership.TABLES)
         support = load('query_actual_capture', 'tests/reference/client/statistics/support.py')
         source_saving = load('query_actual_seed', 'tests/tools/world/test_source_saving.py')
-        if args.kind == 'collision':
+        if args.kind == 'close':
+            recipe = load('query_actual_close_recipe', 'tests/tools/world/activation_close_inputs.py')
+        elif args.kind == 'collision':
             recipe = load('query_actual_collision_recipe', 'tests/tools/world/collision_query_inputs.py')
             construction = load('query_actual_construction_seed', 'tests/tools/world/test_source_world_construction.py')
         else:
@@ -729,8 +845,9 @@ def main():
         fixture_root = out / 'owned'
         require(str(fixture_root).isascii() and not fixture_root.exists(), 'Fresh ASCII native fixture root required')
         input_names = expected_input_names(bundle, args.kind, args.mode)
-        prepared = recipe.prepared(args.mode, source_saving, construction) if args.kind == 'collision' else (
-            recipe.prepared(args.kind, args.mode, source_saving))
+        prepared = recipe.prepared(args.mode, source_saving) if args.kind == 'close' else (
+            recipe.prepared(args.mode, source_saving, construction) if args.kind == 'collision' else (
+                recipe.prepared(args.kind, args.mode, source_saving)))
         require(type(prepared) is dict and set(prepared) == set(input_names),
                 'Exact authored input names required')
         (fixture_root / 'world/region').mkdir(parents=True)

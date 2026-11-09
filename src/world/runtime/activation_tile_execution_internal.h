@@ -14,8 +14,10 @@
  * returns an explicitly empty result. That is not a replacement for it.
  *
  * result is required fresh/disjoint and carries native owner errors beside
- * the unchanged first Source cause. Failed pop retains B in its exact fixed
- * slot. Caller retries native unwind only; no Source registration replay.
+ * the unchanged first Source cause. A genuinely refused checked pop publishes
+ * B's created token/actual preclose status/failed operand/LOCALS_DRAINED phase.
+ * Parent atomically forwards its close/pending VALUEs before frame loss.
+ * Caller retries that explicit native close only; no Source body replay.
  * Kernel sidecar propagation/loading/TileEntity projection joins are separate
  * dependencies. No owning context, World scope or Math context retires here. */
 mc_world_storage_status mc_world_runtime_register_chunk_tile_entities_in_execution(

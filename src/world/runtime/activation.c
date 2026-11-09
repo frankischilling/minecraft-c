@@ -80,12 +80,11 @@ static mc_world_storage_status close_tile_scope(mc_entity_tick_execution *execut
                                                 mc_world_runtime_execution_result *owned) {
     if (execution == NULL)
         return source_status;
-    const mc_world_storage_status status =
-        mc_entity_tick_execution_pop_world(execution, token, source_status != MC_WORLD_STORAGE_OK);
+    const mc_world_storage_status status = mc_world_runtime_execution_close_scope(
+        execution, owned, MC_WORLD_RUNTIME_EXECUTION_CLOSE_CHUNK_TILE, token, source_status,
+        "Chunk TileEntity activation owned scope cleanup", site);
     if (status == MC_WORLD_STORAGE_OK)
         return source_status;
-    mc_world_runtime_execution_result_note(owned, status,
-                                           "Chunk TileEntity activation owned scope cleanup", site);
     if (source_status != MC_WORLD_STORAGE_OK)
         return source_status;
     return result(
@@ -180,8 +179,9 @@ mc_world_storage_status mc_world_runtime_register_chunk_tile_entities_in_executi
 
 /* Native checked scope coordination only. Source failure status/cause/typed
  * batch prefix has already been selected by the one actual entered body and
- * remains primary if this close also refuses. B stays in the context's exact
- * current slot on refusal; callers retry only pop, never this Source body. */
+ * remains primary if this close also refuses. A genuine non-consuming close
+ * publishes its exact created token after local native calls have drained;
+ * callers retry that explicit capsule, never this Source body. */
 static mc_world_storage_status close_entity_scope(mc_entity_tick_execution *execution,
                                                   const mc_entity_tick_execution_world_token *token,
                                                   mc_world_storage_status source_status,
@@ -190,12 +190,11 @@ static mc_world_storage_status close_entity_scope(mc_entity_tick_execution *exec
                                                   mc_entity_tick_execution_site site) {
     if (execution == NULL)
         return source_status;
-    const mc_world_storage_status status =
-        mc_entity_tick_execution_pop_world(execution, token, source_status != MC_WORLD_STORAGE_OK);
-    /* Select this actual pop's native refusal NOW, before any parent completion.
-     * Keep the earlier Source failure independently primary in error. */
-    mc_world_runtime_execution_result_note(native, status,
-                                           "Chunk Entity activation owned scope cleanup", site);
+    const mc_world_storage_status status = mc_world_runtime_execution_close_scope(
+        execution, native, MC_WORLD_RUNTIME_EXECUTION_CLOSE_CHUNK_ENTITY, token, source_status,
+        "Chunk Entity activation owned scope cleanup", site);
+    /* The actual checked pop published its own refused close VALUE before
+     * this local frame leaves. Earlier Source failure remains primary. */
     if (status == MC_WORLD_STORAGE_OK || source_status != MC_WORLD_STORAGE_OK)
         return source_status;
     /* Native layer attribution. Detailed current admission/cleanup remains in

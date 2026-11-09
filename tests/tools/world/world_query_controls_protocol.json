@@ -28,6 +28,10 @@
       "loader-null-error",
       "armed",
       "held"
+    ],
+    "close": [
+      "error",
+      "null-error"
     ]
   },
   "supplier_protocols": {
@@ -42,6 +46,10 @@
     "collision": {
       "bytes": 3875,
       "sha256": "6fd0849ab48f9b3741756f160f022c003e24bdcdbe94fec36996fb7980acad0f"
+    },
+    "close": {
+      "bytes": 3359,
+      "sha256": "4727e921d329f66b33ee93f8e32cd9397257d78e87721a373446758873fcd8c0"
     }
   },
   "stdout_contract": "Exact global BEGIN, one genuine setup banner pair, ordered actual case markers, explicit lookup OPEN line, literal positive uint32 mode footer, terminal newline; only LF or CRLF",
@@ -205,7 +213,40 @@
       "COLLISION_QUERY_CASE callback END",
       "COLLISION_QUERY_OPEN Blank/foreign-Store/structural-unwind/full-SL",
       "PASS: <positive canonical uint32> actual owned collision scalar checks;mode=held"
+    ],
+    "close/error": [
+      "ACTIVATION_CLOSE_BEGIN schema=1 mode=error",
+      "16 achievements",
+      "151 recipes",
+      "ACTIVATION_CLOSE_CASE get entered",
+      "ACTIVATION_CLOSE_CASE get returned",
+      "ACTIVATION_CLOSE_CASE capsule selected",
+      "ACTIVATION_CLOSE_CASE receipt selected",
+      "ACTIVATION_CLOSE_CASE token rejected",
+      "ACTIVATION_CLOSE_CASE close retried",
+      "ACTIVATION_CLOSE_CASE capsule consumed",
+      "ACTIVATION_CLOSE_CASE get finished",
+      "ACTIVATION_CLOSE_CASE owner retired",
+      "ACTIVATION_CLOSE_OPEN Tile-refusal/consumed-nonOK/direct-close-wrong-current/full-SL",
+      "PASS: <positive canonical uint32> actual activation close-result checks;mode=error"
+    ],
+    "close/null-error": [
+      "ACTIVATION_CLOSE_BEGIN schema=1 mode=null-error",
+      "16 achievements",
+      "151 recipes",
+      "ACTIVATION_CLOSE_CASE get entered",
+      "ACTIVATION_CLOSE_CASE get returned",
+      "ACTIVATION_CLOSE_CASE capsule selected",
+      "ACTIVATION_CLOSE_CASE receipt selected",
+      "ACTIVATION_CLOSE_CASE token rejected",
+      "ACTIVATION_CLOSE_CASE close retried",
+      "ACTIVATION_CLOSE_CASE capsule consumed",
+      "ACTIVATION_CLOSE_CASE get finished",
+      "ACTIVATION_CLOSE_CASE owner retired",
+      "ACTIVATION_CLOSE_OPEN Tile-refusal/consumed-nonOK/direct-close-wrong-current/full-SL",
+      "PASS: <positive canonical uint32> actual activation close-result checks;mode=null-error"
     ]
   },
-  "collision_scope": "Prospective component and native fixture; no inherited native result; old loader/lookup contract unchanged"
+  "collision_scope": "Prospective component and native fixture; no inherited native result; old loader/lookup contract unchanged",
+  "close_scope": "Prospective genuine one-get activation-close fixture and exact five-file owner candidate; no inherited native execution claim"
 }

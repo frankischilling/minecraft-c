@@ -3106,8 +3106,8 @@
       "sha256": "f0a5967dda1f6a44f29860b1637c2317c3a2933fae0f105b64e6fa5027cd381d"
     },
     "src/world/runtime/activation.c": {
-      "bytes": 19603,
-      "sha256": "84e562c66b8e477e134ab199cb91355b3a4da6205801b8b75742a6e41bacd9a6"
+      "bytes": 19542,
+      "sha256": "9bd3706802a4a529ee863f892de41364e30929f91a34bf28f9b49ef60a333d6a"
     },
     "src/world/runtime/activation_internal.h": {
       "bytes": 2195,
@@ -11670,24 +11670,24 @@
       "sha256": "3b3ae634d54610a99e8ee3bddb9fc5e2f36fb64242dd8d7142133b280729addb"
     },
     "src/world/runtime/activation_entity_execution_internal.h": {
-      "bytes": 1413,
-      "sha256": "9e8a22d52dcfabcf70ff2a8aa64f85111f5a0ecabfa190304d0881304206e460"
+      "bytes": 1645,
+      "sha256": "9772ec138b576acdc1d2f91c502a15e4e3decccb2e95c386874b24219d64805e"
     },
     "src/world/runtime/activation_tile_execution_internal.h": {
-      "bytes": 1449,
-      "sha256": "04522902519f6cc431aacb7350b38a53e0d2d39fa1db610faee07b93aad6349b"
+      "bytes": 1605,
+      "sha256": "27c630007d453a0c1bdb3e81f3630bf1137dcd49b933066fdc114a2e02bcdaa9"
     },
     "src/world/runtime/entity_publication_detailed_execution_internal.h": {
       "bytes": 1167,
       "sha256": "76aa266bb50fc5b6792f7fe0230a327e4492ca6421c2f06973adf885bad06bfa"
     },
     "src/world/runtime/runtime_execution.c": {
-      "bytes": 8293,
-      "sha256": "2d48de6b0bd64a930a16a5d5f84cbed3757a5c17b241b38ad01770632fc5b5d5"
+      "bytes": 17733,
+      "sha256": "1beb31d4f21902c8bd6a0eccbaf982629fe4d171d06ed133eff7b58dbcc535fa"
     },
     "src/world/runtime/runtime_execution_internal.h": {
-      "bytes": 5846,
-      "sha256": "3f6bd74884ce52af0fe16b83bf0be434dda0034b21af95dc5216451208bebabc"
+      "bytes": 10285,
+      "sha256": "3e0e5e44bb29a55373c0ed071d6425525a3421bd9affd0c429c05caa8f685084"
     },
     "src/world/runtime/tile_entities/execution_internal.h": {
       "bytes": 4017,
@@ -11702,12 +11702,12 @@
       "sha256": "b0a0cf48ee2f249c7ec3384cd9f5f03648611ba2fa7a9462480f03bf94e181f8"
     },
     "tests/tools/world/test_kernel_execution.py": {
-      "bytes": 25690,
-      "sha256": "72516a6341f46c9d1031e7b55d823725c22ec37d089b43e0246abbe592400c93"
+      "bytes": 25708,
+      "sha256": "59e9758cc924013be26142aef4c4acdafb6848da7912c040fcf31983a41e6339"
     },
     "cmake/tests/world_query_controls.cmake": {
-      "bytes": 4111,
-      "sha256": "f87af84ad903c50a42f38cb0109e22f504c174e295ffb423f7a72b3a514c9131"
+      "bytes": 4795,
+      "sha256": "a7807432796afa742536a7ccd298ac690ccdcd9c3624e1674ad9b076c3da1555"
     },
     "tests/world/runtime/world_access/test_kernel_loader_execution.c": {
       "bytes": 23441,
@@ -11718,8 +11718,8 @@
       "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
     },
     "tests/tools/world/test_world_query_controls.py": {
-      "bytes": 45186,
-      "sha256": "dc6b37750c62d8585361e6ae1fd7d357bcca631baf349148eb39ca5ec304ba4d"
+      "bytes": 51398,
+      "sha256": "e60b43452f83b19c913090db48ab969c5c55546eeb9e706015dbec592d569009"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -11736,6 +11736,14 @@
     "tests/world/runtime/world_access/test_collision_query_execution.c": {
       "bytes": 39905,
       "sha256": "8032d0b673620aea1f1cce08685ff751509878c707a53f45b6f8098361702938"
+    },
+    "tests/tools/world/activation_close_inputs.py": {
+      "bytes": 433,
+      "sha256": "e4237a04846dd0a971d066bb56949098514461a9d6021f95d4e28b04d03dd25b"
+    },
+    "tests/world/runtime/world_access/test_activation_close_execution.c": {
+      "bytes": 30572,
+      "sha256": "72cd515c4007b9251e6b3cd6daebdb9d8b936f139f2ae45ccbda26e8ef4750ad"
     }
   },
   "actual_source_method": {
@@ -19414,6 +19422,73 @@
             "tests/world/runtime/world_access/test_collision_query_execution.c"
           ],
           "current_count": 2934
+        }
+      }
+    },
+    {
+      "from_commit": "ef52247dbaa7cda063079b9cebf675097b75e8a0",
+      "role": "Prospective callee-published activation close values, exact native retry and atomic result forwarding, with genuine one-get Entity descendant controls. Current source admissions only; actual compilation and each native outcome require separate execution. Historical suppliers and observations remain unchanged. No historical execution, arbitrary descendant unwind or full gameplay qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 823918,
+        "sha256": "d6289e6c758685546826f1216af8c1399b2f55da908827e9827fa6b48c768ec2"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "src/world/runtime/activation.c": {
+              "bytes": 19603,
+              "sha256": "84e562c66b8e477e134ab199cb91355b3a4da6205801b8b75742a6e41bacd9a6"
+            },
+            "src/world/runtime/activation_entity_execution_internal.h": {
+              "bytes": 1413,
+              "sha256": "9e8a22d52dcfabcf70ff2a8aa64f85111f5a0ecabfa190304d0881304206e460"
+            },
+            "src/world/runtime/activation_tile_execution_internal.h": {
+              "bytes": 1449,
+              "sha256": "04522902519f6cc431aacb7350b38a53e0d2d39fa1db610faee07b93aad6349b"
+            },
+            "src/world/runtime/runtime_execution.c": {
+              "bytes": 8293,
+              "sha256": "2d48de6b0bd64a930a16a5d5f84cbed3757a5c17b241b38ad01770632fc5b5d5"
+            },
+            "src/world/runtime/runtime_execution_internal.h": {
+              "bytes": 5846,
+              "sha256": "3f6bd74884ce52af0fe16b83bf0be434dda0034b21af95dc5216451208bebabc"
+            },
+            "cmake/tests/world_query_controls.cmake": {
+              "bytes": 4111,
+              "sha256": "f87af84ad903c50a42f38cb0109e22f504c174e295ffb423f7a72b3a514c9131"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 45186,
+              "sha256": "dc6b37750c62d8585361e6ae1fd7d357bcca631baf349148eb39ca5ec304ba4d"
+            }
+          },
+          "added": [
+            "tests/tools/world/activation_close_inputs.py",
+            "tests/world/runtime/world_access/test_activation_close_execution.c"
+          ],
+          "current_count": 2936
+        }
+      }
+    },
+    {
+      "from_commit": "ef52247dbaa7cda063079b9cebf675097b75e8a0",
+      "role": "Prospective callee-published activation close values, exact native retry and atomic result forwarding, with genuine one-get Entity descendant controls. Current source admissions only; actual compilation and each native outcome require separate execution. Historical suppliers and observations remain unchanged. No historical execution, arbitrary descendant unwind or full gameplay qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 826611,
+        "sha256": "c730a5c28cee767a5156e885df96eb79907722493d9a4e177a7db76ba762c59b"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "tests/tools/world/test_kernel_execution.py": {
+              "bytes": 25690,
+              "sha256": "72516a6341f46c9d1031e7b55d823725c22ec37d089b43e0246abbe592400c93"
+            }
+          },
+          "added": [],
+          "current_count": 2936
         }
       }
     }

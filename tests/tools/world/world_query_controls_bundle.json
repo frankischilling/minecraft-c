@@ -1,6 +1,6 @@
 {
   "schema": "EXPLICIT_WORLD_QUERY_CONTROLS_BUNDLE_V1",
-  "selection": "a97:nested3+Entity2+kernel2+Tile2;loader1+lookup1-nbt-capacity-fix1;collision-owner1+collision-fixture1",
+  "selection": "a97:nested3+Entity2+kernel2+Tile2;loader1+lookup1-nbt-capacity-fix1;collision-owner1+collision-fixture1;activation-close-owner1+fixture1",
   "published_supplier": "a97 (Parent-provided revision label; actual bytes pinned below, no Git run)",
   "dependencies": {
     "sl-nested-owner-candidates-3": {
@@ -22,6 +22,10 @@
     "sl-collision-query-owner-candidates-1": {
       "bytes": 15626,
       "sha256": "7ac6e2149d4d21282c15a8d8ed5757d18ae5055249b68ace757965c6ca3cedc7"
+    },
+    "sl-activation-close-result-candidates-1": {
+      "bytes": 105354,
+      "sha256": "99f663dbebcd4bf863d0b56c8fb139769546cee866d67fc2ec763c9e4739c33c"
     }
   },
   "fixtures": {
@@ -69,6 +73,21 @@
         "bytes": 39905,
         "sha256": "8032d0b673620aea1f1cce08685ff751509878c707a53f45b6f8098361702938"
       }
+    },
+    "close": {
+      "manifest": {
+        "bytes": 59248,
+        "sha256": "8d880e0ea00573319e4ba758e1baecc9af5ac97f0fa3a6008192a6949c7b94d4"
+      },
+      "protocol": {
+        "bytes": 3359,
+        "sha256": "4727e921d329f66b33ee93f8e32cd9397257d78e87721a373446758873fcd8c0"
+      },
+      "source": "tests/world/runtime/world_access/test_activation_close_execution.c",
+      "source_pin": {
+        "bytes": 30572,
+        "sha256": "72cd515c4007b9251e6b3cd6daebdb9d8b936f139f2ae45ccbda26e8ef4750ad"
+      }
     }
   },
   "sources": {
@@ -81,20 +100,20 @@
       "sha256": "379777c714021593f9605bf6dbfe69e35373e0c8898269583568f0b2fe8086b7"
     },
     "src/world/runtime/activation.c": {
-      "bytes": 19603,
-      "sha256": "84e562c66b8e477e134ab199cb91355b3a4da6205801b8b75742a6e41bacd9a6"
+      "bytes": 19542,
+      "sha256": "9bd3706802a4a529ee863f892de41364e30929f91a34bf28f9b49ef60a333d6a"
     },
     "src/world/runtime/activation_entity_execution_internal.h": {
-      "bytes": 1413,
-      "sha256": "9e8a22d52dcfabcf70ff2a8aa64f85111f5a0ecabfa190304d0881304206e460"
+      "bytes": 1645,
+      "sha256": "9772ec138b576acdc1d2f91c502a15e4e3decccb2e95c386874b24219d64805e"
     },
     "src/world/runtime/activation_execution_internal.h": {
       "bytes": 1752,
       "sha256": "56057b04af9216634d6cb60fae3869255526ab39aa8ebd1e5a4d2f8f836ad300"
     },
     "src/world/runtime/activation_tile_execution_internal.h": {
-      "bytes": 1449,
-      "sha256": "04522902519f6cc431aacb7350b38a53e0d2d39fa1db610faee07b93aad6349b"
+      "bytes": 1605,
+      "sha256": "27c630007d453a0c1bdb3e81f3630bf1137dcd49b933066fdc114a2e02bcdaa9"
     },
     "src/world/runtime/entity_publication.c": {
       "bytes": 45422,
@@ -117,12 +136,12 @@
       "sha256": "4e43b01f389d611486563938963f4b609f16ca1fbed6015c9a1c7e8da4eb0539"
     },
     "src/world/runtime/runtime_execution.c": {
-      "bytes": 8293,
-      "sha256": "2d48de6b0bd64a930a16a5d5f84cbed3757a5c17b241b38ad01770632fc5b5d5"
+      "bytes": 17733,
+      "sha256": "1beb31d4f21902c8bd6a0eccbaf982629fe4d171d06ed133eff7b58dbcc535fa"
     },
     "src/world/runtime/runtime_execution_internal.h": {
-      "bytes": 5846,
-      "sha256": "3f6bd74884ce52af0fe16b83bf0be434dda0034b21af95dc5216451208bebabc"
+      "bytes": 10285,
+      "sha256": "3e0e5e44bb29a55373c0ed071d6425525a3421bd9affd0c429c05caa8f685084"
     },
     "src/world/runtime/tile_entities/execution_internal.h": {
       "bytes": 4017,
@@ -205,8 +224,8 @@
       "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
     },
     "cmake/tests/world_query_controls.cmake": {
-      "bytes": 4111,
-      "sha256": "f87af84ad903c50a42f38cb0109e22f504c174e295ffb423f7a72b3a514c9131"
+      "bytes": 4795,
+      "sha256": "a7807432796afa742536a7ccd298ac690ccdcd9c3624e1674ad9b076c3da1555"
     },
     "src/world/runtime/collision/blocks.c": {
       "bytes": 86765,
@@ -219,6 +238,10 @@
     "tests/world/runtime/world_access/test_collision_query_execution.c": {
       "bytes": 39905,
       "sha256": "8032d0b673620aea1f1cce08685ff751509878c707a53f45b6f8098361702938"
+    },
+    "tests/world/runtime/world_access/test_activation_close_execution.c": {
+      "bytes": 30572,
+      "sha256": "72cd515c4007b9251e6b3cd6daebdb9d8b936f139f2ae45ccbda26e8ef4750ad"
     }
   },
   "helpers": {
@@ -243,12 +266,16 @@
       "sha256": "877551f32b09cd29ec4c62f79a0e90ba1c12291ad01a13a977b7aa097dd41e69"
     },
     "tests/tools/world/world_query_controls_protocol.json": {
-      "bytes": 8253,
-      "sha256": "a62f474eb1a7ebad04e0755814765d2caad5bc33a3a7de78974c6a06a7c48197"
+      "bytes": 10040,
+      "sha256": "4f1b3f29257fd204f913097a3458b479da0444e3d1e3d20b152519406472f427"
     },
     "tests/tools/world/collision_query_inputs.py": {
       "bytes": 2883,
       "sha256": "139792707ccb921e3cae9abe3da8e6cbc2cdf3fc555780b8d70613ad76a36e55"
+    },
+    "tests/tools/world/activation_close_inputs.py": {
+      "bytes": 433,
+      "sha256": "e4237a04846dd0a971d066bb56949098514461a9d6021f95d4e28b04d03dd25b"
     }
   },
   "inputs": {
@@ -306,7 +333,12 @@
         "world/region/r.0.0.mcr",
         "world/preserve.bin"
       ]
-    }
+    },
+    "close": [
+      "world/level.dat",
+      "world/region/r.0.0.mcr",
+      "world/preserve.bin"
+    ]
   },
   "only_permitted_addition": {
     "path": "world/session.lock",
@@ -336,5 +368,32 @@
     "native_execution": "UNKNOWN_NOT_RUN; no inherited qualification",
     "recipe": "Exact frozen recipe; all four input values are immutable bytes in every collision mode",
     "external_graph": "Same World source graph; parent Arrow unwind, Blank, foreign Store, arbitrary source arms and full SL OPEN"
+  },
+  "prospective_activation_close": {
+    "owner_files": {
+      "src/world/runtime/activation.c": {
+        "bytes": 19542,
+        "sha256": "9bd3706802a4a529ee863f892de41364e30929f91a34bf28f9b49ef60a333d6a"
+      },
+      "src/world/runtime/runtime_execution.c": {
+        "bytes": 17733,
+        "sha256": "1beb31d4f21902c8bd6a0eccbaf982629fe4d171d06ed133eff7b58dbcc535fa"
+      },
+      "src/world/runtime/runtime_execution_internal.h": {
+        "bytes": 10285,
+        "sha256": "3e0e5e44bb29a55373c0ed071d6425525a3421bd9affd0c429c05caa8f685084"
+      },
+      "src/world/runtime/activation_entity_execution_internal.h": {
+        "bytes": 1645,
+        "sha256": "9772ec138b576acdc1d2f91c502a15e4e3decccb2e95c386874b24219d64805e"
+      },
+      "src/world/runtime/activation_tile_execution_internal.h": {
+        "bytes": 1605,
+        "sha256": "27c630007d453a0c1bdb3e81f3630bf1137dcd49b933066fdc114a2e02bcdaa9"
+      }
+    },
+    "execution": "UNKNOWN_NOT_RUN; no inherited native result",
+    "recipe": "Exact frozen pure three-file item-chest recipe, no Source/native model",
+    "open": "Tile-refusal/consumed-nonOK/direct-close-wrong-current/unrecorded descendants/foreign Store/full SL"
   }
 }

@@ -16,7 +16,7 @@ sys.dont_write_bytecode = True
 TIMEOUT = 240
 LIMIT = 1024**2
 MAX_CHECKS = 2**32 - 1
-BUNDLE_SHA = '9e6f7b08c5294773f593727c016080c8e7233c858e2aeeb587ff8ed3696ddd6b'
+BUNDLE_SHA = 'ba846bca7bc648f3c34d7cec3a486dfba03834f1d5173f9fd6a8036aa64b0116'
 MODES = ('empty', 'source', 'native', 'first-owner')
 FIXTURE_MANIFEST = '94d5b87ba2ef91fc0f37fea967c27e47bc9bd39427be65ef1749204e828d6f6e'
 PROTOCOL_SHA = '4f4e1ba34cbe81d0368cbb809a652923f6dafbacc5ba08412f43e20c22ca0d30'
@@ -117,7 +117,7 @@ def completed(child, mode, command):
 def bundle_payload(data):
     require(type(data) is bytes and len(data) <= LIMIT and hashlib.sha256(data).hexdigest() == BUNDLE_SHA, 'Unapproved explicit dependency bundle')
     bundle = json.loads(data.decode('utf-8'))
-    require(type(bundle) is dict and bundle.get('schema') == 'EXPLICIT_KERNEL_EXECUTION_TILE2_BUNDLE_V1' and bundle.get('selection') == 'nested3+Entity2+kernel2+Tile2', 'Wrong selected dependency schema')
+    require(type(bundle) is dict and bundle.get('schema') == 'EXPLICIT_KERNEL_EXECUTION_TILE2_BUNDLE_V1' and bundle.get('selection') == 'nested3+Entity2+kernel2+Tile2;activation-close1', 'Wrong selected dependency schema')
     require(bundle['fixture']['manifest']['sha256'] == FIXTURE_MANIFEST and bundle['fixture']['protocol']['sha256'] == PROTOCOL_SHA, 'Wrong immutable fixture/protocol supplier')
     return bundle
 

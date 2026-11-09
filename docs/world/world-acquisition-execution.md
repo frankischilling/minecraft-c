@@ -177,6 +177,24 @@ names. Both builds, formatting of 2,285 files and two actual GCC recipes pass.
 Parent Arrow result/classifier/checked-unwind composition, structural native
 completion refusal and whole gameplay remain open; this is no frame/FPS result.
 
+## Callee close continuations
+
+The [activation close result](activation-close.md) now carries an exact
+callee-created scope token and drained phase when its genuine checked close
+leaves that scope open. A native caller can retry that one published close,
+restore its actual parent and finish a matching returned get; no source body
+is repeated and no ambient current scope is guessed. Forwarding preserves both
+pending-attempt and close ledgers before a local child frame disappears.
+
+Two genuine one-get Entity-B cases pass 114 native checks per host with normal
+and NULL acquisition diagnostics. They select B only from the actual returned
+record, preserve the first source/native failures and verify capture, close,
+parent completion and owner/producer teardown. All common modes pass 913 native
+checks per host; disjoint complete selections pass 112 unique Windows and 110
+sanitized Linux tests. Tile refusal, consumed-nonOK and arbitrary unrecorded
+callee graphs receive no runtime qualification from these cases. The Arrow
+parent's final result/classifier/unwind integration remains open.
+
 ## Remaining composition
 
 The finite query controls cover direct malformed loading, cold owned Tile

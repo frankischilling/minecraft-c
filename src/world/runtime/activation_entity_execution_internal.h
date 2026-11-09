@@ -14,8 +14,11 @@
  * The actual defining-code caller supplies code.entity_receiver_site (lm.e33
  * or its actual server alias). It is never inferred from mutable Chunk.d/A.
  * No acquisition happens in this one-slice body; its result has no selected
- * loader/pending attempt. All such fields are initialized explicitly empty.
- * Parent forwards this native VALUE before completing its actual reservation.
+ * loader/pending attempt. Those fields initialize explicitly empty. A genuine
+ * refused checked close additionally publishes the created token, actual
+ * status/failed operand, defining site and LOCALS_DRAINED phase in closes[].
+ * Consumed non-OK closes publish no capsule. Parent atomically forwards these
+ * VALUEs before completing its actual reservation or losing the child frame.
  * Old public and old owned APIs retain their signatures and NULL selector. */
 mc_world_storage_status mc_world_runtime_register_chunk_entities_detailed_in_execution(
     mc_entity_tick_execution *, mc_world_chunk *, size_t, mc_world_runtime_execution_code,

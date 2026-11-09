@@ -1,5 +1,42 @@
 # Test scope and reproduction
 
+## Activation close continuations
+
+The [callee-published close records](world/activation-close.md) preserve the
+actual Entity descendant scope after a checked close refuses, including a child
+that made no get. Native retry uses that returned record, restores the exact
+parent and completes its actual pending query without source replay. The two
+ordinary/NULL-error modes pass 114 new native checks per host. Source IO and first
+native capture refusal remain separate, with actual receipt/World rights held
+through checked unwind and region-flush-before-readback cleanup.
+
+The common 18-test selection passes 913 native query/close checks in sixteen
+fresh processes plus normal/optimized Python controls: Windows in 136.19 seconds,
+sanitized Linux in 58.70 seconds. Additional disjoint regressions pass Windows
+94/94 in 150.24 seconds and Linux 92/92 in 109.00 seconds. Combined unique Passed
+names are 112 Windows and 110 Linux; every preceding name is preserved, with no
+skips, unrun tests or duplicate focused cases. Both builds, exact clang-format
+18.1.3 over 2,286 files and three actual GCC recipes pass. All C/header/fixture/
+recipe/controller/bundle bytes remain unchanged through the final executions.
+
+An initial broader run refused four older kernel controls per host before
+native launch because their separate bundle still selected the previous five
+implementation/header bytes. Those setup failures remain retained with zero
+native credit. An explicit source projection updates only those five pins,
+declares the new owner/selection and changes the old runner's exact bundle hash
+and approved selection literals. Native fixtures, input recipes, protocols,
+assertions and all transport/input/source/product guards stay unchanged. All
+four older programs subsequently execute and pass under the fresh bound cohort.
+
+Normal and optimized Python each reject 944 transport corruptions, 320 retained-red
+payload changes, seven literal changes, four changed bundles, three real root
+loss/replacements and 70 filename corruptions, preserving the first failure.
+They also pass 97 collision recipe checks, two close fourth-file refusals and
+31 canonical close byte/NBT checks. These pure Python counts are not native
+bootstrap or original execution. Tile refused-close, consumed-nonOK, direct retry
+wrong-current/matching-child-get and unrecorded descendants remain unqualified;
+Arrow parent/result/classifier/full SL and frame/FPS equality remain unfinished.
+
 ## Owned collision block values
 
 The [shared collision reader and controls](world/collision/block-values.md)

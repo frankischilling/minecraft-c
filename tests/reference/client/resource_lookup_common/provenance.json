@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 224145,
-      "sha256": "78a6c33f781a08b11169d2f464dce09d21ebf1ae24b0092140fe0f276f13a12e"
+      "bytes": 225002,
+      "sha256": "2572ce0fa8a93c318b9c5b3c526b2c34c9a800512fd0d182e813e0897f56047f"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 579408,
-      "sha256": "d43a39d4216c5da40965d8a331d7c8975a34b9e13431b023a2636b0a9676d0a2"
+      "bytes": 581873,
+      "sha256": "ff67d89745a40bf88a94955920c2948ba4e232696ddc41d57662951340c84748"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
@@ -4586,8 +4586,8 @@
       "sha256": "f0a5967dda1f6a44f29860b1637c2317c3a2933fae0f105b64e6fa5027cd381d"
     },
     "src/world/runtime/activation.c": {
-      "bytes": 19603,
-      "sha256": "84e562c66b8e477e134ab199cb91355b3a4da6205801b8b75742a6e41bacd9a6"
+      "bytes": 19542,
+      "sha256": "9bd3706802a4a529ee863f892de41364e30929f91a34bf28f9b49ef60a333d6a"
     },
     "src/world/runtime/activation_internal.h": {
       "bytes": 2195,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 725841,
-      "sha256": "0117559bed021ec0fa81df7d748644f97befe63661b08a12d968a434ed1fb6f3"
+      "bytes": 729349,
+      "sha256": "cb5b015f29e03ef93b2b1e638e192eb6dd539aaf0676f23d6d5ef7a8caaa8ec7"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 823918,
-      "sha256": "d6289e6c758685546826f1216af8c1399b2f55da908827e9827fa6b48c768ec2"
+      "bytes": 827614,
+      "sha256": "29155118d33c41c8d0f7e79f4b03948565e57bb87b11bfca8a47ba5c644b229b"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 722820,
-      "sha256": "331040b76760697f2c0c215563716cb57ac48b902bbb237acd01bf68e87010d3"
+      "bytes": 726328,
+      "sha256": "746c8e2c3c62a40548e87861d05bc756119f3557a9d17b7e64bf86c5ab0e7d02"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -23286,24 +23286,24 @@
       "sha256": "89a56b91ce0f0f08119fade75355a496ffa5145b8b8178a4388422c4d2fc1f55"
     },
     "src/world/runtime/activation_entity_execution_internal.h": {
-      "bytes": 1413,
-      "sha256": "9e8a22d52dcfabcf70ff2a8aa64f85111f5a0ecabfa190304d0881304206e460"
+      "bytes": 1645,
+      "sha256": "9772ec138b576acdc1d2f91c502a15e4e3decccb2e95c386874b24219d64805e"
     },
     "src/world/runtime/activation_tile_execution_internal.h": {
-      "bytes": 1449,
-      "sha256": "04522902519f6cc431aacb7350b38a53e0d2d39fa1db610faee07b93aad6349b"
+      "bytes": 1605,
+      "sha256": "27c630007d453a0c1bdb3e81f3630bf1137dcd49b933066fdc114a2e02bcdaa9"
     },
     "src/world/runtime/entity_publication_detailed_execution_internal.h": {
       "bytes": 1167,
       "sha256": "76aa266bb50fc5b6792f7fe0230a327e4492ca6421c2f06973adf885bad06bfa"
     },
     "src/world/runtime/runtime_execution.c": {
-      "bytes": 8293,
-      "sha256": "2d48de6b0bd64a930a16a5d5f84cbed3757a5c17b241b38ad01770632fc5b5d5"
+      "bytes": 17733,
+      "sha256": "1beb31d4f21902c8bd6a0eccbaf982629fe4d171d06ed133eff7b58dbcc535fa"
     },
     "src/world/runtime/runtime_execution_internal.h": {
-      "bytes": 5846,
-      "sha256": "3f6bd74884ce52af0fe16b83bf0be434dda0034b21af95dc5216451208bebabc"
+      "bytes": 10285,
+      "sha256": "3e0e5e44bb29a55373c0ed071d6425525a3421bd9affd0c429c05caa8f685084"
     },
     "src/world/runtime/tile_entities/execution_internal.h": {
       "bytes": 4017,
@@ -23318,20 +23318,20 @@
       "sha256": "b0a0cf48ee2f249c7ec3384cd9f5f03648611ba2fa7a9462480f03bf94e181f8"
     },
     "tests/tools/world/kernel_execution_bundle.json": {
-      "bytes": 4428,
-      "sha256": "9e6f7b08c5294773f593727c016080c8e7233c858e2aeeb587ff8ed3696ddd6b"
+      "bytes": 6741,
+      "sha256": "ba846bca7bc648f3c34d7cec3a486dfba03834f1d5173f9fd6a8036aa64b0116"
     },
     "tests/tools/world/test_kernel_execution.py": {
-      "bytes": 25690,
-      "sha256": "72516a6341f46c9d1031e7b55d823725c22ec37d089b43e0246abbe592400c93"
+      "bytes": 25708,
+      "sha256": "59e9758cc924013be26142aef4c4acdafb6848da7912c040fcf31983a41e6339"
     },
     "docs/world/world-acquisition-execution.md": {
-      "bytes": 11758,
-      "sha256": "4eb870975d6233388ea2f16fc0dac79e961598e1adbfbfd2b5c9232299e8c100"
+      "bytes": 12854,
+      "sha256": "a7dd45e38e5df0c772471f727ee2fbdb16631ea0e9daa952407b062686762e58"
     },
     "cmake/tests/world_query_controls.cmake": {
-      "bytes": 4111,
-      "sha256": "f87af84ad903c50a42f38cb0109e22f504c174e295ffb423f7a72b3a514c9131"
+      "bytes": 4795,
+      "sha256": "a7807432796afa742536a7ccd298ac690ccdcd9c3624e1674ad9b076c3da1555"
     },
     "tests/world/runtime/world_access/test_kernel_loader_execution.c": {
       "bytes": 23441,
@@ -23342,16 +23342,16 @@
       "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
     },
     "tests/tools/world/test_world_query_controls.py": {
-      "bytes": 45186,
-      "sha256": "dc6b37750c62d8585361e6ae1fd7d357bcca631baf349148eb39ca5ec304ba4d"
+      "bytes": 51398,
+      "sha256": "e60b43452f83b19c913090db48ab969c5c55546eeb9e706015dbec592d569009"
     },
     "tests/tools/world/world_query_controls_bundle.json": {
-      "bytes": 12474,
-      "sha256": "5dda4c47e7add8cb462473ff8e218e049c3541babbb1632685a6630581cd9e24"
+      "bytes": 14857,
+      "sha256": "bf88043c69513aac617e1b41a9cb31b04af15aa3840355b761e2cfa6489e3259"
     },
     "tests/tools/world/world_query_controls_protocol.json": {
-      "bytes": 8253,
-      "sha256": "a62f474eb1a7ebad04e0755814765d2caad5bc33a3a7de78974c6a06a7c48197"
+      "bytes": 10040,
+      "sha256": "4f1b3f29257fd204f913097a3458b479da0444e3d1e3d20b152519406472f427"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -23372,6 +23372,18 @@
     "docs/world/collision/block-values.md": {
       "bytes": 7680,
       "sha256": "43cf7578ae61167b03ecdac4c49cf1c446e9e7f380e330910ba11cf3dd63d4bd"
+    },
+    "tests/tools/world/activation_close_inputs.py": {
+      "bytes": 433,
+      "sha256": "e4237a04846dd0a971d066bb56949098514461a9d6021f95d4e28b04d03dd25b"
+    },
+    "tests/world/runtime/world_access/test_activation_close_execution.c": {
+      "bytes": 30572,
+      "sha256": "72cd515c4007b9251e6b3cd6daebdb9d8b936f139f2ae45ccbda26e8ef4750ad"
+    },
+    "docs/world/activation-close.md": {
+      "bytes": 8437,
+      "sha256": "725654040c24e63c27c461db2d5c97b3197185699e0c70effd00a1493bffcd27"
     }
   },
   "self_metadata_excluded": true,
@@ -37843,6 +37855,139 @@
             "docs/world/collision/block-values.md"
           ],
           "current_count": 5843
+        }
+      }
+    },
+    {
+      "from_commit": "ef52247dbaa7cda063079b9cebf675097b75e8a0",
+      "role": "Prospective callee-published activation close values, exact native retry and atomic result forwarding, with genuine one-get Entity descendant controls. Current source admissions only; actual compilation and each native outcome require separate execution. Historical suppliers and observations remain unchanged. No historical execution, arbitrary descendant unwind or full gameplay qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1665359,
+        "sha256": "7118ef645322331f2552e0667317ba69458c2afd2e5365a624f7283011d393be"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "src/world/runtime/activation.c": {
+              "bytes": 19603,
+              "sha256": "84e562c66b8e477e134ab199cb91355b3a4da6205801b8b75742a6e41bacd9a6"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 725841,
+              "sha256": "0117559bed021ec0fa81df7d748644f97befe63661b08a12d968a434ed1fb6f3"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 823918,
+              "sha256": "d6289e6c758685546826f1216af8c1399b2f55da908827e9827fa6b48c768ec2"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 722820,
+              "sha256": "331040b76760697f2c0c215563716cb57ac48b902bbb237acd01bf68e87010d3"
+            },
+            "src/world/runtime/activation_entity_execution_internal.h": {
+              "bytes": 1413,
+              "sha256": "9e8a22d52dcfabcf70ff2a8aa64f85111f5a0ecabfa190304d0881304206e460"
+            },
+            "src/world/runtime/activation_tile_execution_internal.h": {
+              "bytes": 1449,
+              "sha256": "04522902519f6cc431aacb7350b38a53e0d2d39fa1db610faee07b93aad6349b"
+            },
+            "src/world/runtime/runtime_execution.c": {
+              "bytes": 8293,
+              "sha256": "2d48de6b0bd64a930a16a5d5f84cbed3757a5c17b241b38ad01770632fc5b5d5"
+            },
+            "src/world/runtime/runtime_execution_internal.h": {
+              "bytes": 5846,
+              "sha256": "3f6bd74884ce52af0fe16b83bf0be434dda0034b21af95dc5216451208bebabc"
+            },
+            "cmake/tests/world_query_controls.cmake": {
+              "bytes": 4111,
+              "sha256": "f87af84ad903c50a42f38cb0109e22f504c174e295ffb423f7a72b3a514c9131"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 45186,
+              "sha256": "dc6b37750c62d8585361e6ae1fd7d357bcca631baf349148eb39ca5ec304ba4d"
+            },
+            "tests/tools/world/world_query_controls_bundle.json": {
+              "bytes": 12474,
+              "sha256": "5dda4c47e7add8cb462473ff8e218e049c3541babbb1632685a6630581cd9e24"
+            },
+            "tests/tools/world/world_query_controls_protocol.json": {
+              "bytes": 8253,
+              "sha256": "a62f474eb1a7ebad04e0755814765d2caad5bc33a3a7de78974c6a06a7c48197"
+            }
+          },
+          "added": [
+            "tests/tools/world/activation_close_inputs.py",
+            "tests/world/runtime/world_access/test_activation_close_execution.c"
+          ],
+          "current_count": 5845
+        }
+      }
+    },
+    {
+      "from_commit": "ef52247dbaa7cda063079b9cebf675097b75e8a0",
+      "role": "Prospective callee-published activation close values, exact native retry and atomic result forwarding, with genuine one-get Entity descendant controls. Current source admissions only; actual compilation and each native outcome require separate execution. Historical suppliers and observations remain unchanged. No historical execution, arbitrary descendant unwind or full gameplay qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1669082,
+        "sha256": "006e76b62655616e3731225fb6db6a4f524fc5552f5e8ee606b49f2d2c94a047"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 728348,
+              "sha256": "82da681e84d68d1318834c358a7caf6cbe33d1a3dacaf3d3cf7fb5f986bee085"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 826611,
+              "sha256": "c730a5c28cee767a5156e885df96eb79907722493d9a4e177a7db76ba762c59b"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 725327,
+              "sha256": "c683e94924b947eb014f7d28e34d1d868332b71da4b4a4e484d111383ebcb4d4"
+            },
+            "tests/tools/world/kernel_execution_bundle.json": {
+              "bytes": 4428,
+              "sha256": "9e6f7b08c5294773f593727c016080c8e7233c858e2aeeb587ff8ed3696ddd6b"
+            },
+            "tests/tools/world/test_kernel_execution.py": {
+              "bytes": 25690,
+              "sha256": "72516a6341f46c9d1031e7b55d823725c22ec37d089b43e0246abbe592400c93"
+            }
+          },
+          "added": [],
+          "current_count": 5845
+        }
+      }
+    },
+    {
+      "from_commit": "ef52247dbaa7cda063079b9cebf675097b75e8a0",
+      "role": "Prospective callee-published activation close values, exact native retry and atomic result forwarding, with genuine one-get Entity descendant controls. Current source admissions only; actual compilation and each native outcome require separate execution. Historical suppliers and observations remain unchanged. No historical execution, arbitrary descendant unwind or full gameplay qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1670904,
+        "sha256": "8455c8b9f7dc63c3e0999932a8fae18149a6c0f3a153a179aecd59b1f2d02bbd"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/parity.md": {
+              "bytes": 224145,
+              "sha256": "78a6c33f781a08b11169d2f464dce09d21ebf1ae24b0092140fe0f276f13a12e"
+            },
+            "docs/testing.md": {
+              "bytes": 579408,
+              "sha256": "d43a39d4216c5da40965d8a331d7c8975a34b9e13431b023a2636b0a9676d0a2"
+            },
+            "docs/world/world-acquisition-execution.md": {
+              "bytes": 11758,
+              "sha256": "4eb870975d6233388ea2f16fc0dac79e961598e1adbfbfd2b5c9232299e8c100"
+            }
+          },
+          "added": [
+            "docs/world/activation-close.md"
+          ],
+          "current_count": 5846
         }
       }
     }
