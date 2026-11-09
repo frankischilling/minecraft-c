@@ -3,6 +3,7 @@
 #include "construction_internal.h"
 #include "execution_children_internal.h"
 #include "mutation/mutation_internal.h"
+#include "runtime_execution_internal.h"
 #include "world_access_internal.h"
 
 #include <stddef.h>
@@ -100,8 +101,9 @@ bool mc_world_mutation_sound(mc_world_runtime *world, double x, double y, double
 static bool particle_body(mc_world_runtime *world, const mc_registry_string *name, double x,
                           double y, double z, double velocity_x, double velocity_y,
                           double velocity_z, mc_world_mutation_error *error,
-                          mc_entity_tick_execution *execution,
-                          mc_world_access_failure_lease *lease) {
+                          mc_entity_tick_execution *execution, mc_world_access_failure_lease *lease,
+                          mc_world_runtime_execution_result *native,
+                          mc_entity_tick_execution_site receiver_site) {
     /* No Math.random, default-Random construction or velocity adjustment is
      * performed here. Every caller draw retains its original interleaving. */
     for (size_t index = 0;; ++index) {
@@ -123,11 +125,14 @@ static bool particle_body(mc_world_runtime *world, const mc_registry_string *nam
                               : mc_world_access_call_particle_with_lease(
                                     &world_access, world, name, x, y, z, velocity_x, velocity_y,
                                     velocity_z, lease, &cause, &error->world_access_failure);
-        if (status != MC_WORLD_STORAGE_OK && execution != NULL &&
-            mc_entity_tick_execution_capture_receipt(execution, &error->world_access_failure) !=
-                MC_WORLD_STORAGE_OK &&
-            execution->capture_pending)
-            error->world_access_failure = (mc_world_access_failure){0};
+        if (status != MC_WORLD_STORAGE_OK && execution != NULL) {
+            const mc_world_storage_status captured =
+                mc_entity_tick_execution_capture_receipt(execution, &error->world_access_failure);
+            mc_world_runtime_execution_result_note(
+                native, captured, "World particle owned receipt capture", receiver_site);
+            if (captured != MC_WORLD_STORAGE_OK && execution->capture_pending)
+                error->world_access_failure = (mc_world_access_failure){0};
+        }
         mc_world_access_release_held(world_access);
         if (status != MC_WORLD_STORAGE_OK)
             return presentation_failure(world, error,
@@ -139,7 +144,7 @@ bool mc_world_mutation_particle(mc_world_runtime *world, const mc_registry_strin
                                 double y, double z, double velocity_x, double velocity_y,
                                 double velocity_z, mc_world_mutation_error *error) {
     return particle_body(world, name, x, y, z, velocity_x, velocity_y, velocity_z, error, NULL,
-                         NULL);
+                         NULL, NULL, (mc_entity_tick_execution_site){NULL, NULL, NULL, -1});
 }
 
 mc_world_storage_status mc_world_runtime_sound(mc_world_runtime *world, double x, double y,
@@ -153,17 +158,17 @@ mc_world_storage_status mc_world_runtime_sound(mc_world_runtime *world, double x
     return presentation_finish(world, completed, &frame, error);
 }
 
-static mc_world_storage_status particle_run(mc_world_runtime *world, const mc_registry_string *name,
-                                            double x, double y, double z, double velocity_x,
-                                            double velocity_y, double velocity_z,
-                                            mc_world_mutation_error *error,
-                                            mc_entity_tick_execution *execution,
-                                            mc_world_access_failure_lease *lease) {
+static mc_world_storage_status
+particle_run(mc_world_runtime *world, const mc_registry_string *name, double x, double y, double z,
+             double velocity_x, double velocity_y, double velocity_z,
+             mc_world_mutation_error *error, mc_entity_tick_execution *execution,
+             mc_world_access_failure_lease *lease, mc_world_runtime_execution_result *native,
+             mc_entity_tick_execution_site receiver_site) {
     mc_world_mutation_error frame = mc_world_mutation_empty_error();
     if (!presentation_enter(world, &frame))
         return presentation_result(error, &frame);
     const bool completed = particle_body(world, name, x, y, z, velocity_x, velocity_y, velocity_z,
-                                         &frame, execution, lease);
+                                         &frame, execution, lease, native, receiver_site);
     return presentation_finish(world, completed, &frame, error);
 }
 
@@ -172,18 +177,21 @@ mc_world_storage_status mc_world_runtime_particle(mc_world_runtime *world,
                                                   double y, double z, double velocity_x,
                                                   double velocity_y, double velocity_z,
                                                   mc_world_mutation_error *error) {
-    return particle_run(world, name, x, y, z, velocity_x, velocity_y, velocity_z, error, NULL,
-                        NULL);
+    return particle_run(world, name, x, y, z, velocity_x, velocity_y, velocity_z, error, NULL, NULL,
+                        NULL, (mc_entity_tick_execution_site){NULL, NULL, NULL, -1});
 }
 
-mc_world_storage_status
-mc_world_runtime_particle_in_execution(mc_entity_tick_execution *execution, mc_world_runtime *world,
-                                       const mc_registry_string *name, double x, double y, double z,
-                                       double velocity_x, double velocity_y, double velocity_z,
-                                       mc_world_mutation_error *error) {
+static mc_world_storage_status
+particle_owned_run(mc_entity_tick_execution *execution, mc_world_runtime *world,
+                   const mc_registry_string *name, double x, double y, double z, double velocity_x,
+                   double velocity_y, double velocity_z, mc_world_mutation_error *error,
+                   mc_world_runtime_execution_result *native,
+                   mc_entity_tick_execution_site receiver_site) {
     mc_world_access_failure_lease *lease = NULL;
     const mc_world_storage_status status = mc_world_execution_child_lease(execution, world, &lease);
     if (status != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(
+            native, status, "World particle actual owned admission", receiver_site);
         if (error != NULL) {
             mc_world_mutation_error_init(error);
             error->status = error->cause.status = status;
@@ -194,5 +202,35 @@ mc_world_runtime_particle_in_execution(mc_entity_tick_execution *execution, mc_w
         return status;
     }
     return particle_run(world, name, x, y, z, velocity_x, velocity_y, velocity_z, error, execution,
-                        lease);
+                        lease, native, receiver_site);
+}
+
+mc_world_storage_status
+mc_world_runtime_particle_in_execution(mc_entity_tick_execution *execution, mc_world_runtime *world,
+                                       const mc_registry_string *name, double x, double y, double z,
+                                       double velocity_x, double velocity_y, double velocity_z,
+                                       mc_world_mutation_error *error) {
+    return particle_owned_run(execution, world, name, x, y, z, velocity_x, velocity_y, velocity_z,
+                              error, NULL, (mc_entity_tick_execution_site){NULL, NULL, NULL, -1});
+}
+
+mc_world_storage_status mc_world_runtime_particle_detailed_in_execution(
+    mc_entity_tick_execution *execution, mc_world_runtime *world, const mc_registry_string *name,
+    double x, double y, double z, double velocity_x, double velocity_y, double velocity_z,
+    mc_entity_tick_execution_site receiver_site, mc_world_mutation_error *error,
+    mc_world_runtime_execution_result *native) {
+    if (execution == NULL || native == NULL) {
+        mc_world_runtime_execution_result_note(native, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "World particle execution/native result required",
+                                               receiver_site);
+        if (error != NULL) {
+            mc_world_mutation_error_init(error);
+            error->status = error->cause.status = MC_WORLD_STORAGE_INVALID_ARGUMENT;
+            error->operation = error->cause.operation =
+                "World particle execution/native result required";
+        }
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    }
+    return particle_owned_run(execution, world, name, x, y, z, velocity_x, velocity_y, velocity_z,
+                              error, native, receiver_site);
 }

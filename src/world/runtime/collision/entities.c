@@ -1,3 +1,5 @@
+#include "../execution_children_internal.h"
+#include "entities_execution_internal.h"
 #include "entities_internal.h"
 
 #include "../../../entity/entity_internal.h"
@@ -214,6 +216,58 @@ static mc_world_storage_status append(mc_world_runtime *world, mc_world_referenc
     return MC_WORLD_STORAGE_OK;
 }
 
+/* Borrowed descriptor only. One query/gather/acquisition body serves both
+ * routes. The execution, Math and result remain in the actual caller frame. */
+typedef struct nearby_execution {
+    mc_entity_tick_execution *execution;
+    mc_world_runtime_execution_code code;
+    mc_world_runtime_execution_result *owned;
+} nearby_execution;
+
+static bool nearby_pending(const mc_world_runtime_execution_result *owned) {
+    if (owned->root_pending)
+        return true;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (owned->pending[i].used)
+            return true;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (owned->closes[i].used)
+            return true;
+    return false;
+}
+
+static bool stopped(mc_world_nearby_error *frame, mc_world_storage_status status,
+                    const char *operation) {
+    (void)fail(frame, status, operation);
+    return false;
+}
+
+/* argument was already evaluated, including its actual preceding arithmetic.
+ * Defining client IN comes explicitly from the caller, never World.trig/d. */
+static bool floor_value(double argument, int pc, bool chunk, int32_t *out,
+                        mc_world_nearby_error *frame, const nearby_execution *owned) {
+    if (owned != NULL) {
+        if (chunk)
+            frame->query.chunk_bytecode = (unsigned int)pc;
+        else
+            frame->query.bytecode = (unsigned int)pc;
+        if (owned->execution->math == NULL) {
+            mc_world_runtime_execution_result_note(owned->owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                                   "Nearby reached defining Math context",
+                                                   owned->execution->site);
+            return false;
+        }
+        const mc_math_execution_site site =
+            chunk ? (mc_math_execution_site){"lm", "a", "(Lsn;Leq;Ljava/util/List;)V", pc}
+                  : (mc_math_execution_site){"fd", "b", "(Lsn;Leq;)Ljava/util/List;", pc};
+        if (mc_math_execution_require(owned->execution->math, site, "b", "(D)I") !=
+            MC_MATH_CLASS_OK)
+            return false;
+    }
+    *out = mc_math_floor_double(argument);
+    return true;
+}
+
 static bool slice_array(const mc_world_chunk *chunk, const mc_world_chunk_list_array *array) {
     return array == &chunk->slices && array->length <= CHUNK_ENTITY_SLICES;
 }
@@ -230,30 +284,33 @@ static bool slice_list(const mc_world_chunk *chunk, const mc_world_chunk_entity_
            ((list->capacity == 0) == (list->items == NULL));
 }
 
-static mc_world_storage_status gather(mc_world_runtime *world, mc_world_chunk *chunk,
-                                      mc_entity *excluded, const mc_entity_bounds *bounds,
-                                      mc_world_reference_list *destination,
-                                      mc_world_nearby_error *frame) {
+static bool gather(mc_world_runtime *world, mc_world_chunk *chunk, mc_entity *excluded,
+                   const mc_entity_bounds *bounds, mc_world_reference_list *destination,
+                   mc_world_nearby_error *frame, const nearby_execution *owned) {
     frame->query.chunk_bytecode = 1;
     if (bounds == NULL)
-        return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Chunk gather query bounds");
+        return stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Chunk gather query bounds");
     frame->query.chunk_bytecode = 7;
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u)
-        return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Chunk gather FP admission");
-    int32_t low = mc_math_floor_double((bounds->min_y - 2.0) / 16.0);  /* floor12 */
-    int32_t high = mc_math_floor_double((bounds->max_y + 2.0) / 16.0); /* floor29 */
+        return stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Chunk gather FP admission");
+    int32_t low, high;
+    if (!floor_value((bounds->min_y - 2.0) / 16.0, 12, true, &low, frame, owned))
+        return false;
+    if (!floor_value((bounds->max_y + 2.0) / 16.0, 29, true, &high, frame, owned))
+        return false;
     if (low < 0)
         low = 0;
     frame->query.chunk_bytecode = 48;
     mc_world_chunk_list_array *array = chunk->m;
     if (!slice_array(chunk, array))
-        return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Chunk gather slice array length");
+        return stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                       "Chunk gather slice array length");
     if (high >= (int32_t)array->length) {
         frame->query.chunk_bytecode = 56;
         array = chunk->m;
         if (!slice_array(chunk, array))
-            return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                        "Chunk gather clamp array length");
+            return stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Chunk gather clamp array length");
         high = mc_java_i32_sub((int32_t)array->length, 1);
     }
     for (int32_t slice = low; slice <= high; slice = mc_java_i32_add(slice, 1)) {
@@ -261,35 +318,81 @@ static mc_world_storage_status gather(mc_world_runtime *world, mc_world_chunk *c
         frame->query.chunk_bytecode = 78;
         array = chunk->m; /* current m73, indexed78 */
         if (!slice_array(chunk, array) || slice < 0 || (uint32_t)slice >= array->length)
-            return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Chunk gather selected slice");
+            return stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "Chunk gather selected slice");
         mc_world_chunk_entity_list *const list = array->items[(uint32_t)slice]; /* local7 */
         for (size_t index = 0;; ++index) {
             frame->index = index;
             frame->query.chunk_bytecode = 88;
             if (!slice_list(chunk, list))
-                return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Chunk gather List size");
+                return stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Chunk gather List size");
             if (index >= list->count)
                 break;
             frame->query.chunk_bytecode = 100;
             mc_entity *candidate;
             if (mc_world_chunk_entity_at(list, index, &candidate) != MC_WORLD_STORAGE_OK)
-                return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Chunk gather List get");
+                return stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Chunk gather List get");
             if (candidate == excluded) /* actual reference comparison113 */
                 continue;
             frame->query.chunk_bytecode = 118;
             if (candidate == NULL || candidate->bounds == NULL)
-                return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                            "Chunk gather Entity bounds");
+                return stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Chunk gather Entity bounds");
             frame->query.chunk_bytecode = 122;
             if (mc_entity_bounds_intersects(candidate->bounds, bounds)) {
                 frame->query.chunk_bytecode = 131;
                 const mc_world_storage_status status = append(world, destination, candidate, frame);
                 if (status != MC_WORLD_STORAGE_OK)
-                    return status;
+                    return false;
             }
         }
     }
-    return MC_WORLD_STORAGE_OK;
+    return true;
+}
+
+static mc_world_storage_status gather_run(mc_world_runtime *world, mc_chunk_state *state,
+                                          mc_entity *excluded, const mc_entity_bounds *bounds,
+                                          mc_world_reference_list *destination,
+                                          mc_world_nearby_error *error,
+                                          const nearby_execution *owned, bool *continued) {
+    mc_world_nearby_error legacy_local;
+    mc_world_nearby_error *const frame = owned == NULL ? &legacy_local : error;
+    if (owned == NULL) {
+        if (error == NULL)
+            mc_world_nearby_error_init(frame);
+        else
+            *frame = *error;
+    }
+    bool completed = false;
+    mc_world_storage_status status;
+    frame->query.chunk_bytecode = 0;
+    if (state == NULL)
+        status = fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Nearby acquired Chunk receiver");
+    else if (state->blank) {
+        status = MC_WORLD_STORAGE_OK; /* actual li/hg override return0 */
+        completed = true;
+    } else {
+        mc_world_store *store = world->fields.w;
+        mc_world_chunk *chunk = mc_world_store_chunk_object(store, state);
+        if (chunk == NULL || !mc_world_chunk_source_enabled(chunk))
+            status = fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Nearby concrete Chunk owner");
+        else {
+            mc_world_storage_error child = {0};
+            status = mc_world_store_lease_chunk(store, state, &child);
+            if (status != MC_WORLD_STORAGE_OK)
+                (void)cause(frame, child);
+            else {
+                completed = gather(world, chunk, excluded, bounds, destination, frame, owned);
+                status = completed ? MC_WORLD_STORAGE_OK : frame->query.status;
+                (void)mc_world_store_release_chunk(store, state, NULL);
+            }
+        }
+    }
+    if (owned == NULL && error != NULL)
+        *error = *frame;
+    if (continued != NULL)
+        *continued = completed;
+    return status;
 }
 
 mc_world_storage_status mc_world_nearby_gather_held(mc_world_runtime *world, mc_chunk_state *state,
@@ -297,41 +400,22 @@ mc_world_storage_status mc_world_nearby_gather_held(mc_world_runtime *world, mc_
                                                     const mc_entity_bounds *bounds,
                                                     mc_world_reference_list *destination,
                                                     mc_world_nearby_error *error) {
-    mc_world_nearby_error frame;
-    if (error == NULL)
-        mc_world_nearby_error_init(&frame);
-    else
-        frame = *error;
-    mc_world_storage_status status;
-    frame.query.chunk_bytecode = 0;
-    if (state == NULL)
-        status = fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Nearby acquired Chunk receiver");
-    else if (state->blank)
-        status = MC_WORLD_STORAGE_OK; /* actual li/hg override return0 */
-    else {
-        mc_world_store *store = world->fields.w;
-        mc_world_chunk *chunk = mc_world_store_chunk_object(store, state);
-        if (chunk == NULL || !mc_world_chunk_source_enabled(chunk))
-            status =
-                fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Nearby concrete Chunk owner");
-        else {
-            mc_world_storage_error child = {0};
-            status = mc_world_store_lease_chunk(store, state, &child);
-            if (status != MC_WORLD_STORAGE_OK)
-                (void)cause(&frame, child);
-            else {
-                status = gather(world, chunk, excluded, bounds, destination, &frame);
-                (void)mc_world_store_release_chunk(store, state, NULL);
-            }
-        }
-    }
-    if (error != NULL)
-        *error = frame;
-    return status;
+    return gather_run(world, state, excluded, bounds, destination, error, NULL, NULL);
 }
 
-bool mc_world_entity_query_acquire_held(mc_world_runtime *world, int32_t x, int32_t z,
-                                        mc_chunk_state **out, mc_world_nearby_error *frame) {
+static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk_state **out,
+                    mc_world_nearby_error *frame, const nearby_execution *owned) {
+    if (owned != NULL) {
+        mc_world_access_failure_lease *unused = NULL;
+        const mc_world_storage_status admitted =
+            mc_world_execution_child_lease(owned->execution, world, &unused);
+        if (admitted != MC_WORLD_STORAGE_OK) {
+            mc_world_runtime_execution_result_note(
+                owned->owned, admitted, "Nearby acquiring getter evaluated World ownership",
+                owned->execution->site);
+            return false;
+        }
+    }
     frame->query.provider_bytecode = 6;
     if (world->fields.v == NULL) {
         fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Nearby provider receiver");
@@ -353,11 +437,34 @@ bool mc_world_entity_query_acquire_held(mc_world_runtime *world, int32_t x, int3
         return false;
     }
     mc_world_runtime_acquisition_error child;
-    frame->query.acquisition = mc_world_runtime_get_detailed(world, x, z, out, &child);
+    if (owned != NULL && (owned->owned->ownership_status != MC_WORLD_STORAGE_OK ||
+                          owned->owned->selection_ready || nearby_pending(owned->owned))) {
+        mc_world_runtime_execution_result_note(owned->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                               "Nearby prior actual acquisition is not drained",
+                                               owned->execution->site);
+        return false;
+    }
+    frame->query.acquisition =
+        owned == NULL ? mc_world_runtime_get_detailed(world, x, z, out, &child)
+                      : mc_world_runtime_get_in_execution(owned->execution, world, owned->code, x,
+                                                          z, out, &child, owned->owned);
     if (frame->query.acquisition != MC_CHUNK_ACQUIRE_OK) {
         frame->query.registry = child.registry;
         frame->query.population = child.population;
         frame->query.source_chunk = child.source_chunk;
+        if (owned != NULL && owned->owned->selection_ready) {
+            mc_entity_tick_execution_loader_view selected;
+            if (mc_entity_tick_execution_loader_read(owned->execution, &owned->owned->selection,
+                                                     &selected) &&
+                selected.status != MC_CHUNK_ACQUIRE_OK)
+                frame->query.source_chunk = selected.failure;
+            else {
+                frame->query.source_chunk = NULL;
+                mc_world_runtime_execution_result_note(
+                    owned->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Nearby selected loader view",
+                    owned->execution->site);
+            }
+        }
         frame->tile_entity = child.tile_entity;
         frame->batch = child.batch;
         frame->load_entity = child.load_entity;
@@ -376,12 +483,53 @@ bool mc_world_entity_query_acquire_held(mc_world_runtime *world, int32_t x, int3
                  "Nearby Chunk acquisition");
         return false;
     }
+    if (owned != NULL) {
+        if (owned->owned->ownership_status != MC_WORLD_STORAGE_OK)
+            return false;
+        mc_entity_tick_execution_loader_view selected;
+        if (!owned->owned->selection_ready || nearby_pending(owned->owned) ||
+            !mc_entity_tick_execution_loader_read(owned->execution, &owned->owned->selection,
+                                                  &selected) ||
+            selected.status != MC_CHUNK_ACQUIRE_OK || selected.failure != NULL) {
+            mc_world_runtime_execution_result_note(owned->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                                   "Nearby completed acquisition outcome",
+                                                   owned->execution->site);
+            return false;
+        }
+        owned->owned->selection_ready = false;
+    }
     frame->query.provider_bytecode = 0;
     return true;
 }
 
+bool mc_world_entity_query_acquire_held(mc_world_runtime *world, int32_t x, int32_t z,
+                                        mc_chunk_state **out, mc_world_nearby_error *frame) {
+    return acquire(world, x, z, out, frame, NULL);
+}
+
+bool mc_world_entity_query_acquire_in_execution(mc_entity_tick_execution *execution,
+                                                mc_world_runtime *world,
+                                                mc_world_runtime_execution_code code, int32_t x,
+                                                int32_t z, mc_chunk_state **out,
+                                                mc_world_nearby_error *frame,
+                                                mc_world_runtime_execution_result *result) {
+    const mc_entity_tick_execution_site site =
+        execution != NULL && execution->identity == execution
+            ? execution->site
+            : (mc_entity_tick_execution_site){NULL, NULL, NULL, -1};
+    if (execution == NULL || out == NULL || frame == NULL || result == NULL || world == NULL) {
+        mc_world_runtime_execution_result_note(
+            result, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+            "Nearby acquiring getter required execution/World/frame/result/output", site);
+        return false;
+    }
+    const nearby_execution descriptor = {execution, code, result};
+    return acquire(world, x, z, out, frame, &descriptor);
+}
+
 static bool query(mc_world_runtime *world, mc_entity *excluded, const mc_entity_bounds *bounds,
-                  mc_world_entity_list_view *value, mc_world_nearby_error *frame) {
+                  mc_world_entity_list_view *value, mc_world_nearby_error *frame,
+                  const nearby_execution *owned) {
     frame->query.bytecode = 4;
     if (world->fields.R == NULL || world->fields.R != world->nearby_entities.list ||
         !mc_world_nearby_owned_valid(world)) {
@@ -399,10 +547,15 @@ static bool query(mc_world_runtime *world, mc_entity *excluded, const mc_entity_
         fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Nearby coordinate FP admission");
         return false;
     }
-    const int32_t low_x = mc_math_floor_double((bounds->min_x - 2.0) / 16.0);
-    const int32_t high_x = mc_math_floor_double((bounds->max_x + 2.0) / 16.0);
-    const int32_t low_z = mc_math_floor_double((bounds->min_z - 2.0) / 16.0);
-    const int32_t high_z = mc_math_floor_double((bounds->max_z + 2.0) / 16.0);
+    int32_t low_x, high_x, low_z, high_z;
+    if (!floor_value((bounds->min_x - 2.0) / 16.0, 21, false, &low_x, frame, owned))
+        return false;
+    if (!floor_value((bounds->max_x + 2.0) / 16.0, 37, false, &high_x, frame, owned))
+        return false;
+    if (!floor_value((bounds->min_z - 2.0) / 16.0, 54, false, &low_z, frame, owned))
+        return false;
+    if (!floor_value((bounds->max_z + 2.0) / 16.0, 71, false, &high_z, frame, owned))
+        return false;
     for (int32_t x = low_x; x <= high_x; x = mc_java_i32_add(x, 1)) {
         for (int32_t z = low_z; z <= high_z; z = mc_java_i32_add(z, 1)) {
             frame->query.bytecode = 102;
@@ -419,13 +572,15 @@ static bool query(mc_world_runtime *world, mc_entity *excluded, const mc_entity_
                 continue;
             frame->query.bytecode = 113;
             mc_chunk_state *state = NULL;
-            if (!mc_world_entity_query_acquire_held(world, x, z, &state, frame))
+            if (!acquire(world, x, z, &state, frame, owned))
                 return false;
             /* Actual load of current R119 occurs AFTER acquiring getter113.
              * The Chunk call captures this destination without another clear. */
             frame->query.bytecode = 122;
-            if (mc_world_nearby_gather_held(world, state, excluded, bounds, world->fields.R,
-                                            frame) != MC_WORLD_STORAGE_OK)
+            bool gathered = false;
+            (void)gather_run(world, state, excluded, bounds, world->fields.R, frame, owned,
+                             &gathered);
+            if (!gathered)
                 return false;
             frame->query.chunk_bytecode = 0;
             frame->slice = frame->index = SIZE_MAX;
@@ -446,45 +601,108 @@ static bool query(mc_world_runtime *world, mc_entity *excluded, const mc_entity_
     return true;
 }
 
+static mc_world_storage_status run(mc_world_runtime *world, mc_entity *excluded,
+                                   const mc_entity_bounds *bounds, mc_world_entity_list_view *out,
+                                   mc_world_nearby_error *error, const nearby_execution *owned,
+                                   bool *continued) {
+    mc_world_nearby_error legacy_local;
+    mc_world_nearby_error *const frame = owned == NULL ? &legacy_local : error;
+    mc_world_nearby_error_init(frame);
+    bool completed = false;
+    if (world == NULL || out == NULL) {
+        fail(frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Nearby arguments");
+        if (owned != NULL)
+            mc_world_runtime_execution_result_note(owned->owned, frame->query.status,
+                                                   "Nearby native arguments",
+                                                   owned->execution->site);
+    } else if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
+               world->construction.phase == MC_WORLD_RUNTIME_RETIRED) {
+        fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Nearby World phase");
+        if (owned != NULL)
+            mc_world_runtime_execution_result_note(owned->owned, frame->query.status,
+                                                   "Nearby native World phase",
+                                                   owned->execution->site);
+    } else {
+        mc_world_storage_error child = {0};
+        if (mc_world_runtime_call_enter(world, &child) != MC_WORLD_STORAGE_OK) {
+            cause(frame, child);
+            if (owned != NULL)
+                mc_world_runtime_execution_result_note(owned->owned, child.status,
+                                                       "Nearby World call admission",
+                                                       owned->execution->site);
+        } else {
+            const mc_entity_status held =
+                excluded == NULL ? MC_ENTITY_OK : mc_entity_retain(excluded);
+            if (held != MC_ENTITY_OK) {
+                frame->entity =
+                    (mc_entity_error){.status = held, .operation = "Nearby excluded Entity hold"};
+                fail(frame, entity_status(held), "Nearby excluded Entity hold");
+                if (owned != NULL)
+                    mc_world_runtime_execution_result_note(owned->owned, frame->query.status,
+                                                           "Nearby excluded Entity hold",
+                                                           owned->execution->site);
+            } else {
+                mc_world_entity_list_view value = {0};
+                if (query(world, excluded, bounds, &value, frame, owned)) {
+                    completed = true;
+                    *out = value;
+                    mc_world_nearby_error_init(frame);
+                }
+                mc_entity_release(excluded);
+            }
+            if (frame->query.status != MC_WORLD_STORAGE_OK)
+                world->last_error = frame->query.cause;
+            mc_world_runtime_call_leave(world);
+        }
+    }
+    if (owned == NULL && error != NULL)
+        *error = *frame;
+    if (continued != NULL)
+        *continued = completed && frame->query.status == MC_WORLD_STORAGE_OK &&
+                     owned->owned->ownership_status == MC_WORLD_STORAGE_OK;
+    return frame->query.status;
+}
+
 mc_world_storage_status mc_world_runtime_nearby_entities(mc_world_runtime *world,
                                                          mc_entity *excluded,
                                                          const mc_entity_bounds *bounds,
                                                          mc_world_entity_list_view *out,
                                                          mc_world_nearby_error *error) {
-    mc_world_nearby_error frame;
-    mc_world_nearby_error_init(&frame);
-    if (world == NULL || out == NULL)
-        fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Nearby arguments");
-    else if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
-             world->construction.phase == MC_WORLD_RUNTIME_RETIRED)
-        fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Nearby World phase");
-    else {
-        mc_world_storage_error child = {0};
-        if (mc_world_runtime_call_enter(world, &child) != MC_WORLD_STORAGE_OK)
-            cause(&frame, child);
-        else {
-            const mc_entity_status held =
-                excluded == NULL ? MC_ENTITY_OK : mc_entity_retain(excluded);
-            if (held != MC_ENTITY_OK) {
-                frame.entity =
-                    (mc_entity_error){.status = held, .operation = "Nearby excluded Entity hold"};
-                fail(&frame, entity_status(held), "Nearby excluded Entity hold");
-            } else {
-                mc_world_entity_list_view value = {0};
-                if (query(world, excluded, bounds, &value, &frame)) {
-                    *out = value;
-                    mc_world_nearby_error_init(&frame);
-                }
-                mc_entity_release(excluded);
-            }
-            if (frame.query.status != MC_WORLD_STORAGE_OK)
-                world->last_error = frame.query.cause;
-            mc_world_runtime_call_leave(world);
-        }
+    return run(world, excluded, bounds, out, error, NULL, NULL);
+}
+
+bool mc_world_runtime_nearby_entities_in_execution(
+    mc_entity_tick_execution *execution, mc_world_runtime *world,
+    mc_world_runtime_execution_code code, mc_entity *excluded, const mc_entity_bounds *bounds,
+    mc_world_entity_list_view *out, mc_world_nearby_error *error, mc_world_storage_status *status,
+    mc_world_runtime_execution_result *result) {
+    if (result != NULL)
+        mc_world_runtime_execution_result_init(result);
+    const mc_entity_tick_execution_site site =
+        execution != NULL && execution->identity == execution
+            ? execution->site
+            : (mc_entity_tick_execution_site){NULL, NULL, NULL, -1};
+    mc_world_storage_status admitted = MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    const char *operation = "Nearby required execution/error/status/result/output";
+    if (execution != NULL && out != NULL && error != NULL && status != NULL && result != NULL) {
+        mc_world_access_failure_lease *unused = NULL;
+        admitted = mc_world_execution_child_lease(execution, world, &unused);
+        operation = "Nearby exact evaluated World ownership";
     }
-    if (error != NULL)
-        *error = frame;
-    return frame.query.status;
+    if (admitted != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(result, admitted, operation, site);
+        if (error != NULL) {
+            mc_world_nearby_error_init(error);
+            (void)fail(error, admitted, operation);
+        }
+        if (status != NULL)
+            *status = admitted;
+        return false;
+    }
+    const nearby_execution descriptor = {execution, code, result};
+    bool completed = false;
+    *status = run(world, excluded, bounds, out, error, &descriptor, &completed);
+    return completed;
 }
 
 mc_world_storage_status mc_world_entity_list_view_count(const mc_world_entity_list_view *view,

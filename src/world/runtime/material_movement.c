@@ -5,7 +5,8 @@
 #include "../../entity/entity_internal.h"
 #include "collision/blocks_internal.h"
 #include "construction_internal.h"
-#include "material_movement_internal.h"
+#include "execution_children_internal.h"
+#include "material_movement_execution_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
@@ -19,6 +20,26 @@
 #error "Material movement requires strict floating transformations"
 #endif
 #include <emmintrin.h>
+
+/* Borrowed per-call descriptor only. All query outputs and ownership ledgers
+ * live in the retained caller; no failure is adopted through an ambient owner. */
+typedef struct material_owned_execution {
+    mc_entity_tick_execution *execution;
+    mc_world_runtime_classes *code_classes;
+    mc_world_runtime_execution_code code;
+    mc_world_material_scan_query *query;
+    mc_world_runtime_execution_result *result;
+} material_owned_execution;
+
+static mc_registry_classes *code_registry(mc_world_runtime *world,
+                                          const material_owned_execution *owned) {
+    return owned == NULL ? world->classes->registry : owned->code_classes->registry;
+}
+
+static mc_entity_classes *code_entities(mc_world_runtime *world,
+                                        const material_owned_execution *owned) {
+    return owned == NULL ? mc_world_runtime_entities(world) : owned->code_classes->entities;
+}
 
 void mc_world_material_movement_error_init(mc_world_material_movement_error *error) {
     static const mc_world_material_movement_error zero = {0};
@@ -91,31 +112,58 @@ static bool cell(mc_world_material_movement_error *e) {
 }
 
 static bool read_value(mc_world_runtime *w, int32_t x, int32_t y, int32_t z, bool metadata,
-                       int32_t *out, mc_world_material_movement_error *e) {
-    if (mc_world_collision_block_value_held(w, x, y, z, metadata, out, &e->block) ==
-        MC_WORLD_STORAGE_OK)
-        return true;
-    return cause(e, e->block.nearby.query.cause);
+                       int32_t *out, mc_world_material_movement_error *e,
+                       const material_owned_execution *owned) {
+    mc_world_storage_status status;
+    if (owned == NULL) {
+        status = mc_world_collision_block_value_held(w, x, y, z, metadata, out, &e->block);
+    } else {
+        *owned->query = (mc_world_material_scan_query){.leaf = MC_WORLD_MATERIAL_SCAN_SCALAR_LEAF};
+        status = mc_world_collision_block_value_in_execution(
+            owned->execution, w, owned->code, x, y, z, metadata, out, &e->block, owned->result);
+        owned->query->status = status;
+        owned->query->returned = true;
+        /* Keep the real active lower frame and native result independently.
+         * No owner-only stop is projected into a fabricated Source cause. */
+        if (owned->result->ownership_status != MC_WORLD_STORAGE_OK)
+            return false;
+    }
+    return status == MC_WORLD_STORAGE_OK || cause(e, e->block.nearby.query.cause);
 }
 
 static bool material(mc_world_runtime *w, int32_t x, int32_t y, int32_t z, mc_material **out,
-                     mc_world_material_movement_error *e) {
-    if (mc_world_runtime_material_get_detailed(w, x, y, z, out, &e->material) ==
-        MC_WORLD_STORAGE_OK)
-        return true;
+                     mc_world_material_movement_error *e, const material_owned_execution *owned) {
+    if (owned == NULL) {
+        if (mc_world_runtime_material_get_detailed(w, x, y, z, out, &e->material) ==
+            MC_WORLD_STORAGE_OK)
+            return true;
+    } else {
+        *owned->query =
+            (mc_world_material_scan_query){.leaf = MC_WORLD_MATERIAL_SCAN_MATERIAL_LEAF};
+        const bool completed = mc_world_runtime_material_get_in_execution(
+            owned->execution, owned->code_classes, w, owned->code, x, y, z, out, &e->material,
+            &e->block, &owned->query->status, owned->result);
+        owned->query->returned = true;
+        owned->query->material_completed = completed;
+        if (owned->result->ownership_status != MC_WORLD_STORAGE_OK)
+            return false;
+        if (completed)
+            return true;
+    }
     return cause(e, e->material.cause);
 }
 
 static bool selected_block(mc_world_runtime *w, int32_t x, int32_t y, int32_t z,
                            const mc_block **out, unsigned load, unsigned getter, unsigned index,
-                           mc_world_material_movement_error *e) {
+                           mc_world_material_movement_error *e,
+                           const material_owned_execution *owned) {
     mc_registry_block_m_view array;
     e->bytecode = load;
-    if (mc_registry_block_m_get(w->classes->registry, &array, &e->registry) != MC_REGISTRY_OK)
+    if (mc_registry_block_m_get(code_registry(w, owned), &array, &e->registry) != MC_REGISTRY_OK)
         return registry_fail(w, e);
     e->bytecode = getter;
     int32_t id;
-    if (!read_value(w, x, y, z, false, &id, e))
+    if (!read_value(w, x, y, z, false, &id, e, owned))
         return false;
     e->bytecode = index;
     if (mc_registry_block_m_at(&array, id, out, &e->registry) != MC_REGISTRY_OK)
@@ -124,11 +172,12 @@ static bool selected_block(mc_world_runtime *w, int32_t x, int32_t y, int32_t z,
 }
 
 static bool decay(mc_world_runtime *w, const mc_block *b, int32_t x, int32_t y, int32_t z,
-                  int32_t *out, unsigned pc, mc_world_material_movement_error *e) {
+                  int32_t *out, unsigned pc, mc_world_material_movement_error *e,
+                  const material_owned_execution *owned) {
     e->fluid_bytecode = pc;
     e->fluid_child_bytecode = 5;
     mc_material *m;
-    if (!material(w, x, y, z, &m, e))
+    if (!material(w, x, y, z, &m, e, owned))
         return false;
     if (m != b->fields.bA) {
         *out = -1;
@@ -136,7 +185,7 @@ static bool decay(mc_world_runtime *w, const mc_block *b, int32_t x, int32_t y, 
         return true;
     }
     e->fluid_child_bytecode = 24;
-    if (!read_value(w, x, y, z, true, out, e))
+    if (!read_value(w, x, y, z, true, out, e, owned))
         return false;
     if (*out >= 8)
         *out = 0;
@@ -145,11 +194,12 @@ static bool decay(mc_world_runtime *w, const mc_block *b, int32_t x, int32_t y, 
 }
 
 static bool side_solid(mc_world_runtime *w, const mc_block *b, int32_t x, int32_t y, int32_t z,
-                       unsigned pc, bool *out, mc_world_material_movement_error *e) {
+                       unsigned pc, bool *out, mc_world_material_movement_error *e,
+                       const material_owned_execution *owned) {
     e->fluid_bytecode = pc;
     e->fluid_child_bytecode = 5;
     mc_material *m;
-    if (!material(w, x, y, z, &m, e))
+    if (!material(w, x, y, z, &m, e, owned))
         return false;
     if (m == b->fields.bA) {
         *out = false;
@@ -158,7 +208,7 @@ static bool side_solid(mc_world_runtime *w, const mc_block *b, int32_t x, int32_
     }
     e->fluid_child_bytecode = 25;
     mc_material *ice;
-    if (mc_registry_material_get(w->classes->registry, MC_MATERIAL_s, &ice, &e->registry) !=
+    if (mc_registry_material_get(code_registry(w, owned), MC_MATERIAL_s, &ice, &e->registry) !=
         MC_REGISTRY_OK)
         return registry_fail(w, e);
     if (m == ice) {
@@ -169,7 +219,7 @@ static bool side_solid(mc_world_runtime *w, const mc_block *b, int32_t x, int32_
     /* All reached directions are 2,3,4,5: invoke the actual super body rather
      * than the fluid's direction==1 early true. uu.d/na.b reloads Material. */
     e->fluid_child_bytecode = 49;
-    if (!material(w, x, y, z, &m, e))
+    if (!material(w, x, y, z, &m, e, owned))
         return false;
     if (m == NULL)
         return null_registry(w, e, "Fluid side Material receiver");
@@ -199,14 +249,15 @@ static bool replace_normal(mc_entity_classes *classes, mc_entity_vector **v,
 }
 
 static bool fluid_vector(mc_world_runtime *w, const mc_block *b, int32_t x, int32_t y, int32_t z,
-                         mc_entity_vector **out, mc_world_material_movement_error *e) {
-    mc_entity_classes *classes = mc_world_runtime_entities(w);
+                         mc_entity_vector **out, mc_world_material_movement_error *e,
+                         const material_owned_execution *owned) {
+    mc_entity_classes *classes = code_entities(w, owned);
     mc_entity_vector *v = NULL;
     e->fluid_bytecode = 3;
     if (!vector_result(e, mc_entity_vector_pool_get(classes, 0, 0, 0, &v, &e->vector)))
         return false;
     int32_t level;
-    if (!decay(w, b, x, y, z, &level, 14, e))
+    if (!decay(w, b, x, y, z, &level, 14, e, owned))
         goto failed;
     for (int d = 0; d < 4; ++d) {
         int32_t nx = x, nz = z;
@@ -219,14 +270,14 @@ static bool fluid_vector(mc_world_runtime *w, const mc_block *b, int32_t x, int3
         if (d == 3)
             nz = mc_java_i32_add(nz, 1);
         int32_t neighbor;
-        if (!decay(w, b, nx, y, nz, &neighbor, 81, e))
+        if (!decay(w, b, nx, y, nz, &neighbor, 81, e, owned))
             goto failed;
         unsigned add_pc = 213;
         int32_t delta;
         if (neighbor < 0) {
             e->fluid_bytecode = 98;
             mc_material *m;
-            if (!material(w, nx, y, nz, &m, e))
+            if (!material(w, nx, y, nz, &m, e, owned))
                 goto failed;
             e->fluid_bytecode = 103;
             if (m == NULL) {
@@ -235,7 +286,7 @@ static bool fluid_vector(mc_world_runtime *w, const mc_block *b, int32_t x, int3
             }
             if (mc_material_c(m))
                 continue;
-            if (!decay(w, b, nx, mc_java_i32_sub(y, 1), nz, &neighbor, 119, e))
+            if (!decay(w, b, nx, mc_java_i32_sub(y, 1), nz, &neighbor, 119, e, owned))
                 goto failed;
             if (neighbor < 0)
                 continue;
@@ -251,7 +302,7 @@ static bool fluid_vector(mc_world_runtime *w, const mc_block *b, int32_t x, int3
     }
     e->fluid_bytecode = 229;
     int32_t metadata;
-    if (!read_value(w, x, y, z, true, &metadata, e))
+    if (!read_value(w, x, y, z, true, &metadata, e, owned))
         goto failed;
     if (metadata >= 8) {
         static const int8_t offsets[8][3] = {{0, 0, -1}, {0, 0, 1}, {-1, 0, 0}, {1, 0, 0},
@@ -261,7 +312,7 @@ static bool fluid_vector(mc_world_runtime *w, const mc_block *b, int32_t x, int3
         for (unsigned i = 0; i < 8 && !solid; ++i) {
             if (!side_solid(w, b, mc_java_i32_add(x, offsets[i][0]),
                             mc_java_i32_add(y, offsets[i][1]), mc_java_i32_add(z, offsets[i][2]),
-                            pcs[i], &solid, e))
+                            pcs[i], &solid, e, owned))
                 goto failed;
         }
         if (solid) {
@@ -285,8 +336,8 @@ failed:
 }
 
 static bool accelerate_block(mc_world_runtime *w, const mc_block *b, int32_t x, int32_t y,
-                             int32_t z, mc_entity_vector *sum,
-                             mc_world_material_movement_error *e) {
+                             int32_t z, mc_entity_vector *sum, mc_world_material_movement_error *e,
+                             const material_owned_execution *owned) {
     e->stair_bytecode = 0;
     e->delegation_depth = 0;
     while (b->kind == MC_BLOCK_STAIRS) {
@@ -309,7 +360,7 @@ static bool accelerate_block(mc_world_runtime *w, const mc_block *b, int32_t x, 
     }
     e->acceleration_bytecode = 6;
     mc_entity_vector *flow;
-    if (!fluid_vector(w, b, x, y, z, &flow, e))
+    if (!fluid_vector(w, b, x, y, z, &flow, e, owned))
         return false;
     e->acceleration_bytecode = 23;
     sum->x = _mm_cvtsd_f64(_mm_add_sd(_mm_set_sd(sum->x), _mm_set_sd(flow->x)));
@@ -317,7 +368,7 @@ static bool accelerate_block(mc_world_runtime *w, const mc_block *b, int32_t x, 
     sum->y = _mm_cvtsd_f64(_mm_add_sd(_mm_set_sd(sum->y), _mm_set_sd(flow->y)));
     e->acceleration_bytecode = 53;
     sum->z = _mm_cvtsd_f64(_mm_add_sd(_mm_set_sd(sum->z), _mm_set_sd(flow->z)));
-    mc_entity_vector_release(mc_world_runtime_entities(w), flow);
+    mc_entity_vector_release(code_entities(w, owned), flow);
     e->acceleration_bytecode = 0;
     e->stair_bytecode = 0;
     e->delegation_depth = 0;
@@ -331,10 +382,14 @@ static bool floor_ready(mc_math_execution *execution, int kind, unsigned int pc,
     /* The new context is selected by the client Arrow's two actual material
      * invocations; legacy/server and contains-liquid callers pass NULL. */
     e->bytecode = pc;
-    const mc_math_class_status status = mc_math_execution_require(
-        execution,
-        (mc_math_execution_site){"fd", "a", kind == 2 ? "(Leq;Lln;Lsn;)Z" : "(Leq;Lln;)Z", (int)pc},
-        "b", "(D)I");
+    const mc_math_class_status status =
+        mc_math_execution_require(execution,
+                                  (mc_math_execution_site){"fd", kind == 1 ? "b" : "a",
+                                                           kind == 2   ? "(Leq;Lln;Lsn;)Z"
+                                                           : kind == 1 ? "(Leq;)Z"
+                                                                       : "(Leq;Lln;)Z",
+                                                           (int)pc},
+                                  "b", "(D)I");
     if (status == MC_MATH_CLASS_OK)
         return true;
     const mc_math_class_error *child = mc_math_execution_cause(execution);
@@ -348,7 +403,7 @@ static bool floor_ready(mc_math_execution *execution, int kind, unsigned int pc,
 
 static bool execute(mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m,
                     mc_entity *entity, int kind, bool *out, mc_world_material_movement_error *e,
-                    mc_math_execution *execution) {
+                    mc_math_execution *execution, const material_owned_execution *owned) {
     e->bytecode = 1;
     if (b == NULL)
         return fail(e, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Material scan bounds receiver");
@@ -362,19 +417,19 @@ static bool execute(mc_world_runtime *w, const mc_entity_bounds *b, mc_material 
         return false;
     int32_t hx = mc_math_floor_double(max_x);
     const double min_y = b->min_y;
-    if (!floor_ready(execution, kind, kind == 2 ? 24u : 23u, e))
+    if (!floor_ready(execution, kind, kind == 2 ? 24u : kind == 1 ? 22u : 23u, e))
         return false;
     int32_t ly = mc_math_floor_double(min_y);
     const double max_y = b->max_y + 1.0;
-    if (!floor_ready(execution, kind, kind == 2 ? 35u : 34u, e))
+    if (!floor_ready(execution, kind, kind == 2 ? 35u : kind == 1 ? 33u : 34u, e))
         return false;
     int32_t hy = mc_math_floor_double(max_y);
     const double min_z = b->min_z;
-    if (!floor_ready(execution, kind, kind == 2 ? 44u : 43u, e))
+    if (!floor_ready(execution, kind, kind == 2 ? 44u : kind == 1 ? 42u : 43u, e))
         return false;
     int32_t lz = mc_math_floor_double(min_z);
     const double max_z = b->max_z + 1.0;
-    if (!floor_ready(execution, kind, kind == 2 ? 55u : 54u, e))
+    if (!floor_ready(execution, kind, kind == 2 ? 55u : kind == 1 ? 53u : 54u, e))
         return false;
     int32_t hz = mc_math_floor_double(max_z);
     if (kind == 1) {
@@ -385,7 +440,7 @@ static bool execute(mc_world_runtime *w, const mc_entity_bounds *b, mc_material 
         if (b->min_z < 0.0)
             lz = mc_java_i32_sub(lz, 1);
     }
-    mc_entity_classes *classes = mc_world_runtime_entities(w);
+    mc_entity_classes *classes = code_entities(w, owned);
     mc_entity_vector *sum = NULL;
     if (kind == 2) {
         e->bytecode = 73;
@@ -410,7 +465,7 @@ static bool execute(mc_world_runtime *w, const mc_entity_bounds *b, mc_material 
                     goto leave;
                 const mc_block *block;
                 if (!selected_block(w, x, y, z, &block, kind == 0 ? 91 : 125, kind == 0 ? 101 : 135,
-                                    kind == 0 ? 104 : 138, e))
+                                    kind == 0 ? 104 : 138, e, owned))
                     goto leave;
                 if (block == NULL)
                     continue;
@@ -435,7 +490,7 @@ static bool execute(mc_world_runtime *w, const mc_entity_bounds *b, mc_material 
                 }
                 e->bytecode = 167;
                 int32_t metadata;
-                if (!read_value(w, x, y, z, true, &metadata, e))
+                if (!read_value(w, x, y, z, true, &metadata, e, owned))
                     goto leave;
                 volatile float top = (float)mc_java_i32_add(y, 1);
                 volatile float surface = top - mc_material_fluid_height(metadata);
@@ -443,7 +498,7 @@ static bool execute(mc_world_runtime *w, const mc_entity_bounds *b, mc_material 
                     continue;
                 found = true;
                 e->bytecode = 201;
-                if (!accelerate_block(w, block, x, y, z, sum, e))
+                if (!accelerate_block(w, block, x, y, z, sum, e, owned))
                     goto leave;
             }
         }
@@ -491,44 +546,50 @@ static mc_world_storage_status run(mc_world_runtime *w, const mc_entity_bounds *
                                    mc_entity *entity, int kind,
                                    const mc_world_material_movement_limits *limits, bool *out,
                                    mc_world_material_movement_error *error,
-                                   mc_math_execution *execution) {
-    mc_world_material_movement_error e;
-    mc_world_material_movement_error_init(&e);
-    e.max_cell_work =
+                                   mc_math_execution *execution,
+                                   const material_owned_execution *owned, bool *continued) {
+    mc_world_material_movement_error legacy_local;
+    mc_world_material_movement_error *const e = owned == NULL ? &legacy_local : error;
+    mc_world_material_movement_error_init(e);
+    e->max_cell_work =
         limits == NULL ? MC_WORLD_MATERIAL_MOVEMENT_DEFAULT_CELL_WORK : limits->max_cell_work;
-    bool entered = false;
+    bool entered = false, completed = false;
     if (w == NULL || out == NULL)
-        fail(&e, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Material movement arguments");
+        fail(e, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Material movement arguments");
     else if (w->construction.mode != MC_WORLD_RUNTIME_GAME ||
              w->construction.phase == MC_WORLD_RUNTIME_RETIRED)
-        fail(&e, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Material movement World phase");
-    else if (mc_world_runtime_call_enter(w, &e.cause) != MC_WORLD_STORAGE_OK)
-        cause(&e, e.cause);
+        fail(e, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Material movement World phase");
+    else if (mc_world_runtime_call_enter(w, &e->cause) != MC_WORLD_STORAGE_OK)
+        cause(e, e->cause);
     else {
         entered = true;
-        (void)execute(w, b, m, entity, kind, out, &e, execution);
+        completed = execute(w, b, m, entity, kind, out, e, execution, owned);
     }
     if (entered) {
-        if (e.status != MC_WORLD_STORAGE_OK)
-            w->last_error = e.cause;
+        if (e->status != MC_WORLD_STORAGE_OK)
+            w->last_error = e->cause;
         mc_world_runtime_call_leave(w);
     }
-    if (e.status == MC_WORLD_STORAGE_OK) {
-        size_t work = e.cell_work, maximum = e.max_cell_work;
-        mc_world_material_movement_error_init(&e);
-        e.cell_work = work;
-        e.max_cell_work = maximum;
+    if (e->status == MC_WORLD_STORAGE_OK &&
+        (owned == NULL || (completed && owned->result->ownership_status == MC_WORLD_STORAGE_OK))) {
+        size_t work = e->cell_work, maximum = e->max_cell_work;
+        mc_world_material_movement_error_init(e);
+        e->cell_work = work;
+        e->max_cell_work = maximum;
     }
-    if (error != NULL)
-        *error = e;
-    return e.status;
+    if (owned == NULL && error != NULL && error != e)
+        *error = *e;
+    if (continued != NULL)
+        *continued = completed && e->status == MC_WORLD_STORAGE_OK &&
+                     owned->result->ownership_status == MC_WORLD_STORAGE_OK;
+    return e->status;
 }
 
 mc_world_storage_status
 mc_world_runtime_contains_material(mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m,
                                    const mc_world_material_movement_limits *l, bool *out,
                                    mc_world_material_movement_error *e) {
-    return run(w, b, m, NULL, 0, l, out, e, NULL);
+    return run(w, b, m, NULL, 0, l, out, e, NULL, NULL, NULL);
 }
 
 mc_world_storage_status mc_world_runtime_contains_liquid(mc_world_runtime *w,
@@ -536,26 +597,69 @@ mc_world_storage_status mc_world_runtime_contains_liquid(mc_world_runtime *w,
                                                          const mc_world_material_movement_limits *l,
                                                          bool *out,
                                                          mc_world_material_movement_error *e) {
-    return run(w, b, NULL, NULL, 1, l, out, e, NULL);
+    return run(w, b, NULL, NULL, 1, l, out, e, NULL, NULL, NULL);
 }
 
 mc_world_storage_status
 mc_world_runtime_material_accelerate(mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m,
                                      mc_entity *entity, const mc_world_material_movement_limits *l,
                                      bool *out, mc_world_material_movement_error *e) {
-    return run(w, b, m, entity, 2, l, out, e, NULL);
+    return run(w, b, m, entity, 2, l, out, e, NULL, NULL, NULL);
 }
 
 mc_world_storage_status mc_world_runtime_material_accelerate_in_execution(
     mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m, mc_entity *entity,
     const mc_world_material_movement_limits *limits, bool *out,
     mc_world_material_movement_error *error, mc_math_execution *execution) {
-    return run(w, b, m, entity, 2, limits, out, error, execution);
+    return run(w, b, m, entity, 2, limits, out, error, execution, NULL, NULL);
 }
 
 mc_world_storage_status mc_world_runtime_contains_material_in_execution(
     mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m,
     const mc_world_material_movement_limits *limits, bool *out,
     mc_world_material_movement_error *error, mc_math_execution *execution) {
-    return run(w, b, m, NULL, 0, limits, out, error, execution);
+    return run(w, b, m, NULL, 0, limits, out, error, execution, NULL, NULL);
+}
+
+bool mc_world_runtime_material_scan_in_execution(
+    mc_entity_tick_execution *execution, mc_world_runtime_classes *code_classes,
+    mc_world_runtime *world, mc_world_runtime_execution_code code, const mc_entity_bounds *bounds,
+    mc_material *material_value, mc_entity *entity, mc_world_material_scan_kind kind,
+    const mc_world_material_movement_limits *limits, bool *out,
+    mc_world_material_movement_error *error, mc_world_material_scan_query *query,
+    mc_world_runtime_execution_result *owned) {
+    if (owned != NULL)
+        mc_world_runtime_execution_result_init(owned);
+    if (query != NULL)
+        *query = (mc_world_material_scan_query){0};
+    const mc_entity_tick_execution_site site =
+        execution != NULL && execution->identity == execution
+            ? execution->site
+            : (mc_entity_tick_execution_site){NULL, NULL, NULL, -1};
+    mc_world_storage_status status = MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    const char *operation = "Material scan required execution/code/query/result";
+    if (execution != NULL && code_classes != NULL && out != NULL && error != NULL &&
+        query != NULL && owned != NULL && execution->math != NULL &&
+        (unsigned int)kind <= (unsigned int)MC_WORLD_MATERIAL_SCAN_ACCELERATE) {
+        mc_world_access_failure_lease *unused = NULL;
+        status = mc_world_execution_child_lease(execution, world, &unused);
+        operation = "Material scan exact evaluated World ownership";
+        if (status == MC_WORLD_STORAGE_OK && world != NULL && world->classes != code_classes) {
+            status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+            operation = "Material scan same defining code namespace";
+        }
+    }
+    if (status != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(owned, status, operation, site);
+        if (error != NULL) {
+            mc_world_material_movement_error_init(error);
+            (void)fail(error, status, operation);
+        }
+        return false;
+    }
+    const material_owned_execution descriptor = {execution, code_classes, code, query, owned};
+    bool completed = false;
+    (void)run(world, bounds, material_value, entity, (int)kind, limits, out, error, execution->math,
+              &descriptor, &completed);
+    return completed;
 }

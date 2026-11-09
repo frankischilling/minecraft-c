@@ -1,3 +1,5 @@
+#include "../../world/runtime/execution_children_internal.h"
+#include "damage_execution_internal.h"
 #include "damage_internal.h"
 #include "death_internal.h"
 
@@ -31,6 +33,103 @@
 _Static_assert(CHAR_BIT == 8 && FLT_RADIX == 2 && FLT_MANT_DIG == 24 && DBL_MANT_DIG == 53 &&
                    FLT_EVAL_METHOD == 0,
                "Living damage requires binary32/binary64 evaluation");
+
+void mc_living_damage_execution_init(mc_living_damage_execution *state,
+                                     mc_entity_tick_execution *execution,
+                                     mc_world_runtime_classes *code_classes,
+                                     mc_world_runtime_execution_result *owned) {
+    if (state != NULL)
+        *state = (mc_living_damage_execution){
+            .execution = execution, .code_classes = code_classes, .owned = owned};
+    mc_world_runtime_execution_result_init(owned);
+}
+
+static bool living_result_quiet(const mc_world_runtime_execution_result *owned) {
+    if (owned->selection_ready || owned->root_pending)
+        return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (owned->pending[i].used)
+            return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (owned->closes[i].used)
+            return false;
+    return true;
+}
+
+static bool living_created_scope_open(const mc_living_damage_execution *state) {
+    const mc_entity_tick_execution *execution = state->execution;
+    return state->scope_created && state->world.owner == execution &&
+           state->world.slot < MC_ENTITY_TICK_EXECUTION_WORLDS &&
+           execution->world_slots[state->world.slot].generation == state->world.generation &&
+           execution->world_slots[state->world.slot].phase == MC_ENTITY_TICK_EXECUTION_WORLD_OPEN;
+}
+
+static bool living_world_begin(mc_living_damage_execution *state, mc_world_runtime *world,
+                               bool fatal) {
+    if (state == NULL)
+        return true;
+    state->receiver_site =
+        (mc_entity_tick_execution_site){"ls", "a", "(Lsn;I)Z", fatal ? 279 : 327};
+    const mc_world_storage_status captured = mc_entity_tick_execution_push_world(
+        state->execution, world, state->receiver_site, &state->world);
+    if (captured != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(
+            state->owned, captured, "Living sound evaluated World ownership", state->receiver_site);
+        return false;
+    }
+    state->scope_created = state->scope_open = true;
+    return true;
+}
+
+static bool living_world_end(mc_living_damage_execution *state, bool completed) {
+    if (!state->scope_created)
+        return completed;
+    if (state->close_attempted)
+        return false;
+    if (completed && (state->owned->ownership_status != MC_WORLD_STORAGE_OK ||
+                      !living_result_quiet(state->owned))) {
+        mc_world_runtime_execution_result_note(state->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                               "Living sound completed result not quiet",
+                                               state->receiver_site);
+        completed = false;
+    }
+    state->close_attempted = true;
+    const mc_world_storage_status closed =
+        mc_entity_tick_execution_pop_world(state->execution, &state->world, !completed);
+    state->scope_open = living_created_scope_open(state);
+    if (closed != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(
+            state->owned, closed, "Living sound actual World checked close", state->receiver_site);
+        return false;
+    }
+    return completed;
+}
+
+static bool living_leaf_admit(mc_entity *p, mc_living_damage_execution *state,
+                              mc_entity_effect_error *error, mc_living_damage_operation operation) {
+    if (state == NULL)
+        return false;
+    const mc_entity_tick_execution_site site = {
+        "ls", "a", operation == MC_LIVING_DAMAGE_SOUND ? "(Lsn;I)Z" : "(Lsn;IDD)V", 0};
+    if (state->execution == NULL || state->execution->identity != state->execution ||
+        state->execution->math == NULL || state->code_classes == NULL || state->owned == NULL ||
+        error == NULL || p == NULL || p->phase != MC_ENTITY_READY || p->holds == 0 ||
+        mc_entity_living_fields(p) == NULL || state->entered || state->scope_open) {
+        mc_world_runtime_execution_result_note(state->owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "Living leaf actual owner/context/frame required",
+                                               site);
+        return false;
+    }
+    if (state->owned->ownership_status != MC_WORLD_STORAGE_OK ||
+        !living_result_quiet(state->owned)) {
+        mc_world_runtime_execution_result_note(state->owned, MC_WORLD_STORAGE_BUSY,
+                                               "Living leaf prior result not quiet", site);
+        return false;
+    }
+    state->operation = operation;
+    state->entered = true;
+    return true;
+}
 
 static void living_at(mc_entity_effect_error *e, uint16_t pc) {
     e->living_bytecode = e->living_damage.living_pc = pc;
@@ -120,12 +219,14 @@ static bool private_draw(mc_entity *p, uint16_t pc, size_t index, mc_entity_effe
 }
 
 static bool sound(mc_entity *p, mc_registry_classes *registry, bool fatal,
-                  mc_entity_effect_error *e) {
+                  mc_entity_effect_error *e, mc_living_damage_execution *owned) {
     /* The World receiver is captured BEFORE evaluating the actual virtual
      * name, volume and both Random operands. Do not reload it after those. */
     mc_world_runtime *world = p->base.world;
     e->living_damage.sound_world_captured = true;
     e->living_damage.sound_world_identity = (uintptr_t)world;
+    if (!living_world_begin(owned, world, fatal))
+        return false;
     const uint16_t name_pc = fatal ? 284u : 332u;
     living_at(e, name_pc);
     const bool skeleton = mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SKELETON);
@@ -207,7 +308,26 @@ static bool sound(mc_entity *p, mc_registry_classes *registry, bool fatal,
     if (world == NULL)
         return damage_null(e, "Living damage null captured sound World receiver");
     const mc_world_storage_status status =
-        mc_world_runtime_entity_sound(world, p, name, volume, pitch, &e->world);
+        owned == NULL ? mc_world_runtime_entity_sound(world, p, name, volume, pitch, &e->world)
+                      : mc_world_runtime_entity_sound_detailed_in_execution(
+                            owned->execution, world, p, name, volume, pitch, owned->receiver_site,
+                            &e->world, owned->owned);
+    if (owned != NULL) {
+        owned->world_returned = true;
+        owned->world_status = status;
+        if (owned->owned->ownership_status != MC_WORLD_STORAGE_OK)
+            return false; /* Preserve the actual SDK Native cause before outer projection. */
+        if (owned->execution->capture_pending) {
+            const mc_entity_tick_execution_error capture = owned->execution->capture;
+            mc_world_runtime_execution_result_note(
+                owned->owned,
+                capture.status == MC_WORLD_STORAGE_OK ? MC_WORLD_STORAGE_UNSUPPORTED_STATE
+                                                      : capture.status,
+                "Living sound actual World capture pending",
+                (mc_entity_tick_execution_site){"ls", "a", "(Lsn;I)Z", fatal ? 311 : 359});
+            return false; /* No outward unprotected receipt classification. */
+        }
+    }
     if (status != MC_WORLD_STORAGE_OK) {
         const mc_entity_status result = status == MC_WORLD_STORAGE_LIMIT ? MC_ENTITY_LIMIT
                                         : status == MC_WORLD_STORAGE_ALLOCATION_FAILED
@@ -242,29 +362,39 @@ static void knockback_at(mc_entity_effect_error *e, uint16_t pc) {
  * The same caller Math namespace is activated at9, before any velocity store;
  * no World field is consulted to discover another Math implementation. */
 static bool knockback(mc_entity *p, mc_math_classes *math, double dx, double dz,
-                      mc_entity_effect_error *e) {
+                      mc_entity_effect_error *e, mc_living_damage_execution *owned) {
     e->living_damage.knockback_entered = true;
     knockback_at(e, 2);
     if (!damage_fp(e))
         return false;
     const double squared = at_add(at_mul(dx, dx), at_mul(dz, dz));
     knockback_at(e, 9);
-    if (math == NULL) {
-        e->math = (mc_math_class_error){.status = MC_MATH_CLASS_INVALID_ARGUMENT,
-                                        .operation = "Living knockback absent MathHelper namespace",
-                                        .source_pc = -1};
-        return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_MATH,
-                           "Living knockback actual MathHelper namespace");
-    }
-    if (mc_math_classes_ensure(math, &e->math) != MC_MATH_CLASS_OK) {
-        const mc_entity_status status =
-            e->math.status == MC_MATH_CLASS_LIMIT               ? MC_ENTITY_LIMIT
-            : e->math.status == MC_MATH_CLASS_ALLOCATION_FAILED ? MC_ENTITY_ALLOCATION_FAILED
-            : e->math.status == MC_MATH_CLASS_BUSY              ? MC_ENTITY_BUSY
-            : e->math.status == MC_MATH_CLASS_UNSUPPORTED_FP    ? MC_ENTITY_UNSUPPORTED_FP
-                                                                : MC_ENTITY_STATE_ERROR;
-        return damage_fail(e, status, MC_ENTITY_EFFECT_CAUSE_MATH,
-                           "Living knockback actual MathHelper active use");
+    if (owned != NULL) {
+        const mc_math_class_status status = mc_math_execution_require(
+            owned->execution->math, (mc_math_execution_site){"ls", "a", "(Lsn;IDD)V", 9}, "a",
+            "(D)F");
+        e->math = *mc_math_execution_cause(owned->execution->math);
+        if (status != MC_MATH_CLASS_OK)
+            return false; /* Real Math cause, independent of e->status/result. */
+    } else {
+        if (math == NULL) {
+            e->math =
+                (mc_math_class_error){.status = MC_MATH_CLASS_INVALID_ARGUMENT,
+                                      .operation = "Living knockback absent MathHelper namespace",
+                                      .source_pc = -1};
+            return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_MATH,
+                               "Living knockback actual MathHelper namespace");
+        }
+        if (mc_math_classes_ensure(math, &e->math) != MC_MATH_CLASS_OK) {
+            const mc_entity_status status =
+                e->math.status == MC_MATH_CLASS_LIMIT               ? MC_ENTITY_LIMIT
+                : e->math.status == MC_MATH_CLASS_ALLOCATION_FAILED ? MC_ENTITY_ALLOCATION_FAILED
+                : e->math.status == MC_MATH_CLASS_BUSY              ? MC_ENTITY_BUSY
+                : e->math.status == MC_MATH_CLASS_UNSUPPORTED_FP    ? MC_ENTITY_UNSUPPORTED_FP
+                                                                    : MC_ENTITY_STATE_ERROR;
+            return damage_fail(e, status, MC_ENTITY_EFFECT_CAUSE_MATH,
+                               "Living knockback actual MathHelper active use");
+        }
     }
     const float length = at_root(squared);
     e->living_damage.knockback_length = length;
@@ -285,6 +415,27 @@ static bool knockback(mc_entity *p, mc_math_classes *math, double dx, double dz,
     knockback_at(e, 121);
     e->living_damage.knockback_returned = true;
     return true;
+}
+
+bool mc_living_damage_sound_in_execution(mc_entity *p, mc_registry_classes *registry, bool fatal,
+                                         mc_living_damage_execution *state,
+                                         mc_entity_effect_error *error) {
+    if (!living_leaf_admit(p, state, error, MC_LIVING_DAMAGE_SOUND))
+        return false;
+    const bool returned = sound(p, registry, fatal, error, state);
+    const bool closed = living_world_end(state, returned);
+    state->completed = returned && closed && state->owned->ownership_status == MC_WORLD_STORAGE_OK;
+    return state->completed;
+}
+
+bool mc_living_damage_knockback_in_execution(mc_entity *p, double dx, double dz,
+                                             mc_living_damage_execution *state,
+                                             mc_entity_effect_error *error) {
+    if (!living_leaf_admit(p, state, error, MC_LIVING_DAMAGE_KNOCKBACK))
+        return false;
+    const bool returned = knockback(p, NULL, dx, dz, error, state);
+    state->completed = returned && state->owned->ownership_status == MC_WORLD_STORAGE_OK;
+    return state->completed;
 }
 
 static bool source_direction(mc_entity *p, mc_math_classes *math, mc_entity *source,
@@ -362,7 +513,7 @@ static bool source_direction(mc_entity *p, mc_math_classes *math, mc_entity *sou
     const float narrowed = at_narrow(degrees);
     mc_entity_living_fields(p)->ac = at_fsub(narrowed, p->base.yaw);
     living_at(e, 244);
-    if (!knockback(p, math, dx, dz, e))
+    if (!knockback(p, math, dx, dz, e, NULL))
         return false;
     r->direction_returned = true;
     return true;
@@ -463,7 +614,7 @@ static bool living_body(mc_entity *p, mc_registry_classes *registry, mc_math_cla
         }
     }
     if (v->Y <= 0) {
-        if (full_hit && !sound(p, registry, true, e))
+        if (full_hit && !sound(p, registry, true, e, NULL))
             return false;
         living_at(e, 316);
         child_at(e, "ls", "b", "(Lsn;)V", 0);
@@ -484,7 +635,7 @@ static bool living_body(mc_entity *p, mc_registry_classes *registry, mc_math_cla
                                "Living damage actual death/drop body");
         else if (!mc_mob_death_entered(p, registry, source, e))
             return false;
-    } else if (full_hit && !sound(p, registry, false, e))
+    } else if (full_hit && !sound(p, registry, false, e, NULL))
         return false;
     living_at(e, 363);
     *out = true;

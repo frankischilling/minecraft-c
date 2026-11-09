@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 225909,
-      "sha256": "61033899b9bcc3bbc9ec5d998a3b6e784fffb56796c229b3c3f1e7f6dde2e3c6"
+      "bytes": 227296,
+      "sha256": "4d0d05bde770ee7f7f176e6daaa11de29e70ebbab8d019925e16f18cc1c9f0ee"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 584630,
-      "sha256": "f9e691e974f1e29f7272a28a4dc089bf4643a9600a07226e825ad903f86f198b"
+      "bytes": 585745,
+      "sha256": "8ab25772fb1711fd7778f613b4d512a15885f42bf6a71fad9962d01a450654c1"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
@@ -4010,8 +4010,8 @@
       "sha256": "9b57bd08b00e7dfa77c1a814de886a8e54ec8c63abf02d4c5e038a749a87f835"
     },
     "src/entity/movement/environment.c": {
-      "bytes": 21804,
-      "sha256": "bafdecf7510283bf1c9e8da1841b29c5bf3a77c5b09e43032959113bec54b2cb"
+      "bytes": 24737,
+      "sha256": "d3f0c48f33d5be078384933d4ad9888a61b07fb87a761089e7bd44806cdd0058"
     },
     "src/entity/movement/material.c": {
       "bytes": 8361,
@@ -4150,8 +4150,8 @@
       "sha256": "7dc6dd74180c1abec9035a3b2ac3b9e26059df9597de7c829fe859c8f4e76913"
     },
     "src/entity/tick/environment.c": {
-      "bytes": 31299,
-      "sha256": "c76f696da747f747ca6945a317fd97d2732502276e54b7bddb11e68e12a3387a"
+      "bytes": 41726,
+      "sha256": "4fb54a451c2905627c9f70788be5c7d943cde81a3836cc74c1cf352bbb90adbf"
     },
     "src/entity/tick/suffocation.c": {
       "bytes": 3016,
@@ -4510,8 +4510,8 @@
       "sha256": "b74d86fe1e214ba8f959d8293689b40aca5f11d72a92b045bc8fd8ba1cda1ba5"
     },
     "src/world/chunk/entities.c": {
-      "bytes": 12115,
-      "sha256": "b43dcd5e334ed9d7e45aa4eeda05b77a1f8ffc1003cb3f9b9886946405259a07"
+      "bytes": 14359,
+      "sha256": "21a226ca48e52f0f5bff1f52549319df7faee2fb3f3e3308cda81dd9d64bde59"
     },
     "src/world/chunk/entity_remove.c": {
       "bytes": 3886,
@@ -4622,8 +4622,8 @@
       "sha256": "a5508eef58b78dc8f3626b4871d55380883ba13882e105af3c6bc811897a0a2f"
     },
     "src/world/runtime/collision/blocks.c": {
-      "bytes": 86765,
-      "sha256": "01ebef6359ebc53f5936360039a69287510f957a8d220241fa9f037243f22546"
+      "bytes": 93853,
+      "sha256": "c4ddbf4a40933bf49ea9b8196faa93e76cbe7e7b74c850cfa8d4759e5d551eea"
     },
     "src/world/runtime/collision/blocks_internal.h": {
       "bytes": 8777,
@@ -4638,16 +4638,16 @@
       "sha256": "f284c24a540b486304e88af6f6b1299cde53f247cd29b87953a34be2bd0199a4"
     },
     "src/world/runtime/collision/class_entities.c": {
-      "bytes": 20554,
-      "sha256": "792cdf1b79d214309e2fde84848d73e07c42a926b90f1a9a6418d5e7dc1e63fd"
+      "bytes": 25924,
+      "sha256": "ccfcae6c3116da0544c2a2f32d35e9803c3eef5d8b75848e947dc664429ec323"
     },
     "src/world/runtime/collision/class_entities_internal.h": {
       "bytes": 1402,
       "sha256": "93f9e71649390515f35169ec498e826f3c46bbe1bdf417eab0186c0f4a9ddae7"
     },
     "src/world/runtime/collision/entities.c": {
-      "bytes": 23927,
-      "sha256": "cd71b6aa3a94b3eab9d7e6dfbac9f731d85f238ac56eff3ab55adc8655c18a72"
+      "bytes": 34990,
+      "sha256": "1117c8c216bbab76f4f89f1e2184ebc31fce5e66daeb9809e0d45be0329b671e"
     },
     "src/world/runtime/collision/entities_internal.h": {
       "bytes": 1949,
@@ -4674,8 +4674,8 @@
       "sha256": "f9b0dadeeb5dddffc82730c07bacf794fc3c5baf02fead2113f4284c45da8939"
     },
     "src/world/runtime/entity_publication.c": {
-      "bytes": 45422,
-      "sha256": "9bf8670cebb46013f78f62cd014f87ff397f6b3bd7189ee3e2d70911695f8203"
+      "bytes": 55691,
+      "sha256": "80d5feb0cdc06668ea97fe58dbde708a5525a506c9ed766802e9d9ca5e432c13"
     },
     "src/world/runtime/entity_publication_internal.h": {
       "bytes": 3048,
@@ -4774,16 +4774,16 @@
       "sha256": "f54c9b9b182691ce3319167e1e61cd76bd8ea32f9de73ef95d2a534d31e90cd6"
     },
     "src/world/runtime/material_movement.c": {
-      "bytes": 22629,
-      "sha256": "bac60fd9b7053628edaee6c98c52e9c2b4a0bed0390cd7919bbb12feb1de5766"
+      "bytes": 28714,
+      "sha256": "25c37be638ec7ff0a509b56ddaee9dc0f61ed0a39dac4dc6ae2a86ec6260bd6c"
     },
     "src/world/runtime/material_movement_internal.h": {
       "bytes": 1293,
       "sha256": "80ed38038b2db86cd108e35fa61714f5b7119d7cb270f9e9f96c8d7f37d3c5fd"
     },
     "src/world/runtime/movement.c": {
-      "bytes": 22632,
-      "sha256": "80e53a8ca1a042a26229cbc83e86a3b23b980d18721b3ede0f1adf337f8c1642"
+      "bytes": 25505,
+      "sha256": "78f3c32efeb46dfe1ef637d7356187477aa6c88261b6a34f72440dc88639500f"
     },
     "src/world/runtime/mutation/chunk.c": {
       "bytes": 9838,
@@ -4990,8 +4990,8 @@
       "sha256": "5e1f353806f8030c36e3b1e5b7d7348287430a877b9ebb89912d5c590dec3a28"
     },
     "src/world/runtime/presentation.c": {
-      "bytes": 9897,
-      "sha256": "76cd8c3db9fadb9690b178f6f4ba3f4b2d1c60ee9df8c86183c271126d013153"
+      "bytes": 12318,
+      "sha256": "220f0209da9593a15cbb4b8cd200e7872d36ed49f406d3111f36b42a9ac85499"
     },
     "src/world/runtime/propagation.c": {
       "bytes": 33028,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 733279,
-      "sha256": "df0f27f007e689fa825a7e379b83070e89b5942e2f440f3358991d274551bbed"
+      "bytes": 748722,
+      "sha256": "ab9df990041df032785caf1874d139cc872d9b57155328c3dd52ec8e9054970d"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 832281,
-      "sha256": "901b90a4bbb3f5ba8aa2409052d6c94260dabf3858bd9fbdfed0e740ffd08a5a"
+      "bytes": 848999,
+      "sha256": "419e3a99975fdc18d67a9c6bbdcf801a565db51e98ce1d59cc014c75787131a8"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 730258,
-      "sha256": "9c8d4a420f3727312064b681541b66064ee9486099afacc76b808907dbf0a3e6"
+      "bytes": 745701,
+      "sha256": "58d341266ff35b790c6cb42ef8b4bea665f2446a6024e8d86b47ccd6d3b1bec4"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -10330,16 +10330,16 @@
       "sha256": "eaae1fa88d1bd34e4770d0ef8ffb5f24bab84f346017b7a3ee29fc0822504ec1"
     },
     "src/world/runtime/raytrace.c": {
-      "bytes": 27970,
-      "sha256": "d33323665aace2dbb151c767dcfd92f6c84e15925e9b7e909d5c152c58880b8e"
+      "bytes": 38793,
+      "sha256": "b6dc20bc0800e6d1b155ed5cbc3b68b1d66d1940e964fb2aec08fe22a89ee4dc"
     },
     "src/world/runtime/raytrace_blocks.c": {
-      "bytes": 9863,
-      "sha256": "ef9042ab821f82d6a3cc0b75a5f16df207b8c65850f8244ff537441789700909"
+      "bytes": 9482,
+      "sha256": "e4260c0f6b31cfd14192b56f8b0ca63e8860054213c401973e5450ce8f7d2758"
     },
     "src/world/runtime/raytrace_internal.h": {
-      "bytes": 3009,
-      "sha256": "8fda97a75d6ca277633153911ce97e951fb50aa46fc0cf1c23cdb537e467cd0c"
+      "bytes": 3781,
+      "sha256": "a9832292fdbd7476e8cbe1db6edca5374c69828f83613baee1f957eda8478d1a"
     },
     "tests/client/world/test_picking.c": {
       "bytes": 33049,
@@ -14422,8 +14422,8 @@
       "sha256": "83fa124aab5972e55bb827ed95dbb5b1d239e16d18f55001b7a1024810a9768f"
     },
     "src/entity/mob/damage.c": {
-      "bytes": 28651,
-      "sha256": "ad80b25b28cb3bb908848bff466fbf1396766418a768aa83dfa2be94cde1e1f4"
+      "bytes": 36297,
+      "sha256": "c0e963e4178fe62eeb8d00f13d8d6354196bbe5dcd26aad5abfb54d5ba68ca3e"
     },
     "src/entity/mob/damage_internal.h": {
       "bytes": 1708,
@@ -22470,8 +22470,8 @@
       "sha256": "e532cdab794162dbea92317dfc992f8922f9933d38da10d1b373500d5d58f102"
     },
     "src/entity/player/ally_alert.c": {
-      "bytes": 23211,
-      "sha256": "23d60832fc491edefd282bdec3ad493d6a061523ac4e19bd48a50e9e6a6cf508"
+      "bytes": 31009,
+      "sha256": "39a87de82a4e357275c02c95dba40d6106d07dedc79f0576c2b4ee1e70207b7c"
     },
     "src/entity/player/ally_alert_occurrences.c": {
       "bytes": 3850,
@@ -22482,8 +22482,8 @@
       "sha256": "80cfc9d4e0708ca17a3b766709375a1436cbc418226db34b6000e28ce3259d4c"
     },
     "src/entity/player/damage_alert.c": {
-      "bytes": 4685,
-      "sha256": "19e949c99c9837faf946e4e35611f3bb989f4509e9bb1de42a2b5f50ce82511d"
+      "bytes": 7260,
+      "sha256": "d1c4dac013901f8bdc8dcd13859ab32edafe52afdd07a9e0615e2000b6e7ef51"
     },
     "src/entity/player/damage_alert_internal.h": {
       "bytes": 413,
@@ -22522,8 +22522,8 @@
       "sha256": "7f0b054111bfb9bf9564e8edca8b6c0ee3afca3483f1e761dc3afa6c8de599ac"
     },
     "tests/entity/player/test_ally_alert_ownership.c": {
-      "bytes": 10795,
-      "sha256": "c61d4240326e26de6d8014e7ab9255ec86e5cec46eaf3a9cc51bb97d593d66ac"
+      "bytes": 11126,
+      "sha256": "d029b5fba1dc1f3ff092f9d7e76136a0250ead9680ddae1b69de18ff43669dc7"
     },
     "tests/entity/player/test_mob_attacker.c": {
       "bytes": 8409,
@@ -23218,24 +23218,24 @@
       "sha256": "d5847a88ac1a8db50d1576f2340e17536004a39e997e28ea4f701d0fb3def3e1"
     },
     "src/entity/tick/execution_internal.h": {
-      "bytes": 11878,
-      "sha256": "379777c714021593f9605bf6dbfe69e35373e0c8898269583568f0b2fe8086b7"
+      "bytes": 11697,
+      "sha256": "e2c1f7124c70b1878a25efbb2265671102b564280a037739c12b45b27e0f1f6a"
     },
     "src/world/runtime/world_access_lease_internal.h": {
       "bytes": 6338,
       "sha256": "00a015fae9fb9fd4524bdc4ca3a003ae3ec649f4cab10bced2b5f3f7b53e2d8e"
     },
     "tests/tools/world/test_execution_ownership.py": {
-      "bytes": 8205,
-      "sha256": "e00db5dca070917b62c6903ef2e40c06338439c889fc58234974610417c9c2fd"
+      "bytes": 8350,
+      "sha256": "1d3616472c10b0c253e881fdd08c33d198765922d5e75bc45ec3f955ece5275e"
     },
     "tests/world/runtime/world_access/test_handoff.c": {
       "bytes": 47009,
       "sha256": "3e3e07e39c7a6a92fff0ed75b5380208a3f8ba21051586e544ed244b7beb3272"
     },
     "src/world/runtime/execution_children_internal.h": {
-      "bytes": 3970,
-      "sha256": "6c6806ac5317027a2802c4d94b7bb3fc70aa173965d0ee4de9e6a81d46b55fa9"
+      "bytes": 5906,
+      "sha256": "1015bc8d556470005c26ee710a7c02bc1f191b81a6f8719ed8eab465b2bf23f5"
     },
     "tests/world/runtime/world_access/test_execution_children.c": {
       "bytes": 44522,
@@ -23282,8 +23282,8 @@
       "sha256": "3b3ae634d54610a99e8ee3bddb9fc5e2f36fb64242dd8d7142133b280729addb"
     },
     "docs/world/world-execution.md": {
-      "bytes": 7266,
-      "sha256": "89a56b91ce0f0f08119fade75355a496ffa5145b8b8178a4388422c4d2fc1f55"
+      "bytes": 10601,
+      "sha256": "cea7a21fc2f50318297d93280653e325340bd51838d9ffd5da129a5a8f397a48"
     },
     "src/world/runtime/activation_entity_execution_internal.h": {
       "bytes": 1645,
@@ -23330,8 +23330,8 @@
       "sha256": "a7dd45e38e5df0c772471f727ee2fbdb16631ea0e9daa952407b062686762e58"
     },
     "cmake/tests/world_query_controls.cmake": {
-      "bytes": 5077,
-      "sha256": "8c7acfc43f0127cfd0c261aa1354a9fc1220fbe70956cea3a27ff80580285252"
+      "bytes": 9364,
+      "sha256": "7abc03885eb12867d586482e1da1c6d45e40ed091f547bb1a4bb5df707dff35e"
     },
     "tests/world/runtime/world_access/test_kernel_loader_execution.c": {
       "bytes": 23441,
@@ -23342,32 +23342,32 @@
       "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
     },
     "tests/tools/world/test_world_query_controls.py": {
-      "bytes": 55170,
-      "sha256": "28f005549ae736340d84f277d213aedb6180dba76efb894d57b52188912b0d03"
+      "bytes": 76712,
+      "sha256": "91f1c35e0f7d3dd0190ff937b27b8e008341f75fdc079ef7d9dc8692b36bcf97"
     },
     "tests/tools/world/world_query_controls_bundle.json": {
-      "bytes": 16810,
-      "sha256": "15ffafd57287986b40186b11128d06b00b22c4c1e3b42c8fcce43399d7ae8116"
+      "bytes": 50873,
+      "sha256": "5f438eec68be0e1c8364dfbf324158f85d3d198424f2adc1ae95358cbdf03a85"
     },
     "tests/tools/world/world_query_controls_protocol.json": {
-      "bytes": 11797,
-      "sha256": "8e9386933302d6f40f719c7b54c26cd1cfc0f54923896146620a0bda29f43d5d"
+      "bytes": 33175,
+      "sha256": "5300a1f91c9df63f36d662d3d9c38706f3c42b22a9583f5fde276d31801c6d68"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
       "sha256": "877551f32b09cd29ec4c62f79a0e90ba1c12291ad01a13a977b7aa097dd41e69"
     },
     "src/world/runtime/collision/blocks_execution_internal.h": {
-      "bytes": 3408,
-      "sha256": "4baf31792425107c53a3b80fe7079b12b8d2964d690672119baacb922888d9f5"
+      "bytes": 6979,
+      "sha256": "20cacb129b2b508962b84cadfef79c42b93638d085d5cb7cc293ff64632fa048"
     },
     "tests/tools/world/collision_query_inputs.py": {
-      "bytes": 2883,
-      "sha256": "139792707ccb921e3cae9abe3da8e6cbc2cdf3fc555780b8d70613ad76a36e55"
+      "bytes": 8318,
+      "sha256": "c701e18687d0ab0a18b94b42952b12ba8dc3cc87f5daed641580698418eadf69"
     },
     "tests/world/runtime/world_access/test_collision_query_execution.c": {
-      "bytes": 60973,
-      "sha256": "8e0bd2af97fe735de215648b837c9a69ff723608826d287cf9c579663d0cff7c"
+      "bytes": 65064,
+      "sha256": "d80a01f031ba9152dfd2546846606a0f742e7aae45bc4d0664118f3d6253c36a"
     },
     "docs/world/collision/block-values.md": {
       "bytes": 7680,
@@ -23394,8 +23394,8 @@
       "sha256": "f7bdcaf09d7c880cfbe00ae716fe21b815b3082df0b5840deec0e0eb6e34bf8f"
     },
     "docs/world/material-execution.md": {
-      "bytes": 3297,
-      "sha256": "ff93893d12b57317d8033cc651a9cc3590e9b49d9806d619ab2b38ab72031cbf"
+      "bytes": 7321,
+      "sha256": "40392f7b150ec4dd427cc0d00ffc16356ca23c48ab69ed10277d670bb5df428f"
     },
     "src/client/runtime/bootstrap_random_internal.h": {
       "bytes": 3917,
@@ -23412,6 +23412,90 @@
     "tests/core/java/test_random_profile_record_overlap.c": {
       "bytes": 17150,
       "sha256": "24989ad6a8fef641a97d9471e4fca29ab4d557146b02cae80dd206b795856c47"
+    },
+    "src/world/runtime/material_movement_execution_internal.h": {
+      "bytes": 4931,
+      "sha256": "015b6b2bba4b1374567d86314c1551e13b4be4b23940d8206bbceba272f117da"
+    },
+    "src/entity/tick/arrow_base_execution_internal.h": {
+      "bytes": 4542,
+      "sha256": "06d301424a64339763a57988e17b556e53d8543214679a54e77fabd64b7c3162"
+    },
+    "src/world/runtime/collision/entities_execution_internal.h": {
+      "bytes": 5156,
+      "sha256": "676f7924df5b82e1fe9e0fa639645034955f9e52fbd9cdf845c7fff89ddc8d6a"
+    },
+    "tests/world/runtime/world_access/test_material_scanner_execution.c": {
+      "bytes": 23179,
+      "sha256": "de1645d2d89f27f6975ec7bdda43167b25532df96d7b121123ce67e22422a89c"
+    },
+    "src/entity/mob/damage_execution_internal.h": {
+      "bytes": 3917,
+      "sha256": "7baddd5b7978d7566aebedeb087bd94b9e9e812e917410735c8739746173c093"
+    },
+    "src/entity/player/ally_alert_execution_internal.h": {
+      "bytes": 2757,
+      "sha256": "2de2d33aa3022edbae139c156532b10f374932d611a554ed42f695cfa1fa8582"
+    },
+    "src/entity/player/damage_alert_execution_internal.h": {
+      "bytes": 1163,
+      "sha256": "700874bd3567af83baf258ec47100abfeb242538adeee4cebf4efdec309c7d40"
+    },
+    "src/world/chunk/entity_insertion_execution_internal.h": {
+      "bytes": 1502,
+      "sha256": "239ea3db2b581b6fbb63d1ba27c7f2c30c025457f300fb469b3e6044196329dc"
+    },
+    "src/world/runtime/collision/class_entities_execution_internal.h": {
+      "bytes": 1750,
+      "sha256": "3b2ef1dd012e9bf285a39e247a1d645825c003565ac9154b76b4503881378135"
+    },
+    "src/world/runtime/entity_insertion_execution_internal.h": {
+      "bytes": 4235,
+      "sha256": "b03fc13bfb2bdabdaf6448991521f597df15ba482a74315004594185f5e563ee"
+    },
+    "src/world/runtime/raytrace_execution_internal.h": {
+      "bytes": 3121,
+      "sha256": "f29f58b49775095e44f9a48f976d124d047195f5992a2dd5d0cd4ef9f2bef809"
+    },
+    "tests/tools/world/arrow_owned_leaves_inputs.py": {
+      "bytes": 4961,
+      "sha256": "885fc21bbfbd3053e7e5beaa93ec2533b0d4965e0b830e207a8edf369adf9d77"
+    },
+    "tests/tools/world/nearby_owned_inputs.py": {
+      "bytes": 2944,
+      "sha256": "2783dd71deb44d65bb4d87f225fa5061fd18f8e3ef355b1f70f2b7de153910ab"
+    },
+    "tests/world/runtime/world_access/test_arrow_owned_leaves.c": {
+      "bytes": 20355,
+      "sha256": "2580d9bb2cae09d9f4e85aa44a55eb06d0ab88b0280a1802df26bd465637f14c"
+    },
+    "tests/world/runtime/world_access/test_nearby_execution.c": {
+      "bytes": 26595,
+      "sha256": "40e0de12f41785f72b6b144dedefb4ba9eb686e6cd8161e9c50638cd4b1ea594"
+    },
+    "tests/tools/world/entity_insert_inputs.py": {
+      "bytes": 563,
+      "sha256": "648860b69ce13efc39634a04de2f482ea61ea8166ceada17a3b910c3134d0c73"
+    },
+    "tests/tools/world/presentation_capture_inputs.py": {
+      "bytes": 776,
+      "sha256": "164f3a04e5dc9fc09237ca25f14bad86c24071d7831e67c24863ade5c5a43022"
+    },
+    "tests/tools/world/raytrace_owned_inputs.py": {
+      "bytes": 3238,
+      "sha256": "096320dc483b43fe693ed3478a6112bd11257260790492d993db1ffc91c1a18b"
+    },
+    "tests/world/runtime/world_access/test_entity_insert_execution.c": {
+      "bytes": 16716,
+      "sha256": "c79aa9a0903ffdf5574af8769fc26aa3b10e422c8fbb5df8af0086177e8fafc1"
+    },
+    "tests/world/runtime/world_access/test_presentation_capture_execution.c": {
+      "bytes": 14954,
+      "sha256": "ca8ccf2c7e4dce77600b314797fa8c2dfcb3cc22e6590d3eaa1e5ac943d2d499"
+    },
+    "tests/world/runtime/world_access/test_raytrace_execution.c": {
+      "bytes": 20205,
+      "sha256": "7a95b98e2ad1fbcc7a28d0fe203636576e575cb53e4664557d8bdf2d237c9a22"
     }
   },
   "self_metadata_excluded": true,
@@ -38188,6 +38272,427 @@
           },
           "added": [],
           "current_count": 5853
+        }
+      }
+    },
+    {
+      "from_commit": "f732094f3554c0073c293193ea11d6d9338df821",
+      "role": "Owned three-kind material scans with caller-stable diagnostics, explicit defining namespace and independent query/native results, plus the genuine nullable-material control. Current source admissions only; compilation and native outcomes require separate execution. Historical suppliers and observations remain unchanged. No parent Arrow, full gameplay or FPS qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1681980,
+        "sha256": "711f1969b822d956b19b57fe39428a203c05c1758345264029b0bead22908e8e"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "src/world/runtime/material_movement.c": {
+              "bytes": 22629,
+              "sha256": "bac60fd9b7053628edaee6c98c52e9c2b4a0bed0390cd7919bbb12feb1de5766"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 733279,
+              "sha256": "df0f27f007e689fa825a7e379b83070e89b5942e2f440f3358991d274551bbed"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 832281,
+              "sha256": "901b90a4bbb3f5ba8aa2409052d6c94260dabf3858bd9fbdfed0e740ffd08a5a"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 730258,
+              "sha256": "9c8d4a420f3727312064b681541b66064ee9486099afacc76b808907dbf0a3e6"
+            },
+            "cmake/tests/world_query_controls.cmake": {
+              "bytes": 5077,
+              "sha256": "8c7acfc43f0127cfd0c261aa1354a9fc1220fbe70956cea3a27ff80580285252"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 55170,
+              "sha256": "28f005549ae736340d84f277d213aedb6180dba76efb894d57b52188912b0d03"
+            },
+            "tests/tools/world/world_query_controls_bundle.json": {
+              "bytes": 16810,
+              "sha256": "15ffafd57287986b40186b11128d06b00b22c4c1e3b42c8fcce43399d7ae8116"
+            },
+            "tests/tools/world/world_query_controls_protocol.json": {
+              "bytes": 11797,
+              "sha256": "8e9386933302d6f40f719c7b54c26cd1cfc0f54923896146620a0bda29f43d5d"
+            },
+            "tests/tools/world/collision_query_inputs.py": {
+              "bytes": 2883,
+              "sha256": "139792707ccb921e3cae9abe3da8e6cbc2cdf3fc555780b8d70613ad76a36e55"
+            },
+            "tests/world/runtime/world_access/test_collision_query_execution.c": {
+              "bytes": 60973,
+              "sha256": "8e0bd2af97fe735de215648b837c9a69ff723608826d287cf9c579663d0cff7c"
+            },
+            "docs/world/material-execution.md": {
+              "bytes": 3297,
+              "sha256": "ff93893d12b57317d8033cc651a9cc3590e9b49d9806d619ab2b38ab72031cbf"
+            }
+          },
+          "added": [
+            "src/world/runtime/material_movement_execution_internal.h"
+          ],
+          "current_count": 5854
+        }
+      }
+    },
+    {
+      "from_commit": "f732094f3554c0073c293193ea11d6d9338df821",
+      "role": "Current source admissions for owned material scanners and nullable controls, collision and nearby queries, and inherited Arrow base runtime. Compilation and native outcomes require separate execution. Historical suppliers and observations remain unchanged. No parent Arrow, full gameplay or FPS qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1685237,
+        "sha256": "1b1d9c9a4fd862690770c2968d80da5fa82dd764a2166a744ca548dc032fe56e"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "src/entity/movement/environment.c": {
+              "bytes": 21804,
+              "sha256": "bafdecf7510283bf1c9e8da1841b29c5bf3a77c5b09e43032959113bec54b2cb"
+            },
+            "src/entity/tick/environment.c": {
+              "bytes": 31299,
+              "sha256": "c76f696da747f747ca6945a317fd97d2732502276e54b7bddb11e68e12a3387a"
+            },
+            "src/world/runtime/collision/blocks.c": {
+              "bytes": 86765,
+              "sha256": "01ebef6359ebc53f5936360039a69287510f957a8d220241fa9f037243f22546"
+            },
+            "src/world/runtime/collision/entities.c": {
+              "bytes": 23927,
+              "sha256": "cd71b6aa3a94b3eab9d7e6dfbac9f731d85f238ac56eff3ab55adc8655c18a72"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 735128,
+              "sha256": "d8579cc21cf6a43c463917e660092ab326a19a768795d4168632a20a43dfda45"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 834323,
+              "sha256": "070d7ef4a879ebfb1abab07b0922003ad5482b9a9aec4169b09ae3cc563ba180"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 732107,
+              "sha256": "87eaaecfc16064730b4c9da4a9610b7591c6b8ea8c9e576cb8822c5af2b614e3"
+            },
+            "src/entity/tick/execution_internal.h": {
+              "bytes": 11878,
+              "sha256": "379777c714021593f9605bf6dbfe69e35373e0c8898269583568f0b2fe8086b7"
+            },
+            "cmake/tests/world_query_controls.cmake": {
+              "bytes": 5095,
+              "sha256": "a6a6c9fa9a498b18d4b7b65c8ccc5ff14b4ed564edee57c165567e054a5e06dd"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 60030,
+              "sha256": "d3e294d0b5efc2bac6801baa0de177296d3b4150f1f8c8c9984410dd74bfd58a"
+            },
+            "tests/tools/world/world_query_controls_bundle.json": {
+              "bytes": 18325,
+              "sha256": "62fe105b9df87834620eec69fa113e122dc4f8931574ed6662a9ae291f779dc5"
+            },
+            "tests/tools/world/world_query_controls_protocol.json": {
+              "bytes": 12343,
+              "sha256": "33ed8221f8051c78f188caf3d505df8307a6e60fbe181fc486b77ba5d2fdf77c"
+            },
+            "src/world/runtime/collision/blocks_execution_internal.h": {
+              "bytes": 3408,
+              "sha256": "4baf31792425107c53a3b80fe7079b12b8d2964d690672119baacb922888d9f5"
+            },
+            "tests/tools/world/collision_query_inputs.py": {
+              "bytes": 5120,
+              "sha256": "a7f552d091a93ce6c0d4822985c3c7bc0a81cf6f1303c6d993ce27dde920aff9"
+            },
+            "tests/world/runtime/world_access/test_collision_query_execution.c": {
+              "bytes": 64951,
+              "sha256": "c46ae4032a30e7f0bac12a09827e9dc7c916a2fc8f8626f7c12d023dedac23da"
+            },
+            "docs/world/material-execution.md": {
+              "bytes": 3881,
+              "sha256": "3d7d1c6050f45368bfbcd7ed879a5e4299ffc60155a7c6e84d1147aa0018b7fc"
+            }
+          },
+          "added": [
+            "src/entity/tick/arrow_base_execution_internal.h",
+            "src/world/runtime/collision/entities_execution_internal.h",
+            "tests/world/runtime/world_access/test_material_scanner_execution.c"
+          ],
+          "current_count": 5857
+        }
+      }
+    },
+    {
+      "from_commit": "f732094f3554c0073c293193ea11d6d9338df821",
+      "role": "Current source admissions for material scanners, collision and nearby queries, Arrow Base, Ray and Player alert, single-Entity insertion, Living leaves and detailed callback native results, plus file-guard and control registration changes. Compilation and native outcomes require separate execution. Historical suppliers and observations remain unchanged. No full Arrow dispatch, original whole-method or FPS result is inherited.",
+      "previous_metadata": {
+        "bytes": 1689891,
+        "sha256": "d5b4e6981110f9ac38045af86fa46cf94e7e666db4cee9db8cc5a8a757e130a8"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/parity.md": {
+              "bytes": 225909,
+              "sha256": "61033899b9bcc3bbc9ec5d998a3b6e784fffb56796c229b3c3f1e7f6dde2e3c6"
+            },
+            "docs/testing.md": {
+              "bytes": 584630,
+              "sha256": "f9e691e974f1e29f7272a28a4dc089bf4643a9600a07226e825ad903f86f198b"
+            },
+            "src/entity/tick/environment.c": {
+              "bytes": 41434,
+              "sha256": "929defc66bdf65b045d34ff1a346700dd243a7eaa2925e2bb014897535a26279"
+            },
+            "src/world/chunk/entities.c": {
+              "bytes": 12115,
+              "sha256": "b43dcd5e334ed9d7e45aa4eeda05b77a1f8ffc1003cb3f9b9886946405259a07"
+            },
+            "src/world/runtime/collision/class_entities.c": {
+              "bytes": 20554,
+              "sha256": "792cdf1b79d214309e2fde84848d73e07c42a926b90f1a9a6418d5e7dc1e63fd"
+            },
+            "src/world/runtime/entity_publication.c": {
+              "bytes": 45422,
+              "sha256": "9bf8670cebb46013f78f62cd014f87ff397f6b3bd7189ee3e2d70911695f8203"
+            },
+            "src/world/runtime/movement.c": {
+              "bytes": 22632,
+              "sha256": "80e53a8ca1a042a26229cbc83e86a3b23b980d18721b3ede0f1adf337f8c1642"
+            },
+            "src/world/runtime/presentation.c": {
+              "bytes": 9897,
+              "sha256": "76cd8c3db9fadb9690b178f6f4ba3f4b2d1c60ee9df8c86183c271126d013153"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 737996,
+              "sha256": "eaff80e42739dcd2917e51de358067729a0e69329cc78c987f2da78da1751401"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 837762,
+              "sha256": "203dc1fa997fcbf14fbcce642a45dfc416893bc48739725869c00d3624b8da13"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 734975,
+              "sha256": "5230a7c0a449b8b471a1ea284010187c1e37340b816770cd76143796a1556dd6"
+            },
+            "src/world/runtime/raytrace.c": {
+              "bytes": 27970,
+              "sha256": "d33323665aace2dbb151c767dcfd92f6c84e15925e9b7e909d5c152c58880b8e"
+            },
+            "src/world/runtime/raytrace_blocks.c": {
+              "bytes": 9863,
+              "sha256": "ef9042ab821f82d6a3cc0b75a5f16df207b8c65850f8244ff537441789700909"
+            },
+            "src/world/runtime/raytrace_internal.h": {
+              "bytes": 3009,
+              "sha256": "8fda97a75d6ca277633153911ce97e951fb50aa46fc0cf1c23cdb537e467cd0c"
+            },
+            "src/entity/mob/damage.c": {
+              "bytes": 28651,
+              "sha256": "ad80b25b28cb3bb908848bff466fbf1396766418a768aa83dfa2be94cde1e1f4"
+            },
+            "src/entity/player/ally_alert.c": {
+              "bytes": 23211,
+              "sha256": "23d60832fc491edefd282bdec3ad493d6a061523ac4e19bd48a50e9e6a6cf508"
+            },
+            "src/entity/player/damage_alert.c": {
+              "bytes": 4685,
+              "sha256": "19e949c99c9837faf946e4e35611f3bb989f4509e9bb1de42a2b5f50ce82511d"
+            },
+            "tests/tools/world/test_execution_ownership.py": {
+              "bytes": 8205,
+              "sha256": "e00db5dca070917b62c6903ef2e40c06338439c889fc58234974610417c9c2fd"
+            },
+            "src/world/runtime/execution_children_internal.h": {
+              "bytes": 3970,
+              "sha256": "6c6806ac5317027a2802c4d94b7bb3fc70aa173965d0ee4de9e6a81d46b55fa9"
+            },
+            "cmake/tests/world_query_controls.cmake": {
+              "bytes": 5817,
+              "sha256": "33b6f79223f0e7b0aa9b64c5f45bf9e45656fdb8eb09c23f4396fdae39348917"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 64574,
+              "sha256": "fe52416a722002a134c7679dd05a895a6426bf0862fcabcd7c94faf04b53cb04"
+            },
+            "tests/tools/world/world_query_controls_bundle.json": {
+              "bytes": 25981,
+              "sha256": "c5435330b159d2c9a3e4d4f4f90cdc4492aef05e3b2c78677bddab2e69cac95a"
+            },
+            "tests/tools/world/world_query_controls_protocol.json": {
+              "bytes": 15305,
+              "sha256": "0d1bbf1482c9cd8414d0f440e4b11ca588b9d65846a83f8e478011efaa0c3702"
+            },
+            "docs/world/material-execution.md": {
+              "bytes": 5648,
+              "sha256": "351acf5461c65aa828e7a3246ce727b8bb9411321fd9e2ec740ccea6677bcabe"
+            }
+          },
+          "added": [
+            "src/entity/mob/damage_execution_internal.h",
+            "src/entity/player/ally_alert_execution_internal.h",
+            "src/entity/player/damage_alert_execution_internal.h",
+            "src/world/chunk/entity_insertion_execution_internal.h",
+            "src/world/runtime/collision/class_entities_execution_internal.h",
+            "src/world/runtime/entity_insertion_execution_internal.h",
+            "src/world/runtime/raytrace_execution_internal.h",
+            "tests/tools/world/arrow_owned_leaves_inputs.py",
+            "tests/tools/world/nearby_owned_inputs.py",
+            "tests/world/runtime/world_access/test_arrow_owned_leaves.c",
+            "tests/world/runtime/world_access/test_nearby_execution.c"
+          ],
+          "current_count": 5868
+        }
+      }
+    },
+    {
+      "from_commit": "f732094f3554c0073c293193ea11d6d9338df821",
+      "role": "Current source admissions for material scanners, collision and nearby queries, Arrow Base, Ray and Player alert, single-Entity insertion, Living leaves and detailed callback native results, plus file-guard and control registration changes. Compilation and native outcomes require separate execution. Historical suppliers and observations remain unchanged. No full Arrow dispatch, original whole-method or FPS result is inherited.",
+      "previous_metadata": {
+        "bytes": 1697928,
+        "sha256": "93cb78b31685995186062431718eebbd73d1f75b5c4a00c609f6d3934ded7260"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 743974,
+              "sha256": "a50dc2be6bd0fe5ece28a1105d582da44ccaee69bf6d1dd0f516425c754ca652"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 844245,
+              "sha256": "e583103f55373e2bd4d76889e703a4177847c8f7ef28629e7843b5e57b05811f"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 740953,
+              "sha256": "e0fbe4d11b6be5b03086fe716a5db6f90bc906ea028af3e132a41e73ff5de209"
+            },
+            "tests/entity/player/test_ally_alert_ownership.c": {
+              "bytes": 10795,
+              "sha256": "c61d4240326e26de6d8014e7ab9255ec86e5cec46eaf3a9cc51bb97d593d66ac"
+            }
+          },
+          "added": [],
+          "current_count": 5868
+        }
+      }
+    },
+    {
+      "from_commit": "f732094f3554c0073c293193ea11d6d9338df821",
+      "role": "Current source admissions for material scanners, collision and nearby queries, Arrow Base, Ray and Player alert, single-Entity insertion, Living leaves and detailed callback native results, plus file-guard and control registration changes. Compilation and native outcomes require separate execution. Historical suppliers and observations remain unchanged. No full Arrow dispatch, original whole-method or FPS result is inherited.",
+      "previous_metadata": {
+        "bytes": 1699577,
+        "sha256": "9c713d5df5bfc66d0a4955c38a7bd14794b04f89f054bb33ead2627d051fe4de"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 745001,
+              "sha256": "be44da8dde64bf7ca626d5705c753eeac3b0eaea682466f8c7f6dc48c99c7f49"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 845274,
+              "sha256": "0d1e727ccbe247e7da275150897eda88184c90f86217d9c956ebf30afe9b8ab8"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 741980,
+              "sha256": "de95f9bbb8ec76472b9b776755b96f54290d5c50e9edba0dd061d718c3f4d4c4"
+            },
+            "tests/entity/player/test_ally_alert_ownership.c": {
+              "bytes": 11126,
+              "sha256": "61b3df779806214002f4a106af8985c2ebc10e3dd399df34a296e9b17fb76bbc"
+            }
+          },
+          "added": [],
+          "current_count": 5868
+        }
+      }
+    },
+    {
+      "from_commit": "f732094f3554c0073c293193ea11d6d9338df821",
+      "role": "Current source admissions for material scanners, collision and nearby queries, Arrow Base, Ray and Player alert, single-Entity insertion, Living leaves and detailed callback native results, plus file-guard and control registration changes. Compilation and native outcomes require separate execution. Historical suppliers and observations remain unchanged. No full Arrow dispatch, original whole-method or FPS result is inherited.",
+      "previous_metadata": {
+        "bytes": 1701226,
+        "sha256": "5b4a92a0e77d80775a2719f2ff2505c832389d49a1c0a700d1626da2bd7c8700"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/parity.md": {
+              "bytes": 226799,
+              "sha256": "c7e6073537eb35614e225e7621ba86b0f22fc9db4965a7200c507f84fffe6b16"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 746028,
+              "sha256": "57d6e0f335fcf248fd7caae9a3080cb549dac047a027d77e22ed8e5113d9cb9a"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 846303,
+              "sha256": "acf52fbf3f76ad347872a94a0bfbf654a88e0fdb7f1903eb32cd8dd9339dafd4"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 743007,
+              "sha256": "4893251231b14c2d5dc218271e0aafd54e7d40bcc90e9ed001fb9ba7b31b72ae"
+            },
+            "cmake/tests/world_query_controls.cmake": {
+              "bytes": 7206,
+              "sha256": "55ea99d957ecd9741c92bb89633c40cb1b10373220bc635b3b805103d72cb9ca"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 69681,
+              "sha256": "b6de17d6944d1dc4a9ddbdb8ba33a931d9cd8f05d5034862920c693303969ffc"
+            },
+            "tests/tools/world/world_query_controls_bundle.json": {
+              "bytes": 41510,
+              "sha256": "ce95ac236013ba02e6281de3b275e0de0fd695fbe01e154b8e605825c80b2a89"
+            },
+            "tests/tools/world/world_query_controls_protocol.json": {
+              "bytes": 23456,
+              "sha256": "223c458228f390473eb1111dfebe588aca853f9bdb8fe6a292415644ccc4fb94"
+            },
+            "docs/world/material-execution.md": {
+              "bytes": 6396,
+              "sha256": "f7f54a0c756e989281e0884e8b4f34d0e66b474f4a6b6c21cdfb54701f8f48ae"
+            }
+          },
+          "added": [
+            "tests/tools/world/entity_insert_inputs.py",
+            "tests/tools/world/presentation_capture_inputs.py",
+            "tests/tools/world/raytrace_owned_inputs.py",
+            "tests/world/runtime/world_access/test_entity_insert_execution.c",
+            "tests/world/runtime/world_access/test_presentation_capture_execution.c",
+            "tests/world/runtime/world_access/test_raytrace_execution.c"
+          ],
+          "current_count": 5874
+        }
+      }
+    },
+    {
+      "from_commit": "f732094f3554c0073c293193ea11d6d9338df821",
+      "role": "Current source admissions for material scanners, collision and nearby queries, Arrow Base, Ray and Player alert, single-Entity insertion, Living leaves and detailed callback native results, plus file-guard and control registration changes. Compilation and native outcomes require separate execution. Historical suppliers and observations remain unchanged. No full Arrow dispatch, original whole-method or FPS result is inherited.",
+      "previous_metadata": {
+        "bytes": 1705306,
+        "sha256": "c74b54d42862f9f4617a278a529c9f0abe008fb7af41e0375f5ed49eb644ad5c"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/parity.md": {
+              "bytes": 226866,
+              "sha256": "a77b217051b11887f64349c2d27d4a086156f9cb63717e27ea6cb1193ab329f5"
+            },
+            "docs/world/world-execution.md": {
+              "bytes": 7266,
+              "sha256": "89a56b91ce0f0f08119fade75355a496ffa5145b8b8178a4388422c4d2fc1f55"
+            },
+            "docs/world/material-execution.md": {
+              "bytes": 7021,
+              "sha256": "08f29b03fefea97a97e64e0b705f924d91ffc4e65711b98e39ae589e54f4965d"
+            }
+          },
+          "added": [],
+          "current_count": 5874
         }
       }
     }

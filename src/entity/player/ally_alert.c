@@ -1,8 +1,9 @@
-#include "mc/entity/player/ally_alert.h"
 #include "../watcher_payload_internal.h"
+#include "ally_alert_execution_internal.h"
 #include "ally_alert_occurrences_internal.h"
 
 #include "../../item/render/internal.h"
+#include "../../world/runtime/construction_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../../world/runtime/world_access_internal.h"
 #include "../bounds/bounds_internal.h"
@@ -23,6 +24,13 @@
 #error "Player ally alert arithmetic requires strict floating transformations"
 #endif
 
+typedef struct ally_execution {
+    mc_entity_tick_execution *execution;
+    mc_world_runtime_classes *code_classes;
+    mc_world_runtime_execution_code code;
+    mc_world_runtime_execution_result *owned;
+} ally_execution;
+
 struct mc_player_ally_alert_call {
     mc_player_ally_alert_state state;
     mc_player_ally_alert_error error;
@@ -31,7 +39,58 @@ struct mc_player_ally_alert_call {
     mc_world_access_failure receipts[4];
     size_t receipt_count;
     bool player_held, target_held, world_held, query_failed, source_copied;
+    bool execution_owned, scope_created, scope_open, query_returned, completed;
+    mc_entity_tick_execution_world_token world_token;
+    mc_world_storage_status query_status;
+    ally_execution owned;
 };
+
+static bool ally_scope_open(const mc_player_ally_alert_call *c) {
+    if (!c->execution_owned || !c->scope_created)
+        return false;
+    const mc_entity_tick_execution *execution = c->owned.execution;
+    return c->world_token.owner == execution &&
+           c->world_token.slot < MC_ENTITY_TICK_EXECUTION_WORLDS &&
+           execution->world_slots[c->world_token.slot].generation == c->world_token.generation &&
+           execution->world_slots[c->world_token.slot].phase == MC_ENTITY_TICK_EXECUTION_WORLD_OPEN;
+}
+
+static bool ally_result_quiet(const mc_world_runtime_execution_result *owned) {
+    if (owned->selection_ready || owned->root_pending)
+        return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (owned->pending[i].used)
+            return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (owned->closes[i].used)
+            return false;
+    return true;
+}
+
+static bool ally_close(mc_player_ally_alert_call *c, bool completed) {
+    if (!c->execution_owned || !c->scope_created)
+        return completed;
+    if (completed && (c->owned.owned->ownership_status != MC_WORLD_STORAGE_OK ||
+                      !ally_result_quiet(c->owned.owned))) {
+        mc_world_runtime_execution_result_note(
+            c->owned.owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+            "Player ally alert completed result not quiet",
+            (mc_entity_tick_execution_site){"gs", "a", "(Lls;Z)V", 65});
+        completed = false;
+    }
+    /* Exactly ONE real close after the shared body. A consumed non-OK pop is
+     * distinguished only by this created token's Native VALUE phase. */
+    const mc_world_storage_status closed =
+        mc_entity_tick_execution_pop_world(c->owned.execution, &c->world_token, !completed);
+    c->scope_open = ally_scope_open(c);
+    if (closed != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(
+            c->owned.owned, closed, "Player ally alert actual World checked close",
+            (mc_entity_tick_execution_site){"gs", "a", "(Lls;Z)V", 65});
+        return false;
+    }
+    return completed;
+}
 
 static void at(mc_player_ally_alert_call *c, unsigned int pc) {
     c->state.source_pc = pc;
@@ -77,7 +136,9 @@ static bool instance(mc_player_ally_alert_call *c, mc_entity *entity, mc_entity_
     if (entity == NULL)
         return true;
     const mc_entity_class_literal *literal = NULL;
-    if (mc_entity_class_literal_get(c->state.player->classes, kind, &literal) != MC_ENTITY_OK ||
+    if (mc_entity_class_literal_get(c->execution_owned ? c->owned.code_classes->entities
+                                                       : c->state.player->classes,
+                                    kind, &literal) != MC_ENTITY_OK ||
         mc_entity_class_literal_is_assignable_from(literal, entity->class_literal, out) !=
             MC_ENTITY_OK)
         return fail(c, MC_ENTITY_STATE_ERROR, "Player attack actual Class identity");
@@ -173,6 +234,8 @@ static bool owner(mc_player_ally_alert_call *c, mc_entity *wolf, bool *out) {
 }
 
 static bool capture_query(mc_player_ally_alert_call *c) {
+    if (c->execution_owned)
+        return true; /* Actual owned lower captured before projection/release. */
     if (!c->query_failed)
         return true;
     mc_world_nearby_error *e = &c->error.nearby;
@@ -302,6 +365,18 @@ static bool body(mc_player_ally_alert_call *c) {
         return returned(c, 63);
     at(c, 65);
     c->state.world = p->base.world; /* Captured field65 precedes all box work. */
+    if (c->execution_owned) {
+        const mc_world_storage_status captured = mc_entity_tick_execution_push_world(
+            c->owned.execution, c->state.world,
+            (mc_entity_tick_execution_site){"gs", "a", "(Lls;Z)V", 65}, &c->world_token);
+        if (captured != MC_WORLD_STORAGE_OK) {
+            mc_world_runtime_execution_result_note(
+                c->owned.owned, captured, "Player ally alert evaluated World ownership",
+                (mc_entity_tick_execution_site){"gs", "a", "(Lls;Z)V", 65});
+            return false;
+        }
+        c->scope_created = c->scope_open = true;
+    }
     if (c->state.world != NULL) {
         if (!mc_world_runtime_binding_retain(c->state.world))
             return fail(c, MC_ENTITY_BUSY, "Player ally alert actual World occurrence");
@@ -309,8 +384,9 @@ static bool body(mc_player_ally_alert_call *c) {
     }
     at(c, 68);
     const mc_entity_class_literal *wolf_class = NULL;
-    if (mc_entity_class_literal_get(p->classes, MC_ENTITY_CLASS_KIND_WOLF, &wolf_class) !=
-        MC_ENTITY_OK)
+    if (mc_entity_class_literal_get(c->execution_owned ? c->owned.code_classes->entities
+                                                       : p->classes,
+                                    MC_ENTITY_CLASS_KIND_WOLF, &wolf_class) != MC_ENTITY_OK)
         return fail(c, MC_ENTITY_STATE_ERROR, "Player ally alert actual Wolf Class");
     at(c, 100);
     const double x0 = p->base.x, y0 = p->base.y, z0 = p->base.z;
@@ -321,14 +397,16 @@ static bool body(mc_player_ally_alert_call *c) {
     const double z1 = _mm_cvtsd_f64(_mm_add_sd(_mm_set_sd(p->base.z), _mm_set_sd(1.0)));
     mc_entity_bounds *bounds = NULL;
     mc_entity_status status =
-        mc_entity_bounds_pool_get(p->classes, x0, y0, z0, x1, y1, z1, &bounds, &c->error.bounds);
+        mc_entity_bounds_pool_get(c->execution_owned ? c->owned.code_classes->entities : p->classes,
+                                  x0, y0, z0, x1, y1, z1, &bounds, &c->error.bounds);
     c->state.bounds = bounds;
     if (status != MC_ENTITY_OK)
         return fail(c, status, "Player ally alert actual pooled bounds");
     at(c, 112);
     mc_entity_bounds *expanded = NULL;
     status =
-        mc_entity_bounds_expand(p->classes, bounds, 16.0, 4.0, 16.0, &expanded, &c->error.bounds);
+        mc_entity_bounds_expand(c->execution_owned ? c->owned.code_classes->entities : p->classes,
+                                bounds, 16.0, 4.0, 16.0, &expanded, &c->error.bounds);
     c->state.expanded = expanded;
     if (status != MC_ENTITY_OK)
         return fail(c, status, "Player ally alert actual bounds expansion");
@@ -336,14 +414,31 @@ static bool body(mc_player_ally_alert_call *c) {
     if (c->state.world == NULL)
         return null_reference(c, "Player ally alert null captured World receiver");
     mc_world_class_entity_list *wolves = NULL;
-    const mc_world_storage_status queried = mc_world_runtime_class_entities(
-        c->state.world, wolf_class, expanded, &wolves, &c->error.nearby);
+    bool queried;
+    if (c->execution_owned) {
+        queried = mc_world_runtime_class_entities_in_execution(
+            c->owned.execution, c->state.world, c->owned.code, wolf_class, expanded, &wolves,
+            &c->error.nearby, &c->query_status, c->owned.owned);
+        c->query_returned = true; /* Exact C entry return, never a Source-return witness. */
+    } else {
+        c->query_status = mc_world_runtime_class_entities(c->state.world, wolf_class, expanded,
+                                                          &wolves, &c->error.nearby);
+        queried = c->query_status == MC_WORLD_STORAGE_OK;
+    }
     c->state.wolves = wolves;
-    if (queried != MC_WORLD_STORAGE_OK) {
+    if (!queried) {
         c->query_failed = true;
+        if (c->execution_owned && c->owned.owned->ownership_status != MC_WORLD_STORAGE_OK)
+            return false; /* Exact lower/Native channels survive without invented Source cause. */
         (void)fail(c, MC_ENTITY_WORLD_FAILED, "Player ally alert actual Wolf query");
-        (void)capture_query(c);
-        classify_query(c);
+        if (c->execution_owned) {
+            /* Exact current nearby/Math Source classification is a parent join.
+             * Keep its typed frame, do not label an unproved cause Native. */
+            c->error.native_policy = false;
+        } else {
+            (void)capture_query(c);
+            classify_query(c);
+        }
         return false;
     }
     at(c, 120);
@@ -407,8 +502,9 @@ static bool body(mc_player_ally_alert_call *c) {
     return returned(c, 214);
 }
 
-mc_entity_status mc_player_ally_alert_begin(mc_entity *player, mc_entity *target, bool attack,
-                                            mc_player_ally_alert_call **out) {
+static mc_entity_status ally_alert_begin(mc_entity *player, mc_entity *target, bool attack,
+                                         mc_player_ally_alert_call **out,
+                                         const ally_execution *owned) {
     if (out == NULL || *out != NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
     if (player != NULL && (player->classes == NULL || player->classes->source != MC_ENTITY_CLIENT ||
@@ -440,10 +536,60 @@ mc_entity_status mc_player_ally_alert_begin(mc_entity *player, mc_entity *target
                                             .error = &c->error,
                                             .cleanup = &c->cleanup};
     mc_world_nearby_error_init(&c->error.nearby);
+    if (owned != NULL) {
+        c->execution_owned = true;
+        c->owned = *owned;
+    }
     *out = c;
-    (void)body(c);
+    const bool returned = body(c);
+    c->completed = ally_close(c, returned);
     c->state.active = false;
     return c->error.status;
+}
+
+mc_entity_status mc_player_ally_alert_begin(mc_entity *player, mc_entity *target, bool attack,
+                                            mc_player_ally_alert_call **out) {
+    return ally_alert_begin(player, target, attack, out, NULL);
+}
+
+bool mc_player_ally_alert_begin_in_execution(mc_entity_tick_execution *execution,
+                                             mc_world_runtime_classes *code_classes,
+                                             mc_world_runtime_execution_code code,
+                                             mc_entity *player, mc_entity *target, bool attack,
+                                             mc_player_ally_alert_call **out,
+                                             mc_entity_status *status,
+                                             mc_world_runtime_execution_result *owned) {
+    if (owned != NULL)
+        mc_world_runtime_execution_result_init(owned);
+    const mc_entity_tick_execution_site site = {"gs", "a", "(Lls;Z)V", 0};
+    if (execution == NULL || execution->identity != execution || execution->math == NULL ||
+        code_classes == NULL || owned == NULL || out == NULL || *out != NULL || status == NULL) {
+        mc_world_runtime_execution_result_note(owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "Player ally alert execution/code/outputs required",
+                                               site);
+        return false;
+    }
+    const ally_execution descriptor = {execution, code_classes, code, owned};
+    *status = ally_alert_begin(player, target, attack, out, &descriptor);
+    if (*out == NULL) {
+        mc_world_runtime_execution_result_note(
+            owned,
+            *status == MC_ENTITY_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+                                                   : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+            "Player ally alert actual invocation admission", site);
+        return false;
+    }
+    return (*out)->completed && owned->ownership_status == MC_WORLD_STORAGE_OK;
+}
+
+bool mc_player_ally_alert_execution_inspect(const mc_player_ally_alert_call *c,
+                                            mc_player_ally_alert_execution_view *out) {
+    if (c == NULL || !c->execution_owned || out == NULL)
+        return false;
+    *out = (mc_player_ally_alert_execution_view){
+        c->owned.execution, c->owned.owned,    c->world_token, c->scope_created,
+        ally_scope_open(c), c->query_returned, c->completed,   c->query_status};
+    return true;
 }
 
 bool mc_player_ally_alert_inspect(const mc_player_ally_alert_call *c,
@@ -480,6 +626,9 @@ mc_entity_status mc_player_ally_alert_retire(mc_player_ally_alert_call **slot,
     c->cleanup = (mc_player_ally_alert_cleanup){0};
     if (c->state.active)
         return cleanup_failed(c, MC_ENTITY_BUSY, "Player ally alert active retirement", out);
+    if (c->execution_owned && ally_scope_open(c))
+        return cleanup_failed(c, MC_ENTITY_BUSY, "Player ally alert actual owned World still open",
+                              out);
     if (!capture_query(c)) {
         if (out != NULL)
             *out = c->cleanup;
@@ -489,7 +638,9 @@ mc_entity_status mc_player_ally_alert_retire(mc_player_ally_alert_call **slot,
         (c->world_held && c->state.world->persistent_bindings == 0))
         return cleanup_failed(c, MC_ENTITY_STATE_ERROR,
                               "Player ally alert retained owner occurrence metadata", out);
-    mc_entity_classes *classes = c->state.player == NULL ? NULL : c->state.player->classes;
+    mc_entity_classes *classes = c->execution_owned        ? c->owned.code_classes->entities
+                                 : c->state.player == NULL ? NULL
+                                                           : c->state.player->classes;
     const mc_entity_bounds *boxes[] = {c->state.bounds, c->state.expanded};
     const size_t box_count = (size_t)(boxes[0] != NULL) + (size_t)(boxes[1] != NULL);
     for (size_t i = 0; i < sizeof(boxes) / sizeof(*boxes); ++i)

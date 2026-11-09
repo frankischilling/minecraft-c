@@ -6,6 +6,7 @@
 #include "mc/entity/hit_result.h"
 #include "mc/world/runtime/raytrace.h"
 #include "mc/world/storage/source_chunk_loader.h"
+#include "raytrace_execution_internal.h"
 #include "runtime_internal.h"
 
 typedef struct mc_world_raytrace_work {
@@ -20,6 +21,14 @@ typedef struct mc_world_raytrace_work {
     mc_entity_geometry_error geometry;
     mc_entity_bounds_error bounds;
     mc_entity_hit_error hit, hit_cleanup;
+    /* Borrowed parent-frame execution/result, no ownership cycle. */
+    mc_entity_tick_execution *execution;
+    mc_world_runtime_execution_result *owned;
+    mc_world_collision_block_execution_code code;
+    bool query_failed, native_stopped;
+    bool math_failed;
+    mc_math_class_error math_error;
+    mc_math_execution_site math_caller, math_child;
     mc_world_runtime *world;
     mc_world_runtime_classes *classes;
     mc_entity_classes *entities;
@@ -55,5 +64,11 @@ mc_world_raytrace_status mc_world_raytrace_block_can_collide_held(mc_world_raytr
 mc_world_raytrace_status mc_world_raytrace_block_held(mc_world_raytrace_work *, const mc_block *,
                                                       int32_t, int32_t, int32_t, mc_entity_vector *,
                                                       mc_entity_vector *, mc_entity_hit_result **);
+
+bool mc_world_raytrace_owned_continuing(mc_world_raytrace_work *);
+bool mc_world_raytrace_value(mc_world_raytrace_work *, int32_t, int32_t, int32_t, bool, int32_t *,
+                             mc_world_raytrace_site);
+bool mc_world_raytrace_shape(mc_world_raytrace_work *, const mc_block *, int32_t, int32_t, int32_t,
+                             mc_world_raytrace_site);
 
 #endif

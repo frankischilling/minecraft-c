@@ -2,6 +2,7 @@
 #include "blocks_internal.h"
 
 #include "../execution_children_internal.h"
+#include "../tile_entities/execution_internal.h"
 
 #include "../../../block/registry/registry_internal.h"
 #include "../../../block/registry/runtime_internal.h"
@@ -28,27 +29,37 @@
 _Static_assert(FLT_RADIX == 2 && FLT_MANT_DIG == 24 && DBL_MANT_DIG == 53 && FLT_EVAL_METHOD == 0,
                "Block collision requires strict binary32/binary64 evaluation");
 
+/* Borrowed descriptor; all outcomes stay in the actual caller's stable result.
+ * Both source bodies and every carried-Block recursion use this same descriptor.
+ * No World/code inference, caller-scope close, or result forwarding is needed:
+ * another getter is reached only after the previous result is fully empty. */
+typedef struct block_shape_execution {
+    mc_entity_tick_execution *execution;
+    mc_world_collision_block_execution_code code;
+    mc_world_runtime_execution_result *owned;
+} block_shape_execution;
+
 typedef struct block_context {
     mc_world_runtime_classes *code_classes;
     mc_world_runtime *world;
     bool legacy_world;
+    const block_shape_execution *query;
 } block_context;
 
-static mc_world_storage_status block_box_core(mc_world_runtime_classes *code_classes,
-                                              mc_world_runtime *world, bool legacy_world,
-                                              const mc_block *block, int32_t x, int32_t y,
-                                              int32_t z, mc_entity_bounds **out,
-                                              mc_world_collision_error *error);
-static mc_world_storage_status shifted_box_core(mc_world_runtime_classes *code_classes,
-                                                mc_world_runtime *world, bool legacy_world,
-                                                const mc_block *moving, int32_t x, int32_t y,
-                                                int32_t z, int32_t carried_id, float progress,
-                                                int32_t facing, mc_entity_bounds **out,
-                                                mc_world_collision_error *error);
+static mc_world_storage_status
+block_box_core(mc_world_runtime_classes *code_classes, mc_world_runtime *world, bool legacy_world,
+               const mc_block *block, int32_t x, int32_t y, int32_t z, mc_entity_bounds **out,
+               mc_world_collision_error *error, const block_shape_execution *query);
+static mc_world_storage_status
+shifted_box_core(mc_world_runtime_classes *code_classes, mc_world_runtime *world, bool legacy_world,
+                 const mc_block *moving, int32_t x, int32_t y, int32_t z, int32_t carried_id,
+                 float progress, int32_t facing, mc_entity_bounds **out,
+                 mc_world_collision_error *error, const block_shape_execution *query);
 static mc_world_storage_status state_shape_core(mc_world_runtime_classes *code_classes,
                                                 mc_world_runtime *world, bool legacy_world,
                                                 const mc_block *block, int32_t x, int32_t y,
-                                                int32_t z, mc_world_collision_error *error);
+                                                int32_t z, mc_world_collision_error *error,
+                                                const block_shape_execution *query);
 
 static mc_world_storage_status fail(mc_world_collision_error *error, mc_world_storage_status status,
                                     const char *operation) {
@@ -409,10 +420,53 @@ static mc_world_storage_status base_box(const block_context *context, const mc_b
     return pooled(context, "uu", "na", 44, x0, y0, z0, x1, y1, z1, out, error);
 }
 
+/* A completed lower success can be discarded/reinitialized only when NONE
+ * and every actual continuation have drained. Failed getters are never reused.
+ * This is a native continuation condition, independent of the Source status. */
+static bool block_shape_result_empty(const mc_world_runtime_execution_result *owned) {
+    if (owned->selection_ready || owned->root_pending)
+        return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (owned->pending[i].used)
+            return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (owned->closes[i].used)
+            return false;
+    return true;
+}
+
+static bool block_shape_continuing(const block_context *context, mc_world_storage_status status) {
+    if (status != MC_WORLD_STORAGE_OK)
+        return false;
+    if (context->query == NULL)
+        return true;
+    const block_shape_execution *query = context->query;
+    if (query->owned->ownership_status != MC_WORLD_STORAGE_OK)
+        return false;
+    if (!block_shape_result_empty(query->owned)) {
+        mc_world_runtime_execution_result_note(
+            query->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+            "Block shape successful query has outstanding ownership", query->execution->site);
+        return false;
+    }
+    return true;
+}
+
 static bool block_value(const block_context *context, const char *client, const char *server,
                         unsigned int pc, int32_t x, int32_t y, int32_t z, bool is_metadata,
                         int32_t *out, mc_world_collision_error *error) {
     stage(context, error, client, server, pc);
+    if (context->query != NULL) {
+        if (!block_shape_continuing(context, MC_WORLD_STORAGE_OK))
+            return false;
+        const block_shape_execution *query = context->query;
+        const mc_world_storage_status status = mc_world_collision_block_value_in_execution(
+            query->execution, context->world, query->code.chunk, x, y, z, is_metadata, out, error,
+            query->owned);
+        /* The lower captured the actual result before its typed projection.
+         * Never follow scalar output or mutate singleton bounds on native refusal. */
+        return block_shape_continuing(context, status);
+    }
     if (context->legacy_world || context->world == NULL)
         return mc_world_collision_block_value_held(context->world, x, y, z, is_metadata, out,
                                                    error) == MC_WORLD_STORAGE_OK;
@@ -514,9 +568,21 @@ static mc_world_storage_status moving_piston_tile_entity(const block_context *co
     mc_tile_entity *tile_entity = NULL;
     mc_live_tile_entity_error child;
     mc_live_tile_entities_error_init(&child);
+    if (!block_shape_continuing(context, MC_WORLD_STORAGE_OK))
+        return MC_WORLD_STORAGE_OK; /* Native result alone forbids continuation. */
+    const block_shape_execution *query = context->query;
     const mc_world_storage_status status =
-        mc_live_tile_entities_get(context->world, x, y, z, &tile_entity, &child);
-    if (status != MC_WORLD_STORAGE_OK) {
+        query == NULL
+            ? mc_live_tile_entities_get(context->world, x, y, z, &tile_entity, &child)
+            : mc_live_tile_entities_get_in_execution(
+                  query->execution, context->world, query->code.chunk, query->code.tile_registry,
+                  query->code.tile_factory_classes, query->code.lazy_receiver_site, x, y, z,
+                  &tile_entity, &child, query->owned);
+    if (!block_shape_continuing(context, status)) {
+        /* Only the actual lookup's ordinary result hold can be released here.
+         * The caller's selected/pending World and loader rights remain live. */
+        if (tile_entity != NULL)
+            mc_tile_entity_release(tile_entity);
         error->nearby.tile_entity = child;
         error->nearby.query.registry = child.registry;
         error->nearby.query.bytecode = child.bytecode;
@@ -528,9 +594,22 @@ static mc_world_storage_status moving_piston_tile_entity(const block_context *co
         error->nearby.activation_world_bytecode = child.activation_world_bytecode;
         error->nearby.load_bytecode = child.load_bytecode;
         error->nearby.load_builder_bytecode = child.load_builder_bytecode;
+        if (query != NULL && query->owned->selection_ready) {
+            mc_entity_tick_execution_loader_view selected;
+            if (mc_entity_tick_execution_loader_read(query->execution, &query->owned->selection,
+                                                     &selected) &&
+                selected.status != MC_CHUNK_ACQUIRE_OK) {
+                error->nearby.query.source_chunk = selected.failure;
+            } else {
+                error->nearby.query.source_chunk = NULL;
+                mc_world_runtime_execution_result_note(
+                    query->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                    "Block shape TileEntity selected loader view", query->execution->site);
+            }
+        }
         if (child.cause.status != MC_WORLD_STORAGE_OK)
             return cause(error, child.cause);
-        return fail(error, status, child.operation);
+        return status == MC_WORLD_STORAGE_OK ? status : fail(error, status, child.operation);
     }
     if (tile_entity == NULL) {
         *out = NULL;
@@ -569,7 +648,7 @@ static mc_world_storage_status moving_piston_box(const block_context *context,
     mc_tile_entity *tile_entity = NULL;
     const mc_world_storage_status status =
         moving_piston_tile_entity(context, x, y, z, &tile_entity, error);
-    if (status != MC_WORLD_STORAGE_OK)
+    if (!block_shape_continuing(context, status))
         return status;
     if (tile_entity == NULL) {
         *out = NULL;
@@ -614,8 +693,9 @@ static mc_world_storage_status moving_piston_box(const block_context *context,
         result = piston_tile_entity_failure(error, tile_entity_status, &lower);
     else {
         error->piston_bytecode = 58;
-        result = shifted_box_core(context->code_classes, context->world, context->legacy_world,
-                                  moving, x, y, z, carried_id, progress, facing, out, error);
+        result =
+            shifted_box_core(context->code_classes, context->world, context->legacy_world, moving,
+                             x, y, z, carried_id, progress, facing, out, error, context->query);
     }
     mc_tile_entity_release(tile_entity);
     return result;
@@ -836,12 +916,11 @@ static bool block_admit(block_context *context, const mc_block *block,
     return true;
 }
 
-static mc_world_storage_status block_box_core(mc_world_runtime_classes *code_classes,
-                                              mc_world_runtime *world, bool legacy_world,
-                                              const mc_block *block, int32_t x, int32_t y,
-                                              int32_t z, mc_entity_bounds **out,
-                                              mc_world_collision_error *error) {
-    block_context frame_context = {code_classes, world, legacy_world};
+static mc_world_storage_status
+block_box_core(mc_world_runtime_classes *code_classes, mc_world_runtime *world, bool legacy_world,
+               const mc_block *block, int32_t x, int32_t y, int32_t z, mc_entity_bounds **out,
+               mc_world_collision_error *error, const block_shape_execution *query) {
+    block_context frame_context = {code_classes, world, legacy_world, query};
     block_context *const context = &frame_context;
     mc_world_collision_error frame;
     if (error == NULL)
@@ -872,13 +951,13 @@ mc_world_storage_status mc_world_collision_block_box_held(mc_world_runtime *worl
                                                           int32_t y, int32_t z,
                                                           mc_entity_bounds **out,
                                                           mc_world_collision_error *error) {
-    return block_box_core(NULL, world, true, block, x, y, z, out, error);
+    return block_box_core(NULL, world, true, block, x, y, z, out, error, NULL);
 }
 
 mc_world_storage_status mc_world_collision_block_box_in_classes_held(
     mc_world_runtime_classes *code_classes, mc_world_runtime *world, const mc_block *block,
     int32_t x, int32_t y, int32_t z, mc_entity_bounds **out, mc_world_collision_error *error) {
-    return block_box_core(code_classes, world, false, block, x, y, z, out, error);
+    return block_box_core(code_classes, world, false, block, x, y, z, out, error, NULL);
 }
 
 static bool piston_registry_result(const block_context *context, mc_world_collision_error *error,
@@ -901,13 +980,12 @@ static bool piston_registry_result(const block_context *context, mc_world_collis
     return false;
 }
 
-static mc_world_storage_status shifted_box_core(mc_world_runtime_classes *code_classes,
-                                                mc_world_runtime *world, bool legacy_world,
-                                                const mc_block *moving, int32_t x, int32_t y,
-                                                int32_t z, int32_t carried_id, float progress,
-                                                int32_t facing, mc_entity_bounds **out,
-                                                mc_world_collision_error *error) {
-    block_context frame_context = {code_classes, world, legacy_world};
+static mc_world_storage_status
+shifted_box_core(mc_world_runtime_classes *code_classes, mc_world_runtime *world, bool legacy_world,
+                 const mc_block *moving, int32_t x, int32_t y, int32_t z, int32_t carried_id,
+                 float progress, int32_t facing, mc_entity_bounds **out,
+                 mc_world_collision_error *error, const block_shape_execution *query) {
+    block_context frame_context = {code_classes, world, legacy_world, query};
     block_context *const context = &frame_context;
     mc_world_collision_error frame;
     if (error == NULL)
@@ -958,10 +1036,10 @@ static mc_world_storage_status shifted_box_core(mc_world_runtime_classes *code_c
                 else
                     status =
                         block_box_core(context->code_classes, context->world, context->legacy_world,
-                                       carried_block, x, y, z, &bounds, &frame);
+                                       carried_block, x, y, z, &bounds, &frame, context->query);
             }
         }
-        if (status == MC_WORLD_STORAGE_OK && bounds != NULL) {
+        if (block_shape_continuing(context, status) && bounds != NULL) {
             static const mc_registry_direction_field fields[6] = {
                 MC_REGISTRY_DIRECTION_B, MC_REGISTRY_DIRECTION_B, MC_REGISTRY_DIRECTION_C,
                 MC_REGISTRY_DIRECTION_C, MC_REGISTRY_DIRECTION_D, MC_REGISTRY_DIRECTION_D};
@@ -999,7 +1077,7 @@ static mc_world_storage_status shifted_box_core(mc_world_runtime_classes *code_c
                 *coordinates[i] = mc_piston_coordinate_subtract(coordinate, offset);
             }
         }
-        if (status == MC_WORLD_STORAGE_OK)
+        if (block_shape_continuing(context, status))
             *out = bounds;
         else if (bounds != NULL)
             (void)mc_entity_bounds_release(context->code_classes->entities, bounds);
@@ -1015,7 +1093,7 @@ mc_world_collision_piston_shifted_box_held(mc_world_runtime *world, const mc_blo
                                            float progress, int32_t facing, mc_entity_bounds **out,
                                            mc_world_collision_error *error) {
     return shifted_box_core(NULL, world, true, moving, x, y, z, carried_id, progress, facing, out,
-                            error);
+                            error, NULL);
 }
 
 mc_world_storage_status mc_world_collision_piston_shifted_box_in_classes_held(
@@ -1023,7 +1101,7 @@ mc_world_storage_status mc_world_collision_piston_shifted_box_in_classes_held(
     int32_t x, int32_t y, int32_t z, int32_t carried_id, float progress, int32_t facing,
     mc_entity_bounds **out, mc_world_collision_error *error) {
     return shifted_box_core(code_classes, world, false, moving, x, y, z, carried_id, progress,
-                            facing, out, error);
+                            facing, out, error, NULL);
 }
 
 /* Actual ut.a(xp,III)/mz.a(pb,III). This is a singleton Block-field update,
@@ -1036,7 +1114,7 @@ static mc_world_storage_status moving_piston_state_shape(const block_context *co
     mc_tile_entity *tile_entity = NULL;
     mc_world_storage_status status =
         moving_piston_tile_entity(context, x, y, z, &tile_entity, error);
-    if (status != MC_WORLD_STORAGE_OK || tile_entity == NULL)
+    if (!block_shape_continuing(context, status) || tile_entity == NULL)
         return status;
 
     mc_registry_classes *const registry = context->code_classes->registry;
@@ -1077,8 +1155,8 @@ static mc_world_storage_status moving_piston_state_shape(const block_context *co
     error->piston_bytecode = 46;
     stage(context, error, "ut", "mz", 46);
     status = state_shape_core(context->code_classes, context->world, context->legacy_world,
-                              carried_block, x, y, z, error);
-    if (status != MC_WORLD_STORAGE_OK)
+                              carried_block, x, y, z, error, context->query);
+    if (!block_shape_continuing(context, status))
         goto done;
 
     /* Keep the captured carried Block and TileEntity identities; read progress, extending
@@ -1390,8 +1468,9 @@ static mc_world_storage_status state_shape(const block_context *context, mc_bloc
 static mc_world_storage_status state_shape_core(mc_world_runtime_classes *code_classes,
                                                 mc_world_runtime *world, bool legacy_world,
                                                 const mc_block *block, int32_t x, int32_t y,
-                                                int32_t z, mc_world_collision_error *error) {
-    block_context context = {code_classes, world, legacy_world};
+                                                int32_t z, mc_world_collision_error *error,
+                                                const block_shape_execution *query) {
+    block_context context = {code_classes, world, legacy_world, query};
     mc_world_collision_error frame;
     if (error == NULL)
         mc_world_collision_error_init(&frame);
@@ -1417,13 +1496,68 @@ mc_world_storage_status mc_world_collision_block_state_shape_held(mc_world_runti
                                                                   const mc_block *block, int32_t x,
                                                                   int32_t y, int32_t z,
                                                                   mc_world_collision_error *error) {
-    return state_shape_core(NULL, world, true, block, x, y, z, error);
+    return state_shape_core(NULL, world, true, block, x, y, z, error, NULL);
 }
 
 mc_world_storage_status mc_world_collision_block_state_shape_in_classes_held(
     mc_world_runtime_classes *code_classes, mc_world_runtime *world, const mc_block *block,
     int32_t x, int32_t y, int32_t z, mc_world_collision_error *error) {
-    return state_shape_core(code_classes, world, false, block, x, y, z, error);
+    return state_shape_core(code_classes, world, false, block, x, y, z, error, NULL);
+}
+
+/* Native admission is deliberately separate from the entered Source body.
+ * No World active call is entered until a real scalar/Tile query reaches it. */
+static bool block_shape_execution_admit(mc_entity_tick_execution *execution,
+                                        mc_world_runtime_classes *code_classes,
+                                        mc_world_runtime *world, mc_world_storage_status *status,
+                                        mc_world_runtime_execution_result *owned) {
+    if (owned != NULL)
+        mc_world_runtime_execution_result_init(owned);
+    const mc_entity_tick_execution_site site =
+        execution != NULL && execution->identity == execution
+            ? execution->site
+            : (mc_entity_tick_execution_site){NULL, NULL, NULL, -1};
+    if (execution == NULL || code_classes == NULL || status == NULL || owned == NULL) {
+        mc_world_runtime_execution_result_note(owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "Block shape execution/code/status/result required",
+                                               site);
+        return false;
+    }
+    mc_world_access_failure_lease *unused = NULL;
+    const mc_world_storage_status admitted =
+        mc_world_execution_child_lease(execution, world, &unused);
+    if (admitted != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(owned, admitted,
+                                               "Block shape evaluated World ownership", site);
+        return false;
+    }
+    return true;
+}
+
+bool mc_world_collision_block_box_in_classes_in_execution(
+    mc_entity_tick_execution *execution, mc_world_runtime_classes *code_classes,
+    mc_world_runtime *world, mc_world_collision_block_execution_code code, const mc_block *block,
+    int32_t x, int32_t y, int32_t z, mc_entity_bounds **out, mc_world_collision_error *error,
+    mc_world_storage_status *status, mc_world_runtime_execution_result *owned) {
+    if (!block_shape_execution_admit(execution, code_classes, world, status, owned))
+        return false;
+    const block_shape_execution query = {execution, code, owned};
+    *status = block_box_core(code_classes, world, false, block, x, y, z, out, error, &query);
+    const block_context context = {code_classes, world, false, &query};
+    return block_shape_continuing(&context, *status);
+}
+
+bool mc_world_collision_block_state_shape_in_classes_in_execution(
+    mc_entity_tick_execution *execution, mc_world_runtime_classes *code_classes,
+    mc_world_runtime *world, mc_world_collision_block_execution_code code, const mc_block *block,
+    int32_t x, int32_t y, int32_t z, mc_world_collision_error *error,
+    mc_world_storage_status *status, mc_world_runtime_execution_result *owned) {
+    if (!block_shape_execution_admit(execution, code_classes, world, status, owned))
+        return false;
+    const block_shape_execution query = {execution, code, owned};
+    *status = state_shape_core(code_classes, world, false, block, x, y, z, error, &query);
+    const block_context context = {code_classes, world, false, &query};
+    return block_shape_continuing(&context, *status);
 }
 
 /* Selected-box virtual dispatch is intentionally independent of box/e above.
@@ -1566,7 +1700,7 @@ mc_world_storage_status mc_world_collision_block_selected_box_in_classes_held(
     if (code_classes->side != MC_WORLD_INFO_CLIENT)
         return selected_failure(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                 "selected-box client code namespace", false);
-    block_context context = {code_classes, world, false};
+    block_context context = {code_classes, world, false, NULL};
     const mc_block *receiver = block;
     for (;;) {
         if (receiver == NULL)
@@ -1808,7 +1942,7 @@ mc_world_collision_block_contribute_held(mc_world_runtime *world, const mc_block
                                          int32_t y, int32_t z, const mc_entity_bounds *query,
                                          mc_world_reference_list *destination,
                                          mc_world_collision_error *error) {
-    block_context frame_context = {NULL, world, true};
+    block_context frame_context = {NULL, world, true, NULL};
     block_context *const context = &frame_context;
     mc_world_collision_error frame;
     if (error == NULL)

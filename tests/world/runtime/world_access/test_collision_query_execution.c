@@ -965,6 +965,61 @@ static int mg_admission(mg_fixture *s) {
     return 0;
 }
 
+/* Native component input: a genuine already-initialized concrete class accepts
+ * its actual nullable Material argument. No class/entered/owner field is set. */
+static int mg_nullable(mg_fixture *s) {
+    fixture *f = &s->cq.source.game;
+    mc_registry_classes *registry = f->registry[0];
+    mc_block *failed = NULL;
+    unsigned char class_before[sizeof(registry->block_states[MC_BLOCK_GLOWSTONE])];
+    unsigned char profile_before[sizeof(*f->profile)];
+    memcpy(class_before, &registry->block_states[MC_BLOCK_GLOWSTONE], sizeof(class_before));
+    memcpy(profile_before, f->profile, sizeof(profile_before));
+    VERIFY(registry->blocks_phase == MC_REGISTRY_READY && registry->entered == 0 &&
+           registry->initializer == NULL && registry->blocks.m[200] == NULL &&
+           registry->block_states[MC_BLOCK_GLOWSTONE].phase == MC_REGISTRY_READY &&
+           f->providers[0].cache->count == 0 && f->classes[0]->initialized);
+    VERIFY(mc_registry_block_allocate(registry, MC_BLOCK_GLOWSTONE, &failed) == MC_REGISTRY_OK &&
+           failed != NULL && failed->phase == MC_BLOCK_RAW && failed->classes == registry &&
+           failed->kind == MC_BLOCK_GLOWSTONE && registry->entered == 0 &&
+           registry->initializer == NULL &&
+           memcmp(class_before, &registry->block_states[MC_BLOCK_GLOWSTONE],
+                  sizeof(class_before)) == 0);
+    const mc_block_arguments arguments = {.id = 200, .texture = 105, .material = NULL};
+    VERIFY(mc_registry_block_construct(registry, failed, &arguments) == MC_REGISTRY_NULL_REFERENCE);
+    const mc_registry_error constructor_failure = registry->last_error;
+    size_t extent = 0;
+    VERIFY(mc_registry_permanent_extent(registry, failed, &extent) && extent == sizeof(*failed) &&
+           failed->phase == MC_BLOCK_CONSTRUCTION_FAILED && failed->constructor_pc == 148 &&
+           failed->constructor_class != NULL && strcmp(failed->constructor_class, "uu") == 0 &&
+           failed->fields.bA == NULL && failed->fields.bn == 200 &&
+           registry->blocks.m[200] == failed && registry->blocks_phase == MC_REGISTRY_READY &&
+           registry->entered == 0 && registry->initializer == NULL &&
+           constructor_failure.status == MC_REGISTRY_NULL_REFERENCE &&
+           constructor_failure.block_id == 200 && constructor_failure.constructor_pc == 148 &&
+           constructor_failure.constructor_class == failed->constructor_class &&
+           memcmp(class_before, &registry->block_states[MC_BLOCK_GLOWSTONE],
+                  sizeof(class_before)) == 0 &&
+           memcmp(profile_before, f->profile, sizeof(profile_before)) == 0);
+    /* The stored ID200 is an input authored before bootstrap. The getter reads
+     * the actual escaped object's bA; it does not need construction success. */
+    VERIFY(mg_value(s, 8, 66, 8, NULL) == 0 && cq_remember(&s->cq) == 0 && s->calls == 1 &&
+           f->states[0]->data->blocks[cell(8, 66, 8)] == 200);
+    mc_world_runtime_source_construction_state construction;
+    mc_world_source_chunk_loader_state loaded;
+    VERIFY(mc_world_runtime_source_construction_inspect(f->worlds[0], &construction) &&
+           mc_world_source_chunk_loader_inspect(construction.loader, &loaded) &&
+           mg_value(s, 8, 66, 8, NULL) == 0 && s->calls == 2 && cq_loader_same(&s->cq, &loaded) &&
+           f->providers[0].cache->count == 1 && f->providers[0].cache->insertion_count == 1 &&
+           registry->blocks.m[200] == failed && failed->fields.bA == NULL &&
+           failed->phase == MC_BLOCK_CONSTRUCTION_FAILED && failed->constructor_pc == 148 &&
+           registry->blocks_phase == MC_REGISTRY_READY && registry->entered == 0 &&
+           registry->initializer == NULL &&
+           memcmp(class_before, &registry->block_states[MC_BLOCK_GLOWSTONE],
+                  sizeof(class_before)) == 0);
+    return 0;
+}
+
 static int mg_loader_error(mg_fixture *s) {
     fixture *f = &s->cq.source.game;
     mc_world_runtime *world = f->worlds[0];
@@ -1035,7 +1090,7 @@ static int mg_loader_error(mg_fixture *s) {
 
 static bool mg_mode(const char *mode) {
     return strcmp(mode, "material-success") == 0 || strcmp(mode, "material-admission") == 0 ||
-           strcmp(mode, "material-loader-error") == 0;
+           strcmp(mode, "material-nullable") == 0 || strcmp(mode, "material-loader-error") == 0;
 }
 
 static int mg_main(const char *mode, const char *root) {
@@ -1051,6 +1106,7 @@ static int mg_main(const char *mode, const char *root) {
     fflush(stdout);
     const int result = strcmp(mode, "material-success") == 0     ? mg_success(s)
                        : strcmp(mode, "material-admission") == 0 ? mg_admission(s)
+                       : strcmp(mode, "material-nullable") == 0  ? mg_nullable(s)
                                                                  : mg_loader_error(s);
     VERIFY(result == 0 && mc_entity_tick_execution_retire(&s->cq.execution) == MC_WORLD_STORAGE_OK);
     printf("MATERIAL_GET_CASE %s END calls=%zu\n", mode, s->calls);
@@ -1068,7 +1124,10 @@ static int mg_main(const char *mode, const char *root) {
     return 0;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_WORLD_COLLISION_QUERY_MAIN
+#define MC_WORLD_COLLISION_QUERY_MAIN main
+#endif
+int MC_WORLD_COLLISION_QUERY_MAIN(int argc, char **argv) {
     if (argc == 3 && mg_mode(argv[1]))
         return mg_main(argv[1], argv[2]);
     VERIFY(argc == 3 &&

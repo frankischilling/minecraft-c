@@ -211,10 +211,8 @@ mc_world_storage_status mc_entity_tick_execution_capture_receipt(mc_entity_tick_
 mc_world_storage_status mc_entity_tick_execution_release_receipts(mc_entity_tick_execution *);
 mc_world_storage_status mc_entity_tick_execution_retire(mc_entity_tick_execution *);
 
-/* Still OPEN same-body composition; this package does not implement the base,
- * acquisition/activation/projection, damage, ray, Block or nearby joins. */
-bool mc_tick_arrow_base_body_in_execution(mc_entity *, mc_registry_classes *,
-                                          mc_entity_tick_execution *, const mc_entity_tick_limits *,
-                                          mc_entity_tick_error *);
+/* The required Arrow Base frame/result/code interface is declared in
+ * arrow_base_execution_internal.h, after the neutral runtime types are complete.
+ * This neutral owner header does not invent a reduced prototype. */
 
 #endif

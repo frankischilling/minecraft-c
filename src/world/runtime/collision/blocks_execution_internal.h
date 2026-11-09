@@ -51,4 +51,57 @@ mc_world_storage_status mc_world_collision_block_value_in_execution(
     int32_t, int32_t, bool metadata, int32_t *, mc_world_collision_error *,
     mc_world_runtime_execution_result *);
 
+/* Ordinary caller VALUE provenance, not an owner. Registry and factory are
+ * actual independently held defining graphs for the reached Chunk lookup/static
+ * and Tile factory operations. Do not infer either from Block/World/Chunk fields.
+ * NULL borrows are not tested until their actual reached lower static/factory use.
+ * The acquisition bundle passes unchanged to every actual owned kernel call. */
+typedef struct mc_world_collision_block_execution_code {
+    mc_world_runtime_execution_code chunk;
+    mc_registry_classes *tile_registry;
+    mc_world_runtime_classes *tile_factory_classes;
+    mc_entity_tick_execution_site lazy_receiver_site;
+} mc_world_collision_block_execution_code;
+
+/* SAME actual virtual collision-box/state-shape bodies, including carried
+ * MovingPiston recursion. Defining code_classes owns the actual Block Registry
+ * and Entity pool; code independently names reached Tile lookup/factory graphs.
+ * The exact nullable World and mutable Chunk.d are independent Source operands,
+ * never code-owner selectors. No equality between those defining graphs is added.
+ * Caller holds this defining graph, every reached provider/Store/import graph,
+ * and the evaluated nullable World scope before later Source arguments.
+ * code.chunk and code.lazy_receiver_site name actual defining Chunk activation
+ * and lazy lm.d/hi.d receiver loads; these are caller-supplied VALUE provenance.
+ *
+ * Required owned is fresh/stable/disjoint caller-frame result storage; status
+ * is a separate required output. All outputs, scratch and owners are disjoint.
+ * Initialized error scratch is optional and
+ * preserves outer collision PCs as in the held entries. Native preflight
+ * initializes owned ONLY, preserving status/error/out; missing execution/result
+ * never selects legacy. The returned bool is the continuation condition, not
+ * an encoding of Source status. status is assigned only after the actual shared
+ * body returns. Inspect owned first; a raw OK status cannot authorize work.
+ * No entered World call is added for a Source-unused World. Only reached scalar
+ * and Tile getters enter/leave their own exact calls and use the owned kernel.
+ *
+ * Each lower getter captures its actual selection/pending/close result before
+ * typed projection. The one stable result is reused only after complete success
+ * with no selection or live continuation; first failure/native refusal stops
+ * every recursive Source continuation. All native records remain in owned.
+ * Source singleton stores, argument/query order, independent Direction reads,
+ * and actual ordinary Tile/pooled-box hold cleanup remain unchanged. No push,
+ * pop, context/Math retirement, fallback, retry, inference or field repair here.
+ * Existing unjoined import/generation/population/captured-provider lifetime
+ * obligations remain the caller's contract; these entries do not close them.
+ */
+bool mc_world_collision_block_box_in_classes_in_execution(
+    mc_entity_tick_execution *, mc_world_runtime_classes *, mc_world_runtime *,
+    mc_world_collision_block_execution_code, const mc_block *, int32_t, int32_t, int32_t,
+    mc_entity_bounds **, mc_world_collision_error *, mc_world_storage_status *,
+    mc_world_runtime_execution_result *);
+bool mc_world_collision_block_state_shape_in_classes_in_execution(
+    mc_entity_tick_execution *, mc_world_runtime_classes *, mc_world_runtime *,
+    mc_world_collision_block_execution_code, const mc_block *, int32_t, int32_t, int32_t,
+    mc_world_collision_error *, mc_world_storage_status *, mc_world_runtime_execution_result *);
+
 #endif

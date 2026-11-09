@@ -8763,3 +8763,21 @@ records 102.24 seconds. The following deletion/output intervals are 21.26 and
 they are not per-command CPU measurements. Cleanup and both capacity reports
 remain, along with the same compiler, sanitizer and test coverage. A new
 whole-job speed comparison has not been established.
+
+## World execution file guards
+
+The World query controller validates every declared source file before and after
+each child. Within one guard call, `protected()` now hashes each source once,
+checks that hash against its binding, and reuses the validated value in the
+returned map. Executable, helper, metadata and DLL paths outside that source set
+are still hashed separately. Every guard call starts fresh; there is no cache
+across calls. Source files must remain exclusive to the test run.
+
+Four local Windows measurements on the same 5,858-file composition return
+identical 5,860-path maps. Mean guard time falls from 4.6294 to 2.5890 seconds;
+reads fall from 11,717 to 5,860. Normal and optimized Python each pass 34 isolated
+file-tamper checks. This measures the guard, not hosted test duration or FPS.
+The map now contains the validated read rather than a second, unchecked read.
+Neither version provides an atomic filesystem snapshot or detects every
+transient concurrent write. Independent pre/post calls still detect persistent
+changes. Arbitrary files outside the declared source set are not enumerated.

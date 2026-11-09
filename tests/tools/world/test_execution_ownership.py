@@ -97,15 +97,19 @@ def protected(executable):
     source = ROOT/'tests/reference/client/resource_lookup_common/provenance.json'
     entries = json.loads(source.read_text(encoding='utf-8'))['source_files']
     paths = {executable, Path(__file__).resolve()}
+    root = ROOT.resolve(strict=True)
+    validated = {}
     for relative, expected in entries.items():
         path = (ROOT/relative).resolve(strict=True)
-        need(path.is_relative_to(ROOT.resolve(strict=True)), 'Source path outside project')
-        need(pin(path) == expected, 'Stale current source binding: ' + relative)
+        need(path.is_relative_to(root), 'Source path outside project')
+        actual = pin(path)
+        need(actual == expected, 'Stale current source binding: ' + relative)
+        validated[path] = actual
         paths.add(path)
     paths.update(ROOT/'tests/reference/client'/name/'provenance.json' for name in TABLES)
     paths.update(executable.parent.glob('*.dll'))
-    return {str(path): pin(path) for path in sorted(paths)}
-
+    return {str(path): validated[path] if path in validated else pin(path)
+            for path in sorted(paths)}
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)

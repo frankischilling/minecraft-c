@@ -1,3 +1,4 @@
+#include "../tick/arrow_base_execution_internal.h"
 #include "environment_internal.h"
 
 #include "../../block/registry/registry_internal.h"
@@ -135,8 +136,13 @@ static bool world_result(mc_entity_environment_error *e, mc_world_storage_status
 
 static bool liquid_probe(mc_entity *entity, mc_registry_classes *registry, bool water,
                          const mc_world_material_movement_limits *limits, bool *out,
-                         mc_entity_environment_error *e, mc_math_execution *execution) {
+                         mc_entity_environment_error *e, mc_math_execution *execution,
+                         mc_tick_arrow_base_execution *state) {
     mc_world_runtime *const receiver = entity->base.world; /* Source load1 precedes args. */
+    if (!mc_tick_arrow_base_world_begin(
+            state, receiver, (mc_entity_tick_execution_site){"sn", water ? "k_" : "ah", "()Z", 1},
+            MC_TICK_ARROW_BASE_ENVIRONMENT))
+        return false;
     const bool item = water && mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM);
     if (item)
         e->source_class = entity->classes->source == MC_ENTITY_CLIENT ? "hl" : "ez";
@@ -186,21 +192,37 @@ static bool liquid_probe(mc_entity *entity, mc_registry_classes *registry, bool 
     if (!namespace_ok(entity, receiver, registry, e, world_pc))
         goto leave;
     bool value;
-    const mc_world_storage_status status =
-        water ? mc_world_runtime_material_accelerate_in_execution(
-                    receiver, query, material, entity, limits, &value, &e->material, execution)
-              : mc_world_runtime_contains_material_in_execution(receiver, query, material, limits,
-                                                                &value, &e->material, execution);
-    if (world_result(e, status, receiver, world_pc)) {
+    if (state != NULL) {
+        const bool scanned = mc_world_runtime_material_scan_in_execution(
+            state->execution, state->code_classes, receiver, state->code, query, material,
+            water ? entity : NULL,
+            water ? MC_WORLD_MATERIAL_SCAN_ACCELERATE : MC_WORLD_MATERIAL_SCAN_MATCH, limits,
+            &value, &e->material, &state->scan, state->owned);
+        state->child_returned = true;
+        if (!scanned) {
+            if (state->owned->ownership_status == MC_WORLD_STORAGE_OK)
+                (void)world_result(e, e->material.status, receiver, world_pc);
+            goto leave;
+        }
         *out = value;
         completed = true;
+    } else {
+        const mc_world_storage_status status =
+            water ? mc_world_runtime_material_accelerate_in_execution(
+                        receiver, query, material, entity, limits, &value, &e->material, execution)
+                  : mc_world_runtime_contains_material_in_execution(
+                        receiver, query, material, limits, &value, &e->material, execution);
+        if (world_result(e, status, receiver, world_pc)) {
+            *out = value;
+            completed = true;
+        }
     }
 leave:
     if (second != NULL)
         mc_entity_bounds_release(entity->classes, second);
     if (first != NULL)
         mc_entity_bounds_release(entity->classes, first);
-    return completed;
+    return mc_tick_arrow_base_world_end(state, completed);
 }
 
 static mc_entity_status liquid(mc_entity *entity, mc_registry_classes *registry, bool water,
@@ -215,7 +237,7 @@ static mc_entity_status liquid(mc_entity *entity, mc_registry_classes *registry,
             entity->classes->source == MC_ENTITY_CLIENT ? MC_REGISTRY_CLIENT : MC_REGISTRY_SERVER,
             entity->classes->profile, &e.registry);
         if (registry_result(&e, held, 0)) {
-            completed = liquid_probe(entity, registry, water, limits, &value, &e, NULL);
+            completed = liquid_probe(entity, registry, water, limits, &value, &e, NULL, NULL);
             /* Exact native borrow retirement, including an admitted synchronous
              * initializer flow. This does not initialize or replace a class. */
             if (!mc_registry_runtime_borrow_release(registry)) {
@@ -236,7 +258,11 @@ static mc_entity_status liquid(mc_entity *entity, mc_registry_classes *registry,
 static mc_entity_status liquid_held_in_execution(mc_entity *entity, mc_registry_classes *registry,
                                                  bool water, mc_math_execution *execution,
                                                  const mc_world_material_movement_limits *limits,
-                                                 bool *out, mc_entity_environment_error *e) {
+                                                 bool *out, mc_entity_environment_error *e,
+                                                 mc_tick_arrow_base_execution *state,
+                                                 bool *continued) {
+    if (continued != NULL)
+        *continued = false;
     if (e == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
     mc_entity_environment_error_init(e);
@@ -255,10 +281,15 @@ static mc_entity_status liquid_held_in_execution(mc_entity *entity, mc_registry_
     else {
         e->source_class = "sn";
         bool value;
-        if (liquid_probe(entity, registry, water, limits, &value, e, execution))
+        const bool completed =
+            liquid_probe(entity, registry, water, limits, &value, e, execution, state);
+        if (continued != NULL)
+            *continued = completed;
+        if (completed)
             *out = value;
     }
-    if (e->status == MC_ENTITY_OK)
+    if (e->status == MC_ENTITY_OK &&
+        (state == NULL || state->owned->ownership_status == MC_WORLD_STORAGE_OK))
         mc_entity_environment_error_init(e);
     return e->status;
 }
@@ -266,13 +297,36 @@ static mc_entity_status liquid_held_in_execution(mc_entity *entity, mc_registry_
 mc_entity_status mc_entity_environment_water_held_in_execution(
     mc_entity *entity, mc_registry_classes *registry, mc_math_execution *execution,
     const mc_world_material_movement_limits *limits, bool *out, mc_entity_environment_error *e) {
-    return liquid_held_in_execution(entity, registry, true, execution, limits, out, e);
+    return liquid_held_in_execution(entity, registry, true, execution, limits, out, e, NULL, NULL);
 }
 
 mc_entity_status mc_entity_environment_lava_held_in_execution(
     mc_entity *entity, mc_registry_classes *registry, mc_math_execution *execution,
     const mc_world_material_movement_limits *limits, bool *out, mc_entity_environment_error *e) {
-    return liquid_held_in_execution(entity, registry, false, execution, limits, out, e);
+    return liquid_held_in_execution(entity, registry, false, execution, limits, out, e, NULL, NULL);
+}
+
+bool mc_entity_environment_liquid_in_tick_execution(mc_entity *entity,
+                                                    mc_registry_classes *registry, bool water,
+                                                    mc_tick_arrow_base_execution *state,
+                                                    const mc_world_material_movement_limits *limits,
+                                                    bool *out, mc_entity_environment_error *error) {
+    if (state == NULL)
+        return false;
+    if (state->execution == NULL || state->execution->math == NULL || state->owned == NULL ||
+        error == NULL) {
+        mc_world_runtime_execution_result_note(state->owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "Arrow Base liquid required execution/result/error",
+                                               state->receiver_site);
+        return false; /* Required owned entry never chooses the legacy branch. */
+    }
+    bool completed = false;
+    const mc_entity_status status = liquid_held_in_execution(
+        entity, registry, water, state->execution->math, limits, out, error, state, &completed);
+    /* Preserve the exact shared probe/checked-close bool. A raw OK status and
+     * ownership channel never reconstruct a discarded continuation result. */
+    return completed && status == MC_ENTITY_OK &&
+           state->owned->ownership_status == MC_WORLD_STORAGE_OK;
 }
 
 mc_entity_status mc_entity_environment_water(mc_entity *entity, mc_registry_classes *registry,

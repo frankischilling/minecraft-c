@@ -1,6 +1,115 @@
+#include "../../world/runtime/execution_children_internal.h"
 #include "../mob/tick/internal.h"
 #include "../watcher_payload_internal.h"
+#include "arrow_base_execution_internal.h"
 #include "tick_internal.h"
+
+void mc_tick_arrow_base_execution_init(mc_tick_arrow_base_execution *state,
+                                       mc_entity_tick_execution *execution,
+                                       mc_world_runtime_classes *code_classes,
+                                       mc_world_runtime_execution_code code,
+                                       mc_world_runtime_execution_result *owned) {
+    if (state != NULL)
+        *state = (mc_tick_arrow_base_execution){
+            .execution = execution, .code_classes = code_classes, .code = code, .owned = owned};
+    mc_world_runtime_execution_result_init(owned);
+}
+
+static bool base_result_empty(const mc_world_runtime_execution_result *owned) {
+    if (owned->selection_ready || owned->root_pending)
+        return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (owned->pending[i].used)
+            return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (owned->closes[i].used)
+            return false;
+    return true;
+}
+
+bool mc_tick_arrow_base_world_begin(mc_tick_arrow_base_execution *state, mc_world_runtime *world,
+                                    mc_entity_tick_execution_site site,
+                                    mc_tick_arrow_base_child child) {
+    if (state == NULL)
+        return true;
+    if (state->world_open || state->owned->ownership_status != MC_WORLD_STORAGE_OK ||
+        !base_result_empty(state->owned)) {
+        mc_world_runtime_execution_result_note(state->owned, MC_WORLD_STORAGE_BUSY,
+                                               "Arrow Base prior World/query not drained", site);
+        return false;
+    }
+    state->receiver_site = site;
+    state->child = child;
+    state->child_returned = false;
+    state->scan = (mc_world_material_scan_query){0};
+    const mc_world_storage_status status =
+        mc_entity_tick_execution_push_world(state->execution, world, site, &state->world);
+    if (status != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(state->owned, status,
+                                               "Arrow Base evaluated World ownership", site);
+        return false;
+    }
+    state->world_open = true;
+    state->close_attempted = false;
+    return true;
+}
+
+bool mc_tick_arrow_base_world_end(mc_tick_arrow_base_execution *state, bool completed) {
+    if (state == NULL)
+        return completed;
+    if (!state->world_open || state->close_attempted)
+        return false;
+    if (completed && (state->owned->ownership_status != MC_WORLD_STORAGE_OK ||
+                      !base_result_empty(state->owned))) {
+        mc_world_runtime_execution_result_note(state->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                               "Arrow Base completed query not drained",
+                                               state->receiver_site);
+        completed = false;
+    }
+    state->close_attempted = true;
+    const mc_world_storage_status status =
+        mc_entity_tick_execution_pop_world(state->execution, &state->world, !completed);
+    if (status != MC_WORLD_STORAGE_OK) {
+        /* A pop can consume its token and still return a Native error. Read
+         * ONLY this created token's VALUE phase/generation, even if another
+         * checked producer invariant currently refuses. Never select a scope. */
+        state->world_open = state->world.owner == state->execution &&
+                            state->world.slot < MC_ENTITY_TICK_EXECUTION_WORLDS &&
+                            state->execution->world_slots[state->world.slot].generation ==
+                                state->world.generation &&
+                            state->execution->world_slots[state->world.slot].phase ==
+                                MC_ENTITY_TICK_EXECUTION_WORLD_OPEN;
+        mc_world_runtime_execution_result_note(
+            state->owned, status, "Arrow Base actual World checked close", state->receiver_site);
+        return false;
+    }
+    state->world_open = false;
+    if (completed)
+        state->child = MC_TICK_ARROW_BASE_NO_CHILD;
+    return completed;
+}
+
+/* This observes only the owned child's explicit Native capture channel. Never
+ * dereference an unprotected outward receipt to classify a failed capture. */
+static bool base_world_child_returned(mc_tick_arrow_base_execution *state,
+                                      mc_world_storage_status status) {
+    if (state == NULL)
+        return true;
+    state->child_returned = true;
+    state->child_status = status;
+    if (state->owned->ownership_status != MC_WORLD_STORAGE_OK)
+        return false; /* The actual detailed SDK already recorded the first refusal. */
+    if (state->execution->capture_pending) {
+        const mc_entity_tick_execution_error capture = state->execution->capture;
+        mc_world_runtime_execution_result_note(
+            state->owned,
+            capture.status == MC_WORLD_STORAGE_OK ? MC_WORLD_STORAGE_UNSUPPORTED_STATE
+                                                  : capture.status,
+            "Arrow Base World child pending capture", state->receiver_site);
+        return false;
+    }
+    return state->owned->ownership_status == MC_WORLD_STORAGE_OK;
+}
 
 static void base_at(mc_entity_tick_error *e, unsigned int pc) {
     e->source_class = "sn";
@@ -37,22 +146,35 @@ static bool work(mc_entity_tick_error *e, unsigned int pc) {
     return true;
 }
 
-static bool remote(mc_entity *entity, bool *out, mc_entity_tick_error *e, unsigned int pc) {
+static bool remote(mc_entity *entity, bool *out, mc_entity_tick_error *e, unsigned int pc,
+                   mc_tick_arrow_base_execution *state) {
     mc_world_runtime *world = entity->base.world;
+    if (!mc_tick_arrow_base_world_begin(
+            state, world, (mc_entity_tick_execution_site){"sn", "U", "()V", (int)pc - 3},
+            MC_TICK_ARROW_BASE_REMOTE))
+        return false;
     if (world == NULL)
-        return mc_tick_null(e, "Tick null World B receiver", pc);
+        return mc_tick_arrow_base_world_end(state,
+                                            mc_tick_null(e, "Tick null World B receiver", pc));
     *out = world->fields.B;
-    return true;
+    return mc_tick_arrow_base_world_end(state, true);
 }
 
 static bool particle(mc_world_runtime *world, const mc_registry_string *name, double x, double y,
                      double z, double vx, double vy, double vz, mc_entity_tick_error *e,
-                     unsigned int pc) {
+                     unsigned int pc, mc_tick_arrow_base_execution *state) {
     if (world == NULL)
-        return mc_tick_null(e, "Tick null World particle receiver", pc);
-    return mc_tick_world(
-        e, mc_world_runtime_particle(world, name, x, y, z, vx, vy, vz, &e->world.presentation),
-        "Tick actual World particle", pc);
+        return mc_tick_arrow_base_world_end(
+            state, mc_tick_null(e, "Tick null World particle receiver", pc));
+    const mc_world_storage_status status =
+        state == NULL
+            ? mc_world_runtime_particle(world, name, x, y, z, vx, vy, vz, &e->world.presentation)
+            : mc_world_runtime_particle_detailed_in_execution(state->execution, world, name, x, y,
+                                                              z, vx, vy, vz, state->receiver_site,
+                                                              &e->world.presentation, state->owned);
+    const bool completed = base_world_child_returned(state, status) &&
+                           mc_tick_world(e, status, "Tick actual World particle", pc);
+    return mc_tick_arrow_base_world_end(state, completed);
 }
 
 static bool math_ready(mc_math_execution *execution, const char *method, const char *descriptor,
@@ -77,7 +199,7 @@ static bool math_ready(mc_math_execution *execution, const char *method, const c
 }
 
 static bool splash(mc_entity *entity, mc_registry_classes *classes, mc_entity_tick_error *e,
-                   mc_math_execution *execution) {
+                   mc_math_execution *execution, mc_tick_arrow_base_execution *state) {
     base_at(e, 138);
     if (!mc_tick_fp(e, 110))
         return false;
@@ -95,6 +217,10 @@ static bool splash(mc_entity *entity, mc_registry_classes *classes, mc_entity_ti
     if (volume > 1.0f)
         volume = 1.0f;
     mc_world_runtime *sound_world = entity->base.world;
+    if (!mc_tick_arrow_base_world_begin(state, sound_world,
+                                        (mc_entity_tick_execution_site){"sn", "U", "()V", 154},
+                                        MC_TICK_ARROW_BASE_SOUND))
+        return false;
     const mc_registry_string *name = NULL;
     if (!literal(entity, classes, "random.splash", &name, e, 158))
         return false;
@@ -104,10 +230,17 @@ static bool splash(mc_entity *entity, mc_registry_classes *classes, mc_entity_ti
     const float pitch = mc_tick_fadd(1.0f, mc_tick_fmul(mc_tick_fsub(first, second), .4f));
     base_at(e, 181);
     if (sound_world == NULL)
-        return mc_tick_null(e, "Tick null World splash sound receiver", 181);
-    if (!mc_tick_world(
-            e, mc_world_runtime_entity_sound(sound_world, entity, name, volume, pitch, &e->world),
-            "Tick actual splash sound", 181))
+        return mc_tick_arrow_base_world_end(
+            state, mc_tick_null(e, "Tick null World splash sound receiver", 181));
+    const mc_world_storage_status status =
+        state == NULL
+            ? mc_world_runtime_entity_sound(sound_world, entity, name, volume, pitch, &e->world)
+            : mc_world_runtime_entity_sound_detailed_in_execution(
+                  state->execution, sound_world, entity, name, volume, pitch, state->receiver_site,
+                  &e->world, state->owned);
+    const bool sounded = base_world_child_returned(state, status) &&
+                         mc_tick_world(e, status, "Tick actual splash sound", 181);
+    if (!mc_tick_arrow_base_world_end(state, sounded))
         return false;
     base_at(e, 188);
     if (entity->bounds == NULL)
@@ -138,6 +271,11 @@ static bool splash(mc_entity *entity, mc_registry_classes *classes, mc_entity_ti
             const float oz =
                 mc_tick_fmul(mc_tick_fsub(mc_tick_fmul(draw, 2.0f), 1.0f), entity->base.width);
             mc_world_runtime *world = entity->base.world;
+            if (!mc_tick_arrow_base_world_begin(
+                    state, world,
+                    (mc_entity_tick_execution_site){"sn", "U", "()V", kind == 0 ? 250 : 362},
+                    MC_TICK_ARROW_BASE_PARTICLE))
+                return false;
             if (!literal(entity, classes, kind == 0 ? "bubble" : "splash", &name, e,
                          kind == 0 ? 253u : 365u))
                 return false;
@@ -154,7 +292,7 @@ static bool splash(mc_entity *entity, mc_registry_classes *classes, mc_entity_ti
             const double velocity_z = entity->base.velocity_z;
             base_at(e, kind == 0 ? 299u : 399u);
             if (!particle(world, name, x, y, z, velocity_x, velocity_y, velocity_z, e,
-                          e->base_bytecode))
+                          e->base_bytecode, state))
                 return false;
             index = mc_java_i32_add(index, 1);
         }
@@ -204,7 +342,7 @@ static bool void_damage(mc_entity *entity, mc_registry_classes *classes, mc_math
 
 static bool base_body(mc_entity *entity, mc_registry_classes *classes, mc_math_classes *math,
                       const mc_entity_tick_limits *limits, mc_entity_tick_error *e,
-                      mc_math_execution *execution) {
+                      mc_math_execution *execution, mc_tick_arrow_base_execution *state) {
     base_at(e, 1);
     mc_entity *rider = entity->base.aH;
     if (rider != NULL) {
@@ -229,17 +367,29 @@ static bool base_body(mc_entity *entity, mc_registry_classes *classes, mc_math_c
     entity->base.aU = entity->base.yaw;
     bool water;
     base_at(e, 81);
-    const mc_entity_status water_status =
-        execution == NULL ? mc_entity_environment_water(entity, classes,
-                                                        limits == NULL ? NULL : &limits->material,
-                                                        &water, &e->environment)
-                          : mc_entity_environment_water_held_in_execution(
-                                entity, classes, execution,
-                                limits == NULL ? NULL : &limits->material, &water, &e->environment);
-    if (!mc_tick_effect(e, water_status, "Tick actual water virtual", 81))
-        return false;
+    if (state != NULL) {
+        if (!mc_entity_environment_liquid_in_tick_execution(
+                entity, classes, true, state, limits == NULL ? NULL : &limits->material, &water,
+                &e->environment)) {
+            if (state->owned->ownership_status == MC_WORLD_STORAGE_OK)
+                (void)mc_tick_effect(e, e->environment.status, "Tick actual water virtual", 81);
+            return false;
+        }
+    } else {
+        const mc_entity_status water_status =
+            execution == NULL
+                ? mc_entity_environment_water(entity, classes,
+                                              limits == NULL ? NULL : &limits->material, &water,
+                                              &e->environment)
+                : mc_entity_environment_water_held_in_execution(
+                      entity, classes, execution, limits == NULL ? NULL : &limits->material, &water,
+                      &e->environment);
+        if (!mc_tick_effect(e, water_status, "Tick actual water virtual", 81))
+            return false;
+    }
     if (water) {
-        if (!entity->base.bx && !entity->base.private_c && !splash(entity, classes, e, execution))
+        if (!entity->base.bx && !entity->base.private_c &&
+            !splash(entity, classes, e, execution, state))
             return false;
         entity->base.bk = 0.0f;
         entity->base.bx = true;
@@ -248,7 +398,7 @@ static bool base_body(mc_entity *entity, mc_registry_classes *classes, mc_math_c
         entity->base.bx = false;
     bool is_remote;
     base_at(e, 435);
-    if (!remote(entity, &is_remote, e, 435))
+    if (!remote(entity, &is_remote, e, 435, state))
         return false;
     if (is_remote)
         entity->base.bv = 0;
@@ -268,15 +418,26 @@ static bool base_body(mc_entity *entity, mc_registry_classes *classes, mc_math_c
     }
     bool lava;
     base_at(e, 516);
-    const mc_entity_status lava_status =
-        execution == NULL
-            ? mc_entity_environment_lava(entity, classes, limits == NULL ? NULL : &limits->material,
-                                         &lava, &e->environment)
-            : mc_entity_environment_lava_held_in_execution(
-                  entity, classes, execution, limits == NULL ? NULL : &limits->material, &lava,
-                  &e->environment);
-    if (!mc_tick_effect(e, lava_status, "Tick actual lava virtual", 516))
-        return false;
+    if (state != NULL) {
+        if (!mc_entity_environment_liquid_in_tick_execution(
+                entity, classes, false, state, limits == NULL ? NULL : &limits->material, &lava,
+                &e->environment)) {
+            if (state->owned->ownership_status == MC_WORLD_STORAGE_OK)
+                (void)mc_tick_effect(e, e->environment.status, "Tick actual lava virtual", 516);
+            return false;
+        }
+    } else {
+        const mc_entity_status lava_status =
+            execution == NULL
+                ? mc_entity_environment_lava(entity, classes,
+                                             limits == NULL ? NULL : &limits->material, &lava,
+                                             &e->environment)
+                : mc_entity_environment_lava_held_in_execution(
+                      entity, classes, execution, limits == NULL ? NULL : &limits->material, &lava,
+                      &e->environment);
+        if (!mc_tick_effect(e, lava_status, "Tick actual lava virtual", 516))
+            return false;
+    }
     if (lava) {
         base_at(e, 523);
         if (!lava_damage(entity, classes, math, e))
@@ -291,7 +452,7 @@ static bool base_body(mc_entity *entity, mc_registry_classes *classes, mc_math_c
             return false;
     }
     base_at(e, 545);
-    if (!remote(entity, &is_remote, e, 545))
+    if (!remote(entity, &is_remote, e, 545, state))
         return false;
     if (!is_remote) {
         base_at(e, 565);
@@ -336,7 +497,7 @@ static bool drowning_particles(mc_entity *entity, mc_registry_classes *classes,
         const double vx = entity->base.velocity_x, vy = entity->base.velocity_y,
                      vz = entity->base.velocity_z;
         living_at(e, 237);
-        if (!particle(world, name, x, y, z, vx, vy, vz, e, 237))
+        if (!particle(world, name, x, y, z, vx, vy, vz, e, 237, NULL))
             return false;
     }
     return true;
@@ -380,7 +541,7 @@ static bool death_particles(mc_entity *entity, mc_registry_classes *classes,
                          mc_tick_widen(mc_tick_fmul(mc_tick_fmul(draw, entity->base.width), 2.0f))),
             mc_tick_widen(entity->base.width));
         living_at(e, 489);
-        if (!particle(world, name, x, y, z, velocity[0], velocity[1], velocity[2], e, 489))
+        if (!particle(world, name, x, y, z, velocity[0], velocity[1], velocity[2], e, 489, NULL))
             return false;
     }
     return true;
@@ -525,7 +686,7 @@ static bool living_body(mc_entity *entity, mc_registry_classes *classes, mc_math
         return mc_tick_fail(e, MC_ENTITY_STATE_ERROR, "Living tick represented embedded fields", 0);
     fields->W = fields->X;
     living_at(e, 9);
-    if (!base_body(entity, classes, math, limits, e, NULL))
+    if (!base_body(entity, classes, math, limits, e, NULL, NULL))
         return false;
     living_at(e, 19);
     if (entity->random == NULL)
@@ -564,7 +725,7 @@ static bool living_body(mc_entity *entity, mc_registry_classes *classes, mc_math
     else {
         bool is_remote;
         living_at(e, 81);
-        if (!remote(entity, &is_remote, e, 81))
+        if (!remote(entity, &is_remote, e, 81, NULL))
             return false;
         if (is_remote)
             entity->base.bv = 0;
@@ -642,7 +803,7 @@ static mc_entity_status run(mc_entity *entity, mc_registry_classes *classes, mc_
         if (living)
             (void)living_body(entity, classes, math, limits, &frame, NULL);
         else
-            (void)base_body(entity, classes, math, limits, &frame, NULL);
+            (void)base_body(entity, classes, math, limits, &frame, NULL, NULL);
         mc_entity_release(entity);
     }
     return mc_tick_finish(&frame, out);
@@ -681,12 +842,12 @@ bool mc_tick_item_base_body(mc_entity *entity, mc_registry_classes *classes,
                             const mc_entity_tick_limits *limits, mc_entity_tick_error *error) {
     error->max_particle_work =
         limits == NULL ? MC_ENTITY_TICK_DEFAULT_PARTICLE_WORK : limits->max_particle_work;
-    return base_body(entity, classes, NULL, limits, error, NULL);
+    return base_body(entity, classes, NULL, limits, error, NULL, NULL);
 }
 
-bool mc_tick_arrow_base_body(mc_entity *entity, mc_registry_classes *classes,
-                             mc_math_execution *execution, const mc_entity_tick_limits *limits,
-                             mc_entity_tick_error *error) {
+static bool arrow_base_body_run(mc_entity *entity, mc_registry_classes *classes,
+                                mc_math_execution *execution, const mc_entity_tick_limits *limits,
+                                mc_entity_tick_error *error, mc_tick_arrow_base_execution *state) {
     if (!mc_entity_has_arrow(entity))
         return mc_tick_fail(error, MC_ENTITY_STATE_ERROR, "Tick actual client Arrow base owner", 0);
     if (entity->phase != MC_ENTITY_READY)
@@ -698,12 +859,47 @@ bool mc_tick_arrow_base_body(mc_entity *entity, mc_registry_classes *classes,
                             "Tick Arrow private Math execution storage", 0);
     error->max_particle_work =
         limits == NULL ? MC_ENTITY_TICK_DEFAULT_PARTICLE_WORK : limits->max_particle_work;
-    return base_body(entity, classes, NULL, limits, error, execution);
+    if (state != NULL)
+        state->body_entered = true;
+    return base_body(entity, classes, NULL, limits, error, execution, state);
+}
+
+bool mc_tick_arrow_base_body(mc_entity *entity, mc_registry_classes *classes,
+                             mc_math_execution *execution, const mc_entity_tick_limits *limits,
+                             mc_entity_tick_error *error) {
+    return arrow_base_body_run(entity, classes, execution, limits, error, NULL);
+}
+
+bool mc_tick_arrow_base_body_in_execution(mc_entity *entity, mc_registry_classes *classes,
+                                          mc_tick_arrow_base_execution *state,
+                                          const mc_entity_tick_limits *limits,
+                                          mc_entity_tick_error *error) {
+    if (state == NULL)
+        return false;
+    const mc_entity_tick_execution_site site = {"sn", "U", "()V", 0};
+    if (state->execution == NULL || state->execution->identity != state->execution ||
+        state->execution->math == NULL || state->code_classes == NULL || state->owned == NULL ||
+        error == NULL || state->world_open || state->body_entered) {
+        mc_world_runtime_execution_result_note(state->owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "Arrow Base required fresh execution/code/frame",
+                                               site);
+        return false;
+    }
+    const bool returned =
+        arrow_base_body_run(entity, classes, state->execution->math, limits, error, state);
+    /* Argument-prefix failure has no lower return to run the ordinary close.
+     * Attempt only this genuinely created scope once. A previous refusal stays
+     * live for the parent's exact-token native unwind; never retry Source. */
+    if (state->world_open && !state->close_attempted)
+        (void)mc_tick_arrow_base_world_end(state, false);
+    state->body_completed = returned && state->owned->ownership_status == MC_WORLD_STORAGE_OK &&
+                            !state->world_open && base_result_empty(state->owned);
+    return state->body_completed;
 }
 
 bool mc_tick_base_body_entered(mc_entity *entity, mc_registry_classes *classes,
                                const mc_entity_tick_limits *limits, mc_entity_tick_error *error) {
-    return base_body(entity, classes, NULL, limits, error, NULL);
+    return base_body(entity, classes, NULL, limits, error, NULL, NULL);
 }
 
 bool mc_entity_mob_environment_entered(mc_mob_tick_scope *scope, mc_entity_tick_error *error) {

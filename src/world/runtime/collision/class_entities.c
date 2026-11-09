@@ -1,4 +1,5 @@
-#include "class_entities_internal.h"
+#include "../execution_children_internal.h"
+#include "class_entities_execution_internal.h"
 
 #include "../../../entity/entity_internal.h"
 #include "../../chunk/object_state_internal.h"
@@ -209,31 +210,75 @@ static bool slice_list(const mc_world_chunk *chunk, const mc_world_chunk_entity_
            ((list->capacity == 0) == (list->items == NULL));
 }
 
-static mc_world_storage_status gather(mc_world_runtime *world, mc_world_chunk *chunk,
-                                      const mc_entity_class_literal *target,
-                                      const mc_entity_bounds *bounds,
-                                      mc_world_class_entity_list *destination,
-                                      mc_world_nearby_error *frame) {
+typedef struct class_query_execution {
+    mc_entity_tick_execution *execution;
+    mc_world_runtime_execution_code code;
+    mc_world_runtime_execution_result *owned;
+} class_query_execution;
+
+static bool class_floor(const class_query_execution *query, double value, bool chunk,
+                        unsigned int pc, int32_t *out, mc_world_nearby_error *frame) {
+    if (query != NULL) {
+        if (chunk)
+            frame->query.chunk_bytecode = pc;
+        else
+            frame->query.bytecode = pc;
+        const mc_math_class_status status = mc_math_execution_require(
+            query->execution->math,
+            (mc_math_execution_site){chunk ? "lm" : "fd", "a",
+                                     chunk ? "(Ljava/lang/Class;Leq;Ljava/util/List;)V"
+                                           : "(Ljava/lang/Class;Leq;)Ljava/util/List;",
+                                     (int)pc},
+            "b", "(D)I");
+        if (status != MC_MATH_CLASS_OK) {
+            return false; /* Exact Math channel; do not invent a World Source status. */
+        }
+    }
+    *out = mc_math_floor_double(value);
+    return true;
+}
+
+static bool class_stopped(mc_world_nearby_error *frame, mc_world_storage_status status,
+                          const char *operation) {
+    (void)fail(frame, status, operation);
+    return false;
+}
+
+static bool class_entity_stopped(mc_world_nearby_error *frame, mc_entity_status status,
+                                 const char *operation) {
+    (void)entity_fail(frame, status, operation);
+    return false;
+}
+
+static bool gather(mc_world_runtime *world, mc_world_chunk *chunk,
+                   const mc_entity_class_literal *target, const mc_entity_bounds *bounds,
+                   mc_world_class_entity_list *destination, mc_world_nearby_error *frame,
+                   const class_query_execution *query) {
     frame->query.chunk_bytecode = 1;
     if (bounds == NULL)
-        return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Class gather query bounds");
+        return class_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                             "Class gather query bounds");
     frame->query.chunk_bytecode = 7;
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u)
-        return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Class gather FP admission");
-    int32_t low = mc_math_floor_double((bounds->min_y - 2.0) / 16.0);
-    int32_t high = mc_math_floor_double((bounds->max_y + 2.0) / 16.0);
+        return class_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                             "Class gather FP admission");
+    int32_t low, high;
+    if (!class_floor(query, (bounds->min_y - 2.0) / 16.0, true, 12, &low, frame) ||
+        !class_floor(query, (bounds->max_y + 2.0) / 16.0, true, 29, &high, frame))
+        return false;
     if (low < 0)
         low = 0;
     frame->query.chunk_bytecode = 48;
     mc_world_chunk_list_array *array = chunk->m;
     if (!slice_array(chunk, array))
-        return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Class gather slice array length");
+        return class_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                             "Class gather slice array length");
     if (high >= (int32_t)array->length) {
         frame->query.chunk_bytecode = 56;
         array = chunk->m;
         if (!slice_array(chunk, array))
-            return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                        "Class gather clamp array length");
+            return class_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                 "Class gather clamp array length");
         high = mc_java_i32_sub((int32_t)array->length, 1);
     }
     for (int32_t slice = low; slice <= high; slice = mc_java_i32_add(slice, 1)) {
@@ -241,34 +286,39 @@ static mc_world_storage_status gather(mc_world_runtime *world, mc_world_chunk *c
         frame->query.chunk_bytecode = 78;
         array = chunk->m;
         if (!slice_array(chunk, array) || slice < 0 || (uint32_t)slice >= array->length)
-            return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Class gather selected slice");
+            return class_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                 "Class gather selected slice");
         mc_world_chunk_entity_list *const list = array->items[(uint32_t)slice];
         for (size_t index = 0;; ++index) {
             frame->index = index;
             frame->query.chunk_bytecode = 88;
             if (!slice_list(chunk, list))
-                return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Class gather List size");
+                return class_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                     "Class gather List size");
             if (index >= list->count)
                 break;
             frame->query.chunk_bytecode = 100;
             mc_entity *candidate;
             if (mc_world_chunk_entity_at(list, index, &candidate) != MC_WORLD_STORAGE_OK)
-                return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Class gather List get");
+                return class_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                     "Class gather List get");
             /* The actual typed Chunk occurrence supplies checkcast105. NULL
              * passes that cast but fails getClass113 before target is used. */
             frame->query.chunk_bytecode = 113;
             if (candidate == NULL || candidate->class_literal == NULL)
-                return entity_fail(frame, MC_ENTITY_STATE_ERROR,
-                                   "Class gather Entity getClass receiver");
+                return class_entity_stopped(frame, MC_ENTITY_STATE_ERROR,
+                                            "Class gather Entity getClass receiver");
             const mc_entity_class_literal *const actual = candidate->class_literal;
             frame->query.chunk_bytecode = 116;
             if (target == NULL)
-                return entity_fail(frame, MC_ENTITY_STATE_ERROR, "Class gather Class receiver");
+                return class_entity_stopped(frame, MC_ENTITY_STATE_ERROR,
+                                            "Class gather Class receiver");
             bool matches;
             const mc_entity_status matched =
                 mc_entity_class_literal_is_assignable_from(target, actual, &matches);
             if (matched != MC_ENTITY_OK)
-                return entity_fail(frame, matched, "Class gather canonical Class matching");
+                return class_entity_stopped(frame, matched,
+                                            "Class gather canonical Class matching");
             if (!matches)
                 continue;
             frame->query.chunk_bytecode = 124;
@@ -276,17 +326,69 @@ static mc_world_storage_status gather(mc_world_runtime *world, mc_world_chunk *c
             /* getfield124 can read NULL; only invoke128 rejects that receiver. */
             frame->query.chunk_bytecode = 128;
             if (candidate_bounds == NULL)
-                return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                            "Class gather bounds invocation receiver");
+                return class_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                     "Class gather bounds invocation receiver");
             if (mc_entity_bounds_intersects(candidate_bounds, bounds)) {
                 frame->query.chunk_bytecode = 137;
                 const mc_world_storage_status status = append(world, destination, candidate, frame);
                 if (status != MC_WORLD_STORAGE_OK)
-                    return status;
+                    return false;
             }
         }
     }
-    return MC_WORLD_STORAGE_OK;
+    return true;
+}
+
+static mc_world_storage_status
+class_gather_run(mc_world_runtime *world, mc_chunk_state *state,
+                 const mc_entity_class_literal *target, const mc_entity_bounds *bounds,
+                 mc_world_class_entity_list *destination, mc_world_nearby_error *error,
+                 const class_query_execution *query, bool *continued) {
+    if (continued != NULL)
+        *continued = false;
+    mc_world_nearby_error local;
+    mc_world_nearby_error *frame = error;
+    if (query == NULL) {
+        if (error == NULL)
+            mc_world_nearby_error_init(&local);
+        else
+            local = *error;
+        frame = &local;
+    }
+    mc_world_storage_status status;
+    bool completed = false;
+    frame->query.chunk_bytecode = 0;
+    if (state == NULL)
+        status =
+            fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Class query acquired Chunk receiver");
+    else if (state->blank) {
+        status = MC_WORLD_STORAGE_OK; /* Actual li/hg override return0. */
+        completed = true;
+    } else if (world == NULL)
+        status = fail(frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Class gather native World owner");
+    else {
+        mc_world_store *const store = world->fields.w;
+        mc_world_chunk *const chunk = mc_world_store_chunk_object(store, state);
+        if (chunk == NULL || !mc_world_chunk_source_enabled(chunk))
+            status =
+                fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Class query concrete Chunk owner");
+        else {
+            mc_world_storage_error child = {0};
+            status = mc_world_store_lease_chunk(store, state, &child);
+            if (status != MC_WORLD_STORAGE_OK)
+                (void)cause(frame, child);
+            else {
+                completed = gather(world, chunk, target, bounds, destination, frame, query);
+                status = frame->query.status;
+                (void)mc_world_store_release_chunk(store, state, NULL);
+            }
+        }
+    }
+    if (continued != NULL)
+        *continued = completed;
+    if (query == NULL && error != NULL)
+        *error = *frame;
+    return status;
 }
 
 mc_world_storage_status mc_world_class_entities_gather_held(mc_world_runtime *world,
@@ -295,45 +397,12 @@ mc_world_storage_status mc_world_class_entities_gather_held(mc_world_runtime *wo
                                                             const mc_entity_bounds *bounds,
                                                             mc_world_class_entity_list *destination,
                                                             mc_world_nearby_error *error) {
-    mc_world_nearby_error frame;
-    if (error == NULL)
-        mc_world_nearby_error_init(&frame);
-    else
-        frame = *error;
-    mc_world_storage_status status;
-    frame.query.chunk_bytecode = 0;
-    if (state == NULL)
-        status =
-            fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Class query acquired Chunk receiver");
-    else if (state->blank)
-        status = MC_WORLD_STORAGE_OK; /* Actual li/hg override return0. */
-    else if (world == NULL)
-        status = fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Class gather native World owner");
-    else {
-        mc_world_store *const store = world->fields.w;
-        mc_world_chunk *const chunk = mc_world_store_chunk_object(store, state);
-        if (chunk == NULL || !mc_world_chunk_source_enabled(chunk))
-            status = fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                          "Class query concrete Chunk owner");
-        else {
-            mc_world_storage_error child = {0};
-            status = mc_world_store_lease_chunk(store, state, &child);
-            if (status != MC_WORLD_STORAGE_OK)
-                (void)cause(&frame, child);
-            else {
-                status = gather(world, chunk, target, bounds, destination, &frame);
-                (void)mc_world_store_release_chunk(store, state, NULL);
-            }
-        }
-    }
-    if (error != NULL)
-        *error = frame;
-    return status;
+    return class_gather_run(world, state, target, bounds, destination, error, NULL, NULL);
 }
 
 static bool query(mc_world_runtime *world, const mc_entity_class_literal *target,
                   const mc_entity_bounds *bounds, mc_world_class_entity_list **out,
-                  mc_world_nearby_error *frame) {
+                  mc_world_nearby_error *frame, const class_query_execution *owned) {
     frame->query.bytecode = 1;
     if (bounds == NULL) {
         fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Class query bounds receiver");
@@ -344,10 +413,12 @@ static bool query(mc_world_runtime *world, const mc_entity_class_literal *target
         fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Class query coordinate FP admission");
         return false;
     }
-    const int32_t low_x = mc_math_floor_double((bounds->min_x - 2.0) / 16.0);
-    const int32_t high_x = mc_math_floor_double((bounds->max_x + 2.0) / 16.0);
-    const int32_t low_z = mc_math_floor_double((bounds->min_z - 2.0) / 16.0);
-    const int32_t high_z = mc_math_floor_double((bounds->max_z + 2.0) / 16.0);
+    int32_t low_x, high_x, low_z, high_z;
+    if (!class_floor(owned, (bounds->min_x - 2.0) / 16.0, false, 12, &low_x, frame) ||
+        !class_floor(owned, (bounds->max_x + 2.0) / 16.0, false, 28, &high_x, frame) ||
+        !class_floor(owned, (bounds->min_z - 2.0) / 16.0, false, 45, &low_z, frame) ||
+        !class_floor(owned, (bounds->max_z + 2.0) / 16.0, false, 62, &high_z, frame))
+        return false;
     mc_world_class_entity_list *const result = result_create(world, frame);
     if (result == NULL)
         return false;
@@ -367,11 +438,17 @@ static bool query(mc_world_runtime *world, const mc_entity_class_literal *target
                 continue;
             frame->query.bytecode = 113;
             mc_chunk_state *state = NULL;
-            if (!mc_world_entity_query_acquire_held(world, x, z, &state, frame))
+            const bool acquired =
+                owned == NULL
+                    ? mc_world_entity_query_acquire_held(world, x, z, &state, frame)
+                    : mc_world_entity_query_acquire_in_execution(
+                          owned->execution, world, owned->code, x, z, &state, frame, owned->owned);
+            if (!acquired)
                 goto failed;
             frame->query.bytecode = 120;
-            if (mc_world_class_entities_gather_held(world, state, target, bounds, result, frame) !=
-                MC_WORLD_STORAGE_OK)
+            bool gathered = false;
+            (void)class_gather_run(world, state, target, bounds, result, frame, owned, &gathered);
+            if (!gathered)
                 goto failed;
             frame->query.chunk_bytecode = 0;
             frame->slice = frame->index = SIZE_MAX;
@@ -392,6 +469,32 @@ failed:
     return false;
 }
 
+static bool class_entities_run(mc_world_runtime *world, const mc_entity_class_literal *target,
+                               const mc_entity_bounds *bounds, mc_world_class_entity_list **out,
+                               mc_world_nearby_error *frame, const class_query_execution *owned) {
+    if (world == NULL || out == NULL) {
+        fail(frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Class query arguments");
+        return false;
+    }
+    if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
+        world->construction.phase == MC_WORLD_RUNTIME_RETIRED) {
+        fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Class query World phase");
+        return false;
+    }
+    mc_world_storage_error child = {0};
+    if (mc_world_runtime_call_enter(world, &child) != MC_WORLD_STORAGE_OK) {
+        cause(frame, child);
+        return false;
+    }
+    const bool completed = query(world, target, bounds, out, frame, owned);
+    if (completed)
+        mc_world_nearby_error_init(frame);
+    if (frame->query.status != MC_WORLD_STORAGE_OK)
+        world->last_error = frame->query.cause;
+    mc_world_runtime_call_leave(world);
+    return completed;
+}
+
 mc_world_storage_status mc_world_runtime_class_entities(mc_world_runtime *world,
                                                         const mc_entity_class_literal *target,
                                                         const mc_entity_bounds *bounds,
@@ -399,26 +502,43 @@ mc_world_storage_status mc_world_runtime_class_entities(mc_world_runtime *world,
                                                         mc_world_nearby_error *error) {
     mc_world_nearby_error frame;
     mc_world_nearby_error_init(&frame);
-    if (world == NULL || out == NULL)
-        fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Class query arguments");
-    else if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
-             world->construction.phase == MC_WORLD_RUNTIME_RETIRED)
-        fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Class query World phase");
-    else {
-        mc_world_storage_error child = {0};
-        if (mc_world_runtime_call_enter(world, &child) != MC_WORLD_STORAGE_OK)
-            cause(&frame, child);
-        else {
-            if (query(world, target, bounds, out, &frame))
-                mc_world_nearby_error_init(&frame);
-            if (frame.query.status != MC_WORLD_STORAGE_OK)
-                world->last_error = frame.query.cause;
-            mc_world_runtime_call_leave(world);
-        }
-    }
+    (void)class_entities_run(world, target, bounds, out, &frame, NULL);
     if (error != NULL)
         *error = frame;
     return frame.query.status;
+}
+
+bool mc_world_runtime_class_entities_in_execution(
+    mc_entity_tick_execution *execution, mc_world_runtime *world,
+    mc_world_runtime_execution_code code, const mc_entity_class_literal *target,
+    const mc_entity_bounds *bounds, mc_world_class_entity_list **out, mc_world_nearby_error *error,
+    mc_world_storage_status *status, mc_world_runtime_execution_result *owned) {
+    if (owned != NULL)
+        mc_world_runtime_execution_result_init(owned);
+    if (error != NULL)
+        mc_world_nearby_error_init(error);
+    const mc_entity_tick_execution_site site =
+        execution != NULL && execution->identity == execution
+            ? execution->site
+            : (mc_entity_tick_execution_site){NULL, NULL, NULL, -1};
+    if (execution == NULL || execution->identity != execution || execution->math == NULL ||
+        error == NULL || status == NULL || owned == NULL) {
+        mc_world_runtime_execution_result_note(owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "Class query execution/Math/outputs required", site);
+        return false;
+    }
+    mc_world_access_failure_lease *unused = NULL;
+    const mc_world_storage_status admitted =
+        mc_world_execution_child_lease(execution, world, &unused);
+    if (admitted != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(owned, admitted,
+                                               "Class query evaluated World ownership", site);
+        return false;
+    }
+    const class_query_execution query = {execution, code, owned};
+    const bool completed = class_entities_run(world, target, bounds, out, error, &query);
+    *status = error->query.status;
+    return completed && owned->ownership_status == MC_WORLD_STORAGE_OK;
 }
 
 mc_world_storage_status mc_world_class_entity_list_count(const mc_world_class_entity_list *result,

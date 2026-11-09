@@ -1,3 +1,4 @@
+#include "damage_alert_execution_internal.h"
 #include "damage_alert_internal.h"
 
 #include "mc/entity/player/ally_alert.h"
@@ -75,17 +76,38 @@ mc_entity_status mc_player_damage_alert_cleanup(mc_entity *p, mc_entity_effect_e
     return MC_ENTITY_OK;
 }
 
-bool mc_player_damage_alert_entered(mc_entity *p, mc_entity *source, mc_entity_effect_error *e) {
+static bool damage_alert_entered(mc_entity *p, mc_entity *source, mc_entity_effect_error *e,
+                                 mc_entity_tick_execution *execution,
+                                 mc_world_runtime_classes *code_classes,
+                                 mc_world_runtime_execution_code code, mc_entity_status *raw_status,
+                                 mc_world_runtime_execution_result *owned) {
     caller_site(e);
-    const mc_entity_status status =
-        mc_player_ally_alert_begin(p, source, false, &p->local_player->pending_damage_alert);
+    mc_entity_status status;
+    bool completed;
+    if (execution == NULL) {
+        status =
+            mc_player_ally_alert_begin(p, source, false, &p->local_player->pending_damage_alert);
+        completed = status == MC_ENTITY_OK;
+    } else {
+        completed = mc_player_ally_alert_begin_in_execution(
+            execution, code_classes, code, p, source, false, &p->local_player->pending_damage_alert,
+            &status, owned);
+        if (owned->ownership_status != MC_WORLD_STORAGE_OK) {
+            /* The lower may have refused before assigning its actual status.
+             * Do not read/project an unwritten local or infer a Source return. */
+            (void)mc_player_damage_alert_inspect(p, &e->player_alert);
+            return false;
+        }
+    }
+    if (raw_status != NULL)
+        *raw_status = status;
     if (!mc_player_damage_alert_inspect(p, &e->player_alert)) {
         e->status = status;
         e->operation = "Player damage ally alert retained invocation admission";
         e->cause = MC_ENTITY_EFFECT_CAUSE_OWNER;
         return false;
     }
-    if (status != MC_ENTITY_OK) {
+    if (!completed) {
         e->status = status;
         e->operation = e->player_alert.operation;
         e->cause =
@@ -102,4 +124,29 @@ bool mc_player_damage_alert_entered(mc_entity *p, mc_entity *source, mc_entity_e
         return false;
     }
     return mc_player_damage_alert_cleanup(p, e) == MC_ENTITY_OK;
+}
+
+bool mc_player_damage_alert_entered(mc_entity *p, mc_entity *source, mc_entity_effect_error *e) {
+    return damage_alert_entered(p, source, e, NULL, NULL, (mc_world_runtime_execution_code){0},
+                                NULL, NULL);
+}
+
+bool mc_player_damage_alert_entered_in_execution(mc_entity_tick_execution *execution,
+                                                 mc_world_runtime_classes *code_classes,
+                                                 mc_world_runtime_execution_code code, mc_entity *p,
+                                                 mc_entity *source, mc_entity_status *status,
+                                                 mc_entity_effect_error *error,
+                                                 mc_world_runtime_execution_result *owned) {
+    if (execution == NULL || code_classes == NULL || status == NULL || error == NULL ||
+        owned == NULL || p == NULL || p->local_player == NULL ||
+        p->local_player->pending_damage_alert != NULL) {
+        if (owned != NULL)
+            mc_world_runtime_execution_result_init(owned);
+        mc_world_runtime_execution_result_note(
+            owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+            "Player damage alert execution/code/Player/fresh-slot/outputs required",
+            (mc_entity_tick_execution_site){"gs", "a", "(Lsn;I)Z", 144});
+        return false; /* Required owned context never chooses legacy. */
+    }
+    return damage_alert_entered(p, source, error, execution, code_classes, code, status, owned);
 }

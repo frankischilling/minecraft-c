@@ -1,3 +1,4 @@
+#include "entity_insertion_execution_internal.h"
 #include "object_state_internal.h"
 
 #include "../../entity/entity_internal.h"
@@ -156,60 +157,83 @@ static mc_world_storage_status append(mc_world_chunk *chunk, mc_world_chunk_enti
     return MC_WORLD_STORAGE_OK;
 }
 
-mc_world_storage_status mc_world_chunk_insert_entity(mc_world_chunk *chunk, mc_entity *entity,
-                                                     mc_world_chunk_entity_error *error) {
-    mc_world_chunk_entity_error frame = {0};
+static bool chunk_insert_stopped(mc_world_chunk_entity_error *frame, mc_world_storage_status status,
+                                 const char *operation, unsigned int pc) {
+    (void)insertion_result(frame, frame, status, operation, pc);
+    return false;
+}
+
+static bool chunk_insert_floor(mc_math_execution *math, double argument, int pc, int32_t *out,
+                               mc_world_chunk_entity_error *frame) {
+    if (math != NULL) {
+        frame->bytecode = (unsigned int)pc;
+        if (mc_math_execution_require(math, (mc_math_execution_site){"lm", "a", "(Lsn;)V", pc}, "b",
+                                      "(D)I") != MC_MATH_CLASS_OK)
+            return false; /* Real independent Math cause; no invented Chunk status. */
+    }
+    *out = mc_math_floor_double(argument);
+    return true;
+}
+
+static bool chunk_insert_run(mc_world_chunk *chunk, mc_entity *entity,
+                             mc_world_chunk_entity_error *frame, mc_math_execution *math) {
     if (chunk == NULL)
-        return insertion_result(error, &frame, MC_WORLD_STORAGE_INVALID_ARGUMENT,
-                                "Chunk Entity insertion arguments", 0);
+        return chunk_insert_stopped(frame, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                    "Chunk Entity insertion arguments", 0);
     if (chunk->state == NULL)
-        return insertion_result(error, &frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                "Chunk Entity state binding", 0);
+        return chunk_insert_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                    "Chunk Entity state binding", 0);
     if (!mc_world_chunk_source_enabled(chunk))
-        return insertion_result(error, &frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                "Chunk Entity source operations are disabled", 0);
+        return chunk_insert_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                    "Chunk Entity source operations are disabled", 0);
 
     /* lm/hi.a(Entity)V: this precedes even the first nullable Entity read. */
     chunk->state->has_entities = true; /* q2 */
     mc_entity_base_fields *fields = mc_entity_runtime_fields(entity);
     if (fields == NULL)
-        return insertion_result(error, &frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                "Chunk Entity x receiver", 6);
+        return chunk_insert_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                    "Chunk Entity x receiver", 6);
     const double x = fields->x; /* sn.aM / lq.aP6 */
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u)
-        return insertion_result(error, &frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                "Chunk Entity coordinate FP admission", 12);
-    const int32_t chunk_x = mc_math_floor_double(x / 16.0); /* ddiv12/floor13 */
+        return chunk_insert_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                    "Chunk Entity coordinate FP admission", 12);
+    int32_t chunk_x;
+    if (!chunk_insert_floor(math, x / 16.0, 13, &chunk_x, frame))
+        return false;
 
     fields = mc_entity_runtime_fields(entity);
     if (fields == NULL)
-        return insertion_result(error, &frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                "Chunk Entity z receiver", 18);
-    const int32_t chunk_z = mc_math_floor_double(fields->z / 16.0); /* 18/24/25 */
+        return chunk_insert_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                    "Chunk Entity z receiver", 18);
+    int32_t chunk_z;
+    if (!chunk_insert_floor(math, fields->z / 16.0, 25, &chunk_z, frame))
+        return false;
     if (chunk_x != chunk->state->x || chunk_z != chunk->state->z)
-        return insertion_result(error, &frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                "Chunk wrong-location diagnostic is not implemented", 45);
+        return chunk_insert_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                    "Chunk wrong-location diagnostic is not implemented", 45);
 
     fields = mc_entity_runtime_fields(entity);
     if (fields == NULL)
-        return insertion_result(error, &frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                "Chunk Entity y receiver", 74);
-    int32_t slice = mc_math_floor_double(fields->y / 16.0); /* 74/80/81 */
+        return chunk_insert_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                    "Chunk Entity y receiver", 74);
+    int32_t slice;
+    if (!chunk_insert_floor(math, fields->y / 16.0, 81, &slice, frame))
+        return false;
     if (slice < 0)
         slice = 0; /* 91/92 */
 
     mc_world_chunk_list_array *array = chunk->m; /* 97 */
     if (array == NULL)
-        return insertion_result(error, &frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                "Chunk Entity slice array length", 100);
+        return chunk_insert_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                    "Chunk Entity slice array length", 100);
     if (array->length > (size_t)INT32_MAX)
-        return insertion_result(error, &frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                "Chunk Entity slice array native shape", 100);
+        return chunk_insert_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                    "Chunk Entity slice array native shape", 100);
     if (slice >= (int32_t)array->length) {
         array = chunk->m; /* Actual second array receiver105/length108. */
         if (array == NULL || array->length > (size_t)INT32_MAX)
-            return insertion_result(error, &frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                    "Chunk Entity clamp array length", 108);
+            return chunk_insert_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                        "Chunk Entity clamp array length", 108);
         slice = mc_java_i32_sub((int32_t)array->length, 1); /* 110 */
     }
 
@@ -223,20 +247,46 @@ mc_world_storage_status mc_world_chunk_insert_entity(mc_world_chunk *chunk, mc_e
     array = chunk->m; /* getfield141, NOT the earlier length receiver */
     if (array == NULL || slice < 0 || (uint32_t)slice >= array->length ||
         (uint32_t)slice >= CHUNK_ENTITY_SLICES)
-        return insertion_result(error, &frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                "Chunk Entity selected slice", 146);
+        return chunk_insert_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                    "Chunk Entity selected slice", 146);
     mc_world_chunk_entity_list *const list = array->items[(uint32_t)slice];
     if (list == NULL)
-        return insertion_result(error, &frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                "Chunk Entity List receiver", 148);
+        return chunk_insert_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                    "Chunk Entity List receiver", 148);
     if (list != &chunk->entities[(uint32_t)slice])
-        return insertion_result(error, &frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                "Chunk Entity List native owner", 148);
-    const mc_world_storage_status status = append(chunk, list, entity, &frame);
-    if (status != MC_WORLD_STORAGE_OK) {
+        return chunk_insert_stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                    "Chunk Entity List native owner", 148);
+    const mc_world_storage_status status = append(chunk, list, entity, frame);
+    if (status != MC_WORLD_STORAGE_OK)
+        return false;
+    (void)insertion_result(frame, frame, MC_WORLD_STORAGE_OK, NULL, 0);
+    return true;
+}
+
+mc_world_storage_status mc_world_chunk_insert_entity(mc_world_chunk *chunk, mc_entity *entity,
+                                                     mc_world_chunk_entity_error *error) {
+    mc_world_chunk_entity_error frame = {0};
+    (void)chunk_insert_run(chunk, entity, &frame, NULL);
+    if (error != NULL)
+        *error = frame;
+    return frame.status;
+}
+
+bool mc_world_chunk_insert_entity_in_math_execution(mc_math_execution *math, mc_world_chunk *chunk,
+                                                    mc_entity *entity,
+                                                    mc_world_chunk_entity_error *error,
+                                                    mc_world_storage_status *status) {
+    if (math == NULL || error == NULL || status == NULL) {
         if (error != NULL)
-            *error = frame;
-        return status;
+            *error = (mc_world_chunk_entity_error){
+                .status = MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                .operation = "Chunk insertion actual Math/error/status required",
+                .cause = {MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                          "Chunk insertion actual Math/error/status required", 0}};
+        return false;
     }
-    return insertion_result(error, &frame, MC_WORLD_STORAGE_OK, NULL, 0);
+    *error = (mc_world_chunk_entity_error){0};
+    const bool completed = chunk_insert_run(chunk, entity, error, math);
+    *status = error->status;
+    return completed; /* Exact bool, including Math stop with raw status OK. */
 }

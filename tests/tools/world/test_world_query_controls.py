@@ -17,8 +17,66 @@ TIMEOUT = 240
 LIMIT = 1024**2
 MAX_CHECKS = 2**32 - 1
 MATERIAL_MAX_CHECKS = 65536
-MATERIAL_CALLS = {'material-success': 4, 'material-admission': 10, 'material-loader-error': 1}
-BUNDLE_SHA = '15ffafd57287986b40186b11128d06b00b22c4c1e3b42c8fcce43399d7ae8116'
+SCANNER_CALLS = {'match': 3, 'liquid': 3, 'accelerate': 4, 'admission': 6, 'scratch': 1, 'loader-error': 1}
+MATERIAL_CALLS = {'material-success': 4, 'material-admission': 10, 'material-loader-error': 1, 'material-nullable': 2}
+NEARBY_ENTRIES = {'query': {'queries': 3, 'acquires': 0, 'gathers': 0, 'setup_gets': 1},
+ 'prefix': {'queries': 4, 'acquires': 0, 'gathers': 1, 'setup_gets': 1},
+ 'armed': {'queries': 3, 'acquires': 0, 'gathers': 0, 'setup_gets': 1},
+ 'held': {'queries': 2, 'acquires': 0, 'gathers': 0, 'setup_gets': 1},
+ 'acquire-loader': {'queries': 0, 'acquires': 1, 'gathers': 0, 'setup_gets': 0}}
+ARROW_LEAVES_ENTRIES = {'base-air': {'calls': 1, 'primes': 1},
+ 'base-water': {'calls': 1, 'primes': 1},
+ 'base-lava': {'calls': 1, 'primes': 1},
+ 'base-splash': {'calls': 2, 'primes': 1},
+ 'collision-unused': {'calls': 4, 'primes': 0},
+ 'collision-portal': {'calls': 2, 'primes': 1},
+ 'collision-metadata': {'calls': 2, 'primes': 1},
+ 'collision-piston': {'calls': 1, 'primes': 1}}
+DIRECT_ENTRIES = {'insert': {'preflight': {'entries': 1, 'primes': 0},
+            'success': {'entries': 1, 'primes': 1},
+            'absent': {'entries': 1, 'primes': 0},
+            'math-missing': {'entries': 1, 'primes': 0},
+            'math-limit': {'entries': 1, 'primes': 0}},
+ 'ray': {'clear': {'calls': 1},
+         'miss': {'calls': 1},
+         'block': {'calls': 1},
+         'state-shape': {'calls': 1},
+         'null-end': {'calls': 1},
+         'math-missing': {'calls': 1},
+         'math-storage': {'calls': 1},
+         'loader-error': {'calls': 1}},
+ 'presentation-capture': {'sound-error': {'entries': 1, 'callbacks': 1},
+                          'sound-null-error': {'entries': 1, 'callbacks': 1},
+                          'particle-error': {'entries': 1, 'callbacks': 1},
+                          'particle-null-error': {'entries': 1, 'callbacks': 1}}}
+DIRECT_PROTOCOLS = {'insert': {'prefix': 'ENTITY_INSERT',
+            'scope': 'malformed-GET/Blank/callback-native-fault/parent/full-SL',
+            'case_mode': True,
+            'footer_counts': False},
+ 'ray': {'prefix': 'RAY_EXECUTION',
+         'scope': 'GET-OK-native-refusal/callbacks/unpublished-close/foreign-graph/full-Arrow',
+         'case_mode': True,
+         'footer_counts': False},
+ 'presentation-capture': {'prefix': 'PRESENTATION_CAPTURE',
+                          'scope': 'Base/Living/full-Arrow/real-renderer-failure',
+                          'case_mode': False,
+                          'footer_counts': True}}
+DIRECT_RECIPES = {'insert': 'tests/tools/world/entity_insert_inputs.py',
+ 'ray': 'tests/tools/world/raytrace_owned_inputs.py',
+ 'presentation-capture': 'tests/tools/world/presentation_capture_inputs.py'}
+BOUNDED_CHECK_KINDS = ('material', 'scanner', 'nearby', 'arrow-leaves', 'insert', 'ray', 'presentation-capture')
+FOOTER_SCOPES = {'loader': b'kernel direct-loader',
+ 'lookup': b'Tile lookup',
+ 'collision': b'owned collision scalar',
+ 'close': b'activation close-result',
+ 'material': b'owned material',
+ 'scanner': b'owned scanner',
+ 'nearby': b'owned nearby',
+ 'arrow-leaves': b'owned Arrow Base/collision',
+ 'insert': b'owned single-Entity insertion',
+ 'ray': b'owned Ray',
+ 'presentation-capture': b'detailed presentation native capture'}
+BUNDLE_SHA = '5f438eec68be0e1c8364dfbf324158f85d3d198424f2adc1ae95358cbdf03a85'
 MODES = {'loader': ('error', 'null-error'),
  'lookup': ('map', 'lazy', 'armed', 'held', 'nested'),
  'collision': ('id-first',
@@ -29,7 +87,33 @@ MODES = {'loader': ('error', 'null-error'),
                'armed',
                'held'),
  'close': ('error', 'null-error'),
- 'material': ('material-success', 'material-admission', 'material-loader-error')}
+ 'material': ('material-success',
+              'material-admission',
+              'material-loader-error',
+              'material-nullable'),
+ 'scanner': ('match', 'liquid', 'accelerate', 'admission', 'scratch', 'loader-error'),
+ 'nearby': ('query', 'prefix', 'armed', 'held', 'acquire-loader'),
+ 'arrow-leaves': ('base-air',
+                  'base-water',
+                  'base-lava',
+                  'base-splash',
+                  'collision-unused',
+                  'collision-portal',
+                  'collision-metadata',
+                  'collision-piston'),
+ 'insert': ('preflight', 'success', 'absent', 'math-missing', 'math-limit'),
+ 'ray': ('clear',
+         'miss',
+         'block',
+         'state-shape',
+         'null-end',
+         'math-missing',
+         'math-storage',
+         'loader-error'),
+ 'presentation-capture': ('sound-error',
+                          'sound-null-error',
+                          'particle-error',
+                          'particle-null-error')}
 SUPPLIERS = {'loader': {'manifest': '01e30de5a0245269259815a878ffd059768858b79b1cf11fc06bfcba93f9685b',
             'protocol': 'fc0b553cf1b23449001bf22a95f943c053a6cc58122eab4d42f408c0548f59f5',
             'source': 'tests/world/runtime/world_access/test_kernel_loader_execution.c',
@@ -43,21 +127,52 @@ SUPPLIERS = {'loader': {'manifest': '01e30de5a0245269259815a878ffd059768858b79b1
  'collision': {'manifest': '8881737d8b31805c0f43fd25e99ef274509125bda65fa1e4b3cc583261bccc9c',
                'protocol': '6fd0849ab48f9b3741756f160f022c003e24bdcdbe94fec36996fb7980acad0f',
                'source': 'tests/world/runtime/world_access/test_collision_query_execution.c',
-               'source_pin': {'bytes': 60973, 'sha256': '8e0bd2af97fe735de215648b837c9a69ff723608826d287cf9c579663d0cff7c'}},
+               'source_pin': {'bytes': 65064,
+                              'sha256': 'd80a01f031ba9152dfd2546846606a0f742e7aae45bc4d0664118f3d6253c36a'}},
  'close': {'manifest': '8d880e0ea00573319e4ba758e1baecc9af5ac97f0fa3a6008192a6949c7b94d4',
            'protocol': '4727e921d329f66b33ee93f8e32cd9397257d78e87721a373446758873fcd8c0',
            'source': 'tests/world/runtime/world_access/test_activation_close_execution.c',
            'source_pin': {'bytes': 30572,
-                          'sha256': '72cd515c4007b9251e6b3cd6daebdb9d8b936f139f2ae45ccbda26e8ef4750ad'}}}
+                          'sha256': '72cd515c4007b9251e6b3cd6daebdb9d8b936f139f2ae45ccbda26e8ef4750ad'}},
+ 'scanner': {'manifest': '7818511c0858f71cb0d8d21dd82d8ea1e39ac4cfff8da7e5aa722b7f2ab94b2a',
+             'protocol': '0ed46df93a3beb53c7bd078b9226501e550a815c4c5341a3696dc9273fcfd35a',
+             'source': 'tests/world/runtime/world_access/test_material_scanner_execution.c',
+             'source_pin': {'bytes': 23179,
+                            'sha256': 'de1645d2d89f27f6975ec7bdda43167b25532df96d7b121123ce67e22422a89c'}},
+ 'nearby': {'manifest': '29e422d8bd13a7d2b3685c29e5dd0c9acbb8bea3107bfd0ec40e6363718db729',
+            'protocol': 'bb9e2c7b762049aedd791b24ee6c89cebc69d85100253e6c8fe55acfc249b6d5',
+            'source': 'tests/world/runtime/world_access/test_nearby_execution.c',
+            'source_pin': {'bytes': 26595,
+                           'sha256': '40e0de12f41785f72b6b144dedefb4ba9eb686e6cd8161e9c50638cd4b1ea594'}},
+ 'arrow-leaves': {'manifest': 'bffd4c14a2b7db9434e98aa50051bec0138af47e0a3269e3e7a25ba95ba6e5be',
+                  'protocol': 'e1904b4f3f49498a7e9240ac3092a6b9c37b870cd3be8357a49454785d49d32e',
+                  'source': 'tests/world/runtime/world_access/test_arrow_owned_leaves.c',
+                  'source_pin': {'bytes': 20355,
+                                 'sha256': '2580d9bb2cae09d9f4e85aa44a55eb06d0ab88b0280a1802df26bd465637f14c'}},
+ 'insert': {'manifest': '2bd13e3e8d056434514aaa2660695bce8a2304fe241b81176c0a47591425e2c0',
+            'protocol': '0fd4209eb31c3d737cd36b3b518250256706c532637e640531cfef87359cfa3d',
+            'source': 'tests/world/runtime/world_access/test_entity_insert_execution.c',
+            'source_pin': {'bytes': 16716,
+                           'sha256': 'c79aa9a0903ffdf5574af8769fc26aa3b10e422c8fbb5df8af0086177e8fafc1'}},
+ 'ray': {'manifest': 'b0a3b64a12857e4bf99ca653148548c953fe772d12e235901076cb389f1943ea',
+         'protocol': '1ffb5463b98acbb16b485ff24f69f168b27258d15ac1c36b73d9652429267c81',
+         'source': 'tests/world/runtime/world_access/test_raytrace_execution.c',
+         'source_pin': {'bytes': 20205,
+                        'sha256': '7a95b98e2ad1fbcc7a28d0fe203636576e575cb53e4664557d8bdf2d237c9a22'}},
+ 'presentation-capture': {'manifest': '2317744cfb26a511edddd716c82bb384afc22cb400bea0a33fdb7d433638762a',
+                          'protocol': 'b1f6abba0fe63fad75415d4e92b86623bc05e547ca537ae251b5559dee3e17e5',
+                          'source': 'tests/world/runtime/world_access/test_presentation_capture_execution.c',
+                          'source_pin': {'bytes': 14954,
+                                         'sha256': 'ca8ccf2c7e4dce77600b314797fa8c2dfcb3cc22e6590d3eaa1e5ac943d2d499'}}}
 
 
-MATERIAL_SOURCE_PIN = {'bytes': 60973, 'sha256': '8e0bd2af97fe735de215648b837c9a69ff723608826d287cf9c579663d0cff7c'}
+MATERIAL_SOURCE_PIN = {'bytes': 65064, 'sha256': 'd80a01f031ba9152dfd2546846606a0f742e7aae45bc4d0664118f3d6253c36a'}
 MATERIAL_FIXTURE = {
     'source': 'tests/world/runtime/world_access/test_collision_query_execution.c',
     'source_pin': MATERIAL_SOURCE_PIN,
     'modes': list(MATERIAL_CALLS),
     'calls': MATERIAL_CALLS,
-    'nullable': 'OPEN_INVALID_FIXTURE_ADMISSION',
+    'nullable': 'READY_GLOWSTONE_NATIVE_INPUT;PUBLIC_COMBINED_PENDING',
     'native_status_channels': 'query_status and result.ownership_status are independent',
 }
 
@@ -100,8 +215,43 @@ def record_failure(report, key, error):
     report['status'] = 'FAIL'
 
 
+def direct_counters(kind, mode, separator=b' '):
+    return separator.join(name.encode('ascii') + b'=' + str(count).encode('ascii')
+                          for name, count in DIRECT_ENTRIES[kind][mode].items())
+
+
+def direct_footer_suffix(kind, mode):
+    return (b';' + direct_counters(kind, mode, b';')
+            if kind in DIRECT_PROTOCOLS and DIRECT_PROTOCOLS[kind]['footer_counts'] else b'')
+
+
 def protocol_lines(kind, mode):
     require(kind in MODES and mode in MODES[kind], 'Unknown literal query control mode')
+    if kind in DIRECT_PROTOCOLS:
+        spec = DIRECT_PROTOCOLS[kind]
+        prefix = spec['prefix'].encode('ascii')
+        case = prefix + b'_CASE' + (b' ' + mode.encode('ascii') if spec['case_mode'] else b'')
+        counters = b'' if spec['footer_counts'] else b' ' + direct_counters(kind, mode)
+        return [prefix + b'_BEGIN schema=1 mode=' + mode.encode('ascii'),
+                b'16 achievements', b'151 recipes', case + b' BEGIN', case + b' END' + counters,
+                prefix + b'_OPEN ' + spec['scope'].encode('ascii')]
+    if kind in ('nearby', 'arrow-leaves'):
+        entries = NEARBY_ENTRIES[mode] if kind == 'nearby' else ARROW_LEAVES_ENTRIES[mode]
+        prefix = b'NEARBY_OWNED' if kind == 'nearby' else b'ARROW_OWNED_LEAVES'
+        counters = b' '.join(name.encode('ascii') + b'=' + str(value).encode('ascii')
+                             for name, value in entries.items())
+        scope = (b'top-query-cold/owned-Blank/get-ok-native-completion/foreign-Store/full-SL'
+                 if kind == 'nearby' else b'callback-failure/unwind/foreign-Store/full-Arrow/full-SL')
+        return [prefix + b'_BEGIN schema=1 mode=' + mode.encode('ascii'), b'16 achievements', b'151 recipes',
+                prefix + b'_CASE ' + mode.encode('ascii') + b' BEGIN',
+                prefix + b'_CASE ' + mode.encode('ascii') + b' END ' + counters,
+                prefix + b'_OPEN ' + scope]
+    if kind == 'scanner':
+        return [b'MATERIAL_SCAN_BEGIN schema=1 mode=' + mode.encode('ascii'),
+                b'16 achievements', b'151 recipes',
+                b'MATERIAL_SCAN_CASE ' + mode.encode('ascii') + b' BEGIN',
+                b'MATERIAL_SCAN_CASE ' + mode.encode('ascii') + b' END calls=' + str(SCANNER_CALLS[mode]).encode('ascii'),
+                b'MATERIAL_SCAN_OPEN GET-OK-native-completion/foreign-graph/Base/full-SL']
     if kind == 'material':
         return [b'MATERIAL_GET_BEGIN schema=1 mode=' + mode.encode('ascii'),
                 b'16 achievements', b'151 recipes',
@@ -131,10 +281,8 @@ def protocol_lines(kind, mode):
 
 def footer_pattern(kind, mode):
     require(kind in MODES and mode in MODES[kind], 'Unknown footer mode')
-    scope = b'owned material' if kind == 'material' else (b'activation close-result' if kind == 'close' else (
-        b'owned collision scalar' if kind == 'collision' else (
-            b'kernel direct-loader' if kind == 'loader' else b'Tile lookup')))
-    return rb'PASS: ([1-9][0-9]{0,9}) actual ' + scope + b' checks;mode=' + mode.encode('ascii')
+    scope = FOOTER_SCOPES[kind]
+    return rb'PASS: ([1-9][0-9]{0,9}) actual ' + scope + b' checks;mode=' + mode.encode('ascii') + direct_footer_suffix(kind, mode)
 
 
 def completed(child, kind, mode, command):
@@ -164,13 +312,17 @@ def completed(child, kind, mode, command):
     normalized = child.stdout.replace(b'\r\n', b'\n')
     require(b'\r' not in normalized, 'Malformed native newline')
     lines = normalized.split(b'\n')
+    if kind in ('nearby', 'arrow-leaves') or kind in DIRECT_PROTOCOLS:
+        require(child.stdout in (b'\n'.join(lines[:-1]) + b'\n',
+                                 b'\r\n'.join(lines[:-1]) + b'\r\n'),
+                'Complete coherent new owned-leaf newline transport')
     expected = protocol_lines(kind, mode)
     require(lines[-1] == b'' and len(lines) == len(expected) + 2 and lines[:-2] == expected,
             'Wrong exact mode/banner/control sequence')
     footer = re.fullmatch(footer_pattern(kind, mode), lines[-2])
     require(footer is not None, 'Missing/wrong literal completion footer')
     checks = int(footer.group(1))
-    require(1 <= checks <= (MATERIAL_MAX_CHECKS if kind == 'material' else MAX_CHECKS),
+    require(1 <= checks <= (MATERIAL_MAX_CHECKS if kind in BOUNDED_CHECK_KINDS else MAX_CHECKS),
             'Unsigned native check count outside range')
     return checks
 
@@ -180,7 +332,7 @@ def bundle_payload(data):
             hashlib.sha256(data).hexdigest() == BUNDLE_SHA, 'Unapproved explicit dependency bundle')
     bundle = json.loads(data.decode('utf-8'))
     require(type(bundle) is dict and bundle.get('schema') == 'EXPLICIT_WORLD_QUERY_CONTROLS_BUNDLE_V1' and
-            bundle.get('selection') == 'a97:nested3+Entity2+kernel2+Tile2;loader1+lookup1-nbt-capacity-fix1;collision-owner1+collision-fixture1;activation-close-owner1+fixture1',
+            bundle.get('selection') == 'a97:nested3+Entity2+kernel2+Tile2;loader1+lookup1-nbt-capacity-fix1;collision-owner1+collision-fixture1;activation-close-owner1+fixture1;scanner2+compact-fixture1;owned-collision1+Base2+nearby1;Ray2+ClassAlert1+Insert2+Living2+SDK-native-result1;owned-leaf-public13-1;direct-insert5+ray8+presentation4-controls1',
             'Wrong selected dependency schema')
     for kind, expected in SUPPLIERS.items():
         actual = bundle['fixtures'][kind]
@@ -350,9 +502,8 @@ def self_test():
     for kind, modes in MODES.items():
         for mode in modes:
             command = ['actual-native', mode, 'fresh-root']
-            footer = b'PASS: 1 actual ' + (b'owned material' if kind == 'material' else (b'activation close-result' if kind == 'close' else (
-                b'owned collision scalar' if kind == 'collision' else
-                (b'kernel direct-loader' if kind == 'loader' else b'Tile lookup')))) + b' checks;mode=' + mode.encode('ascii')
+            footer = (b'PASS: 1 actual ' + FOOTER_SCOPES[kind] + b' checks;mode=' +
+                      mode.encode('ascii') + direct_footer_suffix(kind, mode))
             lines = protocol_lines(kind, mode)
             stdout = b'\n'.join(lines + [footer]) + b'\n'
             report = dict(command=command.copy(), exit=0, reaped=True, pipe_capture_complete=True,
@@ -366,7 +517,7 @@ def self_test():
             windows.capture_report['stdout_bytes'] = len(windows.stdout)
             require(completed(windows, kind, mode, command) == 1, 'Pure CRLF protocol positive')
             maximum = copy.deepcopy(good)
-            ceiling = MATERIAL_MAX_CHECKS if kind == 'material' else MAX_CHECKS
+            ceiling = MATERIAL_MAX_CHECKS if kind in BOUNDED_CHECK_KINDS else MAX_CHECKS
             maximum.stdout = stdout.replace(b'PASS: 1 ', b'PASS: ' + str(ceiling).encode('ascii') + b' ')
             maximum.capture_report['stdout_bytes'] = len(maximum.stdout)
             require(completed(maximum, kind, mode, command) == ceiling, 'Actual selected check ceiling accepted')
@@ -429,9 +580,10 @@ def self_test():
                     rejected += 1
                     continue
                 raise ValueError('Corrupt protocol accepted: ' + kind + '/' + mode)
-            if kind == 'material':
+            if kind in ('material', 'scanner'):
+                call_counts = SCANNER_CALLS if kind == 'scanner' else MATERIAL_CALLS
                 for changed_stdout in (stdout.replace(b'16 achievements\n151 recipes\n', b''),
-                        stdout.replace(b'calls=' + str(MATERIAL_CALLS[mode]).encode('ascii'), b'calls=999')):
+                        stdout.replace(b'calls=' + str(call_counts[mode]).encode('ascii'), b'calls=999')):
                     changed = copy.deepcopy(good)
                     changed.stdout = changed_stdout
                     changed.capture_report['stdout_bytes'] = len(changed_stdout)
@@ -441,6 +593,39 @@ def self_test():
                         rejected += 1
                     else:
                         raise ValueError('Old five-line/material call-count corruption admitted')
+            if kind in ('nearby', 'arrow-leaves'):
+                entries = NEARBY_ENTRIES[mode] if kind == 'nearby' else ARROW_LEAVES_ENTRIES[mode]
+                changed_payloads = [stdout.replace(b'\n', b'\r\n', 1)]
+                for name, value in entries.items():
+                    token = name.encode('ascii') + b'=' + str(value).encode('ascii')
+                    changed_payloads.extend(stdout.replace(token, name.encode('ascii') + b'=' + bad, 1)
+                                            for bad in (b'999', b'True'))
+                for payload in changed_payloads:
+                    changed = copy.deepcopy(good)
+                    changed.stdout = payload
+                    changed.capture_report['stdout_bytes'] = len(payload)
+                    try:
+                        completed(changed, kind, mode, command)
+                    except ValueError:
+                        rejected += 1
+                    else:
+                        raise ValueError('Malformed new C-entry witness/newline admitted')
+            if kind in DIRECT_PROTOCOLS:
+                changed_payloads = [stdout.replace(b'\n', b'\r\n', 1)]
+                for name, count in DIRECT_ENTRIES[kind][mode].items():
+                    token = name.encode('ascii') + b'=' + str(count).encode('ascii')
+                    changed_payloads.extend(stdout.replace(token, name.encode('ascii') + b'=' + bad, 1)
+                                            for bad in (b'999', b'True'))
+                for payload in changed_payloads:
+                    changed = copy.deepcopy(good)
+                    changed.stdout = payload
+                    changed.capture_report['stdout_bytes'] = len(payload)
+                    try:
+                        completed(changed, kind, mode, command)
+                    except ValueError:
+                        rejected += 1
+                    else:
+                        raise ValueError('Malformed direct-entry witness/newline admitted')
             other_command = command.copy()
             other_command[1] = 'foreign'
             other_child = copy.deepcopy(good)
@@ -540,7 +725,13 @@ def self_test():
             bundles += 1
             continue
         raise ValueError('Unapproved bundle accepted')
-    require((rejected, retention, literals, bundles) == (1184, 380, 7, 4),
+    # Existing39:3303/780 retained; add closed new inventory and cross-mode pairs.
+    direct_modes = sum(len(entries) for entries in DIRECT_ENTRIES.values())
+    direct_witness_refusals = sum(1 + 2 * len(fields) for entries in DIRECT_ENTRIES.values()
+                                  for fields in entries.values())
+    expected_rejected = 3303 + direct_modes * (121 + direct_modes) + direct_witness_refusals
+    require((rejected, retention, literals, bundles) ==
+            (expected_rejected, 780 + 20 * direct_modes, 7, 4),
             'Every declared pure corruption refused')
     roots = literal_root_self_test()
     primary = {'status': 'RUNNING'}
@@ -559,14 +750,14 @@ def expected_input_names(bundle, kind, mode):
     """Closed per-kind/mode literal filename contract; no Source outcome model."""
     require(kind in MODES and mode in MODES[kind], 'Unknown literal input kind/mode')
     inputs = bundle['inputs'][kind]
-    if kind in ('collision', 'material'):
+    if kind in ('collision', 'material', 'scanner', 'nearby', 'arrow-leaves', 'insert', 'ray', 'presentation-capture'):
         require(type(inputs) is dict and set(inputs) == set(MODES[kind]),
                 'Exact per-mode input mapping required')
         names = inputs[mode]
     else:
         names = inputs
     expected = ('world/level.dat', 'world/data/idcounts.dat', 'world/region/r.0.0.mcr',
-                'world/preserve.bin') if kind in ('loader', 'collision', 'material') else (
+                'world/preserve.bin') if kind in ('loader', 'collision', 'material', 'scanner', 'nearby', 'arrow-leaves', 'insert', 'ray', 'presentation-capture') else (
                     'world/level.dat', 'world/region/r.0.0.mcr', 'world/preserve.bin')
     require(type(names) is list and tuple(names) == expected,
             'Exact canonical literal filenames required for ' + kind + '/' + mode)
@@ -578,16 +769,20 @@ def input_mapping_self_test():
     three = ['world/level.dat', 'world/region/r.0.0.mcr', 'world/preserve.bin']
     good = {'inputs': {'loader': four, 'lookup': three, 'close': three.copy(),
                        'collision': {mode: four.copy() for mode in MODES['collision']},
-                       'material': {mode: four.copy() for mode in MODES['material']}}}
+                       'material': {mode: four.copy() for mode in MODES['material']},
+                       'scanner': {mode: four.copy() for mode in MODES['scanner']},
+                       'nearby': {mode: four.copy() for mode in MODES['nearby']},
+                       'arrow-leaves': {mode: four.copy() for mode in MODES['arrow-leaves']},
+                       **{kind: {mode: four.copy() for mode in MODES[kind]} for kind in DIRECT_PROTOCOLS}}}
     refused = 0
     for kind, modes in MODES.items():
         for mode in modes:
-            require(expected_input_names(good, kind, mode) == tuple(four if kind in ('loader', 'collision', 'material') else three),
+            require(expected_input_names(good, kind, mode) == tuple(four if kind in ('loader', 'collision', 'material', 'scanner', 'nearby', 'arrow-leaves', 'insert', 'ray', 'presentation-capture') else three),
                     'Exact input mapping positive')
             for replacement in ([], four + ['world/extra'], tuple(four),
                                 ['world/level.dat', 'world/region/r.0.0.mcr']):
                 changed = copy.deepcopy(good)
-                if kind in ('collision', 'material'):
+                if kind in ('collision', 'material', 'scanner', 'nearby', 'arrow-leaves', 'insert', 'ray', 'presentation-capture'):
                     changed['inputs'][kind][mode] = replacement
                 else:
                     changed['inputs'][kind] = replacement
@@ -597,7 +792,7 @@ def input_mapping_self_test():
                     refused += 1
                     continue
                 raise ValueError('Malformed literal filename mapping accepted')
-    for kind in ('collision', 'material'):
+    for kind in ('collision', 'material', 'scanner', 'nearby', 'arrow-leaves', 'insert', 'ray', 'presentation-capture'):
         for replacement in ({}, [], {'foreign': four}, {mode: four for mode in MODES[kind][:-1]}):
             changed = copy.deepcopy(good)
             changed['inputs'][kind] = replacement
@@ -623,7 +818,7 @@ def input_mapping_self_test():
             refused += 1
             continue
         raise ValueError('Removed/changed canonical saved-data input admitted')
-    require(refused == 86, 'All per-mode/saved-data literal mapping corruptions refused')
+    require(refused == 178 + 4 * sum(len(v) for v in DIRECT_ENTRIES.values()) + 4 * len(DIRECT_PROTOCOLS), 'All per-mode/saved-data literal mapping corruptions refused')
     return refused
 
 
@@ -706,7 +901,126 @@ def collision_recipe_self_test(project_root):
             checked += 1
             continue
         raise ValueError('Unknown input mode admitted')
-    print('PASS:', checked, 'pure collision recipe byte/NBT checks;no bootstrap/native execution')
+    collision_checked = checked
+    for mode in MODES['scanner']:
+        actual = recipe.scanner_prepared(mode, saving, construction)
+        check(type(actual) is dict and set(actual) == set(expected_input_names(bundle, 'scanner', mode)),
+              'Exact independent scanner input files: ' + mode)
+        check(all(type(value) is bytes for value in actual.values()), 'Immutable scanner literal bytes: ' + mode)
+        check(actual['world/data/idcounts.dat'] == construction.raw_ids() and
+              actual['world/preserve.bin'] == b'owned scanner unrelated bytes\0\xff',
+              'Actual scanner saved-data and unrelated preservation bytes: ' + mode)
+        raw = unpack(actual['world/region/r.0.0.mcr'])
+        if mode == 'loader-error':
+            check(actual['world/level.dat'] == gzip.compress(construction.metadata(), mtime=0) and
+                  actual['world/region/r.0.0.mcr'] == construction.malformed_region() and raw == b'\1\0\0\7',
+                  'Exact actual malformed-root producer input')
+        elif mode == 'scratch':
+            item_info, item_region = saving.seed('item-chest')
+            check(actual['world/level.dat'] == item_info and raw == unpack(bytes(item_region)),
+                  'Exact actual imported Item/Chest source seed')
+        else:
+            check(actual['world/level.dat'] == base_info, 'Original canonical World metadata: ' + mode)
+            expected_blocks, expected_data = bytearray(blocks), bytearray(data)
+            edits = ((8,66,8,8,0),(8,67,8,200,0)) if mode == 'liquid' else (
+                ((10,70,10,8,0),(9,70,10,8,1),(10,70,9,8,2),(11,70,10,8,3),(10,70,11,8,4))
+                if mode == 'accelerate' else ())
+            for x,y,z,block,metadata in edits:
+                index=(x<<11)|(z<<7)|y
+                check(expected_blocks[index] == 0, 'Independent originally-air scanner input')
+                expected_blocks[index]=block
+                expected_data[index>>1]=(expected_data[index>>1]&(~(15<<((index&1)*4))&255))|(metadata<<((index&1)*4))
+            level = saving.Nbt(raw).root()['Level'][1]
+            check(level['Blocks'] == [7,bytes(expected_blocks)] and level['Data'] == [7,bytes(expected_data)] and
+                  {k:v for k,v in level.items() if k not in ('Blocks','Data')} ==
+                  {k:v for k,v in base_level.items() if k not in ('Blocks','Data')},
+                  'Only exact authored scanner Block/packed-nibble inputs differ: ' + mode)
+    for mode in ('id-first','MATCH','scanner-unknown'):
+        try:
+            recipe.scanner_prepared(mode,saving,construction)
+        except ValueError:
+            checked += 1
+            continue
+        raise ValueError('Unknown scanner recipe mode admitted')
+    print('PASS:', checked-collision_checked, 'pure scanner recipe byte/NBT checks;no bootstrap/native execution')
+    print('PASS:', collision_checked, 'pure collision recipe byte/NBT checks;no bootstrap/native execution')
+    return checked
+
+
+def nullable_recipe_self_test(project_root):
+    """One pre-bootstrap ID200 edit through actual pinned producers; no native call."""
+    import struct
+    import zlib
+
+    here = Path(__file__).resolve().parent
+    root = (project_root if project_root is not None else here.parents[2]).resolve(strict=True)
+    bundle = bundle_payload((here / 'world_query_controls_bundle.json').read_bytes())
+    checked = 0
+
+    def check(value, message):
+        nonlocal checked
+        require(value, message)
+        checked += 1
+
+    def load(name, relative):
+        path = here / 'collision_query_inputs.py' if relative.endswith('/collision_query_inputs.py') else root / relative
+        check(pin(path) == bundle['helpers'][relative], 'Exact nullable input producer: ' + relative)
+        spec = importlib.util.spec_from_file_location(name, path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    saving = load('query_nullable_saving', 'tests/tools/world/test_source_saving.py')
+    construction = load('query_nullable_construction', 'tests/tools/world/test_source_world_construction.py')
+    recipe = load('query_nullable_inputs', 'tests/tools/world/collision_query_inputs.py')
+    base = recipe.prepared('id-first', saving, construction)
+    values = recipe.prepared('material-nullable', saving, construction)
+    check(type(values) is dict and set(values) == set(expected_input_names(bundle, 'material', 'material-nullable')),
+          'Every nullable literal file and no extra input')
+    check(all(type(value) is bytes for value in values.values()), 'Nullable producer returns immutable bytes')
+    for name in ('world/level.dat', 'world/data/idcounts.dat', 'world/preserve.bin'):
+        check(values[name] == base[name], 'Unchanged actual nullable input: ' + name)
+    original, region = base['world/region/r.0.0.mcr'], values['world/region/r.0.0.mcr']
+    check(len(original) == len(region) == 12288, 'Same complete original region extent')
+    check(original[:8192] == region[:8192], 'All location/timestamp bytes unchanged')
+
+    def unpack(value):
+        check(struct.unpack_from('>I', value, 0)[0] == ((2 << 8) | 1), 'Actual nullable sector descriptor')
+        length = struct.unpack_from('>i', value, 8192)[0]
+        check(1 < length < 4092 and value[8196] == 2, 'Bounded actual nullable selector2 record')
+        decoder = zlib.decompressobj()
+        raw = decoder.decompress(value[8197:8196 + length], saving.BOUND + 1)
+        check(len(raw) <= saving.BOUND and decoder.eof and not decoder.unused_data and
+              not decoder.unconsumed_tail, 'Complete actual nullable NBT stream')
+        return raw
+
+    before_raw, after_raw = unpack(original), unpack(region)
+    before, after = saving.Nbt(before_raw).root()['Level'][1], saving.Nbt(after_raw).root()['Level'][1]
+    old, new = before['Blocks'][1], after['Blocks'][1]
+    check(before['Blocks'][0] == after['Blocks'][0] == 7 and type(old) is bytes and type(new) is bytes and
+          len(old) == len(new) == 32768, 'Actual full typed nullable Blocks planes')
+    cell = (8 << 11) | (8 << 7) | 66
+    check(old[cell] == 0 and new[cell] == 200 and [i for i, pair in enumerate(zip(old, new)) if pair[0] != pair[1]] == [cell],
+          'Exactly one originally-air stored ID changes to200')
+    check(new[cell - 2] == 1 and new[cell - 1] == 3 and after['Data'] == before['Data'] and
+          after['Data'][1][(cell - 2) >> 1] == 0xA5, 'Existing Blocks1/3 and packed metadata preserved')
+    check({k: v for k, v in before.items() if k != 'Blocks'} == {k: v for k, v in after.items() if k != 'Blocks'},
+          'Every other actual NBT field unchanged')
+    old_tag = saving.named(7, 'Blocks', struct.pack('>i', len(old)) + old)
+    check(before_raw.count(old_tag) == 1 and after_raw == before_raw.replace(
+          old_tag, saving.named(7, 'Blocks', struct.pack('>i', len(new)) + new), 1),
+          'Only one actual complete Blocks tag replaced')
+    check(after['Entities'] == [9, [10, []]] and after['TileEntities'] == [9, [10, []]],
+          'No invented stored Entity or Tile graph')
+    for mode in ('material-unknown', 'MATERIAL-NULLABLE'):
+        try:
+            recipe.prepared(mode, saving, construction)
+        except ValueError:
+            checked += 1
+            continue
+        raise ValueError('Unknown nullable recipe mode admitted')
+    require(checked == 24, 'Every declared nullable producer check remains present')
+    print('PASS:', checked, 'pure nullable recipe byte/NBT checks;no bootstrap/native execution')
     return checked
 
 
@@ -801,25 +1115,26 @@ def close_recipe_self_test(project_root):
 
 def material_recipe_mode(mode):
     require(mode in MODES['material'], 'Unknown material input mode')
-    return 'loader-error' if mode == 'material-loader-error' else 'id-first'
+    return 'material-nullable' if mode == 'material-nullable' else (
+        'loader-error' if mode == 'material-loader-error' else 'id-first')
 
 
 def material_mapping_self_test():
     expected = {'material-success': 'id-first', 'material-admission': 'id-first',
-                'material-loader-error': 'loader-error'}
+                'material-loader-error': 'loader-error', 'material-nullable': 'material-nullable'}
     require(MATERIAL_CALLS == {'material-success': 4, 'material-admission': 10,
-                              'material-loader-error': 1}, 'Exact material entry budgets')
+                              'material-loader-error': 1, 'material-nullable': 2}, 'Exact material entry budgets')
     for mode, recipe in expected.items():
         require(material_recipe_mode(mode) == recipe, 'Actual saved-input factory mapping')
     refused = 0
-    for mode in ('material-nullable', 'success', 'loader-error', ''):
+    for mode in ('material-unknown', 'success', 'loader-error', ''):
         try:
             material_recipe_mode(mode)
         except ValueError:
             refused += 1
             continue
         raise ValueError('Unshipped/unknown material mode admitted')
-    print('PASS: 3 material factory mappings;4 unshipped/unknown mode refusals')
+    print('PASS: 4 material factory mappings;4 unshipped/unknown mode refusals')
     return refused
 
 
@@ -838,6 +1153,7 @@ def main():
         mapping_refusals = input_mapping_self_test()
         print('PASS:', mapping_refusals, 'per-mode/saved-data filename refusals')
         collision_recipe_self_test(args.project_root)
+        nullable_recipe_self_test(args.project_root)
         close_mapping = close_input_mapping_self_test()
         print('PASS:', close_mapping, 'close fourth-file refusals')
         close_recipe_self_test(args.project_root)
@@ -899,9 +1215,17 @@ def main():
         report['tables'] = list(ownership.TABLES)
         support = load('query_actual_capture', 'tests/reference/client/statistics/support.py')
         source_saving = load('query_actual_seed', 'tests/tools/world/test_source_saving.py')
-        if args.kind == 'close':
+        if args.kind in DIRECT_RECIPES:
+            recipe = load('query_actual_direct_recipe', DIRECT_RECIPES[args.kind])
+            construction = load('query_actual_construction_seed', 'tests/tools/world/test_source_world_construction.py')
+        elif args.kind in ('nearby', 'arrow-leaves'):
+            recipe = load('query_actual_owned_leaf_recipe',
+                          'tests/tools/world/nearby_owned_inputs.py' if args.kind == 'nearby' else
+                          'tests/tools/world/arrow_owned_leaves_inputs.py')
+            construction = load('query_actual_construction_seed', 'tests/tools/world/test_source_world_construction.py')
+        elif args.kind == 'close':
             recipe = load('query_actual_close_recipe', 'tests/tools/world/activation_close_inputs.py')
-        elif args.kind in ('collision', 'material'):
+        elif args.kind in ('collision', 'material', 'scanner', 'nearby', 'arrow-leaves'):
             recipe = load('query_actual_collision_recipe', 'tests/tools/world/collision_query_inputs.py')
             construction = load('query_actual_construction_seed', 'tests/tools/world/test_source_world_construction.py')
         else:
@@ -910,9 +1234,16 @@ def main():
         require(str(fixture_root).isascii() and not fixture_root.exists(), 'Fresh ASCII native fixture root required')
         input_names = expected_input_names(bundle, args.kind, args.mode)
         recipe_mode = material_recipe_mode(args.mode) if args.kind == 'material' else args.mode
-        prepared = recipe.prepared(recipe_mode, source_saving) if args.kind == 'close' else (
-            recipe.prepared(recipe_mode, source_saving, construction) if args.kind in ('collision', 'material') else (
-                recipe.prepared(args.kind, args.mode, source_saving)))
+        if args.kind in DIRECT_RECIPES:
+            prepared = recipe.prepared(args.mode, source_saving, construction)
+        elif args.kind == 'scanner':
+            prepared = recipe.scanner_prepared(args.mode, source_saving, construction)
+        elif args.kind == 'close':
+            prepared = recipe.prepared(recipe_mode, source_saving)
+        elif args.kind in ('collision', 'material', 'nearby', 'arrow-leaves'):
+            prepared = recipe.prepared(recipe_mode, source_saving, construction)
+        else:
+            prepared = recipe.prepared(args.kind, args.mode, source_saving)
         require(type(prepared) is dict and set(prepared) == set(input_names),
                 'Exact authored input names required')
         (fixture_root / 'world/region').mkdir(parents=True)
@@ -934,6 +1265,11 @@ def main():
                                     env=os.environ.copy())
         report['capture'] = child.capture_report
         report['checks'] = completed(child, args.kind, args.mode, command)
+        if args.kind in ('nearby', 'arrow-leaves'):
+            report['C_entry_witnesses_not_Source_calls'] = (
+                NEARBY_ENTRIES[args.mode] if args.kind == 'nearby' else ARROW_LEAVES_ENTRIES[args.mode]).copy()
+        if args.kind in DIRECT_ENTRIES:
+            report['C_entry_witnesses_not_Source_calls'] = DIRECT_ENTRIES[args.kind][args.mode].copy()
         protocol_complete = True
         report['status'] = 'PASS'
     except BaseException as error:

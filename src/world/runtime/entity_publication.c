@@ -15,6 +15,7 @@
 #include "chunk_provider_internal.h"
 #include "construction_internal.h"
 #include "dedicated/entity_index.h"
+#include "entity_insertion_execution_internal.h"
 #include "entity_publication_detailed_execution_internal.h"
 #include "entity_publication_execution_internal.h"
 #include "entity_publication_internal.h"
@@ -653,25 +654,153 @@ static bool enter_entity(mc_world_runtime *world, mc_entity *entity, mc_world_en
     return true;
 }
 
+void mc_world_entity_insert_execution_init(mc_world_entity_insert_execution *frame,
+                                           mc_entity_tick_execution *execution,
+                                           mc_world_runtime_classes *code_classes,
+                                           mc_world_runtime_execution_code code,
+                                           mc_entity_tick_execution_site receiver_site,
+                                           mc_world_runtime_execution_result *owned) {
+    if (frame != NULL)
+        *frame = (mc_world_entity_insert_execution){.execution = execution,
+                                                    .code_classes = code_classes,
+                                                    .code = code,
+                                                    .receiver_site = receiver_site,
+                                                    .owned = owned};
+    mc_world_runtime_execution_result_init(owned);
+}
+
+static bool insert_result_records_quiet(const mc_world_runtime_execution_result *owned) {
+    if (owned->root_pending)
+        return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (owned->pending[i].used)
+            return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (owned->closes[i].used)
+            return false;
+    return true;
+}
+
+static bool insert_result_quiet(const mc_world_runtime_execution_result *owned) {
+    return !owned->selection_ready && insert_result_records_quiet(owned);
+}
+
+static bool insert_floor(mc_world_entity_insert_execution *owned, double argument, int pc,
+                         int32_t *out, mc_world_entity_error *frame) {
+    if (owned != NULL) {
+        frame->bytecode = (unsigned int)pc;
+        if (mc_math_execution_require(owned->execution->math,
+                                      (mc_math_execution_site){"fd", "b", "(Lsn;)Z", pc}, "b",
+                                      "(D)I") != MC_MATH_CLASS_OK)
+            return false; /* Actual Math channel; no invented Entity status. */
+    }
+    *out = mc_math_floor_double(argument);
+    return true;
+}
+
+static void insert_selected_view(mc_world_entity_insert_execution *owned) {
+    if (!owned->owned->selection_ready)
+        return;
+    mc_entity_tick_execution_loader_view selected;
+    if (mc_entity_tick_execution_loader_read(owned->execution, &owned->owned->selection,
+                                             &selected)) {
+        /* A completed successful NONE has no failed raw loader borrow. A
+         * forwarded child's status need not equal the enclosing GET status. */
+        owned->acquisition.source_chunk =
+            selected.status == MC_CHUNK_ACQUIRE_OK ? NULL : selected.failure;
+    } else {
+        owned->acquisition.source_chunk = NULL;
+        mc_world_runtime_execution_result_note(owned->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                               "World single insertion selected loader view",
+                                               owned->receiver_site);
+    }
+}
+
+static bool insert_acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk_state **out,
+                           mc_world_entity_error *frame, mc_world_entity_insert_execution *owned) {
+    if (owned != NULL && (owned->owned->ownership_status != MC_WORLD_STORAGE_OK ||
+                          !insert_result_quiet(owned->owned))) {
+        mc_world_runtime_execution_result_note(owned->owned, MC_WORLD_STORAGE_BUSY,
+                                               "World single insertion prior query not quiet",
+                                               owned->receiver_site);
+        return false;
+    }
+    /* ONE real same-kernel get. Preserve actual caller-stable lower frame and
+     * result BEFORE the old compact Entity projection can discard descendants. */
+    frame->acquisition =
+        owned == NULL
+            ? mc_world_runtime_get_detailed(world, x, z, out, NULL)
+            : mc_world_runtime_get_in_execution(owned->execution, world, owned->code, x, z, out,
+                                                &owned->acquisition, owned->owned);
+    if (owned != NULL) {
+        owned->get_returned = true;
+        insert_selected_view(owned);
+        /* Preserve a real returned child's cause as a VALUE projection, not
+         * as proof that a Native preflight entered Source. An untouched fresh
+         * lower frame stays zero; every channel remains separately available. */
+        if (owned->acquisition.cause.status != MC_WORLD_STORAGE_OK)
+            (void)entity_cause(frame, owned->acquisition.cause);
+        if (owned->owned->ownership_status != MC_WORLD_STORAGE_OK)
+            return false;
+    }
+    if (frame->acquisition != MC_CHUNK_ACQUIRE_OK) {
+        if (frame->acquisition == MC_CHUNK_ACQUIRE_LIMIT ||
+            frame->acquisition == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT)
+            return entity_fail(frame, MC_WORLD_STORAGE_LIMIT,
+                               "World Entity Chunk acquisition limit");
+        const mc_world_storage_error cause =
+            owned == NULL ? world->last_error : owned->acquisition.cause;
+        if (cause.status != MC_WORLD_STORAGE_OK)
+            return entity_cause(frame, cause);
+        return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                           "World Entity Chunk acquisition");
+    }
+    if (owned != NULL) {
+        if (!owned->owned->selection_ready ||
+            owned->owned->selection.status != MC_CHUNK_ACQUIRE_OK ||
+            !insert_result_records_quiet(owned->owned)) {
+            mc_world_runtime_execution_result_note(owned->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                                   "World single insertion completed GET outcome",
+                                                   owned->receiver_site);
+            return false;
+        }
+        owned->owned->selection_ready = false; /* Only actual completed quiet NONE. */
+    }
+    return true;
+}
+
 static bool add_to_chunk(mc_world_runtime *world, mc_chunk_state *state, mc_entity *entity,
-                         mc_world_entity_error *frame) {
+                         mc_world_entity_error *frame, mc_world_entity_insert_execution *owned) {
     if (state->blank)
         return true; /* Actual li/hg.a(Entity)V return0, including NULL. */
-    mc_world_chunk *chunk = mc_world_store_chunk_object(world->fields.w, state);
+    mc_world_store *const store = world->fields.w;
+    mc_world_chunk *chunk = mc_world_store_chunk_object(store, state);
     if (chunk == NULL)
         return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                            "World Entity concrete Chunk");
     mc_world_storage_error cause = {0};
-    if (mc_world_store_lease_chunk(world->fields.w, state, &cause) != MC_WORLD_STORAGE_OK)
+    if (mc_world_store_lease_chunk(store, state, &cause) != MC_WORLD_STORAGE_OK)
         return entity_cause(frame, cause);
-    mc_world_chunk_entity_error detail = {0};
-    const mc_world_storage_status status = mc_world_chunk_insert_entity(chunk, entity, &detail);
-    (void)mc_world_store_release_chunk(world->fields.w, state, NULL);
-    if (status == MC_WORLD_STORAGE_OK)
+    mc_world_chunk_entity_error local = {0};
+    mc_world_chunk_entity_error *detail = owned == NULL ? &local : &owned->chunk;
+    bool completed;
+    if (owned == NULL) {
+        completed = mc_world_chunk_insert_entity(chunk, entity, detail) == MC_WORLD_STORAGE_OK;
+    } else {
+        completed = mc_world_chunk_insert_entity_in_math_execution(
+            owned->execution->math, chunk, entity, detail, &owned->chunk_status);
+        owned->chunk_returned = true;
+    }
+    /* Pair the exact Native Store lease just acquired, even if mutable World
+     * projections change. No Source field or membership repair is performed. */
+    (void)mc_world_store_release_chunk(store, state, NULL);
+    if (completed)
         return true;
-    frame->chunk_bytecode = detail.bytecode;
-    frame->entity = detail.entity;
-    return entity_cause(frame, detail.cause);
+    frame->chunk_bytecode = detail->bytecode;
+    frame->entity = detail->entity;
+    if (detail->cause.status != MC_WORLD_STORAGE_OK)
+        (void)entity_cause(frame, detail->cause);
+    return false; /* Keep actual Math false independently of raw status OK. */
 }
 
 static bool sleeping_fail(mc_world_player_sleep_error *frame, mc_world_storage_status status,
@@ -766,7 +895,8 @@ static bool update_sleeping_held(mc_world_runtime *world, mc_world_player_sleep_
 }
 
 static bool insert_entity(mc_world_runtime *world, mc_entity *entity, bool *value,
-                          mc_world_entity_error *frame) {
+                          mc_world_entity_error *frame, mc_world_entity_insert_execution *owned,
+                          mc_world_access_failure_lease *lease) {
     frame->bytecode = 1;
     mc_entity_base_fields *fields = mc_entity_runtime_fields(entity);
     if (fields == NULL)
@@ -776,10 +906,14 @@ static bool insert_entity(mc_world_runtime *world, mc_entity *entity, bool *valu
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u)
         return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                            "World Entity coordinate FP admission");
-    const int32_t chunk_x = mc_math_floor_double(x / 16.0); /* floor8 */
+    int32_t chunk_x;
+    if (!insert_floor(owned, x / 16.0, 8, &chunk_x, frame))
+        return false;
     frame->bytecode = 13;
     fields = mc_entity_runtime_fields(entity);
-    const int32_t chunk_z = mc_math_floor_double(fields->z / 16.0); /* floor20 */
+    int32_t chunk_z;
+    if (!insert_floor(owned, fields->z / 16.0, 20, &chunk_z, frame))
+        return false;
     /* Two real instanceof sites28/52. Concrete dc has canonical gs ancestry;
      * testing exact PLAYER (gs) literal equality would incorrectly reject dc. */
     const bool player = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER);
@@ -817,25 +951,34 @@ static bool insert_entity(mc_world_runtime *world, mc_entity *entity, bool *valu
     mc_chunk_state *state = NULL;
     /* World.c invokes provider b: a cached hit preserves pending work. */
     world->last_error = (mc_world_storage_error){0};
-    frame->acquisition = mc_world_runtime_get_detailed(world, chunk_x, chunk_z, &state, NULL);
-    if (frame->acquisition != MC_CHUNK_ACQUIRE_OK) {
-        if (frame->acquisition == MC_CHUNK_ACQUIRE_LIMIT ||
-            frame->acquisition == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT)
-            return entity_fail(frame, MC_WORLD_STORAGE_LIMIT,
-                               "World Entity Chunk acquisition limit");
-        if (world->last_error.status != MC_WORLD_STORAGE_OK)
-            return entity_cause(frame, world->last_error);
-        return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                           "World Entity Chunk acquisition");
-    }
+    if (!insert_acquire(world, chunk_x, chunk_z, &state, frame, owned))
+        return false;
     frame->provider_bytecode = 0;
     frame->bytecode = 87;
     if (state == NULL)
         return entity_fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                            "World Entity acquired Chunk receiver");
-    if (!add_to_chunk(world, state, entity, frame) || !append_entity(world, entity, frame) ||
-        !observe_entity_at(world, entity, frame, 103, NULL, NULL, NULL,
-                           (mc_entity_tick_execution_site){NULL, NULL, NULL, -1}))
+    if (!add_to_chunk(world, state, entity, frame, owned) || !append_entity(world, entity, frame))
+        return false;
+    const bool observed =
+        observe_entity_at(world, entity, frame, 103, owned == NULL ? NULL : owned->execution, lease,
+                          owned == NULL ? NULL : owned->owned,
+                          owned == NULL ? (mc_entity_tick_execution_site){NULL, NULL, NULL, -1}
+                                        : owned->receiver_site);
+    if (owned != NULL) {
+        owned->observer_returned = true;
+        if (owned->execution->capture_pending) {
+            const mc_entity_tick_execution_error capture = owned->execution->capture;
+            mc_world_runtime_execution_result_note(
+                owned->owned,
+                capture.status == MC_WORLD_STORAGE_OK ? MC_WORLD_STORAGE_UNSUPPORTED_STATE
+                                                      : capture.status,
+                "World single insertion actual observer capture pending", owned->receiver_site);
+        }
+        if (owned->owned->ownership_status != MC_WORLD_STORAGE_OK)
+            return false;
+    }
+    if (!observed)
         return false;
     *value = true;
     return true;
@@ -871,20 +1014,77 @@ mc_world_storage_status mc_world_runtime_add_weather_entity(mc_world_runtime *wo
     return finish_entity(world, entity, completed, &frame, error);
 }
 
+static bool single_insert_run(mc_world_runtime *world, mc_entity *entity, bool *out,
+                              mc_world_entity_error *frame, mc_world_entity_insert_execution *owned,
+                              mc_world_access_failure_lease *lease) {
+    *frame = (mc_world_entity_error){0};
+    if (out == NULL)
+        return entity_fail(frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World Entity output");
+    if (!enter_entity(world, entity, frame))
+        return false;
+    if (owned != NULL)
+        owned->body_entered = true;
+    bool value = false;
+    const bool returned = insert_entity(world, entity, &value, frame, owned, lease);
+    if (owned != NULL)
+        owned->body_completed = returned;
+    bool completed = returned;
+    if (completed && owned != NULL &&
+        (owned->owned->ownership_status != MC_WORLD_STORAGE_OK ||
+         !insert_result_quiet(owned->owned))) {
+        mc_world_runtime_execution_result_note(owned->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                               "World single insertion returned result not quiet",
+                                               owned->receiver_site);
+        completed = false;
+    }
+    if (completed)
+        *out = value; /* Actual false-on-absence is a completed Source result. */
+    (void)finish_entity(world, entity, completed, frame, frame);
+    return completed;
+}
+
 mc_world_storage_status mc_world_runtime_insert_entity(mc_world_runtime *world, mc_entity *entity,
                                                        bool *out, mc_world_entity_error *error) {
     mc_world_entity_error frame = {0};
-    if (out == NULL) {
-        (void)entity_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World Entity output");
-        return entity_result(error, &frame);
+    (void)single_insert_run(world, entity, out, &frame, NULL, NULL);
+    return entity_result(error, &frame);
+}
+
+bool mc_world_runtime_insert_entity_in_execution(mc_world_entity_insert_execution *frame,
+                                                 mc_world_runtime *world, mc_entity *entity,
+                                                 bool *out, mc_world_entity_error *error,
+                                                 mc_world_storage_status *status) {
+    if (frame == NULL)
+        return false;
+    if (frame->execution == NULL || frame->execution->identity != frame->execution ||
+        frame->execution->math == NULL || frame->code_classes == NULL || frame->owned == NULL ||
+        out == NULL || error == NULL || status == NULL || frame->entered) {
+        mc_world_runtime_execution_result_note(
+            frame->owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+            "World single insertion actual execution/code/outputs required", frame->receiver_site);
+        return false;
     }
-    if (!enter_entity(world, entity, &frame))
-        return entity_result(error, &frame);
-    bool value = false;
-    const bool completed = insert_entity(world, entity, &value, &frame);
-    if (completed)
-        *out = value;
-    return finish_entity(world, entity, completed, &frame, error);
+    if (frame->owned->ownership_status != MC_WORLD_STORAGE_OK ||
+        !insert_result_quiet(frame->owned)) {
+        mc_world_runtime_execution_result_note(frame->owned, MC_WORLD_STORAGE_BUSY,
+                                               "World single insertion fresh result required",
+                                               frame->receiver_site);
+        return false;
+    }
+    mc_world_access_failure_lease *lease = NULL;
+    const mc_world_storage_status admitted =
+        mc_world_execution_child_lease(frame->execution, world, &lease);
+    if (admitted != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(frame->owned, admitted,
+                                               "World single insertion evaluated World ownership",
+                                               frame->receiver_site);
+        return false;
+    }
+    frame->entered = true;
+    const bool completed = single_insert_run(world, entity, out, error, frame, lease);
+    *status = error->status; /* Raw body channel; never a continuation witness. */
+    frame->completed = completed;
+    return completed;
 }
 
 mc_world_storage_status
@@ -956,6 +1156,6 @@ mc_world_storage_status mc_world_runtime_chunk_add_entity(mc_world_chunk *chunk,
         (void)entity_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "Chunk Entity store identity");
     else
-        completed = add_to_chunk(world, state, entity, &frame);
+        completed = add_to_chunk(world, state, entity, &frame, NULL);
     return finish_entity(world, entity, completed, &frame, error);
 }

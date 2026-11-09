@@ -67,4 +67,32 @@ mc_world_storage_status mc_world_runtime_particle_in_execution(mc_entity_tick_ex
                                                                double, double, double, double,
                                                                double, mc_world_mutation_error *);
 
+/* The actual runtime result type is defined in runtime_execution_internal.h.
+ * Forward declaration avoids a neutral owner/header include cycle. */
+struct mc_world_runtime_execution_result;
+
+/* SAME entered sound/particle bodies with required initialized, stable, disjoint
+ * caller result. Do NOT initialize/reset it here. Every actually reached
+ * capture_receipt return is noted immediately BEFORE ordinary temporary rights
+ * release, regardless of capture_pending. Native admission is likewise noted
+ * at its actual return before error projection. This preserves native-first
+ * when capture_admission refuses but pending remains false and first stays OK.
+ * receiver_site is the actual defining caller's evaluated World-load VALUE,
+ * supplied before args/callbacks; no ambient admission/first-error inference.
+ * Source callback status/cause, real HELD/ARMED right, call/Entity pairing and
+ * raw typed-error conventions stay unchanged. Old entries retain old signatures.
+ * Caller checks independent result first, preserves actual Source cause/rights,
+ * then owns exact native unwind and final context/Math retirement. No Source
+ * replay, new owner inference, post-return retain, field repair or pop occurs.
+ * Missing required result/context rejects natively, never legacy fallback.
+ */
+mc_world_storage_status mc_world_runtime_entity_sound_detailed_in_execution(
+    mc_entity_tick_execution *, mc_world_runtime *, mc_entity *, const mc_registry_string *, float,
+    float, mc_entity_tick_execution_site receiver_site, mc_world_movement_error *,
+    struct mc_world_runtime_execution_result *);
+mc_world_storage_status mc_world_runtime_particle_detailed_in_execution(
+    mc_entity_tick_execution *, mc_world_runtime *, const mc_registry_string *, double, double,
+    double, double, double, double, mc_entity_tick_execution_site receiver_site,
+    mc_world_mutation_error *, struct mc_world_runtime_execution_result *);
+
 #endif

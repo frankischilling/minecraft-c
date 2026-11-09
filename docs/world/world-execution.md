@@ -88,6 +88,48 @@ FPS measurement.
 The [owner](../../src/entity/tick/execution.c),
 [activation](../../src/world/runtime/activation.c) and
 [publication](../../src/world/runtime/entity_publication.c) share these lifetimes.
+
+## Entered Arrow operations and direct query controls
+
+The owned Base, collision shape, nearby query, raytrace and single-Entity
+insertion entries share their existing source bodies. Callers provide the
+defining code and stable execution/error/result storage, retain the evaluated
+nullable World before later arguments, and perform checked native cleanup.
+A false continuation can accompany an OK raw status, so callers inspect the
+Boolean, runtime ownership result and reached Math failure independently.
+Completed quiet acquisition alone permits the next actual query.
+
+Detailed Entity sound and particle entries preserve the immediate receipt-capture
+return before temporary references are released. Capture admission can refuse
+without setting `capture_pending`; the supplied result keeps that first native
+cause even if a later scope close also refuses. Four controls exercise sound
+and particle with optional typed errors present and absent. The sound callback
+releases its real caller occurrence; ordinary SDK release then destroys the
+Arrow. The test accounts for that actual binding drain before restoring its
+temporary native counter fault. Source fields and Random state are not repaired.
+
+| Direct controls | Modes | Native checks per host | Scope |
+| --- | ---: | ---: | --- |
+| [Inherited Base and collision shapes](../../tests/world/runtime/world_access/test_arrow_owned_leaves.c) | 8 | 488 | Air/water/lava, full splash, unused/Portal/metadata/Piston shapes |
+| [Nearby queries](../../tests/world/runtime/world_access/test_nearby_execution.c) | 5 | 265 | Duplicate occurrences, live result leases, reached Math refusal and actual callback ownership |
+| [Single-Entity insertion](../../tests/world/runtime/world_access/test_entity_insert_execution.c) | 5 | 237 | Required-output admission, normal insertion, absent nonplayer and independent Math failures |
+| [Raytrace](../../tests/world/runtime/world_access/test_raytrace_execution.c) | 8 | 454 | Early NaN/null prefixes, air miss, stone/Rail hit, reached Math and actual malformed loader failure |
+| [Detailed presentation capture](../../tests/world/runtime/world_access/test_presentation_capture_execution.c) | 4 | 200 | First native cause, protected callback cause, genuine destruction and checked cleanup |
+
+Windows passes 56 tests in 222.28 seconds, then nineteen new/shared controller
+tests in 93.86 seconds. The two selections contain 73 unique names; the latter
+adds seventeen direct modes and repeats only the two Python controller checks.
+Linux Clang Debug passes all 73 together in 142.60 seconds with ASan/UBSan,
+leak detection and halt-on-error. All 56 query modes pass 3,173 checks per host;
+complete captures, literal inputs and source/product guards remain intact.
+The [material controls](material-execution.md) describe the scanner scenarios.
+
+Owned Class queries, Player ally alerts and Living sound/knockback joins compile
+and retain their separate caller contracts. The selected legacy regressions do
+not establish every new owned entry path. Full victim damage, default Arrow
+dispatch, caller classification across every failure, foreign owner graphs and
+complete flight remain unfinished. These controls execute neither a new original
+Arrow method comparison nor a game-frame/FPS benchmark.
 Native fixtures cover [nested calls](../../tests/world/runtime/world_access/test_execution_nested.c),
 [actual activation](../../tests/world/runtime/world_access/test_activation_execution.c),
 [loader failure](../../tests/world/runtime/world_access/test_execution_nested_loader.c)
@@ -106,9 +148,10 @@ activation fixtures independently exercise UTF8 paths transported as hex.
 
 ## Remaining composition
 
-The complete Arrow flight parent, owned inherited base/effect paths, remaining
-direct Block/ray/nearby/damage children and actual World-tick dispatch remain
-unfinished. Source pickup, natural encounters, original audiovisual/whole-frame
+The complete Arrow flight parent, full victim damage/effect composition and
+actual World-tick dispatch remain unfinished. The entered Base, block shape,
+raytrace and nearby components have the separate executed scope above.
+Source pickup, natural encounters, original audiovisual/whole-frame
 equality and sustained FPS remain unqualified. The separate
 [owned acquisition and TileEntity component](world-acquisition-execution.md)
 adds its own finite kernel controls; it receives no execution credit from these

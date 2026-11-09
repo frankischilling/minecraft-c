@@ -10,6 +10,7 @@
 #include "mc/core/math/math.h"
 #include "mc/world/runtime/environment.h"
 #include "mutation/mutation_internal.h"
+#include "runtime_execution_internal.h"
 #include "runtime_internal.h"
 #include "world_access_internal.h"
 
@@ -410,7 +411,9 @@ static bool world_access_cause(mc_world_runtime *world, mc_world_movement_error 
 static bool entity_sound_held(mc_world_runtime *world, mc_entity *entity,
                               const mc_registry_string *name, float volume, float pitch,
                               mc_world_movement_error *frame, mc_entity_tick_execution *execution,
-                              mc_world_access_failure_lease *lease) {
+                              mc_world_access_failure_lease *lease,
+                              mc_world_runtime_execution_result *native,
+                              mc_entity_tick_execution_site receiver_site) {
     for (size_t index = 0;; ++index) {
         mc_world_access *world_access = NULL;
         bool present = false;
@@ -460,11 +463,16 @@ static bool entity_sound_held(mc_world_runtime *world, mc_entity *entity,
                 : mc_world_access_call_sound_with_lease(&world_access, world, name, x, sound_y, z,
                                                         volume, pitch, lease, &cause,
                                                         &frame->world_access_failure);
-        if (status != MC_WORLD_STORAGE_OK && execution != NULL &&
-            mc_entity_tick_execution_capture_receipt(execution, &frame->world_access_failure) !=
-                MC_WORLD_STORAGE_OK &&
-            execution->capture_pending)
-            frame->world_access_failure = (mc_world_access_failure){0};
+        if (status != MC_WORLD_STORAGE_OK && execution != NULL) {
+            const mc_world_storage_status captured =
+                mc_entity_tick_execution_capture_receipt(execution, &frame->world_access_failure);
+            /* The immediate returned VALUE is the native witness. A refused
+             * capture admission need not set capture_pending or first/capture. */
+            mc_world_runtime_execution_result_note(
+                native, captured, "World Entity sound owned receipt capture", receiver_site);
+            if (captured != MC_WORLD_STORAGE_OK && execution->capture_pending)
+                frame->world_access_failure = (mc_world_access_failure){0};
+        }
         mc_entity_release(entity);
         mc_world_access_release_held(world_access);
         if (status != MC_WORLD_STORAGE_OK)
@@ -479,29 +487,38 @@ static mc_world_storage_status entity_sound_run(mc_world_runtime *world, mc_enti
                                                 const mc_registry_string *name, float volume,
                                                 float pitch, mc_world_movement_error *error,
                                                 mc_entity_tick_execution *execution,
-                                                mc_world_access_failure_lease *lease) {
+                                                mc_world_access_failure_lease *lease,
+                                                mc_world_runtime_execution_result *native,
+                                                mc_entity_tick_execution_site receiver_site) {
     mc_world_movement_error frame;
     mc_world_movement_error_init(&frame);
     if (!enter(world, true, &frame))
         return result(error, &frame);
     /* Already evaluated caller arguments are neither dereferenced nor changed.
      * The actual Entity-coordinate overload is not the coordinate-sound body. */
-    (void)entity_sound_held(world, entity, name, volume, pitch, &frame, execution, lease);
+    (void)entity_sound_held(world, entity, name, volume, pitch, &frame, execution, lease, native,
+                            receiver_site);
     return finish(world, &frame, error);
 }
 
 mc_world_storage_status mc_world_runtime_entity_sound(mc_world_runtime *world, mc_entity *entity,
                                                       const mc_registry_string *name, float volume,
                                                       float pitch, mc_world_movement_error *error) {
-    return entity_sound_run(world, entity, name, volume, pitch, error, NULL, NULL);
+    return entity_sound_run(world, entity, name, volume, pitch, error, NULL, NULL, NULL,
+                            (mc_entity_tick_execution_site){NULL, NULL, NULL, -1});
 }
 
-mc_world_storage_status mc_world_runtime_entity_sound_in_execution(
-    mc_entity_tick_execution *execution, mc_world_runtime *world, mc_entity *entity,
-    const mc_registry_string *name, float volume, float pitch, mc_world_movement_error *error) {
+static mc_world_storage_status entity_sound_owned_run(mc_entity_tick_execution *execution,
+                                                      mc_world_runtime *world, mc_entity *entity,
+                                                      const mc_registry_string *name, float volume,
+                                                      float pitch, mc_world_movement_error *error,
+                                                      mc_world_runtime_execution_result *native,
+                                                      mc_entity_tick_execution_site receiver_site) {
     mc_world_access_failure_lease *lease = NULL;
     const mc_world_storage_status status = mc_world_execution_child_lease(execution, world, &lease);
     if (status != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(
+            native, status, "World Entity sound actual owned admission", receiver_site);
         if (error != NULL) {
             mc_world_movement_error_init(error);
             (void)fail(error, status,
@@ -510,5 +527,33 @@ mc_world_storage_status mc_world_runtime_entity_sound_in_execution(
         }
         return status;
     }
-    return entity_sound_run(world, entity, name, volume, pitch, error, execution, lease);
+    return entity_sound_run(world, entity, name, volume, pitch, error, execution, lease, native,
+                            receiver_site);
+}
+
+mc_world_storage_status mc_world_runtime_entity_sound_in_execution(
+    mc_entity_tick_execution *execution, mc_world_runtime *world, mc_entity *entity,
+    const mc_registry_string *name, float volume, float pitch, mc_world_movement_error *error) {
+    return entity_sound_owned_run(execution, world, entity, name, volume, pitch, error, NULL,
+                                  (mc_entity_tick_execution_site){NULL, NULL, NULL, -1});
+}
+
+mc_world_storage_status mc_world_runtime_entity_sound_detailed_in_execution(
+    mc_entity_tick_execution *execution, mc_world_runtime *world, mc_entity *entity,
+    const mc_registry_string *name, float volume, float pitch,
+    mc_entity_tick_execution_site receiver_site, mc_world_movement_error *error,
+    mc_world_runtime_execution_result *native) {
+    if (execution == NULL || native == NULL) {
+        mc_world_runtime_execution_result_note(
+            native, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+            "World Entity sound execution/native result required", receiver_site);
+        if (error != NULL) {
+            mc_world_movement_error_init(error);
+            (void)fail(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                       "World Entity sound execution/native result required");
+        }
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    }
+    return entity_sound_owned_run(execution, world, entity, name, volume, pitch, error, native,
+                                  receiver_site);
 }

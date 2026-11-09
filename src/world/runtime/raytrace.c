@@ -1,4 +1,5 @@
 #include "../../block/registry/runtime_internal.h"
+#include "execution_children_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
 #include "raytrace_internal.h"
@@ -82,6 +83,39 @@ static bool capture(mc_world_raytrace_work *w, const mc_world_access_failure *f)
 
 mc_world_raytrace_status mc_world_raytrace_collision_failed(mc_world_raytrace_work *w,
                                                             mc_world_raytrace_site at) {
+    if (w->execution != NULL) {
+        w->query_failed = true;
+        w->failure.collision = &w->collision;
+        w->failure.world = &w->collision.nearby.query.cause;
+        if (w->owned->selection_ready) {
+            mc_entity_tick_execution_loader_view view = {0};
+            if (mc_entity_tick_execution_loader_read(w->execution, &w->owned->selection, &view) &&
+                view.status != MC_CHUNK_ACQUIRE_OK && view.failure != NULL &&
+                view.failure == w->collision.nearby.query.source_chunk) {
+                w->failure.source_chunk = view.failure;
+                if (view.failure->source.source_exception && !view.failure->source.native_policy) {
+                    w->failure.source_exception = true;
+                    w->failure.exception_class = view.failure->source.exception_class;
+                }
+            }
+        }
+        const mc_world_storage_status child = w->collision.nearby.query.status;
+        if (w->owned->ownership_status != MC_WORLD_STORAGE_OK)
+            w->native_stopped = true;
+        if (child == MC_WORLD_STORAGE_OK)
+            return MC_WORLD_RAYTRACE_OK; /* Native-only stop, not a Source-return witness. */
+        const mc_world_raytrace_status mapped =
+            child == MC_WORLD_STORAGE_LIMIT               ? MC_WORLD_RAYTRACE_LIMIT
+            : child == MC_WORLD_STORAGE_ALLOCATION_FAILED ? MC_WORLD_RAYTRACE_ALLOCATION
+            : child == MC_WORLD_STORAGE_BUSY              ? MC_WORLD_RAYTRACE_BUSY
+            : w->failure.source_exception                 ? MC_WORLD_RAYTRACE_SOURCE_EXCEPTION
+                                                          : MC_WORLD_RAYTRACE_CHILD_FAILED;
+        if (w->collision.block_class != NULL)
+            w->failure.child = (mc_world_raytrace_site){w->collision.block_class, "a", "(Lxp;III)V",
+                                                        (int)w->collision.block_bytecode};
+        return mc_world_raytrace_fail(w, mapped, w->collision.nearby.query.operation, at,
+                                      !w->failure.source_exception);
+    }
     w->failure.collision = &w->collision;
     w->failure.world = &w->collision.nearby.query.cause;
     /* Capture the concrete ld value before any next getter or callback. */
@@ -188,15 +222,91 @@ failed:
                                   mc_world_raytrace_core_site(w->state.source_pc), true);
 }
 
+bool mc_world_raytrace_owned_continuing(mc_world_raytrace_work *w) {
+    if (w->execution == NULL)
+        return true;
+    if (!w->native_stopped && w->owned->ownership_status == MC_WORLD_STORAGE_OK &&
+        !w->owned->selection_ready && !w->owned->root_pending) {
+        bool empty = true;
+        for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+            empty = empty && !w->owned->pending[i].used;
+        for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+            empty = empty && !w->owned->closes[i].used;
+        if (empty)
+            return true;
+    }
+    if (w->owned->ownership_status == MC_WORLD_STORAGE_OK)
+        mc_world_runtime_execution_result_note(
+            w->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+            "World ray successful child has outstanding native continuation",
+            (mc_entity_tick_execution_site){"fd", "a", "(Lbt;Lbt;ZZ)Lvf;",
+                                            (int)w->state.source_pc});
+    w->native_stopped = true;
+    return false;
+}
+
+bool mc_world_raytrace_value(mc_world_raytrace_work *w, int32_t x, int32_t y, int32_t z,
+                             bool metadata, int32_t *out, mc_world_raytrace_site at) {
+    if (!mc_world_raytrace_owned_continuing(w))
+        return false;
+    mc_world_collision_error_init(&w->collision);
+    const mc_world_storage_status status =
+        w->execution == NULL
+            ? mc_world_collision_block_value_held(w->world, x, y, z, metadata, out, &w->collision)
+            : mc_world_collision_block_value_in_execution(w->execution, w->world, w->code.chunk, x,
+                                                          y, z, metadata, out, &w->collision,
+                                                          w->owned);
+    if (status == MC_WORLD_STORAGE_OK && mc_world_raytrace_owned_continuing(w))
+        return true;
+    (void)mc_world_raytrace_collision_failed(w, at);
+    return false;
+}
+
+bool mc_world_raytrace_shape(mc_world_raytrace_work *w, const mc_block *block, int32_t x, int32_t y,
+                             int32_t z, mc_world_raytrace_site at) {
+    if (!mc_world_raytrace_owned_continuing(w))
+        return false;
+    mc_world_collision_error_init(&w->collision);
+    if (w->execution == NULL) {
+        if (mc_world_collision_block_state_shape_held(w->world, block, x, y, z, &w->collision) ==
+            MC_WORLD_STORAGE_OK)
+            return true;
+    } else {
+        mc_world_storage_status status = MC_WORLD_STORAGE_OK;
+        if (mc_world_collision_block_state_shape_in_classes_in_execution(
+                w->execution, w->classes, w->world, w->code, block, x, y, z, &w->collision, &status,
+                w->owned) &&
+            mc_world_raytrace_owned_continuing(w))
+            return true;
+    }
+    (void)mc_world_raytrace_collision_failed(w, at);
+    return false;
+}
+
+static bool movement_box(mc_world_raytrace_work *w, const mc_block *block) {
+    if (!mc_world_raytrace_owned_continuing(w))
+        return false;
+    mc_world_collision_error_init(&w->collision);
+    if (w->execution == NULL) {
+        if (mc_world_collision_block_box_held(w->world, block, w->state.x, w->state.y, w->state.z,
+                                              &w->box, &w->collision) == MC_WORLD_STORAGE_OK)
+            return true;
+    } else {
+        mc_world_storage_status status = MC_WORLD_STORAGE_OK;
+        if (mc_world_collision_block_box_in_classes_in_execution(
+                w->execution, w->classes, w->world, w->code, block, w->state.x, w->state.y,
+                w->state.z, &w->box, &w->collision, &status, w->owned) &&
+            mc_world_raytrace_owned_continuing(w))
+            return true;
+    }
+    (void)mc_world_raytrace_collision_failed(w, mc_world_raytrace_core_site(w->state.source_pc));
+    return false;
+}
+
 static bool block_read(mc_world_raytrace_work *w, int32_t x, int32_t y, int32_t z, bool metadata,
                        unsigned int pc, int32_t *out) {
     w->state.source_pc = pc;
-    mc_world_collision_error_init(&w->collision);
-    if (mc_world_collision_block_value_held(w->world, x, y, z, metadata, out, &w->collision) ==
-        MC_WORLD_STORAGE_OK)
-        return true;
-    (void)mc_world_raytrace_collision_failed(w, mc_world_raytrace_core_site(pc));
-    return false;
+    return mc_world_raytrace_value(w, x, y, z, metadata, out, mc_world_raytrace_core_site(pc));
 }
 
 static bool registry_failure(mc_world_raytrace_work *w, unsigned int pc) {
@@ -239,13 +349,8 @@ static bool cell(mc_world_raytrace_work *w, bool initial) {
     if (w->state.ignore_null_movement_box && block != NULL) {
         w->state.source_pc = initial ? 169u : 882u;
         ++w->state.movement_box_calls;
-        mc_world_collision_error_init(&w->collision);
-        if (mc_world_collision_block_box_held(w->world, block, w->state.x, w->state.y, w->state.z,
-                                              &w->box, &w->collision) != MC_WORLD_STORAGE_OK) {
-            (void)mc_world_raytrace_collision_failed(
-                w, mc_world_raytrace_core_site(w->state.source_pc));
+        if (!movement_box(w, block))
             return false;
-        }
         if (w->box == NULL)
             return true;
         const mc_entity_status status = mc_entity_bounds_release(w->entities, w->box);
@@ -277,7 +382,8 @@ static bool cell(mc_world_raytrace_work *w, bool initial) {
     ++w->state.block_ray_calls;
     return mc_world_raytrace_block_held(w, block, w->state.x, w->state.y, w->state.z,
                                         w->state.start, w->state.end,
-                                        &w->state.result) == MC_WORLD_RAYTRACE_OK;
+                                        &w->state.result) == MC_WORLD_RAYTRACE_OK &&
+           mc_world_raytrace_owned_continuing(w);
 }
 
 static bool floating(mc_world_raytrace_work *w, unsigned int pc) {
@@ -306,6 +412,48 @@ static double add(double a, double b) {
 static double mul(double a, double b) {
     volatile double value = a * b;
     return value;
+}
+
+/* The Source argument is already evaluated before entering this thin wrapper.
+ * Legacy calls keep arithmetic only; owned calls reach actual IN.b at this PC.
+ * A failed require is observed here once, never inferred later from old Math. */
+static bool floor_value(mc_world_raytrace_work *w, double value, unsigned int pc, int32_t *out) {
+    if (w->execution != NULL) {
+        w->state.source_pc = pc;
+        mc_math_execution *math = w->execution->math;
+        const mc_math_class_status status =
+            math == NULL
+                ? MC_MATH_CLASS_STATE_ERROR
+                : mc_math_execution_require(
+                      math, (mc_math_execution_site){"fd", "a", "(Lbt;Lbt;ZZ)Lvf;", (int)pc}, "b",
+                      "(D)I");
+        if (status != MC_MATH_CLASS_OK) {
+            w->math_failed = true;
+            w->native_stopped = true;
+            const mc_math_class_error *cause = mc_math_execution_cause(math);
+            w->math_error =
+                cause != NULL
+                    ? *cause
+                    : (mc_math_class_error){status,
+                                            "World ray reached IN requires Math execution storage",
+                                            -1, MC_MATH_CLASS_OK};
+            w->math_caller = (mc_math_execution_site){"fd", "a", "(Lbt;Lbt;ZZ)Lvf;", (int)pc};
+            w->math_child =
+                w->math_error.source_pc >= 0
+                    ? (mc_math_execution_site){"in", "<clinit>", "()V", w->math_error.source_pc}
+                    : (mc_math_execution_site){"in", "b", "(D)I", -1};
+            const mc_world_raytrace_status mapped =
+                status == MC_MATH_CLASS_LIMIT               ? MC_WORLD_RAYTRACE_LIMIT
+                : status == MC_MATH_CLASS_ALLOCATION_FAILED ? MC_WORLD_RAYTRACE_ALLOCATION
+                : status == MC_MATH_CLASS_BUSY              ? MC_WORLD_RAYTRACE_BUSY
+                                                            : MC_WORLD_RAYTRACE_STATE;
+            (void)mc_world_raytrace_fail(w, mapped, w->math_error.operation,
+                                         mc_world_raytrace_core_site(pc), true);
+            return false;
+        }
+    }
+    *out = mc_math_floor_double(value);
+    return true;
 }
 
 static bool advance(mc_world_raytrace_work *w) {
@@ -371,19 +519,26 @@ static bool advance(mc_world_raytrace_work *w) {
     w->scratch = w->pending_scratch;
     w->pending_scratch = NULL;
     mc_entity_vector *fresh = w->scratch;
-    fresh->x = (double)mc_math_floor_double(s->x);
+    int32_t floored;
+    if (!floor_value(w, s->x, 726, &floored))
+        return false;
+    fresh->x = (double)floored;
     w->state.x = mc_java_double_to_i32(fresh->x);
     if (w->state.face == 5) {
         w->state.x = mc_java_i32_sub(w->state.x, 1);
         fresh->x = add(fresh->x, 1.0);
     }
-    fresh->y = (double)mc_math_floor_double(s->y);
+    if (!floor_value(w, s->y, 763, &floored))
+        return false;
+    fresh->y = (double)floored;
     w->state.y = mc_java_double_to_i32(fresh->y);
     if (w->state.face == 1) {
         w->state.y = mc_java_i32_sub(w->state.y, 1);
         fresh->y = add(fresh->y, 1.0);
     }
-    fresh->z = (double)mc_math_floor_double(s->z);
+    if (!floor_value(w, s->z, 800, &floored))
+        return false;
+    fresh->z = (double)floored;
     w->state.z = mc_java_double_to_i32(fresh->z);
     if (w->state.face == 3) {
         w->state.z = mc_java_i32_sub(w->state.z, 1);
@@ -408,12 +563,18 @@ static void execute(mc_world_raytrace_work *w) {
         w->state.source_pc = 62;
         return;
     }
-    w->state.target_x = mc_math_floor_double(e->x);
-    w->state.target_y = mc_math_floor_double(e->y);
-    w->state.target_z = mc_math_floor_double(e->z);
-    w->state.x = mc_math_floor_double(w->state.start->x);
-    w->state.y = mc_math_floor_double(w->state.start->y);
-    w->state.z = mc_math_floor_double(w->state.start->z);
+    if (!floor_value(w, e->x, 68, &w->state.target_x))
+        return;
+    if (!floor_value(w, e->y, 77, &w->state.target_y))
+        return;
+    if (!floor_value(w, e->z, 86, &w->state.target_z))
+        return;
+    if (!floor_value(w, w->state.start->x, 95, &w->state.x))
+        return;
+    if (!floor_value(w, w->state.start->y, 104, &w->state.y))
+        return;
+    if (!floor_value(w, w->state.start->z, 113, &w->state.z))
+        return;
     if (!cell(w, true))
         return;
     if (w->state.result != NULL) {
@@ -441,24 +602,30 @@ static void execute(mc_world_raytrace_work *w) {
     w->state.source_pc = 934;
 }
 
-static mc_world_raytrace_status begin(mc_world_runtime *world, mc_entity_vector *start,
-                                      mc_entity_vector *end, bool liquid, bool ignore,
-                                      const char *wrapper_descriptor,
-                                      mc_world_raytrace_call **out) {
+static mc_world_raytrace_status
+begin(mc_world_runtime *world, mc_entity_vector *start, mc_entity_vector *end, bool liquid,
+      bool ignore, const char *wrapper_descriptor, mc_world_raytrace_call **out,
+      mc_entity_tick_execution *execution, mc_world_runtime_classes *code_classes,
+      mc_world_collision_block_execution_code code, mc_world_runtime_execution_result *owned) {
     if (out == NULL || *out != NULL || world == NULL)
         return MC_WORLD_RAYTRACE_ARGUMENT;
     if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
-        world->construction.phase == MC_WORLD_RUNTIME_RETIRED || world->classes == NULL ||
-        world->classes->side != MC_WORLD_INFO_CLIENT || world->classes->registry == NULL ||
-        world->classes->entities == NULL)
+        world->construction.phase == MC_WORLD_RUNTIME_RETIRED ||
+        (execution == NULL &&
+         (world->classes == NULL || world->classes->side != MC_WORLD_INFO_CLIENT ||
+          world->classes->registry == NULL || world->classes->entities == NULL)) ||
+        (execution != NULL && (code_classes == NULL || code_classes->entities == NULL)))
         return MC_WORLD_RAYTRACE_STATE;
     mc_world_raytrace_call *call = calloc(1, sizeof(*call));
     if (call == NULL)
         return MC_WORLD_RAYTRACE_ALLOCATION;
     mc_world_raytrace_work *w = &call->work;
     w->world = world;
-    w->classes = world->classes;
-    w->entities = world->classes->entities;
+    w->execution = execution;
+    w->owned = owned;
+    w->code = code;
+    w->classes = execution == NULL ? world->classes : code_classes;
+    w->entities = w->classes->entities;
     w->state.world = world;
     w->state.start = start;
     w->state.end = end;
@@ -517,7 +684,7 @@ static mc_world_raytrace_status begin(mc_world_runtime *world, mc_entity_vector 
     mc_world_runtime_call_leave(world);
 done:
     w->state.active = false;
-    w->state.source_returned = w->failure.status == MC_WORLD_RAYTRACE_OK;
+    w->state.source_returned = w->failure.status == MC_WORLD_RAYTRACE_OK && !w->native_stopped;
     w->state.phase =
         w->state.source_returned ? MC_WORLD_RAYTRACE_RETURNED : MC_WORLD_RAYTRACE_FAILED;
     return w->failure.status;
@@ -526,21 +693,69 @@ done:
 mc_world_raytrace_status mc_world_raytrace_begin(mc_world_runtime *world, mc_entity_vector *start,
                                                  mc_entity_vector *end,
                                                  mc_world_raytrace_call **out) {
-    return begin(world, start, end, false, false, "(Lbt;Lbt;)Lvf;", out);
+    return begin(world, start, end, false, false, "(Lbt;Lbt;)Lvf;", out, NULL, NULL,
+                 (mc_world_collision_block_execution_code){0}, NULL);
 }
 
 mc_world_raytrace_status mc_world_raytrace_liquid_begin(mc_world_runtime *world,
                                                         mc_entity_vector *start,
                                                         mc_entity_vector *end, bool liquid,
                                                         mc_world_raytrace_call **out) {
-    return begin(world, start, end, liquid, false, "(Lbt;Lbt;Z)Lvf;", out);
+    return begin(world, start, end, liquid, false, "(Lbt;Lbt;Z)Lvf;", out, NULL, NULL,
+                 (mc_world_collision_block_execution_code){0}, NULL);
 }
 
 mc_world_raytrace_status mc_world_raytrace_flags_begin(mc_world_runtime *world,
                                                        mc_entity_vector *start,
                                                        mc_entity_vector *end, bool liquid,
                                                        bool ignore, mc_world_raytrace_call **out) {
-    return begin(world, start, end, liquid, ignore, NULL, out);
+    return begin(world, start, end, liquid, ignore, NULL, out, NULL, NULL,
+                 (mc_world_collision_block_execution_code){0}, NULL);
+}
+
+bool mc_world_raytrace_flags_begin_in_execution(
+    mc_entity_tick_execution *execution, mc_world_runtime_classes *code_classes,
+    mc_world_runtime *world, mc_world_collision_block_execution_code code, mc_entity_vector *start,
+    mc_entity_vector *end, bool liquid, bool ignore, mc_world_raytrace_call **out,
+    mc_world_raytrace_status *status, mc_world_runtime_execution_result *owned) {
+    if (owned == NULL)
+        return false;
+    mc_world_runtime_execution_result_init(owned);
+    const mc_entity_tick_execution_site site = {"fd", "a", "(Lbt;Lbt;ZZ)Lvf;", 0};
+    if (execution == NULL || status == NULL || out == NULL || *out != NULL) {
+        mc_world_runtime_execution_result_note(owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "World ray required native execution/result outputs",
+                                               site);
+        return false;
+    }
+    mc_world_access_failure_lease *node = NULL;
+    const mc_world_storage_status admitted =
+        mc_world_execution_child_lease(execution, world, &node);
+    if (admitted != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(owned, admitted, execution->admission.operation,
+                                               site);
+        return false;
+    }
+    *status =
+        begin(world, start, end, liquid, ignore, NULL, out, execution, code_classes, code, owned);
+    return *status == MC_WORLD_RAYTRACE_OK && *out != NULL && (*out)->work.state.source_returned &&
+           mc_world_raytrace_owned_continuing(&(*out)->work);
+}
+
+bool mc_world_raytrace_execution_inspect(const mc_world_raytrace_call *call,
+                                         mc_world_raytrace_execution_state *out) {
+    if (call == NULL || out == NULL || call->work.execution == NULL)
+        return false;
+    *out = (mc_world_raytrace_execution_state){
+        .query_failed = call->work.query_failed,
+        .native_stopped = call->work.native_stopped,
+        .collision = call->work.query_failed ? &call->work.collision : NULL,
+        .owned = call->work.owned,
+        .math_failed = call->work.math_failed,
+        .math_error = call->work.math_error,
+        .math_caller = call->work.math_caller,
+        .math_child = call->work.math_child};
+    return true;
 }
 
 bool mc_world_raytrace_inspect(const mc_world_raytrace_call *call, mc_world_raytrace_state *out) {

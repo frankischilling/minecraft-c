@@ -44,23 +44,14 @@ mc_world_raytrace_status mc_world_raytrace_block_can_collide_held(mc_world_raytr
 
 static bool shape(mc_world_raytrace_work *w, const mc_block *b, int32_t x, int32_t y, int32_t z,
                   const char *cl, unsigned int pc) {
-    mc_world_collision_error_init(&w->collision);
-    if (mc_world_collision_block_state_shape_held(w->world, b, x, y, z, &w->collision) ==
-        MC_WORLD_STORAGE_OK)
-        return true;
-    (void)mc_world_raytrace_collision_failed(w, site(cl, pc));
-    return false;
+    return mc_world_raytrace_shape(w, b, x, y, z, site(cl, pc));
 }
 
 static bool torch(mc_world_raytrace_work *w, const mc_block *block, int32_t x, int32_t y,
                   int32_t z) {
     int32_t value = 0;
-    mc_world_collision_error_init(&w->collision);
-    if (mc_world_collision_block_value_held(w->world, x, y, z, true, &value, &w->collision) !=
-        MC_WORLD_STORAGE_OK) {
-        (void)mc_world_raytrace_collision_failed(w, site("vm", 5));
+    if (!mc_world_raytrace_value(w, x, y, z, true, &value, site("vm", 5)))
         return false;
-    }
     value &= 7;
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
         (void)mc_world_raytrace_fail(w, MC_WORLD_RAYTRACE_STATE, "Torch ray strict FP admission",
