@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 589276,
-      "sha256": "03ab3295febb152947545f1c2f0cdc9c9a88336d58a6ed99b17cf3fce54ec1ca"
+      "bytes": 590855,
+      "sha256": "04a95b4ae3f357544f93c38872b4b45a2bee77dde499b3ed8108f167c5b409a1"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 759552,
-      "sha256": "7a539b178b0dccb3b8ed8f52a34dae5d4826ce8d6c85b5a75b92228a8b52312d"
+      "bytes": 760393,
+      "sha256": "364c45cc9105b64e9af0ea99adad68f966681d32fc61c63a2f40fca68f884188"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 861050,
-      "sha256": "d22452c11384f444ba21121d7d919778a9777a22f98a17a8e8c4e52867db338d"
+      "bytes": 861893,
+      "sha256": "8efd2b27e2b64df87e5f9d2f1a64c4e486e45c9efeb2a41634210fbe68ae63f8"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 756531,
-      "sha256": "6b1774cbc474b737108880abaacfc41fe56c2ad0f8b699dc4582a54e3c84e998"
+      "bytes": 757372,
+      "sha256": "cdf0f4c882cff34b6b6a4dbff1054cdddd6bfbea24f3684c575b66d589aadac5"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -22706,8 +22706,8 @@
       "sha256": "181880b4132f86e8cb7c45de44c02dd331754df28903dbcccccc6a50d71a1861"
     },
     "tests/tools/client/test_zombie_damage.py": {
-      "bytes": 21159,
-      "sha256": "b5646db105d5895d38214ce4e1d1fec8bb5f5d29f6316053954b98a41daa8a3a"
+      "bytes": 22444,
+      "sha256": "eb37239920b7d4f26312a0769773e3bed17dc4869e0e628276b20c2f0d3cc5d1"
     },
     "tests/tools/entity/test_monster_hurt.py": {
       "bytes": 6666,
@@ -39215,6 +39215,58 @@
             "docs/entity/arrow-flight.md": {
               "bytes": 5107,
               "sha256": "13160053a6f659a6342a386649af67f6c1c48b276d6e95c7a2a66514b1f84858"
+            }
+          },
+          "added": [],
+          "current_count": 5889
+        }
+      }
+    },
+    {
+      "from_commit": "309f4d86ab932747d4f49f9eb346cb4134e68e23",
+      "role": "Current source admissions for exact saved-Zombie target readback with separately retained same-species population. Runtime and scene inputs remain unchanged. Historical executed records are preserved; fresh whole-scene qualification remains separate.",
+      "previous_metadata": {
+        "bytes": 1730292,
+        "sha256": "7712424b99ae0729af35773d0deea175c4690247f1cb069cfd3fd269268bf243"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 759552,
+              "sha256": "7a539b178b0dccb3b8ed8f52a34dae5d4826ce8d6c85b5a75b92228a8b52312d"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 861050,
+              "sha256": "d22452c11384f444ba21121d7d919778a9777a22f98a17a8e8c4e52867db338d"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 756531,
+              "sha256": "6b1774cbc474b737108880abaacfc41fe56c2ad0f8b699dc4582a54e3c84e998"
+            },
+            "tests/tools/client/test_zombie_damage.py": {
+              "bytes": 21159,
+              "sha256": "b5646db105d5895d38214ce4e1d1fec8bb5f5d29f6316053954b98a41daa8a3a"
+            }
+          },
+          "added": [],
+          "current_count": 5889
+        }
+      }
+    },
+    {
+      "from_commit": "309f4d86ab932747d4f49f9eb346cb4134e68e23",
+      "role": "Current source admissions for exact saved-Zombie target readback with separately retained same-species population. Runtime and scene inputs remain unchanged. Historical executed records are preserved; fresh whole-scene qualification remains separate.",
+      "previous_metadata": {
+        "bytes": 1731755,
+        "sha256": "bace7ffad9e98530978206ff8fbd15ebd9493929c1d0cd829cbbaaedce455f85"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/testing.md": {
+              "bytes": 589276,
+              "sha256": "03ab3295febb152947545f1c2f0cdc9c9a88336d58a6ed99b17cf3fce54ec1ca"
             }
           },
           "added": [],

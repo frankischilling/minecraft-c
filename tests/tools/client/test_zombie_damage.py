@@ -185,10 +185,24 @@ def statistics_readback(game, assets):
     return result
 
 
-def saved_zombie(entities):
-    zombies = [entity for entity in entities if entity.get('id') == [8, 'Zombie']]
-    require(len(zombies) == 1, 'Exactly one committed saved Zombie')
-    return zombies[0]
+def same_tagged_value(left, right):
+    if type(left) is not type(right):
+        return False
+    if isinstance(left, dict):
+        return left.keys() == right.keys() and all(
+            same_tagged_value(value, right[name]) for name, value in left.items())
+    if isinstance(left, list):
+        return len(left) == len(right) and all(
+            same_tagged_value(a, b) for a, b in zip(left, right))
+    return left == right
+
+
+def saved_zombie(entities, paused):
+    require(type(paused) is dict and same_tagged_value(paused.get('id'), [8, 'Zombie']),
+            'Actual canonical paused Zombie record required')
+    matches = [entity for entity in entities if same_tagged_value(entity, paused)]
+    require(len(matches) == 1, 'Exactly one committed Zombie matches the complete paused record')
+    return matches[0]
 
 
 def readback(nbt, helper, saves, evidence):
@@ -211,11 +225,12 @@ def readback(nbt, helper, saves, evidence):
         entities.extend(level['Entities'][1][1])
         chunks.append(dict(coordinate=list(coordinate), bytes=len(raw),
                            sha256=hashlib.sha256(raw).hexdigest(), entities=level['Entities'][1][1]))
-    saved = saved_zombie(entities)
+    saved = saved_zombie(entities, zombie)
     for name in ('id', 'Pos', 'Motion', 'Rotation', 'Health', 'HurtTime', 'DeathTime', 'AttackTime'):
         require(zombie[name] == saved[name], 'Paused Zombie matches ordinary save: ' + name)
     return dict(time=data['Time'][1], player_health=15, zombie_health=20,
-                saved_zombies=1, sleeping=False, inventory=[], snapshots_match_save=True,
+                saved_zombies=sum(entity.get('id') == [8, 'Zombie'] for entity in entities),
+                saved_target_matches=1, sleeping=False, inventory=[], snapshots_match_save=True,
                 saved_entities=len(entities), additional_entities=[e for e in entities if e is not saved],
                 saved_chunk_inventory=chunks)
 
@@ -226,17 +241,25 @@ def self_test():
     written = {'Health': [2, 15], 'Dimension': [3, 0], 'Sleeping': [1, 0],
                'SleepTimer': [2, 0], 'Inventory': [9, [1, []]], 'Score': [3, 0]}
     player_fields(written, 15)
-    target = {'id': [8, 'Zombie']}
+    target = {'id': [8, 'Zombie'], 'Pos': [9, [6, [0, 1, 2]]], 'Health': [2, 20]}
     ambient = {'id': [8, 'Pig']}
-    require(saved_zombie([target]) is target and saved_zombie([ambient, target]) is target,
-            'Unique saved target with separately retained ambient population')
-    for entities in ([], [ambient], [target, target], [target, ambient, target]):
+    other_zombie = {**target, 'Pos': [9, [6, [3, 1, 2]]]}
+    require(saved_zombie([target], target) is target and
+            saved_zombie([ambient, other_zombie, target], target) is target,
+            'Unique complete saved target with separately retained same-species population')
+    corruptions = ({**target, 'Health': [2, 19]},
+                   {**target, 'Health': [3, 20]},
+                   {**target, 'Pos': [9, [6, [False, 1, 2]]]},
+                   {**target, 'extra': [1, 0]},
+                   {name: value for name, value in target.items() if name != 'Pos'})
+    for entities in ([], [ambient], [other_zombie], [target, target],
+                     [target, ambient, dict(target)], *([value] for value in corruptions)):
         try:
-            saved_zombie(entities)
+            saved_zombie(entities, target)
         except ValueError:
             pass
         else:
-            raise ValueError('Missing or duplicate saved Zombie accepted')
+            raise ValueError('Missing, ambiguous or corrupted saved target accepted')
     for name, value in (('Inventory', [9, [0, []]]), ('Inventory', [9, [10, []]]),
                         ('Health', [2, 20]), ('Sleeping', [1, 1]), ('Score', [3, 1]),
                         ('SpawnX', [3, 0])):

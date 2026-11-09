@@ -489,9 +489,10 @@ the successful Pig candidate and Random history were not observed. Initial
 one-Zombie input and the native Player-plus-Zombie load assertion remain strict.
 
 Both regressions go red before their corrections. Saved output now requires
-exact empty type 1 while authored input still requires 10. Final readback requires
-one matching Zombie and compares all its paused tags; missing or duplicate
-Zombies fail. Every additional Entity and saved Chunk remains inventoried,
+exact empty type 1 while authored input still requires 10. The earlier reader
+requires one saved Zombie and compares selected paused tags. The later extension
+below admits additional Zombies while requiring one complete target match.
+Every additional Entity and saved Chunk remains inventoried,
 including its raw digest. No population or Random state is suppressed. Pure
 fixture tests pass normally and under optimized Python on Windows and Linux.
 Processing the unchanged first native capture then passes every NBT, statistic,
@@ -509,6 +510,28 @@ unchanged throughout. The native product is unchanged from the full-suite
 cohort; only the controller and its admission records change afterward.
 This is a prepared saved hostile encounter, without natural-spawn, original
 whole-frame/audio, unrestricted play or FPS qualification.
+
+A later fresh monitor-2 encounter passes the complete controller and 435 native
+checks. Both 854x480 windows are inside physical monitor 2, with genuine native
+focus. Actual creature behavior deals 5 damage, Player health falls from 20 to
+15, and statistic2021 increases by 5. Terrain/HUD, SDK pause, Save and Quit,
+independent saved NBT/statistics, three screenshots and checked window cleanup
+pass. All 384 saved Chunks remain inventoried, including the target Zombie and
+an additional Creeper in Chunk (4,-9). The 5,890 source files, 413 imported
+asset files and native products remain unchanged through this fresh opportunity.
+
+The preceding opportunity completes 430 native checks but fails the Python
+readback's demand for exactly one saved Zombie in the entire World. Its retained
+save contains the target in Chunk (0,0) and another Zombie in Chunk (6,-9).
+The correction selects exactly one complete paused-NBT target record, comparing
+all keys, tags, list items and value types; missing, ambiguous or altered targets
+fail. Species totals and every additional Entity remain reported. Normal and
+optimized Python controls cover these cases, including bool/int confusion.
+Processing the unchanged retained capture then passes the corrected readback;
+the original controller result remains FAIL. The later 435-check result
+comes from a separate fresh scene, with no gameplay, input or Random repair.
+This qualifies the prepared encounter, without FPS, unrestricted combat or
+original audiovisual qualification.
 
 ## Arrow constructors, heading and terminal ownership
 

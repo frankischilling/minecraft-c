@@ -11290,8 +11290,8 @@
       "sha256": "181880b4132f86e8cb7c45de44c02dd331754df28903dbcccccc6a50d71a1861"
     },
     "tests/tools/client/test_zombie_damage.py": {
-      "bytes": 21159,
-      "sha256": "b5646db105d5895d38214ce4e1d1fec8bb5f5d29f6316053954b98a41daa8a3a"
+      "bytes": 22444,
+      "sha256": "eb37239920b7d4f26312a0769773e3bed17dc4869e0e628276b20c2f0d3cc5d1"
     },
     "tests/tools/entity/test_monster_hurt.py": {
       "bytes": 6666,
@@ -20206,6 +20206,26 @@
             "tests/tools/client/test_arrow_world_tick_cleanup.py": {
               "bytes": 16782,
               "sha256": "033197941f06c878c02985761c5522d178491312e4ad5a6d00942d3d21c567d1"
+            }
+          },
+          "added": [],
+          "current_count": 2974
+        }
+      }
+    },
+    {
+      "from_commit": "309f4d86ab932747d4f49f9eb346cb4134e68e23",
+      "role": "Current source admissions for exact saved-Zombie target readback with separately retained same-species population. Runtime and scene inputs remain unchanged. Historical executed records are preserved; fresh whole-scene qualification remains separate.",
+      "previous_metadata": {
+        "bytes": 861050,
+        "sha256": "d22452c11384f444ba21121d7d919778a9777a22f98a17a8e8c4e52867db338d"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "tests/tools/client/test_zombie_damage.py": {
+              "bytes": 21159,
+              "sha256": "b5646db105d5895d38214ce4e1d1fec8bb5f5d29f6316053954b98a41daa8a3a"
             }
           },
           "added": [],
