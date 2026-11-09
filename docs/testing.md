@@ -8781,3 +8781,20 @@ The map now contains the validated read rather than a second, unchecked read.
 Neither version provides an atomic filesystem snapshot or detects every
 transient concurrent write. Independent pre/post calls still detect persistent
 changes. Arbitrary files outside the declared source set are not enumerated.
+
+The [hosted run for `3ea96305`](https://github.com/frankischilling/minecraft-c/actions/runs/42620910071)
+fails eight nested/activation/kernel controls on each platform: Windows runs
+867 tests, GCC and Clang each run 926. Formatting passes. Local reproductions
+stop before native launch because both controllers still bind the previous
+ownership helper. The kernel bundle also retains previous Entity execution
+and publication source pins. Their selected current bindings now name the
+actual adopted files; historical fixture and dependency identities remain
+unchanged. Existing protocol, source guards and failure assertions still apply.
+Failed-run uploads also retain these controllers' reports and bounded native
+captures, alongside the existing test log and sleeping-NBT evidence.
+
+After a coherent five-target Windows MSVC Release rebuild, all twelve affected
+CTest entries pass in 39.56 seconds: eight actual native controls with 807 checks
+and four normal/optimized Python controls. Retained captures, current-source
+guards and applicable literal-input guards pass. This local result does not
+replace the failed hosted run or qualify a new hosted head.

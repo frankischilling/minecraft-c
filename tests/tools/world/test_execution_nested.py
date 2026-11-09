@@ -32,7 +32,7 @@ ACTIVATION_SOURCES = {
 }
 HELPER_SOURCES = {
     'tests/tools/world/test_execution_ownership.py':
-        {'bytes': 8205, 'sha256': 'e00db5dca070917b62c6903ef2e40c06338439c889fc58234974610417c9c2fd'},
+        {'bytes': 8350, 'sha256': '1d3616472c10b0c253e881fdd08c33d198765922d5e75bc45ec3f955ece5275e'},
     'tests/reference/client/statistics/support.py':
         {'bytes': 7123, 'sha256': '1ac10e26456a6a8c9ba21751f49499549ec8ed322874c0d5c07be74c5fed4fa1'},
     'tests/tools/world/test_source_world_construction.py':

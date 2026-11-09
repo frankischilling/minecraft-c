@@ -9779,7 +9779,7 @@
     },
     "tests/tools/world/test_execution_nested.py": {
       "bytes": 29429,
-      "sha256": "30c114d0f3c9edbe0fb22efcaab0094c8be160d3cf0f075b1616333732b83fba"
+      "sha256": "2dc57e90925c79f4397d9b69d39bda14525416ba38a6943332eb4324b6f9fdcd"
     },
     "tests/world/runtime/world_access/test_activation_execution.c": {
       "bytes": 30628,
@@ -9831,7 +9831,7 @@
     },
     "tests/tools/world/test_kernel_execution.py": {
       "bytes": 25708,
-      "sha256": "59e9758cc924013be26142aef4c4acdafb6848da7912c040fcf31983a41e6339"
+      "sha256": "00ad54a69151b92d08ae82f7d117ed501347c753e3fef6319e5c86c057474c34"
     },
     "cmake/tests/world_query_controls.cmake": {
       "bytes": 9364,
@@ -17366,6 +17366,30 @@
             "tests/world/runtime/world_access/test_presentation_capture_execution.c",
             "tests/world/runtime/world_access/test_raytrace_execution.c"
           ],
+          "current_count": 2495
+        }
+      }
+    },
+    {
+      "from_commit": "3ea96305302614a5efbc297386c4cd8b34735f26",
+      "role": "Current admissions for nested and kernel controller supplier pins and failed-run report retention. Historical suppliers and executed observations remain unchanged; native qualification requires separate execution.",
+      "previous_metadata": {
+        "bytes": 748722,
+        "sha256": "ab9df990041df032785caf1874d139cc872d9b57155328c3dd52ec8e9054970d"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/world/test_execution_nested.py": {
+              "bytes": 29429,
+              "sha256": "30c114d0f3c9edbe0fb22efcaab0094c8be160d3cf0f075b1616333732b83fba"
+            },
+            "tests/tools/world/test_kernel_execution.py": {
+              "bytes": 25708,
+              "sha256": "59e9758cc924013be26142aef4c4acdafb6848da7912c040fcf31983a41e6339"
+            }
+          },
+          "added": [],
           "current_count": 2495
         }
       }

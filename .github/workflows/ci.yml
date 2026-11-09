@@ -183,6 +183,14 @@ jobs:
           path: |
             build/Testing/Temporary/LastTest.log
             build/Testing/Temporary/LastTestsFailed.log
+            build/world-nested-controls/**/report.json
+            build/world-nested-controls/**/native.capture.json
+            build/world-nested-controls/**/native.stdout
+            build/world-nested-controls/**/native.stderr
+            build/world-kernel-controls/**/report.json
+            build/world-kernel-controls/**/native.capture.json
+            build/world-kernel-controls/**/native.stdout
+            build/world-kernel-controls/**/native.stderr
             build/player-sleep-nbt-parent/**/report.json
             build/player-sleep-nbt-parent/**/native.capture.json
             build/player-sleep-nbt-parent/**/native.stdout
@@ -330,6 +338,14 @@ jobs:
           path: |
             build/Testing/Temporary/LastTest.log
             build/Testing/Temporary/LastTestsFailed.log
+            build/world-nested-controls/**/report.json
+            build/world-nested-controls/**/native.capture.json
+            build/world-nested-controls/**/native.stdout
+            build/world-nested-controls/**/native.stderr
+            build/world-kernel-controls/**/report.json
+            build/world-kernel-controls/**/native.capture.json
+            build/world-kernel-controls/**/native.stdout
+            build/world-kernel-controls/**/native.stderr
             build/player-sleep-nbt-parent/**/report.json
             build/player-sleep-nbt-parent/**/native.capture.json
             build/player-sleep-nbt-parent/**/native.stdout

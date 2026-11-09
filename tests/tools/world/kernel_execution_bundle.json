@@ -29,8 +29,8 @@
       "sha256": "d5847a88ac1a8db50d1576f2340e17536004a39e997e28ea4f701d0fb3def3e1"
     },
     "src/entity/tick/execution_internal.h": {
-      "bytes": 11878,
-      "sha256": "379777c714021593f9605bf6dbfe69e35373e0c8898269583568f0b2fe8086b7"
+      "bytes": 11697,
+      "sha256": "e2c1f7124c70b1878a25efbb2265671102b564280a037739c12b45b27e0f1f6a"
     },
     "src/world/runtime/activation.c": {
       "bytes": 19542,
@@ -49,8 +49,8 @@
       "sha256": "27c630007d453a0c1bdb3e81f3630bf1137dcd49b933066fdc114a2e02bcdaa9"
     },
     "src/world/runtime/entity_publication.c": {
-      "bytes": 45422,
-      "sha256": "9bf8670cebb46013f78f62cd014f87ff397f6b3bd7189ee3e2d70911695f8203"
+      "bytes": 55691,
+      "sha256": "80d5feb0cdc06668ea97fe58dbde708a5525a506c9ed766802e9d9ca5e432c13"
     },
     "src/world/runtime/entity_publication_detailed_execution_internal.h": {
       "bytes": 1167,
@@ -91,8 +91,8 @@
   },
   "helpers": {
     "tests/tools/world/test_execution_ownership.py": {
-      "bytes": 8205,
-      "sha256": "e00db5dca070917b62c6903ef2e40c06338439c889fc58234974610417c9c2fd"
+      "bytes": 8350,
+      "sha256": "1d3616472c10b0c253e881fdd08c33d198765922d5e75bc45ec3f955ece5275e"
     },
     "tests/reference/client/statistics/support.py": {
       "bytes": 7123,
@@ -169,6 +169,48 @@
         "current": {
           "bytes": 1605,
           "sha256": "27c630007d453a0c1bdb3e81f3630bf1137dcd49b933066fdc114a2e02bcdaa9"
+        }
+      }
+    }
+  },
+  "current_ci_supplier_projection": {
+    "baseline_commit": "3ea96305302614a5efbc297386c4cd8b34735f26",
+    "previous_bundle": {
+      "bytes": 6741,
+      "sha256": "ba846bca7bc648f3c34d7cec3a486dfba03834f1d5173f9fd6a8036aa64b0116"
+    },
+    "role": "Explicit current supplier binding over this committed runtime; existing fixture, protocol, selection and historical manifests remain unchanged. Runtime qualification requires new actual executions.",
+    "source_changes": {
+      "src/entity/tick/execution_internal.h": {
+        "previous": {
+          "bytes": 11878,
+          "sha256": "379777c714021593f9605bf6dbfe69e35373e0c8898269583568f0b2fe8086b7"
+        },
+        "current": {
+          "bytes": 11697,
+          "sha256": "e2c1f7124c70b1878a25efbb2265671102b564280a037739c12b45b27e0f1f6a"
+        }
+      },
+      "src/world/runtime/entity_publication.c": {
+        "previous": {
+          "bytes": 45422,
+          "sha256": "9bf8670cebb46013f78f62cd014f87ff397f6b3bd7189ee3e2d70911695f8203"
+        },
+        "current": {
+          "bytes": 55691,
+          "sha256": "80d5feb0cdc06668ea97fe58dbde708a5525a506c9ed766802e9d9ca5e432c13"
+        }
+      }
+    },
+    "helper_changes": {
+      "tests/tools/world/test_execution_ownership.py": {
+        "previous": {
+          "bytes": 8205,
+          "sha256": "e00db5dca070917b62c6903ef2e40c06338439c889fc58234974610417c9c2fd"
+        },
+        "current": {
+          "bytes": 8350,
+          "sha256": "1d3616472c10b0c253e881fdd08c33d198765922d5e75bc45ec3f955ece5275e"
         }
       }
     }

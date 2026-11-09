@@ -10,8 +10,8 @@
       "sha256": "3bd8ab194c32f8fc5cddc52467b656152b4a411da75faa6a1c3402213f08cc33"
     },
     ".github/workflows/ci.yml": {
-      "bytes": 16842,
-      "sha256": "ac3fb966b7d931a3f80613375dd8956979486f15adf689f4ce33e35993dfe6fa"
+      "bytes": 17770,
+      "sha256": "084f830bb006d24568465d9f31236d382063628c219e27db5aedf9cd5cfc23fd"
     },
     ".gitignore": {
       "bytes": 282,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 585745,
-      "sha256": "8ab25772fb1711fd7778f613b4d512a15885f42bf6a71fad9962d01a450654c1"
+      "bytes": 586905,
+      "sha256": "6c16b8fb9804a0189159a638c840137501af060bc5cd4dd0b55467c759fbccd5"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 748722,
-      "sha256": "ab9df990041df032785caf1874d139cc872d9b57155328c3dd52ec8e9054970d"
+      "bytes": 749724,
+      "sha256": "4ba553a59c4fa7277b6977828b4641ab9cd1a80a8ffc99361ce875cda50c340f"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 848999,
-      "sha256": "419e3a99975fdc18d67a9c6bbdcf801a565db51e98ce1d59cc014c75787131a8"
+      "bytes": 850003,
+      "sha256": "4af0055f7368ff97f67026bdb1fa0d7a261a9c40d5282c082b1e7c5b56b18e8e"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 745701,
-      "sha256": "58d341266ff35b790c6cb42ef8b4bea665f2446a6024e8d86b47ccd6d3b1bec4"
+      "bytes": 746703,
+      "sha256": "b1f3b76e2debc524c2273d4cbeaed9ae0a51d8444bfe03cd60a71ecb422aecac"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -23263,7 +23263,7 @@
     },
     "tests/tools/world/test_execution_nested.py": {
       "bytes": 29429,
-      "sha256": "30c114d0f3c9edbe0fb22efcaab0094c8be160d3cf0f075b1616333732b83fba"
+      "sha256": "2dc57e90925c79f4397d9b69d39bda14525416ba38a6943332eb4324b6f9fdcd"
     },
     "tests/world/runtime/world_access/test_activation_execution.c": {
       "bytes": 30628,
@@ -23318,12 +23318,12 @@
       "sha256": "b0a0cf48ee2f249c7ec3384cd9f5f03648611ba2fa7a9462480f03bf94e181f8"
     },
     "tests/tools/world/kernel_execution_bundle.json": {
-      "bytes": 6741,
-      "sha256": "ba846bca7bc648f3c34d7cec3a486dfba03834f1d5173f9fd6a8036aa64b0116"
+      "bytes": 8309,
+      "sha256": "34166db5537170ee69de19bd2005d5b9479e9b744772c7820a9b3754d961c553"
     },
     "tests/tools/world/test_kernel_execution.py": {
       "bytes": 25708,
-      "sha256": "59e9758cc924013be26142aef4c4acdafb6848da7912c040fcf31983a41e6339"
+      "sha256": "00ad54a69151b92d08ae82f7d117ed501347c753e3fef6319e5c86c057474c34"
     },
     "docs/world/world-acquisition-execution.md": {
       "bytes": 12854,
@@ -38689,6 +38689,74 @@
             "docs/world/material-execution.md": {
               "bytes": 7021,
               "sha256": "08f29b03fefea97a97e64e0b705f924d91ffc4e65711b98e39ae589e54f4965d"
+            }
+          },
+          "added": [],
+          "current_count": 5874
+        }
+      }
+    },
+    {
+      "from_commit": "3ea96305302614a5efbc297386c4cd8b34735f26",
+      "role": "Current admissions for nested and kernel controller supplier pins and failed-run report retention. Historical suppliers and executed observations remain unchanged; native qualification requires separate execution.",
+      "previous_metadata": {
+        "bytes": 1706670,
+        "sha256": "a7d897be80965aca73528a8f5f9f1fcd54db34db9a4a40f3215e5240c3d1061a"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            ".github/workflows/ci.yml": {
+              "bytes": 16842,
+              "sha256": "ac3fb966b7d931a3f80613375dd8956979486f15adf689f4ce33e35993dfe6fa"
+            },
+            "docs/testing.md": {
+              "bytes": 585745,
+              "sha256": "8ab25772fb1711fd7778f613b4d512a15885f42bf6a71fad9962d01a450654c1"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 748722,
+              "sha256": "ab9df990041df032785caf1874d139cc872d9b57155328c3dd52ec8e9054970d"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 848999,
+              "sha256": "419e3a99975fdc18d67a9c6bbdcf801a565db51e98ce1d59cc014c75787131a8"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 745701,
+              "sha256": "58d341266ff35b790c6cb42ef8b4bea665f2446a6024e8d86b47ccd6d3b1bec4"
+            },
+            "tests/tools/world/test_execution_nested.py": {
+              "bytes": 29429,
+              "sha256": "30c114d0f3c9edbe0fb22efcaab0094c8be160d3cf0f075b1616333732b83fba"
+            },
+            "tests/tools/world/kernel_execution_bundle.json": {
+              "bytes": 6741,
+              "sha256": "ba846bca7bc648f3c34d7cec3a486dfba03834f1d5173f9fd6a8036aa64b0116"
+            },
+            "tests/tools/world/test_kernel_execution.py": {
+              "bytes": 25708,
+              "sha256": "59e9758cc924013be26142aef4c4acdafb6848da7912c040fcf31983a41e6339"
+            }
+          },
+          "added": [],
+          "current_count": 5874
+        }
+      }
+    },
+    {
+      "from_commit": "3ea96305302614a5efbc297386c4cd8b34735f26",
+      "role": "Post-native test documentation admission for the nested and kernel controller supplier repair. Runtime, fixture, helper and historical observed bytes remain unchanged.",
+      "previous_metadata": {
+        "bytes": 1708841,
+        "sha256": "39b96234397e77747ec6038b93431f4e72eb0ecbd8dab0c4ca5b391636057231"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/testing.md": {
+              "bytes": 586530,
+              "sha256": "1b29780c4e3a1da3a7b8f46574955f27cba77b4cb7abc6ca142b9cc0ae13f42c"
             }
           },
           "added": [],
