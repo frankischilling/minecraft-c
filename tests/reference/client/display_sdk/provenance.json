@@ -1570,8 +1570,8 @@
       "sha256": "161364bb3c034fa7f5f06900e613ef5092c5fa444cb6669155a63223ac86e68e"
     },
     "src/core/java/random_profile_internal.h": {
-      "bytes": 5196,
-      "sha256": "aaed566e75da8db62639f5695e8c86e2480329629074592636456ef036e82ef2"
+      "bytes": 9836,
+      "sha256": "589490b66a84ed45bf63d6143ea782125a6859bc937aa1c7b238f0ad2d264d8d"
     },
     "src/core/java/system_output.c": {
       "bytes": 7492,
@@ -2342,8 +2342,8 @@
       "sha256": "253914a08f69c1a13527e24bbe43c9faa40fba294aa4da8369469a6995291498"
     },
     "src/client/runtime/bootstrap.c": {
-      "bytes": 45247,
-      "sha256": "21aea875ae95105214182e69614fc9e4f112b6ebd15f101b2e041586e92089d2"
+      "bytes": 49363,
+      "sha256": "cdf330afa8b922ea5adf12906434afeb9982d2232a0349f69cd78b251c900fe4"
     },
     "src/client/runtime/bootstrap.h": {
       "bytes": 4398,
@@ -9834,8 +9834,8 @@
       "sha256": "59e9758cc924013be26142aef4c4acdafb6848da7912c040fcf31983a41e6339"
     },
     "cmake/tests/world_query_controls.cmake": {
-      "bytes": 4795,
-      "sha256": "a7807432796afa742536a7ccd298ac690ccdcd9c3624e1674ad9b076c3da1555"
+      "bytes": 5077,
+      "sha256": "8c7acfc43f0127cfd0c261aa1354a9fc1220fbe70956cea3a27ff80580285252"
     },
     "tests/world/runtime/world_access/test_kernel_loader_execution.c": {
       "bytes": 23441,
@@ -9846,8 +9846,8 @@
       "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
     },
     "tests/tools/world/test_world_query_controls.py": {
-      "bytes": 51398,
-      "sha256": "e60b43452f83b19c913090db48ab969c5c55546eeb9e706015dbec592d569009"
+      "bytes": 55170,
+      "sha256": "28f005549ae736340d84f277d213aedb6180dba76efb894d57b52188912b0d03"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -9862,8 +9862,8 @@
       "sha256": "139792707ccb921e3cae9abe3da8e6cbc2cdf3fc555780b8d70613ad76a36e55"
     },
     "tests/world/runtime/world_access/test_collision_query_execution.c": {
-      "bytes": 39905,
-      "sha256": "8032d0b673620aea1f1cce08685ff751509878c707a53f45b6f8098361702938"
+      "bytes": 60973,
+      "sha256": "8e0bd2af97fe735de215648b837c9a69ff723608826d287cf9c579663d0cff7c"
     },
     "tests/tools/world/activation_close_inputs.py": {
       "bytes": 433,
@@ -9872,6 +9872,26 @@
     "tests/world/runtime/world_access/test_activation_close_execution.c": {
       "bytes": 30572,
       "sha256": "72cd515c4007b9251e6b3cd6daebdb9d8b936f139f2ae45ccbda26e8ef4750ad"
+    },
+    "cmake/tests/java_random_recording.cmake": {
+      "bytes": 1556,
+      "sha256": "39704b63da6f30514909b0c303a31466b4c3ff9a922e8f7e768a671fc7a2c529"
+    },
+    "src/client/runtime/bootstrap_random_internal.h": {
+      "bytes": 3917,
+      "sha256": "170b9de1268ca0352a8873aeafc55b03845ab31cf5008d826255c5fc89186f1b"
+    },
+    "src/world/runtime/registry_execution_internal.h": {
+      "bytes": 4185,
+      "sha256": "bfa8fc9ea785858961e180d731cf09c356a84b90ab4b549b3af76f9b341aee65"
+    },
+    "tests/client/startup/test_bootstrap_random_admission.c": {
+      "bytes": 5389,
+      "sha256": "ed8d7ff1abd90ac50f639d69bd14f91b8bbc90717da6387257d06125ee5ada0f"
+    },
+    "tests/core/java/test_random_profile_record_overlap.c": {
+      "bytes": 17150,
+      "sha256": "24989ad6a8fef641a97d9471e4fca29ab4d557146b02cae80dd206b795856c47"
     }
   },
   "authorities": {
@@ -16967,6 +16987,68 @@
           },
           "added": [],
           "current_count": 2468
+        }
+      }
+    },
+    {
+      "from_commit": "af6b08b00506ad3a57674bf8deabe24a009af2f2",
+      "role": "Random constructor recording and strict whole-input replay, early bootstrap binding and retirement receipts, and owned World material lookup with separate native/query results. Current source admissions only; compilation and native outcomes require separate execution. Historical suppliers and observations remain unchanged. No whole-frame, full gameplay or FPS qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 729349,
+        "sha256": "cb5b015f29e03ef93b2b1e638e192eb6dd539aaf0676f23d6d5ef7a8caaa8ec7"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "src/core/java/random_profile_internal.h": {
+              "bytes": 5196,
+              "sha256": "aaed566e75da8db62639f5695e8c86e2480329629074592636456ef036e82ef2"
+            },
+            "src/client/runtime/bootstrap.c": {
+              "bytes": 45247,
+              "sha256": "21aea875ae95105214182e69614fc9e4f112b6ebd15f101b2e041586e92089d2"
+            },
+            "cmake/tests/world_query_controls.cmake": {
+              "bytes": 4795,
+              "sha256": "a7807432796afa742536a7ccd298ac690ccdcd9c3624e1674ad9b076c3da1555"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 51398,
+              "sha256": "e60b43452f83b19c913090db48ab969c5c55546eeb9e706015dbec592d569009"
+            },
+            "tests/world/runtime/world_access/test_collision_query_execution.c": {
+              "bytes": 39905,
+              "sha256": "8032d0b673620aea1f1cce08685ff751509878c707a53f45b6f8098361702938"
+            }
+          },
+          "added": [
+            "cmake/tests/java_random_recording.cmake",
+            "src/client/runtime/bootstrap_random_internal.h",
+            "src/world/runtime/registry_execution_internal.h",
+            "tests/client/startup/test_bootstrap_random_admission.c",
+            "tests/core/java/test_random_profile_record_overlap.c"
+          ],
+          "current_count": 2473
+        }
+      }
+    },
+    {
+      "from_commit": "af6b08b00506ad3a57674bf8deabe24a009af2f2",
+      "role": "Random constructor recording and strict whole-input replay, early bootstrap binding and retirement receipts, and owned World material lookup with separate native/query results. Current source admissions only; compilation and native outcomes require separate execution. Historical suppliers and observations remain unchanged. No whole-frame, full gameplay or FPS qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 732293,
+        "sha256": "3ad45dcef679f0922247bfee0a83fa6e27462ed782028f8fc079ae79a6a5c113"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 55170,
+              "sha256": "1265c95232625e622a320599f90ae06f7127aca62821a97078e6c913dfdda042"
+            }
+          },
+          "added": [],
+          "current_count": 2473
         }
       }
     }

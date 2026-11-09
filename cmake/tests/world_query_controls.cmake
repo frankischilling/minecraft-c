@@ -29,7 +29,7 @@ if(BUILD_TESTING AND TARGET mc_test_world_kernel_loader_execution
         AND TARGET mc_test_world_tile_lookup_execution
         AND TARGET mc_test_world_collision_query_execution
         AND TARGET mc_test_world_activation_close_execution AND Python3_Interpreter_FOUND)
-    foreach(_mc_query_kind IN ITEMS loader lookup collision close)
+    foreach(_mc_query_kind IN ITEMS loader lookup collision close material)
         if(_mc_query_kind STREQUAL "loader")
             set(_mc_query_target mc_test_world_kernel_loader_execution)
             set(_mc_query_modes error null-error)
@@ -42,6 +42,10 @@ if(BUILD_TESTING AND TARGET mc_test_world_kernel_loader_execution
             set(_mc_query_target mc_test_world_collision_query_execution)
             set(_mc_query_modes id-first metadata-first domain loader-error loader-null-error armed held)
             set(_mc_query_name collision_query_execution)
+        elseif(_mc_query_kind STREQUAL "material")
+            set(_mc_query_target mc_test_world_collision_query_execution)
+            set(_mc_query_modes material-success material-admission material-loader-error)
+            set(_mc_query_name material_query_execution)
         else()
             set(_mc_query_target mc_test_world_activation_close_execution)
             set(_mc_query_modes error null-error)

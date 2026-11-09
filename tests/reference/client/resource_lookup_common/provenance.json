@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 342935,
-      "sha256": "4c655b3042efc8350087a3632e53067b3a9ad9f3a66c89b2d0081360dd15b6d5"
+      "bytes": 343014,
+      "sha256": "0e13e25ca7bef841c3baeed3002d3004e71ae20d3e8cbca9246cad0286093e54"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 225002,
-      "sha256": "2572ce0fa8a93c318b9c5b3c526b2c34c9a800512fd0d182e813e0897f56047f"
+      "bytes": 225909,
+      "sha256": "61033899b9bcc3bbc9ec5d998a3b6e784fffb56796c229b3c3f1e7f6dde2e3c6"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 136296,
-      "sha256": "84cb4096c8f1df4096f26416e8d8f985791f42f4f1e49e545dd21dd9f409dc68"
+      "bytes": 137305,
+      "sha256": "fc3b0be2268a8f12c34c86e535086c74351185a5905220fbf5addee9d1dfae1a"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 581873,
-      "sha256": "ff67d89745a40bf88a94955920c2948ba4e232696ddc41d57662951340c84748"
+      "bytes": 584630,
+      "sha256": "f9e691e974f1e29f7272a28a4dc089bf4643a9600a07226e825ad903f86f198b"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
@@ -3818,12 +3818,12 @@
       "sha256": "9b5eb9b2c0ecedd5d2fca802b293fe7aba56716a725beb50e1f383284451d9a5"
     },
     "src/core/java/random_profile.c": {
-      "bytes": 14027,
-      "sha256": "40f3e82db81204a3e3e7c4e03c85ea4ec8c03bcb6893e68a19380566ee43a43e"
+      "bytes": 20567,
+      "sha256": "c0ea797b3ee5d0b9c4bc7d50695fe03e223f5361e693d62a20050a2e7571a909"
     },
     "src/core/java/random_profile_internal.h": {
-      "bytes": 5196,
-      "sha256": "aaed566e75da8db62639f5695e8c86e2480329629074592636456ef036e82ef2"
+      "bytes": 9836,
+      "sha256": "589490b66a84ed45bf63d6143ea782125a6859bc937aa1c7b238f0ad2d264d8d"
     },
     "src/core/java/reader.c": {
       "bytes": 17077,
@@ -5002,8 +5002,8 @@
       "sha256": "2520f3189e541be5a7af421bd97e117f2e1e03cbbcf99a69ddc4da04a66f4ee2"
     },
     "src/world/runtime/registry.c": {
-      "bytes": 7361,
-      "sha256": "bdceab094d8f5b48adec40403592fd879ce1c58967165d272f1b78166185affb"
+      "bytes": 12242,
+      "sha256": "80d19882ffdbdc2428d45961eb5a718e74f1ccd7393d6c88aec32d990149b3ef"
     },
     "src/world/runtime/runtime.c": {
       "bytes": 71947,
@@ -5902,8 +5902,8 @@
       "sha256": "dff89560e47b3d5e54bfe6c518841577e11eb5d3badbf7185e3af5545d29228d"
     },
     "tests/core/java/test_random_profile_inputs.c": {
-      "bytes": 22097,
-      "sha256": "f2efc2deb3d47157f5a5a7f3d21b8411469bc139ca2fe199f454854e21951521"
+      "bytes": 46843,
+      "sha256": "3598b9d849d17fe199189586f2315661ec03619de5bfbb356117240deedd63a9"
     },
     "tests/core/java/test_reader.c": {
       "bytes": 32093,
@@ -6306,8 +6306,8 @@
       "sha256": "a84476874a75591bba353f7590376c59c29e123687966ddc4fa41925d9b7f910"
     },
     "tests/reference/client/biped/provenance.json": {
-      "bytes": 39140,
-      "sha256": "2a56744aeb58b31884e701968af7a060ecd9e6d41bd55be23ec678ee5a3559be"
+      "bytes": 40302,
+      "sha256": "ebbc5dd604031e380c5a1e3f640f1fd256532fa4c4d2e1335cfd428ff46617a4"
     },
     "tests/reference/client/biped/run_native.py": {
       "bytes": 2290,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 729349,
-      "sha256": "cb5b015f29e03ef93b2b1e638e192eb6dd539aaf0676f23d6d5ef7a8caaa8ec7"
+      "bytes": 733279,
+      "sha256": "df0f27f007e689fa825a7e379b83070e89b5942e2f440f3358991d274551bbed"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 827614,
-      "sha256": "29155118d33c41c8d0f7e79f4b03948565e57bb87b11bfca8a47ba5c644b229b"
+      "bytes": 832281,
+      "sha256": "901b90a4bbb3f5ba8aa2409052d6c94260dabf3858bd9fbdfed0e740ffd08a5a"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 726328,
-      "sha256": "746c8e2c3c62a40548e87861d05bc756119f3557a9d17b7e64bf86c5ab0e7d02"
+      "bytes": 730258,
+      "sha256": "9c8d4a420f3727312064b681541b66064ee9486099afacc76b808907dbf0a3e6"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9810,8 +9810,8 @@
       "sha256": "253914a08f69c1a13527e24bbe43c9faa40fba294aa4da8369469a6995291498"
     },
     "src/client/runtime/bootstrap.c": {
-      "bytes": 45247,
-      "sha256": "21aea875ae95105214182e69614fc9e4f112b6ebd15f101b2e041586e92089d2"
+      "bytes": 49363,
+      "sha256": "cdf330afa8b922ea5adf12906434afeb9982d2232a0349f69cd78b251c900fe4"
     },
     "src/client/runtime/bootstrap.h": {
       "bytes": 4398,
@@ -23330,8 +23330,8 @@
       "sha256": "a7dd45e38e5df0c772471f727ee2fbdb16631ea0e9daa952407b062686762e58"
     },
     "cmake/tests/world_query_controls.cmake": {
-      "bytes": 4795,
-      "sha256": "a7807432796afa742536a7ccd298ac690ccdcd9c3624e1674ad9b076c3da1555"
+      "bytes": 5077,
+      "sha256": "8c7acfc43f0127cfd0c261aa1354a9fc1220fbe70956cea3a27ff80580285252"
     },
     "tests/world/runtime/world_access/test_kernel_loader_execution.c": {
       "bytes": 23441,
@@ -23342,16 +23342,16 @@
       "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
     },
     "tests/tools/world/test_world_query_controls.py": {
-      "bytes": 51398,
-      "sha256": "e60b43452f83b19c913090db48ab969c5c55546eeb9e706015dbec592d569009"
+      "bytes": 55170,
+      "sha256": "28f005549ae736340d84f277d213aedb6180dba76efb894d57b52188912b0d03"
     },
     "tests/tools/world/world_query_controls_bundle.json": {
-      "bytes": 14857,
-      "sha256": "bf88043c69513aac617e1b41a9cb31b04af15aa3840355b761e2cfa6489e3259"
+      "bytes": 16810,
+      "sha256": "15ffafd57287986b40186b11128d06b00b22c4c1e3b42c8fcce43399d7ae8116"
     },
     "tests/tools/world/world_query_controls_protocol.json": {
-      "bytes": 10040,
-      "sha256": "4f1b3f29257fd204f913097a3458b479da0444e3d1e3d20b152519406472f427"
+      "bytes": 11797,
+      "sha256": "8e9386933302d6f40f719c7b54c26cd1cfc0f54923896146620a0bda29f43d5d"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -23366,8 +23366,8 @@
       "sha256": "139792707ccb921e3cae9abe3da8e6cbc2cdf3fc555780b8d70613ad76a36e55"
     },
     "tests/world/runtime/world_access/test_collision_query_execution.c": {
-      "bytes": 39905,
-      "sha256": "8032d0b673620aea1f1cce08685ff751509878c707a53f45b6f8098361702938"
+      "bytes": 60973,
+      "sha256": "8e0bd2af97fe735de215648b837c9a69ff723608826d287cf9c579663d0cff7c"
     },
     "docs/world/collision/block-values.md": {
       "bytes": 7680,
@@ -23384,6 +23384,34 @@
     "docs/world/activation-close.md": {
       "bytes": 8437,
       "sha256": "725654040c24e63c27c461db2d5c97b3197185699e0c70effd00a1493bffcd27"
+    },
+    "cmake/tests/java_random_recording.cmake": {
+      "bytes": 1556,
+      "sha256": "39704b63da6f30514909b0c303a31466b4c3ff9a922e8f7e768a671fc7a2c529"
+    },
+    "docs/core/random-recording.md": {
+      "bytes": 4864,
+      "sha256": "f7bdcaf09d7c880cfbe00ae716fe21b815b3082df0b5840deec0e0eb6e34bf8f"
+    },
+    "docs/world/material-execution.md": {
+      "bytes": 3297,
+      "sha256": "ff93893d12b57317d8033cc651a9cc3590e9b49d9806d619ab2b38ab72031cbf"
+    },
+    "src/client/runtime/bootstrap_random_internal.h": {
+      "bytes": 3917,
+      "sha256": "170b9de1268ca0352a8873aeafc55b03845ab31cf5008d826255c5fc89186f1b"
+    },
+    "src/world/runtime/registry_execution_internal.h": {
+      "bytes": 4185,
+      "sha256": "bfa8fc9ea785858961e180d731cf09c356a84b90ab4b549b3af76f9b341aee65"
+    },
+    "tests/client/startup/test_bootstrap_random_admission.c": {
+      "bytes": 5389,
+      "sha256": "ed8d7ff1abd90ac50f639d69bd14f91b8bbc90717da6387257d06125ee5ada0f"
+    },
+    "tests/core/java/test_random_profile_record_overlap.c": {
+      "bytes": 17150,
+      "sha256": "24989ad6a8fef641a97d9471e4fca29ab4d557146b02cae80dd206b795856c47"
     }
   },
   "self_metadata_excluded": true,
@@ -37988,6 +38016,178 @@
             "docs/world/activation-close.md"
           ],
           "current_count": 5846
+        }
+      }
+    },
+    {
+      "from_commit": "af6b08b00506ad3a57674bf8deabe24a009af2f2",
+      "role": "Random constructor recording and strict whole-input replay, early bootstrap binding and retirement receipts, and owned World material lookup with separate native/query results. Current source admissions only; compilation and native outcomes require separate execution. Historical suppliers and observations remain unchanged. No whole-frame, full gameplay or FPS qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1672451,
+        "sha256": "80fcdb597e1879812e48ad1fd64d25588d71d3fc8a338b99c5ea35c5442c247f"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 342935,
+              "sha256": "4c655b3042efc8350087a3632e53067b3a9ad9f3a66c89b2d0081360dd15b6d5"
+            },
+            "src/core/java/random_profile.c": {
+              "bytes": 14027,
+              "sha256": "40f3e82db81204a3e3e7c4e03c85ea4ec8c03bcb6893e68a19380566ee43a43e"
+            },
+            "src/core/java/random_profile_internal.h": {
+              "bytes": 5196,
+              "sha256": "aaed566e75da8db62639f5695e8c86e2480329629074592636456ef036e82ef2"
+            },
+            "src/world/runtime/registry.c": {
+              "bytes": 7361,
+              "sha256": "bdceab094d8f5b48adec40403592fd879ce1c58967165d272f1b78166185affb"
+            },
+            "tests/core/java/test_random_profile_inputs.c": {
+              "bytes": 22097,
+              "sha256": "f2efc2deb3d47157f5a5a7f3d21b8411469bc139ca2fe199f454854e21951521"
+            },
+            "tests/reference/client/biped/provenance.json": {
+              "bytes": 39140,
+              "sha256": "2a56744aeb58b31884e701968af7a060ecd9e6d41bd55be23ec678ee5a3559be"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 729349,
+              "sha256": "cb5b015f29e03ef93b2b1e638e192eb6dd539aaf0676f23d6d5ef7a8caaa8ec7"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 827614,
+              "sha256": "29155118d33c41c8d0f7e79f4b03948565e57bb87b11bfca8a47ba5c644b229b"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 726328,
+              "sha256": "746c8e2c3c62a40548e87861d05bc756119f3557a9d17b7e64bf86c5ab0e7d02"
+            },
+            "src/client/runtime/bootstrap.c": {
+              "bytes": 45247,
+              "sha256": "21aea875ae95105214182e69614fc9e4f112b6ebd15f101b2e041586e92089d2"
+            },
+            "cmake/tests/world_query_controls.cmake": {
+              "bytes": 4795,
+              "sha256": "a7807432796afa742536a7ccd298ac690ccdcd9c3624e1674ad9b076c3da1555"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 51398,
+              "sha256": "e60b43452f83b19c913090db48ab969c5c55546eeb9e706015dbec592d569009"
+            },
+            "tests/tools/world/world_query_controls_bundle.json": {
+              "bytes": 14857,
+              "sha256": "bf88043c69513aac617e1b41a9cb31b04af15aa3840355b761e2cfa6489e3259"
+            },
+            "tests/tools/world/world_query_controls_protocol.json": {
+              "bytes": 10040,
+              "sha256": "4f1b3f29257fd204f913097a3458b479da0444e3d1e3d20b152519406472f427"
+            },
+            "tests/world/runtime/world_access/test_collision_query_execution.c": {
+              "bytes": 39905,
+              "sha256": "8032d0b673620aea1f1cce08685ff751509878c707a53f45b6f8098361702938"
+            }
+          },
+          "added": [
+            "cmake/tests/java_random_recording.cmake",
+            "docs/core/random-recording.md",
+            "docs/world/material-execution.md",
+            "src/client/runtime/bootstrap_random_internal.h",
+            "src/world/runtime/registry_execution_internal.h",
+            "tests/client/startup/test_bootstrap_random_admission.c",
+            "tests/core/java/test_random_profile_record_overlap.c"
+          ],
+          "current_count": 5853
+        }
+      }
+    },
+    {
+      "from_commit": "af6b08b00506ad3a57674bf8deabe24a009af2f2",
+      "role": "Random constructor recording and strict whole-input replay, early bootstrap binding and retirement receipts, and owned World material lookup with separate native/query results. Current source admissions only; compilation and native outcomes require separate execution. Historical suppliers and observations remain unchanged. No whole-frame, full gameplay or FPS qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1677754,
+        "sha256": "0eee411e12a59022bc3deac2832bda350cd5c6b67564b9761a00c0c9e410d19f"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 732293,
+              "sha256": "3ad45dcef679f0922247bfee0a83fa6e27462ed782028f8fc079ae79a6a5c113"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 831293,
+              "sha256": "33cc86f9d30bc3ef5fd3c7db4206d69db44296cc18dbb756e0438114816b0c7a"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 729272,
+              "sha256": "3849d91cdf63aae4c35d0c5781f596e88f27d1bb528ae02ab02d0d71293fc1d6"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 55170,
+              "sha256": "1265c95232625e622a320599f90ae06f7127aca62821a97078e6c913dfdda042"
+            }
+          },
+          "added": [],
+          "current_count": 5853
+        }
+      }
+    },
+    {
+      "from_commit": "af6b08b00506ad3a57674bf8deabe24a009af2f2",
+      "role": "Random constructor recording and strict whole-input replay, early bootstrap binding and retirement receipts, and owned World material lookup with separate native/query results. Current source admissions only; compilation and native outcomes require separate execution. Historical suppliers and observations remain unchanged. No whole-frame, full gameplay or FPS qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1679362,
+        "sha256": "5ed58a172375ad38b2e98ef546a623e25c8bdb8a03a5c5d46f7c97f9616686e3"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/parity.md": {
+              "bytes": 225002,
+              "sha256": "2572ce0fa8a93c318b9c5b3c526b2c34c9a800512fd0d182e813e0897f56047f"
+            },
+            "docs/status.md": {
+              "bytes": 136296,
+              "sha256": "84cb4096c8f1df4096f26416e8d8f985791f42f4f1e49e545dd21dd9f409dc68"
+            },
+            "docs/testing.md": {
+              "bytes": 581873,
+              "sha256": "ff67d89745a40bf88a94955920c2948ba4e232696ddc41d57662951340c84748"
+            },
+            "docs/core/random-recording.md": {
+              "bytes": 4460,
+              "sha256": "791930357aa6913ff73326f0fddff77bbdc31d00283c3676f4ca28bebf2b3b5c"
+            },
+            "docs/world/material-execution.md": {
+              "bytes": 3105,
+              "sha256": "e98c64d9e9d90598ed15daa80af9780f301e19c9cbd42da4e32c88125fd1fb96"
+            }
+          },
+          "added": [],
+          "current_count": 5853
+        }
+      }
+    },
+    {
+      "from_commit": "af6b08b00506ad3a57674bf8deabe24a009af2f2",
+      "role": "Random constructor recording and strict whole-input replay, early bootstrap binding and retirement receipts, and owned World material lookup with separate native/query results. Current source admissions only; compilation and native outcomes require separate execution. Historical suppliers and observations remain unchanged. No whole-frame, full gameplay or FPS qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1681024,
+        "sha256": "9fc804983473c454d3b84b59f203a3e8bc30cb8655674d77781d97f9e8055028"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/parity.md": {
+              "bytes": 225951,
+              "sha256": "81fdfd7506c6fe53ea539067f1c4f176837dd5c6662ba21f44f792af092e5f31"
+            }
+          },
+          "added": [],
+          "current_count": 5853
         }
       }
     }

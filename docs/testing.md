@@ -1,5 +1,48 @@
 # Test scope and reproduction
 
+## Constructor recording and owned material lookup
+
+The [Random recorder](core/random-recording.md) captures actual committed
+constructor inputs and requires complete consumption for replay. Bootstrap binds
+before dependent constructors and reports observation results separately at
+profile retirement. The [owned material entry](world/material-execution.md)
+shares the ordinary lookup body while preserving lower-query and native
+ownership results through checked unwind.
+
+The coherent Windows Release build passes all 820 configured tests: 26 focused
+tests in 209.56 seconds and 794 disjoint remaining tests in 546.71 seconds. The
+union equals the registered inventory, with no duplicates, skips or unrun cases.
+The existing Linux Clang 18 Debug ASan/UBSan graph builds eight targets and
+passes the 25 common focused tests in 135 seconds, with leak detection and
+halt-on-error. That is targeted Linux coverage, not a full-suite or GCC result.
+The genuine client runtime is absent from this local Linux graph, so bootstrap
+admission is covered only by the Windows run.
+
+Each host passes 220 constructor-input checks, the unchanged 191 profile checks
+and 18 earlier observation checks. The fixed real-thread cohorts make 12,289
+successful constructors per host and observe both ample-capacity overlap and
+overflow-first overlap. Windows performs 18,283 checks; Linux performs 17,539.
+Both printed qualification flags are 1 on each host. These totals depend on
+actual recorded rows; exit 0 alone would not qualify overlap. Windows also
+passes 14 real no-window bootstrap admission and retirement checks.
+
+Nineteen native query modes pass 1,079 checks per host. The three material modes
+add 166 checks: 55 successful lookup, 69 admission and 42 loader-error checks,
+with four, ten and one actual material calls respectively. Normal and optimized
+Python each reject 1,184 transport corruptions, 380 retained-red payload changes,
+86 filename-map corruptions, seven literal changes and four dependency bundles.
+The earlier pure runs retained a stale expected count of 70; changing that
+inventory literal to 86 preserves every old corruption and all 16 new cases.
+Existing recipe, returned-capture, authored-file and source/product guards pass.
+Exact clang-format 18.1.3 checks all 2,290 C source/header/fragment files.
+
+A separate earlier monitor-2 frame recording completed with focus and checked
+cleanup. Its sole whole-input replay left 227 of 7,628 declared inputs unused
+and correctly refused completion. The retained tape is not trimmed, padded or
+retried. That result supplies no whole-frame equivalence or FPS improvement.
+Nullable material, GET-OK/native-completion refusal, arbitrary foreign graphs
+and full Arrow parent execution remain unqualified.
+
 ## Activation close continuations
 
 The [callee-published close records](world/activation-close.md) preserve the

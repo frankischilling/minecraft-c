@@ -209,7 +209,9 @@ static bool kl_error_same(const mc_world_source_chunk_error *a,
 /* Genuine SourceSaving graph; all defining code/Registry/Store/import/loader
  * owners remain externally live and exclusive through cleanup. Native component
  * inputs only: no modeled child return, Source pointer fault or manual attempt. */
+#include "core/java/random_profile_internal.h"
 #include "world/runtime/collision/blocks_execution_internal.h"
+#include "world/runtime/registry_execution_internal.h"
 #include "world/runtime/tile_entities/execution_internal.h"
 #include "world/runtime/world_access_internal.h"
 
@@ -692,7 +694,383 @@ static int cq_callback_case(cq_fixture *s) {
     return 0;
 }
 
+/* Material controls use the same genuine graph above. All operation results and
+ * typed lower query scratch stay in this retained heap fixture. */
+typedef struct mg_guard {
+    unsigned char world[sizeof(mc_world_runtime)];
+    unsigned char classes[sizeof(mc_world_runtime_classes)];
+    unsigned char registry[sizeof(mc_registry_classes)];
+    unsigned char profile[sizeof(mc_java_random_profile)];
+    unsigned char resources[sizeof(resources)];
+    unsigned char random[sizeof(mc_java_random)];
+    mc_world_source_chunk_loader_state loader;
+    size_t cache_count, insertion_count, pending_count;
+    size_t world_count, lease_count, receipt_count, loader_count;
+    mc_entity_tick_execution_phase execution_phase;
+    mc_entity_tick_execution_error first, capture, cleanup;
+} mg_guard;
+
+typedef struct mg_fixture {
+    cq_fixture cq;
+    mc_world_material_error material;
+    mc_world_storage_status query_status;
+    mc_material *out;
+    size_t calls;
+    unsigned char material_before[sizeof(mc_world_material_error)];
+    unsigned char lower_before[sizeof(mc_world_collision_error)];
+    unsigned char result_before[sizeof(mc_world_runtime_execution_result)];
+    mg_guard before;
+} mg_fixture;
+
+static const mc_entity_tick_execution_site mg_site = {"native.material.control", "get", "()V", 0};
+
+static bool mg_closes_empty(const mc_world_runtime_execution_result *result) {
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (result->closes[i].used)
+            return false;
+    return true;
+}
+
+static void mg_seed(mg_fixture *s) {
+    s->out = mc_materials_get(s->cq.source.game.materials, MC_MATERIAL_a);
+    s->material = (mc_world_material_error){
+        .status = MC_WORLD_STORAGE_IO_ERROR,
+        .operation = "Material control untouched scratch",
+        .bytecode = 71,
+        .cause = {MC_WORLD_STORAGE_IO_ERROR, "Material control untouched cause", 19},
+        .registry = {.initializer_pc = -1,
+                     .block_id = -1,
+                     .constructor_pc = -1,
+                     .active_initializer_pc = -1,
+                     .item_argument = -1}};
+    mc_world_collision_error_init(&s->cq.collision);
+    s->cq.collision.world_bytecode = 4;
+    s->cq.collision.nearby.query.status = MC_WORLD_STORAGE_BUSY;
+    s->cq.collision.nearby.query.cause =
+        (mc_world_storage_error){MC_WORLD_STORAGE_BUSY, "Material control lower scratch", 23};
+    s->query_status = MC_WORLD_STORAGE_IO_ERROR;
+    mc_world_runtime_execution_result_init(&s->cq.result);
+    memcpy(s->material_before, &s->material, sizeof(s->material));
+    memcpy(s->lower_before, &s->cq.collision, sizeof(s->cq.collision));
+    memcpy(s->result_before, &s->cq.result, sizeof(s->cq.result));
+}
+
+static bool mg_scratch_same(const mg_fixture *s) {
+    return s->out == mc_materials_get(s->cq.source.game.materials, MC_MATERIAL_a) &&
+           s->query_status == MC_WORLD_STORAGE_IO_ERROR &&
+           memcmp(s->material_before, &s->material, sizeof(s->material)) == 0 &&
+           memcmp(s->lower_before, &s->cq.collision, sizeof(s->cq.collision)) == 0;
+}
+
+static bool mg_guard_take(mg_fixture *s) {
+    fixture *f = &s->cq.source.game;
+    mc_world_runtime *world = f->worlds[0];
+    mc_world_runtime_source_construction_state construction;
+    mg_guard *g = &s->before;
+    if (world->fields.r == NULL ||
+        !mc_world_runtime_source_construction_inspect(world, &construction) ||
+        !mc_world_source_chunk_loader_inspect(construction.loader, &g->loader))
+        return false;
+    memcpy(g->world, world, sizeof(*world));
+    memcpy(g->classes, f->classes[0], sizeof(*f->classes[0]));
+    memcpy(g->registry, f->registry[0], sizeof(*f->registry[0]));
+    memcpy(g->profile, f->profile, sizeof(*f->profile));
+    memcpy(g->resources, &f->sources[0], sizeof(f->sources[0]));
+    memcpy(g->random, world->fields.r, sizeof(*world->fields.r));
+    g->cache_count = f->providers[0].cache->count;
+    g->insertion_count = f->providers[0].cache->insertion_count;
+    g->pending_count = f->providers[0].pending->count;
+    g->world_count = s->cq.execution.world_count;
+    g->lease_count = s->cq.execution.lease_count;
+    g->receipt_count = s->cq.execution.receipt_count;
+    g->loader_count = s->cq.execution.loader_count;
+    g->execution_phase = s->cq.execution.phase;
+    g->first = s->cq.execution.first;
+    g->capture = s->cq.execution.capture;
+    g->cleanup = s->cq.execution.cleanup;
+    return true;
+}
+
+static bool mg_guard_same(mg_fixture *s) {
+    fixture *f = &s->cq.source.game;
+    mc_world_runtime *world = f->worlds[0];
+    const mg_guard *g = &s->before;
+    return memcmp(g->world, world, sizeof(*world)) == 0 &&
+           memcmp(g->classes, f->classes[0], sizeof(*f->classes[0])) == 0 &&
+           memcmp(g->registry, f->registry[0], sizeof(*f->registry[0])) == 0 &&
+           memcmp(g->profile, f->profile, sizeof(*f->profile)) == 0 &&
+           memcmp(g->resources, &f->sources[0], sizeof(f->sources[0])) == 0 &&
+           memcmp(g->random, world->fields.r, sizeof(*world->fields.r)) == 0 &&
+           cq_loader_same(&s->cq, &g->loader) && g->cache_count == f->providers[0].cache->count &&
+           g->insertion_count == f->providers[0].cache->insertion_count &&
+           g->pending_count == f->providers[0].pending->count &&
+           g->world_count == s->cq.execution.world_count &&
+           g->lease_count == s->cq.execution.lease_count &&
+           g->receipt_count == s->cq.execution.receipt_count &&
+           g->loader_count == s->cq.execution.loader_count &&
+           g->execution_phase == s->cq.execution.phase &&
+           cq_owner_error_same(g->first, s->cq.execution.first) &&
+           cq_owner_error_same(g->capture, s->cq.execution.capture) &&
+           cq_owner_error_same(g->cleanup, s->cq.execution.cleanup);
+}
+
+static bool mg_call(mg_fixture *s, int32_t x, int32_t y, int32_t z) {
+    ++s->calls;
+    return mc_world_runtime_material_get_in_execution(
+        &s->cq.execution, s->cq.source.game.classes[0], s->cq.source.game.worlds[0], cq_code, x, y,
+        z, &s->out, &s->material, &s->cq.collision, &s->query_status, &s->cq.result);
+}
+
+static void mg_failure(const mg_fixture *s, bool completed, const char *stage) {
+    fprintf(stderr,
+            "MATERIAL_GET_FAILURE stage=%s completed=%u calls=%zu query=%d material=%d pc=%u "
+            "operation=%.192s ownership=%d ownership_operation=%.192s selected=%u pending=%u\n",
+            stage, completed ? 1u : 0u, s->calls, (int)s->query_status, (int)s->material.status,
+            s->material.bytecode, s->material.operation == NULL ? "(null)" : s->material.operation,
+            (int)s->cq.result.ownership_status,
+            s->cq.result.ownership_error.operation == NULL ? "(null)"
+                                                           : s->cq.result.ownership_error.operation,
+            s->cq.result.selection_ready ? 1u : 0u, cq_pending(&s->cq.result) ? 1u : 0u);
+}
+
+static bool mg_material_clear(const mc_world_material_error *error) {
+    const mc_registry_error *r = &error->registry;
+    return error->status == MC_WORLD_STORAGE_OK && error->operation == NULL &&
+           error->bytecode == 0 && error->cause.status == MC_WORLD_STORAGE_OK &&
+           error->cause.operation == NULL && error->cause.system_error == 0 &&
+           r->status == MC_REGISTRY_OK && r->message == NULL && r->initializer_pc == -1 &&
+           r->block_id == -1 && r->constructor_class == NULL && r->constructor_pc == -1 &&
+           r->profile_status == MC_JAVA_RANDOM_PROFILE_OK && r->active_initializer_class == NULL &&
+           r->active_initializer_pc == -1 && r->item_argument == -1 &&
+           r->format_error.status == MC_JAVA_FORMAT_OK && r->format_error.offset == 0 &&
+           r->format_error.length == 0 && r->format_error.value == 0 &&
+           r->format_error.flags == 0 && r->format_error.conversion == 0 &&
+           !r->format_error.date_time;
+}
+
+static int mg_value(mg_fixture *s, int32_t x, int32_t y, int32_t z, mc_material *expected) {
+    fixture *f = &s->cq.source.game;
+    mc_world_runtime *world = f->worlds[0];
+    const size_t calls = world->active_calls;
+    mc_entity_tick_execution_world_token outer;
+    VERIFY(f->classes[0]->initialized && f->registry[0]->blocks_phase == MC_REGISTRY_READY &&
+           mc_entity_tick_execution_push_world(&s->cq.execution, world, mg_site, &outer) ==
+               MC_WORLD_STORAGE_OK);
+    mg_seed(s);
+    const bool completed = mg_call(s, x, y, z);
+    if (!completed || s->out != expected || s->query_status != MC_WORLD_STORAGE_OK ||
+        s->cq.result.ownership_status != MC_WORLD_STORAGE_OK)
+        mg_failure(s, completed, "value");
+    VERIFY(completed && s->out == expected && s->query_status == MC_WORLD_STORAGE_OK &&
+           mg_material_clear(&s->material) &&
+           s->cq.collision.nearby.query.status == MC_WORLD_STORAGE_OK &&
+           s->cq.result.ownership_status == MC_WORLD_STORAGE_OK && !s->cq.result.selection_ready &&
+           !cq_pending(&s->cq.result) && mg_closes_empty(&s->cq.result) &&
+           s->cq.execution.loader_count == 0 && s->cq.execution.receipt_count == 0 &&
+           world->active_calls == calls);
+    const size_t before_pop = world->persistent_bindings;
+    VERIFY(mc_entity_tick_execution_pop_world(&s->cq.execution, &outer, false) ==
+               MC_WORLD_STORAGE_OK &&
+           world->persistent_bindings + 1 == before_pop && s->cq.execution.world_count == 0 &&
+           s->cq.execution.lease_count == 0);
+    s->cq.result = (mc_world_runtime_execution_result){0};
+    return 0;
+}
+
+static int mg_success(mg_fixture *s) {
+    fixture *f = &s->cq.source.game;
+    VERIFY(mg_value(s, 32000000, 64, 8, mc_materials_get(f->materials, MC_MATERIAL_a)) == 0 &&
+           f->providers[0].cache->count == 0);
+    VERIFY(mg_value(s, 8, 66, 8, mc_materials_get(f->materials, MC_MATERIAL_a)) == 0 &&
+           cq_remember(&s->cq) == 0);
+    VERIFY(mg_value(s, 8, 64, 8, mc_materials_get(f->materials, MC_MATERIAL_e)) == 0 &&
+           mg_value(s, 8, 65, 8, mc_materials_get(f->materials, MC_MATERIAL_c)) == 0 &&
+           s->calls == 4);
+    return 0;
+}
+
+static int mg_admission(mg_fixture *s) {
+    fixture *f = &s->cq.source.game;
+    mc_world_runtime *world = f->worlds[0];
+    mc_entity_tick_execution_world_token outer;
+    VERIFY(mc_entity_tick_execution_push_world(&s->cq.execution, world, mg_site, &outer) ==
+           MC_WORLD_STORAGE_OK);
+    for (unsigned int missing = 0; missing < 8u; ++missing) {
+        mg_seed(s);
+        VERIFY(mg_guard_take(s));
+        ++s->calls;
+        const bool completed = mc_world_runtime_material_get_in_execution(
+            missing == 0u ? NULL : &s->cq.execution, missing == 1u ? NULL : f->classes[0],
+            missing == 2u ? NULL : world, cq_code, 8, 64, 8, missing == 3u ? NULL : &s->out,
+            missing == 4u ? NULL : &s->material, missing == 5u ? NULL : &s->cq.collision,
+            missing == 6u ? NULL : &s->query_status, missing == 7u ? NULL : &s->cq.result);
+        VERIFY(!completed && mg_scratch_same(s) && mg_guard_same(s));
+        if (missing == 7u)
+            VERIFY(memcmp(s->result_before, &s->cq.result, sizeof(s->cq.result)) == 0);
+        else
+            VERIFY(s->cq.result.ownership_status == MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+                   !s->cq.result.selection_ready && !cq_pending(&s->cq.result) &&
+                   mg_closes_empty(&s->cq.result));
+    }
+    /* Genuine nested NULL scope, not a fabricated World or owner/phase edit. */
+    mc_entity_tick_execution_world_token nullable;
+    VERIFY(mc_entity_tick_execution_push_world(&s->cq.execution, NULL, mg_site, &nullable) ==
+           MC_WORLD_STORAGE_OK);
+    mg_seed(s);
+    VERIFY(mg_guard_take(s));
+    VERIFY(!mg_call(s, 8, 64, 8) && mg_scratch_same(s) && mg_guard_same(s) &&
+           s->cq.result.ownership_status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+           !s->cq.result.selection_ready && !cq_pending(&s->cq.result) &&
+           mg_closes_empty(&s->cq.result) &&
+           mc_entity_tick_execution_pop_world(&s->cq.execution, &nullable, false) ==
+               MC_WORLD_STORAGE_OK);
+    mc_registry_classes *cold_registry = NULL;
+    mc_world_runtime_classes *cold_code = NULL;
+    const mc_registry_options options = {MC_REGISTRY_CLIENT, f->profile, f->materials, 0,
+                                         &f->sources[0].api};
+    VERIFY(mc_registry_classes_allocate(&options, &cold_registry, NULL) == MC_REGISTRY_OK &&
+           mc_world_runtime_classes_create(MC_WORLD_INFO_CLIENT, f->profile, &trig, &cold_code,
+                                           NULL) == MC_WORLD_STORAGE_OK &&
+           mc_world_runtime_classes_bind_registry(cold_code, cold_registry, NULL) ==
+               MC_REGISTRY_OK);
+    unsigned char *cold_before = malloc(sizeof(*cold_registry) + sizeof(*cold_code));
+    VERIFY(cold_before != NULL && cold_registry->blocks_phase == MC_REGISTRY_COLD &&
+           !cold_code->initialized && cold_code->live_worlds == 0);
+    memcpy(cold_before, cold_registry, sizeof(*cold_registry));
+    memcpy(cold_before + sizeof(*cold_registry), cold_code, sizeof(*cold_code));
+    mg_seed(s);
+    VERIFY(mg_guard_take(s));
+    ++s->calls;
+    const bool completed = mc_world_runtime_material_get_in_execution(
+        &s->cq.execution, cold_code, world, cq_code, 8, 64, 8, &s->out, &s->material,
+        &s->cq.collision, &s->query_status, &s->cq.result);
+    VERIFY(!completed && mg_scratch_same(s) && mg_guard_same(s) &&
+           s->cq.result.ownership_status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+           s->cq.result.ownership_error.operation != NULL &&
+           strcmp(s->cq.result.ownership_error.operation,
+                  "World material same defining code namespace") == 0 &&
+           !s->cq.result.selection_ready && !cq_pending(&s->cq.result) &&
+           mg_closes_empty(&s->cq.result) &&
+           memcmp(cold_before, cold_registry, sizeof(*cold_registry)) == 0 &&
+           memcmp(cold_before + sizeof(*cold_registry), cold_code, sizeof(*cold_code)) == 0 &&
+           cold_registry->blocks_phase == MC_REGISTRY_COLD && !cold_code->initialized);
+    free(cold_before);
+    VERIFY(mc_world_runtime_classes_free(cold_code, NULL) == MC_WORLD_STORAGE_OK &&
+           mc_registry_classes_free(cold_registry, NULL) == MC_REGISTRY_OK && s->calls == 10 &&
+           mc_entity_tick_execution_pop_world(&s->cq.execution, &outer, false) ==
+               MC_WORLD_STORAGE_OK &&
+           s->cq.execution.world_count == 0 && s->cq.execution.lease_count == 0 &&
+           f->providers[0].cache->count == 0);
+    s->cq.result = (mc_world_runtime_execution_result){0};
+    return 0;
+}
+
+static int mg_loader_error(mg_fixture *s) {
+    fixture *f = &s->cq.source.game;
+    mc_world_runtime *world = f->worlds[0];
+    mc_world_runtime_source_construction_state construction;
+    VERIFY(mc_world_runtime_source_construction_inspect(world, &construction) &&
+           construction.loader != NULL && f->providers[0].cache->count == 0);
+    const size_t bindings = world->persistent_bindings, calls = world->active_calls;
+    mc_entity_tick_execution_world_token outer;
+    VERIFY(mc_entity_tick_execution_push_world(&s->cq.execution, world, mg_site, &outer) ==
+           MC_WORLD_STORAGE_OK);
+    mg_seed(s);
+    const bool completed = mg_call(s, 8, 64, 8);
+    if (completed || s->query_status != MC_WORLD_STORAGE_INVALID_DATA ||
+        s->cq.result.ownership_status != MC_WORLD_STORAGE_OK)
+        mg_failure(s, completed, "loader");
+    VERIFY(!completed && s->calls == 1 && s->out == mc_materials_get(f->materials, MC_MATERIAL_a) &&
+           s->query_status == MC_WORLD_STORAGE_INVALID_DATA &&
+           s->material.status == s->query_status && s->material.bytecode == 4 &&
+           s->material.operation == s->cq.collision.nearby.query.cause.operation &&
+           s->material.cause.status == s->cq.collision.nearby.query.cause.status &&
+           s->material.cause.system_error == s->cq.collision.nearby.query.cause.system_error &&
+           s->material.registry.status == MC_REGISTRY_OK &&
+           s->cq.result.ownership_status == MC_WORLD_STORAGE_OK && s->cq.result.selection_ready &&
+           !cq_pending(&s->cq.result) && mg_closes_empty(&s->cq.result) &&
+           s->cq.result.selection.status == MC_CHUNK_ACQUIRE_CALLBACK_FAILED &&
+           kl_world_same(&s->cq.result.selection.world, &outer) &&
+           mc_entity_tick_execution_loader_read(&s->cq.execution, &s->cq.result.selection,
+                                                &s->cq.view) &&
+           s->cq.view.failure != NULL && world->active_calls == calls &&
+           s->cq.collision.nearby.query.status == s->query_status &&
+           s->cq.collision.nearby.query.acquisition == MC_CHUNK_ACQUIRE_CALLBACK_FAILED &&
+           s->cq.collision.nearby.query.bytecode == 48 &&
+           s->cq.collision.nearby.query.provider_bytecode == 6 &&
+           s->cq.collision.nearby.query.source_chunk == s->cq.view.failure);
+    mc_world_source_chunk_loader_state producer;
+    VERIFY(mc_world_source_chunk_loader_inspect(construction.loader, &producer) &&
+           producer.phase == MC_WORLD_SOURCE_FAILED && producer.last_pc == 18 &&
+           producer.reader != NULL && producer.record != NULL && producer.failure != NULL &&
+           s->cq.view.failure != producer.failure &&
+           s->cq.view.failure == &s->cq.execution.loaders[0] &&
+           kl_error_same(s->cq.view.failure, producer.failure) &&
+           s->cq.view.failure->source.source_exception &&
+           !s->cq.view.failure->source.native_policy &&
+           s->cq.view.failure->input.source_fault == MC_NBT_SOURCE_ROOT &&
+           s->cq.view.failure->source.frame_count == 1 &&
+           s->cq.view.failure->source.frames[0].pc == 18 &&
+           s->cq.view.failure->source.frames[0].class_name != NULL &&
+           strcmp(s->cq.view.failure->source.frames[0].class_name, "ld") == 0);
+    s->cq.selected = s->cq.result.selection;
+    VERIFY(mc_entity_tick_execution_pop_world(&s->cq.execution, &outer, true) ==
+               MC_WORLD_STORAGE_OK &&
+           world->persistent_bindings == bindings + 1 &&
+           mc_world_runtime_free(world, &s->cq.source.error) == MC_WORLD_STORAGE_BUSY &&
+           mc_entity_tick_execution_loader_read(&s->cq.execution, &s->cq.selected, &s->cq.view) &&
+           kl_error_same(s->cq.view.failure, producer.failure));
+    /* End only caller diagnostic/value borrows before actual native retirement. */
+    s->cq.collision.nearby.query.source_chunk = NULL;
+    s->cq.view = (mc_entity_tick_execution_loader_view){0};
+    s->cq.selected = (mc_entity_tick_execution_loader_selection){0};
+    s->cq.result = (mc_world_runtime_execution_result){0};
+    producer = (mc_world_source_chunk_loader_state){0};
+    construction = (mc_world_runtime_source_construction_state){0};
+    VERIFY(mc_entity_tick_execution_retire(&s->cq.execution) == MC_WORLD_STORAGE_OK &&
+           world->persistent_bindings == bindings && s->cq.execution.loader_count == 0 &&
+           s->cq.execution.world_count == 0);
+    return 0;
+}
+
+static bool mg_mode(const char *mode) {
+    return strcmp(mode, "material-success") == 0 || strcmp(mode, "material-admission") == 0 ||
+           strcmp(mode, "material-loader-error") == 0;
+}
+
+static int mg_main(const char *mode, const char *root) {
+    printf("MATERIAL_GET_BEGIN schema=1 mode=%s\n", mode);
+    fflush(stdout);
+    mg_fixture *s = calloc(1, sizeof(*s));
+    VERIFY(s != NULL);
+    s->cq.mode = mode;
+    VERIFY(ss_setup(&s->cq.source, root) == 0 && cq_files(&s->cq, true) == 0 &&
+           ss_open(&s->cq.source) == 0);
+    mc_entity_tick_execution_init(&s->cq.execution, NULL);
+    printf("MATERIAL_GET_CASE %s BEGIN\n", mode);
+    fflush(stdout);
+    const int result = strcmp(mode, "material-success") == 0     ? mg_success(s)
+                       : strcmp(mode, "material-admission") == 0 ? mg_admission(s)
+                                                                 : mg_loader_error(s);
+    VERIFY(result == 0 && mc_entity_tick_execution_retire(&s->cq.execution) == MC_WORLD_STORAGE_OK);
+    printf("MATERIAL_GET_CASE %s END calls=%zu\n", mode, s->calls);
+    fflush(stdout);
+    mc_world_collision_error_init(&s->cq.collision);
+    s->material = (mc_world_material_error){0};
+    VERIFY((s->cq.source.game.states[0] == NULL ? cq_empty_stop(&s->cq.source)
+                                                : ss_stop(&s->cq.source)) == 0 &&
+           cq_files(&s->cq, false) == 0 && ss_finish(&s->cq.source) == 0);
+    for (size_t i = 0; i < COUNT(s->cq.inputs); ++i)
+        mc_ws_free_file_bytes(&s->cq.inputs[i]);
+    free(s);
+    printf("MATERIAL_GET_OPEN get-ok-native-completion/Blank/foreign-Store/parent/full-SL\n");
+    printf("PASS: %u actual owned material checks;mode=%s\n", checks, mode);
+    return 0;
+}
+
 int main(int argc, char **argv) {
+    if (argc == 3 && mg_mode(argv[1]))
+        return mg_main(argv[1], argv[2]);
     VERIFY(argc == 3 &&
            (strcmp(argv[1], "id-first") == 0 || strcmp(argv[1], "metadata-first") == 0 ||
             strcmp(argv[1], "domain") == 0 || strcmp(argv[1], "loader-error") == 0 ||

@@ -1,7 +1,7 @@
 {
   "schema": "EXPLICIT_WORLD_QUERY_CONTROLS_BUNDLE_V1",
   "selection": "a97:nested3+Entity2+kernel2+Tile2;loader1+lookup1-nbt-capacity-fix1;collision-owner1+collision-fixture1;activation-close-owner1+fixture1",
-  "published_supplier": "a97 (Parent-provided revision label; actual bytes pinned below, no Git run)",
+  "published_supplier": "a97; historical dependency identities retained below",
   "dependencies": {
     "sl-nested-owner-candidates-3": {
       "bytes": 7824,
@@ -70,8 +70,8 @@
       },
       "source": "tests/world/runtime/world_access/test_collision_query_execution.c",
       "source_pin": {
-        "bytes": 39905,
-        "sha256": "8032d0b673620aea1f1cce08685ff751509878c707a53f45b6f8098361702938"
+        "bytes": 60973,
+        "sha256": "8e0bd2af97fe735de215648b837c9a69ff723608826d287cf9c579663d0cff7c"
       }
     },
     "close": {
@@ -88,6 +88,25 @@
         "bytes": 30572,
         "sha256": "72cd515c4007b9251e6b3cd6daebdb9d8b936f139f2ae45ccbda26e8ef4750ad"
       }
+    },
+    "material": {
+      "source": "tests/world/runtime/world_access/test_collision_query_execution.c",
+      "source_pin": {
+        "bytes": 60973,
+        "sha256": "8e0bd2af97fe735de215648b837c9a69ff723608826d287cf9c579663d0cff7c"
+      },
+      "modes": [
+        "material-success",
+        "material-admission",
+        "material-loader-error"
+      ],
+      "calls": {
+        "material-success": 4,
+        "material-admission": 10,
+        "material-loader-error": 1
+      },
+      "nullable": "OPEN_INVALID_FIXTURE_ADMISSION",
+      "native_status_channels": "query_status and result.ownership_status are independent"
     }
   },
   "sources": {
@@ -224,8 +243,8 @@
       "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
     },
     "cmake/tests/world_query_controls.cmake": {
-      "bytes": 4795,
-      "sha256": "a7807432796afa742536a7ccd298ac690ccdcd9c3624e1674ad9b076c3da1555"
+      "bytes": 5077,
+      "sha256": "8c7acfc43f0127cfd0c261aa1354a9fc1220fbe70956cea3a27ff80580285252"
     },
     "src/world/runtime/collision/blocks.c": {
       "bytes": 86765,
@@ -236,12 +255,20 @@
       "sha256": "4baf31792425107c53a3b80fe7079b12b8d2964d690672119baacb922888d9f5"
     },
     "tests/world/runtime/world_access/test_collision_query_execution.c": {
-      "bytes": 39905,
-      "sha256": "8032d0b673620aea1f1cce08685ff751509878c707a53f45b6f8098361702938"
+      "bytes": 60973,
+      "sha256": "8e0bd2af97fe735de215648b837c9a69ff723608826d287cf9c579663d0cff7c"
     },
     "tests/world/runtime/world_access/test_activation_close_execution.c": {
       "bytes": 30572,
       "sha256": "72cd515c4007b9251e6b3cd6daebdb9d8b936f139f2ae45ccbda26e8ef4750ad"
+    },
+    "src/world/runtime/registry.c": {
+      "bytes": 12242,
+      "sha256": "80d19882ffdbdc2428d45961eb5a718e74f1ccd7393d6c88aec32d990149b3ef"
+    },
+    "src/world/runtime/registry_execution_internal.h": {
+      "bytes": 4185,
+      "sha256": "bfa8fc9ea785858961e180d731cf09c356a84b90ab4b549b3af76f9b341aee65"
     }
   },
   "helpers": {
@@ -266,8 +293,8 @@
       "sha256": "877551f32b09cd29ec4c62f79a0e90ba1c12291ad01a13a977b7aa097dd41e69"
     },
     "tests/tools/world/world_query_controls_protocol.json": {
-      "bytes": 10040,
-      "sha256": "4f1b3f29257fd204f913097a3458b479da0444e3d1e3d20b152519406472f427"
+      "bytes": 11797,
+      "sha256": "8e9386933302d6f40f719c7b54c26cd1cfc0f54923896146620a0bda29f43d5d"
     },
     "tests/tools/world/collision_query_inputs.py": {
       "bytes": 2883,
@@ -338,7 +365,27 @@
       "world/level.dat",
       "world/region/r.0.0.mcr",
       "world/preserve.bin"
-    ]
+    ],
+    "material": {
+      "material-success": [
+        "world/level.dat",
+        "world/data/idcounts.dat",
+        "world/region/r.0.0.mcr",
+        "world/preserve.bin"
+      ],
+      "material-admission": [
+        "world/level.dat",
+        "world/data/idcounts.dat",
+        "world/region/r.0.0.mcr",
+        "world/preserve.bin"
+      ],
+      "material-loader-error": [
+        "world/level.dat",
+        "world/data/idcounts.dat",
+        "world/region/r.0.0.mcr",
+        "world/preserve.bin"
+      ]
+    }
   },
   "only_permitted_addition": {
     "path": "world/session.lock",
@@ -395,5 +442,11 @@
     "execution": "UNKNOWN_NOT_RUN; no inherited native result",
     "recipe": "Exact frozen pure three-file item-chest recipe, no Source/native model",
     "open": "Tile-refusal/consumed-nonOK/direct-close-wrong-current/unrecorded descendants/foreign Store/full SL"
+  },
+  "material_scope": {
+    "source_body": "Shared material_get body; ordinary wrappers unchanged",
+    "status_channels": "Required stable exact lower query_status and runtime ownership result; source projection remains separate",
+    "scope": "Three finite native control modes; nullable/GET-OK-native-completion/Blank/foreign graph/scanner/parent/full SL OPEN",
+    "combined_build": "Coherent current Core/private profile header required; prior baseline Core receipts do not qualify combined build"
   }
 }

@@ -10,6 +10,7 @@
 #include "../startup/application_startup_internal.h"
 #include "../startup/application_startup_menu.h"
 #include "../window/frame.h"
+#include "bootstrap_random_internal.h"
 #include "bootstrap_terminal_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/client/world/frustum.h"
@@ -60,6 +61,10 @@ struct mc_client_bootstrap {
     mc_client_menu_loop *menu;
     bool terminal_begun;
     mc_client_bootstrap_terminal_scope terminal_scope;
+    mc_client_bootstrap_random_terminal *random_terminal;
+    mc_client_bootstrap_random_mode random_mode;
+    mc_java_random_profile_status random_binding_status;
+    bool random_binding_attempted;
 };
 
 static const char *text(const char *value) {
@@ -147,10 +152,31 @@ static mc_client_bootstrap_status open_resources(mc_client_bootstrap *context, c
     return MC_CLIENT_BOOTSTRAP_OK;
 }
 
-static mc_client_bootstrap_status open_constructor_services(mc_client_bootstrap *context) {
+static mc_client_bootstrap_status
+open_constructor_services(mc_client_bootstrap *context,
+                          const mc_client_bootstrap_random_config *random) {
     mc_client_application_constructor_services *services = &context->constructor;
     OPEN_OWNER(mc_java_random_profile_create(SIZE_MAX, &services->profile),
                MC_JAVA_RANDOM_PROFILE_OK, "Random profile");
+    if (random != NULL) {
+        context->random_binding_attempted = true;
+        switch (random->mode) {
+            case MC_CLIENT_BOOTSTRAP_RANDOM_REPLAY:
+                context->random_binding_status = mc_java_random_profile_bind_constructor_inputs(
+                    services->profile, random->data.replay.inputs, random->data.replay.count);
+                break;
+            case MC_CLIENT_BOOTSTRAP_RANDOM_RECORD:
+                context->random_binding_status = mc_java_random_profile_bind_constructor_records(
+                    services->profile, random->data.record.records, random->data.record.capacity);
+                break;
+            default:
+                context->random_binding_status = MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT;
+                break;
+        }
+        if (context->random_binding_status != MC_JAVA_RANDOM_PROFILE_OK)
+            return owner_failure("Random constructor observation binding",
+                                 (int)context->random_binding_status);
+    }
     if (!mc_materials_create(&context->materials))
         return allocation_failure("Material namespace");
     const mc_registry_options registry = {.side = MC_REGISTRY_CLIENT,
@@ -315,7 +341,9 @@ static mc_client_bootstrap_status open_session(mc_client_bootstrap *context, con
 }
 
 static mc_client_bootstrap_status open_profile(const mc_client_application_options *options,
-                                               bool standalone, mc_client_bootstrap **out) {
+                                               bool standalone,
+                                               const mc_client_bootstrap_random_config *random,
+                                               mc_client_bootstrap **out) {
     if (options == NULL || out == NULL || *out != NULL || options->assets == NULL ||
         options->assets[0] == '\0' || options->width <= 0 || options->height <= 0)
         return MC_CLIENT_BOOTSTRAP_INVALID_ARGUMENT;
@@ -325,14 +353,22 @@ static mc_client_bootstrap_status open_profile(const mc_client_application_optio
                         "--gui-scale or --inspect-world overrides.\n");
         return MC_CLIENT_BOOTSTRAP_UNSUPPORTED_OPTION;
     }
+    if (random != NULL &&
+        (random->terminal == NULL || (random->mode != MC_CLIENT_BOOTSTRAP_RANDOM_REPLAY &&
+                                      random->mode != MC_CLIENT_BOOTSTRAP_RANDOM_RECORD)))
+        return MC_CLIENT_BOOTSTRAP_INVALID_ARGUMENT;
     mc_client_bootstrap *context = calloc(1, sizeof(*context));
     if (context == NULL)
         return allocation_failure("native application context");
     *out = context;
+    if (random != NULL) {
+        context->random_terminal = random->terminal;
+        context->random_mode = random->mode;
+    }
     mc_client_bootstrap_status status = open_resources(context, options->assets);
     if (status != MC_CLIENT_BOOTSTRAP_OK)
         return status;
-    status = open_constructor_services(context);
+    status = open_constructor_services(context, random);
     if (status != MC_CLIENT_BOOTSTRAP_OK)
         return status;
     status = open_startup_services(context);
@@ -406,13 +442,26 @@ static mc_client_bootstrap_status open_profile(const mc_client_application_optio
 
 mc_client_bootstrap_status mc_client_bootstrap_open(const mc_client_application_options *o,
                                                     mc_client_bootstrap **out) {
-    return open_profile(o, false, out);
+    return open_profile(o, false, NULL, out);
 }
 
 mc_client_bootstrap_status
 mc_client_bootstrap_open_standalone(const mc_client_application_options *o,
                                     mc_client_bootstrap **out) {
-    return open_profile(o, true, out);
+    return open_profile(o, true, NULL, out);
+}
+
+mc_client_bootstrap_status
+mc_client_bootstrap_open_with_random_inputs(const mc_client_application_options *o,
+                                            const mc_client_bootstrap_random_config *random,
+                                            mc_client_bootstrap **out) {
+    return open_profile(o, false, random, out);
+}
+
+mc_client_bootstrap_status mc_client_bootstrap_open_standalone_with_random_inputs(
+    const mc_client_application_options *o, const mc_client_bootstrap_random_config *random,
+    mc_client_bootstrap **out) {
+    return open_profile(o, true, random, out);
 }
 
 #undef OPEN_OWNER
@@ -658,6 +707,36 @@ static mc_client_bootstrap_status close_application(mc_client_bootstrap *context
                        : owner_failure(operation, bootstrap_owner_code);                           \
     } while (0)
 
+static void finish_random_observation(mc_client_bootstrap *context) {
+    mc_java_random_profile *profile = context->constructor.profile;
+    mc_client_bootstrap_random_terminal terminal = {
+        .present = true,
+        .binding_attempted = context->random_binding_attempted,
+        .mode = context->random_mode,
+        .binding_status = context->random_binding_status,
+        .completion_status = context->random_binding_status};
+    if (terminal.binding_attempted && terminal.binding_status == MC_JAVA_RANDOM_PROFILE_OK) {
+        switch (terminal.mode) {
+            case MC_CLIENT_BOOTSTRAP_RANDOM_REPLAY:
+                terminal.completion_status =
+                    mc_java_random_profile_constructor_inputs_complete(profile);
+                break;
+            case MC_CLIENT_BOOTSTRAP_RANDOM_RECORD:
+                terminal.completion_status =
+                    mc_java_random_profile_constructor_records_complete(profile);
+                break;
+            default:
+                terminal.completion_status = MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT;
+                break;
+        }
+    }
+    terminal.replay_view_status =
+        mc_java_random_profile_constructor_inputs_get(profile, &terminal.replay);
+    terminal.record_view_status =
+        mc_java_random_profile_constructor_records_get(profile, &terminal.recording);
+    *context->random_terminal = terminal;
+}
+
 mc_client_bootstrap_status mc_client_bootstrap_close(mc_client_bootstrap **slot) {
     if (slot == NULL)
         return MC_CLIENT_BOOTSTRAP_INVALID_ARGUMENT;
@@ -755,8 +834,13 @@ mc_client_bootstrap_status mc_client_bootstrap_close(mc_client_bootstrap **slot)
     }
     mc_materials_destroy(context->materials);
     context->materials = NULL;
+    const bool random_observed = constructor->profile != NULL && context->random_terminal != NULL;
+    if (random_observed)
+        finish_random_observation(context);
     mc_java_random_profile_free(constructor->profile);
     constructor->profile = NULL;
+    if (random_observed)
+        context->random_terminal->profile_retired = true;
     CLOSE_OWNER(mc_math_classes_release(&context->math, &context->math_error), MC_MATH_CLASS_OK,
                 MC_MATH_CLASS_BUSY, "shared MathHelper namespace retirement");
     context->trig = NULL;

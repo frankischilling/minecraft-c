@@ -32,6 +32,11 @@
     "close": [
       "error",
       "null-error"
+    ],
+    "material": [
+      "material-success",
+      "material-admission",
+      "material-loader-error"
     ]
   },
   "supplier_protocols": {
@@ -245,8 +250,42 @@
       "ACTIVATION_CLOSE_CASE owner retired",
       "ACTIVATION_CLOSE_OPEN Tile-refusal/consumed-nonOK/direct-close-wrong-current/full-SL",
       "PASS: <positive canonical uint32> actual activation close-result checks;mode=null-error"
+    ],
+    "material/material-success": [
+      "MATERIAL_GET_BEGIN schema=1 mode=material-success",
+      "16 achievements",
+      "151 recipes",
+      "MATERIAL_GET_CASE material-success BEGIN",
+      "MATERIAL_GET_CASE material-success END calls=4",
+      "MATERIAL_GET_OPEN get-ok-native-completion/Blank/foreign-Store/parent/full-SL",
+      "PASS: <positive canonical integer <=65536> actual owned material checks;mode=material-success"
+    ],
+    "material/material-admission": [
+      "MATERIAL_GET_BEGIN schema=1 mode=material-admission",
+      "16 achievements",
+      "151 recipes",
+      "MATERIAL_GET_CASE material-admission BEGIN",
+      "MATERIAL_GET_CASE material-admission END calls=10",
+      "MATERIAL_GET_OPEN get-ok-native-completion/Blank/foreign-Store/parent/full-SL",
+      "PASS: <positive canonical integer <=65536> actual owned material checks;mode=material-admission"
+    ],
+    "material/material-loader-error": [
+      "MATERIAL_GET_BEGIN schema=1 mode=material-loader-error",
+      "16 achievements",
+      "151 recipes",
+      "MATERIAL_GET_CASE material-loader-error BEGIN",
+      "MATERIAL_GET_CASE material-loader-error END calls=1",
+      "MATERIAL_GET_OPEN get-ok-native-completion/Blank/foreign-Store/parent/full-SL",
+      "PASS: <positive canonical integer <=65536> actual owned material checks;mode=material-loader-error"
     ]
   },
   "collision_scope": "Prospective component and native fixture; no inherited native result; old loader/lookup contract unchanged",
-  "close_scope": "Prospective genuine one-get activation-close fixture and exact five-file owner candidate; no inherited native execution claim"
+  "close_scope": "Prospective genuine one-get activation-close fixture and exact five-file owner candidate; no inherited native execution claim",
+  "material_status": "Three finite native cases; nullable OPEN_INVALID_FIXTURE_ADMISSION; combined coherent Core qualification required",
+  "material_calls": {
+    "material-success": 4,
+    "material-admission": 10,
+    "material-loader-error": 1
+  },
+  "material_check_bound": 65536
 }

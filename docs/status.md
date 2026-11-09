@@ -1,5 +1,20 @@
 # Development status
 
+The current scoped increment adds actual Random constructor recording, strict
+whole-input replay and early bootstrap binding with retirement receipts. Owned
+World material lookup now keeps its exact lower-query and native ownership
+results separate through checked unwind. The [combined validation](testing.md#constructor-recording-and-owned-material-lookup)
+passes all 820 configured Windows tests and 25 selected Linux Clang sanitizer
+tests. Material controls add 166 checks on each host; the real thread tests
+observe both declared overlap cases without a retry.
+
+These are diagnostic and ownership foundations for single-player work. The
+earlier focused monitor-2 recording completed, but its whole replay correctly
+refused 227 unused inputs. No new FPS gain, original audiovisual equality,
+nullable-material coverage or complete Arrow flight/pickup result is claimed.
+The [recording contract](core/random-recording.md) and
+[material contract](world/material-execution.md) describe the remaining limits.
+
 Genuine client Arrows now execute their inherited literal-null collision-box
 methods inside the actual World query. The [collision controls](world/collision/boxes.md#arrow-source-and-qualification)
 pass 794 checks on Windows and sanitized Linux after failing the old callee.

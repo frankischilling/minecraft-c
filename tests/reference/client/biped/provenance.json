@@ -354,12 +354,12 @@
       "sha256": "161364bb3c034fa7f5f06900e613ef5092c5fa444cb6669155a63223ac86e68e"
     },
     "src/core/java/random_profile.c": {
-      "bytes": 14027,
-      "sha256": "40f3e82db81204a3e3e7c4e03c85ea4ec8c03bcb6893e68a19380566ee43a43e"
+      "bytes": 20567,
+      "sha256": "c0ea797b3ee5d0b9c4bc7d50695fe03e223f5361e693d62a20050a2e7571a909"
     },
     "src/core/java/random_profile_internal.h": {
-      "bytes": 5196,
-      "sha256": "aaed566e75da8db62639f5695e8c86e2480329629074592636456ef036e82ef2"
+      "bytes": 9836,
+      "sha256": "589490b66a84ed45bf63d6143ea782125a6859bc937aa1c7b238f0ad2d264d8d"
     },
     "src/core/java/system_output.c": {
       "bytes": 7492,
@@ -959,6 +959,30 @@
             "include/mc/entity/hit_result.h": {
               "bytes": 7793,
               "sha256": "cdfef690358705668d1fba704744a255d0593d709e2c36747808680b74e9a9fa"
+            }
+          },
+          "added": [],
+          "current_count": 127
+        }
+      }
+    },
+    {
+      "from_commit": "af6b08b00506ad3a57674bf8deabe24a009af2f2",
+      "role": "Random constructor recording and strict whole-input replay, early bootstrap binding and retirement receipts, and owned World material lookup with separate native/query results. Current source admissions only; compilation and native outcomes require separate execution. Historical suppliers and observations remain unchanged. No whole-frame, full gameplay or FPS qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 39140,
+        "sha256": "2a56744aeb58b31884e701968af7a060ecd9e6d41bd55be23ec678ee5a3559be"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "src/core/java/random_profile.c": {
+              "bytes": 14027,
+              "sha256": "40f3e82db81204a3e3e7c4e03c85ea4ec8c03bcb6893e68a19380566ee43a43e"
+            },
+            "src/core/java/random_profile_internal.h": {
+              "bytes": 5196,
+              "sha256": "aaed566e75da8db62639f5695e8c86e2480329629074592636456ef036e82ef2"
             }
           },
           "added": [],

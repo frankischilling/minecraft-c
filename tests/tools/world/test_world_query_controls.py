@@ -1,4 +1,4 @@
-"""Retain bounded actual kernel-loader and Tile lookup controls; no full SL claim."""
+"""Retain bounded owned World query controls; parent and full Arrow tick remain open."""
 import argparse
 import copy
 import hashlib
@@ -16,7 +16,9 @@ sys.dont_write_bytecode = True
 TIMEOUT = 240
 LIMIT = 1024**2
 MAX_CHECKS = 2**32 - 1
-BUNDLE_SHA = 'bf88043c69513aac617e1b41a9cb31b04af15aa3840355b761e2cfa6489e3259'
+MATERIAL_MAX_CHECKS = 65536
+MATERIAL_CALLS = {'material-success': 4, 'material-admission': 10, 'material-loader-error': 1}
+BUNDLE_SHA = '15ffafd57287986b40186b11128d06b00b22c4c1e3b42c8fcce43399d7ae8116'
 MODES = {'loader': ('error', 'null-error'),
  'lookup': ('map', 'lazy', 'armed', 'held', 'nested'),
  'collision': ('id-first',
@@ -26,7 +28,8 @@ MODES = {'loader': ('error', 'null-error'),
                'loader-null-error',
                'armed',
                'held'),
- 'close': ('error', 'null-error')}
+ 'close': ('error', 'null-error'),
+ 'material': ('material-success', 'material-admission', 'material-loader-error')}
 SUPPLIERS = {'loader': {'manifest': '01e30de5a0245269259815a878ffd059768858b79b1cf11fc06bfcba93f9685b',
             'protocol': 'fc0b553cf1b23449001bf22a95f943c053a6cc58122eab4d42f408c0548f59f5',
             'source': 'tests/world/runtime/world_access/test_kernel_loader_execution.c',
@@ -40,13 +43,23 @@ SUPPLIERS = {'loader': {'manifest': '01e30de5a0245269259815a878ffd059768858b79b1
  'collision': {'manifest': '8881737d8b31805c0f43fd25e99ef274509125bda65fa1e4b3cc583261bccc9c',
                'protocol': '6fd0849ab48f9b3741756f160f022c003e24bdcdbe94fec36996fb7980acad0f',
                'source': 'tests/world/runtime/world_access/test_collision_query_execution.c',
-               'source_pin': {'bytes': 39905,
-                              'sha256': '8032d0b673620aea1f1cce08685ff751509878c707a53f45b6f8098361702938'}},
+               'source_pin': {'bytes': 60973, 'sha256': '8e0bd2af97fe735de215648b837c9a69ff723608826d287cf9c579663d0cff7c'}},
  'close': {'manifest': '8d880e0ea00573319e4ba758e1baecc9af5ac97f0fa3a6008192a6949c7b94d4',
            'protocol': '4727e921d329f66b33ee93f8e32cd9397257d78e87721a373446758873fcd8c0',
            'source': 'tests/world/runtime/world_access/test_activation_close_execution.c',
            'source_pin': {'bytes': 30572,
                           'sha256': '72cd515c4007b9251e6b3cd6daebdb9d8b936f139f2ae45ccbda26e8ef4750ad'}}}
+
+
+MATERIAL_SOURCE_PIN = {'bytes': 60973, 'sha256': '8e0bd2af97fe735de215648b837c9a69ff723608826d287cf9c579663d0cff7c'}
+MATERIAL_FIXTURE = {
+    'source': 'tests/world/runtime/world_access/test_collision_query_execution.c',
+    'source_pin': MATERIAL_SOURCE_PIN,
+    'modes': list(MATERIAL_CALLS),
+    'calls': MATERIAL_CALLS,
+    'nullable': 'OPEN_INVALID_FIXTURE_ADMISSION',
+    'native_status_channels': 'query_status and result.ownership_status are independent',
+}
 
 
 COLLISION_MARKERS = {'id-first': ('cold BEGIN', 'cold END', 'cache BEGIN', 'cache END'),
@@ -89,6 +102,12 @@ def record_failure(report, key, error):
 
 def protocol_lines(kind, mode):
     require(kind in MODES and mode in MODES[kind], 'Unknown literal query control mode')
+    if kind == 'material':
+        return [b'MATERIAL_GET_BEGIN schema=1 mode=' + mode.encode('ascii'),
+                b'16 achievements', b'151 recipes',
+                b'MATERIAL_GET_CASE ' + mode.encode('ascii') + b' BEGIN',
+                b'MATERIAL_GET_CASE ' + mode.encode('ascii') + b' END calls=' + str(MATERIAL_CALLS[mode]).encode('ascii'),
+                b'MATERIAL_GET_OPEN get-ok-native-completion/Blank/foreign-Store/parent/full-SL']
     if kind == 'close':
         return [b'ACTIVATION_CLOSE_BEGIN schema=1 mode=' + mode.encode('ascii'), b'16 achievements', b'151 recipes'] + [
             b'ACTIVATION_CLOSE_CASE ' + marker.encode('ascii') for marker in CLOSE_MARKERS] + [
@@ -112,9 +131,9 @@ def protocol_lines(kind, mode):
 
 def footer_pattern(kind, mode):
     require(kind in MODES and mode in MODES[kind], 'Unknown footer mode')
-    scope = b'activation close-result' if kind == 'close' else (
+    scope = b'owned material' if kind == 'material' else (b'activation close-result' if kind == 'close' else (
         b'owned collision scalar' if kind == 'collision' else (
-            b'kernel direct-loader' if kind == 'loader' else b'Tile lookup'))
+            b'kernel direct-loader' if kind == 'loader' else b'Tile lookup')))
     return rb'PASS: ([1-9][0-9]{0,9}) actual ' + scope + b' checks;mode=' + mode.encode('ascii')
 
 
@@ -151,7 +170,8 @@ def completed(child, kind, mode, command):
     footer = re.fullmatch(footer_pattern(kind, mode), lines[-2])
     require(footer is not None, 'Missing/wrong literal completion footer')
     checks = int(footer.group(1))
-    require(1 <= checks <= MAX_CHECKS, 'Unsigned native check count outside range')
+    require(1 <= checks <= (MATERIAL_MAX_CHECKS if kind == 'material' else MAX_CHECKS),
+            'Unsigned native check count outside range')
     return checks
 
 
@@ -169,6 +189,9 @@ def bundle_payload(data):
                 actual['source'] == expected['source'] and actual['source_pin'] == expected['source_pin'] and
                 bundle['sources'][expected['source']] == expected['source_pin'],
                 'Wrong immutable fixture/protocol/source supplier: ' + kind)
+    require(bundle['fixtures'].get('material') == MATERIAL_FIXTURE and
+            bundle['sources'][MATERIAL_FIXTURE['source']] == MATERIAL_FIXTURE['source_pin'],
+            'Exact three valid material modes and current native source')
     return bundle
 
 
@@ -327,9 +350,9 @@ def self_test():
     for kind, modes in MODES.items():
         for mode in modes:
             command = ['actual-native', mode, 'fresh-root']
-            footer = b'PASS: 1 actual ' + (b'activation close-result' if kind == 'close' else (
+            footer = b'PASS: 1 actual ' + (b'owned material' if kind == 'material' else (b'activation close-result' if kind == 'close' else (
                 b'owned collision scalar' if kind == 'collision' else
-                (b'kernel direct-loader' if kind == 'loader' else b'Tile lookup'))) + b' checks;mode=' + mode.encode('ascii')
+                (b'kernel direct-loader' if kind == 'loader' else b'Tile lookup')))) + b' checks;mode=' + mode.encode('ascii')
             lines = protocol_lines(kind, mode)
             stdout = b'\n'.join(lines + [footer]) + b'\n'
             report = dict(command=command.copy(), exit=0, reaped=True, pipe_capture_complete=True,
@@ -343,9 +366,10 @@ def self_test():
             windows.capture_report['stdout_bytes'] = len(windows.stdout)
             require(completed(windows, kind, mode, command) == 1, 'Pure CRLF protocol positive')
             maximum = copy.deepcopy(good)
-            maximum.stdout = stdout.replace(b'PASS: 1 ', b'PASS: 4294967295 ')
+            ceiling = MATERIAL_MAX_CHECKS if kind == 'material' else MAX_CHECKS
+            maximum.stdout = stdout.replace(b'PASS: 1 ', b'PASS: ' + str(ceiling).encode('ascii') + b' ')
             maximum.capture_report['stdout_bytes'] = len(maximum.stdout)
-            require(completed(maximum, kind, mode, command) == MAX_CHECKS, 'Actual uint32 ceiling accepted')
+            require(completed(maximum, kind, mode, command) == ceiling, 'Actual selected check ceiling accepted')
             bad = []
             for key, value in [('returncode', 1), ('returncode', False), ('returncode', 0.0),
                                ('stderr', b'real failure\n'), ('stderr', ''), ('stdout', stdout[:-1]),
@@ -355,7 +379,7 @@ def self_test():
                                ('stdout', stdout.replace(lines[3], b'UNKNOWN_CASE', 1)),
                                ('stdout', stdout.replace(footer, footer.replace(b'PASS: 1 ', b'PASS: 0 '))),
                                ('stdout', stdout.replace(footer, footer.replace(b'PASS: 1 ', b'PASS: 01 '))),
-                               ('stdout', stdout.replace(footer, footer.replace(b'PASS: 1 ', b'PASS: 4294967296 '))),
+                               ('stdout', stdout.replace(footer, footer.replace(b'PASS: 1 ', b'PASS: ' + str(ceiling + 1).encode('ascii') + b' '))),
                                ('stdout', stdout.replace(b'\n', b'\r', 1))]:
                 item = copy.deepcopy(good)
                 setattr(item, key, value)
@@ -405,6 +429,18 @@ def self_test():
                     rejected += 1
                     continue
                 raise ValueError('Corrupt protocol accepted: ' + kind + '/' + mode)
+            if kind == 'material':
+                for changed_stdout in (stdout.replace(b'16 achievements\n151 recipes\n', b''),
+                        stdout.replace(b'calls=' + str(MATERIAL_CALLS[mode]).encode('ascii'), b'calls=999')):
+                    changed = copy.deepcopy(good)
+                    changed.stdout = changed_stdout
+                    changed.capture_report['stdout_bytes'] = len(changed_stdout)
+                    try:
+                        completed(changed, kind, mode, command)
+                    except ValueError:
+                        rejected += 1
+                    else:
+                        raise ValueError('Old five-line/material call-count corruption admitted')
             other_command = command.copy()
             other_command[1] = 'foreign'
             other_child = copy.deepcopy(good)
@@ -504,7 +540,7 @@ def self_test():
             bundles += 1
             continue
         raise ValueError('Unapproved bundle accepted')
-    require((rejected, retention, literals, bundles) == (944, 320, 7, 4),
+    require((rejected, retention, literals, bundles) == (1184, 380, 7, 4),
             'Every declared pure corruption refused')
     roots = literal_root_self_test()
     primary = {'status': 'RUNNING'}
@@ -523,14 +559,14 @@ def expected_input_names(bundle, kind, mode):
     """Closed per-kind/mode literal filename contract; no Source outcome model."""
     require(kind in MODES and mode in MODES[kind], 'Unknown literal input kind/mode')
     inputs = bundle['inputs'][kind]
-    if kind == 'collision':
-        require(type(inputs) is dict and set(inputs) == set(MODES['collision']),
-                'Exact collision per-mode input mapping required')
+    if kind in ('collision', 'material'):
+        require(type(inputs) is dict and set(inputs) == set(MODES[kind]),
+                'Exact per-mode input mapping required')
         names = inputs[mode]
     else:
         names = inputs
     expected = ('world/level.dat', 'world/data/idcounts.dat', 'world/region/r.0.0.mcr',
-                'world/preserve.bin') if kind in ('loader', 'collision') else (
+                'world/preserve.bin') if kind in ('loader', 'collision', 'material') else (
                     'world/level.dat', 'world/region/r.0.0.mcr', 'world/preserve.bin')
     require(type(names) is list and tuple(names) == expected,
             'Exact canonical literal filenames required for ' + kind + '/' + mode)
@@ -541,16 +577,17 @@ def input_mapping_self_test():
     four = ['world/level.dat', 'world/data/idcounts.dat', 'world/region/r.0.0.mcr', 'world/preserve.bin']
     three = ['world/level.dat', 'world/region/r.0.0.mcr', 'world/preserve.bin']
     good = {'inputs': {'loader': four, 'lookup': three, 'close': three.copy(),
-                       'collision': {mode: four.copy() for mode in MODES['collision']}}}
+                       'collision': {mode: four.copy() for mode in MODES['collision']},
+                       'material': {mode: four.copy() for mode in MODES['material']}}}
     refused = 0
     for kind, modes in MODES.items():
         for mode in modes:
-            require(expected_input_names(good, kind, mode) == tuple(four if kind in ('loader', 'collision') else three),
+            require(expected_input_names(good, kind, mode) == tuple(four if kind in ('loader', 'collision', 'material') else three),
                     'Exact input mapping positive')
             for replacement in ([], four + ['world/extra'], tuple(four),
                                 ['world/level.dat', 'world/region/r.0.0.mcr']):
                 changed = copy.deepcopy(good)
-                if kind == 'collision':
+                if kind in ('collision', 'material'):
                     changed['inputs'][kind][mode] = replacement
                 else:
                     changed['inputs'][kind] = replacement
@@ -560,15 +597,16 @@ def input_mapping_self_test():
                     refused += 1
                     continue
                 raise ValueError('Malformed literal filename mapping accepted')
-    for replacement in ({}, [], {'foreign': four}, {mode: four for mode in MODES['collision'][:-1]}):
-        changed = copy.deepcopy(good)
-        changed['inputs']['collision'] = replacement
-        try:
-            expected_input_names(changed, 'collision', 'domain')
-        except ValueError:
-            refused += 1
-            continue
-        raise ValueError('Incomplete/malformed collision mode map accepted')
+    for kind in ('collision', 'material'):
+        for replacement in ({}, [], {'foreign': four}, {mode: four for mode in MODES[kind][:-1]}):
+            changed = copy.deepcopy(good)
+            changed['inputs'][kind] = replacement
+            try:
+                expected_input_names(changed, kind, MODES[kind][0])
+            except ValueError:
+                refused += 1
+                continue
+            raise ValueError('Incomplete/malformed per-mode map accepted')
     before = {name: {'bytes': 2, 'sha256': '1' * 64} for name in four}
     after = copy.deepcopy(before)
     after['world/session.lock'] = {'bytes': 8, 'sha256': '2' * 64}
@@ -585,7 +623,7 @@ def input_mapping_self_test():
             refused += 1
             continue
         raise ValueError('Removed/changed canonical saved-data input admitted')
-    require(refused == 70, 'All per-mode/saved-data literal mapping corruptions refused')
+    require(refused == 86, 'All per-mode/saved-data literal mapping corruptions refused')
     return refused
 
 
@@ -760,6 +798,31 @@ def close_recipe_self_test(project_root):
     return checked
 
 
+
+def material_recipe_mode(mode):
+    require(mode in MODES['material'], 'Unknown material input mode')
+    return 'loader-error' if mode == 'material-loader-error' else 'id-first'
+
+
+def material_mapping_self_test():
+    expected = {'material-success': 'id-first', 'material-admission': 'id-first',
+                'material-loader-error': 'loader-error'}
+    require(MATERIAL_CALLS == {'material-success': 4, 'material-admission': 10,
+                              'material-loader-error': 1}, 'Exact material entry budgets')
+    for mode, recipe in expected.items():
+        require(material_recipe_mode(mode) == recipe, 'Actual saved-input factory mapping')
+    refused = 0
+    for mode in ('material-nullable', 'success', 'loader-error', ''):
+        try:
+            material_recipe_mode(mode)
+        except ValueError:
+            refused += 1
+            continue
+        raise ValueError('Unshipped/unknown material mode admitted')
+    print('PASS: 3 material factory mappings;4 unshipped/unknown mode refusals')
+    return refused
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--self-test', action='store_true')
@@ -778,6 +841,7 @@ def main():
         close_mapping = close_input_mapping_self_test()
         print('PASS:', close_mapping, 'close fourth-file refusals')
         close_recipe_self_test(args.project_root)
+        material_mapping_self_test()
         return 0
     if (args.kind not in MODES or args.mode not in MODES[args.kind] or args.executable is None or
             args.work_dir is None or args.bundle is None):
@@ -786,7 +850,7 @@ def main():
     out = Path(tempfile.mkdtemp(prefix='query-' + args.kind + '-' + args.mode + '-',
                                 dir=args.work_dir.resolve()))
     report = {'status': 'RUNNING', 'kind': args.kind, 'mode': args.mode,
-              'fixture_preparation_manifest': SUPPLIERS[args.kind]['manifest'],
+              'fixture_preparation_manifest': (None if args.kind == 'material' else SUPPLIERS[args.kind]['manifest']),
               'scope': 'Finite genuine native query controls; external legacy graph contract; '
                        'foreign World/Store, arbitrary caller unwind and full SL OPEN'}
     before = literal_before = None
@@ -837,7 +901,7 @@ def main():
         source_saving = load('query_actual_seed', 'tests/tools/world/test_source_saving.py')
         if args.kind == 'close':
             recipe = load('query_actual_close_recipe', 'tests/tools/world/activation_close_inputs.py')
-        elif args.kind == 'collision':
+        elif args.kind in ('collision', 'material'):
             recipe = load('query_actual_collision_recipe', 'tests/tools/world/collision_query_inputs.py')
             construction = load('query_actual_construction_seed', 'tests/tools/world/test_source_world_construction.py')
         else:
@@ -845,8 +909,9 @@ def main():
         fixture_root = out / 'owned'
         require(str(fixture_root).isascii() and not fixture_root.exists(), 'Fresh ASCII native fixture root required')
         input_names = expected_input_names(bundle, args.kind, args.mode)
-        prepared = recipe.prepared(args.mode, source_saving) if args.kind == 'close' else (
-            recipe.prepared(args.mode, source_saving, construction) if args.kind == 'collision' else (
+        recipe_mode = material_recipe_mode(args.mode) if args.kind == 'material' else args.mode
+        prepared = recipe.prepared(recipe_mode, source_saving) if args.kind == 'close' else (
+            recipe.prepared(recipe_mode, source_saving, construction) if args.kind in ('collision', 'material') else (
                 recipe.prepared(args.kind, args.mode, source_saving)))
         require(type(prepared) is dict and set(prepared) == set(input_names),
                 'Exact authored input names required')

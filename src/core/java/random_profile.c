@@ -104,6 +104,13 @@ mc_java_random_profile_status mc_java_random_profile_create(size_t max_allocatio
     profile->constructor_input_count = 0;
     profile->constructor_input_consumed = 0;
     profile->constructor_input_failure = MC_JAVA_RANDOM_INPUT_NONE;
+    profile->constructor_records_bound = false;
+    profile->constructor_records = NULL;
+    profile->constructor_record_capacity = 0;
+    atomic_init(&profile->constructor_record_count, 0);
+    atomic_init(&profile->constructor_record_failures, MC_JAVA_RANDOM_RECORD_NONE);
+    atomic_init(&profile->constructor_record_first_failure, MC_JAVA_RANDOM_RECORD_NONE);
+    atomic_init(&profile->constructor_record_active, false);
     *out = profile;
     return MC_JAVA_RANDOM_PROFILE_OK;
 }
@@ -125,7 +132,7 @@ mc_java_random_profile_status mc_java_random_profile_bind_constructor_inputs(
         return MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT;
     if (count > MC_JAVA_RANDOM_PROFILE_MAX_CONSTRUCTOR_INPUTS)
         return MC_JAVA_RANDOM_PROFILE_LIMIT;
-    if (profile->constructor_inputs_bound ||
+    if (profile->constructor_inputs_bound || profile->constructor_records_bound ||
         atomic_load_explicit(&profile->constructor_admitted, memory_order_relaxed) ||
         atomic_load_explicit(&profile->uniquifier, memory_order_seq_cst) != INITIAL_UNIQUIFIER ||
         atomic_load_explicit(&profile->holder_phase, memory_order_acquire) !=
@@ -170,6 +177,103 @@ mc_java_random_profile_constructor_inputs_complete(mc_java_random_profile *profi
     return MC_JAVA_RANDOM_PROFILE_OK;
 }
 
+mc_java_random_profile_status mc_java_random_profile_bind_constructor_records(
+    mc_java_random_profile *profile, mc_java_random_constructor_record *records, size_t capacity) {
+    if (profile == NULL || (capacity != 0 && records == NULL))
+        return MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT;
+    if (capacity > MC_JAVA_RANDOM_PROFILE_MAX_CONSTRUCTOR_INPUTS)
+        return MC_JAVA_RANDOM_PROFILE_LIMIT;
+    if (profile->constructor_records_bound || profile->constructor_inputs_bound ||
+        atomic_load_explicit(&profile->constructor_admitted, memory_order_relaxed) ||
+        atomic_load_explicit(&profile->uniquifier, memory_order_seq_cst) != INITIAL_UNIQUIFIER ||
+        atomic_load_explicit(&profile->holder_phase, memory_order_acquire) !=
+            MC_JAVA_RANDOM_HOLDER_COLD ||
+        profile->math != NULL || profile->allocated_bytes != sizeof(*profile))
+        return MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT;
+    profile->constructor_records = records;
+    profile->constructor_record_capacity = capacity;
+    profile->constructor_records_bound = true;
+    return MC_JAVA_RANDOM_PROFILE_OK;
+}
+
+mc_java_random_profile_status
+mc_java_random_profile_constructor_records_get(const mc_java_random_profile *profile,
+                                               mc_java_random_constructor_records_view *out) {
+    if (profile == NULL || out == NULL)
+        return MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT;
+    *out = (mc_java_random_constructor_records_view){
+        .bound = profile->constructor_records_bound,
+        .active = atomic_load_explicit(&profile->constructor_record_active, memory_order_acquire),
+        .capacity = profile->constructor_record_capacity,
+        .recorded = atomic_load_explicit(&profile->constructor_record_count, memory_order_acquire),
+        .failures =
+            atomic_load_explicit(&profile->constructor_record_failures, memory_order_relaxed),
+        .first_failure =
+            atomic_load_explicit(&profile->constructor_record_first_failure, memory_order_relaxed)};
+    return MC_JAVA_RANDOM_PROFILE_OK;
+}
+
+static void record_failure(mc_java_random_profile *profile,
+                           mc_java_random_constructor_record_failure failure) {
+    unsigned int expected = MC_JAVA_RANDOM_RECORD_NONE;
+    (void)atomic_compare_exchange_strong_explicit(&profile->constructor_record_first_failure,
+                                                  &expected, (unsigned int)failure,
+                                                  memory_order_relaxed, memory_order_relaxed);
+    atomic_fetch_or_explicit(&profile->constructor_record_failures, (unsigned int)failure,
+                             memory_order_relaxed);
+}
+
+mc_java_random_profile_status
+mc_java_random_profile_constructor_records_complete(mc_java_random_profile *profile) {
+    if (profile == NULL || !profile->constructor_records_bound)
+        return MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT;
+    if (atomic_load_explicit(&profile->constructor_record_active, memory_order_acquire))
+        record_failure(profile, MC_JAVA_RANDOM_RECORD_CONCURRENT);
+    return atomic_load_explicit(&profile->constructor_record_failures, memory_order_relaxed) == 0
+               ? MC_JAVA_RANDOM_PROFILE_OK
+               : MC_JAVA_RANDOM_PROFILE_RANGE;
+}
+
+static bool record_enter(mc_java_random_profile *profile) {
+    if (!profile->constructor_records_bound)
+        return false;
+    if (!atomic_exchange_explicit(&profile->constructor_record_active, true, memory_order_acquire))
+        return true;
+    record_failure(profile, MC_JAVA_RANDOM_RECORD_CONCURRENT);
+    return false;
+}
+
+static void record_leave(mc_java_random_profile *profile, bool record_owned) {
+    if (record_owned)
+        atomic_store_explicit(&profile->constructor_record_active, false, memory_order_release);
+}
+
+static mc_java_random_constructor_record *
+record_sample(mc_java_random_profile *profile, bool record_owned,
+              mc_java_random_constructor_kind kind, mc_java_random *destination,
+              uintptr_t math_destination, uint64_t committed, mc_java_random_profile_status status,
+              int64_t sample) {
+    if (!record_owned)
+        return NULL;
+    const size_t index =
+        atomic_load_explicit(&profile->constructor_record_count, memory_order_relaxed);
+    if (index >= profile->constructor_record_capacity) {
+        record_failure(profile, MC_JAVA_RANDOM_RECORD_OVERFLOW);
+        return NULL;
+    }
+    mc_java_random_constructor_record *record = &profile->constructor_records[index];
+    *record =
+        (mc_java_random_constructor_record){.committed_uniquifier = committed,
+                                            .nanotime = sample,
+                                            .sample_status = status,
+                                            .kind = kind,
+                                            .destination = (uintptr_t)destination,
+                                            .math_destination = math_destination,
+                                            .sample_returned = status == MC_JAVA_RANDOM_PROFILE_OK};
+    atomic_store_explicit(&profile->constructor_record_count, index + 1u, memory_order_release);
+    return record;
+}
+
 static mc_java_random_profile_status constructor_sample(mc_java_random_profile *profile,
                                                         uint64_t committed, int64_t *out) {
     if (!profile->constructor_inputs_bound)
@@ -191,8 +295,10 @@ static mc_java_random_profile_status constructor_sample(mc_java_random_profile *
     return MC_JAVA_RANDOM_PROFILE_OK;
 }
 
-mc_java_random_profile_status mc_java_random_construct_default(mc_java_random_profile *profile,
-                                                               mc_java_random *out) {
+static mc_java_random_profile_status construct_default(mc_java_random_profile *profile,
+                                                       mc_java_random *out,
+                                                       mc_java_random_constructor_kind kind,
+                                                       uintptr_t math_destination) {
     if (profile == NULL || out == NULL) {
         return MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT;
     }
@@ -201,16 +307,29 @@ mc_java_random_profile_status mc_java_random_construct_default(mc_java_random_pr
     if (check_status != MC_JAVA_RANDOM_PROFILE_OK) {
         return check_status;
     }
+    const bool record_owned = record_enter(profile);
     const uint64_t committed = advance_uniquifier(profile);
     atomic_store_explicit(&profile->constructor_admitted, true, memory_order_relaxed);
     int64_t sample;
     const mc_java_random_profile_status sample_status =
         constructor_sample(profile, committed, &sample);
+    mc_java_random_constructor_record *record =
+        record_sample(profile, record_owned, kind, out, math_destination, committed, sample_status,
+                      sample_status == MC_JAVA_RANDOM_PROFILE_OK ? sample : 0);
     if (sample_status != MC_JAVA_RANDOM_PROFILE_OK) {
+        record_leave(profile, record_owned);
         return sample_status;
     }
     mc_java_random_finish_default(committed, sample, out);
+    if (record != NULL)
+        record->tail_returned = true;
+    record_leave(profile, record_owned);
     return MC_JAVA_RANDOM_PROFILE_OK;
+}
+
+mc_java_random_profile_status mc_java_random_construct_default(mc_java_random_profile *profile,
+                                                               mc_java_random *out) {
+    return construct_default(profile, out, MC_JAVA_RANDOM_CONSTRUCTOR_ORDINARY, 0);
 }
 
 static mc_java_random_profile_status initialize_math(mc_java_random_profile *profile) {
@@ -231,7 +350,7 @@ static mc_java_random_profile_status initialize_math(mc_java_random_profile *pro
     }
     mc_java_random initial;
     const mc_java_random_profile_status status =
-        mc_java_random_construct_default(profile, &initial);
+        construct_default(profile, &initial, MC_JAVA_RANDOM_CONSTRUCTOR_MATH, (uintptr_t)math);
     if (status != MC_JAVA_RANDOM_PROFILE_OK) {
         free(math);
         atomic_store_explicit(&profile->holder_phase, MC_JAVA_RANDOM_HOLDER_FAILED,

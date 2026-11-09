@@ -2,8 +2,8 @@
   "scope": "Current authored real-owner loading draw/update/yield/retirement controls; native results are recorded separately for their exact tested snapshots.",
   "native_sources": {
     "CMakeLists.txt": {
-      "bytes": 342935,
-      "sha256": "4c655b3042efc8350087a3632e53067b3a9ad9f3a66c89b2d0081360dd15b6d5"
+      "bytes": 343014,
+      "sha256": "0e13e25ca7bef841c3baeed3002d3004e71ae20d3e8cbca9246cad0286093e54"
     },
     "cmake/client_controllers.cmake": {
       "bytes": 1093,
@@ -2338,12 +2338,12 @@
       "sha256": "9b5eb9b2c0ecedd5d2fca802b293fe7aba56716a725beb50e1f383284451d9a5"
     },
     "src/core/java/random_profile.c": {
-      "bytes": 14027,
-      "sha256": "40f3e82db81204a3e3e7c4e03c85ea4ec8c03bcb6893e68a19380566ee43a43e"
+      "bytes": 20567,
+      "sha256": "c0ea797b3ee5d0b9c4bc7d50695fe03e223f5361e693d62a20050a2e7571a909"
     },
     "src/core/java/random_profile_internal.h": {
-      "bytes": 5196,
-      "sha256": "aaed566e75da8db62639f5695e8c86e2480329629074592636456ef036e82ef2"
+      "bytes": 9836,
+      "sha256": "589490b66a84ed45bf63d6143ea782125a6859bc937aa1c7b238f0ad2d264d8d"
     },
     "src/core/java/reader.c": {
       "bytes": 17077,
@@ -3522,8 +3522,8 @@
       "sha256": "2520f3189e541be5a7af421bd97e117f2e1e03cbbcf99a69ddc4da04a66f4ee2"
     },
     "src/world/runtime/registry.c": {
-      "bytes": 7361,
-      "sha256": "bdceab094d8f5b48adec40403592fd879ce1c58967165d272f1b78166185affb"
+      "bytes": 12242,
+      "sha256": "80d19882ffdbdc2428d45961eb5a718e74f1ccd7393d6c88aec32d990149b3ef"
     },
     "src/world/runtime/runtime.c": {
       "bytes": 71947,
@@ -4374,8 +4374,8 @@
       "sha256": "dff89560e47b3d5e54bfe6c518841577e11eb5d3badbf7185e3af5545d29228d"
     },
     "tests/core/java/test_random_profile_inputs.c": {
-      "bytes": 22097,
-      "sha256": "f2efc2deb3d47157f5a5a7f3d21b8411469bc139ca2fe199f454854e21951521"
+      "bytes": 46843,
+      "sha256": "3598b9d849d17fe199189586f2315661ec03619de5bfbb356117240deedd63a9"
     },
     "tests/core/java/test_reader.c": {
       "bytes": 32093,
@@ -5670,8 +5670,8 @@
       "sha256": "253914a08f69c1a13527e24bbe43c9faa40fba294aa4da8369469a6995291498"
     },
     "src/client/runtime/bootstrap.c": {
-      "bytes": 45247,
-      "sha256": "21aea875ae95105214182e69614fc9e4f112b6ebd15f101b2e041586e92089d2"
+      "bytes": 49363,
+      "sha256": "cdf330afa8b922ea5adf12906434afeb9982d2232a0349f69cd78b251c900fe4"
     },
     "src/client/runtime/bootstrap.h": {
       "bytes": 4398,
@@ -11706,8 +11706,8 @@
       "sha256": "59e9758cc924013be26142aef4c4acdafb6848da7912c040fcf31983a41e6339"
     },
     "cmake/tests/world_query_controls.cmake": {
-      "bytes": 4795,
-      "sha256": "a7807432796afa742536a7ccd298ac690ccdcd9c3624e1674ad9b076c3da1555"
+      "bytes": 5077,
+      "sha256": "8c7acfc43f0127cfd0c261aa1354a9fc1220fbe70956cea3a27ff80580285252"
     },
     "tests/world/runtime/world_access/test_kernel_loader_execution.c": {
       "bytes": 23441,
@@ -11718,8 +11718,8 @@
       "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
     },
     "tests/tools/world/test_world_query_controls.py": {
-      "bytes": 51398,
-      "sha256": "e60b43452f83b19c913090db48ab969c5c55546eeb9e706015dbec592d569009"
+      "bytes": 55170,
+      "sha256": "28f005549ae736340d84f277d213aedb6180dba76efb894d57b52188912b0d03"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -11734,8 +11734,8 @@
       "sha256": "139792707ccb921e3cae9abe3da8e6cbc2cdf3fc555780b8d70613ad76a36e55"
     },
     "tests/world/runtime/world_access/test_collision_query_execution.c": {
-      "bytes": 39905,
-      "sha256": "8032d0b673620aea1f1cce08685ff751509878c707a53f45b6f8098361702938"
+      "bytes": 60973,
+      "sha256": "8e0bd2af97fe735de215648b837c9a69ff723608826d287cf9c579663d0cff7c"
     },
     "tests/tools/world/activation_close_inputs.py": {
       "bytes": 433,
@@ -11744,6 +11744,26 @@
     "tests/world/runtime/world_access/test_activation_close_execution.c": {
       "bytes": 30572,
       "sha256": "72cd515c4007b9251e6b3cd6daebdb9d8b936f139f2ae45ccbda26e8ef4750ad"
+    },
+    "cmake/tests/java_random_recording.cmake": {
+      "bytes": 1556,
+      "sha256": "39704b63da6f30514909b0c303a31466b4c3ff9a922e8f7e768a671fc7a2c529"
+    },
+    "src/client/runtime/bootstrap_random_internal.h": {
+      "bytes": 3917,
+      "sha256": "170b9de1268ca0352a8873aeafc55b03845ab31cf5008d826255c5fc89186f1b"
+    },
+    "src/world/runtime/registry_execution_internal.h": {
+      "bytes": 4185,
+      "sha256": "bfa8fc9ea785858961e180d731cf09c356a84b90ab4b549b3af76f9b341aee65"
+    },
+    "tests/client/startup/test_bootstrap_random_admission.c": {
+      "bytes": 5389,
+      "sha256": "ed8d7ff1abd90ac50f639d69bd14f91b8bbc90717da6387257d06125ee5ada0f"
+    },
+    "tests/core/java/test_random_profile_record_overlap.c": {
+      "bytes": 17150,
+      "sha256": "24989ad6a8fef641a97d9471e4fca29ab4d557146b02cae80dd206b795856c47"
     }
   },
   "actual_source_method": {
@@ -19489,6 +19509,84 @@
           },
           "added": [],
           "current_count": 2936
+        }
+      }
+    },
+    {
+      "from_commit": "af6b08b00506ad3a57674bf8deabe24a009af2f2",
+      "role": "Random constructor recording and strict whole-input replay, early bootstrap binding and retirement receipts, and owned World material lookup with separate native/query results. Current source admissions only; compilation and native outcomes require separate execution. Historical suppliers and observations remain unchanged. No whole-frame, full gameplay or FPS qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 827614,
+        "sha256": "29155118d33c41c8d0f7e79f4b03948565e57bb87b11bfca8a47ba5c644b229b"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 342935,
+              "sha256": "4c655b3042efc8350087a3632e53067b3a9ad9f3a66c89b2d0081360dd15b6d5"
+            },
+            "src/core/java/random_profile.c": {
+              "bytes": 14027,
+              "sha256": "40f3e82db81204a3e3e7c4e03c85ea4ec8c03bcb6893e68a19380566ee43a43e"
+            },
+            "src/core/java/random_profile_internal.h": {
+              "bytes": 5196,
+              "sha256": "aaed566e75da8db62639f5695e8c86e2480329629074592636456ef036e82ef2"
+            },
+            "src/world/runtime/registry.c": {
+              "bytes": 7361,
+              "sha256": "bdceab094d8f5b48adec40403592fd879ce1c58967165d272f1b78166185affb"
+            },
+            "tests/core/java/test_random_profile_inputs.c": {
+              "bytes": 22097,
+              "sha256": "f2efc2deb3d47157f5a5a7f3d21b8411469bc139ca2fe199f454854e21951521"
+            },
+            "src/client/runtime/bootstrap.c": {
+              "bytes": 45247,
+              "sha256": "21aea875ae95105214182e69614fc9e4f112b6ebd15f101b2e041586e92089d2"
+            },
+            "cmake/tests/world_query_controls.cmake": {
+              "bytes": 4795,
+              "sha256": "a7807432796afa742536a7ccd298ac690ccdcd9c3624e1674ad9b076c3da1555"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 51398,
+              "sha256": "e60b43452f83b19c913090db48ab969c5c55546eeb9e706015dbec592d569009"
+            },
+            "tests/world/runtime/world_access/test_collision_query_execution.c": {
+              "bytes": 39905,
+              "sha256": "8032d0b673620aea1f1cce08685ff751509878c707a53f45b6f8098361702938"
+            }
+          },
+          "added": [
+            "cmake/tests/java_random_recording.cmake",
+            "src/client/runtime/bootstrap_random_internal.h",
+            "src/world/runtime/registry_execution_internal.h",
+            "tests/client/startup/test_bootstrap_random_admission.c",
+            "tests/core/java/test_random_profile_record_overlap.c"
+          ],
+          "current_count": 2941
+        }
+      }
+    },
+    {
+      "from_commit": "af6b08b00506ad3a57674bf8deabe24a009af2f2",
+      "role": "Random constructor recording and strict whole-input replay, early bootstrap binding and retirement receipts, and owned World material lookup with separate native/query results. Current source admissions only; compilation and native outcomes require separate execution. Historical suppliers and observations remain unchanged. No whole-frame, full gameplay or FPS qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 831293,
+        "sha256": "33cc86f9d30bc3ef5fd3c7db4206d69db44296cc18dbb756e0438114816b0c7a"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 55170,
+              "sha256": "1265c95232625e622a320599f90ae06f7127aca62821a97078e6c913dfdda042"
+            }
+          },
+          "added": [],
+          "current_count": 2941
         }
       }
     }
