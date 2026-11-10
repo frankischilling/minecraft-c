@@ -48,8 +48,8 @@
       "sha256": "c2bc52972d5cabdf108f5694672a9814de129f9a002731cd146b6d066363666b"
     },
     "src/world/runtime/terminal_inventory.c": {
-      "bytes": 45039,
-      "sha256": "907ce3a4efa5a878f73732b489a3edc21f9add84a99a9493126e6ad49b3e23a6"
+      "bytes": 45298,
+      "sha256": "9856c9a3c53686219f7b26b90471caab72d382ff28c50441a1ae16e82d689892"
     },
     "tests/world/runtime/test_arrow_natural_flight.c": {
       "bytes": 16439,

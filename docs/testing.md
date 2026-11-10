@@ -1,5 +1,88 @@
 # Test scope and reproduction
 
+## Remaining Living damage and Wolf retaliation
+
+The [hurt contract](entity/remaining-damage.md), [Wolf wrapper](entity/wolf-damage.md)
+and [remaining drop contract](entity/remaining-death.md) describe the actual
+source scope. The first native Wolf test fails at the old concrete-hurt refusal
+in 0.12 seconds. A Slime direct-death test fails at the old animal-only admission
+in 0.10 seconds, and the combined hurt fixture fails in 0.11 seconds. Those
+regressions precede the dispatcher, sound, wrapper and drop changes.
+
+The native component controls now pass 402 Wolf checks, 1,381 death checks across
+30 profiles and 756 combined damage/cleanup checks. A fatal direct-Arrow source
+case separately exposed the old inherited callback refusal; its red artifact
+remains retained. After exact `SL -> SN` method-resolution verification, that
+case completes both literal callbacks, preserves the Arrow argument and amount,
+and retains the original Arrow target. It does not substitute the shooter before
+the inherited parent. This is separate from the still-unjoined Arrow tick call.
+
+A second fatal-source regression fails at the same whitelist for an actual
+Item in 0.12 seconds. Auditing all 39 represented client declarations and their
+intermediate parents confirms that only Player overrides these callbacks. The
+corrected dispatch admits the inherited Entity bodies while preserving concrete
+Player handling and refusing the abstract Player query literal.
+
+The [optional collector](../tests/reference/entity/remaining_damage/README.md)
+executes ten fresh unchanged-original calls. The native fixture matches the
+typed return, health/timer fields, raw angle/velocity, private Random progress,
+nullable sound name, raw volume/pitch and ordered Item publication records
+exactly. Its numerical public golden retains no original code or assets.
+Constructor and Item entropy remain independent. Wolf's original compared pack
+is empty; populated-pack and owner/Arrow branches have separate authored native
+controls and static source evidence.
+
+The [String comparison runner](../tests/reference/core/string_case/README.md)
+matches case keys for all 1,114,112 code point values and 1,306,160 actual JDK17 String
+comparisons, regenerates the table exactly and rejects seven corruptions.
+Its 21 Java-free controls include the full case-key fingerprint. General
+Java-reference configurations now register the exhaustive comparison, including
+the native CI jobs. No JDK or host locale is needed by the game runtime.
+
+An initial hidden-launched Windows saved-Zombie regression passes 519 checks.
+The frame and canvas both occupy `(-1387,280,854,480)` inside physical monitor
+2's `(-1920,0,1920,1040)` work area. Actual AI changes health 20 to 15 and adds
+5 to statistic 2021; World/HUD returns, SDK pause/save and independent Player,
+Zombie and statistics readback pass. All three captures were inspected. Source,
+native products and all 412 imported resources remain unchanged during execution;
+checked cleanup leaves both windows absent. This is a regression of the existing
+Zombie scene, not an exercised Player attack on the four newly supported targets.
+
+The first complete Windows build passes; its 895-test run passes 891 and
+fails four natural Arrow scene admissions in 428.09 seconds. All four stop
+before starting a native child: their current prospective bundle still pins
+the old `terminal_inventory.c` bytes. All 5,953 public inputs remain frozen
+through that run. The corrected current bundle and early binding checker keep
+the old failure reports, historical projections and native assertions intact.
+The early check now also covers every live explicit native bundle.
+
+With current declarations, the complete Windows x64 strict MSVC Release client
+build passes all 895 configured tests in 439.87 seconds, without skips. Linux
+Clang 18 Debug ASan/UBSan with leak detection passes 29 selected checks in
+39.73 seconds: the 25 damage/death/ownership/String checks plus four natural
+Arrow scenes. This does not qualify a full Linux sanitizer suite.
+
+Ten fresh unchanged-original Windows JVM records compare exactly with each
+host's native damage records. The original JVM for both comparisons runs on
+Windows; independent constructor and Item entropy remain excluded.
+
+A second monitor-2 encounter against the final rebuilt client passes 481 native
+checks. Health 20 to 15, statistic 2021 plus 5, returned World/HUD, SDK pause/save,
+independent readback and checked window cleanup all pass. All three final captures
+were inspected. Its 2,334 source/product inputs and 412 imported resources remain
+unchanged throughout execution.
+
+All 5,953 public inputs remain unchanged throughout the complete Windows rerun.
+After execution, only result documents, the wiki combat summary and their
+current-public admission map change. Full binding audits and representative
+protected native calls run again against those final documents. Runtime source,
+products, historical authority and native assertions retain their tested bytes.
+Pinned clang-format 18.1.3 checks all 2,331 C source/header/fragment files.
+
+Full Arrow impact composition, delayed Slime splitting, original full frames,
+audible output, extended combat and FPS remain unqualified. Native/hosted suite
+results below retain their exact source and configuration scope.
+
 ## Monster death and Player kill callbacks
 
 The [death contract](entity/monster-death.md) and
@@ -90,7 +173,7 @@ The Linux run uses an exact 5,914-file source copy on ext4; all original ELF
 paths, working directories, selected names, limits and resource locks remain
 unchanged. Source and native artifact hashes match before and after. The first
 Windows-mounted-source cohort was deliberately interrupted after 29 completed
-tests because its source guards took 111–141 seconds per case; its partial
+tests because its source guards took 111ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ141 seconds per case; its partial
 results remain separate. This is test transport work, with no gameplay speedup
 claim. The full 729-test Linux configuration is not a local full-suite result.
 
@@ -1121,7 +1204,7 @@ source-loader execution or original-runtime comparison.
 The [earlier retirement CPU cohort](performance/player-ally-retire.md) retains all
 2,520 measured calls from 12 serial processes on one compiled observer and
 identical ordered core archive graph. Distinct/repeated 1,024-entry Lists fall
-from median 4,695.9/4,868.65 Ã‚Âµs to 21.05/9.4 Ã‚Âµs. Tiny Lists, insufficient-hold
+from median 4,695.9/4,868.65 ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âµs to 21.05/9.4 ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âµs. Tiny Lists, insufficient-hold
 refusal/retry, source fields and Random preservation pass. Forced optional
 allocation failure keeps the previous scan and cleanup result. All 1,901
 source/product/resource/region guards remain unchanged. This measures checked
@@ -1673,7 +1756,7 @@ under `-Wconversion -Werror`. Integer promotion makes the byte operand an
 `int` before the unsigned mask. No GCC runtime test executes. The local
 GCC 13.3 strict, sanitizer-enabled syntax check reproduces both diagnostics.
 Each fixture now explicitly promotes its byte to `unsigned int` before the
-shift. Byte values remain 0Ã¢â‚¬â€œ255 and decoded nibbles remain 0Ã¢â‚¬â€œ15; production
+shift. Byte values remain 0ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ255 and decoded nibbles remain 0ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ15; production
 code, original data and assertions are unchanged. The same strict GCC check
 then passes, as do the native Windows and Clang fixture builds. The hosted
 failure retains its exact-checkpoint scope; follow-up results are separate.
@@ -2357,7 +2440,7 @@ The private Linux phase observation reaches a 36.165-second random-Chunk body,
 including 33.716 seconds in 32 actual population callbacks. All 1,235,464 GETs
 are generic. Its inherited Food observer unconditionally exports the provider
 before admission; snapshots show raw_exports=1, owned=false and cache counts
-310Ã¢â‚¬â€œ362, with a whole-capture maximum of 382. This establishes that observer
+310ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ362, with a whole-capture maximum of 382. This establishes that observer
 escape, not that the generic validator accounts for all population time. The
 larger-map optimization is not exercised. The [performance notes](performance/world-queries.md#retained-linux-phase-diagnosis)
 keep overlapping intervals and the separate Source-progress exposure explicit.

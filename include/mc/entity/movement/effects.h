@@ -4,6 +4,7 @@
 #include "mc/core/math/classes.h"
 #include "mc/entity/entity.h"
 #include "mc/entity/mob/death.h"
+#include "mc/entity/mob/wolf_damage.h"
 #include "mc/entity/player/death.h"
 #include "mc/entity/player/statistics.h"
 #include "mc/inventory/runtime/armor.h"
@@ -150,6 +151,7 @@ typedef struct mc_entity_effect_error {
     int32_t damage_amount;
     mc_entity_living_damage_state living_damage;
     mc_mob_death_state death;
+    mc_wolf_damage_state wolf_damage;
     mc_player_death_state player_death;
     mc_entity_player_wake_state player_wake;
     mc_entity_player_alert_state player_alert;

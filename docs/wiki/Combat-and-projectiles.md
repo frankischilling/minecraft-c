@@ -1,5 +1,19 @@
 # Combat and projectiles
 
+Wolf, Slime, Squid and Ghast now reach their actual hurt/sound/drop methods.
+Wolf clears sitting before the inherited parent, adjusts the original damage
+amount, then performs the original retaliation, pack and owner decisions.
+The owner comparison preserves counted UTF16 behavior, including supplementary
+and malformed surrogate inputs. Squid still forwards its NULL sound name and
+consumes both private pitch draws; Ghast keeps volume 10.
+
+Ten finite records match fresh original calls for return, state, sound and
+ordered Item publication. The [remaining hurt contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/remaining-damage.md)
+separates that comparison from authored populated-pack and failure controls.
+A fresh monitor-2 saved-Zombie regression passes 481 checks through returned
+World/HUD, pause/save, independent state readback and cleanup. It does not
+exercise ordinary Player attacks on the four newly admitted victims.
+
 Spider, Zombie, Skeleton and Creeper now take nonnull-attacker damage through
 their actual inherited Living damage body. Successful hits apply knockback and
 the concrete hurt sound, then preserve mount/self targets or retain the attacker
@@ -15,7 +29,7 @@ describe ownership, failure ordering and reproduction.
 
 Arrow water controls cover wet flight, both air/water transitions, callback
 failure and checked cleanup. They preserve the original small-bounds quirk:
-an eight-tick prepared water scene has wet ticks 1–4, dry ticks 5–7, then another
+an eight-tick prepared water scene has wet ticks 1â€“4, dry ticks 5â€“7, then another
 wet tick with a new splash. NULL particle listeners now retain the actual Source
 null-reference classification. The [water reference collector](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/entity/arrow_water/README.md)
 records complete finite state/event pairs and every independent-entropy

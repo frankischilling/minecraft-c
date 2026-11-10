@@ -3,6 +3,7 @@ include_guard(GLOBAL)
 target_sources(mc_simulation PRIVATE
     src/entity/living/fields.c
     src/entity/mob/damage.c
+    src/entity/mob/wolf_damage.c
     src/entity/mob/references.c
     src/entity/mob/tick/common.c
     src/entity/mob/tick/helpers.c

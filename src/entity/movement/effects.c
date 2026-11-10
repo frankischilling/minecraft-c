@@ -4,6 +4,7 @@
 
 #include "../mob/damage_internal.h"
 #include "../mob/death_internal.h"
+#include "../mob/wolf_damage_internal.h"
 #include "../player/damage_alert_internal.h"
 #include "../player/damage_internal.h"
 #include "../player/damage_wake_internal.h"
@@ -709,6 +710,7 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_clas
                    mc_entity *source, int32_t amount, bool *out, mc_entity_effect_error *error) {
     if (mc_entity_effect_has_pending(entity)) {
         (void)mc_mob_death_inspect(entity, &error->death);
+        (void)mc_mob_wolf_damage_inspect(entity, &error->wolf_damage);
         (void)mc_player_death_inspect(entity, &error->player_death);
         (void)mc_player_damage_wake_inspect(entity, &error->player_wake);
         (void)mc_player_damage_alert_inspect(entity, &error->player_alert);
@@ -723,10 +725,16 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_clas
         entity->classes->source == MC_ENTITY_CLIENT)
         return mc_mob_monster_damage_entered(entity, classes, math, source, amount, out, error);
     if (entity->classes->source == MC_ENTITY_CLIENT &&
+        mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_WOLF))
+        return mc_mob_wolf_damage_entered(entity, classes, math, source, amount, out, error);
+    if (entity->classes->source == MC_ENTITY_CLIENT &&
         (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SHEEP) ||
          mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PIG) ||
          mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_COW) ||
-         mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_CHICKEN)))
+         mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_CHICKEN) ||
+         mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SLIME) ||
+         mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SQUID) ||
+         mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_GHAST)))
         return mc_mob_living_damage_entered(entity, classes, math, source, amount, out, error);
     if (mc_entity_has_mob(entity)) {
         const mc_entity_class_kind kind = entity->class_literal->kind;
@@ -858,7 +866,8 @@ mc_entity_status mc_entity_effect_damage_with_math(mc_entity *entity, mc_registr
 }
 
 bool mc_entity_effect_has_pending(const mc_entity *entity) {
-    return (mc_entity_has_mob(entity) && entity->mob->pending_death != NULL) ||
+    return (mc_entity_has_mob(entity) &&
+            (entity->mob->pending_death != NULL || entity->mob->pending_wolf_damage != NULL)) ||
            (entity != NULL && entity->local_player != NULL &&
             (entity->local_player->pending_death != NULL ||
              entity->local_player->pending_damage_wake != NULL ||
@@ -869,11 +878,14 @@ mc_entity_status mc_entity_effect_cleanup(mc_entity *entity, mc_entity_effect_er
     mc_entity_effect_error frame;
     mc_entity_effect_error_init(&frame);
     if (enter(entity, &frame)) {
-        if (mc_entity_has_mob(entity))
-            (void)mc_mob_death_cleanup(entity, &frame);
-        else if (entity->local_player != NULL &&
-                 mc_player_damage_wake_cleanup(entity, &frame) == MC_ENTITY_OK &&
-                 mc_player_damage_alert_cleanup(entity, &frame) == MC_ENTITY_OK)
+        if (mc_entity_has_mob(entity)) {
+            if (entity->mob->pending_wolf_damage != NULL)
+                (void)mc_mob_wolf_damage_cleanup(entity, &frame);
+            else
+                (void)mc_mob_death_cleanup(entity, &frame);
+        } else if (entity->local_player != NULL &&
+                   mc_player_damage_wake_cleanup(entity, &frame) == MC_ENTITY_OK &&
+                   mc_player_damage_alert_cleanup(entity, &frame) == MC_ENTITY_OK)
             (void)mc_player_death_cleanup(entity, &frame);
         mc_entity_release(entity);
     }
@@ -926,6 +938,26 @@ static void refresh_player_borrows(mc_entity_effect_error *error,
 bool mc_entity_effect_error_retire(mc_entity_effect_error *error) {
     if (error == NULL)
         return false;
+    if (error->wolf_damage.pending) {
+        mc_entity_effect_error cleanup;
+        mc_entity_effect_error_init(&cleanup);
+        const mc_entity_status status =
+            mc_mob_wolf_damage_cleanup(error->wolf_damage.receiver, &cleanup);
+        if (cleanup.wolf_damage.entered)
+            error->wolf_damage = cleanup.wolf_damage;
+        if (cleanup.death.entered)
+            error->death = cleanup.death;
+        if (status != MC_ENTITY_OK) {
+            error->wolf_damage.cleanup_status = status;
+            error->wolf_damage.cleanup_operation = cleanup.operation;
+            return false;
+        }
+        /* The wrapper's private parent owns and retires any newly acquired
+         * inherited failure. Earlier passive copies must not dereference it. */
+        error->death.pending = error->death.active = false;
+        error->death.receiver = NULL;
+        error->death.drop_error = NULL;
+    }
     if (!error->player_wake.pending && !error->player_alert.pending && !error->death.pending &&
         !error->player_death.pending)
         return true;
@@ -983,6 +1015,7 @@ mc_entity_status mc_entity_effect_death_with_math(mc_entity *entity, mc_registry
         frame.source_class = "ls";
         if (mc_entity_effect_has_pending(entity)) {
             (void)mc_mob_death_inspect(entity, &frame.death);
+            (void)mc_mob_wolf_damage_inspect(entity, &frame.wolf_damage);
             (void)mc_player_death_inspect(entity, &frame.player_death);
             (void)mc_player_damage_wake_inspect(entity, &frame.player_wake);
             (void)mc_player_damage_alert_inspect(entity, &frame.player_alert);

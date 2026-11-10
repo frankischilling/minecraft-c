@@ -15,6 +15,7 @@ typedef struct mc_mob_entity_state {
     struct mc_mob_ray_pending *pending_ray;
     struct mc_world_path_call *pending_path;
     struct mc_mob_death_work *pending_death;
+    struct mc_wolf_damage_work *pending_wolf_damage;
     bool tick_active;
     bool creature_attacking;
     int32_t monster_damage, creeper_a, creeper_b, slime_jump_delay;

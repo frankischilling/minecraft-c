@@ -193,7 +193,10 @@ static bool receiver(const mc_entity *actor) {
             mc_entity_is_kind(actor, MC_ENTITY_CLASS_KIND_ZOMBIE) ||
             mc_entity_is_kind(actor, MC_ENTITY_CLASS_KIND_SPIDER) ||
             mc_entity_is_kind(actor, MC_ENTITY_CLASS_KIND_SKELETON) ||
-            mc_entity_is_kind(actor, MC_ENTITY_CLASS_KIND_CREEPER));
+            mc_entity_is_kind(actor, MC_ENTITY_CLASS_KIND_CREEPER) ||
+            mc_entity_is_kind(actor, MC_ENTITY_CLASS_KIND_SLIME) ||
+            mc_entity_is_kind(actor, MC_ENTITY_CLASS_KIND_SQUID) ||
+            mc_entity_is_kind(actor, MC_ENTITY_CLASS_KIND_GHAST));
 }
 
 static mc_entity_status begin(mc_registry_classes *registry, mc_entity *actor, mc_item_stack *stack,

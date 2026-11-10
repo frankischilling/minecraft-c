@@ -1,6 +1,13 @@
 #ifndef MC_ENTITY_MOB_DAMAGE_INTERNAL_H
 #define MC_ENTITY_MOB_DAMAGE_INTERNAL_H
 #include "mc/entity/movement/effects.h"
+
+/* Same complete LS.a(SN,I) body for an enclosing concrete wrapper. The caller
+ * holds the canonical client Mob and owns initialized stable diagnostics.
+ * Preserve the enclosing argument/wrapper fields. Only the genuine parent
+ * Boolean is written; no outer wrapper return/result is published here. */
+bool mc_mob_damage_living_parent_entered(mc_entity *, mc_registry_classes *, mc_math_classes *,
+                                         mc_entity *, int32_t, bool *, mc_entity_effect_error *);
 /* Closed canonical client Spider/Zombie/Skeleton/Creeper. These actual
  * receivers inherit GZ -> LS damage; their sound overrides stay distinct.
  * The real effect facade
@@ -15,7 +22,7 @@
 bool mc_mob_monster_damage_entered(mc_entity *, mc_registry_classes *, mc_math_classes *,
                                    mc_entity *source, int32_t, bool *, mc_entity_effect_error *);
 
-/* Canonical client Sheep/Pig/Cow/Chicken. Sheep DL.a invokes symbolic BG.a,
+/* Canonical client Sheep/Pig/Cow/Chicken/Slime/Squid/Ghast. Sheep DL.a invokes symbolic BG.a,
  * resolving inherited LS directly; the other three inherit LS.a. The effect
  * facade already holds the receiver. A nonnull source is admitted/retained
  * only at actual LS144, then kept through later callbacks and released before

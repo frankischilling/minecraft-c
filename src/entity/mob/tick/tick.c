@@ -70,7 +70,7 @@ run_entered(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
     else if (p->mob->tick_active)
         mt_fail(&s, MC_ENTITY_BUSY, "Mob tick already entered");
     else if (p->mob->pending_ray != NULL || p->mob->pending_path != NULL ||
-             p->mob->pending_death != NULL) {
+             p->mob->pending_death != NULL || p->mob->pending_wolf_damage != NULL) {
         e->state.cleanup_pending = true;
         mt_fail(&s, MC_ENTITY_BUSY, "Mob pending native child cleanup");
     } else {

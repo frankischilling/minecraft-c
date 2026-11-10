@@ -54,8 +54,8 @@
       "sha256": "c2bc52972d5cabdf108f5694672a9814de129f9a002731cd146b6d066363666b"
     },
     "src/world/runtime/terminal_inventory.c": {
-      "bytes": 45039,
-      "sha256": "907ce3a4efa5a878f73732b489a3edc21f9add84a99a9493126e6ad49b3e23a6"
+      "bytes": 45298,
+      "sha256": "9856c9a3c53686219f7b26b90471caab72d382ff28c50441a1ae16e82d689892"
     },
     "tests/world/runtime/test_arrow_natural_flight.c": {
       "bytes": 16439,
@@ -66,8 +66,8 @@
       "sha256": "80d866a4df85af27011535b381728a1cae45bfbd24da103b2b453d5ed5056042"
     },
     "CMakeLists.txt": {
-      "bytes": 343529,
-      "sha256": "8fc4ccb8d7ddaae1730e6628fe03b488e4cfcd27f0f9d21a97c7eaeb1190765a"
+      "bytes": 343726,
+      "sha256": "56b11312a09cc0ba52a49b7afba9b729a4276b770ad8920d2b0681d0991ee98c"
     },
     "cmake/tests/arrow_world_tick_cleanup.cmake": {
       "bytes": 2831,
@@ -77,7 +77,7 @@
   "helpers": {
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76712,
-      "sha256": "c4c94412b6db3e20c0a43894749770e28278d1c06b31e7927aebda402802ecd3"
+      "sha256": "bd55e14bcf2e0d82c854d3eaf828188600eaeb263e66e07049ea6cc3791c1b68"
     },
     "tests/tools/world/test_execution_ownership.py": {
       "bytes": 8350,

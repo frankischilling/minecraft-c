@@ -2,8 +2,8 @@
   "scope": "Current authored real-owner loading draw/update/yield/retirement controls; native results are recorded separately for their exact tested snapshots.",
   "native_sources": {
     "CMakeLists.txt": {
-      "bytes": 343529,
-      "sha256": "8fc4ccb8d7ddaae1730e6628fe03b488e4cfcd27f0f9d21a97c7eaeb1190765a"
+      "bytes": 343726,
+      "sha256": "56b11312a09cc0ba52a49b7afba9b729a4276b770ad8920d2b0681d0991ee98c"
     },
     "cmake/client_controllers.cmake": {
       "bytes": 1093,
@@ -438,8 +438,8 @@
       "sha256": "58339fe3230b4a56ea4f36865ec1e2714bfda0b7a9e5ce66e3474d2e8ed80e76"
     },
     "include/mc/entity/movement/effects.h": {
-      "bytes": 18006,
-      "sha256": "f2608a6707a55a344cf79d181f3dc87b0704d9e1eb7a58e3b2701b3a978d44e8"
+      "bytes": 18083,
+      "sha256": "c4e9d716ccb1e973e12f5874a825de03a73dca72e83d5fa74411b82b03a7aaed"
     },
     "include/mc/entity/movement/environment.h": {
       "bytes": 5402,
@@ -2526,8 +2526,8 @@
       "sha256": "ffeff1e593667e16efd2d0ec820aac3de624807991fc709fee291826f05b09e8"
     },
     "src/entity/movement/effects.c": {
-      "bytes": 50540,
-      "sha256": "cba4223a1b18c09c362d56373da46e4cd9809fca0cf70d3263fe7a6e0c01b069"
+      "bytes": 52263,
+      "sha256": "0f7ab49fde2199357df271d0f84c1d4974ded4d1a31b18864c0fa7dbae1e4275"
     },
     "src/entity/movement/environment.c": {
       "bytes": 24737,
@@ -6958,8 +6958,8 @@
       "sha256": "25c58f085145e129bcae5ba13fadb29eba767651082c05cc03b77fd42be24d0f"
     },
     "src/world/runtime/terminal_inventory.c": {
-      "bytes": 45039,
-      "sha256": "907ce3a4efa5a878f73732b489a3edc21f9add84a99a9493126e6ad49b3e23a6"
+      "bytes": 45298,
+      "sha256": "9856c9a3c53686219f7b26b90471caab72d382ff28c50441a1ae16e82d689892"
     },
     "src/world/runtime/terminal_inventory_internal.h": {
       "bytes": 6928,
@@ -7254,12 +7254,12 @@
       "sha256": "fc84465ea32817c3672a58bbd91b86c79e0a2805d6a21bc39004eac93cfbdc2a"
     },
     "src/entity/mob/construction.c": {
-      "bytes": 40125,
-      "sha256": "fcc0313a135eb7da9b88d9a535a74bf6316bf6afebdee1b63d187b8d9f37f866"
+      "bytes": 40169,
+      "sha256": "e3d10201005882e8b60da103bde5b63015c0e5d40c6e2178307d909cd840e39f"
     },
     "src/entity/mob/internal.h": {
-      "bytes": 2440,
-      "sha256": "42336fd6bc59ce482c65b1c51a8a5fc797b7db60493ae20b821011228c52119c"
+      "bytes": 2493,
+      "sha256": "f1043265586a5412278fa548236bd6db5a71d339c8bb48f5969faf9e9db75005"
     },
     "tests/entity/test_mob_construction.c": {
       "bytes": 53791,
@@ -7386,8 +7386,8 @@
       "sha256": "0776d9186908e10a50937f5fce43c0ab216a15284a732394e2e0b04b043d25e7"
     },
     "cmake/mob_tick.cmake": {
-      "bytes": 9966,
-      "sha256": "ccbfbef39adcf7ab4065d6679dec4cd8932207270fc51d24e490268873e60628"
+      "bytes": 9999,
+      "sha256": "99661ccdb89c1eab8e3df8ee90c26fdb7cef4f3299ad92d57c0dc6f2a9af7bcf"
     },
     "include/mc/entity/mob/tick.h": {
       "bytes": 9868,
@@ -7434,16 +7434,16 @@
       "sha256": "da5d263b8785e21f32de98f09584f763380b137a60bad2ee17f0bf1f5e8ab187"
     },
     "src/entity/mob/tick/ray.c": {
-      "bytes": 13157,
-      "sha256": "7c4870492202105d95c4fa816a571e7c568a359e8dedf51eeead68928eec29da"
+      "bytes": 13238,
+      "sha256": "55e5ccb992de7f278abac645653781561ab9e2b6293b04f8b119f870ddf29910"
     },
     "src/entity/mob/tick/slime_squid.c": {
       "bytes": 7270,
       "sha256": "c9d2b86bc1468399ad9341259cd33a0059c6d3a455a73138de07716410c1135a"
     },
     "src/entity/mob/tick/tick.c": {
-      "bytes": 13855,
-      "sha256": "2a726073b6ff22d90f611183389d86c67ce909165157dbcaadf59fb060757def"
+      "bytes": 13894,
+      "sha256": "3fdfa9a40d0a5e0c461e57c91adf5c0d55c3dcae6fa1695eb3a8579e82ee927d"
     },
     "src/entity/mob/tick/wolf.c": {
       "bytes": 26597,
@@ -7766,12 +7766,12 @@
       "sha256": "26637fb384220afd6a9922c5d42abe53337fcc3d41880d4da83ac4720acc49d1"
     },
     "src/entity/mob/damage.c": {
-      "bytes": 41638,
-      "sha256": "5659378997a33f7611d61b3d4392a27447bd4babcce0aedd1e6a82bc1b28aabc"
+      "bytes": 43493,
+      "sha256": "77a3a6da09f6e42ce475486b45bc378c4c4a21ca26a538b32317cc0b11a09c33"
     },
     "src/entity/mob/damage_internal.h": {
-      "bytes": 1908,
-      "sha256": "7ec3b0e983ad35c3469b9b05d62f7154869bd30ab662dd87e653fa656cb28b7a"
+      "bytes": 2426,
+      "sha256": "42a7be6bda1bd0678f07088378c4df1ed899e5d7323b7c92f1b00db907dd8323"
     },
     "src/entity/movement/effects_internal.h": {
       "bytes": 2047,
@@ -8694,28 +8694,28 @@
       "sha256": "9973682bab462837025568d8a0a65e2a9eff722450c1218b351ecc1de5ffcd5f"
     },
     "include/mc/entity/drop.h": {
-      "bytes": 3684,
-      "sha256": "e44e39087821af3246a2d25dc3be23a844c94b17959a9f98a3b45fa539b9c241"
+      "bytes": 3702,
+      "sha256": "9dbb3de20447f5fedec55371605c9b4149f4e9ad7b760aa5ee6eb635ce2156c9"
     },
     "include/mc/entity/mob/death.h": {
       "bytes": 2565,
       "sha256": "2cfbd8b48200e7ef3d67745fc629795fd5f829e0e88f8f2328a31bb2ef89ed4f"
     },
     "src/entity/drop/drop.c": {
-      "bytes": 15057,
-      "sha256": "098d94a6868f2d0eb81c639275389f61f0713c7c9e00ab9f0bdeda12f2c1be16"
+      "bytes": 15261,
+      "sha256": "5ad0b30ac4d7bd8220696214e004685760d3ee30dd29dcd9293bd3fac3d18ea0"
     },
     "src/entity/drop/internal.h": {
       "bytes": 509,
       "sha256": "846baad9b46c780e58508989ac2dbdc13835383cecc7ba44e2b0dfa203df299c"
     },
     "src/entity/mob/death.c": {
-      "bytes": 32703,
-      "sha256": "8d1d1a5ba7dc3e6ca6d77f7bf36b0bb2142011eb940580e88851c4c783515834"
+      "bytes": 37671,
+      "sha256": "16e64ddda6e5a9e96eed3bf15da66a3bf357ffd3d68561a51f612ad756a58a99"
     },
     "src/entity/mob/death_internal.h": {
-      "bytes": 1805,
-      "sha256": "a7e646485d92d8a350b0ffc8330926f2c012a5568d5b6f51bed19296c8cdb4bb"
+      "bytes": 1826,
+      "sha256": "d13f893d4dc7634a672964435d0248b683dcd132a00f04ab41eba491a5332f49"
     },
     "tests/entity/drop/test_drop.c": {
       "bytes": 17898,
@@ -11062,8 +11062,8 @@
       "sha256": "92d46e46de41b7535e323c1fc02263b13b366b8c6f6bc18e4bbfc44849433c6b"
     },
     "src/world/runtime/nightmare.c": {
-      "bytes": 60124,
-      "sha256": "a27c98b804893bb1f71a50e654f62433961f1cd7f7fdf288275517d9ac484dfe"
+      "bytes": 60182,
+      "sha256": "7cfb1946063497040322bd89bb3897d09a2af1e2e8f6f16954353abbf7b88ea2"
     },
     "src/world/runtime/nightmare_classes_internal.h": {
       "bytes": 2312,
@@ -11719,7 +11719,7 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76712,
-      "sha256": "c4c94412b6db3e20c0a43894749770e28278d1c06b31e7927aebda402802ecd3"
+      "sha256": "bd55e14bcf2e0d82c854d3eaf828188600eaeb263e66e07049ea6cc3791c1b68"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -11879,7 +11879,7 @@
     },
     "tests/tools/world/test_arrow_natural_flight.py": {
       "bytes": 13011,
-      "sha256": "90662b4832e43f3577f3ff930331b51c3d615a1a95eb2c108539a5e83f4fa497"
+      "sha256": "16d3c987d02a72600241c994e09985bda7cf98eddeeddcdca2f833524ed0ba79"
     },
     "tests/world/runtime/test_arrow_natural_flight.c": {
       "bytes": 16439,
@@ -11895,7 +11895,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 16782,
-      "sha256": "8b59aafe304ca4d9258e5a4a5d7cbc73b2341e7a34443d2018af4d1d033e0cef"
+      "sha256": "c515679738a99c0a0f7b383010f33a897cc3e429ec459366463c2c7f9e224977"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,
@@ -11903,7 +11903,7 @@
     },
     "tests/tools/entity/test_damage_native_close.py": {
       "bytes": 17605,
-      "sha256": "4e0b58b25efc922497826cb75ac681e69a8675b614b6a10cff735d9e3273e027"
+      "sha256": "e07c0c49981a24cc6221af1ee5d80637aa92c61abb0e704f192fc5e30fb87260"
     },
     "tests/world/runtime/world_access/test_damage_close_execution.c": {
       "bytes": 28929,
@@ -11988,6 +11988,98 @@
     "tests/tools/entity/test_monster_kill.py": {
       "bytes": 2701,
       "sha256": "9306feadba97ad472557b07139f64dd096cea101ec92e612f24c3431a0cb3535"
+    },
+    "cmake/tests/remaining_damage.cmake": {
+      "bytes": 861,
+      "sha256": "bbc153e28a803f6b961640b45358ec1cc131c94d2b988cd3b48a485c8b51391e"
+    },
+    "cmake/tests/remaining_death.cmake": {
+      "bytes": 852,
+      "sha256": "8bbd34c45195c4b5871d78bed9beb7b21306828e765e5d4928d53408293df73a"
+    },
+    "cmake/tests/string_case.cmake": {
+      "bytes": 1280,
+      "sha256": "f048147f1089c355bf314dfc4559f9fb573586dd0610bdf8f941bd9450fce2fb"
+    },
+    "cmake/tests/wolf_damage.cmake": {
+      "bytes": 816,
+      "sha256": "c0a18129ade90afb86f441c13d945f0d91bb9ff5b7fb27eff1a45d9ac5e6eee9"
+    },
+    "include/mc/core/java/string_case.h": {
+      "bytes": 548,
+      "sha256": "38e29c1f432721863d49d3522804dbef3c511e2bfb7bf17eaf119a5eac9561fe"
+    },
+    "include/mc/entity/mob/wolf_damage.h": {
+      "bytes": 1538,
+      "sha256": "3b2621f9fd944b957e6d890535b8562f9f88c81aac1de468326f160e89c2b9f4"
+    },
+    "src/core/java/string_case.c": {
+      "bytes": 2640,
+      "sha256": "e4731a91618115217fb19f15977acd1ccf2edd55046a50b0a2028a3bda15f286"
+    },
+    "src/core/java/string_case_internal.h": {
+      "bytes": 317,
+      "sha256": "a23d15a776c81a744a4706cd841bfcdfcb9a12cca747100086ad2a54b430002e"
+    },
+    "src/core/java/string_case_table.inc": {
+      "bytes": 61468,
+      "sha256": "b34b8888e60929833c2c23da833bdc56400dcc6a9940eed363a4ff777a84fdac"
+    },
+    "src/entity/mob/wolf_damage.c": {
+      "bytes": 31914,
+      "sha256": "61a96cba637fccef717e0af98225628f080c190e8546c0a8c0333402970dd329"
+    },
+    "src/entity/mob/wolf_damage_internal.h": {
+      "bytes": 1037,
+      "sha256": "d3b403f1e3dcef6a12f70d26c6ed2f056d9d929753b386108ce8898546da197f"
+    },
+    "tests/core/java/test_string_case.c": {
+      "bytes": 7105,
+      "sha256": "9f0b4b40a0a824814a6ae8b23ccfa74757b90f231b7d2ed09087f82e1a12515b"
+    },
+    "tests/entity/mob/remaining_damage_expected.json": {
+      "bytes": 6350,
+      "sha256": "99824ee2b98673a6dd4a3e31d255abc5c832aea9258395487ae25ce6f2e36549"
+    },
+    "tests/entity/mob/test_remaining_damage.c": {
+      "bytes": 11589,
+      "sha256": "c09c082ec83bb56512ca9a407cca44e8b2547981c57646f925261ca4a2be8a61"
+    },
+    "tests/entity/mob/test_remaining_death.c": {
+      "bytes": 14690,
+      "sha256": "670d324d354692e716dd3b60b85d0138984e4dc5b5beff30365c6bf7fa1878ce"
+    },
+    "tests/entity/mob/test_wolf_damage.c": {
+      "bytes": 27132,
+      "sha256": "8f9968f7c0e3e46c108f78daaec8d58509d51751b2393e0aa67c40d7f12118fd"
+    },
+    "tests/reference/core/string_case/StringCaseReference.java": {
+      "bytes": 5885,
+      "sha256": "6e55b45fadd0956ea02529054ac1ce14f43e1fd049455d094e0541b012b1aca3"
+    },
+    "tests/reference/core/string_case/capture_reference.py": {
+      "bytes": 8584,
+      "sha256": "cfb15ea2f2baa223f2fd7a8bf1fca37d3662a9af2bfeec45cc523454bb6efd4e"
+    },
+    "tests/reference/core/string_case/generate_table.py": {
+      "bytes": 2197,
+      "sha256": "c451e1a18de0664fd1bfd8944a0422f0f504883f88f0d24725bd06477649c319"
+    },
+    "tests/reference/entity/remaining_damage/capture_reference.py": {
+      "bytes": 15105,
+      "sha256": "687436b06b3a07953538f3cffb46724b1b9b6b0746a8e68214fdb1efff400fef"
+    },
+    "tests/tools/entity/test_remaining_damage.py": {
+      "bytes": 3126,
+      "sha256": "a1de5a901ea2c79e4254737f7cd0e374db203f45937e86b69a631811bf429121"
+    },
+    "tests/tools/entity/test_remaining_death.py": {
+      "bytes": 1723,
+      "sha256": "6fb5d0eda8488f2cd618db78af4fe7836124b99f2227108c871449e6524fec2b"
+    },
+    "tests/tools/entity/test_wolf_damage.py": {
+      "bytes": 2304,
+      "sha256": "7e9b6f892d9899800ca87f1196395c5bc02604c24539811addb4f77c53975fb3"
     }
   },
   "actual_source_method": {
@@ -20734,6 +20826,142 @@
           },
           "added": [],
           "current_count": 2997
+        }
+      }
+    },
+    {
+      "from_commit": "7be9790a25aa6442b37f03c608765c40bf6fe5c1",
+      "role": "Current source admissions after remaining Mob damage/death, Wolf retaliation and Java String case comparison. Historical records preserve their exact identities; current bindings do not claim earlier native or original observations used these inputs. Complete execution-owned Arrow victim damage and unrestricted play remain separate unfinished work.",
+      "previous_metadata": {
+        "bytes": 884431,
+        "sha256": "4459cafaee575d1ecfa3917c1f35e47a71122ce80133efb90339da36b0a437f5"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 343529,
+              "sha256": "8fc4ccb8d7ddaae1730e6628fe03b488e4cfcd27f0f9d21a97c7eaeb1190765a"
+            },
+            "include/mc/entity/movement/effects.h": {
+              "bytes": 18006,
+              "sha256": "f2608a6707a55a344cf79d181f3dc87b0704d9e1eb7a58e3b2701b3a978d44e8"
+            },
+            "src/entity/movement/effects.c": {
+              "bytes": 50540,
+              "sha256": "cba4223a1b18c09c362d56373da46e4cd9809fca0cf70d3263fe7a6e0c01b069"
+            },
+            "src/world/runtime/terminal_inventory.c": {
+              "bytes": 45039,
+              "sha256": "907ce3a4efa5a878f73732b489a3edc21f9add84a99a9493126e6ad49b3e23a6"
+            },
+            "src/entity/mob/construction.c": {
+              "bytes": 40125,
+              "sha256": "fcc0313a135eb7da9b88d9a535a74bf6316bf6afebdee1b63d187b8d9f37f866"
+            },
+            "src/entity/mob/internal.h": {
+              "bytes": 2440,
+              "sha256": "42336fd6bc59ce482c65b1c51a8a5fc797b7db60493ae20b821011228c52119c"
+            },
+            "cmake/mob_tick.cmake": {
+              "bytes": 9966,
+              "sha256": "ccbfbef39adcf7ab4065d6679dec4cd8932207270fc51d24e490268873e60628"
+            },
+            "src/entity/mob/tick/ray.c": {
+              "bytes": 13157,
+              "sha256": "7c4870492202105d95c4fa816a571e7c568a359e8dedf51eeead68928eec29da"
+            },
+            "src/entity/mob/tick/tick.c": {
+              "bytes": 13855,
+              "sha256": "2a726073b6ff22d90f611183389d86c67ce909165157dbcaadf59fb060757def"
+            },
+            "src/entity/mob/damage.c": {
+              "bytes": 41638,
+              "sha256": "5659378997a33f7611d61b3d4392a27447bd4babcce0aedd1e6a82bc1b28aabc"
+            },
+            "src/entity/mob/damage_internal.h": {
+              "bytes": 1908,
+              "sha256": "7ec3b0e983ad35c3469b9b05d62f7154869bd30ab662dd87e653fa656cb28b7a"
+            },
+            "include/mc/entity/drop.h": {
+              "bytes": 3684,
+              "sha256": "e44e39087821af3246a2d25dc3be23a844c94b17959a9f98a3b45fa539b9c241"
+            },
+            "src/entity/drop/drop.c": {
+              "bytes": 15057,
+              "sha256": "098d94a6868f2d0eb81c639275389f61f0713c7c9e00ab9f0bdeda12f2c1be16"
+            },
+            "src/entity/mob/death.c": {
+              "bytes": 32703,
+              "sha256": "8d1d1a5ba7dc3e6ca6d77f7bf36b0bb2142011eb940580e88851c4c783515834"
+            },
+            "src/entity/mob/death_internal.h": {
+              "bytes": 1805,
+              "sha256": "a7e646485d92d8a350b0ffc8330926f2c012a5568d5b6f51bed19296c8cdb4bb"
+            },
+            "src/world/runtime/nightmare.c": {
+              "bytes": 60124,
+              "sha256": "a27c98b804893bb1f71a50e654f62433961f1cd7f7fdf288275517d9ac484dfe"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 76712,
+              "sha256": "c4c94412b6db3e20c0a43894749770e28278d1c06b31e7927aebda402802ecd3"
+            },
+            "tests/tools/client/test_arrow_world_tick_cleanup.py": {
+              "bytes": 16782,
+              "sha256": "8b59aafe304ca4d9258e5a4a5d7cbc73b2341e7a34443d2018af4d1d033e0cef"
+            },
+            "tests/tools/entity/test_damage_native_close.py": {
+              "bytes": 17605,
+              "sha256": "4e0b58b25efc922497826cb75ac681e69a8675b614b6a10cff735d9e3273e027"
+            }
+          },
+          "added": [
+            "cmake/tests/remaining_damage.cmake",
+            "cmake/tests/remaining_death.cmake",
+            "cmake/tests/string_case.cmake",
+            "cmake/tests/wolf_damage.cmake",
+            "include/mc/core/java/string_case.h",
+            "include/mc/entity/mob/wolf_damage.h",
+            "src/core/java/string_case.c",
+            "src/core/java/string_case_internal.h",
+            "src/core/java/string_case_table.inc",
+            "src/entity/mob/wolf_damage.c",
+            "src/entity/mob/wolf_damage_internal.h",
+            "tests/core/java/test_string_case.c",
+            "tests/entity/mob/remaining_damage_expected.json",
+            "tests/entity/mob/test_remaining_damage.c",
+            "tests/entity/mob/test_remaining_death.c",
+            "tests/entity/mob/test_wolf_damage.c",
+            "tests/reference/core/string_case/StringCaseReference.java",
+            "tests/reference/core/string_case/capture_reference.py",
+            "tests/reference/core/string_case/generate_table.py",
+            "tests/reference/entity/remaining_damage/capture_reference.py",
+            "tests/tools/entity/test_remaining_damage.py",
+            "tests/tools/entity/test_remaining_death.py",
+            "tests/tools/entity/test_wolf_damage.py"
+          ],
+          "current_count": 3020
+        }
+      }
+    },
+    {
+      "from_commit": "7be9790a25aa6442b37f03c608765c40bf6fe5c1",
+      "role": "Current source-binding admission correction after the frozen Windows cohort rejected four natural-flight profiles before child execution. The natural-flight bundle now pins the unchanged current terminal-inventory source; its helper SHA follows that exact bundle. The development preflight checks all five live bundle source/helper groups and their helper SHA constants. The previous metadata and changed-entry pins preserve the failed snapshot identity. Historical suppliers, native protocols, dependencies and completed results remain unchanged; a new execution is required for current qualification.",
+      "previous_metadata": {
+        "bytes": 893622,
+        "sha256": "1783b1049ba392d4a0c6fd6d60f7bf1ab91d205d66fdadf78b11fc3c39fb6b5b"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "tests/tools/world/test_arrow_natural_flight.py": {
+              "bytes": 13011,
+              "sha256": "90662b4832e43f3577f3ff930331b51c3d615a1a95eb2c108539a5e83f4fa497"
+            }
+          },
+          "added": [],
+          "current_count": 3020
         }
       }
     }

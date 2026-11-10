@@ -5,6 +5,7 @@
 #include "../../block/registry/runtime_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../living/fields_internal.h"
+#include "../movement/effects_internal.h"
 #include "../player/combat_callbacks_internal.h"
 #include "internal.h"
 #include "mc/block/registry/runtime.h"
@@ -19,7 +20,7 @@ struct mc_mob_death_work {
     mc_mob_death_state state;
     mc_entity *actor, *source;
     mc_registry_classes *registry;
-    mc_item_stack *sheep_stack;
+    mc_item_stack *stack;
     mc_entity_drop_call *drop;
     mc_entity_drop_error drop_error, drop_cleanup;
     mc_world_runtime *worlds[2];
@@ -44,6 +45,12 @@ static bool monster(const mc_entity *p) {
            mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SPIDER) ||
            mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SKELETON) ||
            mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_CREEPER);
+}
+
+static bool remaining_living(const mc_entity *p) {
+    return mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SLIME) ||
+           mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SQUID) ||
+           mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_GHAST);
 }
 
 static mc_mob_death_state view(const struct mc_mob_death_work *w) {
@@ -272,12 +279,15 @@ static bool callback(struct mc_mob_death_work *w, mc_entity *source, bool score,
             w->state.kill_callback_returned = true;
         return true;
     }
-    if (!animal(source) && !monster(source))
+    if (mc_entity_is_kind(source, MC_ENTITY_CLASS_KIND_PLAYER))
         return failure(w, e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
-                       score ? "Living death actual attacker score override"
-                             : "Living death actual attacker kill override");
-    /* Animal and Monster chains declare neither descriptor. Both
-     * virtuals resolve directly to SN's actual literal return0 declarations. */
+                       score ? "Living death query-only Player score override"
+                             : "Living death query-only Player kill override");
+    /* All 39 supplied-client literal hierarchies and their omitted parents
+     * were inspected. Only abstract GS overrides these two SN descriptors;
+     * the constructed DC path is handled above. Every other admitted canonical
+     * source resolves directly to SN's actual literal return0 declarations. */
+    _Static_assert(MC_ENTITY_CLASS_KIND_COUNT == 39, "Audit death callbacks for new Entity kinds");
     w->state.child = site("sn", score ? "c" : "a", score ? "(Lsn;I)V" : "(Lls;)V", 0);
     if (score) {
         w->state.score_callback_entered = true;
@@ -353,7 +363,7 @@ static bool drop(struct mc_mob_death_work *w, bool numeric, mc_entity_effect_err
     const mc_entity_status status =
         numeric ? mc_entity_drop_numeric_begin(w->registry, w->actor, w->state.drop_id, 1, 0.0f,
                                                &w->drop, &w->drop_error)
-                : mc_entity_drop_stack_begin(w->registry, w->actor, w->sheep_stack, 0.0f, &w->drop,
+                : mc_entity_drop_stack_begin(w->registry, w->actor, w->stack, 0.0f, &w->drop,
                                              &w->drop_error);
     mc_mob_death_state current = view(w);
     w->state = current;
@@ -400,7 +410,7 @@ static bool sheep_q(struct mc_mob_death_work *w, mc_entity_effect_error *e) {
     if (w->state.sheared)
         goto returned;
     q_at(w, "dl", 8);
-    w->state.stack_status = mc_item_stack_allocate(&w->sheep_stack);
+    w->state.stack_status = mc_item_stack_allocate(&w->stack);
     if (w->state.stack_status != MC_ITEM_STACK_OK)
         return failure(w, e,
                        w->state.stack_status == MC_ITEM_STACK_ALLOCATION_FAILED
@@ -408,7 +418,7 @@ static bool sheep_q(struct mc_mob_death_work *w, mc_entity_effect_error *e) {
                            : MC_ENTITY_LIMIT,
                        MC_ENTITY_EFFECT_CAUSE_OWNER, "Sheep death actual RAW Stack allocation");
     w->state.stack_allocated = true;
-    w->state.sheep_stack_identity = (uintptr_t)w->sheep_stack;
+    w->state.sheep_stack_identity = (uintptr_t)w->stack;
     q_at(w, "dl", 12);
     if (!registry(w, e))
         return false;
@@ -427,8 +437,7 @@ static bool sheep_q(struct mc_mob_death_work *w, mc_entity_effect_error *e) {
     w->state.color_read = true;
     w->state.color = (int32_t)value & 15;
     q_at(w, "dl", 23);
-    w->state.stack_status =
-        mc_item_stack_construct(w->sheep_stack, w->state.drop_id, 1, w->state.color);
+    w->state.stack_status = mc_item_stack_construct(w->stack, w->state.drop_id, 1, w->state.color);
     if (w->state.stack_status != MC_ITEM_STACK_OK)
         return failure(w, e, MC_ENTITY_ITEM_FAILED, MC_ENTITY_EFFECT_CAUSE_OWNER,
                        "Sheep death actual numeric Stack constructor");
@@ -477,23 +486,114 @@ static bool item_j(struct mc_mob_death_work *w, mc_entity_effect_error *e) {
         w->state.drop_id = -1;
         return true;
     }
+    if (kind == MC_ENTITY_CLASS_KIND_SLIME) {
+        j_at(w, "uw", 1);
+        int8_t size;
+        mc_entity_watcher_byte_error read;
+        const bool returned = mc_entity_watcher_byte_read_entered(w->actor, 16, &size, &read);
+        if (!returned) {
+            const bool receiver = read.stage == MC_ENTITY_WATCHER_BYTE_STAGE_FLAG;
+            w->state.watcher_pc = e->watcher_bytecode = receiver ? 6 : read.pc;
+            e->watcher_index = read.index;
+            w->state.child =
+                receiver ? site("uw", "v", "()I", 6) : site("ud", "a", "(I)B", read.pc);
+            if (read.cause == MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE)
+                return null_reference(w, e, read.operation);
+            if (read.cause == MC_ENTITY_EFFECT_CAUSE_CLASS_CAST)
+                return exception(w, e, read.cause, "java/lang/ClassCastException", read.operation);
+            return failure(w, e, read.status, read.cause, read.operation);
+        }
+        w->state.watcher_pc = 25;
+        e->watcher_index = -1;
+        e->watcher_bytecode = 0;
+        w->state.child = site("uw", "v", "()I", 9);
+        if (size != 1) {
+            w->state.drop_id = 0;
+            j_at(w, "uw", 16);
+            return true;
+        }
+        j_at(w, "uw", 8);
+        if (!item_id(w, "aK", e))
+            return false;
+        j_at(w, "uw", 14);
+        return true;
+    }
     const char *cl = kind == MC_ENTITY_CLASS_KIND_PIG       ? "wh"
                      : kind == MC_ENTITY_CLASS_KIND_COW     ? "bx"
                      : kind == MC_ENTITY_CLASS_KIND_ZOMBIE  ? "uz"
                      : kind == MC_ENTITY_CLASS_KIND_SPIDER  ? "cn"
                      : kind == MC_ENTITY_CLASS_KIND_CREEPER ? "gb"
+                     : kind == MC_ENTITY_CLASS_KIND_GHAST   ? "bp"
                                                             : "ww";
     const bool burning = kind == MC_ENTITY_CLASS_KIND_PIG && w->actor->base.bv > 0;
     const char *field = kind == MC_ENTITY_CLASS_KIND_PIG       ? (burning ? "ap" : "ao")
                         : kind == MC_ENTITY_CLASS_KIND_COW     ? "aD"
                         : kind == MC_ENTITY_CLASS_KIND_SPIDER  ? "I"
                         : kind == MC_ENTITY_CLASS_KIND_CREEPER ? "K"
+                        : kind == MC_ENTITY_CLASS_KIND_GHAST   ? "K"
                                                                : "J";
     const uint16_t getstatic_pc = kind == MC_ENTITY_CLASS_KIND_PIG ? (burning ? 7u : 14u) : 0u;
     j_at(w, cl, getstatic_pc);
     if (!item_id(w, field, e))
         return false;
     j_at(w, cl, (uint16_t)(getstatic_pc + 6u));
+    return true;
+}
+
+static bool squid_q(struct mc_mob_death_work *w, mc_entity_effect_error *e) {
+    q_at(w, "xt", 5);
+    w->state.quantity_attempted = true;
+    mc_java_random *random = w->actor->random;
+    if (random == NULL)
+        return null_reference(w, e, "Squid death null quantity Random receiver");
+    int32_t quantity;
+    if (!mc_java_random_next_bounded(random, 3, &quantity))
+        return failure(w, e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_RANDOM,
+                       "Squid death actual quantity Random.nextInt(3)");
+    w->state.quantity = mc_java_i32_add(quantity, 1);
+    w->state.quantity_returned = true;
+    for (w->state.index = 0; w->state.index < w->state.quantity; ++w->state.index) {
+        q_at(w, "xt", 19);
+        w->state.stack_allocated = w->state.stack_constructed = false;
+        w->state.stack_status = mc_item_stack_allocate(&w->stack);
+        if (w->state.stack_status != MC_ITEM_STACK_OK)
+            return failure(w, e,
+                           w->state.stack_status == MC_ITEM_STACK_ALLOCATION_FAILED
+                               ? MC_ENTITY_ALLOCATION_FAILED
+                               : MC_ENTITY_LIMIT,
+                           MC_ENTITY_EFFECT_CAUSE_OWNER, "Squid death actual RAW Stack allocation");
+        w->state.stack_allocated = true;
+        q_at(w, "xt", 23);
+        if (!registry(w, e))
+            return false;
+        const mc_item *item = NULL;
+        mc_registry_status status =
+            mc_registry_item_static_get(w->registry, "aU", &item, &e->registry);
+        if (status != MC_REGISTRY_OK)
+            return registry_failure(w, e, status, "Squid death actual Ink Sac Item getstatic",
+                                    true);
+        q_at(w, "xt", 28);
+        w->state.child = site("iz", "<init>", "(Lgm;II)V", 2);
+        status = mc_registry_item_source_id(w->registry, item, &w->state.drop_id, &e->registry);
+        if (status != MC_REGISTRY_OK) {
+            w->state.registry = e->registry;
+            if (status == MC_REGISTRY_NULL_REFERENCE)
+                return null_reference(w, e, "Squid death null Item Stack constructor bf receiver");
+            return registry_failure(w, e, status, "Squid death actual Stack Item bf read", false);
+        }
+        w->state.stack_status = mc_item_stack_construct(w->stack, w->state.drop_id, 1, 0);
+        if (w->state.stack_status != MC_ITEM_STACK_OK)
+            return failure(w, e, MC_ENTITY_ITEM_FAILED, MC_ENTITY_EFFECT_CAUSE_OWNER,
+                           "Squid death actual Item Stack numeric constructor");
+        w->state.stack_constructed = true;
+        q_at(w, "xt", 32);
+        if (!drop(w, false, e))
+            return false;
+        mc_item_stack_release(w->stack);
+        w->stack = NULL;
+    }
+    q_at(w, "xt", 42);
+    w->state.q_returned = true;
     return true;
 }
 
@@ -613,6 +713,7 @@ static bool body(struct mc_mob_death_work *w, mc_entity *source, mc_entity_effec
         w->state.q_entered = true;
         if (!(w->state.kind == MC_ENTITY_CLASS_KIND_SHEEP      ? sheep_q(w, e)
               : w->state.kind == MC_ENTITY_CLASS_KIND_SKELETON ? skeleton_q(w, e)
+              : w->state.kind == MC_ENTITY_CLASS_KIND_SQUID    ? squid_q(w, e)
                                                                : living_q(w, e)))
             return false;
     }
@@ -664,8 +765,8 @@ mc_entity_status mc_mob_death_cleanup(mc_entity *p, mc_entity_effect_error *e) {
         return MC_ENTITY_BUSY;
     }
     w->state.registry_held = false;
-    mc_item_stack_release(w->sheep_stack);
-    w->sheep_stack = NULL;
+    mc_item_stack_release(w->stack);
+    w->stack = NULL;
     if (w->source != NULL) {
         mc_entity_release(w->source);
         w->source = NULL;
@@ -689,7 +790,7 @@ bool mc_mob_death_entered(mc_entity *p, mc_registry_classes *registry_value, mc_
                           mc_entity_effect_error *e) {
     if (e == NULL)
         return false;
-    if (p == NULL || !mc_entity_has_mob(p) || (!animal(p) && !monster(p)) ||
+    if (p == NULL || !mc_entity_has_mob(p) || (!animal(p) && !monster(p) && !remaining_living(p)) ||
         p->phase != MC_ENTITY_READY || p->classes->source != MC_ENTITY_CLIENT || p->holds == 0) {
         e->status = MC_ENTITY_STATE_ERROR;
         e->cause = MC_ENTITY_EFFECT_CAUSE_OWNER;

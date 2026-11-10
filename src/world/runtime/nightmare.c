@@ -1204,7 +1204,8 @@ static bool entity_release_admit(mc_entity *entity) {
            (entity->holds != 0 &&
             (!mc_entity_has_mob(entity) ||
              (!entity->mob->tick_active && entity->mob->pending_ray == NULL &&
-              entity->mob->pending_path == NULL && entity->mob->pending_death == NULL)));
+              entity->mob->pending_path == NULL && entity->mob->pending_death == NULL &&
+              entity->mob->pending_wolf_damage == NULL)));
 }
 
 mc_world_storage_status mc_world_nightmare_retire(mc_world_nightmare_call **slot,

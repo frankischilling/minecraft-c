@@ -1,5 +1,18 @@
 # Development status
 
+Direct [Wolf, Slime, Squid and Ghast damage](entity/remaining-damage.md) now
+reaches the original hurt, sound and death/drop methods. Wolf includes its full
+sitting/amount/retaliation/pack/owner wrapper with retained failure cleanup.
+Ten finite native records match fresh unchanged-original calls, including the
+Squid's NULL sound callback and Ghast's volume 10. The new UTF16 owner comparator
+also passes its complete JDK17 case-key inventory and finite String corpus.
+
+A fresh monitor-2 Zombie encounter passes 481 checks through actual AI damage,
+returned terrain/HUD, SDK pause/save, independent NBT/statistics and cleanup;
+all three captures were inspected. These are bounded qualifications. Complete
+execution-owned Arrow hits, delayed Slime splitting, unrestricted combat and
+original audiovisual/FPS equality remain unfinished or unqualified.
+
 Fatal [Monster death and drops](entity/monster-death.md) now complete for Spider,
 Zombie, Skeleton and Creeper, including Skeleton's separate Arrow/Bone loops,
 Creeper's late Skeleton-kill record and Player's Kill Enemy callback. Twenty-two
@@ -8,11 +21,13 @@ statistics, drops and actual World/Chunk membership have component coverage.
 Full Arrow victim damage, delayed death/removal sessions and unrestricted combat
 remain unfinished or unqualified. No FPS improvement is established.
 
-The complete Windows client build and all 890 configured tests pass. Linux
-Clang ASan/UBSan passes 20 selected damage/death/ownership tests; its full build
-first stops at the WSL disk limit. Fresh original observations match 22 finite
-records from each native host. [Validation details](testing.md#monster-death-and-player-kill-callbacks)
-retain the failed attempts, source freeze and exact comparison limits.
+The complete Windows client build and all 895 configured tests pass in
+439.87 seconds. Linux Clang ASan/UBSan with leak detection passes 29 selected
+combat, ownership, String and natural Arrow checks in 39.73 seconds. The earlier
+full Linux build stops at the WSL disk limit. Ten fresh original damage records
+match each native host; earlier Monster/Player comparisons retain their own
+22-record scope. [Validation details](testing.md#remaining-living-damage-and-wolf-retaliation)
+retain failed attempts, source freezes and exact comparison limits.
 
 Client [Monster retaliation](entity/monster-retaliation.md) now follows the
 original nonnull-attacker path for Spider, Zombie, Skeleton and Creeper.
@@ -468,8 +483,8 @@ general focus reliability, unrestricted play and FPS remain unfinished.
 have new bounded Windows CPU comparisons. The 96-name public Block getter
 falls from 168.526 to 28.962 ns/get in four alternating rounds and eight fresh
 processes, with 1,011 native controls per process. The selected cache validator
-reduces mixed-key median cost by 93.703Ã¢â‚¬â€œ97.323% for 513Ã¢â‚¬â€œ4,096 entries; deliberately
-colliding keys remain 2.592Ã¢â‚¬â€œ7.552% slower. Earlier candidates and unfavorable
+reduces mixed-key median cost by 93.703ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“97.323% for 513ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“4,096 entries; deliberately
+colliding keys remain 2.592ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“7.552% slower. Earlier candidates and unfavorable
 results remain retained. These are frozen CPU workloads, not scene-FPS results.
 
 The [Source save progress join](world/saving.md#source-progress-ownership) now

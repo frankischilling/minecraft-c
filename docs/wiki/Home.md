@@ -5,11 +5,12 @@ Development focuses on the single-player client. Full parity and unrestricted
 playability remain incomplete; multiplayer and the dedicated server follow
 the client work. Account authentication is the only approved gameplay exception.
 
-The latest [combat work](Combat-and-projectiles) completes fatal Monster drops,
-Skeleton's ordered Arrow/Bone loops, Creeper's Skeleton-kill record and Player
-kill callbacks. Twenty-two finite records match unchanged original calls.
-The comparison keeps constructor and Item entropy independent. It establishes
-no original audiovisual equality or FPS improvement.
+The latest [combat work](Combat-and-projectiles) adds Wolf, Slime, Squid and
+Ghast hurt/sound/drop paths, including Wolf pack/owner decisions and counted
+UTF16 comparison. Ten finite records match unchanged original calls. Earlier
+Monster death, Skeleton Arrow/Bone loops, Creeper's record and Player kill
+callbacks keep their separate comparison. Constructor and Item entropy remain
+independent; no original audiovisual equality or FPS improvement is established.
 
 ## Start here
 

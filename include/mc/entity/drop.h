@@ -46,7 +46,7 @@ typedef struct mc_entity_drop_state {
  * offset+0. The Stack entry preserves its exact nullable RAW/READY/failed owner
  * without reading fields. A NULL invocation receiver fails before source work.
  * The current closed receiver set is client FallingSand/Sheep/Pig/Cow/Chicken
- * and Zombie/Spider/Skeleton/Creeper;
+ * and Zombie/Spider/Skeleton/Creeper/Slime/Squid/Ghast;
  * other virtual dispatch is refused as native admission, never approximated.
  *
  * Output is mandatory, starts NULL and stays live/disjoint through synchronous

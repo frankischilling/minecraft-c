@@ -366,6 +366,25 @@ static bool sound(mc_entity *p, mc_registry_classes *registry, bool fatal,
     } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_CHICKEN)) {
         declaring_class = "ww";
         text = "mob.chickenhurt";
+    } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_WOLF)) {
+        declaring_class = volume_class = "gi";
+        text = fatal ? "mob.wolf.death" : "mob.wolf.hurt";
+        volume = .4f;
+        volume_pc = 2;
+    } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SLIME)) {
+        declaring_class = volume_class = "uw";
+        text = "mob.slime";
+        volume = .6f;
+        volume_pc = 2;
+    } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SQUID)) {
+        declaring_class = volume_class = "xt";
+        volume = .4f;
+        volume_pc = 2;
+    } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_GHAST)) {
+        declaring_class = volume_class = "bp";
+        text = fatal ? "mob.ghast.death" : "mob.ghast.scream";
+        volume = 10.f;
+        volume_pc = 2;
     } else
         return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
                            "Living damage actual concrete sound declaration");
@@ -373,13 +392,14 @@ static bool sound(mc_entity *p, mc_registry_classes *registry, bool fatal,
     /* FR.i and FR.j_ both return mob.skeletonhurt. Neither receiver is
      * replaced; only its actual virtual String declaration differs here. */
     const mc_registry_string *name = NULL;
-    if (registry == NULL || registry->entities != p->classes)
+    if (text != NULL && (registry == NULL || registry->entities != p->classes))
         return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_REGISTRY,
                            skeleton ? "Skeleton damage actual code String namespace"
                            : zombie ? "Zombie damage actual code String namespace"
                                     : "Living damage actual concrete String namespace");
     const mc_registry_status code =
-        mc_registry_runtime_literal_ascii(registry, text, &name, &e->registry);
+        text == NULL ? MC_REGISTRY_OK
+                     : mc_registry_runtime_literal_ascii(registry, text, &name, &e->registry);
     if (code != MC_REGISTRY_OK)
         return damage_fail(e,
                            code == MC_REGISTRY_LIMIT               ? MC_ENTITY_LIMIT
@@ -389,7 +409,7 @@ static bool sound(mc_entity *p, mc_registry_classes *registry, bool fatal,
                            skeleton ? "Skeleton damage actual code String literal"
                            : zombie ? "Zombie damage actual code String literal"
                                     : "Living damage actual concrete String literal");
-    child_at(e, declaring_class, fatal ? "i" : "j_", "()Ljava/lang/String;", 2);
+    child_at(e, declaring_class, fatal ? "i" : "j_", "()Ljava/lang/String;", text == NULL ? 1 : 2);
     e->living_damage.sound_name_returned = true;
     e->living_damage.sound_name_identity = (uintptr_t)name;
     e->living_damage.sound_literal = text;
@@ -748,6 +768,21 @@ static bool living(mc_entity *p, mc_registry_classes *registry, mc_math_classes 
     return returned;
 }
 
+bool mc_mob_damage_living_parent_entered(mc_entity *p, mc_registry_classes *registry,
+                                         mc_math_classes *math, mc_entity *source, int32_t amount,
+                                         bool *out, mc_entity_effect_error *e) {
+    if (e == NULL)
+        return false;
+    if (p == NULL || !mc_entity_has_mob(p) || p->phase != MC_ENTITY_READY ||
+        p->classes->source != MC_ENTITY_CLIENT || out == NULL)
+        return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_OWNER,
+                           "Living parent entered canonical client owner");
+    e->living_damage.entered = true;
+    const bool returned = living(p, registry, math, source, amount, out, e);
+    e->living_damage.living_returned = returned;
+    return returned;
+}
+
 bool mc_player_living_damage_entered(mc_entity *p, mc_registry_classes *registry,
                                      mc_math_classes *math, mc_entity *source, int32_t amount,
                                      bool *out, mc_entity_effect_error *e) {
@@ -843,9 +878,12 @@ bool mc_mob_living_damage_entered(mc_entity *p, mc_registry_classes *registry,
         (!mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SHEEP) &&
          !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_PIG) &&
          !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_COW) &&
-         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_CHICKEN)))
+         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_CHICKEN) &&
+         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SLIME) &&
+         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SQUID) &&
+         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_GHAST)))
         return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_OWNER,
-                           "Living damage entered canonical animal owner contract");
+                           "Living damage entered canonical Living owner contract");
     const bool sheep = mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SHEEP);
     e->damage_arguments_stored = true;
     e->damage_source_identity = (uintptr_t)source;

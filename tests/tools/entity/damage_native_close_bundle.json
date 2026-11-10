@@ -13,8 +13,8 @@
       "sha256": "54d9f163904767d003b962ccfe478992a31d255983a802df10cd653b035aadc9"
     },
     "CMakeLists.txt": {
-      "bytes": 343529,
-      "sha256": "8fc4ccb8d7ddaae1730e6628fe03b488e4cfcd27f0f9d21a97c7eaeb1190765a"
+      "bytes": 343726,
+      "sha256": "56b11312a09cc0ba52a49b7afba9b729a4276b770ad8920d2b0681d0991ee98c"
     },
     "tests/entity/player/test_ally_alert_ownership.c": {
       "bytes": 11240,
@@ -25,8 +25,8 @@
       "sha256": "2871f208485700afc6d6411cfe05a41fd00fedafa876d01c92a00a17f2ad8a4b"
     },
     "src/entity/mob/damage.c": {
-      "bytes": 41638,
-      "sha256": "5659378997a33f7611d61b3d4392a27447bd4babcce0aedd1e6a82bc1b28aabc"
+      "bytes": 43493,
+      "sha256": "77a3a6da09f6e42ce475486b45bc378c4c4a21ca26a538b32317cc0b11a09c33"
     },
     "src/entity/mob/damage_execution_internal.h": {
       "bytes": 6121,

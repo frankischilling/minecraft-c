@@ -311,6 +311,7 @@ endif()
 add_library(mc_core STATIC
     src/core/java/int_set.c
     src/core/java/java.c
+    src/core/java/string_case.c
     src/core/java/float_parse.c
     src/core/java/float_format.c
     src/core/java/integer_parse.c
@@ -5713,6 +5714,10 @@ include(cmake/tests/arrow_tick_failures.cmake)
 include(cmake/tests/monster_damage.cmake)
 include(cmake/tests/monster_death.cmake)
 include(cmake/tests/player_monster_kill.cmake)
+include(cmake/tests/wolf_damage.cmake)
+include(cmake/tests/remaining_death.cmake)
+include(cmake/tests/remaining_damage.cmake)
+include(cmake/tests/string_case.cmake)
 include(cmake/tests/arrow_world_tick_cleanup.cmake)
 include(cmake/client_respawn.cmake)
 include(cmake/client_bed_respawn.cmake)
