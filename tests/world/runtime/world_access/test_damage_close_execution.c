@@ -313,9 +313,10 @@ static bool dnc_run(dnc_fixture *s) {
                   s->sound.close_locals_drained && s->sound.scope_open &&
                   !s->sound.close_consumed && !s->sound.completed &&
                   !s->sound.native_close_attempted && s->effect.status == MC_ENTITY_OK &&
-                  s->effect.living_damage.sound_returned == !s->capture_fault &&
-                  s->sound.close_failed == s->capture_fault &&
+                  !s->effect.living_damage.sound_returned && s->sound.close_failed &&
                   s->sound.initial_close_status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+                  s->sound.world_returned && s->effect.world.bytecode == 53 &&
+                  s->effect.world.world_access_bytecode == 53 &&
                   s->sound.world_status ==
                       (s->capture_fault ? MC_WORLD_STORAGE_IO_ERROR : MC_WORLD_STORAGE_OK) &&
                   s->effect.living_damage.private_calls == 2 &&
@@ -379,7 +380,7 @@ static bool dnc_run(dnc_fixture *s) {
         } else
             DNC_CHECK(
                 s->first_native.operation != NULL &&
-                strcmp(s->first_native.operation, "Living sound actual World checked close") == 0);
+                strcmp(s->first_native.operation, "World Entity sound checked current scope") == 0);
         DNC_CHECK(dnc_prepare_sound_close(s, own));
     }
     if (!s->unreached)
@@ -399,8 +400,8 @@ static bool dnc_run(dnc_fixture *s) {
     if (!s->unreached)
         DNC_CHECK(s->execution.world_slots[own.slot].generation == own.generation &&
                   s->execution.world_slots[own.slot].phase ==
-                      (s->capture_fault ? MC_ENTITY_TICK_EXECUTION_WORLD_RETAINED
-                                        : MC_ENTITY_TICK_EXECUTION_WORLD_FREE));
+                      (s->sound_mode ? MC_ENTITY_TICK_EXECUTION_WORLD_RETAINED
+                                     : MC_ENTITY_TICK_EXECUTION_WORLD_FREE));
     DNC_CHECK(!s->execution.world_open && dnc_error(s->owned.ownership_error, s->first_native));
     if (s->capture_fault) {
         const mc_world_access_failure *held = NULL;
@@ -415,14 +416,27 @@ static bool dnc_run(dnc_fixture *s) {
                   s->effect.world.world_access_failure.receipt == s->receipt &&
                   mc_world_access_receipt_retire(&s->receipt, NULL) == MC_WORLD_STORAGE_BUSY);
     }
-    if (!s->capture_fault && !s->unreached)
+    if (!s->sound_mode && !s->unreached)
         DNC_CHECK(dnc_reuse_control(s, own));
-    if (s->capture_fault) {
-        const size_t bindings = world->persistent_bindings, slots = s->execution.world_count;
-        DNC_CHECK(s->execution.phase == MC_ENTITY_TICK_EXECUTION_FAILED &&
-                  mc_living_damage_sound_native_close(&s->sound) == MC_WORLD_STORAGE_OK &&
-                  world->persistent_bindings == bindings && s->execution.world_count == slots &&
-                  !s->execution.world_open);
+    if (s->sound_mode) {
+        const size_t bindings = world->persistent_bindings, slots = s->execution.world_count,
+                     leases = s->execution.lease_count, receipts = s->execution.receipt_count;
+        mc_entity_tick_execution_world_token refused = {0};
+        DNC_CHECK(
+            s->execution.phase == MC_ENTITY_TICK_EXECUTION_FAILED &&
+            mc_entity_tick_execution_push_world(&s->execution, world, dnc_reuse, &refused) ==
+                MC_WORLD_STORAGE_BUSY &&
+            refused.owner == NULL && refused.slot == 0 && refused.generation == 0 &&
+            world->persistent_bindings == bindings && s->execution.world_count == slots &&
+            s->execution.lease_count == leases && s->execution.receipt_count == receipts &&
+            s->execution.world_slots[own.slot].generation == own.generation &&
+            s->execution.world_slots[own.slot].phase == MC_ENTITY_TICK_EXECUTION_WORLD_RETAINED &&
+            mc_living_damage_sound_native_close(&s->sound) == MC_WORLD_STORAGE_OK &&
+            world->persistent_bindings == bindings && s->execution.world_count == slots &&
+            s->execution.lease_count == leases && s->execution.receipt_count == receipts &&
+            s->execution.world_slots[own.slot].generation == own.generation &&
+            s->execution.world_slots[own.slot].phase == MC_ENTITY_TICK_EXECUTION_WORLD_RETAINED &&
+            !s->execution.world_open);
     }
     DNC_CHECK(s->callbacks == (s->normal ? 0u : 1u) && s->calls == 1 &&
               dnc_random(s->skeleton->random, &s->actor_after) &&
@@ -431,7 +445,7 @@ static bool dnc_run(dnc_fixture *s) {
               dnc_random(world->fields.r, &s->world_before) &&
               dnc_error(s->owned.ownership_error, s->first_native));
     if (s->sound_mode)
-        DNC_CHECK(!s->sound.completed && s->sound.close_failed == s->capture_fault &&
+        DNC_CHECK(!s->sound.completed && s->sound.close_failed &&
                   s->sound.initial_close_status == MC_WORLD_STORAGE_UNSUPPORTED_STATE);
     else {
         DNC_CHECK(mc_player_ally_alert_execution_inspect(s->ally, &s->ally_view) &&
@@ -450,6 +464,10 @@ static bool dnc_run(dnc_fixture *s) {
     DNC_CHECK(mc_entity_tick_execution_release_receipts(&s->execution) == MC_WORLD_STORAGE_OK &&
               mc_math_execution_retire(&s->math) == MC_MATH_CLASS_OK &&
               mc_entity_tick_execution_retire(&s->execution) == MC_WORLD_STORAGE_OK &&
+              s->execution.world_count == 0 && s->execution.lease_count == 0 &&
+              s->execution.receipt_count == 0 &&
+              (!s->sound_mode || s->execution.world_slots[own.slot].generation == own.generation) &&
+              s->execution.world_slots[own.slot].phase == MC_ENTITY_TICK_EXECUTION_WORLD_FREE &&
               mc_math_classes_release(&s->math_owner, NULL) == MC_MATH_CLASS_OK &&
               mc_world_access_receipt_retire(&s->receipt, NULL) == MC_WORLD_STORAGE_OK &&
               mc_world_access_free(s->access, NULL) == MC_WORLD_STORAGE_OK &&
@@ -473,7 +491,10 @@ static bool dnc_cleanup(dnc_fixture *s) {
     return true;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_DAMAGE_CLOSE_MAIN
+#define MC_DAMAGE_CLOSE_MAIN main
+#endif
+int MC_DAMAGE_CLOSE_MAIN(int argc, char **argv) {
     char root[8192];
     if (argc != 3 || !decode_path(argv[2], root, sizeof(root)))
         return 2;

@@ -9,6 +9,17 @@ typedef struct mc_world_access mc_world_access;
 typedef struct mc_client_render_global_error mc_client_render_global_error;
 typedef struct mc_world_access_receipt mc_world_access_receipt;
 
+/* VALUE-only witness from the actual WorldAccess List receiver read. A NULL
+ * List fails before a concrete receiver/callback/receipt exists. Metadata or
+ * native ownership rejection supplies no such Source witness. The recorded
+ * size/get operation is retained with its caller's actual failed bytecode;
+ * callers never reconstruct it from a later World.u or operation string. */
+typedef enum mc_world_access_source_fault {
+    MC_WORLD_ACCESS_SOURCE_FAULT_NONE,
+    MC_WORLD_ACCESS_SOURCE_FAULT_NULL_SIZE_LIST,
+    MC_WORLD_ACCESS_SOURCE_FAULT_NULL_GET_LIST
+} mc_world_access_source_fault;
+
 /* An explicit receipt from this particular interface invocation. The concrete
  * receiver owns the immutable full failure through its checked retirement;
  * callers keep that receiver/graph live while inspecting this borrowed view.

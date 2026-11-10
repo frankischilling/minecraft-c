@@ -610,12 +610,12 @@
       "sha256": "1403db31747821713d1472b01bcdfbdebbd9ecd9a73c6a0802a6b2ed277c498e"
     },
     "include/mc/world/runtime/movement.h": {
-      "bytes": 5253,
-      "sha256": "656258a3fea4374ffe08691fbdea9203c34c6ab7d1788b8845fe822c3ada0b3f"
+      "bytes": 5465,
+      "sha256": "16b31d42c9899f07f81691d90d3ddc28750ee057ed6adbb7d75f4b7851e1fcfd"
     },
     "include/mc/world/runtime/mutations.h": {
-      "bytes": 10336,
-      "sha256": "6f613c132aaffe45675b36c7ff206b91dc06eb0a668a0afe58b8b3a2f08f92b8"
+      "bytes": 10365,
+      "sha256": "9b34e3890292d16a9e0b7aad49f99884ee4c27f8a6c26106b0bd73573e59f005"
     },
     "include/mc/world/runtime/plants.h": {
       "bytes": 3817,
@@ -2710,8 +2710,8 @@
       "sha256": "75d23f82d56e9c6be62ffeeb48b1b22c6c96d2de1f15c3c76dd1eaedf6a63281"
     },
     "include/mc/world/runtime/world_access_error.h": {
-      "bytes": 2180,
-      "sha256": "6a27812224006fbe8f8336af9f75eb6d40da752def19129466e0dadfc69e4095"
+      "bytes": 2776,
+      "sha256": "09a4829a8f9f56c1d68ab26355d844b8377fd1c3aac5ea8e9028cbbd3a167bfe"
     },
     "src/client/render/manager/world.c": {
       "bytes": 4094,
@@ -2774,8 +2774,8 @@
       "sha256": "619946b5733bc9ba5dc95f880e115a07e05d6592fc4840e1501fc1458bec5396"
     },
     "src/world/runtime/world_access_internal.h": {
-      "bytes": 7817,
-      "sha256": "f0e45ba85d5edb563566fea75841410e7103825eacc2dd1241f4ddff8bde4fcf"
+      "bytes": 8532,
+      "sha256": "dfdcb4e00705520d8c9521c0444834512afbbc543bafafe0845d94d3088e878f"
     },
     "src/world/storage/files.h": {
       "bytes": 6918,
@@ -3386,8 +3386,8 @@
       "sha256": "476af52bb256f13e8fe9a066459b20fafd5ffec8d84803019ee64572ee66448a"
     },
     "src/world/runtime/mutation/mutation_internal.h": {
-      "bytes": 19306,
-      "sha256": "1a7fdd98ee17ee05aec943a1c8287ff7309571eda66da720d9c826bb1d92a39d"
+      "bytes": 19643,
+      "sha256": "61d64f928d2b61b48235522036376ac27baa50d8b96b6289062b12118d256fe9"
     },
     "src/world/runtime/world_tick.c": {
       "bytes": 64763,
@@ -5450,12 +5450,12 @@
       "sha256": "83fa124aab5972e55bb827ed95dbb5b1d239e16d18f55001b7a1024810a9768f"
     },
     "src/entity/mob/damage.c": {
-      "bytes": 43493,
-      "sha256": "77a3a6da09f6e42ce475486b45bc378c4c4a21ca26a538b32317cc0b11a09c33"
+      "bytes": 50991,
+      "sha256": "c3a0faac915e3df191894b57006f09b551df5277033093622d112a2606f90d2e"
     },
     "src/entity/mob/damage_internal.h": {
-      "bytes": 2426,
-      "sha256": "42a7be6bda1bd0678f07088378c4df1ed899e5d7323b7c92f1b00db907dd8323"
+      "bytes": 3564,
+      "sha256": "e85d4c867790c488b2d36d053693d4536706f8945a79d48bdc7cf62d219c6a85"
     },
     "src/entity/movement/effects_internal.h": {
       "bytes": 2047,
@@ -6238,8 +6238,8 @@
       "sha256": "58ccd23d1e4c8d91c1419f1242b70e311b7a0bd18886a3468ef5c274be21ae55"
     },
     "src/entity/player/drop.c": {
-      "bytes": 20228,
-      "sha256": "e5d5a107b6ed170749fbc6412d0b0c56a2602344e0f6781c09d8fcb6968793f8"
+      "bytes": 37436,
+      "sha256": "0b0fbde2148dc718d9d538650bceb4c28d860c3b85eedabe13bb8c25666b2098"
     },
     "tests/client/gameplay/test_drop.c": {
       "bytes": 11256,
@@ -8090,8 +8090,8 @@
       "sha256": "ae15e8fb904b7fde7d0b92a22beea685aaf1a6ba0ac106c30a54c8c02662f2a2"
     },
     "src/entity/movement/effects.c": {
-      "bytes": 52263,
-      "sha256": "0f7ab49fde2199357df271d0f84c1d4974ded4d1a31b18864c0fa7dbae1e4275"
+      "bytes": 83630,
+      "sha256": "5a4fcea3aae52da911c9aee86b573f759079c213fc7aa1d2cb490f503c855cfb"
     },
     "src/entity/player/damage.c": {
       "bytes": 4943,
@@ -8194,8 +8194,8 @@
       "sha256": "33a63ff5670007277ff13798035d05c441c527782cee7ef5626c8bfc39e2e6eb"
     },
     "src/entity/player/death.c": {
-      "bytes": 24853,
-      "sha256": "61e6787c2d3c5cc27b8b14dfb74d7d296ff46e62605aac18433c0a44f6fc5f51"
+      "bytes": 32084,
+      "sha256": "40b862f457380f6371b86dd0a63b6cbaf4faa437cf44b684d53ed31025084b3f"
     },
     "src/entity/player/death_internal.h": {
       "bytes": 512,
@@ -8210,12 +8210,12 @@
       "sha256": "4fb54a451c2905627c9f70788be5c7d943cde81a3836cc74c1cf352bbb90adbf"
     },
     "src/inventory/runtime/scatter.c": {
-      "bytes": 5030,
-      "sha256": "1f369a22a5d2d1979991738268f1db1399bbcb4a574a5ab0174f7a835143d092"
+      "bytes": 8759,
+      "sha256": "14642de8bda69dd7fcb304a0c0dc8a7a48bc70f87f0dfa2dd8697a88eda7f419"
     },
     "src/inventory/runtime/scatter_internal.h": {
-      "bytes": 784,
-      "sha256": "2bde36d6bb4012d0f68ade170a1e5f18bcf5bc6d87afe8ef2ffc72bfcd9b9742"
+      "bytes": 1939,
+      "sha256": "3334a415fd7ba07140dca944f5cadb856a07d7cabe6fa58802c61fc466dc1263"
     },
     "src/world/dimension/world_provider.c": {
       "bytes": 55507,
@@ -8542,8 +8542,8 @@
       "sha256": "7aaf32108145ef910d338a8087f777290376b89c7211be71a79f4b0087350fb2"
     },
     "src/world/runtime/mutation/hooks.c": {
-      "bytes": 22505,
-      "sha256": "01b05d4f99e999665482afae0dc398ee7b6186a4e6837f8124d482c4aa2d398f"
+      "bytes": 22672,
+      "sha256": "0796bbe8257c02646dcf805afe8da925057f59d9b4ec26d3fdf01496d52ffad0"
     },
     "src/world/runtime/placement/bed.inc": {
       "bytes": 21281,
@@ -8658,8 +8658,8 @@
       "sha256": "69e5ae20ac102c23c8aa2e84e06222539b75ef0ae69fef8ae93e2c8dcc76e0e7"
     },
     "src/world/runtime/entity_publication.c": {
-      "bytes": 55691,
-      "sha256": "80d5feb0cdc06668ea97fe58dbde708a5525a506c9ed766802e9d9ca5e432c13"
+      "bytes": 56160,
+      "sha256": "c99cc55bf66073d9011b16232a7424ffd96c8143fb7d1c5a677cbb43e084e1f5"
     },
     "src/world/runtime/entity_tick_lists.c": {
       "bytes": 7575,
@@ -9706,8 +9706,8 @@
       "sha256": "66085fb6af7bf294540559c6cc319bc53e633c1d45e02a815e52b101c75322c1"
     },
     "src/core/math/execution_internal.h": {
-      "bytes": 5904,
-      "sha256": "0f04ea758924772f5e65445e97ceb3a8bdc8a6a7bb4550a35745559fae8fda69"
+      "bytes": 7418,
+      "sha256": "ff3cf04e9bcfb028e2e372fc328da5a1277f30e7edb4b1346925312fb1970abb"
     },
     "src/entity/movement/environment_internal.h": {
       "bytes": 1069,
@@ -9810,12 +9810,12 @@
       "sha256": "76aa266bb50fc5b6792f7fe0230a327e4492ca6421c2f06973adf885bad06bfa"
     },
     "src/world/runtime/runtime_execution.c": {
-      "bytes": 17733,
-      "sha256": "1beb31d4f21902c8bd6a0eccbaf982629fe4d171d06ed133eff7b58dbcc535fa"
+      "bytes": 20205,
+      "sha256": "39ebbb88f6bd90dbc3662fdaa2fda9978759cf02fc06b0543bd8a6c7472c9e7f"
     },
     "src/world/runtime/runtime_execution_internal.h": {
-      "bytes": 10285,
-      "sha256": "3e0e5e44bb29a55373c0ed071d6425525a3421bd9affd0c429c05caa8f685084"
+      "bytes": 11563,
+      "sha256": "7ad9fb3f900dc93e9f0be3bddb07cf8a0dbe8d034370f9ce6d7edd7ff4860fc3"
     },
     "src/world/runtime/tile_entities/execution_internal.h": {
       "bytes": 4017,
@@ -9831,7 +9831,7 @@
     },
     "tests/tools/world/test_kernel_execution.py": {
       "bytes": 25708,
-      "sha256": "00ad54a69151b92d08ae82f7d117ed501347c753e3fef6319e5c86c057474c34"
+      "sha256": "884f799ec833035727306fa900e4762fc317399bf5d123a4308a51798dbaddc6"
     },
     "cmake/tests/world_query_controls.cmake": {
       "bytes": 9364,
@@ -9847,7 +9847,7 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76712,
-      "sha256": "bd55e14bcf2e0d82c854d3eaf828188600eaeb263e66e07049ea6cc3791c1b68"
+      "sha256": "ada889e19bb6669fbc158046acc0ed2aa14bb267f9a6a6feb8074af59a69f9f8"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -9986,36 +9986,36 @@
       "sha256": "9663e593c7c0fc6af8dde1d10ee9d403eb29ceadaf42596c3b68256ff3d8e1f1"
     },
     "include/mc/entity/arrow/tick.h": {
-      "bytes": 9555,
-      "sha256": "f85088f318142c78dd87792dc8b291631734e5791cc896ec541551339b3c3b37"
+      "bytes": 10264,
+      "sha256": "b8e36bd83ca8869a407abcd283d05fd300a80664bee7ed2c9acbce9f697b3a40"
     },
     "src/entity/arrow/tick.c": {
-      "bytes": 25119,
-      "sha256": "36a375ebccf7ca444df43c22263c178eb4cc4199127a892f507c7148d7e74c9b"
+      "bytes": 36364,
+      "sha256": "cb503a7c838b0febd59d2e6ad0b2fd4b8daa2e098fb7e0a492ed9bdaded666a8"
     },
     "src/entity/arrow/tick_body.c": {
       "bytes": 29442,
       "sha256": "f1827a6f4becd64bf634363c7fd4442c1a77bf5b71a7e66731a277136c6f92ee"
     },
     "src/entity/arrow/tick_children.c": {
-      "bytes": 46309,
-      "sha256": "c718b2a31e90693982199c7e98f077126839a457b85fb977204c76661265f12e"
+      "bytes": 53285,
+      "sha256": "137ef45ce8e853e8959e65712fd122a3dfa2f192ff52772aca5ac3c924b1823b"
     },
     "src/entity/arrow/tick_execution_dependencies.h": {
       "bytes": 1712,
       "sha256": "f6e35a1aeea69e34c968de68f3dae97224a0a06f1eb49825b70e3e6b90ddacf3"
     },
     "src/entity/arrow/tick_internal.h": {
-      "bytes": 7940,
-      "sha256": "fbb1fcdca32b7546adf70a1139be91a77188e2e0db6d938f43eb4cf164ba36e3"
+      "bytes": 8740,
+      "sha256": "ecc11ed7cecd1a973fe31d62b3b4abd13c37b2b8a617840213024d33e0373101"
     },
     "tests/tools/world/test_arrow_natural_flight.py": {
-      "bytes": 13011,
-      "sha256": "16d3c987d02a72600241c994e09985bda7cf98eddeeddcdca2f833524ed0ba79"
+      "bytes": 16754,
+      "sha256": "adf54e773c3e5c013736763188b7f6d2d4e82114e3238294d751e2b37b3d9f24"
     },
     "tests/world/runtime/test_arrow_natural_flight.c": {
-      "bytes": 16439,
-      "sha256": "98b70cd9dc84c51558e1fc3e937abd0a4fc471440e355cac2e022086e555491d"
+      "bytes": 19352,
+      "sha256": "ef30933831986c962b9f27512a66462a41ee65d01b15220fc83b3ce57f282e47"
     },
     "cmake/tests/arrow_world_tick_cleanup.cmake": {
       "bytes": 2831,
@@ -10026,8 +10026,8 @@
       "sha256": "80d866a4df85af27011535b381728a1cae45bfbd24da103b2b453d5ed5056042"
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
-      "bytes": 16782,
-      "sha256": "1e91f446a6e5c77a899449e088d786955cf64619086569248437ff1b6b49426a"
+      "bytes": 20496,
+      "sha256": "22870692639179d689daf4f3ab4ae9ba7aed7cf6fbee95a667b781305a209a74"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,
@@ -10035,11 +10035,11 @@
     },
     "tests/tools/entity/test_damage_native_close.py": {
       "bytes": 17605,
-      "sha256": "3424eb6d5e13366d52a2bb7e0ec606c5b13fb9fc592f7dee92d167cfe946899a"
+      "sha256": "e8023b2829ee005f66e70a36672946ced91bb3011fa9d96d37fa4af92293fb70"
     },
     "tests/world/runtime/world_access/test_damage_close_execution.c": {
-      "bytes": 28929,
-      "sha256": "2871f208485700afc6d6411cfe05a41fd00fedafa876d01c92a00a17f2ad8a4b"
+      "bytes": 30398,
+      "sha256": "1b19fa49f0845661fe7e8d71432109b101c7f1aafc0596916ad306ea914daeee"
     },
     "cmake/arrow_world_tick_baseline.cmake": {
       "bytes": 1409,
@@ -10158,8 +10158,8 @@
       "sha256": "b34b8888e60929833c2c23da833bdc56400dcc6a9940eed363a4ff777a84fdac"
     },
     "src/entity/mob/wolf_damage.c": {
-      "bytes": 31914,
-      "sha256": "61a96cba637fccef717e0af98225628f080c190e8546c0a8c0333402970dd329"
+      "bytes": 42666,
+      "sha256": "c65e6384d021ec696ee4a6daca30012c6bf81c748d350ca99f6fe7d257f6cd30"
     },
     "src/entity/mob/wolf_damage_internal.h": {
       "bytes": 1037,
@@ -10316,6 +10316,186 @@
     "tests/world/runtime/world_access/test_notification_execution.c": {
       "bytes": 24208,
       "sha256": "3b68ed26967b42555daa94bfc88d4c0eb445a2bea348d05f2d8b56fa38ec33f9"
+    },
+    "CMakeLists.txt": {
+      "bytes": 345142,
+      "sha256": "3cf33e3a6a3c8a69eb5c0eadc66633a631123780410b7e366bdd4d81538464b0"
+    },
+    "cmake/client_arrow_pig.cmake": {
+      "bytes": 2700,
+      "sha256": "3e6a1a50f3cacb61e41d07e6125f741fbcf884388c80c8363a02284eadb65ea7"
+    },
+    "cmake/tests/arrow_hurt_execution.cmake": {
+      "bytes": 1030,
+      "sha256": "80282ee33b51dc83a57827e3246ba8a1a0eaf5b8bfe38910dc52fcee8ba2cc41"
+    },
+    "cmake/tests/arrow_hurt_handoff.cmake": {
+      "bytes": 1206,
+      "sha256": "0a3c822127a8ccca397581ce9f99d9523d3fab1c7028d2f552a2389b35cf3ae2"
+    },
+    "cmake/tests/arrow_hurt_player.cmake": {
+      "bytes": 1104,
+      "sha256": "bf2f47329278352f624b012162a24301c723a55fe9c9f8ec16dbe4628910c57f"
+    },
+    "cmake/tests/arrow_hurt_prior.cmake": {
+      "bytes": 845,
+      "sha256": "7199e47182de105d87c34b5b5d962cb6fe2f9232dc627e47923c80f2f00adf61"
+    },
+    "cmake/tests/damage_execution.cmake": {
+      "bytes": 2508,
+      "sha256": "9045bae6c2d72910e6ce88567db11519c6a59b3b7279ba4b6524439985ab9fc6"
+    },
+    "cmake/tests/player_death_execution.cmake": {
+      "bytes": 1552,
+      "sha256": "4628db357d67e5d41814f9bc320fcc7245c7c926bbcd3dc56dc58fcb7fdd0c13"
+    },
+    "cmake/tests/player_drop_execution.cmake": {
+      "bytes": 1382,
+      "sha256": "df4f835d3c9331851bf069b87941caded21f34baf018674b73cb2ad6627a8207"
+    },
+    "cmake/tests/world_math_proof_execution.cmake": {
+      "bytes": 2145,
+      "sha256": "60d97b818c4c5907b01bcf9ae57f37a7059aa0e2beb4a17fd9066c9c418d2e77"
+    },
+    "cmake/tests/world_presentation_execution.cmake": {
+      "bytes": 3109,
+      "sha256": "cf963b0172de684912e11400668ba52285e27c305b5bc2269e63063e486b9c19"
+    },
+    "src/entity/mob/wolf_damage_execution_internal.h": {
+      "bytes": 864,
+      "sha256": "82fa360d0522c59a7937cf3f02709d068a085e208e675c86a4f77e4f559c24c9"
+    },
+    "src/entity/movement/damage_execution_internal.h": {
+      "bytes": 7280,
+      "sha256": "10fee661579a6587e4f5fa4f9d9ecae478b630c6de9d38974db3931e5fcf4981"
+    },
+    "src/entity/player/death_execution_internal.h": {
+      "bytes": 2898,
+      "sha256": "bfb504d3e0251dd0c96bddc2e0e275e2c7b277beaedc6d26851dff1cb4c54bc6"
+    },
+    "src/entity/player/drop_execution_internal.h": {
+      "bytes": 3957,
+      "sha256": "f8e2bc3dd99f6ee23fb949126f619e1f4e0fbdc21ce88c0335392d403e5e0a7c"
+    },
+    "src/world/runtime/collision/class_entities.c": {
+      "bytes": 26478,
+      "sha256": "255dd0b05f85742528504cd7f2775926e6500d16b1ac64592001aa8e2d195705"
+    },
+    "src/world/runtime/movement.c": {
+      "bytes": 29751,
+      "sha256": "8a9b441be8788d514cfe896c49a024ab7380b9f85aaaf418d0ba1762f43c05f3"
+    },
+    "src/world/runtime/mutation/ladder.c": {
+      "bytes": 5856,
+      "sha256": "2ca0c8eccfdcd3804f87a4bedcefdebc6172470a25ad07d966af4b9d10865860"
+    },
+    "src/world/runtime/presentation.c": {
+      "bytes": 22937,
+      "sha256": "213129f7a912d449632d2e2e319a892c6b2980efbcd4bc6602ce3272f1277e2b"
+    },
+    "src/world/runtime/presentation_execution_internal.h": {
+      "bytes": 4096,
+      "sha256": "33470313a5e2f6741eddd064be8f2d994ae1d0b07b8c9b0e4188fbed669c26e5"
+    },
+    "src/world/runtime/world_access.c": {
+      "bytes": 59580,
+      "sha256": "06734754032eadb1a92414dd244bc8a2a785ef2113bbb96d23907e629c7a2134"
+    },
+    "tests/client/gameplay/test_arrow_pig.c": {
+      "bytes": 18093,
+      "sha256": "07e433385672d3446d1d7b6b58bff9813e738976ab733fccda8018259bb28700"
+    },
+    "tests/entity/player/test_death_execution.c": {
+      "bytes": 20772,
+      "sha256": "a939cbd56cc5ad75c3a83caf18cc8ad8bcc796ce2478940d832422b7aefd69a3"
+    },
+    "tests/entity/player/test_drop_execution.c": {
+      "bytes": 30958,
+      "sha256": "2ddb5ef200a280c7e4d14fa330d3a57e58ebd3427211335ded806b2383153948"
+    },
+    "tests/reference/world/ladder_neighbor/capture_reference.py": {
+      "bytes": 11272,
+      "sha256": "d036f104edcc7f02a7c20c975a17615b5b059b2e2ae82232811a978a44be7ad3"
+    },
+    "tests/tools/client/test_arrow_pig.py": {
+      "bytes": 18746,
+      "sha256": "939aaa2dda5a468cf1bcf960a02ff20076b37afb0d3761a0fbc2ddb2c4ea2677"
+    },
+    "tests/tools/entity/test_damage_execution.py": {
+      "bytes": 2547,
+      "sha256": "3498d4ae1fdf1b7836c6b6f037fe22246c3c424fec0ff01e8955dff1c4f2ec0d"
+    },
+    "tests/tools/entity/test_player_death_execution.py": {
+      "bytes": 178,
+      "sha256": "093a7caa70be325c37399645423884ba50556b8250a67ade2826f6dfead5f83e"
+    },
+    "tests/tools/entity/test_player_drop_execution.py": {
+      "bytes": 5556,
+      "sha256": "e5fc70080ced70c81b9e4a459eaf4ad9e585eb2a190be459386dd9fd17c08473"
+    },
+    "tests/tools/world/test_arrow_hurt_execution.py": {
+      "bytes": 2456,
+      "sha256": "8d3f0bdbf64225cb7f56434d6025f64d4662f3267601e227c1f64f4b79e8b3e9"
+    },
+    "tests/tools/world/test_arrow_hurt_handoff.py": {
+      "bytes": 2595,
+      "sha256": "bae87edf26cd028c2d914245860ec6ddbbfb871715f22f89c10141d86acf999d"
+    },
+    "tests/tools/world/test_arrow_hurt_player.py": {
+      "bytes": 2684,
+      "sha256": "8522bf8ab713469f989049e442bc3a202c491b24e858b1704eec5dc6ebf67832"
+    },
+    "tests/tools/world/test_arrow_hurt_prior.py": {
+      "bytes": 2188,
+      "sha256": "acf75e6a06f60c409e1d4ccc7565f071eff4465f1468b780c06a3f73dc481e3e"
+    },
+    "tests/tools/world/test_math_proof_execution.py": {
+      "bytes": 8416,
+      "sha256": "1f32f4d393d3de488aee3b45a8ea06b93ba32163f3e04e75e482d11157e981ed"
+    },
+    "tests/tools/world/test_presentation_execution.py": {
+      "bytes": 11646,
+      "sha256": "012c98af187b69ce1c75bfdab21c75e9448986c24e56879f152a0453aa7ced1e"
+    },
+    "tests/world/runtime/test_arrow_hurt_execution.c": {
+      "bytes": 5686,
+      "sha256": "9d85f5a182c1e4277cf7d97ba58c127df46e55bd44770bfe4076691eda6da345"
+    },
+    "tests/world/runtime/test_arrow_hurt_handoff.c": {
+      "bytes": 24434,
+      "sha256": "6710dc79e99ac974d7a86dc80492ebbd254f58ae0dc96a2040f759eccc1a9d5a"
+    },
+    "tests/world/runtime/test_arrow_hurt_player.c": {
+      "bytes": 14551,
+      "sha256": "9e41ba4b747d08ea599bfbf39cf9b473672cf417ae2723b7dff5e7d24809eee3"
+    },
+    "tests/world/runtime/test_arrow_hurt_prior.c": {
+      "bytes": 6575,
+      "sha256": "c87ccb6c35b1e17cd21556ab9c30972cb6ec013c8747ff1716831690cf1a5920"
+    },
+    "tests/world/runtime/test_ladder.c": {
+      "bytes": 11492,
+      "sha256": "908605571c9ab34c82ee3313ff7a0e458db3d162f6e3452491727a2e2873c385"
+    },
+    "tests/world/runtime/test_pressure_plate.c": {
+      "bytes": 48075,
+      "sha256": "35af6587602a520ee621c43c4eb35a63c2ff836fe61143ab7718f97bd4fd55be"
+    },
+    "tests/world/runtime/world_access/test_damage_execution.c": {
+      "bytes": 9016,
+      "sha256": "647f43ff7cdc62cf6a7b3a16f4461b433d21c4d3dfc523998ee5ef3b09a1629f"
+    },
+    "tests/world/runtime/world_access/test_damage_execution_profiles.c": {
+      "bytes": 39316,
+      "sha256": "305ace7f662e71107836f9a7633a9472f655565d01010a052301662e0fbcef0a"
+    },
+    "tests/world/runtime/world_access/test_math_proof_execution.c": {
+      "bytes": 20962,
+      "sha256": "9c821eb13b9bf46f02a96a8fef5e48dd5922d393cecb3b178d1c13ea2a19c6bf"
+    },
+    "tests/world/runtime/world_access/test_presentation_execution.c": {
+      "bytes": 43704,
+      "sha256": "149e0057e02ce3034b21ede85e30eb33e14e8911e845dac47e976e1dff94f988"
     }
   },
   "authorities": {
@@ -18536,6 +18716,273 @@
           ],
           "current_count": 2579
         }
+      }
+    },
+    {
+      "from_commit": "07f946d6e1630a1b9b99b3cb2319e2b9d7819fd9",
+      "role": "Current source admissions for execution-owned Player drops/death, coordinate sound and particle loops, actual Entity-sound continuation and typed NULL-List faults, exact failed-Math return proofs, the genuine Ladder neighbor body, and actual Arrow victim hurt entry with bounded native cleanup controls. Historical authority, supplier, source_projection, native_validation and capture records retain their exact prior identities. Current declarations do not qualify older compiled products or observations; fresh frozen build/execution evidence is separate. Full notifying mutation, sleeping Player wake, arbitrary cold/provider hooks and unrestricted play remain open.",
+      "previous_metadata": {
+        "bytes": 801287,
+        "sha256": "8313e7325a550e46c88297847a8834670ab02c54a05bc6cd50dc646384d637d5"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "include/mc/world/runtime/movement.h": {
+              "bytes": 5253,
+              "sha256": "656258a3fea4374ffe08691fbdea9203c34c6ab7d1788b8845fe822c3ada0b3f"
+            },
+            "include/mc/world/runtime/mutations.h": {
+              "bytes": 10336,
+              "sha256": "6f613c132aaffe45675b36c7ff206b91dc06eb0a668a0afe58b8b3a2f08f92b8"
+            },
+            "include/mc/world/runtime/world_access_error.h": {
+              "bytes": 2180,
+              "sha256": "6a27812224006fbe8f8336af9f75eb6d40da752def19129466e0dadfc69e4095"
+            },
+            "src/world/runtime/world_access_internal.h": {
+              "bytes": 7817,
+              "sha256": "f0e45ba85d5edb563566fea75841410e7103825eacc2dd1241f4ddff8bde4fcf"
+            },
+            "src/world/runtime/mutation/mutation_internal.h": {
+              "bytes": 19306,
+              "sha256": "1a7fdd98ee17ee05aec943a1c8287ff7309571eda66da720d9c826bb1d92a39d"
+            },
+            "src/entity/mob/damage.c": {
+              "bytes": 43493,
+              "sha256": "77a3a6da09f6e42ce475486b45bc378c4c4a21ca26a538b32317cc0b11a09c33"
+            },
+            "src/entity/mob/damage_internal.h": {
+              "bytes": 2426,
+              "sha256": "42a7be6bda1bd0678f07088378c4df1ed899e5d7323b7c92f1b00db907dd8323"
+            },
+            "src/entity/player/drop.c": {
+              "bytes": 20228,
+              "sha256": "e5d5a107b6ed170749fbc6412d0b0c56a2602344e0f6781c09d8fcb6968793f8"
+            },
+            "src/entity/movement/effects.c": {
+              "bytes": 52263,
+              "sha256": "0f7ab49fde2199357df271d0f84c1d4974ded4d1a31b18864c0fa7dbae1e4275"
+            },
+            "src/entity/player/death.c": {
+              "bytes": 24853,
+              "sha256": "61e6787c2d3c5cc27b8b14dfb74d7d296ff46e62605aac18433c0a44f6fc5f51"
+            },
+            "src/inventory/runtime/scatter.c": {
+              "bytes": 5030,
+              "sha256": "1f369a22a5d2d1979991738268f1db1399bbcb4a574a5ab0174f7a835143d092"
+            },
+            "src/inventory/runtime/scatter_internal.h": {
+              "bytes": 784,
+              "sha256": "2bde36d6bb4012d0f68ade170a1e5f18bcf5bc6d87afe8ef2ffc72bfcd9b9742"
+            },
+            "src/world/runtime/mutation/hooks.c": {
+              "bytes": 22505,
+              "sha256": "01b05d4f99e999665482afae0dc398ee7b6186a4e6837f8124d482c4aa2d398f"
+            },
+            "src/world/runtime/entity_publication.c": {
+              "bytes": 55691,
+              "sha256": "80d5feb0cdc06668ea97fe58dbde708a5525a506c9ed766802e9d9ca5e432c13"
+            },
+            "src/core/math/execution_internal.h": {
+              "bytes": 5904,
+              "sha256": "0f04ea758924772f5e65445e97ceb3a8bdc8a6a7bb4550a35745559fae8fda69"
+            },
+            "src/world/runtime/runtime_execution.c": {
+              "bytes": 17733,
+              "sha256": "1beb31d4f21902c8bd6a0eccbaf982629fe4d171d06ed133eff7b58dbcc535fa"
+            },
+            "src/world/runtime/runtime_execution_internal.h": {
+              "bytes": 10285,
+              "sha256": "3e0e5e44bb29a55373c0ed071d6425525a3421bd9affd0c429c05caa8f685084"
+            },
+            "tests/tools/world/test_kernel_execution.py": {
+              "bytes": 25708,
+              "sha256": "00ad54a69151b92d08ae82f7d117ed501347c753e3fef6319e5c86c057474c34"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 76712,
+              "sha256": "bd55e14bcf2e0d82c854d3eaf828188600eaeb263e66e07049ea6cc3791c1b68"
+            },
+            "include/mc/entity/arrow/tick.h": {
+              "bytes": 9555,
+              "sha256": "f85088f318142c78dd87792dc8b291631734e5791cc896ec541551339b3c3b37"
+            },
+            "src/entity/arrow/tick.c": {
+              "bytes": 25119,
+              "sha256": "36a375ebccf7ca444df43c22263c178eb4cc4199127a892f507c7148d7e74c9b"
+            },
+            "src/entity/arrow/tick_children.c": {
+              "bytes": 46309,
+              "sha256": "c718b2a31e90693982199c7e98f077126839a457b85fb977204c76661265f12e"
+            },
+            "src/entity/arrow/tick_internal.h": {
+              "bytes": 7940,
+              "sha256": "fbb1fcdca32b7546adf70a1139be91a77188e2e0db6d938f43eb4cf164ba36e3"
+            },
+            "tests/tools/world/test_arrow_natural_flight.py": {
+              "bytes": 13011,
+              "sha256": "16d3c987d02a72600241c994e09985bda7cf98eddeeddcdca2f833524ed0ba79"
+            },
+            "tests/world/runtime/test_arrow_natural_flight.c": {
+              "bytes": 16439,
+              "sha256": "98b70cd9dc84c51558e1fc3e937abd0a4fc471440e355cac2e022086e555491d"
+            },
+            "tests/tools/client/test_arrow_world_tick_cleanup.py": {
+              "bytes": 16782,
+              "sha256": "1e91f446a6e5c77a899449e088d786955cf64619086569248437ff1b6b49426a"
+            },
+            "tests/tools/entity/test_damage_native_close.py": {
+              "bytes": 17605,
+              "sha256": "3424eb6d5e13366d52a2bb7e0ec606c5b13fb9fc592f7dee92d167cfe946899a"
+            },
+            "tests/world/runtime/world_access/test_damage_close_execution.c": {
+              "bytes": 28929,
+              "sha256": "2871f208485700afc6d6411cfe05a41fd00fedafa876d01c92a00a17f2ad8a4b"
+            },
+            "src/entity/mob/wolf_damage.c": {
+              "bytes": 31914,
+              "sha256": "61a96cba637fccef717e0af98225628f080c190e8546c0a8c0333402970dd329"
+            }
+          },
+          "added": [
+            "CMakeLists.txt",
+            "cmake/client_arrow_pig.cmake",
+            "cmake/tests/arrow_hurt_execution.cmake",
+            "cmake/tests/arrow_hurt_handoff.cmake",
+            "cmake/tests/arrow_hurt_player.cmake",
+            "cmake/tests/arrow_hurt_prior.cmake",
+            "cmake/tests/damage_execution.cmake",
+            "cmake/tests/player_death_execution.cmake",
+            "cmake/tests/player_drop_execution.cmake",
+            "cmake/tests/world_math_proof_execution.cmake",
+            "cmake/tests/world_presentation_execution.cmake",
+            "src/entity/mob/wolf_damage_execution_internal.h",
+            "src/entity/movement/damage_execution_internal.h",
+            "src/entity/player/death_execution_internal.h",
+            "src/entity/player/drop_execution_internal.h",
+            "src/world/runtime/collision/class_entities.c",
+            "src/world/runtime/movement.c",
+            "src/world/runtime/mutation/ladder.c",
+            "src/world/runtime/presentation.c",
+            "src/world/runtime/presentation_execution_internal.h",
+            "src/world/runtime/world_access.c",
+            "tests/client/gameplay/test_arrow_pig.c",
+            "tests/entity/player/test_death_execution.c",
+            "tests/entity/player/test_drop_execution.c",
+            "tests/reference/world/ladder_neighbor/capture_reference.py",
+            "tests/tools/client/test_arrow_pig.py",
+            "tests/tools/entity/test_damage_execution.py",
+            "tests/tools/entity/test_player_death_execution.py",
+            "tests/tools/entity/test_player_drop_execution.py",
+            "tests/tools/world/test_arrow_hurt_execution.py",
+            "tests/tools/world/test_arrow_hurt_handoff.py",
+            "tests/tools/world/test_arrow_hurt_player.py",
+            "tests/tools/world/test_arrow_hurt_prior.py",
+            "tests/tools/world/test_math_proof_execution.py",
+            "tests/tools/world/test_presentation_execution.py",
+            "tests/world/runtime/test_arrow_hurt_execution.c",
+            "tests/world/runtime/test_arrow_hurt_handoff.c",
+            "tests/world/runtime/test_arrow_hurt_player.c",
+            "tests/world/runtime/test_arrow_hurt_prior.c",
+            "tests/world/runtime/test_ladder.c",
+            "tests/world/runtime/test_pressure_plate.c",
+            "tests/world/runtime/world_access/test_damage_execution.c",
+            "tests/world/runtime/world_access/test_damage_execution_profiles.c",
+            "tests/world/runtime/world_access/test_math_proof_execution.c",
+            "tests/world/runtime/world_access/test_presentation_execution.c"
+          ],
+          "current_count": 2624
+        }
+      }
+    },
+    {
+      "from_commit": "07f946d6e1630a1b9b99b3cb2319e2b9d7819fd9",
+      "role": "Current admission successor after the first protected compatibility batch passed 12/13 controls and the old sound-pop expectation failed against the already-frozen exact-scope Entity-sound guard. The bounded fixture correction records false continuation, the actual saved callback at bytecode 53 prefix, exact first Native operation and failed close operand. Existing RNG/token/drain/reuse assertions remain; runtime bodies are unchanged. The current Living-damage prose follows the same measured prefix. Previous metadata and changed-entry pins retain the executed failed admission snapshot; that failure is not upgraded or rebound. Fresh execution remains a separate gate.",
+      "previous_metadata": {
+        "bytes": 817905,
+        "sha256": "f813dc0ebf7aecf52eab951e055811e489ceb8de4846f13e815d0f7cb72124a7"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/entity/test_damage_native_close.py": {
+              "bytes": 17605,
+              "sha256": "30f6cfd82a884191dff04c83009f8168edc5889161de174674c093410a8cde7a"
+            },
+            "tests/world/runtime/world_access/test_damage_close_execution.c": {
+              "bytes": 29015,
+              "sha256": "e6fa3f3abce43b70cf0ac8ac21f43af730f4c1b82425d952af5b3755ee124640"
+            }
+          },
+          "added": [],
+          "current_count": 2624
+        }
+      }
+    },
+    {
+      "from_commit": "07f946d6e1630a1b9b99b3cb2319e2b9d7819fd9",
+      "role": "Current admission successor after the second protected compatibility batch again passed 12/13 controls: sound-pop passed its corrected callback prefix but exposed an old FREE-slot/reuse assumption. The narrowly corrected fixture now asserts the actual RETAINED token after failed close, BUSY new-push refusal with unchanged output/ledger/bindings, idempotent recorded close and final checked empty ledger. Successful ally cases retain their actual same-slot reuse checks. Only fixture expectations and current Living-damage contract prose changed; runtime bodies did not. Previous metadata and changed-entry pins preserve this second failed snapshot separately from the first failed snapshot already recorded. Neither failed execution is upgraded; new native qualification remains separate.",
+      "previous_metadata": {
+        "bytes": 819392,
+        "sha256": "c76d987a7711a16d14634b95c48b39a15f99e98a2b09dc24086c1b61dd6e0803"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/entity/test_damage_native_close.py": {
+              "bytes": 17605,
+              "sha256": "7cf912f424f46445468640d665f7531abf197ddfb37914e32efc9e036103e4f0"
+            },
+            "tests/world/runtime/world_access/test_damage_close_execution.c": {
+              "bytes": 29082,
+              "sha256": "8fd9ffcffebcb2f68433463912af2f654dd4656ab5f54b1c07e4df362f75be9f"
+            }
+          },
+          "added": [],
+          "current_count": 2624
+        }
+      }
+    },
+    {
+      "from_commit": "07f946d6e1630a1b9b99b3cb2319e2b9d7819fd9",
+      "role": "LINE_ENDING_ONLY current source admission. Root normalized only the two presentation-control inputs from CRLF to LF; exact normalized bytes, Python AST including locations, and unchanged CTest inventories 1099 Windows/945 Linux were verified. Earlier full Windows 1099/1099 and Linux 251/251 runtime qualification, protected 13 and gameplay observations retain their original exact 6025-source snapshot; this successor does not retroactively qualify all final source bytes. The final LF inputs have separate affected 40-test qualification on each host (Windows 5.77s; Linux Clang18 ASan/UBSan/leaks 12.80s). No C/runtime/product/asset source changed. Final result-document pins clarify these scopes; exact-head CI full qualification is a separate later gate. All historical authority, capture, source-projection, validation and failed-admission records remain unchanged.",
+      "previous_metadata": {
+        "bytes": 820995,
+        "sha256": "ed011483bbcb8fa950f53970ba5c856c9aba1193e3453303b277cf8c43425bca"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "cmake/tests/world_presentation_execution.cmake": {
+              "bytes": 3183,
+              "sha256": "90522a42bac2081b38f4cc0f5697aa4c86ae61249db52293e236ba9fc7af37de"
+            },
+            "tests/tools/world/test_presentation_execution.py": {
+              "bytes": 11893,
+              "sha256": "92571d71a863073bd284b2b526d500b99423369c9a652729f67ee4d231e161a6"
+            }
+          },
+          "added": [],
+          "current_count": 2624
+        }
+      },
+      "admission_kind": "LINE_ENDING_ONLY",
+      "normalization_scope": {
+        "kind": "CRLF_TO_LF_ONLY",
+        "inputs": {
+          "cmake/tests/world_presentation_execution.cmake": {
+            "bytes": 3109,
+            "sha256": "cf963b0172de684912e11400668ba52285e27c305b5bc2269e63063e486b9c19"
+          },
+          "tests/tools/world/test_presentation_execution.py": {
+            "bytes": 11646,
+            "sha256": "012c98af187b69ce1c75bfdab21c75e9448986c24e56879f152a0453aa7ced1e"
+          }
+        },
+        "proof": "Exact normalized-byte identity; Python AST including locations identical; CTest inventories unchanged1099 Windows/945 Linux.",
+        "current_affected_qualification": "Windows 40/40 PASS 5.77s; Linux 40/40 PASS 12.80s with Clang18 ASan/UBSan/leaks.",
+        "prior_full_qualification": "Earlier 1099/1099 Windows and 251/251 Linux plus protected/gameplay remain bound to original 6025-source byte snapshot; no retrospective full-byte claim."
       }
     }
   ],

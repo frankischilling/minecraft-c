@@ -454,8 +454,8 @@
       "sha256": "4a308bc84d1dc1f4aec704476fcc6bb2fb7c5d0fb71612a5adff4b95790a5f48"
     },
     "include/mc/world/runtime/world_access_error.h": {
-      "bytes": 2180,
-      "sha256": "6a27812224006fbe8f8336af9f75eb6d40da752def19129466e0dadfc69e4095"
+      "bytes": 2776,
+      "sha256": "09a4829a8f9f56c1d68ab26355d844b8377fd1c3aac5ea8e9028cbbd3a167bfe"
     },
     "include/mc/entity/hit_result.h": {
       "bytes": 8117,
@@ -990,6 +990,26 @@
             "include/mc/entity/hit_result.h": {
               "bytes": 7793,
               "sha256": "cdfef690358705668d1fba704744a255d0593d709e2c36747808680b74e9a9fa"
+            }
+          },
+          "added": [],
+          "current_count": 119
+        }
+      }
+    },
+    {
+      "from_commit": "07f946d6e1630a1b9b99b3cb2319e2b9d7819fd9",
+      "role": "Current source admissions for execution-owned Player drops/death, coordinate sound and particle loops, actual Entity-sound continuation and typed NULL-List faults, exact failed-Math return proofs, the genuine Ladder neighbor body, and actual Arrow victim hurt entry with bounded native cleanup controls. Historical authority, supplier, source_projection, native_validation and capture records retain their exact prior identities. Current declarations do not qualify older compiled products or observations; fresh frozen build/execution evidence is separate. Full notifying mutation, sleeping Player wake, arbitrary cold/provider hooks and unrestricted play remain open.",
+      "previous_metadata": {
+        "bytes": 41112,
+        "sha256": "f494598cde3ada402f009bf30fd6a03457be5ad48e66a3928e17caba4e8e29e7"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "include/mc/world/runtime/world_access_error.h": {
+              "bytes": 2180,
+              "sha256": "6a27812224006fbe8f8336af9f75eb6d40da752def19129466e0dadfc69e4095"
             }
           },
           "added": [],

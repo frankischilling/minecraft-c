@@ -5,7 +5,10 @@ The default client World Entity dispatcher enters the actual Arrow parent throug
 entered Base, collision, raytrace, nearby-query and presentation implementations.
 The original method has 1,537 Code bytes, SHA-256
 `f48dde96f4efaaa629c8b097f793f6ed6a2c561293110f9e2b5bd4e2f4e65f32`.
-The full victim damage call at 741 remains an explicit unentered dependency.
+At victim call 741 it enters the [shared owned damage dispatcher](damage-execution.md)
+with the actual target, current nullable Living shooter captured at 737 and
+literal amount 4. The reached Living, Monster, Wolf and Player bodies share the
+caller's execution and Math context.
 
 ## Call and lifetime
 
@@ -21,6 +24,12 @@ backlink. `mc_arrow_tick_inspect` returns borrowed views that expire at checked
 retirement. Source completion, ordinary values, raw child status, runtime
 ownership failure and reached Math failure remain distinct.
 
+Only a reached hurt call allocates its separate stable damage workspace. That
+workspace lives outside the reused child union, and its canonical result remains
+available for protected capture, native close and checked actor cleanup. A false
+continuation stops the Arrow before later impact work even when raw Entity status
+is OK. A completed false gameplay result still takes the original reflection path.
+
 `mc_arrow_tick_retire` drains entered children, actual hit/vector/bounds and Entity
 occurrences, exact World tokens and protected producers before releasing Math
 and defining code. It clears the backlink before its final Arrow release.
@@ -30,17 +39,22 @@ entry replays a Source getter, callback or body. The World dispatcher retires a
 returned call before continuing, or transfers the actual failed call into its
 owning diagnostic. World container retirement refuses while that call remains.
 
-Windows x64 MSVC measures the retained frame at 140,088 bytes, including its
-106,712-byte work union and 26,520-byte execution owner. Its existing 2 MiB parent
-and diagnostic ceiling is unchanged. This is a size measurement, not an FPS or
-allocation-rate result. Child allocations retain their own contracts and limits.
+At the prior flight-only checkpoint, Windows x64 MSVC measured the retained frame
+at 140,088 bytes, including its 106,712-byte work union and 26,520-byte execution
+owner. Its existing 2 MiB parent
+and diagnostic ceiling remains unchanged; the later reached damage workspace and
+protected exception-name copy count against that ceiling. The recorded frame size
+does not measure those later allocations, FPS or allocation rate. Child allocations
+retain their own contracts and limits.
 
-## Recorded native controls
+## Prior recorded native controls
 
-Fresh processes construct real defining owners and 25 stored air Chunks, then
-use actual Arrow construction, heading and insertion. No Arrow field, scheduler
-or Random reset supplies a returned tick. Stone placement occurs through actual
-quiet setters before constructing the Arrow.
+The following table records the earlier flight-only checkpoint, including the
+Pig damage frontier that was unentered at that time. It does not qualify the
+later owned damage join. Fresh processes constructed real defining owners and
+25 stored air Chunks, then used actual Arrow construction, heading and insertion.
+No Arrow field, scheduler or Random reset supplied a returned tick. Stone placement
+occurred through actual quiet setters before constructing the Arrow.
 
 | Mode | Checks per host | World C entries | Result |
 | --- | ---: | ---: | --- |
@@ -52,14 +66,14 @@ quiet setters before constructing the Arrow.
 | SDK cleanup retry | 196 | 3 | Separate native capture refusal, retained call and genuine retry |
 
 Windows x64 MSVC Release and Linux Clang 18 Debug with ASan, UBSan and leak
-detection each pass these six modes: 1,170 checks across 21 World C entries.
+detection each passed these six modes: 1,170 checks across 21 World C entries.
 The two SDK modes
-each reach one actual sound callback. They place the real World output directly
-in the SDK record and invoke its production cleanup function; they do not execute
+each reached one actual sound callback. They placed the real World output directly
+in the SDK record and invoked its production cleanup function; they did not execute
 the full `Minecraft.k`/App startup/window path. Normal and optimized Python each
-pass the separate flight and SDK protocol controls. Five affected regressions
-also pass: World ticking, its ABI, Arrow construction, terminal cleanup and NBT.
-The complete fifteen-test selection passes in 42.31 seconds on Windows and
+passed the separate flight and SDK protocol controls. Five affected regressions
+also passed: World ticking, its ABI, Arrow construction, terminal cleanup and NBT.
+The complete fifteen-test selection passed in 42.31 seconds on Windows and
 21.32 seconds on Linux, without failed or skipped tests. These are finite
 component results, with the unfinished behavior below kept separate.
 
@@ -115,12 +129,18 @@ observations retain the small Arrow bounds quirk: the eight-tick wet scene has
 four wet ticks, three dry ticks, then a wet tick with a new splash. The tests
 preserve that sequence rather than forcing a continuously wet result.
 
-At victim invocation 741 the parent has evaluated and held the real target and
-current nullable Living shooter. It does not enter damage, modify victim health,
-invent its Boolean or acquire victim cleanup. The Pig control checks that boundary
-and actual retirement. Full damage, alert/wake/death/drop composition,
-pickup/rider paths, foreign owner graphs and natural ranged encounters
-remain unfinished or unqualified. The existing leaf controls have their own scope.
+The current victim invocation 741 enters owned damage and retains only the actor
+work acquired by that actual call. Living sound and knockback, Wolf group/owner
+decisions, Player ally alert, and Mob and Player fatal drop/death continuations use
+their existing bodies. The [damage execution contract](damage-execution.md) records
+the distinct outcomes, actual failure evidence and cleanup order. The prior Pig
+frontier above remains evidence of its earlier checkpoint.
+
+Complete sleeping Player wake still stops at the actually reached GS35 dependency;
+its notifying Bed metadata and recursive mutation tree are not joined. Delayed
+Slime splitting, arbitrary cold import/generation, foreign owner graphs,
+pickup/rider paths and broader natural combat encounters remain unfinished or
+unqualified. The existing component controls retain their own scope.
 
 The finite observations and native lifetime controls do not establish whole-method
 equality, visible-game qualification, sustained play or FPS. The refused

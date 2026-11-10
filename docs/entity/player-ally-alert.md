@@ -43,6 +43,13 @@ or target assignment. A refused cleanup leaves the invocation available for
 retry. Successful cleanup clears the Player backedge before the final Entity
 holds can be released, and clears borrowed diagnostic views immediately.
 
+The [shared damage execution entry](damage-execution.md) now enters this same
+GS144 body from the owned Arrow741 route. Its explicit descriptor supplies the
+actual defining runtime and one shared Math context; mutable Player World does
+not select that namespace. The enclosing damage frame adopts only the invocation
+created by its actual call and exposes the canonical query result for capture and
+draining. An unrelated pending invocation remains with its original owner.
+
 The damage error retains a compact first-outcome view and borrows the detailed
 helper error while its owner lives. Error retirement handles a child already
 consumed through another cleanup sink. A current native BUSY or cleanup refusal
@@ -73,13 +80,15 @@ Neither step replays the query, watcher writes or target assignment, retires the
 shared execution/Math, or clears an outer effect-cleanup guard. The helper is
 void; Native cleanup does not supply a GS hurt Boolean.
 
-The [four direct controls](living-damage.md#recorded-native-close)
-include real query success and an actual early return. Windows x64 MSVC Release
-and Linux Clang 18 Debug ASan/UBSan with leak detection each pass all four
-modes and 175 checks. The complete eighteen-test selection passes on each
-host. These results qualify the selected Native ownership paths. Canonical
-ally initial-pop/capture callback faults, consumed-nonOK and full victim741
-remain OPEN; retained GS144 composition has separate future scope.
+The earlier [four direct controls](living-damage.md#recorded-native-close)
+included real query success and an actual early return. Windows x64 MSVC Release
+and Linux Clang 18 Debug ASan/UBSan with leak detection each passed all four
+modes and 175 checks. The complete eighteen-test selection passed on each
+host. These earlier results qualify the selected Native ownership paths, with
+their historical scope unchanged. Retained GS144 now composes with owned damage
+and the Player drop/death entries described in the shared contract. Canonical
+ally initial-pop/capture callback faults and consumed-nonOK retain their separate
+limits; unqualified query failures remain unresolved.
 
 ## Evidence and remaining scope
 
@@ -111,7 +120,9 @@ effect record from that same completed read. Eleven watcher controls and the
 separate hidden hand-rendering profiles cover this diagnostic adapter without
 replaying a getter or adding a large stack record.
 
-These components do not establish loaded hostile encounters, Arrow shooter
-resolution, unrestricted combat, original audiovisual output or sustained FPS.
+The current Arrow hurt route supplies the evaluated nullable Living shooter to
+the shared damage body. Complete GS35 sleeping wake and arbitrary cold/foreign
+graphs remain open. These components do not establish loaded hostile encounters,
+unrestricted combat, original audiovisual output or sustained FPS.
 Ghast construction has its [separate scope](ghast.md); Ghast flight and attacks
 remain unfinished.

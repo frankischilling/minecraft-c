@@ -16,7 +16,7 @@ TIMEOUT = 240
 LIMIT = 1024 ** 2
 MODES = {'air-first': 1, 'air-multi': 8, 'block': 5, 'victim-frontier': 1}
 TARGET = 'mc_test_arrow_natural_flight'
-BUNDLE_SHA = '835a2cda2949df489f0193fff122104498db2a4a69cd6be5d36afdf8a18f4d15'
+BUNDLE_SHA = '2b2807d63d69b8e30a3ff3292854538821da75da50cf22c2c78366d20de1edef'
 
 
 def need(value, message):
@@ -75,7 +75,67 @@ def completed(child, mode, command):
     return checks
 
 
+def source_successor_valid(value):
+    """Admit the exact additive current-source declaration, never old evidence."""
+    def valid_pin(item):
+        return (type(item) is dict and set(item) == {'bytes', 'sha256'} and
+                type(item['bytes']) is int and item['bytes'] >= 0 and
+                type(item['sha256']) is str and
+                re.fullmatch(r'[0-9a-f]{64}', item['sha256']) is not None)
+    if (type(value) is not dict or set(value) !=
+            {'schema', 'from_commit', 'previous_metadata', 'role', 'groups', 'current_semantics'}):
+        return False
+    if (value['schema'] != 'CURRENT_SOURCE_ADMISSION_SUCCESSOR_V1' or
+            type(value['from_commit']) is not str or
+            re.fullmatch(r'[0-9a-f]{40}', value['from_commit']) is None or
+            not valid_pin(value['previous_metadata']) or
+            type(value['role']) is not str or not value['role'] or
+            type(value['groups']) is not dict or not value['groups']):
+        return False
+    for name, group in value['groups'].items():
+        if (name not in ('sources', 'helpers', 'files') or type(group) is not dict or
+                set(group) != {'previous', 'added', 'current_count'} or
+                type(group['previous']) is not dict or
+                not all(type(path) is str and valid_pin(pin)
+                        for path, pin in group['previous'].items()) or
+                type(group['added']) is not list or
+                not all(type(path) is str for path in group['added']) or
+                len(group['added']) != len(set(group['added'])) or
+                type(group['current_count']) is not int or
+                group['current_count'] < len(group['added'])):
+            return False
+    semantics = value['current_semantics']
+    return (type(semantics) is dict and set(semantics) == {'scope', 'qualification'} and
+            all(type(text) is str and bool(text) for text in semantics.values()))
+
+
+def source_successor_self_test():
+    pin_value = {'bytes': 1, 'sha256': '0' * 64}
+    good = {'schema': 'CURRENT_SOURCE_ADMISSION_SUCCESSOR_V1', 'from_commit': '0' * 40,
+            'previous_metadata': pin_value, 'role': 'Current source admission only',
+            'groups': {'sources': {'previous': {'src/old.c': pin_value},
+                                   'added': ['src/new.c'], 'current_count': 2}},
+            'current_semantics': {'scope': 'Current source only',
+                                  'qualification': 'Historical evidence unchanged'}}
+    need(source_successor_valid(good), 'Exact successor schema positive')
+    bad = [None, {}, dict(good, extra=True), dict(good, schema='old'),
+           dict(good, from_commit='0' * 39), dict(good, role=''), dict(good, groups={}),
+           dict(good, previous_metadata={'bytes': True, 'sha256': '0' * 64}),
+           dict(good, previous_metadata={'bytes': 1, 'sha256': '0' * 63}),
+           dict(good, current_semantics={'scope': '', 'qualification': 'old'}),
+           dict(good, current_semantics={'scope': 'current', 'qualification': False})]
+    for key, value in [('current_count', True), ('added', ['a', 'a']), ('added', [1]),
+                       ('previous', {'src/a.c': {'bytes': False, 'sha256': '0' * 64}})]:
+        item = copy.deepcopy(good)
+        item['groups']['sources'][key] = value
+        bad.append(item)
+    need(len(bad) == 15 and all(not source_successor_valid(item) for item in bad),
+         'Every malformed successor schema refused')
+    print('PASS: 1 source-successor schema positive; 15 malformed declarations refused')
+
+
 def self_test():
+    source_successor_self_test()
     positives = refused = 0
     for mode in MODES:
         command = ['actual-native', mode, 'fresh-root-hex']
@@ -163,7 +223,9 @@ def main():
         common.literal_metadata(executable)
         need(pin(args.bundle)['sha256'] == BUNDLE_SHA, 'Wrong immutable flight bundle')
         bundle = json.loads(args.bundle.read_text(encoding='utf-8'))
-        need(set(bundle) == {'schema', 'target', 'required_parent', 'sources'} and
+        need(set(bundle) == {'schema', 'target', 'required_parent', 'sources',
+                             'prospective_source_successor'} and
+             source_successor_valid(bundle['prospective_source_successor']) and
              bundle['schema'] == 'ARROW_NATURAL_FLIGHT_BINDINGS_V1' and bundle['target'] == TARGET and
              bundle['required_parent'] == '05a1335fe4992e203398388234f672d3a5f439a4d37751303ae681011b31ccad' and
              type(bundle['sources']) is dict and

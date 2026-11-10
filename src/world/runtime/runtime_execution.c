@@ -61,10 +61,34 @@ static bool result_owner(const mc_entity_tick_execution_world_token *world,
     return true;
 }
 
+static bool math_return_valid(const mc_world_runtime_execution_result *result) {
+    return !result->math_failed ||
+           (result->math_owner != NULL && result->math_status != MC_MATH_CLASS_OK);
+}
+
+static bool same_math_site(const mc_math_execution_site *a, const mc_math_execution_site *b) {
+    return a->class_name == b->class_name && a->method == b->method &&
+           a->descriptor == b->descriptor && a->pc == b->pc;
+}
+
+static bool same_math_failure(const mc_math_execution_failure *a,
+                              const mc_math_execution_failure *b) {
+    return same_math_site(&a->caller, &b->caller) && same_math_site(&a->child, &b->child) &&
+           a->cause.status == b->cause.status && a->cause.operation == b->cause.operation &&
+           a->cause.source_pc == b->cause.source_pc &&
+           a->cause.initial_cause == b->cause.initial_cause;
+}
+
+static bool same_math_return(const mc_world_runtime_execution_result *a,
+                             const mc_world_runtime_execution_result *b) {
+    return a->math_owner == b->math_owner && a->math_status == b->math_status &&
+           same_math_failure(&a->math_failure, &b->math_failure);
+}
+
 /* Ordinary VALUE validation only. No owner or diagnostic pointer is followed. */
 static bool continuations_valid(const mc_world_runtime_execution_result *result,
                                 const mc_entity_tick_execution **owner) {
-    if (result->selection_ready && result->root_pending)
+    if (!math_return_valid(result) || (result->selection_ready && result->root_pending))
         return false;
     for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i) {
         const mc_world_runtime_execution_pending *p = &result->pending[i];
@@ -120,6 +144,26 @@ void mc_world_runtime_execution_result_note(mc_world_runtime_execution_result *r
     }
 }
 
+mc_world_storage_status mc_world_runtime_execution_result_note_math(
+    mc_world_runtime_execution_result *result, const mc_math_execution *owner,
+    mc_math_class_status status, const mc_math_execution_failure *failure) {
+    if (result == NULL || owner == NULL || status == MC_MATH_CLASS_OK || failure == NULL)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    if (!math_return_valid(result))
+        return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+    if (result->math_failed) {
+        return result->math_owner == owner && result->math_status == status &&
+                       same_math_failure(&result->math_failure, failure)
+                   ? MC_WORLD_STORAGE_OK
+                   : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+    }
+    result->math_owner = owner;
+    result->math_status = status;
+    result->math_failure = *failure;
+    result->math_failed = true;
+    return MC_WORLD_STORAGE_OK;
+}
+
 mc_world_storage_status
 mc_world_runtime_execution_result_forward(mc_world_runtime_execution_result *parent,
                                           const mc_world_runtime_execution_result *child) {
@@ -130,6 +174,8 @@ mc_world_runtime_execution_result_forward(mc_world_runtime_execution_result *par
         return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
     if (parent == child)
         return MC_WORLD_STORAGE_OK;
+    if (parent->math_failed && child->math_failed && !same_math_return(parent, child))
+        return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
     for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
         if (child->pending[i].used && parent->pending[i].used &&
             !same_pending(&parent->pending[i], &child->pending[i]))
@@ -145,7 +191,7 @@ mc_world_runtime_execution_result_forward(mc_world_runtime_execution_result *par
         (parent->root_pending && child->root_pending &&
          !same_attempt(&parent->root_attempt, &child->root_attempt)))
         return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
-    /* BOTH ledgers and active selectors are prevalidated before ANY copy. */
+    /* BOTH ledgers, actual Math proofs and selectors precede ANY mutation. */
     for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
         if (child->pending[i].used)
             parent->pending[i] = child->pending[i];
@@ -164,6 +210,12 @@ mc_world_runtime_execution_result_forward(mc_world_runtime_execution_result *par
     if (child->root_pending) {
         parent->root_pending = true;
         parent->root_attempt = child->root_attempt;
+    }
+    if (child->math_failed) {
+        parent->math_failed = true;
+        parent->math_owner = child->math_owner;
+        parent->math_status = child->math_status;
+        parent->math_failure = child->math_failure;
     }
     return MC_WORLD_STORAGE_OK;
 }

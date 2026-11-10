@@ -408,18 +408,60 @@ static bool world_access_cause(mc_world_runtime *world, mc_world_movement_error 
     return storage_failure(frame, cause);
 }
 
+static bool entity_sound_current(mc_entity_tick_execution *execution, mc_world_runtime *world,
+                                 const mc_entity_tick_execution_world_token *initial,
+                                 mc_world_access_failure_lease *lease,
+                                 mc_world_runtime_execution_result *native,
+                                 mc_entity_tick_execution_site receiver_site) {
+    if (native->ownership_status != MC_WORLD_STORAGE_OK)
+        return false;
+    mc_world_storage_status status = MC_WORLD_STORAGE_OK;
+    const char *operation = NULL;
+    mc_entity_tick_execution_world_token current;
+    if (initial == NULL) {
+        status = MC_WORLD_STORAGE_INVALID_ARGUMENT;
+        operation = "World Entity sound initial scope required";
+    } else if (!mc_entity_tick_execution_current_world(execution, &current)) {
+        status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        operation = "World Entity sound checked current scope";
+    } else if (current.owner != initial->owner || current.slot != initial->slot ||
+               current.generation != initial->generation) {
+        status = MC_WORLD_STORAGE_BUSY;
+        operation = "World Entity sound exact evaluated scope changed";
+    } else {
+        mc_world_access_failure_lease *actual = NULL;
+        status = mc_world_execution_child_lease(execution, world, &actual);
+        if (status != MC_WORLD_STORAGE_OK)
+            operation = "World Entity sound evaluated scope admission";
+        else if (actual != lease) {
+            status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+            operation = "World Entity sound exact producer lease changed";
+        }
+    }
+    mc_world_runtime_execution_result_note(native, status, operation, receiver_site);
+    return status == MC_WORLD_STORAGE_OK;
+}
+
 static bool entity_sound_held(mc_world_runtime *world, mc_entity *entity,
                               const mc_registry_string *name, float volume, float pitch,
                               mc_world_movement_error *frame, mc_entity_tick_execution *execution,
                               mc_world_access_failure_lease *lease,
                               mc_world_runtime_execution_result *native,
-                              mc_entity_tick_execution_site receiver_site) {
+                              mc_entity_tick_execution_site receiver_site,
+                              const mc_entity_tick_execution_world_token *initial) {
     for (size_t index = 0;; ++index) {
+        /* The captured token is a caller-local VALUE only. Check it and the
+         * same IDLE producer before every live List reload and later Entity
+         * argument read. A native-only stop changes no Source status/PC. */
+        if (execution != NULL &&
+            !entity_sound_current(execution, world, initial, lease, native, receiver_site))
+            return false;
         mc_world_access *world_access = NULL;
         bool present = false;
         mc_world_storage_error cause = {0};
-        if (!mc_world_access_next(world, index, 9, 23, 28, &world_access, &present,
-                                  &frame->world_access_bytecode, &cause))
+        if (!mc_world_access_next_detailed(world, index, 9, 23, 28, &world_access, &present,
+                                           &frame->world_access_bytecode, &cause,
+                                           &frame->world_access_fault))
             return world_access_cause(world, frame, frame->world_access_bytecode, cause);
         if (!present)
             return true; /* return64, before any Entity/FP access */
@@ -483,21 +525,27 @@ static bool entity_sound_held(mc_world_runtime *world, mc_entity *entity,
     }
 }
 
-static mc_world_storage_status entity_sound_run(mc_world_runtime *world, mc_entity *entity,
-                                                const mc_registry_string *name, float volume,
-                                                float pitch, mc_world_movement_error *error,
-                                                mc_entity_tick_execution *execution,
-                                                mc_world_access_failure_lease *lease,
-                                                mc_world_runtime_execution_result *native,
-                                                mc_entity_tick_execution_site receiver_site) {
+static mc_world_storage_status
+entity_sound_run(mc_world_runtime *world, mc_entity *entity, const mc_registry_string *name,
+                 float volume, float pitch, mc_world_movement_error *error,
+                 mc_entity_tick_execution *execution, mc_world_access_failure_lease *lease,
+                 mc_world_runtime_execution_result *native,
+                 mc_entity_tick_execution_site receiver_site,
+                 const mc_entity_tick_execution_world_token *initial) {
     mc_world_movement_error frame;
     mc_world_movement_error_init(&frame);
     if (!enter(world, true, &frame))
         return result(error, &frame);
     /* Already evaluated caller arguments are neither dereferenced nor changed.
      * The actual Entity-coordinate overload is not the coordinate-sound body. */
-    (void)entity_sound_held(world, entity, name, volume, pitch, &frame, execution, lease, native,
-                            receiver_site);
+    const bool completed = entity_sound_held(world, entity, name, volume, pitch, &frame, execution,
+                                             lease, native, receiver_site, initial);
+    if (!completed && frame.status == MC_WORLD_STORAGE_OK) {
+        /* Preserve raw OK plus the last actually reached Source PC on native
+         * refusal. Ordinary finish would erase that prefix as a success. */
+        mc_world_runtime_call_leave(world);
+        return result(error, &frame);
+    }
     return finish(world, &frame, error);
 }
 
@@ -505,7 +553,7 @@ mc_world_storage_status mc_world_runtime_entity_sound(mc_world_runtime *world, m
                                                       const mc_registry_string *name, float volume,
                                                       float pitch, mc_world_movement_error *error) {
     return entity_sound_run(world, entity, name, volume, pitch, error, NULL, NULL, NULL,
-                            (mc_entity_tick_execution_site){NULL, NULL, NULL, -1});
+                            (mc_entity_tick_execution_site){NULL, NULL, NULL, -1}, NULL);
 }
 
 static mc_world_storage_status entity_sound_owned_run(mc_entity_tick_execution *execution,
@@ -527,8 +575,38 @@ static mc_world_storage_status entity_sound_owned_run(mc_entity_tick_execution *
         }
         return status;
     }
-    return entity_sound_run(world, entity, name, volume, pitch, error, execution, lease, native,
-                            receiver_site);
+    /* Preserve the older admission above exactly. This values-only adapter
+     * introduces no scope/hold, and no pointer to this local token or result
+     * escapes through callbacks, diagnostics or future native cleanup. The
+     * detailed caller's initialized result is never reset here. */
+    mc_world_runtime_execution_result local_native;
+    if (native == NULL)
+        mc_world_runtime_execution_result_init(&local_native);
+    mc_world_runtime_execution_result *owned = native == NULL ? &local_native : native;
+    mc_entity_tick_execution_world_token initial;
+    if (!mc_entity_tick_execution_current_world(execution, &initial)) {
+        mc_world_runtime_execution_result_note(owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                               "World Entity sound checked current scope",
+                                               receiver_site);
+        if (error != NULL) {
+            mc_world_movement_error_init(error);
+            (void)fail(error, owned->ownership_status, owned->ownership_error.operation);
+        }
+        return owned->ownership_status;
+    }
+    const mc_world_storage_status raw =
+        entity_sound_run(world, entity, name, volume, pitch, error, execution, lease, owned,
+                         receiver_site, &initial);
+    if (native == NULL && raw == MC_WORLD_STORAGE_OK &&
+        owned->ownership_status != MC_WORLD_STORAGE_OK) {
+        /* The old bare entry has no native channel. Report only a native-only
+         * stop through its existing status/cause, retaining the reached PC and
+         * without manufacturing a Source Throwable or replacing Source error. */
+        if (error != NULL)
+            (void)fail(error, owned->ownership_status, owned->ownership_error.operation);
+        return owned->ownership_status;
+    }
+    return raw;
 }
 
 mc_world_storage_status mc_world_runtime_entity_sound_in_execution(

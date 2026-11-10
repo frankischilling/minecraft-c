@@ -86,7 +86,38 @@ typedef struct nf_fixture {
     mc_math_classes *math;
     mc_entity *arrow, *victim;
     bool owns_error;
+    mc_world_access *victim_access;
+    size_t victim_sounds, victim_impacts;
+    bool victim_sound_valid;
 } nf_fixture;
+
+static mc_world_storage_status nf_victim_sound(void *context, mc_world_runtime *world,
+                                               const mc_registry_string *name, double x, double y,
+                                               double z, float volume, float pitch,
+                                               mc_world_storage_error *error) {
+    nf_fixture *s = context;
+    const bool impact = s->victim_sounds != 0;
+    const char *expected = impact ? "random.drr" : "mob.pig";
+    mc_registry_string_view text = {0};
+    mc_arrow_tick_state state = {0};
+    s->victim_sound_valid &=
+        world == s->world->worlds[0] && s->victim_sounds < 2 && volume == 1.f && pitch > 0.f &&
+        mc_registry_string_read(name, &text) && text.length == strlen(expected) &&
+        mc_entity_living_fields(s->victim)->Y == 6 && !s->arrow->base.be &&
+        s->arrow->arrow->tick_call != NULL &&
+        mc_arrow_tick_inspect(s->arrow->arrow->tick_call, &state) && state.active &&
+        state.hurt_invoked && state.hurt_returned == impact && state.hurt_continued == impact &&
+        (impact ? state.hurt_result && state.hurt_bytes == 0 : state.hurt_bytes != 0);
+    for (size_t i = 0; s->victim_sound_valid && i < text.length; ++i)
+        s->victim_sound_valid &= text.units[i] == (uint16_t)expected[i];
+    const mc_entity *p = impact ? s->arrow : s->victim;
+    s->victim_sound_valid &=
+        x == p->base.x && y == p->base.y - (double)p->base.offset && z == p->base.z;
+    ++s->victim_sounds;
+    s->victim_impacts += impact;
+    *error = (mc_world_storage_error){0};
+    return MC_WORLD_STORAGE_OK;
+}
 
 /* Includable by a separate genuine SDK-cleanup control. A supplied error is
  * the actual caller output from the first call, never a copied owning record. */
@@ -220,9 +251,11 @@ static bool nf_victim(nf_fixture *s) {
           mc_world_runtime_insert_entity(s->world->worlds[0], s->victim, &inserted, NULL) ==
               MC_WORLD_STORAGE_OK &&
           inserted);
-    unsigned char living[sizeof(mc_living_entity_fields)];
-    memcpy(living, mc_entity_living_fields(s->victim), sizeof(living));
-    const mc_java_random random = *s->victim->random;
+    CHECK(mc_entity_living_fields(s->victim)->Y == 10);
+    mc_java_random expected_victim = *s->victim->random, expected_arrow = *s->arrow->random;
+    (void)mc_java_random_next_float(&expected_victim);
+    (void)mc_java_random_next_float(&expected_victim);
+    (void)mc_java_random_next_float(&expected_arrow);
     const size_t ah = s->arrow->holds, vh = s->victim->holds;
     const size_t bindings = s->world->worlds[0]->persistent_bindings;
     const size_t code = s->world->classes[0]->native_borrows;
@@ -231,27 +264,36 @@ static bool nf_victim(nf_fixture *s) {
     const size_t local_leases = world->local_leases;
     CHECK(mc_world_nearby_owned_valid(world) && source_r != NULL &&
           source_r == world->nearby_entities.list);
+    s->victim_sound_valid = true;
+    const mc_world_access_callbacks callbacks = {.sound = nf_victim_sound};
+    CHECK(mc_world_access_create(&callbacks, s, &s->victim_access, NULL) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_add_world_access(world, s->victim_access, NULL) == MC_WORLD_STORAGE_OK);
     size_t occurrences_before = 0;
     for (size_t i = 0; i < world->nearby_entities.count; ++i)
         if (world->nearby_entities.entries[i] == s->victim)
             ++occurrences_before;
     ++nf_calls;
     CHECK(mc_world_runtime_tick_entity(s->world->worlds[0], s->arrow, &tick_context, NULL,
-                                       tick_error) != MC_WORLD_STORAGE_OK &&
-          tick_error->child == MC_WORLD_ENTITY_TICK_CHILD_ARROW &&
-          tick_error->child_error.arrow.call != NULL &&
-          s->arrow->arrow->tick_call == tick_error->child_error.arrow.call);
-    mc_arrow_tick_state state;
-    CHECK(mc_arrow_tick_inspect(tick_error->child_error.arrow.call, &state) &&
-          !state.source_returned && state.source_pc == 741 && !state.hurt_invoked &&
-          !state.hurt_returned && !state.hurt_cleanup_acquired && state.hurt_target == s->victim &&
-          state.hurt_source == NULL && state.failure != NULL && state.failure->native_policy &&
-          state.failure->operation != NULL &&
-          strcmp(state.failure->operation,
-                 "Arrow actual victim damage dependency; callee not entered") == 0 &&
-          memcmp(living, mc_entity_living_fields(s->victim), sizeof(living)) == 0 &&
-          s->victim->random->state == random.state &&
-          s->world->classes[0]->native_borrows == code + 1);
+                                       tick_error) == MC_WORLD_STORAGE_OK &&
+          tick_error->child == MC_WORLD_ENTITY_TICK_CHILD_NONE &&
+          s->arrow->arrow->tick_call == NULL);
+    const mc_living_entity_fields *living = mc_entity_living_fields(s->victim);
+    CHECK(living->Y == 6 && living->Z == 10 && living->au == 4 && living->aa == 10 &&
+          living->ab == 10 && living->al == 1.5f && !living->ah &&
+          s->victim->base.by == living->E && s->victim_sound_valid && s->victim_sounds == 2 &&
+          s->victim_impacts == 1 && s->arrow->base.be && !s->arrow->arrow->fields.i &&
+          s->arrow->base.bt == 1 && s->arrow->arrow->fields.k == 1 &&
+          ad_bits(s->arrow->base.x) == UINT64_C(0x4022333334000000) &&
+          ad_bits(s->arrow->base.velocity_x) == UINT64_C(0x3fe3020c5978d500) &&
+          ad_bits(s->arrow->base.velocity_y) == UINT64_C(0xbf9eb851e0000000) &&
+          s->victim->random->state == expected_victim.state &&
+          s->victim->random->have_next_next_gaussian == expected_victim.have_next_next_gaussian &&
+          ad_bits(s->victim->random->next_next_gaussian) ==
+              ad_bits(expected_victim.next_next_gaussian) &&
+          s->arrow->random->state == expected_arrow.state &&
+          s->arrow->random->have_next_next_gaussian == expected_arrow.have_next_next_gaussian &&
+          ad_bits(s->arrow->random->next_next_gaussian) ==
+              ad_bits(expected_arrow.next_next_gaussian));
     CHECK(mc_world_entity_tick_error_retire(tick_error));
     CHECK(mc_world_nearby_owned_valid(world) && world->fields.R == source_r &&
           world->nearby_entities.list == source_r);
@@ -269,8 +311,7 @@ static bool nf_victim(nf_fixture *s) {
           s->victim->holds >= vh - occurrences_before &&
           s->victim->holds - (vh - occurrences_before) == occurrences_after &&
           s->world->worlds[0]->persistent_bindings == bindings &&
-          s->world->classes[0]->native_borrows == code &&
-          memcmp(living, mc_entity_living_fields(s->victim), sizeof(living)) == 0);
+          s->world->classes[0]->native_borrows == code && living->Y == 6);
     ok = true;
 cleanup:
     return ok;
@@ -279,6 +320,14 @@ cleanup:
 static bool nf_cleanup(nf_fixture *s) {
     if (tick_error != NULL && !mc_world_entity_tick_error_retire(tick_error))
         return false;
+    if (s->victim_access != NULL) {
+        bool removed = false;
+        if (mc_world_runtime_remove_world_access(s->world->worlds[0], s->victim_access, &removed,
+                                                 NULL) != MC_WORLD_STORAGE_OK ||
+            !removed || mc_world_access_free(s->victim_access, NULL) != MC_WORLD_STORAGE_OK)
+            return false;
+        s->victim_access = NULL;
+    }
     mc_entity_release(s->arrow);
     s->arrow = NULL;
     mc_entity_release(s->victim);

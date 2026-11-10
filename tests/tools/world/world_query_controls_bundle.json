@@ -231,8 +231,8 @@
       "sha256": "27c630007d453a0c1bdb3e81f3630bf1137dcd49b933066fdc114a2e02bcdaa9"
     },
     "src/world/runtime/entity_publication.c": {
-      "bytes": 55691,
-      "sha256": "80d5feb0cdc06668ea97fe58dbde708a5525a506c9ed766802e9d9ca5e432c13"
+      "bytes": 56160,
+      "sha256": "c99cc55bf66073d9011b16232a7424ffd96c8143fb7d1c5a677cbb43e084e1f5"
     },
     "src/world/runtime/entity_publication_detailed_execution_internal.h": {
       "bytes": 1167,
@@ -251,12 +251,12 @@
       "sha256": "4e43b01f389d611486563938963f4b609f16ca1fbed6015c9a1c7e8da4eb0539"
     },
     "src/world/runtime/runtime_execution.c": {
-      "bytes": 17733,
-      "sha256": "1beb31d4f21902c8bd6a0eccbaf982629fe4d171d06ed133eff7b58dbcc535fa"
+      "bytes": 20205,
+      "sha256": "39ebbb88f6bd90dbc3662fdaa2fda9978759cf02fc06b0543bd8a6c7472c9e7f"
     },
     "src/world/runtime/runtime_execution_internal.h": {
-      "bytes": 10285,
-      "sha256": "3e0e5e44bb29a55373c0ed071d6425525a3421bd9affd0c429c05caa8f685084"
+      "bytes": 11563,
+      "sha256": "7ad9fb3f900dc93e9f0be3bddb07cf8a0dbe8d034370f9ce6d7edd7ff4860fc3"
     },
     "src/world/runtime/tile_entities/execution_internal.h": {
       "bytes": 4017,
@@ -435,8 +435,8 @@
       "sha256": "2580d9bb2cae09d9f4e85aa44a55eb06d0ab88b0280a1802df26bd465637f14c"
     },
     "src/entity/mob/damage.c": {
-      "bytes": 43493,
-      "sha256": "77a3a6da09f6e42ce475486b45bc378c4c4a21ca26a538b32317cc0b11a09c33"
+      "bytes": 50991,
+      "sha256": "c3a0faac915e3df191894b57006f09b551df5277033093622d112a2606f90d2e"
     },
     "src/entity/mob/damage_execution_internal.h": {
       "bytes": 6121,
@@ -467,8 +467,8 @@
       "sha256": "239ea3db2b581b6fbb63d1ba27c7f2c30c025457f300fb469b3e6044196329dc"
     },
     "src/world/runtime/collision/class_entities.c": {
-      "bytes": 25924,
-      "sha256": "ccfcae6c3116da0544c2a2f32d35e9803c3eef5d8b75848e947dc664429ec323"
+      "bytes": 26478,
+      "sha256": "255dd0b05f85742528504cd7f2775926e6500d16b1ac64592001aa8e2d195705"
     },
     "src/world/runtime/collision/class_entities_execution_internal.h": {
       "bytes": 1750,
@@ -483,12 +483,12 @@
       "sha256": "1015bc8d556470005c26ee710a7c02bc1f191b81a6f8719ed8eab465b2bf23f5"
     },
     "src/world/runtime/movement.c": {
-      "bytes": 25505,
-      "sha256": "78f3c32efeb46dfe1ef637d7356187477aa6c88261b6a34f72440dc88639500f"
+      "bytes": 29751,
+      "sha256": "8a9b441be8788d514cfe896c49a024ab7380b9f85aaaf418d0ba1762f43c05f3"
     },
     "src/world/runtime/presentation.c": {
-      "bytes": 12318,
-      "sha256": "220f0209da9593a15cbb4b8cd200e7872d36ed49f406d3111f36b42a9ac85499"
+      "bytes": 22937,
+      "sha256": "213129f7a912d449632d2e2e319a892c6b2980efbcd4bc6602ce3272f1277e2b"
     },
     "src/world/runtime/raytrace.c": {
       "bytes": 38793,
@@ -517,6 +517,22 @@
     "tests/world/runtime/world_access/test_presentation_capture_execution.c": {
       "bytes": 14954,
       "sha256": "ca8ccf2c7e4dce77600b314797fa8c2dfcb3cc22e6590d3eaa1e5ac943d2d499"
+    },
+    "include/mc/world/runtime/movement.h": {
+      "bytes": 5465,
+      "sha256": "16b31d42c9899f07f81691d90d3ddc28750ee057ed6adbb7d75f4b7851e1fcfd"
+    },
+    "include/mc/world/runtime/world_access_error.h": {
+      "bytes": 2776,
+      "sha256": "09a4829a8f9f56c1d68ab26355d844b8377fd1c3aac5ea8e9028cbbd3a167bfe"
+    },
+    "src/core/math/execution_internal.h": {
+      "bytes": 7418,
+      "sha256": "ff3cf04e9bcfb028e2e372fc328da5a1277f30e7edb4b1346925312fb1970abb"
+    },
+    "src/world/runtime/presentation_execution_internal.h": {
+      "bytes": 4096,
+      "sha256": "33470313a5e2f6741eddd064be8f2d994ae1d0b07b8c9b0e4188fbed669c26e5"
     }
   },
   "helpers": {
@@ -1414,5 +1430,64 @@
     },
     "selected_sdk_helper_role": "The literal-only query-controller derivative is pinned in the SDK bundle helpers map. Its old pin is preserved here; the new pin is outside this query bundle to avoid a circular self-binding.",
     "qualification": "Source identity only. No compilation, Native execution, prior runtime result, full victim741, original audiovisual or FPS qualification is inherited. Existing results retain their earlier supplier scopes."
+  },
+  "prospective_source_successor": {
+    "schema": "CURRENT_SOURCE_ADMISSION_SUCCESSOR_V1",
+    "from_commit": "07f946d6e1630a1b9b99b3cb2319e2b9d7819fd9",
+    "previous_metadata": {
+      "bytes": 53288,
+      "sha256": "d9a15ce1ab67d65fe3876c9d87c7664ff809611d3b8859df000328e3e3755e06"
+    },
+    "role": "Current source admissions for execution-owned Player drops/death, coordinate sound and particle loops, actual Entity-sound continuation and typed NULL-List faults, exact failed-Math return proofs, the genuine Ladder neighbor body, and actual Arrow victim hurt entry with bounded native cleanup controls. Historical authority, supplier, source_projection, native_validation and capture records retain their exact prior identities. Current declarations do not qualify older compiled products or observations; fresh frozen build/execution evidence is separate. Full notifying mutation, sleeping Player wake, arbitrary cold/provider hooks and unrestricted play remain open.",
+    "groups": {
+      "sources": {
+        "previous": {
+          "src/world/runtime/entity_publication.c": {
+            "bytes": 55691,
+            "sha256": "80d5feb0cdc06668ea97fe58dbde708a5525a506c9ed766802e9d9ca5e432c13"
+          },
+          "src/world/runtime/runtime_execution.c": {
+            "bytes": 17733,
+            "sha256": "1beb31d4f21902c8bd6a0eccbaf982629fe4d171d06ed133eff7b58dbcc535fa"
+          },
+          "src/world/runtime/runtime_execution_internal.h": {
+            "bytes": 10285,
+            "sha256": "3e0e5e44bb29a55373c0ed071d6425525a3421bd9affd0c429c05caa8f685084"
+          },
+          "src/entity/mob/damage.c": {
+            "bytes": 43493,
+            "sha256": "77a3a6da09f6e42ce475486b45bc378c4c4a21ca26a538b32317cc0b11a09c33"
+          },
+          "src/world/runtime/collision/class_entities.c": {
+            "bytes": 25924,
+            "sha256": "ccfcae6c3116da0544c2a2f32d35e9803c3eef5d8b75848e947dc664429ec323"
+          },
+          "src/world/runtime/movement.c": {
+            "bytes": 25505,
+            "sha256": "78f3c32efeb46dfe1ef637d7356187477aa6c88261b6a34f72440dc88639500f"
+          },
+          "src/world/runtime/presentation.c": {
+            "bytes": 12318,
+            "sha256": "220f0209da9593a15cbb4b8cd200e7872d36ed49f406d3111f36b42a9ac85499"
+          }
+        },
+        "added": [
+          "include/mc/world/runtime/movement.h",
+          "include/mc/world/runtime/world_access_error.h",
+          "src/core/math/execution_internal.h",
+          "src/world/runtime/presentation_execution_internal.h"
+        ],
+        "current_count": 82
+      },
+      "helpers": {
+        "previous": {},
+        "added": [],
+        "current_count": 13
+      }
+    },
+    "current_semantics": {
+      "scope": "Current selected sources share exact typed Native/Math results and Source diagnostics. Existing finite fixture modes and historical dependency/supplier protocols remain unchanged.",
+      "qualification": "Source admission only. Historical captures, dependencies and native/original validation keep their original scope; no retrospective or inherited execution qualification."
+    }
   }
 }

@@ -1,15 +1,19 @@
 #include "../../world/runtime/execution_children_internal.h"
 #include "damage_execution_internal.h"
 #include "damage_internal.h"
+#include "death_execution_internal.h"
 #include "death_internal.h"
 
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../living/fields_internal.h"
+#include "../movement/damage_execution_internal.h"
 #include "../movement/effects_internal.h"
 #include "../player/damage_internal.h"
+#include "../player/death_execution_internal.h"
 #include "../player/death_internal.h"
+#include "../player/player_internal.h"
 #include "../player/tick_math_internal.h"
 #include "internal.h"
 #include "mc/core/java/java.h"
@@ -495,12 +499,20 @@ static bool knockback(mc_entity *p, mc_math_classes *math, double dx, double dz,
     const double squared = at_add(at_mul(dx, dx), at_mul(dz, dz));
     knockback_at(e, 9);
     if (owned != NULL) {
-        const mc_math_class_status status = mc_math_execution_require(
+        mc_math_execution_failure failure;
+        const mc_math_class_status status = mc_math_execution_require_recorded(
             owned->execution->math, (mc_math_execution_site){"ls", "a", "(Lsn;IDD)V", 9}, "a",
-            "(D)F");
+            "(D)F", &failure);
         e->math = *mc_math_execution_cause(owned->execution->math);
-        if (status != MC_MATH_CLASS_OK)
+        if (status != MC_MATH_CLASS_OK) {
+            const mc_world_storage_status noted = mc_world_runtime_execution_result_note_math(
+                owned->owned, owned->execution->math, status, &failure);
+            if (noted != MC_WORLD_STORAGE_OK)
+                mc_world_runtime_execution_result_note(
+                    owned->owned, noted, "Living knockback exact Math receipt note",
+                    (mc_entity_tick_execution_site){"ls", "a", "(Lsn;IDD)V", 9});
             return false; /* Real Math cause, independent of e->status/result. */
+        }
     } else {
         if (math == NULL) {
             e->math =
@@ -563,8 +575,35 @@ bool mc_living_damage_knockback_in_execution(mc_entity *p, double dx, double dz,
     return state->completed;
 }
 
+static bool damage_sound(mc_entity *p, mc_registry_classes *registry, bool fatal,
+                         mc_entity_effect_error *e, mc_entity_damage_execution *owned) {
+    if (owned == NULL)
+        return sound(p, registry, fatal, e, NULL);
+    mc_entity_damage_execution_select(owned, MC_ENTITY_DAMAGE_CHILD_SOUND);
+    mc_living_damage_execution_init(&owned->sound, owned->execution, owned->code_classes,
+                                    &owned->sound_result);
+    const bool returned = mc_living_damage_sound_in_execution(p, registry, fatal, &owned->sound, e);
+    mc_entity_damage_execution_returned(owned);
+    mc_entity_damage_execution_note(owned, &owned->sound_result);
+    return returned;
+}
+
+static bool damage_knockback(mc_entity *p, mc_math_classes *math, double dx, double dz,
+                             mc_entity_effect_error *e, mc_entity_damage_execution *owned) {
+    if (owned == NULL)
+        return knockback(p, math, dx, dz, e, NULL);
+    mc_entity_damage_execution_select(owned, MC_ENTITY_DAMAGE_CHILD_KNOCKBACK);
+    mc_living_damage_execution_init(&owned->knockback, owned->execution, owned->code_classes,
+                                    &owned->knockback_result);
+    const bool returned = mc_living_damage_knockback_in_execution(p, dx, dz, &owned->knockback, e);
+    mc_entity_damage_execution_returned(owned);
+    mc_entity_damage_execution_note(owned, &owned->knockback_result);
+    return returned;
+}
+
 static bool source_direction(mc_entity *p, mc_math_classes *math, mc_entity *source,
-                             bool *source_held, mc_entity_effect_error *e) {
+                             bool *source_held, mc_entity_effect_error *e,
+                             mc_entity_damage_execution *owned) {
     mc_entity_living_damage_state *r = &e->living_damage;
     r->direction_entered = true;
     living_at(e, 144);
@@ -638,7 +677,7 @@ static bool source_direction(mc_entity *p, mc_math_classes *math, mc_entity *sou
     const float narrowed = at_narrow(degrees);
     mc_entity_living_fields(p)->ac = at_fsub(narrowed, p->base.yaw);
     living_at(e, 244);
-    if (!knockback(p, math, dx, dz, e, NULL))
+    if (!damage_knockback(p, math, dx, dz, e, owned))
         return false;
     r->direction_returned = true;
     return true;
@@ -662,7 +701,7 @@ static bool health_damage(mc_entity *p, mc_registry_classes *registry, int32_t a
 
 static bool living_body(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
                         mc_entity *source, int32_t amount, bool *out, bool *source_held,
-                        mc_entity_effect_error *e) {
+                        mc_entity_effect_error *e, mc_entity_damage_execution *owned) {
     mc_living_entity_fields *v = mc_entity_living_fields(p);
     living_at(e, 4);
     child_at(e, "ls", "a", "(Lsn;I)Z", 4);
@@ -726,7 +765,7 @@ static bool living_body(mc_entity *p, mc_registry_classes *registry, mc_math_cla
         mc_entity_effect_attacked_entered(p);
         e->living_damage.attacked_returned = true;
         if (source != NULL) {
-            if (!source_direction(p, math, source, source_held, e))
+            if (!source_direction(p, math, source, source_held, e, owned))
                 return false;
         } else {
             double shared;
@@ -739,18 +778,56 @@ static bool living_body(mc_entity *p, mc_registry_classes *registry, mc_math_cla
         }
     }
     if (v->Y <= 0) {
-        if (full_hit && !sound(p, registry, true, e, NULL))
+        if (full_hit && !damage_sound(p, registry, true, e, owned))
             return false;
         living_at(e, 316);
         child_at(e, "ls", "b", "(Lsn;)V", 0);
         e->living_damage.death_invoke_reached = true;
         if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
             child_at(e, "gs", "b", "(Lsn;)V", 2);
-            if (!mc_player_death_entered(p, registry, math, source, e))
+            bool returned;
+            if (owned == NULL)
+                returned = mc_player_death_entered(p, registry, math, source, e);
+            else {
+                mc_entity_damage_execution_select(owned, MC_ENTITY_DAMAGE_CHILD_PLAYER_DEATH);
+                const void *prior = p->local_player->pending_death;
+                returned = mc_player_death_entered_in_execution(
+                    owned->execution, owned->code_classes, owned->code, p, registry, source,
+                    &owned->child_status, e, &owned->death_result);
+                mc_entity_damage_execution_returned(owned);
+                mc_entity_damage_execution_note(owned, &owned->death_result);
+                if (prior == NULL && p->local_player->pending_death != NULL) {
+                    owned->death_work = p->local_player->pending_death;
+                    owned->work_kind = MC_ENTITY_DAMAGE_WORK_PLAYER_DEATH;
+                    owned->acquired_work = owned->death_work;
+                }
+            }
+            if (!returned)
                 return false;
-        } else if (!mc_mob_death_entered(p, registry, source, e))
-            return false;
-    } else if (full_hit && !sound(p, registry, false, e, NULL))
+        } else {
+            bool returned;
+            if (owned == NULL)
+                returned = mc_mob_death_entered(p, registry, source, e);
+            else {
+                mc_entity_damage_execution_select(owned, MC_ENTITY_DAMAGE_CHILD_MOB_DEATH);
+                const void *prior = p->mob->pending_death;
+                returned = mc_mob_death_entered_in_execution(
+                    owned->execution, owned->code_classes, owned->code, p, registry, source,
+                    &owned->child_status, e, &owned->death_result);
+                mc_entity_damage_execution_returned(owned);
+                mc_entity_damage_execution_note(owned, &owned->death_result);
+                if (prior == NULL && p->mob->pending_death != NULL) {
+                    owned->death_work = p->mob->pending_death;
+                    if (owned->work_kind == MC_ENTITY_DAMAGE_WORK_NONE) {
+                        owned->work_kind = MC_ENTITY_DAMAGE_WORK_MOB_DEATH;
+                        owned->acquired_work = owned->death_work;
+                    }
+                }
+            }
+            if (!returned)
+                return false;
+        }
+    } else if (full_hit && !damage_sound(p, registry, false, e, owned))
         return false;
     living_at(e, 363);
     *out = true;
@@ -758,9 +835,11 @@ static bool living_body(mc_entity *p, mc_registry_classes *registry, mc_math_cla
 }
 
 static bool living(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
-                   mc_entity *source, int32_t amount, bool *out, mc_entity_effect_error *e) {
+                   mc_entity *source, int32_t amount, bool *out, mc_entity_effect_error *e,
+                   mc_entity_damage_execution *owned) {
     bool source_held = false;
-    const bool returned = living_body(p, registry, math, source, amount, out, &source_held, e);
+    const bool returned =
+        living_body(p, registry, math, source, amount, out, &source_held, e, owned);
     if (source_held) {
         mc_entity_release(source);
         e->living_damage.source_hold_released = true;
@@ -768,9 +847,10 @@ static bool living(mc_entity *p, mc_registry_classes *registry, mc_math_classes 
     return returned;
 }
 
-bool mc_mob_damage_living_parent_entered(mc_entity *p, mc_registry_classes *registry,
-                                         mc_math_classes *math, mc_entity *source, int32_t amount,
-                                         bool *out, mc_entity_effect_error *e) {
+static bool living_parent_entered(mc_entity *p, mc_registry_classes *registry,
+                                  mc_math_classes *math, mc_entity *source, int32_t amount,
+                                  bool *out, mc_entity_effect_error *e,
+                                  mc_entity_damage_execution *owned) {
     if (e == NULL)
         return false;
     if (p == NULL || !mc_entity_has_mob(p) || p->phase != MC_ENTITY_READY ||
@@ -778,14 +858,15 @@ bool mc_mob_damage_living_parent_entered(mc_entity *p, mc_registry_classes *regi
         return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_OWNER,
                            "Living parent entered canonical client owner");
     e->living_damage.entered = true;
-    const bool returned = living(p, registry, math, source, amount, out, e);
+    const bool returned = living(p, registry, math, source, amount, out, e, owned);
     e->living_damage.living_returned = returned;
     return returned;
 }
 
-bool mc_player_living_damage_entered(mc_entity *p, mc_registry_classes *registry,
-                                     mc_math_classes *math, mc_entity *source, int32_t amount,
-                                     bool *out, mc_entity_effect_error *e) {
+static bool player_living_entered(mc_entity *p, mc_registry_classes *registry,
+                                  mc_math_classes *math, mc_entity *source, int32_t amount,
+                                  bool *out, mc_entity_effect_error *e,
+                                  mc_entity_damage_execution *owned) {
     if (e == NULL)
         return false;
     if (p == NULL || !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) ||
@@ -800,7 +881,7 @@ bool mc_player_living_damage_entered(mc_entity *p, mc_registry_classes *registry
     e->living_damage.entered = true;
     e->living_damage.wrapper_pc = 158;
     bool answer = false;
-    if (!living(p, registry, math, source, amount, &answer, e))
+    if (!living(p, registry, math, source, amount, &answer, e, owned))
         return false;
     e->living_damage.living_returned = true;
     e->source_bytecode = e->player_bytecode = e->living_damage.wrapper_pc = 161;
@@ -812,9 +893,9 @@ bool mc_player_living_damage_entered(mc_entity *p, mc_registry_classes *registry
     return true;
 }
 
-bool mc_mob_monster_damage_entered(mc_entity *p, mc_registry_classes *registry,
-                                   mc_math_classes *math, mc_entity *source, int32_t amount,
-                                   bool *out, mc_entity_effect_error *e) {
+static bool monster_entered(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
+                            mc_entity *source, int32_t amount, bool *out, mc_entity_effect_error *e,
+                            mc_entity_damage_execution *owned) {
     /* This check is native structural admission, never a Source preflight of
      * future World/Random/target/health operands. The facade owns a live hold. */
     if (e == NULL)
@@ -836,7 +917,7 @@ bool mc_mob_monster_damage_entered(mc_entity *p, mc_registry_classes *registry,
     bool answer = false;
     /* The symbolic II.a invokespecial resolves inherited LS directly: there
      * is no II declaration, entered body or intermediate return to credit. */
-    if (!living(p, registry, math, source, amount, &answer, e))
+    if (!living(p, registry, math, source, amount, &answer, e, owned))
         return false;
     e->living_damage.living_returned = true;
     uint16_t pc = 40;
@@ -868,9 +949,9 @@ bool mc_mob_monster_damage_entered(mc_entity *p, mc_registry_classes *registry,
     return true;
 }
 
-bool mc_mob_living_damage_entered(mc_entity *p, mc_registry_classes *registry,
-                                  mc_math_classes *math, mc_entity *source, int32_t amount,
-                                  bool *out, mc_entity_effect_error *e) {
+static bool mob_living_entered(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
+                               mc_entity *source, int32_t amount, bool *out,
+                               mc_entity_effect_error *e, mc_entity_damage_execution *owned) {
     if (e == NULL)
         return false;
     if (p == NULL || !mc_entity_has_mob(p) || p->classes->source != MC_ENTITY_CLIENT ||
@@ -893,7 +974,7 @@ bool mc_mob_living_damage_entered(mc_entity *p, mc_registry_classes *registry,
     e->living_damage.entered = true;
     e->living_damage.wrapper_pc = sheep ? 3 : 0;
     bool answer = false;
-    if (!living(p, registry, math, source, amount, &answer, e)) {
+    if (!living(p, registry, math, source, amount, &answer, e, owned)) {
         if (!sheep)
             e->source_bytecode = e->living_bytecode;
         return false;
@@ -911,4 +992,57 @@ bool mc_mob_living_damage_entered(mc_entity *p, mc_registry_classes *registry,
     e->living_damage.result = answer;
     *out = answer;
     return true;
+}
+
+bool mc_mob_damage_living_parent_entered(mc_entity *p, mc_registry_classes *registry,
+                                         mc_math_classes *math, mc_entity *source, int32_t amount,
+                                         bool *out, mc_entity_effect_error *e) {
+    return living_parent_entered(p, registry, math, source, amount, out, e, NULL);
+}
+
+bool mc_player_living_damage_entered(mc_entity *p, mc_registry_classes *registry,
+                                     mc_math_classes *math, mc_entity *source, int32_t amount,
+                                     bool *out, mc_entity_effect_error *e) {
+    return player_living_entered(p, registry, math, source, amount, out, e, NULL);
+}
+
+bool mc_mob_monster_damage_entered(mc_entity *p, mc_registry_classes *registry,
+                                   mc_math_classes *math, mc_entity *source, int32_t amount,
+                                   bool *out, mc_entity_effect_error *e) {
+    return monster_entered(p, registry, math, source, amount, out, e, NULL);
+}
+
+bool mc_mob_living_damage_entered(mc_entity *p, mc_registry_classes *registry,
+                                  mc_math_classes *math, mc_entity *source, int32_t amount,
+                                  bool *out, mc_entity_effect_error *e) {
+    return mob_living_entered(p, registry, math, source, amount, out, e, NULL);
+}
+
+bool mc_mob_damage_living_parent_entered_in_execution(mc_entity *p, mc_entity *source,
+                                                      int32_t amount, bool *out,
+                                                      mc_entity_effect_error *e,
+                                                      mc_entity_damage_execution *owned) {
+    return owned != NULL &&
+           living_parent_entered(p, owned->registry, NULL, source, amount, out, e, owned);
+}
+
+bool mc_player_living_damage_entered_in_execution(mc_entity *p, mc_entity *source, int32_t amount,
+                                                  bool *out, mc_entity_effect_error *e,
+                                                  mc_entity_damage_execution *owned) {
+    return owned != NULL &&
+           player_living_entered(p, owned->registry, NULL, source, amount, out, e, owned);
+}
+
+bool mc_mob_monster_damage_entered_in_execution(mc_entity *p, mc_entity *source, int32_t amount,
+                                                bool *out, mc_entity_effect_error *e,
+                                                mc_entity_damage_execution *owned) {
+    return owned != NULL &&
+           monster_entered(p, owned->registry, NULL, source, amount, out, e, owned);
+}
+
+bool mc_mob_living_damage_entered_in_execution(mc_entity *p, mc_entity *source, int32_t amount,
+                                               bool *out, mc_entity_effect_error *e,
+                                               mc_entity_damage_execution *owned) {
+    return owned != NULL &&
+           mob_living_entered(p, owned->registry, NULL, source, amount, out, e, owned);
 }

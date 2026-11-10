@@ -4,8 +4,8 @@
   "required_parent": "05a1335fe4992e203398388234f672d3a5f439a4d37751303ae681011b31ccad",
   "sources": {
     "include/mc/entity/arrow/tick.h": {
-      "bytes": 9555,
-      "sha256": "f85088f318142c78dd87792dc8b291631734e5791cc896ec541551339b3c3b37"
+      "bytes": 10264,
+      "sha256": "b8e36bd83ca8869a407abcd283d05fd300a80664bee7ed2c9acbce9f697b3a40"
     },
     "include/mc/world/runtime/entity_tick.h": {
       "bytes": 8014,
@@ -20,24 +20,24 @@
       "sha256": "ba74e695188cdf04de5cf52e12f59e82cc6439c6d9153c95580443eb52b1e9e2"
     },
     "src/entity/arrow/tick.c": {
-      "bytes": 25119,
-      "sha256": "36a375ebccf7ca444df43c22263c178eb4cc4199127a892f507c7148d7e74c9b"
+      "bytes": 36364,
+      "sha256": "cb503a7c838b0febd59d2e6ad0b2fd4b8daa2e098fb7e0a492ed9bdaded666a8"
     },
     "src/entity/arrow/tick_body.c": {
       "bytes": 29442,
       "sha256": "f1827a6f4becd64bf634363c7fd4442c1a77bf5b71a7e66731a277136c6f92ee"
     },
     "src/entity/arrow/tick_children.c": {
-      "bytes": 46309,
-      "sha256": "c718b2a31e90693982199c7e98f077126839a457b85fb977204c76661265f12e"
+      "bytes": 53285,
+      "sha256": "137ef45ce8e853e8959e65712fd122a3dfa2f192ff52772aca5ac3c924b1823b"
     },
     "src/entity/arrow/tick_execution_dependencies.h": {
       "bytes": 1712,
       "sha256": "f6e35a1aeea69e34c968de68f3dae97224a0a06f1eb49825b70e3e6b90ddacf3"
     },
     "src/entity/arrow/tick_internal.h": {
-      "bytes": 7940,
-      "sha256": "fbb1fcdca32b7546adf70a1139be91a77188e2e0db6d938f43eb4cf164ba36e3"
+      "bytes": 8740,
+      "sha256": "ecc11ed7cecd1a973fe31d62b3b4abd13c37b2b8a617840213024d33e0373101"
     },
     "src/world/runtime/entity_tick.c": {
       "bytes": 12480,
@@ -52,8 +52,175 @@
       "sha256": "9856c9a3c53686219f7b26b90471caab72d382ff28c50441a1ae16e82d689892"
     },
     "tests/world/runtime/test_arrow_natural_flight.c": {
-      "bytes": 16439,
-      "sha256": "98b70cd9dc84c51558e1fc3e937abd0a4fc471440e355cac2e022086e555491d"
+      "bytes": 19352,
+      "sha256": "ef30933831986c962b9f27512a66462a41ee65d01b15220fc83b3ce57f282e47"
+    },
+    "include/mc/world/runtime/movement.h": {
+      "bytes": 5465,
+      "sha256": "16b31d42c9899f07f81691d90d3ddc28750ee057ed6adbb7d75f4b7851e1fcfd"
+    },
+    "include/mc/world/runtime/world_access_error.h": {
+      "bytes": 2776,
+      "sha256": "09a4829a8f9f56c1d68ab26355d844b8377fd1c3aac5ea8e9028cbbd3a167bfe"
+    },
+    "src/core/math/execution_internal.h": {
+      "bytes": 7418,
+      "sha256": "ff3cf04e9bcfb028e2e372fc328da5a1277f30e7edb4b1346925312fb1970abb"
+    },
+    "src/entity/mob/damage.c": {
+      "bytes": 50991,
+      "sha256": "c3a0faac915e3df191894b57006f09b551df5277033093622d112a2606f90d2e"
+    },
+    "src/entity/mob/damage_execution_internal.h": {
+      "bytes": 6121,
+      "sha256": "73d0b58e7d6fdde6d63580c61fbeb84b20157aeaca5dad8fcd4be879ce3b38e4"
+    },
+    "src/entity/mob/damage_internal.h": {
+      "bytes": 3564,
+      "sha256": "e85d4c867790c488b2d36d053693d4536706f8945a79d48bdc7cf62d219c6a85"
+    },
+    "src/entity/mob/wolf_damage.c": {
+      "bytes": 42666,
+      "sha256": "c65e6384d021ec696ee4a6daca30012c6bf81c748d350ca99f6fe7d257f6cd30"
+    },
+    "src/entity/mob/wolf_damage_execution_internal.h": {
+      "bytes": 864,
+      "sha256": "82fa360d0522c59a7937cf3f02709d068a085e208e675c86a4f77e4f559c24c9"
+    },
+    "src/entity/movement/damage_execution_internal.h": {
+      "bytes": 7280,
+      "sha256": "10fee661579a6587e4f5fa4f9d9ecae478b630c6de9d38974db3931e5fcf4981"
+    },
+    "src/entity/movement/effects.c": {
+      "bytes": 83630,
+      "sha256": "5a4fcea3aae52da911c9aee86b573f759079c213fc7aa1d2cb490f503c855cfb"
+    },
+    "src/entity/player/death.c": {
+      "bytes": 32084,
+      "sha256": "40b862f457380f6371b86dd0a63b6cbaf4faa437cf44b684d53ed31025084b3f"
+    },
+    "src/entity/player/death_execution_internal.h": {
+      "bytes": 2898,
+      "sha256": "bfb504d3e0251dd0c96bddc2e0e275e2c7b277beaedc6d26851dff1cb4c54bc6"
+    },
+    "src/entity/player/drop.c": {
+      "bytes": 37436,
+      "sha256": "0b0fbde2148dc718d9d538650bceb4c28d860c3b85eedabe13bb8c25666b2098"
+    },
+    "src/entity/player/drop_execution_internal.h": {
+      "bytes": 3957,
+      "sha256": "f8e2bc3dd99f6ee23fb949126f619e1f4e0fbdc21ce88c0335392d403e5e0a7c"
+    },
+    "src/inventory/runtime/scatter.c": {
+      "bytes": 8759,
+      "sha256": "14642de8bda69dd7fcb304a0c0dc8a7a48bc70f87f0dfa2dd8697a88eda7f419"
+    },
+    "src/inventory/runtime/scatter_internal.h": {
+      "bytes": 1939,
+      "sha256": "3334a415fd7ba07140dca944f5cadb856a07d7cabe6fa58802c61fc466dc1263"
+    },
+    "src/world/runtime/collision/class_entities.c": {
+      "bytes": 26478,
+      "sha256": "255dd0b05f85742528504cd7f2775926e6500d16b1ac64592001aa8e2d195705"
+    },
+    "src/world/runtime/entity_publication.c": {
+      "bytes": 56160,
+      "sha256": "c99cc55bf66073d9011b16232a7424ffd96c8143fb7d1c5a677cbb43e084e1f5"
+    },
+    "src/world/runtime/movement.c": {
+      "bytes": 29751,
+      "sha256": "8a9b441be8788d514cfe896c49a024ab7380b9f85aaaf418d0ba1762f43c05f3"
+    },
+    "src/world/runtime/presentation.c": {
+      "bytes": 22937,
+      "sha256": "213129f7a912d449632d2e2e319a892c6b2980efbcd4bc6602ce3272f1277e2b"
+    },
+    "src/world/runtime/presentation_execution_internal.h": {
+      "bytes": 4096,
+      "sha256": "33470313a5e2f6741eddd064be8f2d994ae1d0b07b8c9b0e4188fbed669c26e5"
+    },
+    "src/world/runtime/runtime_execution.c": {
+      "bytes": 20205,
+      "sha256": "39ebbb88f6bd90dbc3662fdaa2fda9978759cf02fc06b0543bd8a6c7472c9e7f"
+    },
+    "src/world/runtime/runtime_execution_internal.h": {
+      "bytes": 11563,
+      "sha256": "7ad9fb3f900dc93e9f0be3bddb07cf8a0dbe8d034370f9ce6d7edd7ff4860fc3"
+    },
+    "src/world/runtime/world_access.c": {
+      "bytes": 59580,
+      "sha256": "06734754032eadb1a92414dd244bc8a2a785ef2113bbb96d23907e629c7a2134"
+    },
+    "src/world/runtime/world_access_internal.h": {
+      "bytes": 8532,
+      "sha256": "dfdcb4e00705520d8c9521c0444834512afbbc543bafafe0845d94d3088e878f"
+    }
+  },
+  "prospective_source_successor": {
+    "schema": "CURRENT_SOURCE_ADMISSION_SUCCESSOR_V1",
+    "from_commit": "07f946d6e1630a1b9b99b3cb2319e2b9d7819fd9",
+    "previous_metadata": {
+      "bytes": 2227,
+      "sha256": "835a2cda2949df489f0193fff122104498db2a4a69cd6be5d36afdf8a18f4d15"
+    },
+    "role": "Current source admissions for execution-owned Player drops/death, coordinate sound and particle loops, actual Entity-sound continuation and typed NULL-List faults, exact failed-Math return proofs, the genuine Ladder neighbor body, and actual Arrow victim hurt entry with bounded native cleanup controls. Historical authority, supplier, source_projection, native_validation and capture records retain their exact prior identities. Current declarations do not qualify older compiled products or observations; fresh frozen build/execution evidence is separate. Full notifying mutation, sleeping Player wake, arbitrary cold/provider hooks and unrestricted play remain open.",
+    "groups": {
+      "sources": {
+        "previous": {
+          "include/mc/entity/arrow/tick.h": {
+            "bytes": 9555,
+            "sha256": "f85088f318142c78dd87792dc8b291631734e5791cc896ec541551339b3c3b37"
+          },
+          "src/entity/arrow/tick.c": {
+            "bytes": 25119,
+            "sha256": "36a375ebccf7ca444df43c22263c178eb4cc4199127a892f507c7148d7e74c9b"
+          },
+          "src/entity/arrow/tick_children.c": {
+            "bytes": 46309,
+            "sha256": "c718b2a31e90693982199c7e98f077126839a457b85fb977204c76661265f12e"
+          },
+          "src/entity/arrow/tick_internal.h": {
+            "bytes": 7940,
+            "sha256": "fbb1fcdca32b7546adf70a1139be91a77188e2e0db6d938f43eb4cf164ba36e3"
+          },
+          "tests/world/runtime/test_arrow_natural_flight.c": {
+            "bytes": 16439,
+            "sha256": "98b70cd9dc84c51558e1fc3e937abd0a4fc471440e355cac2e022086e555491d"
+          }
+        },
+        "added": [
+          "include/mc/world/runtime/movement.h",
+          "include/mc/world/runtime/world_access_error.h",
+          "src/core/math/execution_internal.h",
+          "src/entity/mob/damage.c",
+          "src/entity/mob/damage_execution_internal.h",
+          "src/entity/mob/damage_internal.h",
+          "src/entity/mob/wolf_damage.c",
+          "src/entity/mob/wolf_damage_execution_internal.h",
+          "src/entity/movement/damage_execution_internal.h",
+          "src/entity/movement/effects.c",
+          "src/entity/player/death.c",
+          "src/entity/player/death_execution_internal.h",
+          "src/entity/player/drop.c",
+          "src/entity/player/drop_execution_internal.h",
+          "src/inventory/runtime/scatter.c",
+          "src/inventory/runtime/scatter_internal.h",
+          "src/world/runtime/collision/class_entities.c",
+          "src/world/runtime/entity_publication.c",
+          "src/world/runtime/movement.c",
+          "src/world/runtime/presentation.c",
+          "src/world/runtime/presentation_execution_internal.h",
+          "src/world/runtime/runtime_execution.c",
+          "src/world/runtime/runtime_execution_internal.h",
+          "src/world/runtime/world_access.c",
+          "src/world/runtime/world_access_internal.h"
+        ],
+        "current_count": 38
+      }
+    },
+    "current_semantics": {
+      "scope": "The current natural victim-frontier source now invokes the actual owned hurt child at Arrow victim741; the inherited victim Boolean is consumed only after that actual child continuation and its native cleanup. Failed children retain their actual typed diagnostics, Math-return proof and exact explicit cleanup records. This prospective source successor does not describe the behavior or qualification of the preserved historical supplier cohorts.",
+      "qualification": "Source admission only. Historical captures, dependencies and native/original validation keep their original scope; no retrospective or inherited execution qualification."
     }
   }
 }

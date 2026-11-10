@@ -49,8 +49,8 @@
       "sha256": "27c630007d453a0c1bdb3e81f3630bf1137dcd49b933066fdc114a2e02bcdaa9"
     },
     "src/world/runtime/entity_publication.c": {
-      "bytes": 55691,
-      "sha256": "80d5feb0cdc06668ea97fe58dbde708a5525a506c9ed766802e9d9ca5e432c13"
+      "bytes": 56160,
+      "sha256": "c99cc55bf66073d9011b16232a7424ffd96c8143fb7d1c5a677cbb43e084e1f5"
     },
     "src/world/runtime/entity_publication_detailed_execution_internal.h": {
       "bytes": 1167,
@@ -69,12 +69,12 @@
       "sha256": "4e43b01f389d611486563938963f4b609f16ca1fbed6015c9a1c7e8da4eb0539"
     },
     "src/world/runtime/runtime_execution.c": {
-      "bytes": 17733,
-      "sha256": "1beb31d4f21902c8bd6a0eccbaf982629fe4d171d06ed133eff7b58dbcc535fa"
+      "bytes": 20205,
+      "sha256": "39ebbb88f6bd90dbc3662fdaa2fda9978759cf02fc06b0543bd8a6c7472c9e7f"
     },
     "src/world/runtime/runtime_execution_internal.h": {
-      "bytes": 10285,
-      "sha256": "3e0e5e44bb29a55373c0ed071d6425525a3421bd9affd0c429c05caa8f685084"
+      "bytes": 11563,
+      "sha256": "7ad9fb3f900dc93e9f0be3bddb07cf8a0dbe8d034370f9ce6d7edd7ff4860fc3"
     },
     "src/world/runtime/tile_entities/execution_internal.h": {
       "bytes": 4017,
@@ -87,6 +87,18 @@
     "tests/world/runtime/world_access/test_kernel_execution.c": {
       "bytes": 25462,
       "sha256": "b0a0cf48ee2f249c7ec3384cd9f5f03648611ba2fa7a9462480f03bf94e181f8"
+    },
+    "include/mc/world/runtime/movement.h": {
+      "bytes": 5465,
+      "sha256": "16b31d42c9899f07f81691d90d3ddc28750ee057ed6adbb7d75f4b7851e1fcfd"
+    },
+    "include/mc/world/runtime/world_access_error.h": {
+      "bytes": 2776,
+      "sha256": "09a4829a8f9f56c1d68ab26355d844b8377fd1c3aac5ea8e9028cbbd3a167bfe"
+    },
+    "src/core/math/execution_internal.h": {
+      "bytes": 7418,
+      "sha256": "ff3cf04e9bcfb028e2e372fc328da5a1277f30e7edb4b1346925312fb1970abb"
     }
   },
   "helpers": {
@@ -213,6 +225,48 @@
           "sha256": "1d3616472c10b0c253e881fdd08c33d198765922d5e75bc45ec3f955ece5275e"
         }
       }
+    }
+  },
+  "prospective_source_successor": {
+    "schema": "CURRENT_SOURCE_ADMISSION_SUCCESSOR_V1",
+    "from_commit": "07f946d6e1630a1b9b99b3cb2319e2b9d7819fd9",
+    "previous_metadata": {
+      "bytes": 8309,
+      "sha256": "34166db5537170ee69de19bd2005d5b9479e9b744772c7820a9b3754d961c553"
+    },
+    "role": "Current source admissions for execution-owned Player drops/death, coordinate sound and particle loops, actual Entity-sound continuation and typed NULL-List faults, exact failed-Math return proofs, the genuine Ladder neighbor body, and actual Arrow victim hurt entry with bounded native cleanup controls. Historical authority, supplier, source_projection, native_validation and capture records retain their exact prior identities. Current declarations do not qualify older compiled products or observations; fresh frozen build/execution evidence is separate. Full notifying mutation, sleeping Player wake, arbitrary cold/provider hooks and unrestricted play remain open.",
+    "groups": {
+      "sources": {
+        "previous": {
+          "src/world/runtime/entity_publication.c": {
+            "bytes": 55691,
+            "sha256": "80d5feb0cdc06668ea97fe58dbde708a5525a506c9ed766802e9d9ca5e432c13"
+          },
+          "src/world/runtime/runtime_execution.c": {
+            "bytes": 17733,
+            "sha256": "1beb31d4f21902c8bd6a0eccbaf982629fe4d171d06ed133eff7b58dbcc535fa"
+          },
+          "src/world/runtime/runtime_execution_internal.h": {
+            "bytes": 10285,
+            "sha256": "3e0e5e44bb29a55373c0ed071d6425525a3421bd9affd0c429c05caa8f685084"
+          }
+        },
+        "added": [
+          "include/mc/world/runtime/movement.h",
+          "include/mc/world/runtime/world_access_error.h",
+          "src/core/math/execution_internal.h"
+        ],
+        "current_count": 19
+      },
+      "helpers": {
+        "previous": {},
+        "added": [],
+        "current_count": 3
+      }
+    },
+    "current_semantics": {
+      "scope": "Current selected sources share exact typed Native/Math results and Source diagnostics. Existing finite fixture modes and historical dependency/supplier protocols remain unchanged.",
+      "qualification": "Source admission only. Historical captures, dependencies and native/original validation keep their original scope; no retrospective or inherited execution qualification."
     }
   }
 }

@@ -118,6 +118,46 @@ bool mc_arrow_tick_inspect(const mc_arrow_tick_call *c, mc_arrow_tick_state *out
     out->query_unwind = c->query_unwind;
     out->direct_world_open = c->direct_world_open;
     out->diagnostic_bytes = c->exception_storage_bytes;
+    out->hurt_bytes = c->hurt_bytes;
+    return true;
+}
+
+bool mc_arrow_tick_hurt_allocate(mc_arrow_tick_call *c) {
+    if (c->hurt != NULL || c->hurt_bytes != 0)
+        return mc_arrow_tick_fail(c, MC_ARROW_TICK_BUSY, "Arrow hurt workspace already reached",
+                                  true, NULL);
+    const size_t frame = sizeof(*c), bytes = sizeof(*c->hurt);
+    if (c->limits.max_parent_bytes < frame ||
+        c->exception_storage_bytes > c->limits.max_parent_bytes - frame ||
+        bytes > c->limits.max_parent_bytes - frame - c->exception_storage_bytes)
+        return mc_arrow_tick_fail(c, MC_ARROW_TICK_LIMIT,
+                                  "Arrow actual hurt workspace parent byte ceiling", true, NULL);
+    c->hurt = calloc(1, bytes);
+    if (c->hurt == NULL)
+        return mc_arrow_tick_fail(c, MC_ARROW_TICK_ALLOCATION,
+                                  "Arrow actual retained hurt workspace allocation", true, NULL);
+    c->hurt_bytes = bytes;
+    return true;
+}
+
+bool mc_arrow_tick_hurt_release(mc_arrow_tick_call *c) {
+    if (c->hurt == NULL)
+        return c->hurt_bytes == 0;
+    if (!c->hurt->cleanup_done || !c->hurt->execution.cleaned || c->hurt_bytes != sizeof(*c->hurt))
+        return false;
+    if (c->error.effect == &c->hurt->error)
+        c->error.effect = NULL;
+    if (c->cleanup.effect == &c->hurt->error)
+        c->cleanup.effect = NULL;
+    if (c->error.query == &c->hurt->execution.owned)
+        c->error.query = NULL;
+    if (c->cleanup.query == &c->hurt->execution.owned)
+        c->cleanup.query = NULL;
+    free(c->hurt);
+    c->hurt = NULL;
+    c->hurt_bytes = 0;
+    c->effect_cleanup_owned = false;
+    c->state.hurt_cleanup_acquired = false;
     return true;
 }
 
@@ -174,6 +214,7 @@ static bool cleanup_hit(mc_arrow_tick_call *c, mc_entity_hit_result **owned) {
 }
 
 static void clear_world_borrows(mc_arrow_tick_call *c) {
+    c->error.effect = NULL;
     c->error.base = NULL;
     c->error.block = NULL;
     c->error.nearby = NULL;
@@ -201,6 +242,18 @@ static bool unwind_has_records(const mc_arrow_tick_call *c) {
     return false;
 }
 
+static bool hurt_records(const mc_world_runtime_execution_result *result) {
+    if (result->root_pending)
+        return true;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (result->pending[i].used)
+            return true;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (result->closes[i].used)
+            return true;
+    return false;
+}
+
 static mc_arrow_tick_status unwind_refused(mc_arrow_tick_call *c, mc_world_storage_status status,
                                            const char *operation) {
     c->query_unwind = MC_ARROW_TICK_UNWIND_REFUSED;
@@ -215,15 +268,156 @@ static mc_arrow_tick_status unwind_refused(mc_arrow_tick_call *c, mc_world_stora
     return c->cleanup.status;
 }
 
+static mc_arrow_tick_status
+hurt_unwind_refused(mc_arrow_tick_call *c, mc_world_storage_status status, const char *operation) {
+    (void)unwind_refused(c, status, operation);
+    /* A stable summary only. A canonical actor child can be consumed by partial
+     * checked cleanup; never export a stale pointer to that released result. */
+    c->cleanup.query = c->hurt == NULL ? NULL : &c->hurt->execution.owned;
+    return c->cleanup.status;
+}
+
+static bool hurt_owns_current(mc_entity_damage_execution_view *view,
+                              const mc_entity_tick_execution_world_token *current) {
+    if (view->world_created && view->world_open && unwind_same_token(&view->world, current))
+        return true;
+    if (view->mob_drop != NULL) {
+        mc_entity_drop_execution_view drop;
+        return mc_entity_drop_execution_inspect(view->mob_drop, &drop) &&
+               ((drop.publication_world.created && !drop.publication_world.consumed &&
+                 unwind_same_token(&drop.publication_world.world, current)) ||
+                (drop.constructor_world.created && !drop.constructor_world.consumed &&
+                 unwind_same_token(&drop.constructor_world.world, current)));
+    }
+    if (view->player_drop != NULL) {
+        mc_player_drop_execution_view drop;
+        return mc_local_player_drop_execution_inspect(view->player_drop, &drop) &&
+               ((drop.publication_world.created && !drop.publication_world.consumed &&
+                 unwind_same_token(&drop.publication_world.world, current)) ||
+                (drop.constructor_world.created && !drop.constructor_world.consumed &&
+                 unwind_same_token(&drop.constructor_world.world, current)));
+    }
+    return false;
+}
+
+/* ONE actual canonical acquisition/capsule/callee-close/native-cleanup action.
+ * Re-inspect each time: a previous cleanup refusal can consume an owned prefix.
+ * This function never resumes Source or frees the failed hurt workspace. */
+static mc_arrow_tick_status hurt_unwind_step(mc_arrow_tick_call *c, bool *quiescent) {
+    mc_arrow_tick_hurt_work *w = c->hurt;
+    if (w == NULL || !w->returned || w->execution.active)
+        return hurt_unwind_refused(c, MC_WORLD_STORAGE_BUSY,
+                                   "Arrow actual hurt entry has not returned");
+    if (!w->close_done) {
+        mc_entity_damage_execution_view view = {0};
+        if (w->execution.entered && !mc_entity_damage_execution_inspect(&w->execution, &view))
+            return hurt_unwind_refused(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                       "Arrow exact returned hurt work/result changed");
+        mc_world_runtime_execution_result *result =
+            w->execution.entered ? view.result : &w->execution.owned;
+        if (c->execution.world_open) {
+            mc_entity_tick_execution_world_token current;
+            if (!mc_entity_tick_execution_current_world(&c->execution, &current))
+                return hurt_unwind_refused(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                           "Arrow hurt checked current World");
+            mc_world_runtime_execution_close *close = &result->closes[current.slot];
+            const bool published = close->used && unwind_same_token(&close->world, &current);
+            if ((!w->execution.entered || !hurt_owns_current(&view, &current)) && !published)
+                return hurt_unwind_refused(c, MC_WORLD_STORAGE_BUSY,
+                                           "Arrow hurt current descendant lacks recorded close");
+            if (!unwind_same_token(&c->captured_worlds[current.slot], &current)) {
+                const mc_world_access_failure *protected = NULL;
+                mc_world_access_failure_lease *node = &c->execution.leases[current.slot];
+                mc_world_storage_status status;
+                if (mc_world_access_failure_lease_inspect(node, &protected))
+                    status = mc_entity_tick_execution_capture_receipt(&c->execution, protected);
+                else
+                    status = mc_world_access_failure_lease_release(node, NULL);
+                if (status != MC_WORLD_STORAGE_OK)
+                    return hurt_unwind_refused(c, status,
+                                               "Arrow exact hurt protected receipt admission");
+                c->captured_worlds[current.slot] = current;
+                c->query_unwind = MC_ARROW_TICK_UNWIND_CAPTURE;
+                *quiescent = false;
+                return MC_ARROW_TICK_OK;
+            }
+            for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+                if (result->pending[i].used &&
+                    unwind_same_token(&result->pending[i].attempt.world, &current)) {
+                    const mc_world_storage_status status =
+                        mc_world_runtime_execution_finish_pending(&c->execution, result);
+                    if (status != MC_WORLD_STORAGE_OK)
+                        return hurt_unwind_refused(c, status,
+                                                   "Arrow actual canonical hurt pending finish");
+                    c->query_unwind = MC_ARROW_TICK_UNWIND_FINISH;
+                    *quiescent = false;
+                    return MC_ARROW_TICK_OK;
+                }
+            if (published) {
+                const mc_world_storage_status status =
+                    mc_world_runtime_execution_retry_close(&c->execution, result, close);
+                if (status != MC_WORLD_STORAGE_OK)
+                    return hurt_unwind_refused(c, status,
+                                               "Arrow actual canonical hurt child close");
+                c->query_unwind = MC_ARROW_TICK_UNWIND_CHILD_CLOSE;
+                *quiescent = false;
+                return MC_ARROW_TICK_OK;
+            }
+        }
+        if (hurt_records(result))
+            return hurt_unwind_refused(c, MC_WORLD_STORAGE_BUSY,
+                                       "Arrow hurt awaits exact canonical pending/close record");
+        const mc_world_storage_status closed =
+            mc_entity_damage_execution_native_close(&w->execution);
+        if (closed != MC_WORLD_STORAGE_OK)
+            return hurt_unwind_refused(c, closed, "Arrow hurt exact recorded callee close");
+        w->close_done = true;
+        c->query_unwind = MC_ARROW_TICK_UNWIND_HURT_CLOSE;
+        *quiescent = false;
+        return MC_ARROW_TICK_OK;
+    }
+    if (!w->cleanup_done) {
+        /* Snapshot already ran. Expire outward borrows BEFORE this operation
+         * may consume actor children, even if a later native release refuses. */
+        c->error.effect = NULL;
+        c->cleanup.effect = NULL;
+        w->cleanup_started = true;
+        const mc_entity_status cleaned =
+            mc_entity_damage_execution_cleanup(&w->execution, &w->error);
+        if (cleaned != MC_ENTITY_OK)
+            return hurt_unwind_refused(c,
+                                       cleaned == MC_ENTITY_BUSY
+                                           ? MC_WORLD_STORAGE_BUSY
+                                           : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                       "Arrow hurt actual acquired-work checked cleanup");
+        w->cleanup_done = true;
+        c->effect_cleanup_owned = false;
+        c->state.hurt_cleanup_acquired = false;
+        c->query_unwind = MC_ARROW_TICK_UNWIND_HURT_CLEANUP;
+        *quiescent = false;
+        return MC_ARROW_TICK_OK;
+    }
+    return hurt_unwind_refused(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "Arrow hurt cleanup action already completed");
+}
+
 /* Native-only protected diagnostic copy. All real producers/children remain
  * held: this runs before ANY cleanup can consume one. No Source or class use,
  * callback, getter, field repair or guessed name lifetime is introduced. */
 static mc_arrow_tick_status snapshot_exception(mc_arrow_tick_call *c, bool *copied) {
     *copied = false;
+    if ((c->hurt == NULL) != (c->hurt_bytes == 0) ||
+        (c->hurt != NULL && c->hurt_bytes != sizeof(*c->hurt)))
+        return unwind_refused(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "Arrow hurt workspace byte provenance");
+    if (c->limits.max_parent_bytes < sizeof(*c) ||
+        c->hurt_bytes > c->limits.max_parent_bytes - sizeof(*c))
+        return unwind_refused(c, MC_WORLD_STORAGE_LIMIT,
+                              "Arrow live hurt workspace parent byte ceiling");
+    const size_t available = c->limits.max_parent_bytes - sizeof(*c) - c->hurt_bytes;
     if (c->exception_storage != NULL) {
         if (c->error.exception_class == c->exception_storage && c->exception_storage_bytes != 0 &&
-            c->limits.max_parent_bytes >= sizeof(*c) &&
-            c->exception_storage_bytes <= c->limits.max_parent_bytes - sizeof(*c))
+            c->exception_storage_bytes <= available)
             return MC_ARROW_TICK_OK;
         return unwind_refused(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                               "Arrow owned diagnostic class-name provenance");
@@ -233,7 +427,6 @@ static mc_arrow_tick_status snapshot_exception(mc_arrow_tick_call *c, bool *copi
     if (c->limits.max_parent_bytes < sizeof(*c))
         return unwind_refused(c, MC_WORLD_STORAGE_LIMIT,
                               "Arrow protected diagnostic parent byte ceiling");
-    const size_t available = c->limits.max_parent_bytes - sizeof(*c);
     const char *const protected_name = c->error.exception_class;
     size_t length = 0;
     while (length < available && protected_name[length] != '\0')
@@ -287,9 +480,14 @@ static bool unwind_selected_loader(mc_arrow_tick_call *c) {
 }
 
 static mc_arrow_tick_status native_unwind_step(mc_arrow_tick_call *c, bool *quiescent) {
-    if (c->state.active || c->ray != NULL || c->intercept != NULL || c->effect_cleanup_owned)
+    if (c->state.active || c->ray != NULL || c->intercept != NULL)
         return unwind_refused(c, MC_WORLD_STORAGE_BUSY,
                               "Arrow entered child must drain before explicit World unwind");
+    if (c->hurt != NULL && !c->hurt->cleanup_done)
+        return hurt_unwind_step(c, quiescent);
+    if (c->effect_cleanup_owned)
+        return unwind_refused(c, MC_WORLD_STORAGE_BUSY,
+                              "Arrow prior effect child must drain before World unwind");
     if (!c->direct_world_open && !unwind_has_records(c)) {
         if (c->execution.world_open)
             return unwind_refused(c, MC_WORLD_STORAGE_BUSY,
@@ -411,9 +609,23 @@ mc_arrow_tick_status mc_arrow_tick_retire(mc_arrow_tick_call **slot) {
     if (snapshot_exception(c, &copied) != MC_ARROW_TICK_OK)
         goto done;
 
+    if (c->hurt != NULL && !c->hurt->cleanup_done) {
+        bool hurt_quiet = false;
+        for (size_t i = 0;
+             i < 2u * MC_ENTITY_TICK_EXECUTION_WORLDS + MC_ENTITY_TICK_EXECUTION_LOADERS + 4u &&
+             !c->hurt->cleanup_done;
+             ++i)
+            if (hurt_unwind_step(c, &hurt_quiet) != MC_ARROW_TICK_OK)
+                goto done;
+        if (!c->hurt->cleanup_done) {
+            (void)hurt_unwind_refused(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                      "Arrow bounded canonical hurt unwind did not drain");
+            goto done;
+        }
+    }
     /* Keep Arrow's protected WA captures while a victim-owned child releases
      * its own captures. Existing child cleanup does not retire the producer. */
-    if (c->effect_cleanup_owned) {
+    if (c->effect_cleanup_owned && c->hurt == NULL) {
         c->error.effect = NULL; /* Subsequent cleanup may consume nested borrows. */
         if (!mc_entity_effect_error_retire(&c->work.effect)) {
             c->cleanup.effect = &c->work.effect;
@@ -470,7 +682,7 @@ mc_arrow_tick_status mc_arrow_tick_retire(mc_arrow_tick_call **slot) {
      * No Math/producer retirement occurs while one native step still refuses. */
     bool quiescent = false;
     for (size_t i = 0;
-         i < 2u * MC_ENTITY_TICK_EXECUTION_WORLDS + MC_ENTITY_TICK_EXECUTION_LOADERS + 2u; ++i) {
+         i < 2u * MC_ENTITY_TICK_EXECUTION_WORLDS + MC_ENTITY_TICK_EXECUTION_LOADERS + 4u; ++i) {
         if (native_unwind_step(c, &quiescent) != MC_ARROW_TICK_OK)
             goto done;
         if (quiescent)
@@ -503,6 +715,11 @@ mc_arrow_tick_status mc_arrow_tick_retire(mc_arrow_tick_call **slot) {
     if (owners != MC_WORLD_STORAGE_OK) {
         (void)unwind_refused(c, owners,
                              "Arrow evaluated World/producer context checked retirement");
+        goto done;
+    }
+    if (!mc_arrow_tick_hurt_release(c)) {
+        (void)cleanup_fail(c, MC_ARROW_TICK_CHILD_EFFECT,
+                           "Arrow retained hurt workspace checked retirement");
         goto done;
     }
     mc_entity *receiver = c->state.receiver;

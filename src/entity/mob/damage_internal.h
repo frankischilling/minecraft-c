@@ -1,6 +1,7 @@
 #ifndef MC_ENTITY_MOB_DAMAGE_INTERNAL_H
 #define MC_ENTITY_MOB_DAMAGE_INTERNAL_H
 #include "mc/entity/movement/effects.h"
+struct mc_entity_damage_execution;
 
 /* Same complete LS.a(SN,I) body for an enclosing concrete wrapper. The caller
  * holds the canonical client Mob and owns initialized stable diagnostics.
@@ -33,4 +34,18 @@ bool mc_mob_monster_damage_entered(mc_entity *, mc_registry_classes *, mc_math_c
 bool mc_mob_living_damage_entered(mc_entity *, mc_registry_classes *, mc_math_classes *,
                                   mc_entity *source, int32_t amount, bool *,
                                   mc_entity_effect_error *);
+
+/* Required descriptor routes through those SAME actual wrappers/LS body. */
+bool mc_mob_damage_living_parent_entered_in_execution(mc_entity *, mc_entity *, int32_t, bool *,
+                                                      mc_entity_effect_error *,
+                                                      struct mc_entity_damage_execution *);
+bool mc_mob_monster_damage_entered_in_execution(mc_entity *, mc_entity *, int32_t, bool *,
+                                                mc_entity_effect_error *,
+                                                struct mc_entity_damage_execution *);
+bool mc_mob_living_damage_entered_in_execution(mc_entity *, mc_entity *, int32_t, bool *,
+                                               mc_entity_effect_error *,
+                                               struct mc_entity_damage_execution *);
+bool mc_player_living_damage_entered_in_execution(mc_entity *, mc_entity *, int32_t, bool *,
+                                                  mc_entity_effect_error *,
+                                                  struct mc_entity_damage_execution *);
 #endif

@@ -742,6 +742,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/mutation/pressure_plate.c
     src/world/runtime/mutation/pressure_lifecycle.c
     src/world/runtime/mutation/lever.c
+    src/world/runtime/mutation/ladder.c
     src/world/runtime/mutation/rails/connections.c
     src/world/runtime/mutation/rails/detector.c
     src/world/runtime/mutation/rails/dispatch.c
@@ -2270,6 +2271,8 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_world_pressure_plate PRIVATE mc_simulation mc_c_atomics mc_build_options)
     add_executable(mc_test_world_lever tests/world/runtime/test_lever.c)
     target_link_libraries(mc_test_world_lever PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_executable(mc_test_world_ladder tests/world/runtime/test_ladder.c)
+    target_link_libraries(mc_test_world_ladder PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_scheduling tests/world/runtime/test_scheduling.c)
     target_link_libraries(mc_test_world_scheduling PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -4120,6 +4123,15 @@ if(BUILD_TESTING)
     set_tests_properties(world.pressure_plate PROPERTIES
         LABELS "public;integration;ownership;mutation;scheduling" TIMEOUT 90)
 
+    add_test(NAME world.ladder
+        COMMAND "${Python3_EXECUTABLE}" -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
+        --executable "$<TARGET_FILE:mc_test_world_ladder>"
+        --scenario world-ladder
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-ladder-contracts")
+    set_tests_properties(world.ladder PROPERTIES
+        LABELS "public;integration;ownership;mutation" TIMEOUT 90)
+
     add_test(NAME world.lever
         COMMAND "${Python3_EXECUTABLE}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_runtime.py"
@@ -5719,6 +5731,15 @@ include(cmake/tests/remaining_death.cmake)
 include(cmake/tests/remaining_damage.cmake)
 include(cmake/tests/string_case.cmake)
 include(cmake/tests/entity_drop_execution.cmake)
+include(cmake/tests/player_drop_execution.cmake)
+include(cmake/tests/player_death_execution.cmake)
+include(cmake/tests/damage_execution.cmake)
+include(cmake/tests/world_presentation_execution.cmake)
+include(cmake/tests/arrow_hurt_execution.cmake)
+include(cmake/tests/arrow_hurt_handoff.cmake)
+include(cmake/tests/arrow_hurt_player.cmake)
+include(cmake/tests/arrow_hurt_prior.cmake)
+include(cmake/tests/world_math_proof_execution.cmake)
 include(cmake/tests/world_block_scalar_execution.cmake)
 include(cmake/tests/metadata_set.cmake)
 include(cmake/tests/mob_death_execution.cmake)
@@ -5729,6 +5750,7 @@ include(cmake/client_respawn.cmake)
 include(cmake/client_bed_respawn.cmake)
 include(cmake/client_bed_interaction.cmake)
 include(cmake/client_zombie_damage.cmake)
+include(cmake/client_arrow_pig.cmake)
 include(cmake/client_sleep_wake.cmake)
 include(cmake/player_sleep_tick.cmake)
 include(cmake/player_sleep_nbt.cmake)

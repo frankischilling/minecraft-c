@@ -224,6 +224,19 @@ static bool protected_exception(mc_arrow_tick_call *c, const mc_world_access_fai
  * No raw status, last-leaf field or ambient admission selects Source failure. */
 bool mc_arrow_tick_base_source_failure(mc_arrow_tick_call *c, const char **operation,
                                        const char **exception) {
+    if (c->base_execution.child_returned && c->base_execution.child_status != MC_WORLD_STORAGE_OK &&
+        c->base_execution.child == MC_TICK_ARROW_BASE_SOUND &&
+        c->work.base.world.status == c->base_execution.child_status &&
+        (c->work.base.world.world_access_fault == MC_WORLD_ACCESS_SOURCE_FAULT_NULL_SIZE_LIST ||
+         c->work.base.world.world_access_fault == MC_WORLD_ACCESS_SOURCE_FAULT_NULL_GET_LIST)) {
+        /* The actual returned sound frame identifies its null Source List
+         * read. This typed VALUE requires no producer/receipt or current u. */
+        *operation = c->work.base.world.operation;
+        *exception = "java/lang/NullPointerException";
+        c->error.child_site = (mc_arrow_site){"fd", "a", "(Lsn;Ljava/lang/String;FF)V",
+                                              (int32_t)c->work.base.world.world_access_bytecode};
+        return true;
+    }
     if (c->work.base.source_exception && c->work.base.exception_class != NULL) {
         *operation = c->work.base.operation;
         *exception = c->work.base.exception_class;
@@ -753,20 +766,107 @@ bool mc_arrow_tick_intercept(mc_arrow_tick_call *c) {
     return true;
 }
 
-/* Actual invoke741 is reached only after the complete Source argument prefix,
- * including current Living c737, was evaluated/held by tick_body. The required
- * full victim damage join is still missing. Stop here without entering a
- * callee, inventing its Boolean or acquiring victim cleanup. Air/block paths
- * never reach this dependency. This is NOT a substitute damage implementation. */
+/* ONE actual invoke741 after target733/current nullable shooter737 were held.
+ * The same top dispatcher admits every canonical victim; actually reached
+ * unresolved descendants remain visible rather than selecting legacy. */
 bool mc_arrow_tick_hurt(mc_arrow_tick_call *c, mc_entity *target, mc_entity *source, bool *out) {
     mc_arrow_tick_select(c, MC_ARROW_TICK_CHILD_EFFECT, 741);
-    (void)source;
-    (void)out;
     if (target == NULL)
         return mc_arrow_tick_null(c, "Arrow null actual victim invocation receiver");
-    return mc_arrow_tick_fail(c, MC_ARROW_TICK_CHILD_FAILED,
-                              "Arrow actual victim damage dependency; callee not entered", true,
-                              NULL);
+    if (!mc_arrow_tick_hurt_allocate(c))
+        return false;
+    mc_arrow_tick_hurt_work *w = c->hurt;
+    mc_entity_damage_execution_init(&w->execution, &c->execution, c->code_classes, c->query_code,
+                                    c->registry);
+    c->state.hurt_invoked = true;
+    w->continued = mc_entity_effect_damage_in_execution(&w->execution, target, source, 4,
+                                                        &w->result, &w->error, &w->status);
+    w->returned = c->state.hurt_returned = true;
+    c->state.hurt_prior_pending = w->execution.prior_pending;
+    c->state.hurt_cleanup_acquired = w->execution.acquired_work != NULL;
+    c->effect_cleanup_owned = w->execution.entered;
+    if (w->continued) {
+        /* No failed typed view is published on this path. Native cleanup must
+         * finish before the parent can consume the Boolean/reuse its union. */
+        const mc_world_storage_status closed =
+            mc_entity_damage_execution_native_close(&w->execution);
+        if (closed != MC_WORLD_STORAGE_OK) {
+            c->error.query = &w->execution.owned;
+            c->error.execution = &c->execution;
+            return mc_arrow_tick_fail(c, world_status(closed),
+                                      "Arrow returned hurt exact native close", true, NULL);
+        }
+        w->close_done = true;
+        w->cleanup_started = true;
+        const mc_entity_status cleaned =
+            mc_entity_damage_execution_cleanup(&w->execution, &w->error);
+        if (cleaned != MC_ENTITY_OK) {
+            c->error.query = &w->execution.owned;
+            c->error.execution = &c->execution;
+            return mc_arrow_tick_fail(c, entity_status(cleaned),
+                                      "Arrow returned hurt checked native cleanup", true, NULL);
+        }
+        w->close_done = w->cleanup_done = true;
+        const bool result = w->result;
+        if (!mc_arrow_tick_hurt_release(c))
+            return mc_arrow_tick_fail(c, MC_ARROW_TICK_CLEANUP_FAILED,
+                                      "Arrow returned hurt workspace retirement", true, NULL);
+        *out = c->state.hurt_result = result;
+        c->state.hurt_continued = true;
+        c->work_tag = MC_ARROW_TICK_CHILD_NONE;
+        return true;
+    }
+
+    /* Classify only through the actual selected top-child proof while its
+     * entire producer graph and stable error still live. Math is its saved
+     * failed-return VALUE, never an ambient historical math.failed inference. */
+    c->error.effect = &w->error;
+    c->error.query = &w->execution.owned; /* Summary observation, never close authority. */
+    c->error.execution = &c->execution;
+    mc_entity_damage_failure failure = {.kind = MC_ENTITY_DAMAGE_FAILURE_UNRESOLVED};
+    const bool classified = mc_entity_damage_execution_source_failure(&w->execution, &failure);
+    mc_arrow_tick_status status =
+        w->status == MC_ENTITY_OK ? MC_ARROW_TICK_CHILD_FAILED : entity_status(w->status);
+    if (classified) {
+        c->error.child_site = (mc_arrow_site){failure.site.class_name, failure.site.method,
+                                              failure.site.descriptor, failure.site.pc};
+        if (failure.registry != NULL) {
+            /* Actual typed return VALUE. The defining Registry graph remains
+             * held by this parent through any later Native cleanup refusal. */
+            c->registry_error = *failure.registry;
+            c->error.registry = &c->registry_error;
+        }
+        if (failure.math != NULL) {
+            c->error.math = &failure.math->cause;
+            status = failure.math_status == MC_MATH_CLASS_LIMIT ? MC_ARROW_TICK_LIMIT
+                     : failure.math_status == MC_MATH_CLASS_ALLOCATION_FAILED
+                         ? MC_ARROW_TICK_ALLOCATION
+                     : failure.math_status == MC_MATH_CLASS_BUSY ? MC_ARROW_TICK_BUSY
+                                                                 : MC_ARROW_TICK_CHILD_FAILED;
+        } else if (failure.kind == MC_ENTITY_DAMAGE_FAILURE_NATIVE &&
+                   w->execution.owned.ownership_status != MC_WORLD_STORAGE_OK)
+            status = world_status(w->execution.owned.ownership_status);
+        const mc_arrow_tick_failure_kind kind =
+            failure.kind == MC_ENTITY_DAMAGE_FAILURE_SOURCE_EXCEPTION
+                ? MC_ARROW_TICK_FAILURE_SOURCE_EXCEPTION
+            : failure.kind == MC_ENTITY_DAMAGE_FAILURE_SOURCE_ERROR
+                ? MC_ARROW_TICK_FAILURE_SOURCE_ERROR
+            : failure.kind == MC_ENTITY_DAMAGE_FAILURE_NATIVE ? MC_ARROW_TICK_FAILURE_NATIVE
+                                                              : MC_ARROW_TICK_FAILURE_UNRESOLVED;
+        return mc_arrow_tick_fail_classified(c, status,
+                                             failure.operation == NULL
+                                                 ? "Arrow actual victim selected failed child"
+                                                 : failure.operation,
+                                             kind, failure.exception_class);
+    }
+    if (w->execution.owned.ownership_status != MC_WORLD_STORAGE_OK) {
+        const mc_entity_tick_execution_error actual = w->execution.owned.ownership_error;
+        c->error.child_site = (mc_arrow_site){actual.site.class_name, actual.site.method,
+                                              actual.site.descriptor, actual.site.pc};
+        return mc_arrow_tick_fail(c, world_status(actual.status), actual.operation, true, NULL);
+    }
+    return mc_arrow_tick_fail_classified(c, status, "Arrow actual victim cause remains unresolved",
+                                         MC_ARROW_TICK_FAILURE_UNRESOLVED, NULL);
 }
 
 bool mc_arrow_tick_sound(mc_arrow_tick_call *c, mc_world_runtime *world,
@@ -777,6 +877,18 @@ bool mc_arrow_tick_sound(mc_arrow_tick_call *c, mc_world_runtime *world,
     const mc_world_storage_status status = mc_world_runtime_entity_sound_detailed_in_execution(
         &c->execution, world, c->state.receiver, name, 1.0f, pitch, c->direct_world_site,
         &c->work.sound, &c->query_result);
+    if (status != MC_WORLD_STORAGE_OK &&
+        (c->work.sound.world_access_fault == MC_WORLD_ACCESS_SOURCE_FAULT_NULL_SIZE_LIST ||
+         c->work.sound.world_access_fault == MC_WORLD_ACCESS_SOURCE_FAULT_NULL_GET_LIST)) {
+        c->error.sound = &c->work.sound;
+        c->error.query = &c->query_result;
+        c->error.execution = &c->execution;
+        c->error.child_site = (mc_arrow_site){"fd", "a", "(Lsn;Ljava/lang/String;FF)V",
+                                              (int32_t)c->work.sound.world_access_bytecode};
+        return mc_arrow_tick_fail_classified(c, world_status(status), c->work.sound.operation,
+                                             MC_ARROW_TICK_FAILURE_SOURCE_EXCEPTION,
+                                             "java/lang/NullPointerException");
+    }
     /* Source first only with this actual typed protected callback proof.
      * query_result retains the immediate first ownership error independently. */
     const char *source_exception = NULL;

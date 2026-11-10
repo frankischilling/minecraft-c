@@ -26,7 +26,9 @@ typedef enum mc_arrow_tick_native_unwind_phase {
     MC_ARROW_TICK_UNWIND_FINISH,
     MC_ARROW_TICK_UNWIND_CHILD_CLOSE,
     MC_ARROW_TICK_UNWIND_OWN_CLOSE,
-    MC_ARROW_TICK_UNWIND_REFUSED
+    MC_ARROW_TICK_UNWIND_REFUSED,
+    MC_ARROW_TICK_UNWIND_HURT_CLOSE,
+    MC_ARROW_TICK_UNWIND_HURT_CLEANUP
 } mc_arrow_tick_native_unwind_phase;
 typedef struct mc_entity_source_position_error mc_entity_source_position_error;
 
@@ -111,7 +113,7 @@ typedef struct mc_arrow_tick_error {
 } mc_arrow_tick_error;
 
 typedef struct mc_arrow_tick_limits {
-    /* Parent frame plus its exact owned first diagnostic class-name bytes.
+    /* Parent frame, live lazy hurt workspace and exact owned first class-name bytes.
      * Child ray/intercept/source pools retain independent budgets. This is a
      * fixed begin ceiling, not a total-call cap or a mutable cleanup quota. */
     size_t max_parent_bytes;
@@ -126,9 +128,12 @@ typedef struct mc_arrow_tick_state {
     unsigned int source_pc, base_wrapper_pc;
     size_t candidates_started, angle_iterations;
     unsigned int random_calls, bubble_calls;
-    /* Valid damage-child observations only when hurt_invoked is true.
-     * The current741 dependency stops before entry; it records no prior state. */
+    /* invoked/returned describe the ONE actual damage C entry; neither proves
+     * Source/native continuation. result is consumed only when continued.
+     * prior_pending is that entry's actual observation, never early probing.
+     * cleanup_acquired names newly adopted actor work, not arbitrary old work. */
     bool hurt_invoked, hurt_returned, hurt_result, hurt_prior_pending;
+    bool hurt_continued;
     bool hurt_cleanup_acquired;
     size_t base_particle_work;
     mc_entity *receiver, *candidate, *selected, *hurt_source, *hurt_target;
@@ -145,6 +150,7 @@ typedef struct mc_arrow_tick_state {
     mc_arrow_tick_native_unwind_phase query_unwind;
     bool query_live, query_invoked, direct_world_open;
     size_t diagnostic_bytes; /* Exact frame-owned first class-name bytes, including NUL. */
+    size_t hurt_bytes;       /* Exact live lazy workspace bytes under the SAME parent ceiling. */
     const mc_arrow_tick_error *failure, *cleanup;
 } mc_arrow_tick_state;
 
@@ -163,8 +169,9 @@ mc_arrow_tick_limits mc_arrow_tick_default_limits(void);
  * before using one after this frame consumes its own occurrence.
  *
  * Base/collision/Ray/nearby/presentation use actual owned published entries.
- * Full victim damage still stops at the reached invocation741; no callee
- * success/entry is claimed. The default World dispatcher owns failed calls;
+ * Victim damage741 uses the complete same-body owned dispatcher. Actually
+ * reached GS35 wake remains an explicit unjoined dependency; no kind/health
+ * whitelist or legacy fallback hides it. The default World dispatcher owns failed calls;
  * their real defining-code/provider/Store/import graph must remain externally
  * held under the existing contract. This is not full Arrow/SL admission.
  * Source pickup/rider dispatch are separate complete methods. */
@@ -189,7 +196,10 @@ bool mc_arrow_tick_inspect(const mc_arrow_tick_call *, mc_arrow_tick_state *);
  * first Source/native result, all pending/close values, Math and owners.
  * quiescent=false means one explicit native action progressed; callers may
  * retry this API. Inspect cleanup for this refusal separately from failure.
- * No getter, Source callback, automatic owner search/pop or field repair.
+ * Hurt first services its actual canonical result, recorded child close and
+ * checked actor-work cleanup before the earlier parent query/direct scope.
+ * Failed hurt storage stays live; typed outward borrows expire before their
+ * producer-consuming cleanup. No getter, Source callback, owner search/pop or field repair.
  * retire drives only the bounded participating actions before Math/owners. */
 mc_arrow_tick_status mc_arrow_tick_native_unwind_step(mc_arrow_tick_call *, bool *quiescent);
 mc_arrow_tick_status mc_arrow_tick_retire(mc_arrow_tick_call **);

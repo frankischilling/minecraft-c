@@ -60,6 +60,15 @@ typedef struct mc_world_runtime_execution_result {
     mc_entity_tick_execution_loader_attempt root_attempt;
     mc_world_runtime_execution_pending pending[MC_ENTITY_TICK_EXECUTION_LOADERS];
     mc_world_runtime_execution_close closes[MC_ENTITY_TICK_EXECUTION_WORLDS];
+    /* VALUE proof from ONE actually returned non-OK require call. The Math
+     * owner is identity only, never retained/dereferenced by this result.
+     * Requested caller and returned-cause origin are distinct: an old clinit
+     * cause does not prove a fresh Source entry. Actual C status and preserved
+     * cause.status stay independent. No ambient execution state is sampled. */
+    bool math_failed;
+    const mc_math_execution *math_owner;
+    mc_math_class_status math_status;
+    mc_math_execution_failure math_failure;
 } mc_world_runtime_execution_result;
 
 void mc_world_runtime_execution_result_init(mc_world_runtime_execution_result *);
@@ -68,9 +77,19 @@ void mc_world_runtime_execution_result_init(mc_world_runtime_execution_result *)
 void mc_world_runtime_execution_result_note(mc_world_runtime_execution_result *,
                                             mc_world_storage_status, const char *,
                                             mc_entity_tick_execution_site);
+/* Record only the supplied actual non-OK require return, immediately at that
+ * invocation. First/identical VALUE proof succeeds; invalid/conflicting input
+ * refuses with the result unchanged. This never changes ownership_status,
+ * queries an owner or classifies Source. The caller records refusal separately
+ * in its native channel and retains the original actual Math status/cause. */
+mc_world_storage_status
+mc_world_runtime_execution_result_note_math(mc_world_runtime_execution_result *,
+                                            const mc_math_execution *, mc_math_class_status,
+                                            const mc_math_execution_failure *);
 /* Forward ONLY the actually reached failed child result. Required fresh,
  * disjoint operation results share ONE stable exclusive execution. Prevalidate
  * BOTH complete sparse pending/close ledgers, owner identity, exact conflicts
+ * and actual failed-Math VALUE proofs (including their exact Math owner),
  * and active selection/root compatibility before changing ANY destination.
  * Equal VALUE copies are idempotent; an empty child never erases live records.
  * Invalid/conflicting input returns refusal with the destination unchanged;

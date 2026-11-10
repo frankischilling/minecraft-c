@@ -223,14 +223,20 @@ static bool class_floor(const class_query_execution *query, double value, bool c
             frame->query.chunk_bytecode = pc;
         else
             frame->query.bytecode = pc;
-        const mc_math_class_status status = mc_math_execution_require(
-            query->execution->math,
-            (mc_math_execution_site){chunk ? "lm" : "fd", "a",
-                                     chunk ? "(Ljava/lang/Class;Leq;Ljava/util/List;)V"
-                                           : "(Ljava/lang/Class;Leq;)Ljava/util/List;",
-                                     (int)pc},
-            "b", "(D)I");
+        const mc_math_execution_site site = {chunk ? "lm" : "fd", "a",
+                                             chunk ? "(Ljava/lang/Class;Leq;Ljava/util/List;)V"
+                                                   : "(Ljava/lang/Class;Leq;)Ljava/util/List;",
+                                             (int)pc};
+        mc_math_execution_failure failure;
+        const mc_math_class_status status =
+            mc_math_execution_require_recorded(query->execution->math, site, "b", "(D)I", &failure);
         if (status != MC_MATH_CLASS_OK) {
+            const mc_world_storage_status recorded = mc_world_runtime_execution_result_note_math(
+                query->owned, query->execution->math, status, &failure);
+            mc_world_runtime_execution_result_note(
+                query->owned, recorded, "World Class query actual Math return recording",
+                (mc_entity_tick_execution_site){site.class_name, site.method, site.descriptor,
+                                                site.pc});
             return false; /* Exact Math channel; do not invent a World Source status. */
         }
     }

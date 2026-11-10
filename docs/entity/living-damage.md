@@ -32,6 +32,13 @@ their recorded scope. [Animal damage](animal-damage.md) now
 executes the inherited NULL and non-NULL-attacker body for client Sheep, Pig,
 Cow and Chicken. Other concrete overrides retain their explicit dependencies.
 
+The [shared damage execution entry](damage-execution.md) now carries an actual
+Arrow hit at 741 through these same bodies, with the current nullable Living
+shooter and amount 4. Knockback, sound and Mob death use the caller's defining
+runtime, Registry and shared Math context. Player armor/statistics, ally alert
+and retained fatal drops/death join that same dispatcher. Raw Entity status,
+gameplay result and native continuation remain separate.
+
 ## Recorded Native close
 
 The owned Living sound leaf records its actual World
@@ -43,10 +50,17 @@ pop, including after a non-OK close or later slot reuse. Source completion, raw
 status, first Native failure and Math remain separate; cleanup never promotes a
 previous false continuation or reruns sound.
 
-Four direct controls use genuine constructors and one actual setup GET:
+Entity sound checks its exact initial World token and the same idle lease before
+each next List reload and Entity argument read. A listener that leaves a descendant
+scope open stops the call before a later listener; detailed raw status can remain
+OK while native continuation is false. A null World listener List records its
+typed Source fault at the actual receiver read. These current contracts are
+separate from the earlier controls recorded below.
+
+The earlier four direct controls used genuine constructors and one actual setup GET:
 
 - `sound-pop`: real Skeleton sound and an entered callback's Native binding fault
-  retain the original token with a recorded failed operand of false.
+  retained the original token with a recorded failed operand of false.
 - `sound-capture`: a real callback IO/Throwable and immediate Native capture
   refusal preserve their separate causes and the actual protected handoff.
 - `ally-success`: a real Player/Skeleton and loaded Class/Wolf query return an
@@ -55,13 +69,27 @@ Four direct controls use genuine constructors and one actual setup GET:
   World/query/Math work remains unreached and no close is invented.
 
 Windows x64 MSVC Release and Linux Clang 18 Debug with ASan, UBSan and leak
-detection each pass all four modes: 175 checks, four leaf entries and four
-setup GETs. Their two sound callbacks and one protected capture use the real
-WorldAccess and receipt paths. Both hosts also pass the affected eighteen-test
+detection each passed all four modes: 175 checks, four leaf entries and four
+setup GETs. Their two sound callbacks and one protected capture used the real
+WorldAccess and receipt paths. Both hosts also passed the affected eighteen-test
 selection, with no failures or skips.
 
-Canonical ally initial-pop/capture callback faults and consumed-nonOK remain
-dynamically untested. Full victim damage741, original full-method comparison
+The current per-reload guard stops `sound-pop` after its callback invalidates the
+native binding count, before another Source List read. The detailed World return
+remains raw OK at callback PC53, but sound continuation is false and the saved
+close operand is now `failed=true`. The first native cause is the guard that checks
+the current scope; restoring the projected native count permits only recorded cleanup.
+The historical 175-check record above keeps its earlier operand and capture scope.
+Closing with that saved failure retains the exact World slot and marks execution
+failed. New scopes refuse until checked retirement; repeated recorded close is
+idempotent. The current same-slot generation reuse control belongs to the successful
+ally mode, whose returning scope is freed normally.
+
+That record does not retroactively qualify the later damage join. The current
+22 damage-execution modes pass, including the typed null-List and both Entity-sound
+scope controls. Canonical ally initial-pop/capture callback faults and consumed-nonOK
+retain their separate limits. Complete GS35 wake, delayed Slime splitting,
+arbitrary cold/foreign graphs, original full-method comparison, audiovisual equality
 and FPS remain OPEN.
 The [Player ally ownership contract](player-ally-alert.md#recorded-native-close)
 keeps retained-call retirement separate from its World-token close.

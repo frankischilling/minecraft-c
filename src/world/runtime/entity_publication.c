@@ -689,10 +689,18 @@ static bool insert_floor(mc_world_entity_insert_execution *owned, double argumen
                          int32_t *out, mc_world_entity_error *frame) {
     if (owned != NULL) {
         frame->bytecode = (unsigned int)pc;
-        if (mc_math_execution_require(owned->execution->math,
-                                      (mc_math_execution_site){"fd", "b", "(Lsn;)Z", pc}, "b",
-                                      "(D)I") != MC_MATH_CLASS_OK)
+        mc_math_execution_failure failure;
+        const mc_math_class_status status = mc_math_execution_require_recorded(
+            owned->execution->math, (mc_math_execution_site){"fd", "b", "(Lsn;)Z", pc}, "b", "(D)I",
+            &failure);
+        if (status != MC_MATH_CLASS_OK) {
+            const mc_world_storage_status recorded = mc_world_runtime_execution_result_note_math(
+                owned->owned, owned->execution->math, status, &failure);
+            mc_world_runtime_execution_result_note(
+                owned->owned, recorded, "World single insertion actual Math return recording",
+                (mc_entity_tick_execution_site){"fd", "b", "(Lsn;)Z", pc});
             return false; /* Actual Math channel; no invented Entity status. */
+        }
     }
     *out = mc_math_floor_double(argument);
     return true;

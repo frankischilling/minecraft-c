@@ -188,11 +188,17 @@ void mc_world_accesses_owned_release(mc_world_runtime *world) {
     world->construction.direct_allocation_bytes -= bytes;
 }
 
-bool mc_world_access_next(mc_world_runtime *world, size_t index, unsigned int size_pc,
-                          unsigned int get_pc, unsigned int cast_pc, mc_world_access **out,
-                          bool *has, unsigned int *failed_pc, mc_world_storage_error *error) {
+bool mc_world_access_next_detailed(mc_world_runtime *world, size_t index, unsigned int size_pc,
+                                   unsigned int get_pc, unsigned int cast_pc, mc_world_access **out,
+                                   bool *has, unsigned int *failed_pc,
+                                   mc_world_storage_error *error,
+                                   mc_world_access_source_fault *fault) {
+    if (fault != NULL)
+        *fault = MC_WORLD_ACCESS_SOURCE_FAULT_NONE;
     const mc_world_reference_list *list = world->fields.u;
     *failed_pc = size_pc;
+    if (list == NULL && fault != NULL)
+        *fault = MC_WORLD_ACCESS_SOURCE_FAULT_NULL_SIZE_LIST;
     if (!shape(list)) {
         result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "WorldAccess size receiver metadata");
         return false;
@@ -206,6 +212,8 @@ bool mc_world_access_next(mc_world_runtime *world, size_t index, unsigned int si
     }
     *failed_pc = get_pc;
     list = world->fields.u; /* Independent source receiver before List.get. */
+    if (list == NULL && fault != NULL)
+        *fault = MC_WORLD_ACCESS_SOURCE_FAULT_NULL_GET_LIST;
     if (!shape(list) || index >= list->count) {
         result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "WorldAccess get receiver or index");
         return false;
@@ -239,6 +247,13 @@ bool mc_world_access_next(mc_world_runtime *world, size_t index, unsigned int si
     *failed_pc = 0;
     result(error, MC_WORLD_STORAGE_OK, NULL);
     return true;
+}
+
+bool mc_world_access_next(mc_world_runtime *world, size_t index, unsigned int size_pc,
+                          unsigned int get_pc, unsigned int cast_pc, mc_world_access **out,
+                          bool *has, unsigned int *failed_pc, mc_world_storage_error *error) {
+    return mc_world_access_next_detailed(world, index, size_pc, get_pc, cast_pc, out, has,
+                                         failed_pc, error, NULL);
 }
 
 void mc_world_access_release_held(mc_world_access *world_access) {

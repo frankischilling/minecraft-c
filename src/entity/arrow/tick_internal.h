@@ -11,6 +11,9 @@
 #include "../../world/runtime/mutation/mutation_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../../world/runtime/world_access_internal.h"
+#include "../drop/execution_internal.h"
+#include "../movement/damage_execution_internal.h"
+#include "../player/drop_execution_internal.h"
 #include "../player/tick_math_internal.h"
 #include "../position_internal.h"
 #include "../tick/arrow_base_execution_internal.h"
@@ -43,6 +46,16 @@ typedef union mc_arrow_tick_work {
     mc_world_mutation_error particle;
 } mc_arrow_tick_work;
 
+/* Lazy at actual invoke741, after evaluated victim/shooter holds. This error
+ * and frame never occupy the reused work union. ANY failed invocation keeps
+ * this exact storage until parent-retire snapshot and typed-borrow expiration. */
+typedef struct mc_arrow_tick_hurt_work {
+    mc_entity_damage_execution execution;
+    mc_entity_effect_error error;
+    mc_entity_status status;
+    bool returned, continued, result, close_done, cleanup_started, cleanup_done;
+} mc_arrow_tick_hurt_work;
+
 struct mc_arrow_tick_call {
     mc_arrow_tick_state state;
     mc_arrow_tick_error error, cleanup;
@@ -53,6 +66,8 @@ struct mc_arrow_tick_call {
     bool effect_cleanup_owned;
     mc_arrow_tick_child work_tag;
     mc_arrow_tick_work work;
+    mc_arrow_tick_hurt_work *hurt;
+    size_t hurt_bytes;
     mc_math_execution math;
     mc_math_class_error ray_math_error; /* Actual Ray failure VALUE; no child borrow. */
     mc_entity_tick_execution execution;
@@ -117,6 +132,8 @@ bool mc_arrow_tick_nearby(mc_arrow_tick_call *, mc_world_runtime *);
 bool mc_arrow_tick_intercept(mc_arrow_tick_call *);
 bool mc_arrow_tick_base_source_failure(mc_arrow_tick_call *, const char **, const char **);
 bool mc_arrow_tick_hurt(mc_arrow_tick_call *, mc_entity *, mc_entity *, bool *);
+bool mc_arrow_tick_hurt_allocate(mc_arrow_tick_call *);
+bool mc_arrow_tick_hurt_release(mc_arrow_tick_call *);
 bool mc_arrow_tick_sound(mc_arrow_tick_call *, mc_world_runtime *, const mc_registry_string *,
                          float, unsigned int);
 bool mc_arrow_tick_particle(mc_arrow_tick_call *, mc_world_runtime *, const mc_registry_string *,

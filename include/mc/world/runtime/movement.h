@@ -27,6 +27,9 @@ typedef struct mc_world_movement_error {
     mc_world_chunk_manager_error biome;
     mc_world_mutation_error presentation;
     mc_entity_error entity;
+    /* Typed actual List receiver fault, before any WorldAccess invocation.
+     * This VALUE carries no producer/receipt and is not a generic Source flag. */
+    mc_world_access_source_fault world_access_fault;
     mc_world_access_failure world_access_failure;
 } mc_world_movement_error;
 

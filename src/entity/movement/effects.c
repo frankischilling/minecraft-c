@@ -3,19 +3,27 @@
 #include "../watcher_payload_internal.h"
 
 #include "../mob/damage_internal.h"
+#include "../mob/death_execution_internal.h"
 #include "../mob/death_internal.h"
+#include "../mob/wolf_damage_execution_internal.h"
 #include "../mob/wolf_damage_internal.h"
+#include "../player/damage_alert_execution_internal.h"
 #include "../player/damage_alert_internal.h"
 #include "../player/damage_internal.h"
 #include "../player/damage_wake_internal.h"
+#include "../player/death_execution_internal.h"
 #include "../player/death_internal.h"
+#include "../player/drop_execution_internal.h"
+#include "damage_execution_internal.h"
 #include "effects_internal.h"
 
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
 #include "../../client/input/movement_input_internal.h"
+#include "../../item/render/internal.h"
 #include "../../world/runtime/collision/blocks_internal.h"
 #include "../../world/runtime/runtime_internal.h"
+#include "../../world/runtime/world_access_internal.h"
 #include "../entity_internal.h"
 #include "../mob/internal.h"
 #include "../player/player_internal.h"
@@ -706,8 +714,9 @@ static bool instance_of(mc_entity *source, mc_entity_classes *classes, mc_entity
            answer;
 }
 
-static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_classes *math,
-                   mc_entity *source, int32_t amount, bool *out, mc_entity_effect_error *error) {
+static bool damage_body(mc_entity *entity, mc_registry_classes *classes, mc_math_classes *math,
+                        mc_entity *source, int32_t amount, bool *out, mc_entity_effect_error *error,
+                        mc_entity_damage_execution *owned) {
     if (mc_entity_effect_has_pending(entity)) {
         (void)mc_mob_death_inspect(entity, &error->death);
         (void)mc_mob_wolf_damage_inspect(entity, &error->wolf_damage);
@@ -723,10 +732,16 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_clas
          mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SKELETON) ||
          mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_CREEPER)) &&
         entity->classes->source == MC_ENTITY_CLIENT)
-        return mc_mob_monster_damage_entered(entity, classes, math, source, amount, out, error);
+        return owned == NULL ? mc_mob_monster_damage_entered(entity, classes, math, source, amount,
+                                                             out, error)
+                             : mc_mob_monster_damage_entered_in_execution(entity, source, amount,
+                                                                          out, error, owned);
     if (entity->classes->source == MC_ENTITY_CLIENT &&
         mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_WOLF))
-        return mc_mob_wolf_damage_entered(entity, classes, math, source, amount, out, error);
+        return owned == NULL
+                   ? mc_mob_wolf_damage_entered(entity, classes, math, source, amount, out, error)
+                   : mc_mob_wolf_damage_entered_in_execution(entity, source, amount, out, error,
+                                                             owned);
     if (entity->classes->source == MC_ENTITY_CLIENT &&
         (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SHEEP) ||
          mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PIG) ||
@@ -735,7 +750,10 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_clas
          mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SLIME) ||
          mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SQUID) ||
          mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_GHAST)))
-        return mc_mob_living_damage_entered(entity, classes, math, source, amount, out, error);
+        return owned == NULL
+                   ? mc_mob_living_damage_entered(entity, classes, math, source, amount, out, error)
+                   : mc_mob_living_damage_entered_in_execution(entity, source, amount, out, error,
+                                                               owned);
     if (mc_entity_has_mob(entity)) {
         const mc_entity_class_kind kind = entity->class_literal->kind;
         error->damage_arguments_stored = true;
@@ -766,12 +784,28 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_clas
         }
         if (fields->player.u) {
             if (entity->base.world == NULL) {
+                if (owned != NULL) {
+                    error->living_damage.source_exception = true;
+                    error->living_damage.exception_class = "java/lang/NullPointerException";
+                }
                 fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE,
                      "Player damage sleeping World B receiver", 25);
                 return false;
             }
             if (!entity->base.world->fields.B) {
                 error->source_bytecode = error->player_bytecode = 35;
+                if (owned != NULL) {
+                    mc_entity_damage_execution_select(owned,
+                                                      MC_ENTITY_DAMAGE_CHILD_WAKE_DEPENDENCY);
+                    mc_world_runtime_execution_result_note(
+                        &owned->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                        "Player actual GS35 wake owned mutation dependency; callee not entered",
+                        (mc_entity_tick_execution_site){"gs", "a", "(Lsn;I)Z", 35});
+                    fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
+                         "Player actual GS35 wake owned mutation dependency; callee not entered",
+                         35);
+                    return false;
+                }
                 if (!mc_player_damage_wake_entered(entity, classes, error))
                     return false;
             }
@@ -789,6 +823,10 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_clas
             instance_of(source, entity->classes, MC_ENTITY_CLASS_KIND_ARROW)) {
             mc_world_runtime *world = entity->base.world;
             if (world == NULL) {
+                if (owned != NULL) {
+                    error->living_damage.source_exception = true;
+                    error->living_damage.exception_class = "java/lang/NullPointerException";
+                }
                 fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE,
                      "Player damage difficulty World receiver", 56);
                 return false;
@@ -825,16 +863,40 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_clas
                 attacker = shooter;
             }
         }
-        if (instance_of(attacker, entity->classes, MC_ENTITY_CLASS_KIND_LIVING_ENTITY) &&
-            !mc_player_damage_alert_entered(entity, attacker, error))
-            return false;
+        if (instance_of(attacker, entity->classes, MC_ENTITY_CLASS_KIND_LIVING_ENTITY)) {
+            bool returned;
+            if (owned == NULL)
+                returned = mc_player_damage_alert_entered(entity, attacker, error);
+            else {
+                mc_entity_damage_execution_select(owned, MC_ENTITY_DAMAGE_CHILD_ALERT);
+                const void *prior = entity->local_player->pending_damage_alert;
+                returned = mc_player_damage_alert_entered_in_execution(
+                    owned->execution, owned->code_classes, owned->code, entity, attacker,
+                    &owned->child_status, error, &owned->alert_result);
+                mc_entity_damage_execution_returned(owned);
+                mc_entity_damage_execution_note(owned, &owned->alert_result);
+                if (prior == NULL && entity->local_player->pending_damage_alert != NULL) {
+                    owned->work_kind = MC_ENTITY_DAMAGE_WORK_ALERT;
+                    owned->acquired_work = entity->local_player->pending_damage_alert;
+                }
+                if (!returned && owned->alert_result.ownership_status == MC_WORLD_STORAGE_OK &&
+                    !error->player_alert.native_policy && !error->player_alert.source_exception &&
+                    !error->player_alert.source_error)
+                    owned->unresolved = true;
+            }
+            if (!returned)
+                return false;
+        }
         /* Every Living attacker enters the actual helper, including Player's
          * literal F=false return63. Null/non-Living skips the source call. */
         if (!statistic_get(entity, classes, 18, 148, error))
             return false;
         if (!statistic_dispatch(entity, error, amount, 152))
             return false;
-        return mc_player_living_damage_entered(entity, classes, math, source, amount, out, error);
+        return owned == NULL ? mc_player_living_damage_entered(entity, classes, math, source,
+                                                               amount, out, error)
+                             : mc_player_living_damage_entered_in_execution(entity, source, amount,
+                                                                            out, error, owned);
     }
     mc_entity_effect_attacked_entered(
         entity); /* Both actual damage bodies dispatch inherited ai/af at1. */
@@ -845,6 +907,11 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_clas
     }
     *out = false;
     return true;
+}
+
+static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_classes *math,
+                   mc_entity *source, int32_t amount, bool *out, mc_entity_effect_error *error) {
+    return damage_body(entity, classes, math, source, amount, out, error, NULL);
 }
 
 mc_entity_status mc_entity_effect_damage_with_math(mc_entity *entity, mc_registry_classes *classes,
@@ -863,6 +930,505 @@ mc_entity_status mc_entity_effect_damage_with_math(mc_entity *entity, mc_registr
     if (frame.status == MC_ENTITY_OK && !frame.living_damage.entered)
         mc_entity_effect_error_init(&frame);
     return finish(&frame, error);
+}
+
+void mc_entity_damage_execution_init(mc_entity_damage_execution *frame,
+                                     mc_entity_tick_execution *execution,
+                                     mc_world_runtime_classes *code_classes,
+                                     mc_world_runtime_execution_code code,
+                                     mc_registry_classes *registry) {
+    if (frame == NULL)
+        return;
+    *frame = (mc_entity_damage_execution){
+        .execution = execution, .code_classes = code_classes, .code = code, .registry = registry};
+    mc_world_runtime_execution_result_init(&frame->owned);
+    mc_world_runtime_execution_result_init(&frame->sound_result);
+    mc_world_runtime_execution_result_init(&frame->knockback_result);
+    mc_world_runtime_execution_result_init(&frame->alert_result);
+    mc_world_runtime_execution_result_init(&frame->death_result);
+}
+
+void mc_entity_damage_execution_select(mc_entity_damage_execution *frame,
+                                       mc_entity_damage_child child) {
+    frame->child = child;
+    frame->child_returned = false;
+}
+
+void mc_entity_damage_execution_note(mc_entity_damage_execution *frame,
+                                     const mc_world_runtime_execution_result *result) {
+    if (result->ownership_status != MC_WORLD_STORAGE_OK)
+        mc_world_runtime_execution_result_note(&frame->owned, result->ownership_status,
+                                               result->ownership_error.operation,
+                                               result->ownership_error.site);
+    if (result->math_failed) {
+        const mc_entity_tick_execution_site site = {
+            result->math_failure.caller.class_name, result->math_failure.caller.method,
+            result->math_failure.caller.descriptor, result->math_failure.caller.pc};
+        if (result->math_owner != frame->execution->math) {
+            mc_world_runtime_execution_result_note(
+                &frame->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                "Damage exact child Math proof owner mismatch", site);
+            return;
+        }
+        const mc_world_storage_status noted = mc_world_runtime_execution_result_note_math(
+            &frame->owned, result->math_owner, result->math_status, &result->math_failure);
+        if (noted != MC_WORLD_STORAGE_OK) {
+            mc_world_runtime_execution_result_note(
+                &frame->owned, noted, "Damage exact child Math receipt forwarding", site);
+            return;
+        }
+        frame->math_failed = true;
+        frame->math_owner = result->math_owner;
+        frame->math_status = result->math_status;
+        frame->math_failure = result->math_failure;
+    }
+}
+
+void mc_entity_damage_execution_returned(mc_entity_damage_execution *frame) {
+    frame->child_returned = true;
+}
+
+static mc_world_storage_status damage_native_note(mc_entity_damage_execution *frame,
+                                                  mc_world_storage_status status,
+                                                  const char *operation) {
+    mc_world_runtime_execution_result_note(
+        &frame->owned, status, operation,
+        (mc_entity_tick_execution_site){"native.damage", "owned", "(Lsn;I)Z", -1});
+    return status;
+}
+
+static bool damage_work_matches(const mc_entity_damage_execution *frame) {
+    const mc_entity *p = frame->victim;
+    switch (frame->work_kind) {
+        case MC_ENTITY_DAMAGE_WORK_NONE:
+            return frame->acquired_work == NULL;
+        case MC_ENTITY_DAMAGE_WORK_WOLF:
+            return mc_entity_has_mob(p) && p->mob->pending_wolf_damage == frame->acquired_work;
+        case MC_ENTITY_DAMAGE_WORK_MOB_DEATH:
+            return mc_entity_has_mob(p) && p->mob->pending_death == frame->acquired_work;
+        case MC_ENTITY_DAMAGE_WORK_ALERT:
+            return p->local_player != NULL &&
+                   p->local_player->pending_damage_alert == frame->acquired_work;
+        case MC_ENTITY_DAMAGE_WORK_PLAYER_DEATH:
+            return p->local_player != NULL &&
+                   p->local_player->pending_death == frame->acquired_work;
+    }
+    return false;
+}
+
+bool mc_entity_effect_damage_in_execution(mc_entity_damage_execution *frame, mc_entity *victim,
+                                          mc_entity *source, int32_t amount, bool *out,
+                                          mc_entity_effect_error *error, mc_entity_status *status) {
+    if (frame == NULL)
+        return false;
+    if (frame->execution == NULL || frame->execution->identity != frame->execution ||
+        frame->execution->math == NULL || frame->code_classes == NULL || error == NULL ||
+        status == NULL || out == NULL || frame->entered || frame->active) {
+        (void)damage_native_note(frame, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                 "Damage required fresh stable context/code/outputs");
+        return false;
+    }
+    if (frame->owned.ownership_status != MC_WORLD_STORAGE_OK ||
+        frame->execution->phase != MC_ENTITY_TICK_EXECUTION_OPEN ||
+        frame->execution->math->phase != MC_MATH_EXECUTION_OPEN || frame->execution->math->failed) {
+        (void)damage_native_note(frame, MC_WORLD_STORAGE_BUSY,
+                                 "Damage shared execution already failed or retired");
+        return false;
+    }
+    frame->entered = frame->active = true;
+    frame->victim = victim;
+    frame->error = error;
+    mc_entity_effect_error_init(error);
+    bool returned = false;
+    if (enter_arrow_base(victim, error)) {
+        frame->prior_pending = mc_entity_effect_has_pending(victim);
+        frame->body_invoked = true;
+        returned = damage_body(victim, frame->registry, NULL, source, amount, out, error, frame);
+        mc_entity_release(victim);
+    } else
+        (void)damage_native_note(frame,
+                                 error->status == MC_ENTITY_LIMIT
+                                     ? MC_WORLD_STORAGE_LIMIT
+                                     : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                 "Damage actual victim native admission");
+    frame->active = false;
+    *status = error->status; /* Actual raw C channel; never a continuation witness. */
+    frame->completed = returned && frame->owned.ownership_status == MC_WORLD_STORAGE_OK;
+    return frame->completed;
+}
+
+bool mc_entity_damage_execution_inspect(mc_entity_damage_execution *frame,
+                                        mc_entity_damage_execution_view *out) {
+    if (frame == NULL || out == NULL || !frame->entered || frame->active || frame->cleaned ||
+        !damage_work_matches(frame))
+        return false;
+    mc_entity_damage_execution_view view = {.execution = frame->execution,
+                                            .result = &frame->owned,
+                                            .child = frame->child,
+                                            .acquired_work = frame->acquired_work,
+                                            .completed = frame->completed,
+                                            .unresolved = frame->unresolved};
+    switch (frame->child) {
+        case MC_ENTITY_DAMAGE_CHILD_SOUND:
+            view.result = &frame->sound_result;
+            view.sound = &frame->sound;
+            view.world = frame->sound.world;
+            view.world_created = frame->sound.scope_created;
+            view.world_open = frame->sound.scope_open;
+            break;
+        case MC_ENTITY_DAMAGE_CHILD_KNOCKBACK:
+            view.result = &frame->knockback_result;
+            break;
+        case MC_ENTITY_DAMAGE_CHILD_ALERT:
+            view.result = &frame->alert_result;
+            if (frame->work_kind == MC_ENTITY_DAMAGE_WORK_ALERT) {
+                view.alert = frame->victim->local_player->pending_damage_alert;
+                mc_player_ally_alert_execution_view child;
+                if (!mc_player_ally_alert_execution_inspect(view.alert, &child))
+                    return false;
+                view.result = child.owned;
+                view.world = child.world;
+                view.world_created = child.scope_created;
+                view.world_open = child.scope_open;
+                view.query_returned = child.query_returned;
+                view.query_status = child.query_status;
+                mc_player_ally_alert_state state;
+                if (!mc_player_ally_alert_inspect(view.alert, &state))
+                    return false;
+                view.nearby = &state.error->nearby;
+            }
+            break;
+        case MC_ENTITY_DAMAGE_CHILD_WOLF_QUERY: {
+            if (frame->work_kind != MC_ENTITY_DAMAGE_WORK_WOLF)
+                break; /* Completed Wolf work has already retired its own query. */
+            mc_wolf_damage_execution_view child;
+            if (!mc_mob_wolf_damage_execution_inspect(frame->victim, &child))
+                return false;
+            view.result = child.result;
+            view.nearby = child.nearby;
+            view.world = child.world;
+            view.world_created = child.created;
+            view.world_open = child.open;
+            view.query_status = child.query_status;
+            view.query_returned = child.query_returned;
+            break;
+        }
+        case MC_ENTITY_DAMAGE_CHILD_MOB_DEATH: {
+            view.result = &frame->death_result;
+            mc_mob_death_execution_view child;
+            if (frame->death_work != NULL &&
+                (!mc_entity_has_mob(frame->victim) ||
+                 frame->victim->mob->pending_death != frame->death_work))
+                return false;
+            if (frame->death_work != NULL && mc_entity_has_mob(frame->victim) &&
+                frame->victim->mob->pending_death == frame->death_work &&
+                mc_mob_death_execution_inspect(frame->victim, &child)) {
+                view.mob_drop = child.drop;
+                view.result = child.has_child ? child.child.result : child.result;
+            }
+            break;
+        }
+        case MC_ENTITY_DAMAGE_CHILD_PLAYER_DEATH: {
+            view.result = &frame->death_result;
+            mc_player_death_execution_view child;
+            if (frame->death_work != NULL &&
+                (frame->victim->local_player == NULL ||
+                 frame->victim->local_player->pending_death != frame->death_work))
+                return false;
+            if (frame->death_work != NULL && frame->victim->local_player != NULL &&
+                frame->victim->local_player->pending_death == frame->death_work &&
+                mc_player_death_execution_inspect(frame->victim, &child)) {
+                view.player_drop = child.drop;
+                view.result = child.has_child ? child.child.result : child.result;
+            }
+            break;
+        }
+        default:
+            break;
+    }
+    *out = view;
+    return true;
+}
+
+static mc_entity_damage_failure_kind damage_named_kind(const char *name) {
+    static const char *const exceptions[] = {"java/lang/NullPointerException",
+                                             "java/lang/ClassCastException",
+                                             "java/lang/IllegalStateException",
+                                             "java/lang/IllegalArgumentException",
+                                             "java/lang/IndexOutOfBoundsException",
+                                             "java/lang/ArrayIndexOutOfBoundsException",
+                                             "java/util/ConcurrentModificationException",
+                                             "java/util/NoSuchElementException",
+                                             "java/io/IOException",
+                                             "java/io/EOFException",
+                                             "java/io/UTFDataFormatException"};
+    if (name != NULL) {
+        for (size_t i = 0; i < sizeof(exceptions) / sizeof(*exceptions); ++i)
+            if (strcmp(name, exceptions[i]) == 0)
+                return MC_ENTITY_DAMAGE_FAILURE_SOURCE_EXCEPTION;
+        if (strcmp(name, "java/lang/ExceptionInInitializerError") == 0 ||
+            strcmp(name, "java/lang/NoClassDefFoundError") == 0)
+            return MC_ENTITY_DAMAGE_FAILURE_SOURCE_ERROR;
+    }
+    return MC_ENTITY_DAMAGE_FAILURE_UNRESOLVED;
+}
+
+static bool damage_protected_source(mc_entity_tick_execution *execution,
+                                    mc_entity_tick_execution_world_token token,
+                                    const mc_world_access_failure *active,
+                                    const mc_world_storage_error *cause, const char **name) {
+    if (active->source_null_receiver)
+        return active->receiver == NULL && active->receipt == NULL &&
+               active->render_global == NULL &&
+               mc_world_access_failure_source_exception(active, name);
+    if (token.owner != execution || token.slot >= MC_ENTITY_TICK_EXECUTION_WORLDS ||
+        token.generation == 0 || !execution->lease_used[token.slot] ||
+        execution->world_slots[token.slot].generation != token.generation)
+        return false;
+    const mc_world_access_failure *protected = NULL;
+    const mc_world_access_failure_lease *node = &execution->leases[token.slot];
+    if (!mc_world_access_failure_lease_inspect(node, &protected) ||
+        protected->receiver != active->receiver || protected->receipt != active->receipt ||
+        protected->render_global != active->render_global ||
+        protected->source_null_receiver != active->source_null_receiver)
+        return false;
+    const mc_world_storage_error actual =
+        mc_world_access_callback_error(node->callback_status, node->callback_error);
+    return actual.status == cause->status && actual.operation == cause->operation &&
+           actual.system_error == cause->system_error &&
+           mc_world_access_failure_source_exception(protected, name);
+}
+
+static void damage_named_failure(mc_entity_damage_failure *failure, const char *name,
+                                 const char *operation, mc_entity_tick_execution_site site) {
+    failure->source_proven = true;
+    failure->exception_class = name;
+    failure->operation = operation;
+    failure->site = site;
+    failure->kind = damage_named_kind(name);
+    failure->unresolved = failure->kind == MC_ENTITY_DAMAGE_FAILURE_UNRESOLVED;
+}
+
+bool mc_entity_damage_execution_source_failure(mc_entity_damage_execution *frame,
+                                               mc_entity_damage_failure *out) {
+    mc_entity_damage_execution_view view;
+    if (out == NULL || !mc_entity_damage_execution_inspect(frame, &view) || frame->completed)
+        return false;
+    const mc_entity_effect_error *error = frame->error;
+    mc_entity_damage_failure failure = {
+        .kind = MC_ENTITY_DAMAGE_FAILURE_UNRESOLVED,
+        .operation = error->operation,
+        .site = {error->living_damage.child_site.class_name, error->living_damage.child_site.method,
+                 error->living_damage.child_site.descriptor, error->living_damage.child_site.pc},
+        .math = frame->math_failed ? &frame->math_failure : NULL,
+        .math_owner = frame->math_failed ? frame->math_owner : NULL,
+        .math_status = frame->math_failed ? frame->math_status : MC_MATH_CLASS_OK,
+        .unresolved = true};
+    if (failure.site.class_name == NULL)
+        failure.site = (mc_entity_tick_execution_site){error->source_class, "a", "(Lsn;I)Z",
+                                                       error->source_bytecode};
+    if (frame->child == MC_ENTITY_DAMAGE_CHILD_SOUND && frame->sound.world_returned &&
+        (error->world.world_access_fault == MC_WORLD_ACCESS_SOURCE_FAULT_NULL_SIZE_LIST ||
+         error->world.world_access_fault == MC_WORLD_ACCESS_SOURCE_FAULT_NULL_GET_LIST)) {
+        damage_named_failure(
+            &failure, "java/lang/NullPointerException", error->world.cause.operation,
+            (mc_entity_tick_execution_site){"fd", "a", "(Lsn;Ljava/lang/String;FF)V",
+                                            (int)error->world.world_access_bytecode});
+        *out = failure;
+        return true;
+    }
+    const char *name = NULL;
+    if (frame->child == MC_ENTITY_DAMAGE_CHILD_SOUND && frame->sound.world_returned &&
+        frame->sound.world_status != MC_WORLD_STORAGE_OK &&
+        damage_protected_source(frame->execution, frame->sound.world,
+                                &error->world.world_access_failure, &error->world.cause, &name)) {
+        damage_named_failure(&failure, name, error->world.cause.operation,
+                             (mc_entity_tick_execution_site){"fd", "a",
+                                                             "(Lsn;Ljava/lang/String;FF)V",
+                                                             (int)error->world.bytecode});
+        *out = failure;
+        return true;
+    }
+    if (view.mob_drop != NULL) {
+        mc_entity_drop_state state;
+        mc_entity_drop_execution_view child;
+        if (mc_entity_drop_inspect(view.mob_drop, &state) && state.error != NULL &&
+            state.error->publication != NULL &&
+            mc_entity_drop_execution_inspect(view.mob_drop, &child) && child.publication_returned &&
+            child.publication_status != MC_WORLD_STORAGE_OK) {
+            const mc_world_entity_error *publication = state.error->publication;
+            if (damage_protected_source(frame->execution, child.publication_world.world,
+                                        &publication->world_access_failure, &publication->cause,
+                                        &name)) {
+                damage_named_failure(
+                    &failure, name, publication->cause.operation,
+                    (mc_entity_tick_execution_site){"fd", "c", "(Lsn;)V",
+                                                    (int)publication->world_access_bytecode});
+                *out = failure;
+                return true;
+            }
+        }
+    }
+    if (view.player_drop != NULL) {
+        mc_player_drop_state state;
+        mc_player_drop_execution_view child;
+        if (mc_local_player_drop_inspect(view.player_drop, &state) && state.error != NULL &&
+            state.error->publication != NULL &&
+            mc_local_player_drop_execution_inspect(view.player_drop, &child) &&
+            child.publication_returned && child.publication_status != MC_WORLD_STORAGE_OK) {
+            const mc_world_entity_error *publication = state.error->publication;
+            if (damage_protected_source(frame->execution, child.publication_world.world,
+                                        &publication->world_access_failure, &publication->cause,
+                                        &name)) {
+                damage_named_failure(
+                    &failure, name, publication->cause.operation,
+                    (mc_entity_tick_execution_site){"fd", "c", "(Lsn;)V",
+                                                    (int)publication->world_access_bytecode});
+                *out = failure;
+                return true;
+            }
+        }
+    }
+    /* Query Source classification remains unresolved below unless a current
+     * direct typed fault or independent actual native/Math return proves more.
+     * No legacy copied query classifier runs. */
+    if (error->living_damage.source_exception || error->living_damage.source_error) {
+        damage_named_failure(&failure, error->living_damage.exception_class, error->operation,
+                             failure.site);
+        *out = failure;
+        return true;
+    }
+    if (frame->work_kind == MC_ENTITY_DAMAGE_WORK_ALERT &&
+        (error->player_alert.source_exception || error->player_alert.source_error)) {
+        damage_named_failure(&failure, error->player_alert.exception_class,
+                             error->player_alert.operation,
+                             (mc_entity_tick_execution_site){error->player_alert.child.class_name,
+                                                             error->player_alert.child.method,
+                                                             error->player_alert.child.descriptor,
+                                                             (int)error->player_alert.child.pc});
+        *out = failure;
+        return true;
+    }
+    if (frame->death_work != NULL && frame->child == MC_ENTITY_DAMAGE_CHILD_PLAYER_DEATH &&
+        (error->player_death.source_exception || error->player_death.source_error)) {
+        damage_named_failure(&failure, error->player_death.exception_class,
+                             error->player_death.operation,
+                             (mc_entity_tick_execution_site){error->player_death.child.class_name,
+                                                             error->player_death.child.method,
+                                                             error->player_death.child.descriptor,
+                                                             (int)error->player_death.child.pc});
+        *out = failure;
+        return true;
+    }
+    if (error->registry.status != MC_REGISTRY_OK &&
+        (error->cause == MC_ENTITY_EFFECT_CAUSE_REGISTRY || error->player_bytecode == 148)) {
+        mc_item_render_throwable kind = MC_ITEM_RENDER_NO_THROWABLE;
+        mc_item_render_registry_classification(frame->registry, &error->registry, &kind, &name);
+        failure.registry = &error->registry;
+        if (kind != MC_ITEM_RENDER_NO_THROWABLE) {
+            damage_named_failure(&failure, name, error->operation, failure.site);
+            failure.kind = kind == MC_ITEM_RENDER_SOURCE_ERROR
+                               ? MC_ENTITY_DAMAGE_FAILURE_SOURCE_ERROR
+                               : MC_ENTITY_DAMAGE_FAILURE_SOURCE_EXCEPTION;
+            failure.unresolved = false;
+            *out = failure;
+            return true;
+        }
+    }
+    if ((error->cause == MC_ENTITY_EFFECT_CAUSE_STATISTIC ||
+         error->cause == MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE) &&
+        error->statistic_error.status == MC_PLAYER_STATISTIC_NULL_REFERENCE) {
+        damage_named_failure(&failure, "java/lang/NullPointerException",
+                             error->statistic_error.operation,
+                             (mc_entity_tick_execution_site){error->statistic_error.site.class_name,
+                                                             error->statistic_error.site.method,
+                                                             error->statistic_error.site.descriptor,
+                                                             (int)error->statistic_error.site.pc});
+        *out = failure;
+        return true;
+    }
+    if (frame->owned.ownership_status != MC_WORLD_STORAGE_OK || frame->math_failed ||
+        error->cause == MC_ENTITY_EFFECT_CAUSE_OWNER || error->cause == MC_ENTITY_EFFECT_CAUSE_FP ||
+        error->cause == MC_ENTITY_EFFECT_CAUSE_RANDOM ||
+        error->cause == MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL) {
+        failure.kind = MC_ENTITY_DAMAGE_FAILURE_NATIVE;
+        failure.unresolved = false;
+        if (frame->owned.ownership_status != MC_WORLD_STORAGE_OK) {
+            failure.operation = frame->owned.ownership_error.operation;
+            failure.site = frame->owned.ownership_error.site;
+        } else if (frame->math_failed) {
+            failure.operation = frame->math_failure.cause.operation;
+            failure.site = (mc_entity_tick_execution_site){
+                frame->math_failure.caller.class_name, frame->math_failure.caller.method,
+                frame->math_failure.caller.descriptor, frame->math_failure.caller.pc};
+        }
+    }
+    *out = failure;
+    return true;
+}
+
+mc_world_storage_status mc_entity_damage_execution_native_close(mc_entity_damage_execution *frame) {
+    if (frame == NULL)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    if (frame->active)
+        return damage_native_note(frame, MC_WORLD_STORAGE_BUSY, "Damage actual body still active");
+    if (!frame->entered || frame->cleaned)
+        return MC_WORLD_STORAGE_OK;
+    if (!damage_work_matches(frame))
+        return damage_native_note(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                  "Damage exact acquired actor work identity changed");
+    mc_world_storage_status status = MC_WORLD_STORAGE_OK;
+    if (frame->child == MC_ENTITY_DAMAGE_CHILD_MOB_DEATH) {
+        mc_mob_death_execution_view child;
+        if (frame->death_work != NULL && (!mc_entity_has_mob(frame->victim) ||
+                                          frame->victim->mob->pending_death != frame->death_work))
+            return damage_native_note(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                      "Damage exact acquired Mob death identity changed");
+        if (frame->death_work != NULL && mc_entity_has_mob(frame->victim) &&
+            frame->victim->mob->pending_death == frame->death_work &&
+            mc_mob_death_execution_inspect(frame->victim, &child) && child.drop != NULL)
+            status = mc_entity_drop_native_close(child.drop);
+    } else if (frame->child == MC_ENTITY_DAMAGE_CHILD_PLAYER_DEATH) {
+        mc_player_death_execution_view child;
+        if (frame->death_work != NULL &&
+            (frame->victim->local_player == NULL ||
+             frame->victim->local_player->pending_death != frame->death_work))
+            return damage_native_note(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                      "Damage exact acquired Player death identity changed");
+        if (frame->death_work != NULL && frame->victim->local_player != NULL &&
+            frame->victim->local_player->pending_death == frame->death_work &&
+            mc_player_death_execution_inspect(frame->victim, &child) && child.drop != NULL)
+            status = mc_local_player_drop_native_close(child.drop);
+    } else if (frame->work_kind == MC_ENTITY_DAMAGE_WORK_ALERT)
+        status =
+            mc_player_ally_alert_native_close(frame->victim->local_player->pending_damage_alert);
+    else if (frame->work_kind == MC_ENTITY_DAMAGE_WORK_WOLF &&
+             frame->child == MC_ENTITY_DAMAGE_CHILD_WOLF_QUERY)
+        status = mc_mob_wolf_damage_native_close(frame->victim);
+    else if (frame->sound.entered && frame->sound.scope_created)
+        status = mc_living_damage_sound_native_close(&frame->sound);
+    frame->native_close_status = status;
+    if (status != MC_WORLD_STORAGE_OK)
+        (void)damage_native_note(frame, status, "Damage exact child native close");
+    return status;
+}
+
+mc_entity_status mc_entity_damage_execution_cleanup(mc_entity_damage_execution *frame,
+                                                    mc_entity_effect_error *error) {
+    if (frame == NULL || error == NULL || (frame->entered && frame->error != error))
+        return MC_ENTITY_INVALID_ARGUMENT;
+    if (frame->cleaned)
+        return MC_ENTITY_OK;
+    const mc_world_storage_status closed = mc_entity_damage_execution_native_close(frame);
+    if (closed != MC_WORLD_STORAGE_OK)
+        return closed == MC_WORLD_STORAGE_BUSY ? MC_ENTITY_BUSY : MC_ENTITY_STATE_ERROR;
+    if (frame->acquired_work != NULL && !mc_entity_effect_error_retire(error))
+        return MC_ENTITY_BUSY;
+    frame->acquired_work = NULL;
+    frame->death_work = NULL;
+    frame->work_kind = MC_ENTITY_DAMAGE_WORK_NONE;
+    frame->cleaned = true;
+    return MC_ENTITY_OK;
 }
 
 bool mc_entity_effect_has_pending(const mc_entity *entity) {

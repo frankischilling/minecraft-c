@@ -1,6 +1,9 @@
+#include "wolf_damage_execution_internal.h"
 #include "wolf_damage_internal.h"
 
 #include "../../item/render/internal.h"
+#include "../../world/runtime/collision/class_entities_execution_internal.h"
+#include "../../world/runtime/construction_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../../world/runtime/world_access_internal.h"
 #include "../arrow/references_internal.h"
@@ -25,6 +28,7 @@ struct mc_wolf_damage_work {
     mc_entity *actor, *source;
     mc_world_runtime *world;
     mc_entity_bounds *bounds, *expanded;
+    mc_entity_classes *bounds_classes;
     mc_entity_bounds_error bounds_error;
     mc_world_class_entity_list *wolves;
     mc_world_nearby_error nearby;
@@ -33,6 +37,12 @@ struct mc_wolf_damage_work {
     size_t receipt_count;
     struct mc_mob_death_work *parent_death;
     bool source_held, world_held, source_copied, query_failed;
+    mc_entity_damage_execution *execution;
+    mc_world_runtime_execution_result query_result;
+    mc_entity_tick_execution_world_token query_world;
+    mc_world_storage_status query_status, initial_close_status, native_close_status;
+    bool scope_created, scope_open, query_returned, close_attempted, locals_drained;
+    bool close_failed, close_consumed;
 };
 
 static mc_wolf_damage_site site(const char *cl, const char *method, const char *descriptor,
@@ -229,6 +239,8 @@ static bool target_store(struct mc_wolf_damage_work *w, mc_entity *wolf) {
 }
 
 static bool capture_query(struct mc_wolf_damage_work *w) {
+    if (w->execution != NULL)
+        return true; /* Actual owned kernel/producer already protects the full cause. */
     if (!w->query_failed)
         return true;
     mc_world_nearby_error *error = &w->nearby;
@@ -314,11 +326,25 @@ static void classify_query(struct mc_wolf_damage_work *w) {
     }
 }
 
-static bool group(struct mc_wolf_damage_work *w) {
+static bool group_body(struct mc_wolf_damage_work *w) {
     mc_entity *wolf = w->actor;
     at(w, 101);
     w->world = wolf->base.world;
     w->state.world_identity = (uintptr_t)w->world;
+    if (w->execution != NULL) {
+        mc_entity_damage_execution_select(w->execution, MC_ENTITY_DAMAGE_CHILD_WOLF_QUERY);
+        const mc_world_storage_status captured = mc_entity_tick_execution_push_world(
+            w->execution->execution, w->world,
+            (mc_entity_tick_execution_site){"gi", "a", "(Lsn;I)Z", 101}, &w->query_world);
+        if (captured != MC_WORLD_STORAGE_OK) {
+            mc_world_runtime_execution_result_note(
+                &w->query_result, captured, "Wolf captured World101 ownership",
+                (mc_entity_tick_execution_site){"gi", "a", "(Lsn;I)Z", 101});
+            mc_entity_damage_execution_note(w->execution, &w->query_result);
+            return false;
+        }
+        w->scope_created = w->scope_open = true;
+    }
     if (w->world != NULL) {
         if (!mc_world_runtime_binding_retain(w->world))
             return fail(w, MC_ENTITY_LIMIT, MC_ENTITY_EFFECT_CAUSE_OWNER,
@@ -326,8 +352,10 @@ static bool group(struct mc_wolf_damage_work *w) {
         w->world_held = true;
     }
     const mc_entity_class_literal *wolf_class = NULL;
+    mc_entity_classes *classes =
+        w->execution == NULL ? wolf->classes : w->execution->code_classes->entities;
     at(w, 105);
-    if (mc_entity_class_literal_get(wolf->classes, MC_ENTITY_CLASS_KIND_WOLF, &wolf_class) !=
+    if (mc_entity_class_literal_get(classes, MC_ENTITY_CLASS_KIND_WOLF, &wolf_class) !=
         MC_ENTITY_OK)
         return fail(w, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_OWNER,
                     "Wolf damage Wolf Class literal");
@@ -340,12 +368,13 @@ static bool group(struct mc_wolf_damage_work *w) {
     const double y1 = _mm_cvtsd_f64(_mm_add_sd(_mm_set_sd(wolf->base.y), _mm_set_sd(1.0)));
     const double z1 = _mm_cvtsd_f64(_mm_add_sd(_mm_set_sd(wolf->base.z), _mm_set_sd(1.0)));
     at(w, 137);
-    mc_entity_status status = mc_entity_bounds_pool_get(wolf->classes, x0, y0, z0, x1, y1, z1,
-                                                        &w->bounds, &w->bounds_error);
+    w->bounds_classes = classes;
+    mc_entity_status status =
+        mc_entity_bounds_pool_get(classes, x0, y0, z0, x1, y1, z1, &w->bounds, &w->bounds_error);
     if (status != MC_ENTITY_OK)
         return fail(w, status, MC_ENTITY_EFFECT_CAUSE_OWNER, "Wolf damage actual pooled bounds");
     at(w, 149);
-    status = mc_entity_bounds_expand(wolf->classes, w->bounds, 16.0, 4.0, 16.0, &w->expanded,
+    status = mc_entity_bounds_expand(classes, w->bounds, 16.0, 4.0, 16.0, &w->expanded,
                                      &w->bounds_error);
     if (status != MC_ENTITY_OK)
         return fail(w, status, MC_ENTITY_EFFECT_CAUSE_OWNER, "Wolf damage actual bounds expansion");
@@ -354,10 +383,34 @@ static bool group(struct mc_wolf_damage_work *w) {
         return exception(w, "java/lang/NullPointerException",
                          "Wolf damage null captured query World");
     w->state.query_entered = true;
-    const mc_world_storage_status queried =
-        mc_world_runtime_class_entities(w->world, wolf_class, w->expanded, &w->wolves, &w->nearby);
-    if (queried != MC_WORLD_STORAGE_OK) {
+    bool completed;
+    if (w->execution == NULL) {
+        w->query_status = mc_world_runtime_class_entities(w->world, wolf_class, w->expanded,
+                                                          &w->wolves, &w->nearby);
+        completed = w->query_status == MC_WORLD_STORAGE_OK;
+    } else {
+        completed = mc_world_runtime_class_entities_in_execution(
+            w->execution->execution, w->world, w->execution->code, wolf_class, w->expanded,
+            &w->wolves, &w->nearby, &w->query_status, &w->query_result);
+        w->query_returned = true; /* Exact owned C invocation return, not Source completion. */
+        mc_entity_damage_execution_returned(w->execution);
+        mc_entity_damage_execution_note(w->execution, &w->query_result);
+    }
+    if (!completed) {
         w->query_failed = true;
+        if (w->execution != NULL) {
+            if (w->query_result.ownership_status != MC_WORLD_STORAGE_OK)
+                return false;
+            /* Actual Math/result/query channels remain independent. No copied
+             * loader, after-return receipt retain or numeric Throwable guess. */
+            w->execution->unresolved = true;
+            if (w->query_status != MC_WORLD_STORAGE_OK) {
+                (void)fail(w, MC_ENTITY_WORLD_FAILED, MC_ENTITY_EFFECT_CAUSE_WORLD,
+                           "Wolf actual owned class query");
+                w->state.native_policy = w->error.living_damage.native_policy = false;
+            }
+            return false;
+        }
         (void)fail(w, MC_ENTITY_WORLD_FAILED, MC_ENTITY_EFFECT_CAUSE_WORLD,
                    "Wolf damage actual Wolf class query");
         (void)capture_query(w);
@@ -409,6 +462,123 @@ static bool group(struct mc_wolf_damage_work *w) {
     return true;
 }
 
+static bool group_scope_consumed(const struct mc_wolf_damage_work *w) {
+    if (!w->scope_created || w->execution == NULL)
+        return false;
+    const mc_entity_tick_execution *execution = w->execution->execution;
+    const mc_entity_tick_execution_world_token token = w->query_world;
+    if (token.owner != execution || token.slot >= MC_ENTITY_TICK_EXECUTION_WORLDS ||
+        token.generation == 0 || execution->world_slots[token.slot].generation != token.generation)
+        return false;
+    const mc_entity_tick_execution_world_slot_phase phase =
+        execution->world_slots[token.slot].phase;
+    return phase == MC_ENTITY_TICK_EXECUTION_WORLD_FREE ||
+           phase == MC_ENTITY_TICK_EXECUTION_WORLD_RETAINED;
+}
+
+static bool group_result_quiet(const mc_world_runtime_execution_result *result) {
+    if (result->root_pending)
+        return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (result->pending[i].used)
+            return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (result->closes[i].used)
+            return false;
+    return true;
+}
+
+static mc_world_storage_status group_note(struct mc_wolf_damage_work *w,
+                                          mc_world_storage_status status, const char *operation) {
+    mc_world_runtime_execution_result_note(
+        &w->query_result, status, operation,
+        (mc_entity_tick_execution_site){"gi", "a", "(Lsn;I)Z", 101});
+    mc_entity_damage_execution_note(w->execution, &w->query_result);
+    return status;
+}
+
+static bool group(struct mc_wolf_damage_work *w) {
+    bool completed = group_body(w);
+    if (w->execution == NULL || !w->scope_created)
+        return completed;
+    if (completed && (w->query_result.ownership_status != MC_WORLD_STORAGE_OK ||
+                      w->query_result.selection_ready || !group_result_quiet(&w->query_result))) {
+        (void)group_note(w, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                         "Wolf completed class query result not quiet");
+        completed = false;
+    }
+    w->locals_drained = true;
+    w->close_failed = !completed; /* Actual pre-close operand, never inferred later. */
+    w->close_attempted = true;
+    const mc_world_storage_status closed = mc_entity_tick_execution_pop_world(
+        w->execution->execution, &w->query_world, w->close_failed);
+    w->initial_close_status = closed;
+    w->close_consumed = group_scope_consumed(w);
+    w->scope_open = !w->close_consumed;
+    if (closed != MC_WORLD_STORAGE_OK) {
+        (void)group_note(w, closed, "Wolf actual captured query scope close");
+        return false;
+    }
+    return completed;
+}
+
+bool mc_mob_wolf_damage_execution_inspect(mc_entity *p, mc_wolf_damage_execution_view *out) {
+    if (p == NULL || out == NULL || !mc_entity_has_mob(p) || p->mob->pending_wolf_damage == NULL)
+        return false;
+    struct mc_wolf_damage_work *w = p->mob->pending_wolf_damage;
+    if (w->execution == NULL || w->state.active)
+        return false;
+    *out = (mc_wolf_damage_execution_view){.result = &w->query_result,
+                                           .nearby = &w->nearby,
+                                           .world = w->query_world,
+                                           .query_status = w->query_status,
+                                           .created = w->scope_created,
+                                           .open = w->scope_open,
+                                           .query_returned = w->query_returned};
+    return true;
+}
+
+mc_world_storage_status mc_mob_wolf_damage_native_close(mc_entity *p) {
+    if (p == NULL || !mc_entity_has_mob(p) || p->mob->pending_wolf_damage == NULL)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    struct mc_wolf_damage_work *w = p->mob->pending_wolf_damage;
+    if (w->execution == NULL)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    if (w->state.active)
+        return group_note(w, MC_WORLD_STORAGE_BUSY, "Wolf actual hurt body still active");
+    if (!w->scope_created || w->close_consumed)
+        return MC_WORLD_STORAGE_OK;
+    if (!w->close_attempted || !w->locals_drained)
+        return group_note(w, MC_WORLD_STORAGE_BUSY, "Wolf actual query locals not drained");
+    if (group_scope_consumed(w)) {
+        w->scope_open = false;
+        w->close_consumed = true;
+        return MC_WORLD_STORAGE_OK;
+    }
+    mc_entity_tick_execution *execution = w->execution->execution;
+    const mc_entity_tick_execution_world_token token = w->query_world;
+    if (token.owner != execution || token.slot >= MC_ENTITY_TICK_EXECUTION_WORLDS ||
+        execution->world_slots[token.slot].generation != token.generation ||
+        execution->world_slots[token.slot].phase != MC_ENTITY_TICK_EXECUTION_WORLD_OPEN)
+        return group_note(w, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                          "Wolf recorded query token lacks exact OPEN or consumed proof");
+    mc_entity_tick_execution_world_token current;
+    if (!mc_entity_tick_execution_current_world(execution, &current) ||
+        current.owner != token.owner || current.slot != token.slot ||
+        current.generation != token.generation)
+        return group_note(w, MC_WORLD_STORAGE_BUSY, "Wolf query close awaits exact current scope");
+    if (!group_result_quiet(&w->query_result))
+        return group_note(w, MC_WORLD_STORAGE_BUSY,
+                          "Wolf query close awaits explicit pending/child close completion");
+    const mc_world_storage_status status =
+        mc_entity_tick_execution_pop_world(execution, &token, w->close_failed);
+    w->native_close_status = status;
+    w->close_consumed = group_scope_consumed(w);
+    w->scope_open = !w->close_consumed;
+    (void)group_note(w, status, "Wolf recorded query native close");
+    return status;
+}
+
 static bool same_owner(struct mc_wolf_damage_work *w, bool *out) {
     /* GS.l261 is loaded before the actual GI.A265 argument. */
     if (w->source->local_player == NULL)
@@ -457,12 +627,17 @@ static bool body(struct mc_wolf_damage_work *w, mc_registry_classes *registry,
     w->state.parent_amount = amount;
     at(w, 32);
     w->state.parent_entered = true;
-    const bool parent = mc_mob_damage_living_parent_entered(
-        w->actor, registry, math, w->source, amount, &w->state.parent_result, &w->error);
+    const bool parent =
+        w->execution == NULL
+            ? mc_mob_damage_living_parent_entered(w->actor, registry, math, w->source, amount,
+                                                  &w->state.parent_result, &w->error)
+            : mc_mob_damage_living_parent_entered_in_execution(
+                  w->actor, w->source, amount, &w->state.parent_result, &w->error, w->execution);
     w->state.child =
         site(w->error.living_damage.child_site.class_name, w->error.living_damage.child_site.method,
              w->error.living_damage.child_site.descriptor, w->error.living_damage.child_site.pc);
-    if (w->actor->mob->pending_death != NULL) {
+    if (w->actor->mob->pending_death != NULL &&
+        (w->execution == NULL || w->actor->mob->pending_death == w->execution->death_work)) {
         w->parent_death = w->actor->mob->pending_death;
         w->state.parent_cleanup_owned = true;
     }
@@ -600,6 +775,14 @@ mc_entity_status mc_mob_wolf_damage_cleanup(mc_entity *p, mc_entity_effect_error
         return MC_ENTITY_OK;
     if (w->state.active)
         return cleanup_failed(w, out, MC_ENTITY_BUSY, "Wolf active hurt invocation cleanup");
+    if (w->execution != NULL) {
+        const mc_world_storage_status closed = mc_mob_wolf_damage_native_close(p);
+        if (closed != MC_WORLD_STORAGE_OK)
+            return cleanup_failed(w, out, MC_ENTITY_BUSY, "Wolf recorded query scope cleanup");
+        if (w->execution->sound.entered && w->execution->sound.scope_created &&
+            mc_living_damage_sound_native_close(&w->execution->sound) != MC_WORLD_STORAGE_OK)
+            return cleanup_failed(w, out, MC_ENTITY_BUSY, "Wolf inherited sound scope cleanup");
+    }
     if (w->parent_death != NULL) {
         if (p->mob->pending_death != w->parent_death)
             return cleanup_failed(w, out, MC_ENTITY_STATE_ERROR,
@@ -616,9 +799,9 @@ mc_entity_status mc_mob_wolf_damage_cleanup(mc_entity *p, mc_entity_effect_error
     const mc_entity_bounds *boxes[] = {w->bounds, w->expanded};
     const size_t box_count = (size_t)(boxes[0] != NULL) + (size_t)(boxes[1] != NULL);
     for (size_t i = 0; i < 2; ++i)
-        if (boxes[i] != NULL && (mc_entity_bounds_native_holds(p->classes, boxes[i]) <
+        if (boxes[i] != NULL && (mc_entity_bounds_native_holds(w->bounds_classes, boxes[i]) <
                                      1u + (size_t)(boxes[0] == boxes[1]) ||
-                                 p->classes->bounds_holds < box_count))
+                                 w->bounds_classes->bounds_holds < box_count))
             return cleanup_failed(w, out, MC_ENTITY_STATE_ERROR,
                                   "Wolf damage retained bounds owning occurrences");
     if (p->holds < 1u + (size_t)(w->source_held && w->source == p) ||
@@ -635,9 +818,9 @@ mc_entity_status mc_mob_wolf_damage_cleanup(mc_entity *p, mc_entity_effect_error
                                   "Wolf damage retained query receipt occurrence");
     mc_world_class_entity_list_release(w->wolves);
     if (w->expanded != NULL)
-        (void)mc_entity_bounds_release(p->classes, w->expanded);
+        (void)mc_entity_bounds_release(w->bounds_classes, w->expanded);
     if (w->bounds != NULL)
-        (void)mc_entity_bounds_release(p->classes, w->bounds);
+        (void)mc_entity_bounds_release(w->bounds_classes, w->bounds);
     for (size_t i = 0; i < w->receipt_count; ++i)
         mc_world_access_failure_release(&w->receipts[i]);
     if (w->world_held)
@@ -647,6 +830,11 @@ mc_entity_status mc_mob_wolf_damage_cleanup(mc_entity *p, mc_entity_effect_error
     w->state.cleanup_operation = NULL;
     project(w, out);
     p->mob->pending_wolf_damage = NULL;
+    if (w->execution != NULL && w->execution->acquired_work == w) {
+        w->execution->acquired_work = NULL;
+        w->execution->work_kind = MC_ENTITY_DAMAGE_WORK_NONE;
+        w->execution->death_work = NULL;
+    }
     if (w->source_held)
         mc_entity_release(w->source);
     free(w);
@@ -654,9 +842,9 @@ mc_entity_status mc_mob_wolf_damage_cleanup(mc_entity *p, mc_entity_effect_error
     return MC_ENTITY_OK;
 }
 
-bool mc_mob_wolf_damage_entered(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
-                                mc_entity *source, int32_t amount, bool *out,
-                                mc_entity_effect_error *e) {
+static bool wolf_entered(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
+                         mc_entity *source, int32_t amount, bool *out, mc_entity_effect_error *e,
+                         mc_entity_damage_execution *execution) {
     if (e == NULL)
         return false;
     if (p == NULL || !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_WOLF) || !mc_entity_has_mob(p) ||
@@ -684,6 +872,8 @@ bool mc_mob_wolf_damage_entered(mc_entity *p, mc_registry_classes *registry, mc_
     }
     w->actor = p;
     w->source = source;
+    w->execution = execution;
+    mc_world_runtime_execution_result_init(&w->query_result);
     w->error = *e;
     w->error.damage_arguments_stored = true;
     w->error.damage_source_identity = (uintptr_t)source;
@@ -697,6 +887,10 @@ bool mc_mob_wolf_damage_entered(mc_entity *p, mc_registry_classes *registry, mc_
                                       .amount = amount};
     mc_world_nearby_error_init(&w->nearby);
     p->mob->pending_wolf_damage = w;
+    if (execution != NULL) {
+        execution->work_kind = MC_ENTITY_DAMAGE_WORK_WOLF;
+        execution->acquired_work = w; /* THIS actual allocation, before any callback. */
+    }
     bool answer = false;
     const bool completed = body(w, registry, math, &answer);
     w->state.active = false;
@@ -711,4 +905,17 @@ bool mc_mob_wolf_damage_entered(mc_entity *p, mc_registry_classes *registry, mc_
     e->living_damage.result = answer;
     *out = answer;
     return true;
+}
+
+bool mc_mob_wolf_damage_entered(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
+                                mc_entity *source, int32_t amount, bool *out,
+                                mc_entity_effect_error *e) {
+    return wolf_entered(p, registry, math, source, amount, out, e, NULL);
+}
+
+bool mc_mob_wolf_damage_entered_in_execution(mc_entity *p, mc_entity *source, int32_t amount,
+                                             bool *out, mc_entity_effect_error *e,
+                                             mc_entity_damage_execution *execution) {
+    return execution != NULL &&
+           wolf_entered(p, execution->registry, NULL, source, amount, out, e, execution);
 }

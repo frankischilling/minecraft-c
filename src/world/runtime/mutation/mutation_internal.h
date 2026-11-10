@@ -12,6 +12,10 @@
 mc_registry_error mc_world_mutation_empty_registry(void);
 void mc_world_mutation_error_init(mc_world_mutation_error *error);
 mc_world_mutation_error mc_world_mutation_empty_error(void);
+/* Actual client dp.b(World,IIII): full metadata selects only one support read,
+ * then inherited drop precedes the notifying air setter on support loss. */
+bool mc_world_mutation_ladder_neighbor(mc_world_runtime *, const mc_block *, int32_t, int32_t,
+                                       int32_t, int32_t, mc_world_mutation_error *);
 /* Ordinary client VM bodies. A nonnull GAME World is held/entered by the
  * enclosing operation; nullable source World reaches its first dereference.
  * Native completion and each private predicate's ordinary value are separate. */

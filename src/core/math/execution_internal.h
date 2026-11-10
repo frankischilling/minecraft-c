@@ -113,6 +113,31 @@ failed:
     return status;
 }
 
+/* ONE SAME actual require invocation. Successful return preserves failure.
+ * A non-OK return records the REQUESTED C caller, even when require rejected
+ * before selecting a use (retiring) or returned an already-failed cause. The
+ * copied child/<clinit> PC is that returned cause's origin; it does not prove
+ * a fresh initializer or Source body entered during this invocation. The
+ * returned C status remains separate from cause.status. No retry, owner query,
+ * extra ensure, retain or ambient after-child failure sampling occurs.
+ * failure, when present, is fresh/disjoint caller VALUE storage, not an owner. */
+static inline mc_math_class_status
+mc_math_execution_require_recorded(mc_math_execution *execution, mc_math_execution_site caller,
+                                   const char *method, const char *descriptor,
+                                   mc_math_execution_failure *failure) {
+    const mc_math_class_status status =
+        mc_math_execution_require(execution, caller, method, descriptor);
+    if (status != MC_MATH_CLASS_OK && failure != NULL) {
+        *failure = (mc_math_execution_failure){.caller = caller,
+                                               .child = {"in", method, descriptor, -1},
+                                               .cause = *mc_math_execution_cause(execution)};
+        if (failure->cause.source_pc >= 0)
+            failure->child =
+                (mc_math_execution_site){"in", "<clinit>", "()V", failure->cause.source_pc};
+    }
+    return status;
+}
+
 /* Checked native cleanup only. Consult/release owned, never the unused borrowed
  * declared object. Failure retains the exact slot and first source cause.
  * After retirement begins require rejects before touching borrowed fields. */

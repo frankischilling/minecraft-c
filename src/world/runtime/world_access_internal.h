@@ -94,6 +94,15 @@ mc_world_storage_status mc_world_access_call_tile_entity_dirty(mc_world_access *
 bool mc_world_access_next(mc_world_runtime *world, size_t index, unsigned int size_pc,
                           unsigned int get_pc, unsigned int cast_pc, mc_world_access **out,
                           bool *has, unsigned int *failed_pc, mc_world_storage_error *error);
+/* SAME body and old out/has/status conventions. Optional fresh/disjoint fault
+ * is cleared for this invocation, then written only at a reached NULL List
+ * receiver read. Nonnull malformed metadata remains NONE. No callback, owner
+ * grant, later field reread or Source exception inference occurs here. */
+bool mc_world_access_next_detailed(mc_world_runtime *world, size_t index, unsigned int size_pc,
+                                   unsigned int get_pc, unsigned int cast_pc, mc_world_access **out,
+                                   bool *has, unsigned int *failed_pc,
+                                   mc_world_storage_error *error,
+                                   mc_world_access_source_fault *fault);
 void mc_world_access_release_held(mc_world_access *world_access);
 mc_world_storage_error mc_world_access_callback_error(mc_world_storage_status status,
                                                       mc_world_storage_error cause);

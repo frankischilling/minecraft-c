@@ -1,5 +1,35 @@
 # Development status
 
+The [shared damage entry](entity/damage-execution.md) now connects actual Arrow
+impact to the existing Living, Monster, Wolf and Player bodies. Player drops,
+Inventory scatter and fatal death share that execution. Presentation loops stop
+before another Source read after scope drift. Math attribution records the actual
+failed require call; typed null-List faults retain their WorldAccess origin.
+Complete Player wake still reaches its dependency at `gs.a(Entity,int):35`.
+
+The client [Ladder neighbor body](world/ladder.md) checks its metadata-selected
+support, performs the inherited drop, then invokes the notifying air setter.
+Twenty fresh original records match each native host; both original captures
+use Windows JDK17. Ordinary Item publication has separate native controls.
+
+The complete strict Windows MSVC Release client build and all 1,099 configured
+tests pass in 475.42 seconds. Linux Clang 18 Debug ASan/UBSan with leak detection
+passes all 251 selected tests in 85.93 seconds. Neither run skips or leaves tests
+unrun. Final LF normalization preserves the exact test inventories and Python
+AST; all forty affected presentation checks also pass again on each host. Full
+Linux-suite qualification remains separate.
+
+Two fresh monitor-2 encounters pass: saved Arrow/Pig with 462 checks and Zombie
+with 466. Pig health changes from ten to six with no surviving Arrow; Zombie
+damage changes Player health from twenty to fifteen and statistic 2021 by five.
+Both return terrain/HUD, pause and save through SDK input, pass independent state
+readback and remove both windows. All six captures were inspected. These finite
+scenes establish neither original audiovisual equality nor a measured FPS gain.
+The [test record](testing.md#arrow-victim-damage-player-drops-and-presentation-ownership)
+retains the source freeze, failed attempts and exact remaining limits.
+
+The preceding checkpoints below retain their original qualification scopes.
+
 The [quiet metadata setter](world/blocks.md) now writes the current Chunk's
 NibbleArray rather than a fixed old backing. Fifteen fresh original client
 records match the native normal/replacement/null/short/Blank/domain cases.

@@ -60,6 +60,13 @@ Only a newly acquired parent death is included in cleanup. Earlier pending
 work is rejected, and neither cleanup nor retry replays damage or group stores.
 Typed diagnostic pointers expire when checked cleanup consumes the call.
 
+The [shared damage execution entry](damage-execution.md) also enters this same
+wrapper from Arrow741. It uses the caller's actual defining runtime, Registry and
+shared Math context. World101 is captured before the Class and bounds operands;
+the actual class query keeps its stable canonical result through protected capture
+and recorded native close. Copying a diagnostic does not acquire a receipt or
+close authority, and unqualified query failures remain explicitly unresolved.
+
 `entity.wolf_damage` uses real World, Chunk, Wolf, Player, Cow, Arrow, Item, watcher,
 String and result-List owners. Authored controls cover group membership and
 order, existing targets, tame/angry/self/nullable branches, direct Arrow shooter
@@ -69,8 +76,9 @@ after the captured hurt sound. Failure controls check partial effects, active
 reentry refusal, retained parent death, native refusal while retiring bounds, provenance
 failure and checked cleanup without source-field repair.
 
-This wrapper is exercised through the existing public damage facade. The
-execution-owned Arrow impact join remains separate unfinished work, including
-its reached World/Math descendants and protected cleanup. Authored native group
-controls and finite original component comparisons do not establish unrestricted
-Wolf behavior, complete Arrow hits, original audiovisual equality or FPS parity.
+The existing public damage facade and the owned Arrow impact route share this
+wrapper. Their authored group, owner and cleanup controls retain their separate
+finite scopes; the original component captures are not retroactively expanded by
+the join. Complete Player wake, delayed Slime splitting and arbitrary cold/foreign
+graphs remain outside the complete owned combat path. These results do not
+establish unrestricted Wolf behavior, original audiovisual equality or FPS parity.

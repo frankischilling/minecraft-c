@@ -1,3 +1,4 @@
+#include "death_execution_internal.h"
 #include "death_internal.h"
 
 #include "../../block/registry/registry_internal.h"
@@ -29,6 +30,10 @@ struct mc_player_death_work {
     mc_player_drop_error drop_error, drop_cleanup;
     mc_player_container_call *close;
     mc_player_container_error close_error, close_cleanup;
+    bool execution_owned, drop_returned, completed;
+    mc_player_drop_execution_context execution;
+    mc_world_runtime_execution_result drop_result;
+    mc_player_drop_status drop_status;
 };
 
 static mc_player_death_state view(const struct mc_player_death_work *w) {
@@ -238,6 +243,16 @@ static bool drop_failed(struct mc_player_death_work *w, mc_entity_effect_error *
 }
 
 static bool retire_drop(struct mc_player_death_work *w, mc_entity_effect_error *e) {
+    if (w->execution_owned && w->drop != NULL) {
+        const mc_world_storage_status closed = mc_local_player_drop_native_close(w->drop);
+        if (closed != MC_WORLD_STORAGE_OK) {
+            mc_world_runtime_execution_result_note(
+                &w->drop_result, closed, "Player death completed owned scatter close",
+                (mc_entity_tick_execution_site){"gs", "b", "(Lsn;)V", 61});
+            project(w, e);
+            return false;
+        }
+    }
     if (mc_local_player_drop_retire(&w->drop, &w->drop_cleanup) != MC_PLAYER_DROP_OK) {
         w->state.cleanup_status = MC_ENTITY_BUSY;
         w->state.cleanup_operation = w->drop_cleanup.operation;
@@ -273,10 +288,25 @@ static bool apple(struct mc_player_death_work *w, mc_entity_effect_error *e) {
         return fail(w, e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_OWNER,
                     "Player death actual Apple Stack construction");
     at(w, 61);
-    if (!drop_failed(w, e,
-                     mc_local_player_drop_stack_begin(w->registry, w->math, w->actor, w->apple,
-                                                      true, &w->drop, &w->drop_error)))
+    w->drop_returned = false;
+    w->drop_status = MC_PLAYER_DROP_OK;
+    if (w->execution_owned)
+        w->drop_returned = mc_local_player_drop_stack_begin_in_execution(
+            w->execution.execution, w->execution.code_classes, w->execution.code, w->registry,
+            w->actor, w->apple, true, &w->drop, &w->drop_status, &w->drop_error, &w->drop_result);
+    else {
+        w->drop_status = mc_local_player_drop_stack_begin(w->registry, w->math, w->actor, w->apple,
+                                                          true, &w->drop, &w->drop_error);
+        w->drop_returned = w->drop_status == MC_PLAYER_DROP_OK;
+    }
+    if (!w->drop_returned) {
+        (void)drop_failed(w, e, w->drop_status);
+        if (w->drop_status == MC_PLAYER_DROP_OK) {
+            w->state.child = w->drop_error.site;
+            project(w, e);
+        }
         return false;
+    }
     w->state.apple_returned = true;
     ++w->state.drops_returned;
     if (!retire_drop(w, e))
@@ -288,6 +318,34 @@ static bool apple(struct mc_player_death_work *w, mc_entity_effect_error *e) {
 
 static bool trig(struct mc_player_death_work *w, mc_entity_effect_error *e, float angle, bool sine,
                  float *out) {
+    if (w->execution_owned) {
+        mc_math_execution *math = w->execution.execution->math;
+        mc_math_execution_failure failure;
+        const mc_math_class_status status = mc_math_execution_require_recorded(
+            math, (mc_math_execution_site){"gs", "b", "(Lsn;)V", (int)w->state.site.pc},
+            sine ? "a" : "b", "(F)F", &failure);
+        if (status != MC_MATH_CLASS_OK) {
+            const mc_world_storage_status recorded = mc_world_runtime_execution_result_note_math(
+                &w->drop_result, math, status, &failure);
+            mc_world_runtime_execution_result_note(
+                &w->drop_result, recorded, "Player death actual Math return recording",
+                (mc_entity_tick_execution_site){"gs", "b", "(Lsn;)V", (int)w->state.site.pc});
+            e->math = failure.cause;
+            project(w, e);
+            return false;
+        }
+        const mc_math_trig *table = mc_math_classes_table(math->owned);
+        if (table == NULL) {
+            mc_world_runtime_execution_result_note(
+                &w->drop_result, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                "Player death owned actual Math table",
+                (mc_entity_tick_execution_site){"gs", "b", "(Lsn;)V", (int)w->state.site.pc});
+            project(w, e);
+            return false;
+        }
+        *out = sine ? mc_math_sin(table, angle) : mc_math_cos(table, angle);
+        return true;
+    }
     if (!w->math_held) {
         if (mc_math_classes_retain(w->math, &e->math) != MC_MATH_CLASS_OK)
             return fail(w, e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_MATH,
@@ -355,10 +413,25 @@ static bool body(struct mc_player_death_work *w, mc_entity *source, mc_entity_ef
     if (is_notch && !apple(w, e))
         return false;
     at(w, 68);
-    const mc_entity_status scattered =
-        mc_inventory_player_scatter_entered(p->local_player->fields.player.c, w->registry, w->math,
-                                            &w->state, &w->drop, &w->drop_error, &w->drop_cleanup);
-    if (scattered != MC_ENTITY_OK) {
+    mc_entity_status scattered = MC_ENTITY_OK;
+    bool scatter_returned;
+    if (w->execution_owned)
+        scatter_returned = mc_inventory_player_scatter_entered_in_execution(
+            w->execution.execution, w->execution.code_classes, w->execution.code,
+            p->local_player->fields.player.c, w->registry, &w->state, &w->drop, &w->drop_error,
+            &w->drop_cleanup, &scattered, &w->drop_status, &w->drop_returned, &w->drop_result);
+    else {
+        scattered = mc_inventory_player_scatter_entered(p->local_player->fields.player.c,
+                                                        w->registry, w->math, &w->state, &w->drop,
+                                                        &w->drop_error, &w->drop_cleanup);
+        scatter_returned = scattered == MC_ENTITY_OK;
+    }
+    if (!scatter_returned) {
+        if (scattered == MC_ENTITY_OK) {
+            w->state.child = w->drop_error.site;
+            project(w, e);
+            return false;
+        }
         e->status = scattered;
         e->cause = w->state.source_exception && w->state.exception_class != NULL &&
                            w->state.drop_error == NULL
@@ -462,6 +535,24 @@ bool mc_player_death_inspect(const mc_entity *p, mc_player_death_state *out) {
     return true;
 }
 
+bool mc_player_death_execution_inspect(mc_entity *p, mc_player_death_execution_view *out) {
+    if (p == NULL || p->local_player == NULL || out == NULL ||
+        p->local_player->pending_death == NULL)
+        return false;
+    struct mc_player_death_work *w = p->local_player->pending_death;
+    if (!w->execution_owned)
+        return false;
+    *out = (mc_player_death_execution_view){.execution = w->execution.execution,
+                                            .result = &w->drop_result,
+                                            .drop = w->drop,
+                                            .drop_status = w->drop_status,
+                                            .drop_returned = w->drop_returned,
+                                            .completed = w->completed};
+    if (w->drop != NULL)
+        out->has_child = mc_local_player_drop_execution_inspect(w->drop, &out->child);
+    return true;
+}
+
 static mc_entity_status cleanup_failed(struct mc_player_death_work *w, mc_entity_effect_error *e,
                                        mc_entity_status status, const char *operation) {
     w->state.cleanup_status = status;
@@ -482,6 +573,17 @@ mc_entity_status mc_player_death_cleanup(mc_entity *p, mc_entity_effect_error *e
     if (w->state.active)
         return cleanup_failed(w, e, MC_ENTITY_BUSY, "Player active death/K native cleanup");
     const bool had_drop = w->drop != NULL;
+    if (w->execution_owned && had_drop) {
+        const mc_world_storage_status closed = mc_local_player_drop_native_close(w->drop);
+        if (closed != MC_WORLD_STORAGE_OK)
+            return cleanup_failed(w, e,
+                                  closed == MC_WORLD_STORAGE_BUSY    ? MC_ENTITY_BUSY
+                                  : closed == MC_WORLD_STORAGE_LIMIT ? MC_ENTITY_LIMIT
+                                  : closed == MC_WORLD_STORAGE_ALLOCATION_FAILED
+                                      ? MC_ENTITY_ALLOCATION_FAILED
+                                      : MC_ENTITY_WORLD_FAILED,
+                                  "Player death exact owned scatter native close");
+    }
     if (mc_local_player_drop_retire(&w->drop, &w->drop_cleanup) != MC_PLAYER_DROP_OK)
         return cleanup_failed(w, e, MC_ENTITY_BUSY, w->drop_cleanup.operation);
     if (had_drop)
@@ -514,7 +616,9 @@ mc_entity_status mc_player_death_cleanup(mc_entity *p, mc_entity_effect_error *e
 }
 
 static bool entered(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
-                    mc_entity *source, bool closing, mc_entity_effect_error *e) {
+                    mc_entity *source, bool closing, mc_entity_effect_error *e,
+                    const mc_player_drop_execution_context *execution,
+                    mc_world_runtime_execution_result *owned) {
     if (p == NULL || p->local_player == NULL ||
         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) || p->phase != MC_ENTITY_READY ||
         p->classes->source != MC_ENTITY_CLIENT) {
@@ -548,6 +652,11 @@ static bool entered(mc_entity *p, mc_registry_classes *registry, mc_math_classes
     w->actor = p;
     w->registry = registry;
     w->math = math;
+    if (execution != NULL) {
+        w->execution_owned = true;
+        w->execution = *execution;
+        mc_world_runtime_execution_result_init(&w->drop_result);
+    }
     w->state = (mc_player_death_state){.entered = true,
                                        .pending = true,
                                        .active = true,
@@ -558,9 +667,20 @@ static bool entered(mc_entity *p, mc_registry_classes *registry, mc_math_classes
     p->local_player->pending_death = w;
     at(w, 0);
     const bool returned = closing ? close_body(w, e) : body(w, source, e);
+    w->completed = returned;
     w->state.active = false;
     w->state.returned = returned;
     project(w, e);
+    if (w->execution_owned) {
+        const mc_world_storage_status forwarded =
+            mc_world_runtime_execution_result_forward(owned, &w->drop_result);
+        if (forwarded != MC_WORLD_STORAGE_OK) {
+            mc_world_runtime_execution_result_note(
+                owned, forwarded, "Player death exact owned scatter result forwarding",
+                (mc_entity_tick_execution_site){"gs", "b", "(Lsn;)V", 68});
+            return false;
+        }
+    }
     if (!returned)
         return false;
     return mc_player_death_cleanup(p, e) == MC_ENTITY_OK;
@@ -568,10 +688,32 @@ static bool entered(mc_entity *p, mc_registry_classes *registry, mc_math_classes
 
 bool mc_player_death_entered(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
                              mc_entity *source, mc_entity_effect_error *e) {
-    return entered(p, registry, math, source, false, e);
+    return entered(p, registry, math, source, false, e, NULL, NULL);
 }
 
 bool mc_player_dead_entered(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
                             mc_entity_effect_error *e) {
-    return entered(p, registry, math, NULL, true, e);
+    return entered(p, registry, math, NULL, true, e, NULL, NULL);
+}
+
+bool mc_player_death_entered_in_execution(mc_entity_tick_execution *execution,
+                                          mc_world_runtime_classes *code_classes,
+                                          mc_world_runtime_execution_code code, mc_entity *p,
+                                          mc_registry_classes *registry, mc_entity *source,
+                                          mc_entity_status *status, mc_entity_effect_error *e,
+                                          mc_world_runtime_execution_result *owned) {
+    if (owned != NULL)
+        mc_world_runtime_execution_result_init(owned);
+    if (execution == NULL || execution->identity != execution || execution->math == NULL ||
+        code_classes == NULL || status == NULL || e == NULL || owned == NULL) {
+        mc_world_runtime_execution_result_note(
+            owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+            "Player death execution/code/outputs required",
+            (mc_entity_tick_execution_site){"gs", "b", "(Lsn;)V", 0});
+        return false;
+    }
+    const mc_player_drop_execution_context descriptor = {execution, code_classes, code};
+    const bool returned = entered(p, registry, NULL, source, false, e, &descriptor, owned);
+    *status = e->status;
+    return returned && owned->ownership_status == MC_WORLD_STORAGE_OK;
 }

@@ -12,6 +12,13 @@ Its health child dispatches to Player armor for LocalPlayer and to the inherited
 health subtraction for the supported Mobs. This preserves the original virtual
 call at both the fresh-hit and stronger-hit sites.
 
+The [shared damage execution entry](damage-execution.md) connects that same
+Player body to owned Arrow741. The Arrow supplies its evaluated nullable Living
+shooter and amount 4; ally alert, statistics, armor, sound and reached death use
+the caller's actual defining runtime, Registry and shared Math context. A native
+or Math refusal can leave raw Entity status OK while stopping before a later
+health store, wrapper result or child call.
+
 Fatal LocalPlayer damage now continues through the genuine Player death body.
 The inherited LivingEntity death flag, Player state changes, Inventory drops
 and death statistic execute before the hurt call returns. The
@@ -55,8 +62,17 @@ returns. Aliased slots remain separate ordered occurrences. A failure preserves
 earlier drops and cleared slots, plus the actual pending child and current slot;
 native cleanup neither rolls the action back nor repeats it. Attacker-dependent
 motion or the null-attacker zeroing branch, final offset and death statistic
-follow in source order. The reached Player removal body also performs its two
-actual Container closes, including aliases, through checked close ownership.
+follow in source order. The separate later Player removal body performs its two
+actual Container closes, including aliases, through checked close ownership;
+fatal `gs.b(Entity)` does not close a Container.
+
+The owned Player drop and death entries share these production bodies. They keep
+the actual constructor and fresh publication World captures, stable canonical
+child results, and all 36 main plus four armor slot visits in Source order. A
+false continuation, including raw OK, stops before the current slot clear and
+later slots. The caller drains the actual pending/close capsules before recorded
+native close and checked cleanup; cleanup preserves earlier drops and Random
+progress and does not replay scatter.
 
 ## Verification scope
 
@@ -121,7 +137,11 @@ separates those results from incomplete local suites and unresolved GUI failures
 
 The [sleeping wake](player-damage-wake.md) and
 [Living ally-alert body](player-ally-alert.md) have separate finite source,
-ownership and comparison scopes. Arrow attacker resolution remains unfinished.
+ownership and comparison scopes. The owned Arrow damage join now includes the
+actual shooter argument and shared Player drop/death entries; their contract is
+recorded in [damage execution](damage-execution.md). Complete sleeping wake still
+reaches the explicit GS35 dependency until notifying Bed occupancy and its full
+recursive mutation tree use that same execution.
 Original runtime comparisons for broader fatal inputs and
 scattered Inventories remain separate work. The supported loaded Overworld
 respawn route has its [declared scope](../client/death-respawn.md), including
@@ -129,5 +149,6 @@ saved-Bed validation, exact placement and missing-Bed notification. Prepared
 [Bed use and sleep/wake scenes](../client/bed-sleep.md) retain their own scope.
 Unrestricted sleep gameplay, Nether transition and centered
 ChunkProvider branches remain unavailable.
-These results do not establish full combat, unrestricted survival, audio output
-equality or a frame-rate improvement.
+Arbitrary cold/foreign graphs and delayed Slime splitting retain their separate
+limits. These results do not establish full combat, unrestricted survival, audio
+output equality or a frame-rate improvement.

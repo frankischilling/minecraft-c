@@ -444,6 +444,8 @@ bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *b
         case MC_BLOCK_DOOR:
             return unavailable(world, block, "le", "hc", "Block neighbor hook", error);
         case MC_BLOCK_LADDER:
+            if (block->classes->options.side == MC_REGISTRY_CLIENT)
+                return mc_world_mutation_ladder_neighbor(world, block, x, y, z, source_id, error);
             return unavailable(world, block, "dp", "cg", "Block neighbor hook", error);
         case MC_BLOCK_LEVER:
             if (block->classes->options.side == MC_REGISTRY_CLIENT)

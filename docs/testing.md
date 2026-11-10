@@ -1,5 +1,110 @@
 # Test scope and reproduction
 
+## Arrow victim damage, Player drops and presentation ownership
+
+The [damage contract](entity/damage-execution.md) connects Arrow bytecode 741
+to the same Living, Monster, Wolf and Player bodies used by existing entries.
+It preserves the current nullable shooter, literal damage four, rejected-hit
+reflection, accepted-hit sound `random.drr` and the original flight tail.
+Player drop/scatter/fatal death share that execution; complete Player wake
+still reaches an explicit dependency at `gs.a(Entity,int):35`.
+
+Executed controls first expose the old unentered Arrow boundary, unrelated
+callback death adoption, an older independent Math failure incorrectly attached
+to a later death, null-List Source failure misclassification, and presentation
+callbacks continuing after scope drift. Fixes retain actual canonical child
+results and exact tokens. They add no Source retry, field repair or ambient
+context fallback. The Math proof records one actual failed require return;
+the WorldAccess fault is captured at the actual null receiver read.
+
+Player controls cover every main/armor scatter slot, the Notch Apple prefix,
+two World receivers sharing the defining graph, native false with raw OK and
+retained publication.
+Arrow controls cover Pig, Wolf, live/fatal Player, reached wake, known and
+unknown callback classes, exact allocation limits, native close refusal,
+published fatal drops, scope drift and a prior caller's pending death.
+Protocol controls run under normal Python and `-O`.
+
+Fixture corrections retain their failed observations. The unchanged original
+uses `random.drr`, records raw damage four in the Player statistic and leaves
+a reflected Arrow at yaw minus ninety degrees. A selected victim occurrence
+survives in Source `World.R`; hold accounting includes that actual list rather
+than clearing it. Public Player drop inspection intentionally refuses while
+the call is ACTIVE; the fatal callback control observes its actual private
+insertion/token state instead. Compile failures and stale-binding setup
+refusals provide no native execution credit.
+
+The [Ladder collector](../tests/reference/world/ladder_neighbor/README.md)
+compares twenty unchanged-original cached-World calls: all metadata values
+zero through fifteen, then four missing matching walls. The native fixture
+also checks ordinary drops and failure ordering. The finite original fixture
+sets World B and excludes Item construction; notification counts remain
+separate because its lighting preparation differs.
+
+The final strict MSVC Release client build passes, followed by all 1,099
+configured Windows tests in 475.42 seconds. Linux Clang 18 Debug ASan/UBSan with
+leak detection passes all 251 selected tests in 85.93 seconds. Neither run has
+failed, skipped or unrun tests. The Linux selection includes both actual
+World-to-SDK cleanup modes and their normal/optimized transport controls;
+it is not a full Linux-suite qualification.
+
+Both hosts pass current source admission: six maps, 14,641 entries over 6,024
+distinct files, five live bundles with 224 source/helper pins and five exact
+bundle digests. The complete 6,025-file public inventory stays frozen through
+builds, native tests, fresh original comparisons and both final gameplay runs.
+Formatting checks pass for all 2,362 C source/header/fragments. Result documents
+and current admission maps are updated afterward.
+
+Final staging exposes CRLF in the presentation CMake fragment and Python
+controller, which Git would publish as LF. Both inputs are normalized to those
+exact staged bytes. Python ASTs, including locations, compare identically;
+configuration preserves the exact 1,099-test Windows and 945-test Linux
+inventories. All forty affected presentation tests then pass again on Windows
+in 5.77 seconds and sanitized Linux in 12.80 seconds. The runtime C sources and
+executables retain their qualified bytes. Four current maps record this
+line-ending-only successor; the earlier full-suite and gameplay qualifications
+remain tied to their original frozen inputs, with no retrospective byte claim.
+
+The old protected sound-pop control fails twice in admitted native runs, first
+at its earlier continuation/close-operand assertion, then at its old FREE-slot
+expectation. The new per-reload guard legitimately stops before another Source
+List read: raw status stays OK, continuation is false and the recorded failed
+close retains its exact World slot. The corrected fixture requires refused new
+scope admission, unchanged ledgers and first cause, idempotent close and final
+empty checked retirement. Successful ally calls retain the free-slot generation
+reuse control. Both failed snapshots remain identified in declaration history.
+The final thirteen protected compatibility tests pass in 29.21 seconds.
+
+Linux preparation also catches two unsigned Player-PC conversions rejected by
+strict Clang. Explicit casts preserve the bounded nonnegative Source offsets;
+signed execution/Math sentinels are unchanged. Incorrect target spelling and a
+private script's trailing carriage return fail before native execution and
+provide no qualification credit.
+
+Fresh unchanged-original Ladder calls compare exactly with twenty Windows
+native rows and another twenty Linux rows. Both original captures use Windows
+JDK17, with unchanged archive/helper inputs and six altered-comparison refusals.
+Each native fixture passes 434 checks. The original remote-World fixture still
+excludes Item construction and separate notification counts.
+
+The rebuilt monitor-2 saved Arrow/Pig scene passes 462 checks. Before bootstrap,
+independent input parsing proves one Pig at health ten and one nullable-shooter
+Arrow. Live observation sees both initial subjects; four ordinary World ticks
+leave the Pig alive at six and no Arrow. Returned terrain1013/HUD2101, SDK
+Escape/pause/save, complete committed-entity readback and both absent windows
+pass. This is causal scene evidence, not a direct bytecode-741 receipt; that
+call is covered separately by headless controls.
+
+A fresh Zombie regression passes 466 checks. Its actual GZ61 attack returns true
+once, changing Player health from twenty to fifteen and statistic 2021 by five.
+Independent NBT/statistics readback matches the paused state. Both scenes keep
+all 2,374 guarded source/product inputs and all 413 asset files unchanged.
+All six actual captures were inspected. The first hit frames qualify returned
+terrain/HUD and state; actors appear in the later paused captures. No individual
+actor-draw receipt was retained. Full Player wake, delayed Slime splitting,
+arbitrary cold/foreign graphs, original audiovisual equality, extended play and
+FPS remain unqualified.
+
 ## Shared execution for damage descendants and World metadata
 
 The [World scalar contract](world/blocks.md), [drop execution contract](entity/drop-execution.md)
@@ -86,7 +191,8 @@ the manifest; the imported resource payload still contains 412 files. The final
 result documentation and its public resource map are updated after this frozen
 runtime qualification.
 
-Full Arrow damage still stops before `sl.w_:741`. Player wake needs complete
+At this preceding checkpoint full Arrow damage still stops before `sl.w_:741`.
+Player wake needs complete
 notifying Bed occupancy and its recursive mutation, scheduling and block-hook
 descendants; Player drops/scatter and other victim wrappers also remain separate
 joins. Delayed Slime splitting, arbitrary cold acquisition graphs, extended play,
@@ -9149,7 +9255,7 @@ No performance target or additional platform support follows from these tests.
 
 ## Zombie damage qualification
 
-Windows MSVC Debug and Linux Clang18 Debug with ASan/UBSan each pass the twelve
+Windows MSVC Debug and Linux Clang 18 Debug with ASan/UBSan each pass the twelve
 Zombie damage profiles: 2,179 native checks, 3,544 selected original typed
 checks, 3,861 identity relations and 84 separate-process stream checks. Eight
 comparator, three original-manifest and four build-record corruptions are
