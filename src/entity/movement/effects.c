@@ -5,6 +5,7 @@
 #include "../mob/damage_internal.h"
 #include "../mob/death_execution_internal.h"
 #include "../mob/death_internal.h"
+#include "../mob/removal_internal.h"
 #include "../mob/wolf_damage_execution_internal.h"
 #include "../mob/wolf_damage_internal.h"
 #include "../player/damage_alert_execution_internal.h"
@@ -665,10 +666,15 @@ static bool dead_in_context(mc_entity *entity, mc_registry_classes *registry, mc
     }
     if (mc_entity_has_mob(entity) && mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SLIME)) {
         error->source_class = "uw";
-        error->close_bytecode = 1;
-        fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
-             "Slime K actual splitting/publication body", 1);
-        return false;
+        if (mc_entity_effect_has_pending(entity)) {
+            /* The rejected call cannot grant retirement of earlier work. */
+            fail(error, MC_ENTITY_BUSY, MC_ENTITY_EFFECT_CAUSE_OWNER,
+                 "Slime K pending native child cleanup", 0);
+            return false;
+        }
+        const bool returned = mc_slime_removal_entered(entity, error);
+        error->close_bytecode = (uint16_t)error->slime_removal.site.pc;
+        return returned;
     }
     entity->base.be = true; /* sn.K/lq.J store2; no collection removal. */
     return true;
@@ -1433,7 +1439,8 @@ mc_entity_status mc_entity_damage_execution_cleanup(mc_entity_damage_execution *
 
 bool mc_entity_effect_has_pending(const mc_entity *entity) {
     return (mc_entity_has_mob(entity) &&
-            (entity->mob->pending_death != NULL || entity->mob->pending_wolf_damage != NULL)) ||
+            (entity->mob->pending_death != NULL || entity->mob->pending_wolf_damage != NULL ||
+             entity->mob->pending_slime_removal != NULL)) ||
            (entity != NULL && entity->local_player != NULL &&
             (entity->local_player->pending_death != NULL ||
              entity->local_player->pending_damage_wake != NULL ||
@@ -1445,7 +1452,9 @@ mc_entity_status mc_entity_effect_cleanup(mc_entity *entity, mc_entity_effect_er
     mc_entity_effect_error_init(&frame);
     if (enter(entity, &frame)) {
         if (mc_entity_has_mob(entity)) {
-            if (entity->mob->pending_wolf_damage != NULL)
+            if (entity->mob->pending_slime_removal != NULL)
+                (void)mc_slime_removal_cleanup(entity, &frame);
+            else if (entity->mob->pending_wolf_damage != NULL)
                 (void)mc_mob_wolf_damage_cleanup(entity, &frame);
             else
                 (void)mc_mob_death_cleanup(entity, &frame);
@@ -1504,6 +1513,19 @@ static void refresh_player_borrows(mc_entity_effect_error *error,
 bool mc_entity_effect_error_retire(mc_entity_effect_error *error) {
     if (error == NULL)
         return false;
+    if (error->slime_removal.pending) {
+        mc_entity_effect_error cleanup;
+        mc_entity_effect_error_init(&cleanup);
+        const mc_entity_status status =
+            mc_slime_removal_cleanup(error->slime_removal.receiver, &cleanup);
+        if (cleanup.slime_removal.entered)
+            error->slime_removal = cleanup.slime_removal;
+        if (status != MC_ENTITY_OK) {
+            error->slime_removal.cleanup_status = status;
+            error->slime_removal.cleanup_operation = cleanup.operation;
+            return false;
+        }
+    }
     if (error->wolf_damage.pending) {
         mc_entity_effect_error cleanup;
         mc_entity_effect_error_init(&cleanup);

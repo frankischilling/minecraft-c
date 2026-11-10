@@ -1,5 +1,88 @@
 # Test scope and reproduction
 
+## Slime removal and splitting
+
+The [removal contract](entity/slime-removal.md) connects direct effect K and the
+Mob removal caller to the same `uw.K()V` body. Size is captured through the
+signed watcher getter before the remote-World and exact-zero-health tests.
+Each child uses the real constructor and size/pose methods, a fresh parent yaw
+draw and ordinary World insertion. The parent dead store follows all four
+publications. A separate public `mc_mob_tick` control advances death age through
+21 actual ticks, observes all children before that store, and counts twenty
+explosion particles afterward.
+
+The [unchanged-original packet](../tests/reference/entity/slime_removal/README.md)
+executes 25 direct K calls across 24 profiles. Eleven records per native host
+match the declared comparison fields of the latest original capture, executed
+with Windows JDK17. The comparison retains signed sizes, skipped splits, getter-before-World faults,
+callback mutation, child order/membership, pose/yaw bits and the parent Random
+stream. Independent child-constructor entropy is excluded explicitly. Direct
+original calls do not provide an original comparison for the delayed Mob tick.
+
+The initial expanded strict MSVC group passes all 29 tests in 4.48 seconds. Linux Clang
+18.1.8 Debug ASan/UBSan with leak detection passes all 29 in 12.20 seconds.
+Both focused cohorts include the final module's native-error propagation
+after final cleanup refusal. Eight modes in the explicit-execution fixture
+cover ready success, sticky Math refusal, callback scope drift, native close
+refusal, public legacy release refusal, release inside the loop, final release after the dead store and the next
+child's allocation limit. The latter requires empty current constructor and
+publication views instead of a preceding child's stale frame. A raw-OK stop
+must still preserve the actual canonical native or Math failure. Checked
+cleanup preserves published children, the unrelated actor, callback counts
+and the parent's Random stream.
+
+The initial split and negative-health controls fail at the unimplemented K
+boundary in 0.13 and 0.12 seconds. A later actual legacy release failure retains
+two published children at PC132 but incorrectly returns Entity OK; its cleanup
+still succeeds. Another executed control reaches PC143 and the parent dead
+store, then exposes a native cleanup failure missing from the earlier copied
+summary. The fixes preserve those Source prefixes and report the actual native
+refusals. Failed artifacts, preparing failures and successful reruns remain
+separate; source/product fingerprints bind each native phase to its inputs.
+
+The preceding Linux Clang 18 ASan/UBSan run with leak detection passes 23 tests
+in 10.09 seconds, before the four release/allocation controls. The expanded
+29-test result qualifies those controls separately. A final ownership control
+first shows that retiring a rejected call incorrectly consumes the earlier
+producer. The fix removes that retirement right from both rejected entries;
+the strict MSVC repeat passes all 29 tests in 4.65 seconds.
+
+The 625-Chunk monitor-2 scene observes the live Arrow and size-two Slime at
+four health, zero health at World tick 5 and four living size-one children
+at tick 26. It passes 863 checks, SDK pause/save, independent committed NBT,
+and window cleanup. All three images were inspected. Source and product
+fingerprints cover 2,387 files; all 413 imported assets remain unchanged.
+The first two scene attempts stay separate. The second reaches zero health,
+then detects three naturally created Pigs in Chunk -9 beyond the prepared
+289-Chunk area. The wider pre-bootstrap area keeps the actor assertions and
+normal World spawning intact.
+
+The first broad Windows run passes 1,118 of 1,124 tests in 506.68 seconds.
+Six Arrow fixtures refuse a bundle before native execution. All six pass
+with the exact existing bundle schema, alongside six additional JDK17
+checks, in 29.20 seconds. The first broad Linux run passes 969 of 976 tests
+in 489.53 seconds. Four Arrow fixtures pass after the same bundle correction;
+three other tests pass after restoring ordinary executable paths with identical
+bytes. These are separate runs and do not claim a single all-pass sweep.
+
+The final complete strict Windows MSVC Release client suite passes all 1,130
+tests in 571.08 seconds. The final Linux Clang 18.1.8 Debug headless suite
+passes all 976 tests in 592.10 seconds with ASan, UBSan and leak detection.
+Both include the JDK17 helper checks. The Linux build uses `-g1` and ordinary
+executable files on the mounted Windows volume. Neither run has failures,
+skips or unrun tests. Eleven final records on each host match the same
+unchanged-original capture.
+
+The final monitor-2 repeat passes 712 checks with the same 625-Chunk setup
+and guarded inputs. The first observed zero-health frame is at World tick 7
+with death age 2. The split occurs at tick 26. SDK pause/save, independent
+committed NBT and window cleanup pass again. The split, pause and title images
+were inspected for both successful runs.
+
+The scene has no direct GUI impact/removal invocation receipt. Complete owned
+Mob environment and particle continuation, original delayed-tick comparison,
+extended play and original audiovisual or FPS equality remain unqualified.
+
 ## Arrow victim damage, Player drops and presentation ownership
 
 The [damage contract](entity/damage-execution.md) connects Arrow bytecode 741
@@ -101,7 +184,8 @@ Independent NBT/statistics readback matches the paused state. Both scenes keep
 all 2,374 guarded source/product inputs and all 413 asset files unchanged.
 All six actual captures were inspected. The first hit frames qualify returned
 terrain/HUD and state; actors appear in the later paused captures. No individual
-actor-draw receipt was retained. Full Player wake, delayed Slime splitting,
+actor-draw receipt was retained. At this checkpoint full Player wake, delayed
+Slime splitting,
 arbitrary cold/foreign graphs, original audiovisual equality, extended play and
 FPS remain unqualified.
 

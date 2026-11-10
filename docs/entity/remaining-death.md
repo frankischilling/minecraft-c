@@ -20,8 +20,10 @@ read; it does not become an earlier quantity or static-get failure. Each
 published Item has its own Stack identity and pickup delay 10.
 
 Ghast's drop-ID method selects Gunpowder, Item ID 289, before the inherited
-`nextInt(3)` quantity loop. These changes concern fatal damage/drop dispatch;
-they do not implement Slime's later split/removal body or complete Ghast AI.
+`nextInt(3)` quantity loop. Fatal damage/drop dispatch remains separate from
+[Slime's later removal and splitting](slime-removal.md), which now has its own
+shared body, retained cleanup and direct original comparisons. Ghast behavior
+remains incomplete.
 
 ## Original evidence
 
@@ -75,3 +77,9 @@ published Items and never repeats the source quantity draw or drop loop.
 These are authored native component controls plus static original bytecode
 evidence. They do not by themselves establish executed-original death, complete
 Arrow hits, World tick integration, graphics, audio, extended play or FPS parity.
+
+The later Slime removal packet executes 25 direct K calls across 24 profiles;
+eleven Windows native records match its declared comparison fields. A separate
+native public-Mob test advances 21 death ticks through splitting and the
+particle tail. Those results do not extend this fatal-drop comparison or
+qualify complete execution-owned environment/particle continuation.

@@ -2890,8 +2890,8 @@
       "sha256": "30e61a74b1002cb508665cde8be18118764912ba08c40e4eb06a773e5956c1d9"
     },
     "include/mc/entity/movement/effects.h": {
-      "bytes": 18083,
-      "sha256": "c4e9d716ccb1e973e12f5874a825de03a73dca72e83d5fa74411b82b03a7aaed"
+      "bytes": 18236,
+      "sha256": "ca68c18f84e08cba277bc7fb4d1d79709b490df81e592447480010a1d6d5c59e"
     },
     "include/mc/entity/movement/environment.h": {
       "bytes": 5402,
@@ -4210,8 +4210,8 @@
       "sha256": "2eb7b5f1bbd8639d0abfd43745668c79b43e852df44a66309ff107b85e2bf312"
     },
     "src/world/runtime/terminal_inventory.c": {
-      "bytes": 45298,
-      "sha256": "9856c9a3c53686219f7b26b90471caab72d382ff28c50441a1ae16e82d689892"
+      "bytes": 45552,
+      "sha256": "c582292cef314081feac27fe93acb38f9a93b12a015336b28461f33235b70815"
     },
     "src/world/runtime/terminal_inventory_internal.h": {
       "bytes": 6928,
@@ -4554,12 +4554,12 @@
       "sha256": "fc84465ea32817c3672a58bbd91b86c79e0a2805d6a21bc39004eac93cfbdc2a"
     },
     "src/entity/mob/construction.c": {
-      "bytes": 40169,
-      "sha256": "e3d10201005882e8b60da103bde5b63015c0e5d40c6e2178307d909cd840e39f"
+      "bytes": 40223,
+      "sha256": "f6bfc1e791eced6c1f78f081baaec3dd21c20c2ddc9c4705a4fb0eec64aca660"
     },
     "src/entity/mob/internal.h": {
-      "bytes": 2493,
-      "sha256": "f1043265586a5412278fa548236bd6db5a71d339c8bb48f5969faf9e9db75005"
+      "bytes": 2550,
+      "sha256": "ddada18e68641dacea2125ead2d23c9217c55f7ba91101958a806b22407bbd6e"
     },
     "tests/entity/test_mob_construction.c": {
       "bytes": 53791,
@@ -4782,8 +4782,8 @@
       "sha256": "29186a88779692c81a10299075c6e0d8e69f8492a99caea00e3104b7c6fcc2b0"
     },
     "src/entity/mob/tick/common.c": {
-      "bytes": 23950,
-      "sha256": "a2ba3e2e04b63fc7016d28959448b1a7917df76bdc32bb33202280ff08498de9"
+      "bytes": 24700,
+      "sha256": "e0003328fad900e3573216aadf6eb03874fa964bb7689ef06a06820d886b6bf4"
     },
     "src/entity/mob/tick/helpers.c": {
       "bytes": 5239,
@@ -4798,16 +4798,16 @@
       "sha256": "da5d263b8785e21f32de98f09584f763380b137a60bad2ee17f0bf1f5e8ab187"
     },
     "src/entity/mob/tick/ray.c": {
-      "bytes": 13238,
-      "sha256": "55e5ccb992de7f278abac645653781561ab9e2b6293b04f8b119f870ddf29910"
+      "bytes": 13491,
+      "sha256": "4626e9e23ff4b4cf0a315def890a75b9800e96f0e3bde45cff99e7b81e88346f"
     },
     "src/entity/mob/tick/slime_squid.c": {
       "bytes": 7270,
       "sha256": "c9d2b86bc1468399ad9341259cd33a0059c6d3a455a73138de07716410c1135a"
     },
     "src/entity/mob/tick/tick.c": {
-      "bytes": 13894,
-      "sha256": "3fdfa9a40d0a5e0c461e57c91adf5c0d55c3dcae6fa1695eb3a8579e82ee927d"
+      "bytes": 13948,
+      "sha256": "e7a9431983611086fffa0dbd1196bea7fe010ec30b6f362944f72852f9937407"
     },
     "src/entity/mob/tick/wolf.c": {
       "bytes": 26597,
@@ -6262,8 +6262,8 @@
       "sha256": "a0d8fef8a05997c2f3daf7c0835080afcc5d2233e77f65964e47927ce4df93a8"
     },
     "cmake/entity_animal_death.cmake": {
-      "bytes": 2807,
-      "sha256": "9973682bab462837025568d8a0a65e2a9eff722450c1218b351ecc1de5ffcd5f"
+      "bytes": 2840,
+      "sha256": "cf0dc75a59aaaf003b4b58174b3eb7df76c71d09ee8d2a0aa33c04abbb534b7e"
     },
     "include/mc/entity/drop.h": {
       "bytes": 3702,
@@ -7898,8 +7898,8 @@
       "sha256": "ae15e8fb904b7fde7d0b92a22beea685aaf1a6ba0ac106c30a54c8c02662f2a2"
     },
     "src/entity/movement/effects.c": {
-      "bytes": 83630,
-      "sha256": "5a4fcea3aae52da911c9aee86b573f759079c213fc7aa1d2cb490f503c855cfb"
+      "bytes": 84670,
+      "sha256": "c9f5e14fad32e881ae552374b9cc0775fd5d2d78538d266c2c5f11b780f7fd8c"
     },
     "src/entity/player/damage.c": {
       "bytes": 4943,
@@ -8010,8 +8010,8 @@
       "sha256": "6c04ddcd89c64aaff3db755e60399a64fee045861c599a222c8dbae4c9121165"
     },
     "src/entity/tick/environment.c": {
-      "bytes": 41726,
-      "sha256": "4fb54a451c2905627c9f70788be5c7d943cde81a3836cc74c1cf352bbb90adbf"
+      "bytes": 41719,
+      "sha256": "06edcbbad8d1df8c990a4db451d76c9d909e86ae3b54b2baafba68b948659b68"
     },
     "src/inventory/runtime/scatter.c": {
       "bytes": 8759,
@@ -8990,8 +8990,8 @@
       "sha256": "92d46e46de41b7535e323c1fc02263b13b366b8c6f6bc18e4bbfc44849433c6b"
     },
     "src/world/runtime/nightmare.c": {
-      "bytes": 60182,
-      "sha256": "7cfb1946063497040322bd89bb3897d09a2af1e2e8f6f16954353abbf7b88ea2"
+      "bytes": 60242,
+      "sha256": "70a1ad7b4d69790d0e1172660a9d90c0e2568eb49ff37f54ed9cf0da8b661d20"
     },
     "src/world/runtime/nightmare_classes_internal.h": {
       "bytes": 2312,
@@ -9667,7 +9667,7 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76712,
-      "sha256": "ada889e19bb6669fbc158046acc0ed2aa14bb267f9a6a6feb8074af59a69f9f8"
+      "sha256": "6241e269fa6d19a3a9e754a0e868ee92b744fc5d779406db790db7728d7ee9b9"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -9831,7 +9831,7 @@
     },
     "tests/tools/world/test_arrow_natural_flight.py": {
       "bytes": 16754,
-      "sha256": "adf54e773c3e5c013736763188b7f6d2d4e82114e3238294d751e2b37b3d9f24"
+      "sha256": "5cdb7e809c811007edeaf1686bdea8a168be464ec266dcea22afc8c7f43d01ec"
     },
     "tests/world/runtime/test_arrow_natural_flight.c": {
       "bytes": 19352,
@@ -9847,7 +9847,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "22870692639179d689daf4f3ab4ae9ba7aed7cf6fbee95a667b781305a209a74"
+      "sha256": "881fe0f56e846fbd7d7632ab5f51857768c437ef6ae007b02141b1445c8bc0e9"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,
@@ -9855,7 +9855,7 @@
     },
     "tests/tools/entity/test_damage_native_close.py": {
       "bytes": 17605,
-      "sha256": "e8023b2829ee005f66e70a36672946ced91bb3011fa9d96d37fa4af92293fb70"
+      "sha256": "48fd6d8b83d90a64b068c185d7c8f9298d6fd5fabcd5d7e0636abbc77aefd477"
     },
     "tests/world/runtime/world_access/test_damage_close_execution.c": {
       "bytes": 30398,
@@ -10138,8 +10138,8 @@
       "sha256": "3b68ed26967b42555daa94bfc88d4c0eb445a2bea348d05f2d8b56fa38ec33f9"
     },
     "CMakeLists.txt": {
-      "bytes": 345142,
-      "sha256": "3cf33e3a6a3c8a69eb5c0eadc66633a631123780410b7e366bdd4d81538464b0"
+      "bytes": 345322,
+      "sha256": "4abc1faff12fab607d8b0a1ccd743bb1b5fbaccab9831b2fc6d9c3d9ab00d4a0"
     },
     "cmake/client_arrow_pig.cmake": {
       "bytes": 2700,
@@ -10316,6 +10316,102 @@
     "tests/world/runtime/world_access/test_presentation_execution.c": {
       "bytes": 43704,
       "sha256": "149e0057e02ce3034b21ede85e30eb33e14e8911e845dac47e976e1dff94f988"
+    },
+    "cmake/tests/arrow_slime.cmake": {
+      "bytes": 2758,
+      "sha256": "6d715a45ec128244a3e170714621866be6c0d92c5e3274845377484945bb3970"
+    },
+    "cmake/tests/slime_delayed_removal.cmake": {
+      "bytes": 907,
+      "sha256": "23c0d08234a4bd628d01188399c76d6de2099de84dad382a00b0dfa5b8ba3513"
+    },
+    "cmake/tests/slime_removal.cmake": {
+      "bytes": 2699,
+      "sha256": "73aa9a18a2a5ff96153df6857523ef8afcce77da57c8b883424184f884a9a443"
+    },
+    "cmake/tests/slime_removal_execution.cmake": {
+      "bytes": 1284,
+      "sha256": "120162102a4ed4a79f5d6067b59331d07480c5b3ef33e423f1ff9c534128255b"
+    },
+    "include/mc/entity/mob/removal.h": {
+      "bytes": 2102,
+      "sha256": "1904398f5bfb08fabe6db2ddbd9ca0a6a7f560cb722f803c2f1b8a6bee3699d9"
+    },
+    "src/entity/mob/removal.c": {
+      "bytes": 39165,
+      "sha256": "32922207c59631bae41ab64466e2321c99bcd5c843d09c5f03659d7d415dde50"
+    },
+    "src/entity/mob/removal_execution_internal.h": {
+      "bytes": 2800,
+      "sha256": "aa96e42285f1c27f6f61d977871e5210cebd123fde805acd54957830acb9d607"
+    },
+    "src/entity/mob/removal_internal.h": {
+      "bytes": 790,
+      "sha256": "b59c1cae6ea85a8393a7000340dc3752a264e37ca5b70bc16683e0b7fad3c95f"
+    },
+    "tests/client/gameplay/test_arrow_slime.c": {
+      "bytes": 25157,
+      "sha256": "7a818349c31c723ab3eafdccf8acfa97bbde1f3efb24d47c394c6424a17fadf1"
+    },
+    "tests/reference/entity/slime_removal/SlimeRemovalObservation.java": {
+      "bytes": 10587,
+      "sha256": "80895b86623cd2be866e1fc6cca236dffd291909b47accdeec8536d9e71badc1"
+    },
+    "tests/reference/entity/slime_removal/capture_reference.py": {
+      "bytes": 13699,
+      "sha256": "fa0be0593fee1cc0155dcd8ff00577787ce485e2f65686b1e80a1da43eeb5dd9"
+    },
+    "tests/reference/entity/slime_removal/compare.py": {
+      "bytes": 7872,
+      "sha256": "0dc51c015c44ada80e741287a39165be9008f2caa96f257ebcd3f3a767adc373"
+    },
+    "tests/reference/entity/slime_removal/finite.json": {
+      "bytes": 28162,
+      "sha256": "47baa583488cadc677bb48c514dd959245542915c217104cddefb64344ceeee7"
+    },
+    "tests/reference/entity/slime_removal/profiles.tsv": {
+      "bytes": 601,
+      "sha256": "bbfd54c78853d180bfac2e2a31a696c9e2ac1bcba2b52f9b8de151bb8dc3dfcc"
+    },
+    "tests/reference/entity/slime_removal/provenance.json": {
+      "bytes": 3283,
+      "sha256": "7c40e9c77f4384082c4f6d43630e036661e949cca44c948fbb17153365a99ab7"
+    },
+    "tests/reference/entity/slime_removal/source-pins.json": {
+      "bytes": 101783,
+      "sha256": "35252af0078ef0d1f5c0aca13228e2da6314fac57a57f3a9021003c939d05cd1"
+    },
+    "tests/reference/entity/slime_removal/test_packet.py": {
+      "bytes": 2530,
+      "sha256": "4b1c0d808cc95d1e04d5055faa6ce7ad482e1b72279e4652a650216b8b1fadb3"
+    },
+    "tests/tools/client/test_arrow_slime.py": {
+      "bytes": 26201,
+      "sha256": "12c603f9defd65e8602861a4ff57fdef98079a8f514c3e59cf0f7a44b0881ec7"
+    },
+    "tests/tools/world/test_slime_delayed_removal.py": {
+      "bytes": 2427,
+      "sha256": "f79017c81e91e4304be4a761dd05b3b882287df1b87a71ba30dcd3fceb060746"
+    },
+    "tests/tools/world/test_slime_removal.py": {
+      "bytes": 15353,
+      "sha256": "38a8c79ac1bbd3222367d1de26a0e050cc7f93d6b6d1087d5e2f3339a61a6ae8"
+    },
+    "tests/tools/world/test_slime_removal_execution.py": {
+      "bytes": 7641,
+      "sha256": "84f5f8a6aa19cd9d1e4cdb0ef279acd57dc7db873b57633a43a7e8bc64534ecf"
+    },
+    "tests/world/runtime/test_slime_delayed_removal.c": {
+      "bytes": 6981,
+      "sha256": "4f1ddbf8054cc1e5683bf806415b33f04ad85f078339f802380e5452b22bcb07"
+    },
+    "tests/world/runtime/test_slime_removal.c": {
+      "bytes": 28111,
+      "sha256": "034eaa2e3ce449682c4e241b1df4611ec1d7ad69e08168eb63397bf0ab92d911"
+    },
+    "tests/world/runtime/test_slime_removal_execution.c": {
+      "bytes": 39753,
+      "sha256": "237f1a9cd295af640367c0e664a327c2eb9d0aa9a78e005be8eb6de2ae94f017"
     }
   },
   "source_suppliers": {
@@ -18870,6 +18966,199 @@
         "original_linux_clang": "1170/1170 PASS;799.45s.",
         "original_format": "PASS.",
         "current_focused_portability": "Actual unpooled three modes plus five standard controls; Windows PASS0.80s, Linux Clang ASan/UBSan PASS0.91s; original cohorts not upgraded."
+      }
+    },
+    {
+      "from_commit": "0eefdcf476d3630cf5566b9fac56cce3a3cc201b",
+      "role": "Current Slime removal implementation, finite original/native control inputs, delayed-removal controls and authored Arrow/Slime SDK scene inputs. Current source admission only. Historical authority, supplier, source_projection, native_validation, captures and prior qualification records retain their exact recorded identities and scopes. New compilation/execution and direct comparisons are separately bound; authored GUI inputs have no execution qualification from this update. No unrestricted gameplay, original audiovisual or FPS qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 823382,
+        "sha256": "c86728fc75675e9e1d2bfe4a9fb127d6bb0c8124cba4601be439a707aaa71d8b"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "include/mc/entity/movement/effects.h": {
+              "bytes": 18083,
+              "sha256": "c4e9d716ccb1e973e12f5874a825de03a73dca72e83d5fa74411b82b03a7aaed"
+            },
+            "src/world/runtime/terminal_inventory.c": {
+              "bytes": 45298,
+              "sha256": "9856c9a3c53686219f7b26b90471caab72d382ff28c50441a1ae16e82d689892"
+            },
+            "src/entity/mob/construction.c": {
+              "bytes": 40169,
+              "sha256": "e3d10201005882e8b60da103bde5b63015c0e5d40c6e2178307d909cd840e39f"
+            },
+            "src/entity/mob/internal.h": {
+              "bytes": 2493,
+              "sha256": "f1043265586a5412278fa548236bd6db5a71d339c8bb48f5969faf9e9db75005"
+            },
+            "src/entity/mob/tick/common.c": {
+              "bytes": 23950,
+              "sha256": "a2ba3e2e04b63fc7016d28959448b1a7917df76bdc32bb33202280ff08498de9"
+            },
+            "src/entity/mob/tick/ray.c": {
+              "bytes": 13238,
+              "sha256": "55e5ccb992de7f278abac645653781561ab9e2b6293b04f8b119f870ddf29910"
+            },
+            "src/entity/mob/tick/tick.c": {
+              "bytes": 13894,
+              "sha256": "3fdfa9a40d0a5e0c461e57c91adf5c0d55c3dcae6fa1695eb3a8579e82ee927d"
+            },
+            "cmake/entity_animal_death.cmake": {
+              "bytes": 2807,
+              "sha256": "9973682bab462837025568d8a0a65e2a9eff722450c1218b351ecc1de5ffcd5f"
+            },
+            "src/entity/movement/effects.c": {
+              "bytes": 83630,
+              "sha256": "5a4fcea3aae52da911c9aee86b573f759079c213fc7aa1d2cb490f503c855cfb"
+            },
+            "src/entity/tick/environment.c": {
+              "bytes": 41726,
+              "sha256": "4fb54a451c2905627c9f70788be5c7d943cde81a3836cc74c1cf352bbb90adbf"
+            },
+            "src/world/runtime/nightmare.c": {
+              "bytes": 60182,
+              "sha256": "7cfb1946063497040322bd89bb3897d09a2af1e2e8f6f16954353abbf7b88ea2"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 76712,
+              "sha256": "ada889e19bb6669fbc158046acc0ed2aa14bb267f9a6a6feb8074af59a69f9f8"
+            },
+            "tests/tools/world/test_arrow_natural_flight.py": {
+              "bytes": 16754,
+              "sha256": "adf54e773c3e5c013736763188b7f6d2d4e82114e3238294d751e2b37b3d9f24"
+            },
+            "tests/tools/client/test_arrow_world_tick_cleanup.py": {
+              "bytes": 20496,
+              "sha256": "22870692639179d689daf4f3ab4ae9ba7aed7cf6fbee95a667b781305a209a74"
+            },
+            "tests/tools/entity/test_damage_native_close.py": {
+              "bytes": 17605,
+              "sha256": "e8023b2829ee005f66e70a36672946ced91bb3011fa9d96d37fa4af92293fb70"
+            },
+            "CMakeLists.txt": {
+              "bytes": 345142,
+              "sha256": "3cf33e3a6a3c8a69eb5c0eadc66633a631123780410b7e366bdd4d81538464b0"
+            }
+          },
+          "added": [
+            "cmake/tests/arrow_slime.cmake",
+            "cmake/tests/slime_delayed_removal.cmake",
+            "cmake/tests/slime_removal.cmake",
+            "cmake/tests/slime_removal_execution.cmake",
+            "include/mc/entity/mob/removal.h",
+            "src/entity/mob/removal.c",
+            "src/entity/mob/removal_execution_internal.h",
+            "src/entity/mob/removal_internal.h",
+            "tests/client/gameplay/test_arrow_slime.c",
+            "tests/reference/entity/slime_removal/SlimeRemovalObservation.java",
+            "tests/reference/entity/slime_removal/capture_reference.py",
+            "tests/reference/entity/slime_removal/compare.py",
+            "tests/reference/entity/slime_removal/finite.json",
+            "tests/reference/entity/slime_removal/profiles.tsv",
+            "tests/reference/entity/slime_removal/provenance.json",
+            "tests/reference/entity/slime_removal/source-pins.json",
+            "tests/reference/entity/slime_removal/test_packet.py",
+            "tests/tools/client/test_arrow_slime.py",
+            "tests/tools/world/test_slime_delayed_removal.py",
+            "tests/tools/world/test_slime_removal.py",
+            "tests/tools/world/test_slime_removal_execution.py",
+            "tests/world/runtime/test_slime_delayed_removal.c",
+            "tests/world/runtime/test_slime_removal.c",
+            "tests/world/runtime/test_slime_removal_execution.c"
+          ],
+          "current_count": 2603
+        }
+      }
+    },
+    {
+      "from_commit": "0eefdcf476d3630cf5566b9fac56cce3a3cc201b",
+      "role": "Current Arrow/Slime fixture-input successor after two separately retained failed monitor2 scene cohorts. The authored pre-bootstrap populated Glowstone inventory expands from289Chunks[-8,8] to625Chunks[-12,12] after the second actual attempt reached SlimeHP0 at tick5, then exposed three naturally generated fringe Pigs by tick7. The fixture also retains bounded passive failure diagnostics and a truthful625-Chunk protocol. Runtime spawning/tick bodies and actor/save assertions are unchanged. These are current source admissions only; the prior failed attempts stay failed, earlier6051-file freeze/compiled products retain their exact identities, and this refreshed input has no GUI execution qualification. Historical suppliers, captures, source_projection, native_validation and prior journals remain unchanged.",
+      "previous_metadata": {
+        "bytes": 832724,
+        "sha256": "f6923df8501d0601e852b884c231703a14ac8f6f9df273dfe315d6b8d76c7ddb"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/client/gameplay/test_arrow_slime.c": {
+              "bytes": 22836,
+              "sha256": "17cb0fbf5e7307846db562b8aaeeea48a1bd559e27f950fd594a9f8a2e495150"
+            },
+            "tests/tools/client/test_arrow_slime.py": {
+              "bytes": 25081,
+              "sha256": "7382a501a9980a8977c2936af6c46dddaf226d61cd6a891bc761d5c62e60bcf9"
+            }
+          },
+          "added": [],
+          "current_count": 2603
+        }
+      }
+    },
+    {
+      "from_commit": "0eefdcf476d3630cf5566b9fac56cce3a3cc201b",
+      "role": "Current Arrow bundle admission correction after the actual protected controllers refused the unsupported top-level current_binding_updates key. Both Arrow declarations now use their existing V1 prospective_source_successor slot. Current source and helper pins identify these inputs. Prior failed cohorts and historical supplier, capture, validation and qualification records retain their recorded scope.",
+      "previous_metadata": {
+        "bytes": 834322,
+        "sha256": "d2b91385e8105e2a33deef16df7f5d1df588ca05549161a309aae527ac3474d0"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/tools/world/test_arrow_natural_flight.py": {
+              "bytes": 16754,
+              "sha256": "fe7ff45ecc7b8985a5d377acf8287eaa609c3566acb6e4a56a4f85cd026cba6b"
+            },
+            "tests/tools/client/test_arrow_world_tick_cleanup.py": {
+              "bytes": 20496,
+              "sha256": "02219e359a54fee4f033ed39dc22d347894db8d80b41bdae9b3f0587a79dee88"
+            }
+          },
+          "added": [],
+          "current_count": 2603
+        }
+      }
+    },
+    {
+      "from_commit": "0eefdcf476d3630cf5566b9fac56cce3a3cc201b",
+      "role": "Current Slime removal and effect entry guards reject retiring receivers while preserving the original pending work and its cleanup owner. This admission includes the focused retirement control and four result documents. Earlier execution cohorts and historical supplier, capture and qualification records retain their recorded source and product identities.",
+      "previous_metadata": {
+        "bytes": 835527,
+        "sha256": "668294ca8547441159d3a514f64fd7ff520b34f8473b84c8a8396747d8cf59ab"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "include/mc/entity/movement/effects.h": {
+              "bytes": 18160,
+              "sha256": "44e92a80f295737e9cf9b9186f97719da4305bd9fc1c5a59b86ca1d417848759"
+            },
+            "src/entity/movement/effects.c": {
+              "bytes": 84668,
+              "sha256": "04c1bfca65197c4bcebd02faa47f501a767818c09cd10c834e01acf17a9223b7"
+            },
+            "tests/tools/world/test_arrow_natural_flight.py": {
+              "bytes": 16754,
+              "sha256": "9dd34934cd0d0c752ec511d96e36c46db708be81a3428e498c6a510d0d1dd0d5"
+            },
+            "tests/tools/client/test_arrow_world_tick_cleanup.py": {
+              "bytes": 20496,
+              "sha256": "e636498b22b0271d051375425909c4548250602353110094702490032f437b85"
+            },
+            "src/entity/mob/removal.c": {
+              "bytes": 39074,
+              "sha256": "5a671b847da3f69900c09c69a6ab2ddfb559b92620a363bd2e80272eb00f2d04"
+            },
+            "tests/world/runtime/test_slime_removal_execution.c": {
+              "bytes": 38546,
+              "sha256": "70df9b641e65705c265ce3b146b961ba3e15f4f3d5b2d9e70bd501c29c347124"
+            }
+          },
+          "added": [],
+          "current_count": 2603
+        }
       }
     }
   ],

@@ -1,5 +1,25 @@
 # Development status
 
+The shared [Slime removal body](entity/slime-removal.md) now serves direct K
+dispatch and the Mob removal caller. It publishes four children before the
+parent dead store, preserves callback changes in source order and retains
+interrupted work for checked cleanup. A public Mob control advances 21 actual
+death ticks through splitting and the particle tail. Eleven records per native host match the declared fields from 25
+unchanged-original calls across 24 profiles, executed with Windows JDK17.
+
+The final complete Windows MSVC Release client suite passes 1,130 tests.
+Linux Clang 18.1.8 Debug passes all 976 headless tests with ASan, UBSan and
+leak detection. These suites include the focused controls for retiring a
+rejected call without consuming the earlier producer.
+
+The monitor-2 Arrow/Slime scene passes 863 checks and the final repeat passes
+712. Four children replace the parent at World tick 26 in both runs. SDK
+pause, save, independent NBT readback and window cleanup all pass. Complete owned Mob
+environment and particle continuation, unrestricted play and original
+audiovisual or FPS equality remain unqualified. The
+[current test record](testing.md#slime-removal-and-splitting) separates these
+results from the preceding checkpoints below.
+
 The [shared damage entry](entity/damage-execution.md) now connects actual Arrow
 impact to the existing Living, Monster, Wolf and Player bodies. Player drops,
 Inventory scatter and fatal death share that execution. Presentation loops stop
@@ -56,7 +76,8 @@ also passes its complete JDK17 case-key inventory and finite String corpus.
 A fresh rebuilt-client monitor-2 Zombie encounter passes 478 checks through actual AI damage,
 returned terrain/HUD, SDK pause/save, independent NBT/statistics and cleanup;
 all three captures were inspected. These are bounded qualifications. Complete
-execution-owned Arrow hits, delayed Slime splitting, unrestricted combat and
+execution-owned Arrow hits, full owned Slime environment/particle continuation,
+unrestricted combat and
 original audiovisual/FPS equality remain unfinished or unqualified.
 
 Fatal [Monster death and drops](entity/monster-death.md) now complete for Spider,

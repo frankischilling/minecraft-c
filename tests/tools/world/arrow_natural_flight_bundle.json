@@ -48,8 +48,8 @@
       "sha256": "c2bc52972d5cabdf108f5694672a9814de129f9a002731cd146b6d066363666b"
     },
     "src/world/runtime/terminal_inventory.c": {
-      "bytes": 45298,
-      "sha256": "9856c9a3c53686219f7b26b90471caab72d382ff28c50441a1ae16e82d689892"
+      "bytes": 45552,
+      "sha256": "c582292cef314081feac27fe93acb38f9a93b12a015336b28461f33235b70815"
     },
     "tests/world/runtime/test_arrow_natural_flight.c": {
       "bytes": 19352,
@@ -92,8 +92,8 @@
       "sha256": "10fee661579a6587e4f5fa4f9d9ecae478b630c6de9d38974db3931e5fcf4981"
     },
     "src/entity/movement/effects.c": {
-      "bytes": 83630,
-      "sha256": "5a4fcea3aae52da911c9aee86b573f759079c213fc7aa1d2cb490f503c855cfb"
+      "bytes": 84670,
+      "sha256": "c9f5e14fad32e881ae552374b9cc0775fd5d2d78538d266c2c5f11b780f7fd8c"
     },
     "src/entity/player/death.c": {
       "bytes": 32084,
@@ -158,69 +158,31 @@
   },
   "prospective_source_successor": {
     "schema": "CURRENT_SOURCE_ADMISSION_SUCCESSOR_V1",
-    "from_commit": "07f946d6e1630a1b9b99b3cb2319e2b9d7819fd9",
+    "from_commit": "0eefdcf476d3630cf5566b9fac56cce3a3cc201b",
     "previous_metadata": {
-      "bytes": 2227,
-      "sha256": "835a2cda2949df489f0193fff122104498db2a4a69cd6be5d36afdf8a18f4d15"
+      "bytes": 10156,
+      "sha256": "2b2807d63d69b8e30a3ff3292854538821da75da50cf22c2c78366d20de1edef"
     },
-    "role": "Current source admissions for execution-owned Player drops/death, coordinate sound and particle loops, actual Entity-sound continuation and typed NULL-List faults, exact failed-Math return proofs, the genuine Ladder neighbor body, and actual Arrow victim hurt entry with bounded native cleanup controls. Historical authority, supplier, source_projection, native_validation and capture records retain their exact prior identities. Current declarations do not qualify older compiled products or observations; fresh frozen build/execution evidence is separate. Full notifying mutation, sleeping Player wake, arbitrary cold/provider hooks and unrestricted play remain open.",
+    "role": "Current Slime removal implementation, finite original/native control inputs, delayed-removal controls and authored Arrow/Slime SDK scene inputs. Current source admission only. Historical authority, supplier, source_projection, native_validation, captures and prior qualification records retain their exact recorded identities and scopes. New compilation/execution and direct comparisons are separately bound; authored GUI inputs have no execution qualification from this update. No unrestricted gameplay, original audiovisual or FPS qualification is inherited.",
     "groups": {
       "sources": {
         "previous": {
-          "include/mc/entity/arrow/tick.h": {
-            "bytes": 9555,
-            "sha256": "f85088f318142c78dd87792dc8b291631734e5791cc896ec541551339b3c3b37"
+          "src/world/runtime/terminal_inventory.c": {
+            "bytes": 45298,
+            "sha256": "9856c9a3c53686219f7b26b90471caab72d382ff28c50441a1ae16e82d689892"
           },
-          "src/entity/arrow/tick.c": {
-            "bytes": 25119,
-            "sha256": "36a375ebccf7ca444df43c22263c178eb4cc4199127a892f507c7148d7e74c9b"
-          },
-          "src/entity/arrow/tick_children.c": {
-            "bytes": 46309,
-            "sha256": "c718b2a31e90693982199c7e98f077126839a457b85fb977204c76661265f12e"
-          },
-          "src/entity/arrow/tick_internal.h": {
-            "bytes": 7940,
-            "sha256": "fbb1fcdca32b7546adf70a1139be91a77188e2e0db6d938f43eb4cf164ba36e3"
-          },
-          "tests/world/runtime/test_arrow_natural_flight.c": {
-            "bytes": 16439,
-            "sha256": "98b70cd9dc84c51558e1fc3e937abd0a4fc471440e355cac2e022086e555491d"
+          "src/entity/movement/effects.c": {
+            "bytes": 83630,
+            "sha256": "5a4fcea3aae52da911c9aee86b573f759079c213fc7aa1d2cb490f503c855cfb"
           }
         },
-        "added": [
-          "include/mc/world/runtime/movement.h",
-          "include/mc/world/runtime/world_access_error.h",
-          "src/core/math/execution_internal.h",
-          "src/entity/mob/damage.c",
-          "src/entity/mob/damage_execution_internal.h",
-          "src/entity/mob/damage_internal.h",
-          "src/entity/mob/wolf_damage.c",
-          "src/entity/mob/wolf_damage_execution_internal.h",
-          "src/entity/movement/damage_execution_internal.h",
-          "src/entity/movement/effects.c",
-          "src/entity/player/death.c",
-          "src/entity/player/death_execution_internal.h",
-          "src/entity/player/drop.c",
-          "src/entity/player/drop_execution_internal.h",
-          "src/inventory/runtime/scatter.c",
-          "src/inventory/runtime/scatter_internal.h",
-          "src/world/runtime/collision/class_entities.c",
-          "src/world/runtime/entity_publication.c",
-          "src/world/runtime/movement.c",
-          "src/world/runtime/presentation.c",
-          "src/world/runtime/presentation_execution_internal.h",
-          "src/world/runtime/runtime_execution.c",
-          "src/world/runtime/runtime_execution_internal.h",
-          "src/world/runtime/world_access.c",
-          "src/world/runtime/world_access_internal.h"
-        ],
+        "added": [],
         "current_count": 38
       }
     },
     "current_semantics": {
-      "scope": "The current natural victim-frontier source now invokes the actual owned hurt child at Arrow victim741; the inherited victim Boolean is consumed only after that actual child continuation and its native cleanup. Failed children retain their actual typed diagnostics, Math-return proof and exact explicit cleanup records. This prospective source successor does not describe the behavior or qualification of the preserved historical supplier cohorts.",
-      "qualification": "Source admission only. Historical captures, dependencies and native/original validation keep their original scope; no retrospective or inherited execution qualification."
+      "scope": "The current natural victim-frontier source now invokes the actual owned hurt child at Arrow victim741; the inherited victim Boolean is consumed only after that actual child continuation and its native cleanup. Failed children retain their actual typed diagnostics, Math-return proof and exact explicit cleanup records. This prospective source successor does not describe the behavior or qualification of the preserved historical supplier cohorts. Current pins also bind the declared Slime removal dispatch and terminal inventory changes. Slime removal admission for retiring actors leaves earlier removal work with its existing cleanup owner.",
+      "qualification": "Current source admission. Existing suppliers, captures and native or original results retain their recorded input identities and qualification."
     }
   }
 }

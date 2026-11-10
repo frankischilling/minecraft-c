@@ -407,8 +407,8 @@
       "sha256": "015b6b2bba4b1374567d86314c1551e13b4be4b23940d8206bbceba272f117da"
     },
     "src/entity/tick/environment.c": {
-      "bytes": 41726,
-      "sha256": "4fb54a451c2905627c9f70788be5c7d943cde81a3836cc74c1cf352bbb90adbf"
+      "bytes": 41719,
+      "sha256": "06edcbbad8d1df8c990a4db451d76c9d909e86ae3b54b2baafba68b948659b68"
     },
     "src/entity/movement/environment.c": {
       "bytes": 24737,
@@ -1489,5 +1489,27 @@
       "scope": "Current selected sources share exact typed Native/Math results and Source diagnostics. Existing finite fixture modes and historical dependency/supplier protocols remain unchanged.",
       "qualification": "Source admission only. Historical captures, dependencies and native/original validation keep their original scope; no retrospective or inherited execution qualification."
     }
-  }
+  },
+  "current_binding_updates": [
+    {
+      "from_commit": "0eefdcf476d3630cf5566b9fac56cce3a3cc201b",
+      "role": "Current Slime removal implementation, finite original/native control inputs, delayed-removal controls and authored Arrow/Slime SDK scene inputs. Current source admission only. Historical authority, supplier, source_projection, native_validation, captures and prior qualification records retain their exact recorded identities and scopes. New compilation/execution and direct comparisons are separately bound; authored GUI inputs have no execution qualification from this update. No unrestricted gameplay, original audiovisual or FPS qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 57077,
+        "sha256": "aefaf6a60fff5a99f44ec74560eb3850396fb0dec7578fd3a13f82970badf030"
+      },
+      "groups": {
+        "sources": {
+          "previous": {
+            "src/entity/tick/environment.c": {
+              "bytes": 41726,
+              "sha256": "4fb54a451c2905627c9f70788be5c7d943cde81a3836cc74c1cf352bbb90adbf"
+            }
+          },
+          "added": [],
+          "current_count": 82
+        }
+      }
+    }
+  ]
 }

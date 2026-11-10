@@ -4,6 +4,7 @@
 #include "mc/core/math/classes.h"
 #include "mc/entity/entity.h"
 #include "mc/entity/mob/death.h"
+#include "mc/entity/mob/removal.h"
 #include "mc/entity/mob/wolf_damage.h"
 #include "mc/entity/player/death.h"
 #include "mc/entity/player/statistics.h"
@@ -151,6 +152,7 @@ typedef struct mc_entity_effect_error {
     int32_t damage_amount;
     mc_entity_living_damage_state living_damage;
     mc_mob_death_state death;
+    mc_slime_removal_state slime_removal;
     mc_wolf_damage_state wolf_damage;
     mc_player_death_state player_death;
     mc_entity_player_wake_state player_wake;
@@ -198,8 +200,9 @@ mc_entity_status mc_entity_effect_fall_state_with_math(mc_entity *, mc_registry_
                                                        bool grounded, mc_entity_effect_error *);
 mc_entity_status mc_entity_effect_attacked(mc_entity *entity, mc_entity_effect_error *error);
 mc_entity_status mc_entity_effect_dead(mc_entity *entity, mc_entity_effect_error *error);
-/* Same actual K dispatch with the reached Container drop namespaces. Player
- * failed death/K children remain owned by that same Player until effect cleanup. */
+/* Same actual K dispatch with the reached Container drop namespaces. Failed
+ * Player and Slime work remains on its actor until checked effect cleanup.
+ * A rejected Slime call acquires no work and grants no older retirement right. */
 mc_entity_status mc_entity_effect_dead_with_context(mc_entity *, mc_registry_classes *,
                                                     mc_math_classes *, mc_entity_effect_error *);
 /* Actual inherited client LS.b(Entity) death body on Sheep/Pig/Cow/Chicken/Wolf.
@@ -213,7 +216,7 @@ mc_entity_status mc_entity_effect_death_with_math(mc_entity *, mc_registry_class
                                                   mc_entity_effect_error *);
 bool mc_entity_effect_has_pending(const mc_entity *);
 mc_entity_status mc_entity_effect_cleanup(mc_entity *, mc_entity_effect_error *);
-/* Consume the borrowed pending death, damage wake or ally alert named by this receipt while its
+/* Consume pending death, Slime removal, damage wake or ally alert named by this receipt while its
  * graph is live. Success clears expired borrows and preserves the source cause.
  * False leaves the remaining producer and cleanup cause available for retry.
  * Copied receipts acquire no independent owner; their borrows expire together. */

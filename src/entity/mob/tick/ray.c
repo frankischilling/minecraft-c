@@ -237,6 +237,7 @@ bool mc_mob_tick_error_retire(mc_mob_tick_error *error) {
                 /* The rejected call owns no old victim work. End only its
                  * copied diagnostic borrows, without consuming that producer. */
                 error->detail.effect.death = (mc_mob_death_state){0};
+                error->detail.effect.slime_removal = (mc_slime_removal_state){0};
                 error->detail.effect.player_death = (mc_player_death_state){0};
                 error->detail.effect.player_wake = (mc_entity_player_wake_state){0};
                 error->detail.effect.player_alert = (mc_entity_player_alert_state){0};
@@ -274,7 +275,8 @@ mc_entity_status mc_mob_tick_cleanup(mc_entity *p, mc_mob_tick_error *out) {
         error->native_policy = true;
         error->operation = "Mob cleanup while source tick entered";
     } else if (p->mob->pending_ray != NULL || p->mob->pending_path != NULL ||
-               p->mob->pending_death != NULL || p->mob->pending_wolf_damage != NULL) {
+               p->mob->pending_death != NULL || p->mob->pending_wolf_damage != NULL ||
+               p->mob->pending_slime_removal != NULL) {
         error->state.cleanup_pending = true;
         error->status = mc_entity_retain(p);
         if (error->status != MC_ENTITY_OK) {
@@ -295,7 +297,8 @@ mc_entity_status mc_mob_tick_cleanup(mc_entity *p, mc_mob_tick_error *out) {
             if (drained)
                 (void)mt_path_cleanup_entered(p, error);
             if (drained && error->status == MC_ENTITY_OK &&
-                (p->mob->pending_death != NULL || p->mob->pending_wolf_damage != NULL)) {
+                (p->mob->pending_death != NULL || p->mob->pending_wolf_damage != NULL ||
+                 p->mob->pending_slime_removal != NULL)) {
                 error->child = MC_MOB_TICK_CHILD_EFFECT;
                 error->status = mc_entity_effect_cleanup(p, &error->detail.effect);
                 if (error->status != MC_ENTITY_OK) {
@@ -306,7 +309,8 @@ mc_entity_status mc_mob_tick_cleanup(mc_entity *p, mc_mob_tick_error *out) {
             }
             error->state.cleanup_pending =
                 p->mob->pending_ray != NULL || p->mob->pending_path != NULL ||
-                p->mob->pending_death != NULL || p->mob->pending_wolf_damage != NULL;
+                p->mob->pending_death != NULL || p->mob->pending_wolf_damage != NULL ||
+                p->mob->pending_slime_removal != NULL;
             mc_entity_release(p); /* This cleanup's independent local occurrence. */
         }
     }

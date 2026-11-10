@@ -512,8 +512,21 @@ bool mt_watch_string(mc_mob_tick_scope *s, int32_t key, const mc_player_string *
 }
 
 bool mt_kill(mc_mob_tick_scope *s) {
-    if (mc_entity_is_kind(s->entity, MC_ENTITY_CLASS_KIND_SLIME))
-        return mt_fail(s, MC_ENTITY_STATE_ERROR, "Slime actual K splitting child");
+    if (mc_entity_is_kind(s->entity, MC_ENTITY_CLASS_KIND_SLIME)) {
+        s->error->child = MC_MOB_TICK_CHILD_EFFECT;
+        const mc_entity_status status = mc_entity_effect_dead_with_context(
+            s->entity, s->registry, s->math, &s->error->detail.effect);
+        if (status == MC_ENTITY_OK) {
+            s->error->child = MC_MOB_TICK_CHILD_NONE;
+            return true;
+        }
+        const mc_slime_removal_state *state = &s->error->detail.effect.slime_removal;
+        s->error->child_site = (mc_mob_site){"uw", "K", "()V", state->site.pc};
+        s->error->source_exception = state->entered && !state->native_policy &&
+                                     (state->source_exception || state->source_error);
+        s->error->exception_class = s->error->source_exception ? state->exception_class : NULL;
+        return mt_fail(s, status, s->error->detail.effect.operation);
+    }
     s->entity->base.be = true;
     return true;
 }

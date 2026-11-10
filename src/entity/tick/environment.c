@@ -772,7 +772,7 @@ static bool living_body(mc_entity *entity, mc_registry_classes *classes, mc_math
             living_at(e, 359);
             if (!mc_tick_effect(
                     e, mc_entity_effect_dead_with_context(entity, classes, math, &e->effect),
-                    "Living tick actual Player K close", 359))
+                    "Living tick actual K close", 359))
                 return false;
             if (!death_particles(entity, classes, e))
                 return false;

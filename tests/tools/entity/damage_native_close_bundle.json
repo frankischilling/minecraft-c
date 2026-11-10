@@ -13,8 +13,8 @@
       "sha256": "54d9f163904767d003b962ccfe478992a31d255983a802df10cd653b035aadc9"
     },
     "CMakeLists.txt": {
-      "bytes": 345142,
-      "sha256": "3cf33e3a6a3c8a69eb5c0eadc66633a631123780410b7e366bdd4d81538464b0"
+      "bytes": 345322,
+      "sha256": "4abc1faff12fab607d8b0a1ccd743bb1b5fbaccab9831b2fc6d9c3d9ab00d4a0"
     },
     "tests/entity/player/test_ally_alert_ownership.c": {
       "bytes": 11240,
@@ -217,6 +217,26 @@
             "tests/world/runtime/world_access/test_damage_close_execution.c": {
               "bytes": 29082,
               "sha256": "8fd9ffcffebcb2f68433463912af2f654dd4656ab5f54b1c07e4df362f75be9f"
+            }
+          },
+          "added": [],
+          "current_count": 25
+        }
+      }
+    },
+    {
+      "from_commit": "0eefdcf476d3630cf5566b9fac56cce3a3cc201b",
+      "role": "Current Slime removal implementation, finite original/native control inputs, delayed-removal controls and authored Arrow/Slime SDK scene inputs. Current source admission only. Historical authority, supplier, source_projection, native_validation, captures and prior qualification records retain their exact recorded identities and scopes. New compilation/execution and direct comparisons are separately bound; authored GUI inputs have no execution qualification from this update. No unrestricted gameplay, original audiovisual or FPS qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 10901,
+        "sha256": "89ee5f81c8f0f058afb930de5e64584b6f80286560b26b82075f198569496b81"
+      },
+      "groups": {
+        "files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 345142,
+              "sha256": "3cf33e3a6a3c8a69eb5c0eadc66633a631123780410b7e366bdd4d81538464b0"
             }
           },
           "added": [],

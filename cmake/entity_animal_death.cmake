@@ -1,7 +1,8 @@
 include_guard(GLOBAL)
 
 if(TARGET mc_simulation)
-    target_sources(mc_simulation PRIVATE src/entity/drop/drop.c src/entity/mob/death.c)
+    target_sources(mc_simulation PRIVATE src/entity/drop/drop.c src/entity/mob/death.c
+        src/entity/mob/removal.c)
 endif()
 
 if(BUILD_TESTING)
