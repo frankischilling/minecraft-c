@@ -57,13 +57,16 @@ mc_world_runtime_metadata_get_detailed(mc_world_runtime *, int32_t x, int32_t y,
  * from native status. Acquisition occurs before any metadata inspection.
  *
  * After successful acquisition, a normal chunk is marked dirty before its
- * metadata owner is accessed; only the selected nibble receives metadata's low
- * four bits. Acquisition can reject a malformed native chunk before this
- * point; a later owner failure retains the dirty assignment. No block hook, WorldAccess,
- * neighbor, height/light change or lighting submission occurs in this quiet
- * path. The blank payload and its dirty flag remain unchanged. Native failure
- * preserves out and retains completed acquisition/dirty effects. The same
- * exclusive-access, lifetime and disjoint-output rules as block_get apply. */
+ * current e NibbleArray/backing is accessed; only the selected nibble receives
+ * metadata's low four bits. A short backing is valid if that selected byte is
+ * in bounds. NULL e/backing and an out-of-bounds byte fail after the dirty
+ * store. Generic stored states without a source Chunk object retain their
+ * existing native fixed-plane representation. Acquisition can reject a malformed native chunk
+ * before this point; a later owner failure retains the dirty assignment. No block hook,
+ * WorldAccess, neighbor, height/light change or lighting submission occurs in this quiet path. The
+ * blank payload and its dirty flag remain unchanged. Native failure preserves out and retains
+ * completed acquisition/dirty effects. The same exclusive-access, lifetime and disjoint-output
+ * rules as block_get apply. */
 mc_world_storage_status mc_world_runtime_metadata_set_quiet(mc_world_runtime *runtime, int32_t x,
                                                             int32_t y, int32_t z, int32_t metadata,
                                                             bool *out,

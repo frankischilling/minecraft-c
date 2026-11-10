@@ -1,5 +1,8 @@
 #include "block_queries_internal.h"
+#include "construction_internal.h"
+#include "execution_children_internal.h"
 #include "runtime_internal.h"
+#include "solid_support_execution_internal.h"
 
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
@@ -136,9 +139,11 @@ static mc_registry_status block_predicate(const mc_block *block, bool *out,
 static mc_world_storage_status solid_support(mc_world_runtime *world, int32_t x, int32_t y,
                                              int32_t z, bool *out,
                                              mc_world_solid_support_error *error,
-                                             mc_world_nearby_error *access) {
+                                             mc_world_nearby_error *access,
+                                             mc_world_solid_support_execution *owned) {
     error->bytecode = 0;
-    mc_registry_classes *classes = mc_world_runtime_registry(world);
+    mc_registry_classes *classes =
+        owned == NULL ? mc_world_runtime_registry(world) : owned->code_classes->registry;
     mc_registry_error cause = empty_error().registry;
     if (classes == NULL) {
         cause.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
@@ -152,7 +157,21 @@ static mc_world_storage_status solid_support(mc_world_runtime *world, int32_t x,
     error->bytecode = 7;
     int32_t id;
     mc_world_storage_status status;
-    if (access == NULL) {
+    if (owned != NULL) {
+        status = mc_world_collision_block_value_in_execution(
+            owned->execution, world, owned->code, x, y, z, false, &id, &owned->lower, owned->owned);
+        /* A lower native refusal is independent of its actual C status. Do
+         * not map an unentered/unfinished lower frame into a Source cause. */
+        if (owned->owned->ownership_status != MC_WORLD_STORAGE_OK) {
+            owned->native_stopped = true;
+            return status;
+        }
+        if (status != MC_WORLD_STORAGE_OK) {
+            *access = owned->lower.nearby;
+            error->cause = owned->lower.nearby.query.cause;
+            error->registry = owned->lower.nearby.query.registry;
+        }
+    } else if (access == NULL) {
         status = mc_world_runtime_block_get(world, x, y, z, &id, &error->cause);
     } else {
         mc_world_collision_error lower = mc_world_collision_empty_error();
@@ -216,7 +235,7 @@ mc_world_solid_support_detailed_held(mc_world_runtime *world, int32_t x, int32_t
         status = admission(&frame.error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                            "World solid-support held arguments");
     } else {
-        status = solid_support(world, x, y, z, out, &frame.error, &frame.access);
+        status = solid_support(world, x, y, z, out, &frame.error, &frame.access, NULL);
         if (status == MC_WORLD_STORAGE_OK)
             frame = (mc_world_solid_support_detail){.error = empty_error(),
                                                     .access = mc_world_nearby_empty_error()};
@@ -243,7 +262,7 @@ mc_world_storage_status mc_world_runtime_solid_support_get(mc_world_runtime *wor
             frame.status = status;
             frame.operation = frame.cause.operation;
         } else {
-            status = solid_support(world, x, y, z, out, &frame, NULL);
+            status = solid_support(world, x, y, z, out, &frame, NULL, NULL);
             mc_world_runtime_call_leave(world);
             if (status == MC_WORLD_STORAGE_OK)
                 frame = empty_error();
@@ -252,4 +271,74 @@ mc_world_storage_status mc_world_runtime_solid_support_get(mc_world_runtime *wor
     if (error != NULL)
         *error = frame;
     return status;
+}
+
+static bool support_quiet(const mc_world_runtime_execution_result *r) {
+    if (r->ownership_status != MC_WORLD_STORAGE_OK || r->selection_ready || r->root_pending)
+        return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (r->pending[i].used)
+            return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (r->closes[i].used)
+            return false;
+    return true;
+}
+
+void mc_world_solid_support_execution_init(mc_world_solid_support_execution *frame,
+                                           mc_entity_tick_execution *execution,
+                                           mc_world_runtime_classes *code_classes,
+                                           mc_world_runtime_execution_code code,
+                                           mc_entity_tick_execution_site site,
+                                           mc_world_runtime_execution_result *owned) {
+    if (frame != NULL)
+        *frame = (mc_world_solid_support_execution){.execution = execution,
+                                                    .code_classes = code_classes,
+                                                    .code = code,
+                                                    .receiver_site = site,
+                                                    .owned = owned};
+    mc_world_runtime_execution_result_init(owned);
+}
+
+bool mc_world_solid_support_detailed_held_in_execution(mc_world_solid_support_execution *frame,
+                                                       mc_world_runtime *world, int32_t x,
+                                                       int32_t y, int32_t z, bool *out,
+                                                       mc_world_storage_status *status) {
+    if (frame == NULL)
+        return false;
+    if (frame->execution == NULL || frame->execution->identity != frame->execution ||
+        world == NULL || frame->code_classes == NULL || frame->owned == NULL || out == NULL ||
+        status == NULL || frame->entered) {
+        mc_world_runtime_execution_result_note(frame->owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "Solid support execution/fresh outputs required",
+                                               frame->receiver_site);
+        return false;
+    }
+    if (!support_quiet(frame->owned)) {
+        mc_world_runtime_execution_result_note(frame->owned, MC_WORLD_STORAGE_BUSY,
+                                               "Solid support fresh result required",
+                                               frame->receiver_site);
+        return false;
+    }
+    mc_world_access_failure_lease *unused = NULL;
+    const mc_world_storage_status admitted =
+        mc_world_execution_child_lease(frame->execution, world, &unused);
+    if (admitted != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(frame->owned, admitted,
+                                               "Solid support evaluated World ownership",
+                                               frame->receiver_site);
+        return false;
+    }
+    frame->entered = true;
+    frame->detail = (mc_world_solid_support_detail){.error = empty_error(),
+                                                    .access = mc_world_nearby_empty_error()};
+    frame->lower = mc_world_collision_empty_error();
+    *status =
+        solid_support(world, x, y, z, out, &frame->detail.error, &frame->detail.access, frame);
+    frame->completed = *status == MC_WORLD_STORAGE_OK && !frame->native_stopped &&
+                       frame->owned->ownership_status == MC_WORLD_STORAGE_OK;
+    if (frame->completed)
+        frame->detail = (mc_world_solid_support_detail){.error = empty_error(),
+                                                        .access = mc_world_nearby_empty_error()};
+    return frame->completed;
 }

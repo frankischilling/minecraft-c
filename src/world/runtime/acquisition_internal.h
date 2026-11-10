@@ -48,4 +48,11 @@ mc_world_storage_status mc_world_runtime_metadata_get_source_failure(
     mc_world_runtime *, int32_t x, int32_t y, int32_t z, int32_t *out, mc_world_storage_error *,
     mc_world_runtime_acquisition_error *, mc_world_metadata_source_error *);
 
+/* SAME quiet setter with the actual FD70/LM14/WI first backing-read failure.
+ * A reached normal Chunk dirty store remains applied on source failure. */
+mc_world_storage_status mc_world_runtime_metadata_set_quiet_source_failure(
+    mc_world_runtime *, int32_t x, int32_t y, int32_t z, int32_t metadata, bool *out,
+    mc_world_storage_error *, mc_world_runtime_acquisition_error *,
+    mc_world_metadata_source_error *);
+
 #endif

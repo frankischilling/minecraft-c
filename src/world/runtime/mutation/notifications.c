@@ -1,7 +1,9 @@
 #include "mutation_internal.h"
+#include "notifications_execution_internal.h"
 
 #include "../../../block/registry/runtime_internal.h"
 #include "../construction_internal.h"
+#include "../execution_children_internal.h"
 #include "../world_access_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/world/runtime/blocks.h"
@@ -15,9 +17,68 @@ static bool world_access_failure(mc_world_runtime *world, mc_world_mutation_erro
     return false;
 }
 
-bool mc_world_mutation_observe_cell(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
-                                    mc_world_mutation_error *error) {
+static bool notification_quiet(const mc_world_runtime_execution_result *owned) {
+    if (owned->selection_ready || owned->root_pending)
+        return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (owned->pending[i].used)
+            return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (owned->closes[i].used)
+            return false;
+    return true;
+}
+
+static bool notification_note(mc_world_notification_execution *frame,
+                              mc_world_storage_status status, const char *operation) {
+    mc_world_runtime_execution_result_note(frame->owned, status, operation, frame->receiver_site);
+    return false;
+}
+
+static bool notification_current(mc_world_notification_execution *frame, mc_world_runtime *world) {
+    mc_entity_tick_execution_world_token current;
+    if (!mc_entity_tick_execution_current_world(frame->execution, &current))
+        return notification_note(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                 "World notification checked current scope");
+    if (current.owner != frame->world.owner || current.slot != frame->world.slot ||
+        current.generation != frame->world.generation)
+        return notification_note(frame, MC_WORLD_STORAGE_BUSY,
+                                 "World notification exact evaluated scope changed");
+    mc_world_access_failure_lease *lease = NULL;
+    const mc_world_storage_status status =
+        mc_world_execution_child_lease(frame->execution, world, &lease);
+    if (status != MC_WORLD_STORAGE_OK)
+        return notification_note(frame, status, "World notification evaluated scope admission");
+    if (lease != frame->lease)
+        return notification_note(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                 "World notification exact producer lease changed");
+    return true;
+}
+
+static void notification_callback(mc_world_notification_execution *frame,
+                                  mc_world_storage_status status, mc_world_mutation_error *error) {
+    if (frame == NULL)
+        return;
+    frame->callback_status = status;
+    if (frame->callbacks_returned != SIZE_MAX)
+        ++frame->callbacks_returned;
+    if (status != MC_WORLD_STORAGE_OK) {
+        const mc_world_storage_status captured = mc_entity_tick_execution_capture_receipt(
+            frame->execution, &error->world_access_failure);
+        mc_world_runtime_execution_result_note(frame->owned, captured,
+                                               "World notification actual receipt capture",
+                                               frame->receiver_site);
+        if (captured != MC_WORLD_STORAGE_OK && frame->execution->capture_pending)
+            error->world_access_failure = (mc_world_access_failure){0};
+    }
+}
+
+static bool observe_cell(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
+                         mc_world_mutation_error *error,
+                         mc_world_notification_execution *execution) {
     for (size_t index = 0;; ++index) {
+        if (execution != NULL && !notification_current(execution, world))
+            return false;
         mc_world_access *world_access = NULL;
         bool present = false;
         mc_world_storage_error cause = {0};
@@ -29,8 +90,13 @@ bool mc_world_mutation_observe_cell(mc_world_runtime *world, int32_t x, int32_t 
             return true;
         }
         error->world_access_bytecode = 34;
-        const mc_world_storage_status status = mc_world_access_call_cell(
-            world_access, world, x, y, z, &cause, &error->world_access_failure);
+        const mc_world_storage_status status =
+            execution == NULL ? mc_world_access_call_cell(world_access, world, x, y, z, &cause,
+                                                          &error->world_access_failure)
+                              : mc_world_access_call_cell_with_lease(&world_access, world, x, y, z,
+                                                                     execution->lease, &cause,
+                                                                     &error->world_access_failure);
+        notification_callback(execution, status, error);
         mc_world_access_release_held(world_access);
         if (status != MC_WORLD_STORAGE_OK)
             return world_access_failure(world, error,
@@ -40,12 +106,15 @@ bool mc_world_mutation_observe_cell(mc_world_runtime *world, int32_t x, int32_t 
     }
 }
 
-bool mc_world_mutation_observe_range(mc_world_runtime *world, int32_t min_x, int32_t min_y,
-                                     int32_t min_z, int32_t max_x, int32_t max_y, int32_t max_z,
-                                     mc_world_mutation_error *error) {
+static bool observe_range(mc_world_runtime *world, int32_t min_x, int32_t min_y, int32_t min_z,
+                          int32_t max_x, int32_t max_y, int32_t max_z,
+                          mc_world_mutation_error *error,
+                          mc_world_notification_execution *execution) {
     /* fd/dj.b(IIIIII)V: pass the supplied bounds without sorting or clipping.
      * Equal endpoints do not select the separate fd.k/dj.i(III)V body. */
     for (size_t index = 0;; ++index) {
+        if (execution != NULL && !notification_current(execution, world))
+            return false;
         mc_world_access *world_access = NULL;
         bool present = false;
         mc_world_storage_error cause = {0};
@@ -58,13 +127,91 @@ bool mc_world_mutation_observe_range(mc_world_runtime *world, int32_t min_x, int
         }
         error->world_access_bytecode = 40;
         const mc_world_storage_status status =
-            mc_world_access_call_range(world_access, world, min_x, min_y, min_z, max_x, max_y,
-                                       max_z, &cause, &error->world_access_failure);
+            execution == NULL
+                ? mc_world_access_call_range(world_access, world, min_x, min_y, min_z, max_x, max_y,
+                                             max_z, &cause, &error->world_access_failure)
+                : mc_world_access_call_range_with_lease(&world_access, world, min_x, min_y, min_z,
+                                                        max_x, max_y, max_z, execution->lease,
+                                                        &cause, &error->world_access_failure);
+        notification_callback(execution, status, error);
         mc_world_access_release_held(world_access);
         if (status != MC_WORLD_STORAGE_OK)
             return world_access_failure(world, error,
                                         mc_world_access_callback_error(status, cause));
     }
+}
+
+bool mc_world_mutation_observe_cell(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
+                                    mc_world_mutation_error *error) {
+    return observe_cell(world, x, y, z, error, NULL);
+}
+
+bool mc_world_mutation_observe_range(mc_world_runtime *world, int32_t min_x, int32_t min_y,
+                                     int32_t min_z, int32_t max_x, int32_t max_y, int32_t max_z,
+                                     mc_world_mutation_error *error) {
+    return observe_range(world, min_x, min_y, min_z, max_x, max_y, max_z, error, NULL);
+}
+
+void mc_world_notification_execution_init(mc_world_notification_execution *frame,
+                                          mc_entity_tick_execution *execution,
+                                          mc_entity_tick_execution_site receiver_site,
+                                          mc_world_runtime_execution_result *owned) {
+    if (frame != NULL)
+        *frame = (mc_world_notification_execution){
+            .execution = execution, .owned = owned, .receiver_site = receiver_site};
+    mc_world_runtime_execution_result_init(owned);
+}
+
+static bool notification_enter(mc_world_notification_execution *frame, mc_world_runtime *world,
+                               mc_world_mutation_error *error, mc_world_storage_status *status) {
+    if (frame == NULL)
+        return false;
+    if (frame->execution == NULL || frame->execution->identity != frame->execution ||
+        frame->owned == NULL || world == NULL || error == NULL || status == NULL || frame->entered)
+        return notification_note(frame, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                 "World notification execution/fresh outputs required");
+    if (frame->owned->ownership_status != MC_WORLD_STORAGE_OK || !notification_quiet(frame->owned))
+        return notification_note(frame, MC_WORLD_STORAGE_BUSY,
+                                 "World notification fresh result required");
+    if (!mc_entity_tick_execution_current_world(frame->execution, &frame->world))
+        return notification_note(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                 "World notification evaluated scope required");
+    const mc_world_storage_status admitted =
+        mc_world_execution_child_lease(frame->execution, world, &frame->lease);
+    if (admitted != MC_WORLD_STORAGE_OK)
+        return notification_note(frame, admitted, "World notification evaluated scope admission");
+    frame->entered = true;
+    return true;
+}
+
+static bool notification_finish(mc_world_notification_execution *frame, bool completed,
+                                mc_world_mutation_error *error, mc_world_storage_status *status) {
+    *status = completed ? MC_WORLD_STORAGE_OK : error->status;
+    frame->completed = completed && frame->owned->ownership_status == MC_WORLD_STORAGE_OK;
+    return frame->completed;
+}
+
+bool mc_world_mutation_observe_cell_in_execution(mc_world_notification_execution *frame,
+                                                 mc_world_runtime *world, int32_t x, int32_t y,
+                                                 int32_t z, mc_world_mutation_error *error,
+                                                 mc_world_storage_status *status) {
+    if (!notification_enter(frame, world, error, status))
+        return false;
+    const bool completed = observe_cell(world, x, y, z, error, frame);
+    return notification_finish(frame, completed, error, status);
+}
+
+bool mc_world_mutation_observe_range_in_execution(mc_world_notification_execution *frame,
+                                                  mc_world_runtime *world, int32_t min_x,
+                                                  int32_t min_y, int32_t min_z, int32_t max_x,
+                                                  int32_t max_y, int32_t max_z,
+                                                  mc_world_mutation_error *error,
+                                                  mc_world_storage_status *status) {
+    if (!notification_enter(frame, world, error, status))
+        return false;
+    const bool completed =
+        observe_range(world, min_x, min_y, min_z, max_x, max_y, max_z, error, frame);
+    return notification_finish(frame, completed, error, status);
 }
 
 bool mc_world_mutation_observe_column(mc_world_runtime *world, int32_t x, int32_t z, int32_t a,

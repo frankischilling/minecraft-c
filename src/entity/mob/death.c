@@ -1,4 +1,5 @@
 #include "../watcher_payload_internal.h"
+#include "death_execution_internal.h"
 #include "death_internal.h"
 
 #include "../../block/registry/registry_internal.h"
@@ -16,6 +17,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef struct death_execution {
+    mc_entity_tick_execution *execution;
+    mc_world_runtime_classes *code_classes;
+    mc_world_runtime_execution_code code;
+} death_execution;
+
 struct mc_mob_death_work {
     mc_mob_death_state state;
     mc_entity *actor, *source;
@@ -26,6 +33,10 @@ struct mc_mob_death_work {
     mc_world_runtime *worlds[2];
     size_t world_count;
     bool drop_reached;
+    bool execution_owned, drop_returned, completed;
+    death_execution execution;
+    mc_world_runtime_execution_result drop_result;
+    mc_entity_status drop_status;
 };
 
 static mc_mob_death_site site(const char *c, const char *m, const char *d, int32_t pc) {
@@ -360,14 +371,38 @@ static bool cleanup_failure(struct mc_mob_death_work *w, mc_entity_effect_error 
 static bool drop(struct mc_mob_death_work *w, bool numeric, mc_entity_effect_error *e) {
     ++w->state.drops_attempted;
     w->drop_reached = true;
-    const mc_entity_status status =
-        numeric ? mc_entity_drop_numeric_begin(w->registry, w->actor, w->state.drop_id, 1, 0.0f,
-                                               &w->drop, &w->drop_error)
-                : mc_entity_drop_stack_begin(w->registry, w->actor, w->stack, 0.0f, &w->drop,
-                                             &w->drop_error);
+    w->drop_returned = false;
+    w->drop_status = MC_ENTITY_OK;
+    if (w->execution_owned) {
+        w->drop_returned =
+            numeric ? mc_entity_drop_numeric_begin_in_execution(
+                          w->execution.execution, w->execution.code_classes, w->execution.code,
+                          w->registry, w->actor, w->state.drop_id, 1, 0.0f, &w->drop,
+                          &w->drop_status, &w->drop_error, &w->drop_result)
+                    : mc_entity_drop_stack_begin_in_execution(
+                          w->execution.execution, w->execution.code_classes, w->execution.code,
+                          w->registry, w->actor, w->stack, 0.0f, &w->drop, &w->drop_status,
+                          &w->drop_error, &w->drop_result);
+    } else {
+        w->drop_status = numeric
+                             ? mc_entity_drop_numeric_begin(w->registry, w->actor, w->state.drop_id,
+                                                            1, 0.0f, &w->drop, &w->drop_error)
+                             : mc_entity_drop_stack_begin(w->registry, w->actor, w->stack, 0.0f,
+                                                          &w->drop, &w->drop_error);
+        w->drop_returned = w->drop_status == MC_ENTITY_OK;
+    }
+    const mc_entity_status status = w->drop_status;
     mc_mob_death_state current = view(w);
     w->state = current;
-    if (status != MC_ENTITY_OK) {
+    if (!w->drop_returned) {
+        w->state.child = site(w->drop_error.site.class_name, w->drop_error.site.method,
+                              w->drop_error.site.descriptor, (int32_t)w->drop_error.site.pc);
+        if (status == MC_ENTITY_OK) {
+            /* Native/Math-only stop: preserve raw Source status and the exact
+             * child/frame. Neither status OK nor cleanup authorizes q resume. */
+            project(w, e);
+            return false;
+        }
         e->entity = w->drop_error.entity;
         e->registry = w->state.registry = w->drop_error.registry;
         w->state.child = site(w->drop_error.site.class_name, w->drop_error.site.method,
@@ -389,6 +424,16 @@ static bool drop(struct mc_mob_death_work *w, bool numeric, mc_entity_effect_err
         w->state.exception_class = e->living_damage.exception_class = w->drop_error.exception_class;
         project(w, e);
         return false;
+    }
+    if (w->execution_owned) {
+        const mc_world_storage_status closed = mc_entity_drop_native_close(w->drop);
+        if (closed != MC_WORLD_STORAGE_OK) {
+            mc_world_runtime_execution_result_note(
+                &w->drop_result, closed, "Living death completed owned Item drop close",
+                (mc_entity_tick_execution_site){"ls", "b", "(Lsn;)V", 45});
+            project(w, e);
+            return false;
+        }
     }
     ++w->state.drops_returned;
     const mc_entity_status retired = mc_entity_drop_retire(&w->drop, &w->drop_cleanup);
@@ -740,6 +785,30 @@ bool mc_mob_death_inspect(const mc_entity *p, mc_mob_death_state *out) {
     return true;
 }
 
+bool mc_mob_death_execution_inspect(mc_entity *p, mc_mob_death_execution_view *out) {
+    if (p == NULL || out == NULL || !mc_entity_has_mob(p) || p->mob->pending_death == NULL)
+        return false;
+    struct mc_mob_death_work *w = p->mob->pending_death;
+    if (!w->execution_owned)
+        return false;
+    *out = (mc_mob_death_execution_view){.execution = w->execution.execution,
+                                         .result = &w->drop_result,
+                                         .drop = w->drop,
+                                         .drop_status = w->drop_status,
+                                         .drop_returned = w->drop_returned,
+                                         .completed = w->completed};
+    if (w->drop != NULL)
+        out->has_child = mc_entity_drop_execution_inspect(w->drop, &out->child);
+    return true;
+}
+
+static mc_entity_status native_status(mc_world_storage_status status) {
+    return status == MC_WORLD_STORAGE_LIMIT               ? MC_ENTITY_LIMIT
+           : status == MC_WORLD_STORAGE_ALLOCATION_FAILED ? MC_ENTITY_ALLOCATION_FAILED
+           : status == MC_WORLD_STORAGE_BUSY              ? MC_ENTITY_BUSY
+                                                          : MC_ENTITY_WORLD_FAILED;
+}
+
 mc_entity_status mc_mob_death_cleanup(mc_entity *p, mc_entity_effect_error *e) {
     if (p == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
@@ -751,6 +820,14 @@ mc_entity_status mc_mob_death_cleanup(mc_entity *p, mc_entity_effect_error *e) {
         return MC_ENTITY_BUSY;
     }
     const bool had_drop = w->drop != NULL;
+    if (w->execution_owned && had_drop) {
+        const mc_world_storage_status closed = mc_entity_drop_native_close(w->drop);
+        if (closed != MC_WORLD_STORAGE_OK) {
+            const mc_entity_status refused = native_status(closed);
+            (void)cleanup_failure(w, e, refused, "Living death exact owned Item drop close");
+            return refused;
+        }
+    }
     const mc_entity_status status = mc_entity_drop_retire(&w->drop, &w->drop_cleanup);
     if (status != MC_ENTITY_OK) {
         (void)cleanup_failure(w, e, status, "Living death retained Item drop cleanup");
@@ -786,8 +863,9 @@ mc_entity_status mc_mob_death_cleanup(mc_entity *p, mc_entity_effect_error *e) {
     return MC_ENTITY_OK;
 }
 
-bool mc_mob_death_entered(mc_entity *p, mc_registry_classes *registry_value, mc_entity *source,
-                          mc_entity_effect_error *e) {
+static bool entered(mc_entity *p, mc_registry_classes *registry_value, mc_entity *source,
+                    mc_entity_effect_error *e, const death_execution *execution,
+                    mc_world_runtime_execution_result *owned) {
     if (e == NULL)
         return false;
     if (p == NULL || !mc_entity_has_mob(p) || (!animal(p) && !monster(p) && !remaining_living(p)) ||
@@ -813,6 +891,11 @@ bool mc_mob_death_entered(mc_entity *p, mc_registry_classes *registry_value, mc_
     }
     w->actor = p;
     w->registry = registry_value;
+    if (execution != NULL) {
+        w->execution_owned = true;
+        w->execution = *execution;
+        mc_world_runtime_execution_result_init(&w->drop_result);
+    }
     w->state = (mc_mob_death_state){.kind = p->class_literal->kind,
                                     .receiver_identity = (uintptr_t)p,
                                     .entered = true,
@@ -829,9 +912,46 @@ bool mc_mob_death_entered(mc_entity *p, mc_registry_classes *registry_value, mc_
     w->state.receiver_held = w->state.pending = w->state.active = true;
     p->mob->pending_death = w;
     const bool returned = body(w, source, e);
+    w->completed = returned;
     w->state.active = false;
     project(w, e);
+    if (w->execution_owned) {
+        const mc_world_storage_status forwarded =
+            mc_world_runtime_execution_result_forward(owned, &w->drop_result);
+        if (forwarded != MC_WORLD_STORAGE_OK) {
+            mc_world_runtime_execution_result_note(
+                owned, forwarded, "Living death exact owned drop result forwarding",
+                (mc_entity_tick_execution_site){"ls", "b", "(Lsn;)V", 45});
+            return false;
+        }
+    }
     if (!returned)
         return false;
     return mc_mob_death_cleanup(p, e) == MC_ENTITY_OK;
+}
+
+bool mc_mob_death_entered(mc_entity *p, mc_registry_classes *registry_value, mc_entity *source,
+                          mc_entity_effect_error *e) {
+    return entered(p, registry_value, source, e, NULL, NULL);
+}
+
+bool mc_mob_death_entered_in_execution(mc_entity_tick_execution *execution,
+                                       mc_world_runtime_classes *code_classes,
+                                       mc_world_runtime_execution_code code, mc_entity *p,
+                                       mc_registry_classes *registry_value, mc_entity *source,
+                                       mc_entity_status *status, mc_entity_effect_error *e,
+                                       mc_world_runtime_execution_result *owned) {
+    if (owned != NULL)
+        mc_world_runtime_execution_result_init(owned);
+    const mc_entity_tick_execution_site at = {"ls", "b", "(Lsn;)V", 0};
+    if (execution == NULL || execution->identity != execution || execution->math == NULL ||
+        code_classes == NULL || status == NULL || e == NULL || owned == NULL) {
+        mc_world_runtime_execution_result_note(owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "Living death execution/code/outputs required", at);
+        return false;
+    }
+    const death_execution descriptor = {execution, code_classes, code};
+    const bool returned = entered(p, registry_value, source, e, &descriptor, owned);
+    *status = e->status;
+    return returned && owned->ownership_status == MC_WORLD_STORAGE_OK;
 }

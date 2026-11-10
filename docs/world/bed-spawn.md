@@ -51,6 +51,30 @@ Map provider and its genuine bound acquisition context.
 
 ## Exit search
 
+The private `bed_spawn_execution_internal.h` entry now runs the same VE exit
+body for an explicit caller execution. It carries the independently supplied
+Bed Registry and defining World code, with stable scalar/support frames in the
+caller's heap. It does not use the saved-Bed GS validation wrapper as a search
+substitute; that captured-provider wrapper remains separately unjoined.
+
+Owned metadata and air calls use the [same World scalar bodies](blocks.md).
+Held solid support still captures `Block.m` before its actual collision getter,
+then indexes that captured array and reads Material/predicate only after both
+channels complete. A native-only refusal stops before journal completion,
+direction reads, another candidate or position publication. Actual lower raw
+status is retained independently: a refused activation close produces its real
+failed GET/status, while a separate completion refusal can retain actual GET OK
+and raw OK. Neither case becomes an ordinary search result.
+
+A nullable World token reaches the static Bed activation before its metadata
+query throws at 4. Failed work keeps its reached ordinary World call and actual
+lower diagnostics alive until explicit pending/close work drains under the
+caller's exact scope. These helpers never guess a scope, replay a query or close
+the caller's context. The native controls compare full quiet search journals
+for skip 0/1/999, preserve the captured array through reentry, and exercise both
+failure channels. Complete Player wake still needs notifying Bed occupancy and
+its recursively reached mutation descendants.
+
 The static VE invocation initializes the declaring Bed class before entering
 its metadata body. At bytecode 4 it reads metadata and selects orientation
 `metadata & 3`. The occupied and head bits do not change that orientation.

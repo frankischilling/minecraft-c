@@ -55,6 +55,146 @@ static mc_entity_status admission(mc_entity_drop_error *error, mc_entity_status 
     return status;
 }
 
+static mc_entity_tick_execution_site execution_site(unsigned int pc) {
+    return (mc_entity_tick_execution_site){"sn", "a", stack_descriptor, (int)pc};
+}
+
+static bool scope_open(const mc_entity_drop_call *call,
+                       const mc_entity_drop_world_execution_view *scope) {
+    const mc_entity_tick_execution *execution = call->execution.execution;
+    return scope->created && scope->world.owner == execution &&
+           scope->world.slot < MC_ENTITY_TICK_EXECUTION_WORLDS &&
+           execution->world_slots[scope->world.slot].generation == scope->world.generation &&
+           execution->world_slots[scope->world.slot].phase == MC_ENTITY_TICK_EXECUTION_WORLD_OPEN;
+}
+
+static bool scope_consumed(const mc_entity_drop_call *call,
+                           const mc_entity_drop_world_execution_view *scope) {
+    const mc_entity_tick_execution *execution = call->execution.execution;
+    if (!scope->created || scope->world.owner != execution ||
+        scope->world.slot >= MC_ENTITY_TICK_EXECUTION_WORLDS || scope->world.generation == 0 ||
+        execution->world_slots[scope->world.slot].generation != scope->world.generation)
+        return false;
+    const mc_entity_tick_execution_world_slot_phase phase =
+        execution->world_slots[scope->world.slot].phase;
+    return phase == MC_ENTITY_TICK_EXECUTION_WORLD_FREE ||
+           phase == MC_ENTITY_TICK_EXECUTION_WORLD_RETAINED;
+}
+
+static bool records_pending(const mc_world_runtime_execution_result *owned) {
+    if (owned->root_pending)
+        return true;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (owned->pending[i].used)
+            return true;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (owned->closes[i].used)
+            return true;
+    return false;
+}
+
+static bool capture_world(mc_entity_drop_call *call, mc_world_runtime *world,
+                          mc_entity_drop_world_execution_view *scope, unsigned int pc) {
+    if (!call->execution_owned)
+        return true;
+    const mc_world_storage_status status = mc_entity_tick_execution_push_world(
+        call->execution.execution, world, execution_site(pc), &scope->world);
+    mc_world_runtime_execution_result_note(
+        &call->owned, status, "Entity drop actual evaluated World capture", execution_site(pc));
+    if (status != MC_WORLD_STORAGE_OK)
+        return false;
+    scope->created = scope->open = true;
+    return true;
+}
+
+static bool close_scope(mc_entity_drop_call *call, mc_entity_drop_world_execution_view *scope,
+                        unsigned int pc, bool completed) {
+    if (!call->execution_owned || !scope->created || scope->close_attempted)
+        return completed;
+    if (completed && (call->owned.ownership_status != MC_WORLD_STORAGE_OK ||
+                      call->owned.selection_ready || records_pending(&call->owned))) {
+        mc_world_runtime_execution_result_note(&call->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                               "Entity drop completed result not quiet",
+                                               execution_site(pc));
+        completed = false;
+    }
+    /* The actual synchronous child/body returned. Retained call/producer rights
+     * stay live. Record this ONE initial pop's genuine operand before calling. */
+    scope->locals_drained = true;
+    scope->failed = !completed;
+    scope->close_attempted = true;
+    const mc_world_storage_status status =
+        mc_entity_tick_execution_pop_world(call->execution.execution, &scope->world, scope->failed);
+    scope->initial_close_status = status;
+    scope->open = scope_open(call, scope);
+    scope->consumed = scope_consumed(call, scope);
+    mc_world_runtime_execution_result_note(
+        &call->owned, status, "Entity drop actual World checked close", execution_site(pc));
+    return status == MC_WORLD_STORAGE_OK && completed;
+}
+
+static mc_world_storage_status native_refused(mc_entity_drop_call *call,
+                                              mc_world_storage_status status, const char *operation,
+                                              unsigned int pc) {
+    mc_world_runtime_execution_result_note(&call->owned, status, operation, execution_site(pc));
+    return status;
+}
+
+static mc_world_storage_status native_close_scope(mc_entity_drop_call *call,
+                                                  mc_entity_drop_world_execution_view *scope,
+                                                  unsigned int pc) {
+    if (!scope->created || scope->consumed)
+        return MC_WORLD_STORAGE_OK;
+    if (!scope->close_attempted || !scope->locals_drained)
+        return native_refused(call, MC_WORLD_STORAGE_BUSY,
+                              "Entity drop actual initial close/locals required", pc);
+    if (scope_consumed(call, scope)) {
+        scope->open = false;
+        scope->consumed = true;
+        return MC_WORLD_STORAGE_OK;
+    }
+    if (!scope->open || !scope_open(call, scope))
+        return native_refused(call, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "Entity drop recorded token not OPEN or proved consumed", pc);
+    mc_entity_tick_execution_world_token current;
+    if (!mc_entity_tick_execution_current_world(call->execution.execution, &current))
+        return native_refused(call, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "Entity drop recorded close checked current token", pc);
+    if (current.owner != scope->world.owner || current.slot != scope->world.slot ||
+        current.generation != scope->world.generation)
+        return native_refused(call, MC_WORLD_STORAGE_BUSY,
+                              "Entity drop recorded close awaits exact current token", pc);
+    scope->native_close_attempted = true;
+    const mc_world_storage_status status =
+        mc_entity_tick_execution_pop_world(call->execution.execution, &scope->world, scope->failed);
+    scope->native_close_status = status;
+    scope->open = scope_open(call, scope);
+    scope->consumed = scope_consumed(call, scope);
+    mc_world_runtime_execution_result_note(
+        &call->owned, status, "Entity drop recorded Native checked close", execution_site(pc));
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    if (!scope->consumed)
+        return native_refused(call, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                              "Entity drop successful close lacks consumed token proof", pc);
+    return MC_WORLD_STORAGE_OK;
+}
+
+mc_world_storage_status mc_entity_drop_native_close(mc_entity_drop_call *call) {
+    if (call == NULL || !call->execution_owned || call->execution.execution == NULL ||
+        call->execution.execution->identity != call->execution.execution)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    if (call->state.active)
+        return native_refused(call, MC_WORLD_STORAGE_BUSY, "Entity drop active native close", 35);
+    if (records_pending(&call->owned))
+        return native_refused(call, MC_WORLD_STORAGE_BUSY,
+                              "Entity drop close awaits explicit pending/child continuation", 35);
+    mc_world_storage_status status = native_close_scope(call, &call->publication_scope, 35);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    return native_close_scope(call, &call->constructor_scope, 5);
+}
+
 /* Retain only this invocation's immutable producer receipt. If native receipt
  * admission refuses, the original source error and owner slots remain intact;
  * checked retirement retries this capture before releasing their graph. */
@@ -71,10 +211,27 @@ static bool publication_capture(mc_entity_drop_call *call) {
     return false;
 }
 
+static bool publication_failure_protected(const mc_entity_drop_call *call) {
+    if (!call->execution_owned)
+        return true;
+    const mc_entity_drop_world_execution_view *scope = &call->publication_scope;
+    const mc_entity_tick_execution *execution = call->execution.execution;
+    const mc_world_access_failure *protected = NULL;
+    return call->insertion.observer_returned && scope->created && scope->world.owner == execution &&
+           scope->world.slot < MC_ENTITY_TICK_EXECUTION_WORLDS &&
+           execution->world_slots[scope->world.slot].generation == scope->world.generation &&
+           mc_world_access_failure_lease_inspect(&execution->leases[scope->world.slot],
+                                                 &protected) &&
+           protected->receipt == call->publication.world_access_failure.receipt &&
+           protected->receiver == call->publication.world_access_failure.receiver;
+}
+
 static bool publish(mc_entity_drop_call *call) {
     at(call, false, 35);
     mc_world_runtime *world = call->state.actor->base.world;
     call->state.publication_world = world;
+    if (!capture_world(call, world, &call->publication_scope, 35))
+        return false;
     if (world != NULL) {
         if (!mc_world_runtime_binding_retain(world))
             return fail(call, MC_ENTITY_LIMIT, "Entity drop publication World occurrence", true);
@@ -85,29 +242,42 @@ static bool publish(mc_entity_drop_call *call) {
         return null_reference(call, "Entity drop actual publication World null receiver");
     call->state.publication_entered = true;
     call->error.publication = &call->publication;
-    const mc_world_storage_status status = mc_world_runtime_insert_entity(
-        world, call->state.item, &call->state.inserted, &call->publication);
+    bool completed;
+    if (call->execution_owned) {
+        mc_world_entity_insert_execution_init(&call->insertion, call->execution.execution,
+                                              call->execution.code_classes, call->execution.code,
+                                              execution_site(35), &call->owned);
+        completed = mc_world_runtime_insert_entity_in_execution(
+            &call->insertion, world, call->state.item, &call->state.inserted, &call->publication,
+            &call->publication_status);
+        call->publication_execution_returned = true;
+    } else {
+        call->publication_status = mc_world_runtime_insert_entity(
+            world, call->state.item, &call->state.inserted, &call->publication);
+        completed = call->publication_status == MC_WORLD_STORAGE_OK;
+    }
+    const mc_world_storage_status status = call->publication_status;
     if (status != MC_WORLD_STORAGE_OK) {
         fail(call, storage_status(status), call->publication.operation, true);
         call->error.child = (mc_entity_drop_site){"fd", "b", "(Lsn;)Z", call->publication.bytecode};
         const char *exception_class = NULL;
         if (status != MC_WORLD_STORAGE_LIMIT && status != MC_WORLD_STORAGE_ALLOCATION_FAILED &&
-            status != MC_WORLD_STORAGE_BUSY &&
+            status != MC_WORLD_STORAGE_BUSY && publication_failure_protected(call) &&
             mc_world_access_failure_source_exception(&call->publication.world_access_failure,
                                                      &exception_class)) {
             call->error.source_exception = true;
             call->error.exception_class = exception_class;
             call->error.native_policy = false;
         }
-    } else
+    } else if (completed)
         call->state.publication_returned = true;
-    if (!publication_capture(call)) {
+    if (!call->execution_owned && !publication_capture(call)) {
         if (status == MC_WORLD_STORAGE_OK)
             fail(call, call->cleanup.status, call->cleanup.operation, true);
         return false;
     }
     /* The source pop42 discards an ordinary false World.b result. */
-    return status == MC_WORLD_STORAGE_OK;
+    return completed;
 }
 
 static bool execute_stack(mc_entity_drop_call *call) {
@@ -120,6 +290,8 @@ static bool execute_stack(mc_entity_drop_call *call) {
     at(call, false, 5);
     mc_world_runtime *world = call->state.actor->base.world;
     call->state.constructor_world = world;
+    if (!capture_world(call, world, &call->constructor_scope, 5))
+        return false;
     if (world != NULL) {
         if (!mc_world_runtime_binding_retain(world))
             return fail(call, MC_ENTITY_LIMIT, "Entity drop constructor World occurrence", true);
@@ -140,15 +312,20 @@ static bool execute_stack(mc_entity_drop_call *call) {
         mc_item_entity_construct(call->state.item, world, call->state.x, call->state.y,
                                  call->state.z, call->state.stack, &call->error.entity);
     if (constructed != MC_ENTITY_OK)
-        return fail(call, constructed, "Entity drop actual Item constructor", true);
-    call->state.item_constructed = true;
-    call->error.child = (mc_entity_drop_site){0};
+        fail(call, constructed, "Entity drop actual Item constructor", true);
+    else {
+        call->state.item_constructed = true;
+        call->error.child = (mc_entity_drop_site){0};
+    }
+    if (!close_scope(call, &call->constructor_scope, 5, constructed == MC_ENTITY_OK))
+        return false;
     at(call, false, 31);
     const mc_entity_status delay = mc_entity_item_pickup_delay_set(call->state.item, 10);
     if (delay != MC_ENTITY_OK)
         return fail(call, delay, "Entity drop actual Item pickup-delay store", true);
     call->state.pickup_delay_stored = true;
-    if (!publish(call))
+    const bool published = publish(call);
+    if (!close_scope(call, &call->publication_scope, 35, published))
         return false;
     at(call, false, 44);
     return true;
@@ -201,7 +378,8 @@ static bool receiver(const mc_entity *actor) {
 
 static mc_entity_status begin(mc_registry_classes *registry, mc_entity *actor, mc_item_stack *stack,
                               bool numeric, int32_t id, int32_t count, float offset,
-                              mc_entity_drop_call **out, mc_entity_drop_error *error) {
+                              mc_entity_drop_call **out, mc_entity_drop_error *error,
+                              const mc_entity_drop_execution *execution) {
     if (out == NULL || *out != NULL)
         return admission(error, MC_ENTITY_INVALID_ARGUMENT, "Entity drop mandatory empty output");
     if (actor != NULL && !receiver(actor))
@@ -261,8 +439,16 @@ static mc_entity_status begin(mc_registry_classes *registry, mc_entity *actor, m
         }
         call->registry_held = true;
     }
+    if (execution != NULL) {
+        call->execution_owned = true;
+        call->execution = *execution;
+        mc_world_runtime_execution_result_init(&call->owned);
+    }
     *out = call;
-    call->state.returned = execute(call);
+    bool completed = execute(call);
+    completed = close_scope(call, &call->publication_scope, 35, completed);
+    completed = close_scope(call, &call->constructor_scope, 5, completed);
+    call->state.returned = call->owned_completed = completed;
     call->state.active = false;
     if (error != NULL)
         *error = call->error;
@@ -273,14 +459,87 @@ mc_entity_status mc_entity_drop_numeric_begin(mc_registry_classes *registry, mc_
                                               int32_t id, int32_t count, float offset,
                                               mc_entity_drop_call **out,
                                               mc_entity_drop_error *error) {
-    return begin(registry, actor, NULL, true, id, count, offset, out, error);
+    return begin(registry, actor, NULL, true, id, count, offset, out, error, NULL);
 }
 
 mc_entity_status mc_entity_drop_stack_begin(mc_registry_classes *registry, mc_entity *actor,
                                             mc_item_stack *stack, float offset,
                                             mc_entity_drop_call **out,
                                             mc_entity_drop_error *error) {
-    return begin(registry, actor, stack, false, 0, 0, offset, out, error);
+    return begin(registry, actor, stack, false, 0, 0, offset, out, error, NULL);
+}
+
+static bool begin_in_execution(mc_entity_tick_execution *execution,
+                               mc_world_runtime_classes *code_classes,
+                               mc_world_runtime_execution_code code, mc_registry_classes *registry,
+                               mc_entity *actor, mc_item_stack *stack, bool numeric, int32_t id,
+                               int32_t count, float offset, mc_entity_drop_call **out,
+                               mc_entity_status *status, mc_entity_drop_error *error,
+                               mc_world_runtime_execution_result *owned) {
+    if (owned != NULL)
+        mc_world_runtime_execution_result_init(owned);
+    const mc_entity_tick_execution_site site = {"sn", "a",
+                                                numeric ? numeric_descriptor : stack_descriptor, 0};
+    if (execution == NULL || execution->identity != execution || execution->math == NULL ||
+        code_classes == NULL || out == NULL || *out != NULL || status == NULL || owned == NULL) {
+        mc_world_runtime_execution_result_note(owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "Entity drop execution/code/outputs required", site);
+        return false;
+    }
+    const mc_entity_drop_execution descriptor = {execution, code_classes, code};
+    *status = begin(registry, actor, stack, numeric, id, count, offset, out, error, &descriptor);
+    if (*out == NULL) {
+        mc_world_runtime_execution_result_note(owned,
+                                               *status == MC_ENTITY_ALLOCATION_FAILED
+                                                   ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+                                                   : MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                               "Entity drop actual invocation admission", site);
+        return false;
+    }
+    const mc_world_storage_status forwarded =
+        mc_world_runtime_execution_result_forward(owned, &(*out)->owned);
+    if (forwarded != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(owned, forwarded,
+                                               "Entity drop exact result forwarding", site);
+        return false;
+    }
+    return (*out)->owned_completed && owned->ownership_status == MC_WORLD_STORAGE_OK;
+}
+
+bool mc_entity_drop_numeric_begin_in_execution(
+    mc_entity_tick_execution *execution, mc_world_runtime_classes *code_classes,
+    mc_world_runtime_execution_code code, mc_registry_classes *registry, mc_entity *actor,
+    int32_t id, int32_t count, float offset, mc_entity_drop_call **out, mc_entity_status *status,
+    mc_entity_drop_error *error, mc_world_runtime_execution_result *owned) {
+    return begin_in_execution(execution, code_classes, code, registry, actor, NULL, true, id, count,
+                              offset, out, status, error, owned);
+}
+
+bool mc_entity_drop_stack_begin_in_execution(
+    mc_entity_tick_execution *execution, mc_world_runtime_classes *code_classes,
+    mc_world_runtime_execution_code code, mc_registry_classes *registry, mc_entity *actor,
+    mc_item_stack *stack, float offset, mc_entity_drop_call **out, mc_entity_status *status,
+    mc_entity_drop_error *error, mc_world_runtime_execution_result *owned) {
+    return begin_in_execution(execution, code_classes, code, registry, actor, stack, false, 0, 0,
+                              offset, out, status, error, owned);
+}
+
+bool mc_entity_drop_execution_inspect(mc_entity_drop_call *call,
+                                      mc_entity_drop_execution_view *out) {
+    if (call == NULL || !call->execution_owned || out == NULL)
+        return false;
+    *out = (mc_entity_drop_execution_view){.execution = call->execution.execution,
+                                           .result = &call->owned,
+                                           .publication = &call->insertion,
+                                           .constructor_world = call->constructor_scope,
+                                           .publication_world = call->publication_scope,
+                                           .publication_status = call->publication_status,
+                                           .publication_returned =
+                                               call->publication_execution_returned,
+                                           .completed = call->owned_completed};
+    out->constructor_world.open = scope_open(call, &call->constructor_scope);
+    out->publication_world.open = scope_open(call, &call->publication_scope);
+    return true;
 }
 
 bool mc_entity_drop_inspect(const mc_entity_drop_call *call, mc_entity_drop_state *out) {
@@ -298,7 +557,16 @@ mc_entity_status mc_entity_drop_retire(mc_entity_drop_call **slot, mc_entity_dro
         return admission(error, MC_ENTITY_OK, NULL);
     if (call->state.active)
         return admission(error, MC_ENTITY_BUSY, "Entity drop active invocation retirement");
-    if (!publication_capture(call))
+    if (call->execution_owned &&
+        (records_pending(&call->owned) ||
+         (call->constructor_scope.created && !call->constructor_scope.consumed) ||
+         (call->publication_scope.created && !call->publication_scope.consumed))) {
+        call->cleanup.status = MC_ENTITY_BUSY;
+        call->cleanup.operation = "Entity drop exact owned continuations/tokens not closed";
+        call->cleanup.native_policy = true;
+        goto busy;
+    }
+    if (!call->execution_owned && !publication_capture(call))
         goto busy;
     if (call->registry_held &&
         mc_registry_classes_release(call->registry, &call->cleanup.registry) != MC_REGISTRY_OK) {

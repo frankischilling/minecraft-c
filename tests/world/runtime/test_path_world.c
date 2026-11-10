@@ -65,7 +65,9 @@ static bool direct_metadata(path_fixture *f) {
     object->e = &alternate;
     int32_t value = -1;
     mc_world_storage_error error;
+    mc_world_storage_error setter_error;
     mc_world_metadata_source_error source;
+    mc_world_metadata_source_error setter_source;
     CHECK(mc_world_runtime_metadata_get_source_failure(f->base.world, 8, 64, 8, &value, &error,
                                                        acquisition,
                                                        &source) == MC_WORLD_STORAGE_OK &&
@@ -73,6 +75,23 @@ static bool direct_metadata(path_fixture *f) {
           mc_world_runtime_metadata_get(f->base.world, 8, 65, 8, &value, NULL) ==
               MC_WORLD_STORAGE_OK &&
           value == 10);
+    const bool dirty = state->dirty;
+    uint8_t fixed[MC_CHUNK_NIBBLE_BYTES];
+    memcpy(fixed, state->data->metadata, sizeof(fixed));
+    /* WI checks the selected byte, not the full normal packed-plane extent. */
+    alternate.length = index + 1;
+    bool changed = false;
+    state->dirty = false;
+    CHECK(mc_world_runtime_metadata_set_quiet(f->base.world, 8, 64, 8, 18, &changed,
+                                              &setter_error) == MC_WORLD_STORAGE_OK &&
+          changed && state->dirty && replacement[index] == 0xa2 &&
+          memcmp(fixed, state->data->metadata, sizeof(fixed)) == 0);
+    changed = false;
+    state->dirty = false;
+    CHECK(mc_world_runtime_metadata_set_quiet(f->base.world, 8, 65, 8, -1, &changed,
+                                              &setter_error) == MC_WORLD_STORAGE_OK &&
+          changed && state->dirty && replacement[index] == 0xf2 &&
+          memcmp(fixed, state->data->metadata, sizeof(fixed)) == 0);
     object->e = NULL;
     value = -71;
     CHECK(mc_world_runtime_metadata_get_source_failure(f->base.world, 8, 64, 8, &value, &error,
@@ -81,6 +100,40 @@ static bool direct_metadata(path_fixture *f) {
           value == -71 && source.source_exception && source.world_pc == 68 &&
           source.chunk_pc == 7 && source.nibble_pc == 0 &&
           strcmp(source.exception_class, "java/lang/NullPointerException") == 0);
+    changed = false;
+    state->dirty = false;
+    CHECK(
+        mc_world_runtime_metadata_set_quiet(f->base.world, 8, 64, 8, 18, &changed, &setter_error) ==
+            MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+        !changed && state->dirty && memcmp(fixed, state->data->metadata, sizeof(fixed)) == 0);
+    acquisition->status = MC_CHUNK_ACQUIRE_LIMIT;
+    changed = false;
+    state->dirty = false;
+    CHECK(mc_world_runtime_metadata_set_quiet_source_failure(
+              f->base.world, 8, 64, 8, 18, &changed, &setter_error, acquisition, &setter_source) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          !changed && state->dirty && setter_source.source_exception &&
+          setter_source.world_pc == 70 && setter_source.chunk_pc == 14 &&
+          setter_source.nibble_pc == 0 &&
+          strcmp(setter_source.exception_class, "java/lang/NullPointerException") == 0 &&
+          acquisition->status == MC_CHUNK_ACQUIRE_OK && acquisition->source_chunk == NULL &&
+          acquisition->cause.status == MC_WORLD_STORAGE_OK &&
+          memcmp(fixed, state->data->metadata, sizeof(fixed)) == 0);
+    mc_chunk_provider_cache_observation before, after;
+    CHECK(mc_chunk_provider_cache_observe(f->base.world->fields.v, &before));
+    acquisition->status = MC_CHUNK_ACQUIRE_LIMIT;
+    changed = true;
+    state->dirty = false;
+    CHECK(mc_world_runtime_metadata_set_quiet_source_failure(
+              f->base.world, 8, 128, 8, 18, &changed, &setter_error, acquisition, &setter_source) ==
+              MC_WORLD_STORAGE_OK &&
+          !changed && !state->dirty && !setter_source.source_exception &&
+          setter_source.exception_class == NULL && setter_source.world_pc == 0 &&
+          setter_source.chunk_pc == 0 && setter_source.nibble_pc == 0 &&
+          acquisition->status == MC_CHUNK_ACQUIRE_LIMIT &&
+          mc_chunk_provider_cache_observe(f->base.world->fields.v, &after) &&
+          after.generic_gets == before.generic_gets &&
+          memcmp(fixed, state->data->metadata, sizeof(fixed)) == 0);
     CHECK(mc_world_runtime_metadata_get(f->base.world, 8, 128, 8, &value, NULL) ==
               MC_WORLD_STORAGE_OK &&
           value == 0);
@@ -94,6 +147,25 @@ static bool direct_metadata(path_fixture *f) {
               value == -71 && source.source_exception &&
               source.nibble_pc == (y == 64 ? 36u : 47u) &&
               strcmp(source.exception_class, "java/lang/NullPointerException") == 0);
+        changed = false;
+        state->dirty = false;
+        CHECK(mc_world_runtime_metadata_set_quiet(f->base.world, 8, y, 8, 18, &changed,
+                                                  &setter_error) ==
+                  MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+              !changed && state->dirty && memcmp(fixed, state->data->metadata, sizeof(fixed)) == 0);
+        acquisition->status = MC_CHUNK_ACQUIRE_LIMIT;
+        changed = false;
+        state->dirty = false;
+        CHECK(mc_world_runtime_metadata_set_quiet_source_failure(
+                  f->base.world, 8, y, 8, 18, &changed, &setter_error, acquisition,
+                  &setter_source) == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+              !changed && state->dirty && setter_source.source_exception &&
+              setter_source.world_pc == 70 && setter_source.chunk_pc == 14 &&
+              setter_source.nibble_pc == (y == 64 ? 42u : 70u) &&
+              strcmp(setter_source.exception_class, "java/lang/NullPointerException") == 0 &&
+              acquisition->status == MC_CHUNK_ACQUIRE_OK && acquisition->source_chunk == NULL &&
+              acquisition->cause.status == MC_WORLD_STORAGE_OK &&
+              memcmp(fixed, state->data->metadata, sizeof(fixed)) == 0);
         mc_world_storage_error other;
         CHECK(mc_world_runtime_metadata_get_detailed(f->base.world, 8, y, 8, &value, &other,
                                                      acquisition) == error.status &&
@@ -110,7 +182,32 @@ static bool direct_metadata(path_fixture *f) {
               MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
           value == -71 && source.source_exception && source.nibble_pc == 36 &&
           strcmp(source.exception_class, "java/lang/ArrayIndexOutOfBoundsException") == 0);
+    for (int32_t y = 64; y <= 65; ++y) {
+        changed = false;
+        state->dirty = false;
+        CHECK(mc_world_runtime_metadata_set_quiet(f->base.world, 8, y, 8, 18, &changed,
+                                                  &setter_error) ==
+                  MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+              !changed && state->dirty && memcmp(fixed, state->data->metadata, sizeof(fixed)) == 0);
+        acquisition->status = MC_CHUNK_ACQUIRE_LIMIT;
+        changed = false;
+        state->dirty = false;
+        CHECK(mc_world_runtime_metadata_set_quiet_source_failure(
+                  f->base.world, 8, y, 8, 18, &changed, &setter_error, acquisition,
+                  &setter_source) == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+              !changed && state->dirty && setter_source.source_exception &&
+              setter_source.world_pc == 70 && setter_source.chunk_pc == 14 &&
+              setter_source.nibble_pc == (y == 64 ? 42u : 70u) &&
+              strcmp(setter_source.exception_class, "java/lang/ArrayIndexOutOfBoundsException") ==
+                  0 &&
+              acquisition->status == MC_CHUNK_ACQUIRE_OK && acquisition->source_chunk == NULL &&
+              acquisition->cause.status == MC_WORLD_STORAGE_OK &&
+              memcmp(fixed, state->data->metadata, sizeof(fixed)) == 0);
+    }
+    /* Restore authored fixture fields for the later path search. These test
+     * assignments do not model source exception cleanup or a mutation retry. */
     original->length = length;
+    state->dirty = dirty;
     free(replacement);
     free(acquisition);
     return true;

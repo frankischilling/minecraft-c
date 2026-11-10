@@ -1,5 +1,97 @@
 # Test scope and reproduction
 
+## Shared execution for damage descendants and World metadata
+
+The [World scalar contract](world/blocks.md), [drop execution contract](entity/drop-execution.md)
+and [Bed exit search](world/bed-spawn.md) describe the new caller joins. They
+share existing production bodies rather than replaying earlier results.
+
+A real cached-Chunk regression first fails in `world.path_world` at the quiet
+metadata setter in 1.72 seconds. The original setter reads the current Chunk
+`e` NibbleArray; the old native code instead writes its fixed metadata plane.
+The corrected body follows the current object/backing, admits a valid short
+selected extent, retains dirty before null/index faults, and preserves the
+ordinary Boolean on failure. The source-failure entry retains actual World
+70, Chunk 14 and even/odd backing-read 42/70 sites.
+
+Fifteen freshly executed original client calls match the native metadata rows
+exactly. They compare Boolean/unreturned-exception outcomes, dirty prefixes,
+nullable backing state/length, selected bytes and unchanged fixed/unselected
+bytes. Real cached normal Chunks, genuine Blank and out-of-domain inputs also
+preserve cache membership, World Random and zero notification events. The
+[collector](../tests/reference/world/metadata_set/README.md) pins the unchanged
+archive and method Code, retains all six actual failure records, and rejects
+seven altered typed comparisons. Constructor entropy remains independent.
+
+Separate controls expose why legacy context-free paths cannot serve an owned
+caller: a generic drop proceeds past missing defining Math, a fatal Squid
+advances its drop loop, Bed exit continues inside an ARMED callback, and a
+notification's producer receipt can retire after the ordinary held occurrence
+is released. The respective executed red controls fail in 0.14, 0.12, 0.51 and
+0.15 seconds. These are missing-context joins, not a claim that the legacy API
+violates its existing externally held graph contract.
+
+The integrated Windows component group passes 48/48 tests in 4.61 seconds.
+Its native metadata fixture passes 219 checks and the Bed fixture passes 319.
+Other modes cover ten generic-drop cases, nine Mob-death cases, nine World
+scalar cases and thirteen notification cases. The Mob matrix includes 36 seeded
+profiles and twelve remote receivers, including Creeper's real late record.
+Existing Entity drop and animal/Monster death controls also pass separately.
+
+Raw status, ordinary Boolean, native continuation and Math cause remain separate.
+A refused activation close retains its actual failed GET/storage status; a
+separate real native generation-counter fault exercises actual GET OK/raw OK
+with refused completion. Both stop before metadata payload/dirty/output or a
+later search step. These explicit native-integrity controls restore only their
+native bookkeeping scalars before exact pending/close drain. They perform no
+Source field repair or retry. Re-entry retains actual selections and capsules;
+cleanup retains published Items and does not repeat constructor/quantity work.
+
+Notification controls prove live List reload after removal/append, distinct
+cell/range callback slots even for equal endpoints, unsorted range arguments,
+lease transfer before receipt capture and held release, native capture refusal,
+and refusal before a later callback after exact scope-token drift. Controller
+self-tests also pass under normal Python and `-O`, rejecting 135 malformed scalar
+protocols and 195 malformed notification protocols in each mode.
+
+Integration failures remain retained. The new drop runner initially rejects
+Windows CRLF footers, and five native assertions incorrectly treat Math's
+`selected` diagnostic as successful-use history. Bounded diagnostics show the
+actual retained defining owner, READY class/table and correct Source effects;
+the checks now use that contract. The Bed failure test initially assumes an
+OK lower status for a real activation-close failure; it now retains the actual
+non-OK status and covers raw OK in a separate native-integrity case. Compile-only
+fixture include/main-macro failures are distinct from the executed reds.
+
+The final strict MSVC Release client build passes, followed by all 942 configured
+Windows tests in 445.08 seconds with no skips or unrun tests. Linux Clang 18
+Debug ASan/UBSan with leak detection passes all 84 selected tests in 50.68 seconds.
+An earlier Linux attempt executes 82 tests successfully but leaves two unrun
+because their previously pruned executables were absent. The selection builder
+now explicitly builds those two targets before the successful 84-test run. This
+is selected Linux qualification, not a full Linux-suite result.
+
+The original metadata collector runs afresh for each host comparison: fifteen
+unchanged-original Windows JDK17 records match the Windows native fixture, and
+another fifteen match Linux. Both original runs use Windows Java. Formatting
+checks pass for all 2,344 C files. The complete 5,982-file source snapshot remains
+unchanged throughout the full build, tests and final gameplay run.
+
+A fresh rebuilt-client encounter on monitor 2 passes 478 checks. Natural Zombie
+attacks change health from 20 to 15 and statistic 2021 by five, followed by returned
+terrain/HUD, SDK pause/save, independent NBT/statistics readback and removal of
+both windows. All three final captures were inspected. The run preserves all
+2,350 guarded source/product inputs and all 413 guarded asset files, including
+the manifest; the imported resource payload still contains 412 files. The final
+result documentation and its public resource map are updated after this frozen
+runtime qualification.
+
+Full Arrow damage still stops before `sl.w_:741`. Player wake needs complete
+notifying Bed occupancy and its recursive mutation, scheduling and block-hook
+descendants; Player drops/scatter and other victim wrappers also remain separate
+joins. Delayed Slime splitting, arbitrary cold acquisition graphs, extended play,
+original audiovisual equality and FPS results remain unqualified.
+
 ## Remaining Living damage and Wolf retaliation
 
 The [hurt contract](entity/remaining-damage.md), [Wolf wrapper](entity/wolf-damage.md)
@@ -173,7 +265,7 @@ The Linux run uses an exact 5,914-file source copy on ext4; all original ELF
 paths, working directories, selected names, limits and resource locks remain
 unchanged. Source and native artifact hashes match before and after. The first
 Windows-mounted-source cohort was deliberately interrupted after 29 completed
-tests because its source guards took 111ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ141 seconds per case; its partial
+tests because its source guards took 111ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“141 seconds per case; its partial
 results remain separate. This is test transport work, with no gameplay speedup
 claim. The full 729-test Linux configuration is not a local full-suite result.
 
@@ -1204,7 +1296,7 @@ source-loader execution or original-runtime comparison.
 The [earlier retirement CPU cohort](performance/player-ally-retire.md) retains all
 2,520 measured calls from 12 serial processes on one compiled observer and
 identical ordered core archive graph. Distinct/repeated 1,024-entry Lists fall
-from median 4,695.9/4,868.65 ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âµs to 21.05/9.4 ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âµs. Tiny Lists, insufficient-hold
+from median 4,695.9/4,868.65 ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âµs to 21.05/9.4 ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âµs. Tiny Lists, insufficient-hold
 refusal/retry, source fields and Random preservation pass. Forced optional
 allocation failure keeps the previous scan and cleanup result. All 1,901
 source/product/resource/region guards remain unchanged. This measures checked
@@ -1756,7 +1848,7 @@ under `-Wconversion -Werror`. Integer promotion makes the byte operand an
 `int` before the unsigned mask. No GCC runtime test executes. The local
 GCC 13.3 strict, sanitizer-enabled syntax check reproduces both diagnostics.
 Each fixture now explicitly promotes its byte to `unsigned int` before the
-shift. Byte values remain 0ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ255 and decoded nibbles remain 0ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ15; production
+shift. Byte values remain 0ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“255 and decoded nibbles remain 0ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“15; production
 code, original data and assertions are unchanged. The same strict GCC check
 then passes, as do the native Windows and Clang fixture builds. The hosted
 failure retains its exact-checkpoint scope; follow-up results are separate.
@@ -2440,7 +2532,7 @@ The private Linux phase observation reaches a 36.165-second random-Chunk body,
 including 33.716 seconds in 32 actual population callbacks. All 1,235,464 GETs
 are generic. Its inherited Food observer unconditionally exports the provider
 before admission; snapshots show raw_exports=1, owned=false and cache counts
-310ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ362, with a whole-capture maximum of 382. This establishes that observer
+310ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“362, with a whole-capture maximum of 382. This establishes that observer
 escape, not that the generic validator accounts for all population time. The
 larger-map optimization is not exercised. The [performance notes](performance/world-queries.md#retained-linux-phase-diagnosis)
 keep overlapping intervals and the separate Source-progress exposure explicit.

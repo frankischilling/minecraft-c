@@ -1,5 +1,15 @@
 # Development status
 
+The [quiet metadata setter](world/blocks.md) now writes the current Chunk's
+NibbleArray rather than a fixed old backing. Fifteen fresh original client
+records match the native normal/replacement/null/short/Blank/domain cases.
+Explicit shared-execution [drops and Mob death](entity/drop-execution.md),
+[World scalars](world/blocks.md) and [Bed exit](world/bed-spawn.md) now retain the
+actual pending children and stop on native refusal independently of raw status.
+Owned cell/range notification leaves preserve live List order and exact producer
+leases. The focused component group passes 48 tests; complete Arrow/Player wake
+composition still requires the remaining mutation and victim descendants.
+
 Direct [Wolf, Slime, Squid and Ghast damage](entity/remaining-damage.md) now
 reaches the original hurt, sound and death/drop methods. Wolf includes its full
 sitting/amount/retaliation/pack/owner wrapper with retained failure cleanup.
@@ -7,7 +17,7 @@ Ten finite native records match fresh unchanged-original calls, including the
 Squid's NULL sound callback and Ghast's volume 10. The new UTF16 owner comparator
 also passes its complete JDK17 case-key inventory and finite String corpus.
 
-A fresh monitor-2 Zombie encounter passes 481 checks through actual AI damage,
+A fresh rebuilt-client monitor-2 Zombie encounter passes 478 checks through actual AI damage,
 returned terrain/HUD, SDK pause/save, independent NBT/statistics and cleanup;
 all three captures were inspected. These are bounded qualifications. Complete
 execution-owned Arrow hits, delayed Slime splitting, unrestricted combat and
@@ -21,13 +31,13 @@ statistics, drops and actual World/Chunk membership have component coverage.
 Full Arrow victim damage, delayed death/removal sessions and unrestricted combat
 remain unfinished or unqualified. No FPS improvement is established.
 
-The complete Windows client build and all 895 configured tests pass in
-439.87 seconds. Linux Clang ASan/UBSan with leak detection passes 29 selected
-combat, ownership, String and natural Arrow checks in 39.73 seconds. The earlier
-full Linux build stops at the WSL disk limit. Ten fresh original damage records
-match each native host; earlier Monster/Player comparisons retain their own
-22-record scope. [Validation details](testing.md#remaining-living-damage-and-wolf-retaliation)
-retain failed attempts, source freezes and exact comparison limits.
+The complete Windows client build and all 942 configured tests pass in
+445.08 seconds. Linux Clang 18 ASan/UBSan with leak detection passes 84 selected
+tests in 50.68 seconds. Fifteen fresh original metadata records match each native
+host; both original captures use Windows Java. Earlier combat comparisons retain
+their own ten- and 22-record scopes. [Validation details](testing.md#shared-execution-for-damage-descendants-and-world-metadata)
+retain failed attempts, source freezes and exact comparison limits. Full Linux
+sanitizer-suite qualification remains open.
 
 Client [Monster retaliation](entity/monster-retaliation.md) now follows the
 original nonnull-attacker path for Spider, Zombie, Skeleton and Creeper.
@@ -483,8 +493,8 @@ general focus reliability, unrestricted play and FPS remain unfinished.
 have new bounded Windows CPU comparisons. The 96-name public Block getter
 falls from 168.526 to 28.962 ns/get in four alternating rounds and eight fresh
 processes, with 1,011 native controls per process. The selected cache validator
-reduces mixed-key median cost by 93.703ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“97.323% for 513ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“4,096 entries; deliberately
-colliding keys remain 2.592ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“7.552% slower. Earlier candidates and unfavorable
+reduces mixed-key median cost by 93.703ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ97.323% for 513ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ4,096 entries; deliberately
+colliding keys remain 2.592ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ7.552% slower. Earlier candidates and unfavorable
 results remain retained. These are frozen CPU workloads, not scene-FPS results.
 
 The [Source save progress join](world/saving.md#source-progress-ownership) now

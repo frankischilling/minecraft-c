@@ -4,9 +4,11 @@
 #include "../../block/registry/runtime_internal.h"
 #include "../../item/render/internal.h"
 #include "acquisition_internal.h"
+#include "bed_spawn_execution_internal.h"
 #include "block_queries_internal.h"
 #include "chunk_provider_internal.h"
 #include "construction_internal.h"
+#include "execution_children_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
 #include "runtime_internal.h"
@@ -20,6 +22,7 @@ typedef struct bed_call {
     mc_registry_classes *registry;
     mc_world_bed_spawn_error *error;
     mc_world_solid_support_detail *support_scratch;
+    mc_world_bed_spawn_execution *owned;
     bool world_held, provider_held;
 } bed_call;
 
@@ -122,7 +125,7 @@ static bool registry_result(bed_call *c, mc_registry_status status) {
 
 static bool registry_owner(bed_call *c) {
     if (c->registry == NULL || c->registry->options.side != MC_REGISTRY_CLIENT ||
-        (c->world_held && c->world->classes->registry != c->registry))
+        (c->owned == NULL && c->world_held && c->world->classes->registry != c->registry))
         return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                     "Bed spawn actual code Registry namespace");
     return true;
@@ -159,18 +162,72 @@ static bool world_result(bed_call *c, mc_world_storage_status status) {
     return false;
 }
 
+static bool bed_quiet(const mc_world_runtime_execution_result *r) {
+    if (r->ownership_status != MC_WORLD_STORAGE_OK || r->selection_ready || r->root_pending)
+        return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (r->pending[i].used)
+            return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (r->closes[i].used)
+            return false;
+    return true;
+}
+
+static bool bed_next(bed_call *c) {
+    if (c->owned == NULL || bed_quiet(c->owned->owned))
+        return true;
+    c->owned->native_stopped = true;
+    mc_world_runtime_execution_result_note(c->owned->owned, MC_WORLD_STORAGE_BUSY,
+                                           "Bed lower query result is not reusable",
+                                           c->owned->receiver_site);
+    return false;
+}
+
 static bool query(bed_call *c, mc_world_bed_spawn_event_kind kind, unsigned int pc, int32_t x,
                   int32_t y, int32_t z, int32_t *out) {
     mc_world_bed_spawn_event *record = event(c, kind, pc, x, y, z);
     if (c->world == NULL)
         return null(c, "Bed spawn null World query receiver");
     c->error->child_kind = MC_WORLD_BED_SPAWN_CHILD_ACQUISITION;
-    mc_world_storage_status status =
-        kind == MC_WORLD_BED_SPAWN_METADATA
-            ? mc_world_runtime_metadata_get_detailed(c->world, x, y, z, out, &c->error->cause,
-                                                     &c->error->child.acquisition)
-            : mc_world_runtime_block_get_detailed(c->world, x, y, z, out, &c->error->cause,
-                                                  &c->error->child.acquisition);
+    mc_world_storage_status status;
+    if (c->owned != NULL) {
+        if (!bed_next(c))
+            return false;
+        mc_world_block_execution *frame = &c->owned->scalar;
+        mc_world_block_execution_init(frame, c->owned->execution, c->owned->code,
+                                      c->owned->receiver_site, c->owned->owned);
+        status = MC_WORLD_STORAGE_OK;
+        const bool continued = kind == MC_WORLD_BED_SPAWN_METADATA
+                                   ? mc_world_runtime_metadata_get_in_execution(
+                                         frame, c->world, x, y, z, out, &c->error->cause, &status)
+                                   : mc_world_runtime_block_get_in_execution(
+                                         frame, c->world, x, y, z, out, &c->error->cause, &status);
+        if (c->owned->owned->ownership_status != MC_WORLD_STORAGE_OK) {
+            c->owned->native_stopped = true;
+            c->error->status = status; /* Actual lower C status, not Source classification. */
+            return false;
+        }
+        if (!continued) {
+            if (frame->get_returned && frame->get_status != MC_CHUNK_ACQUIRE_OK)
+                c->error->child.acquisition = frame->acquisition;
+            else
+                c->error->child_kind = MC_WORLD_BED_SPAWN_CHILD_NONE;
+            if (frame->source.source_exception) {
+                c->error->source_exception = true;
+                c->error->native_policy = false;
+                c->error->exception_class = frame->source.exception_class;
+            }
+            (void)world_result(c, status);
+            return false;
+        }
+    } else {
+        status = kind == MC_WORLD_BED_SPAWN_METADATA
+                     ? mc_world_runtime_metadata_get_detailed(
+                           c->world, x, y, z, out, &c->error->cause, &c->error->child.acquisition)
+                     : mc_world_runtime_block_get_detailed(c->world, x, y, z, out, &c->error->cause,
+                                                           &c->error->child.acquisition);
+    }
     if (!world_result(c, status))
         return false;
     if (kind == MC_WORLD_BED_SPAWN_AIR)
@@ -183,6 +240,42 @@ static bool support(bed_call *c, int32_t x, int32_t y, int32_t z, bool *out) {
     mc_world_bed_spawn_event *record = event(c, MC_WORLD_BED_SPAWN_SUPPORT, 101, x, y, z);
     if (c->world == NULL)
         return null(c, "Bed spawn null World support receiver");
+    if (c->owned != NULL) {
+        if (!bed_next(c))
+            return false;
+        mc_world_solid_support_execution *frame = &c->owned->support;
+        mc_world_solid_support_execution_init(frame, c->owned->execution, c->owned->code_classes,
+                                              c->owned->code, c->owned->receiver_site,
+                                              c->owned->owned);
+        mc_world_storage_status status = MC_WORLD_STORAGE_OK;
+        const bool continued = mc_world_solid_support_detailed_held_in_execution(
+            frame, c->world, x, y, z, out, &status);
+        if (c->owned->owned->ownership_status != MC_WORLD_STORAGE_OK) {
+            c->owned->native_stopped = true;
+            c->error->status = status; /* Inspect owned before interpreting this number. */
+            return false;
+        }
+        if (!continued) {
+            c->error->child_kind = MC_WORLD_BED_SPAWN_CHILD_SUPPORT;
+            c->error->child.support.error = frame->detail.error;
+            c->error->child.support.access = frame->detail.access;
+            c->error->cause = frame->detail.error.cause;
+            if (frame->detail.error.registry.status != MC_REGISTRY_OK) {
+                mc_item_render_throwable throwable;
+                mc_registry_classes *classes = c->owned->code_classes->registry;
+                mc_item_render_registry_classification(classes, &frame->detail.error.registry,
+                                                       &throwable, &c->error->exception_class);
+                c->error->source_exception = throwable == MC_ITEM_RENDER_SOURCE_EXCEPTION;
+                c->error->source_error = throwable == MC_ITEM_RENDER_SOURCE_ERROR;
+                c->error->native_policy = throwable == MC_ITEM_RENDER_NO_THROWABLE;
+            }
+            (void)world_result(c, status);
+            return false;
+        }
+        c->error->child_kind = MC_WORLD_BED_SPAWN_CHILD_NONE;
+        completed(record, *out);
+        return true;
+    }
     if (c->support_scratch == NULL)
         c->support_scratch = malloc(sizeof(*c->support_scratch));
     mc_world_solid_support_detail *detail = c->support_scratch;
@@ -395,14 +488,15 @@ static mc_world_storage_status run(mc_world_runtime *world, mc_registry_classes 
                                    const mc_player_coordinates *bed, bool wrapper, int32_t x,
                                    int32_t y, int32_t z, int32_t skip,
                                    const mc_world_bed_spawn_limits *limits,
-                                   mc_player_coordinates **out, mc_world_bed_spawn_error *output) {
+                                   mc_player_coordinates **out, mc_world_bed_spawn_error *output,
+                                   mc_world_bed_spawn_execution *owned) {
     mc_world_bed_spawn_error *e = output == NULL ? malloc(sizeof(*e)) : output;
     if (e == NULL)
         return MC_WORLD_STORAGE_ALLOCATION_FAILED;
     mc_world_bed_spawn_error_init(e);
     e->max_loop_work =
         limits == NULL ? MC_WORLD_BED_SPAWN_DEFAULT_LOOP_WORK : limits->max_loop_work;
-    bed_call c = {.world = world, .registry = registry, .error = e};
+    bed_call c = {.world = world, .registry = registry, .error = e, .owned = owned};
     bool done = false;
     if (out == NULL)
         (void)fail(&c, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Bed spawn output slot");
@@ -412,7 +506,7 @@ static mc_world_storage_status run(mc_world_runtime *world, mc_registry_classes 
         done = validate_body(&c, bed, out);
     if (done)
         e->returned = true;
-    if (output != NULL && e->status != MC_WORLD_STORAGE_OK) {
+    if (output != NULL && (e->status != MC_WORLD_STORAGE_OK || (owned != NULL && !done))) {
         if (c.provider_held)
             e->retained_worlds[e->retained_world_count++] = c.provider_world;
         if (c.world_held)
@@ -423,6 +517,9 @@ static mc_world_storage_status run(mc_world_runtime *world, mc_registry_classes 
         if (c.world_held)
             mc_world_runtime_call_leave(c.world);
     }
+    if (owned != NULL)
+        owned->completed = done && e->status == MC_WORLD_STORAGE_OK && !owned->native_stopped &&
+                           bed_quiet(owned->owned);
     free(c.support_scratch);
     const mc_world_storage_status status = e->status;
     if (output == NULL)
@@ -434,7 +531,7 @@ mc_world_storage_status
 mc_world_bed_spawn_exit(mc_world_runtime *world, mc_registry_classes *registry, int32_t x,
                         int32_t y, int32_t z, int32_t skip, const mc_world_bed_spawn_limits *limits,
                         mc_player_coordinates **out, mc_world_bed_spawn_error *error) {
-    return run(world, registry, NULL, false, x, y, z, skip, limits, out, error);
+    return run(world, registry, NULL, false, x, y, z, skip, limits, out, error, NULL);
 }
 
 mc_world_storage_status mc_world_bed_spawn_validate(mc_world_runtime *world,
@@ -443,7 +540,53 @@ mc_world_storage_status mc_world_bed_spawn_validate(mc_world_runtime *world,
                                                     const mc_world_bed_spawn_limits *limits,
                                                     mc_player_coordinates **out,
                                                     mc_world_bed_spawn_error *error) {
-    return run(world, registry, bed, true, 0, 0, 0, 0, limits, out, error);
+    return run(world, registry, bed, true, 0, 0, 0, 0, limits, out, error, NULL);
+}
+
+void mc_world_bed_spawn_execution_init(mc_world_bed_spawn_execution *frame,
+                                       mc_entity_tick_execution *execution,
+                                       mc_world_runtime_classes *code_classes,
+                                       mc_world_runtime_execution_code code,
+                                       mc_entity_tick_execution_site site,
+                                       mc_world_runtime_execution_result *owned) {
+    if (frame != NULL)
+        *frame = (mc_world_bed_spawn_execution){.execution = execution,
+                                                .code_classes = code_classes,
+                                                .code = code,
+                                                .receiver_site = site,
+                                                .owned = owned};
+    mc_world_runtime_execution_result_init(owned);
+}
+
+bool mc_world_bed_spawn_exit_in_execution(
+    mc_world_bed_spawn_execution *frame, mc_world_runtime *world, mc_registry_classes *registry,
+    int32_t x, int32_t y, int32_t z, int32_t skip, const mc_world_bed_spawn_limits *limits,
+    mc_player_coordinates **out, mc_world_bed_spawn_error *error, mc_world_storage_status *status) {
+    if (frame == NULL)
+        return false;
+    if (frame->execution == NULL || frame->execution->identity != frame->execution ||
+        frame->owned == NULL || out == NULL || error == NULL || status == NULL || frame->entered) {
+        mc_world_runtime_execution_result_note(frame->owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "Bed execution/fresh outputs required",
+                                               frame->receiver_site);
+        return false;
+    }
+    if (!bed_quiet(frame->owned)) {
+        mc_world_runtime_execution_result_note(frame->owned, MC_WORLD_STORAGE_BUSY,
+                                               "Bed fresh result required", frame->receiver_site);
+        return false;
+    }
+    mc_world_access_failure_lease *unused = NULL;
+    const mc_world_storage_status admitted =
+        mc_world_execution_child_lease(frame->execution, world, &unused);
+    if (admitted != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(
+            frame->owned, admitted, "Bed evaluated World ownership", frame->receiver_site);
+        return false;
+    }
+    frame->entered = true;
+    *status = run(world, registry, NULL, false, x, y, z, skip, limits, out, error, frame);
+    return frame->completed;
 }
 
 void mc_world_bed_spawn_position_free(mc_player_coordinates *position) {

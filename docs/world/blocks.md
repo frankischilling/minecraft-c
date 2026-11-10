@@ -20,13 +20,22 @@ looking up a cached Chunk. A null World.v therefore fails even on a cache hit;
 out-of-domain reads still return zero before that receiver access. The shared
 block/metadata acquisition path preserves this order.
 
-A normal metadata getter reads its packed array. Even y selects the low
-nibble; odd y selects the high nibble. A quiet setter marks the selected
-normal chunk dirty before accessing metadata, writes the supplied integer's
+A normal metadata getter reads the Chunk's current `e` NibbleArray and its
+current byte backing. Even y selects the low nibble; odd y selects the high
+nibble. A quiet setter marks the selected normal Chunk dirty before reading
+that same current `e`, writes the supplied integer's
 low four bits and preserves the other nibble. An equal write still marks
 dirty and returns ordinary true. The actual blank chunk returns metadata
 zero and accepts writes with ordinary true while retaining its payload and
 dirty flag.
+
+The setter previously wrote the fixed stored metadata plane even when the
+actual Chunk's `e` named another array. It now follows the current object and
+checks only the selected byte index. A short backing is valid when that index
+is in bounds. Null `e`, null backing and an out-of-bounds selected byte fail after the
+dirty store; the ordinary Boolean remains unpublished. The internal source
+diagnostic records World 70, Chunk 14 and the first backing read at 42 for even
+Y or 70 for odd Y. Blank and out-of-domain calls skip those accesses.
 
 This quiet metadata operation performs no block handler, WorldAccess or neighbor
 notification, height/light update, or lighting submission. [Block-ID setters
@@ -61,10 +70,37 @@ The paired bytecode provides these entry points:
 | Normal Chunk metadata set | `lm.b(IIII)V` | `hi.b(IIII)V` | Dirty assignment at PC2; packed write at PC14 |
 | Blank Chunk overrides | `li.b(III)I`, `li.b(IIII)V` | `hg.b(III)I`, `hg.b(IIII)V` | Getter returns zero; setter returns without mutation |
 
-These are source observations. This addition supplies no new executed
-original-World or original-Chunk comparison. Native cache validation rejects
+The earlier qualification used static source observations and native controls.
+The [quiet-setter collector](../../tests/reference/world/metadata_set/README.md)
+now executes fifteen unchanged-original client calls through the real World,
+provider and cached normal/Blank Chunks. Native records match typed Boolean or
+exception outcomes, dirty prefixes, nullable backing state, selected bytes,
+unchanged fixed/unselected bytes, cache membership and World Random progress.
+Replacement even/odd writes retain the same array across both calls. This
+finite client comparison does not qualify server mutations or complete World
+notification behavior. Native cache validation rejects
 a normal NULL data owner before selection; the later defensive owner guard
 is not a reached native test scenario or Java exception-parity claim.
+
+## Explicit execution callers
+
+The private `blocks_execution_internal.h` entries execute these same scalar
+bodies with a stable caller frame and an explicitly supplied execution/code
+bundle. The caller captures its evaluated World before later arguments. These
+entries neither begin nor close that scope. Only the reached acquisition uses
+the existing owned kernel; successful domain bypasses do not acquire a Chunk.
+
+The returned continuation Boolean is separate from raw storage status. Native
+completion can refuse after an actual successful GET. That path retains the
+real pending attempt and stops before reading scalar payload, setting dirty,
+writing a nibble or publishing an output. Native-only drain never resumes the
+source body. Re-entry preserves the original selection, pending attempts and
+close capsules. Metadata Source faults retain their separate typed sites.
+
+These entries supply scalar descendants for retained callers. Cold import,
+generation/population and foreign provider/Store graphs retain their explicit
+external lifetime contract. Complete notifying mutation, Player wake and Arrow
+impact composition remain separate joins.
 
 ## Native validation
 

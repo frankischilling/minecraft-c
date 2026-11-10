@@ -2,8 +2,8 @@
 
 Fatal client Sheep, Pig, Cow and Chicken damage now enters the inherited
 LivingEntity death body at `ls.a:316`. Direct inherited death calls also admit
-Wolf. The Wolf damage override remains a separate unfinished body; accepting
-its inherited death method does not supply that override.
+Wolf. Its complete [damage wrapper](wolf-damage.md) has separate pack, owner and
+failure controls around this inherited parent.
 
 ## Death order
 
@@ -11,7 +11,9 @@ its inherited death method does not supply that override.
 nonnull attacker invoke the attacker's score callback, including when the
 score is zero. A second independent nonnull test invokes its kill callback.
 The admitted animal and Wolf attackers inherit both empty Entity declarations.
-Other concrete attacker overrides remain explicit dependencies.
+The represented non-Player hierarchies retain those inherited callbacks; the
+concrete Player follows its actual score/kill overrides. The
+[remaining death contract](remaining-death.md) records the exact class audit.
 
 The method then stores the dying flag `ah`, captures the current World and
 reads its remote flag. Only the drop call is skipped in a remote World. After
@@ -43,7 +45,9 @@ the source loop. No aggregate Stack substitutes for those invocations.
 ## Shared Item construction
 
 The retained Entity drop module implements the inherited numeric and Stack
-drop methods for these four animals and Falling Sand. Numeric entry allocates
+drop methods for these four animals and Falling Sand, plus the supported
+[Monster](monster-death.md) and [remaining Living](remaining-death.md) callers.
+Numeric entry allocates
 a RAW Stack and constructs the supplied ID and count with metadata zero.
 Sheep passes its actual color-bearing Stack to the Stack entry.
 
