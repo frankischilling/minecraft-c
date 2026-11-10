@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 343353,
-      "sha256": "f1dc60365fa546f33590b9fda6635595cde7058e0480670b172fd38cb37f5f05"
+      "bytes": 343441,
+      "sha256": "dfa40dffd7cfde9dcd19da691fe48fa9f7f92f311f5d0a54cd70aa436323ab63"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 229530,
-      "sha256": "7045c6fe6fbdbac3e5e8ced06c3ce46d9ad455317bf7e543cb42a6642993adc0"
+      "bytes": 230186,
+      "sha256": "38ff3de1310f8d050200d05a04b7a5d081cd406213074a0e6c6c268235cf9c0d"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 137305,
-      "sha256": "fc3b0be2268a8f12c34c86e535086c74351185a5905220fbf5addee9d1dfae1a"
+      "bytes": 138383,
+      "sha256": "36bc169bd5d019c92e4bc099776079f399dc68d6300065fe3a2fccda9fb72cfc"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 597512,
-      "sha256": "cad45b13a0a21d41f8ccea4a8dafdda2a4855de243a8e8c390c58dd2f37a059e"
+      "bytes": 601415,
+      "sha256": "6f44e69fa47c5e1d6d446bb02d80d9c9a980efeb5ddd098b1383634e25dadcd9"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
@@ -4006,8 +4006,8 @@
       "sha256": "ffeff1e593667e16efd2d0ec820aac3de624807991fc709fee291826f05b09e8"
     },
     "src/entity/movement/effects.c": {
-      "bytes": 50490,
-      "sha256": "9b57bd08b00e7dfa77c1a814de886a8e54ec8c63abf02d4c5e038a749a87f835"
+      "bytes": 50540,
+      "sha256": "cba4223a1b18c09c362d56373da46e4cd9809fca0cf70d3263fe7a6e0c01b069"
     },
     "src/entity/movement/environment.c": {
       "bytes": 24737,
@@ -5102,8 +5102,8 @@
       "sha256": "44d6a5b439f86b9c9962525107eb3b554ebae75918d8f38bc7b2a8f77c15af5d"
     },
     "src/world/runtime/world_access.c": {
-      "bytes": 58529,
-      "sha256": "889ced439238d4d8e656bdaebb8f4922deecc91d9083a4a05c8bc17fd7497815"
+      "bytes": 58736,
+      "sha256": "a6b09f73fc699c76e3b837881c53fc24444860cfc7943884e24b766fa1c7a774"
     },
     "src/world/runtime/world_access_internal.h": {
       "bytes": 7817,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 770950,
-      "sha256": "382f9bf0197056351dbfaa4d0af8540e4cc8ddc80d6627f5e34ea73d74b9b699"
+      "bytes": 776187,
+      "sha256": "b12c73ddd3234eef718a197caf0a5add474d471262efc551c58d485f116f5a59"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 872973,
-      "sha256": "25393d5443cc312606e594bf19c26a3a365bcc1c7ba251b8d3ace8780a8074de"
+      "bytes": 878370,
+      "sha256": "4bdb5d06f2338ddde7e00de777a6020b8e910ed5780a6cfd7b543073789b2e36"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 767929,
-      "sha256": "77d89b2bf46fc912a1188dac1b95b340f1c9e08b7812534e85a693aaeef2498b"
+      "bytes": 773166,
+      "sha256": "1b217343c2fd84cb0c7157900aedce12cf94e64c09cbde6df3593b3a0a2e744d"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -14422,20 +14422,20 @@
       "sha256": "83fa124aab5972e55bb827ed95dbb5b1d239e16d18f55001b7a1024810a9768f"
     },
     "src/entity/mob/damage.c": {
-      "bytes": 41983,
-      "sha256": "a534c282f30981790a2f03dd51a037a2d06c78d745a02724d9ee35c0ed67b6c6"
+      "bytes": 42483,
+      "sha256": "76b3d6f4f64942820c68426bee76b0c2cfd1203b61a5bb28df55df196a22b6b9"
     },
     "src/entity/mob/damage_internal.h": {
-      "bytes": 1708,
-      "sha256": "3bbff5f9640902ceaaa6e5cc4c2388f22f6a2c6cb90f5beb81e9d56da11ad189"
+      "bytes": 1908,
+      "sha256": "7ec3b0e983ad35c3469b9b05d62f7154869bd30ab662dd87e653fa656cb28b7a"
     },
     "src/entity/movement/effects_internal.h": {
       "bytes": 2047,
       "sha256": "5295f36d8f9d11ff799d09a64489d3b6f989de1f19bf8e51f8e4fa6dceb88698"
     },
     "tests/entity/test_zombie_null_damage.c": {
-      "bytes": 29229,
-      "sha256": "7bc7c096c14c700b101ab91b661655696e100df82c0147c261fe47bcedeeaf16"
+      "bytes": 30141,
+      "sha256": "0f7da19a86226fedd439dc896c82e77c01481cb2b3767a27fa048e011a9abdf3"
     },
     "tests/entity/zombie_damage_transport.inc": {
       "bytes": 10954,
@@ -14450,8 +14450,8 @@
       "sha256": "acd8a0c75bff1b7ec238d4aa9e703580e76d11694b2f6e77b067fae166c21c7a"
     },
     "tests/reference/entity/zombie_null_damage/README.md": {
-      "bytes": 5469,
-      "sha256": "5a98bf9c5683232ce90714129a7bf4b503889a558d043140f8a9f955776c1860"
+      "bytes": 5700,
+      "sha256": "e1ce43dc419f65b83c21e355a8c5481ea357b2dc1bfb87047388d2d105817392"
     },
     "tests/reference/entity/zombie_null_damage/ZombieDamageJdi.java": {
       "bytes": 18142,
@@ -14486,12 +14486,12 @@
       "sha256": "f268285aea364b0e9ac90b16db878a26fb2cc097a8f7d677016751d1e2f8d49f"
     },
     "tests/tools/entity/test_zombie_null_damage.py": {
-      "bytes": 58014,
-      "sha256": "503cf315d128941b42a4b562564a238cb873d5d6b478438f4a678c052d3d6ee7"
+      "bytes": 59329,
+      "sha256": "e02edfd6676d1dcc1e66ebc667029c6c7127a4940d68b988ef73997e04cccb05"
     },
     "docs/entity/living-damage.md": {
-      "bytes": 6462,
-      "sha256": "4f34e6af90cb1182553adedc65b793c1eda8eb95fc61fd28fb727a4572f155e2"
+      "bytes": 7647,
+      "sha256": "ff7595a4836d86f032c9b636d7625940c2c8d5d8dffd743f9f1e4081f704a007"
     },
     "src/client/render/living_draw/overlay.c": {
       "bytes": 6939,
@@ -15522,8 +15522,8 @@
       "sha256": "247b349413c93357430cf017927b1a60f91d770c8aef09a2ad3d0fd3a0419c81"
     },
     "tests/entity/mob/test_skeleton_null_damage.c": {
-      "bytes": 18361,
-      "sha256": "90ef1657e379e148a4a96c78d311d94dc77a258996c09ddd601c5181ef101f84"
+      "bytes": 19865,
+      "sha256": "cdedbc7d6fcca6fd9d932099eadbc9262153c62365a66fcfde3b554ab915322e"
     },
     "tests/item/use/test_use.c": {
       "bytes": 40810,
@@ -16762,8 +16762,8 @@
       "sha256": "1a6c7a150b03a2c64cad4e9f1f9ec1f39a1d9a2a658280eb6e0a4816f37512bd"
     },
     "tests/entity/mob/test_creeper_null_damage.c": {
-      "bytes": 19111,
-      "sha256": "357852bf44f4e1bdae5befa4f24e832de700cce991d91483894dd4d3544cf92c"
+      "bytes": 20615,
+      "sha256": "ce397950f38d45757aa1e4f39d00bee05315286bdb6214072761e84891623013"
     },
     "tests/inventory/workbench_interaction_original.c": {
       "bytes": 43953,
@@ -23343,11 +23343,11 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76712,
-      "sha256": "c2c0a0f694202a5d186da18abe4353db0ac5a6287cf7ab8a7b08030019e4b7ec"
+      "sha256": "a2f9371c1b8780973d95354a16bf1cf8912d73884751badd4f7a0d9bb2ff0fe0"
     },
     "tests/tools/world/world_query_controls_bundle.json": {
       "bytes": 53288,
-      "sha256": "27acec0477afbb58cf443d5ed15339eb8e23879fe6aff84ed417a0c4d070903e"
+      "sha256": "2cd0424f1e4e4df2f2d367d8fb98f0934ff75a3009bcfef29e88552a70dfbed0"
     },
     "tests/tools/world/world_query_controls_protocol.json": {
       "bytes": 33175,
@@ -23547,15 +23547,15 @@
     },
     "tests/tools/client/arrow_world_tick_cleanup_bundle.json": {
       "bytes": 3533,
-      "sha256": "be0494e8e5f501ebf15299e5c816629eca9126f34d07342efce2c5d052e0a48c"
+      "sha256": "857b5a6fcdf4e61d007c9cac6d0491fa0c925085674bc85d8b4f325039cb4b13"
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 16782,
-      "sha256": "731ebd85507640c1e851eb2befbe3829d0aa408b11e9a2f4377aee3229f7bee7"
+      "sha256": "d4ea9cd976c3c4f55d8456f7f8501e2892f7254bb872d9d00de07e7e1cf42e68"
     },
     "docs/entity/arrow-flight.md": {
-      "bytes": 8565,
-      "sha256": "cbffc0f90f2ece4070463b52797720a44d738e3a335d301cc3626a4134088c23"
+      "bytes": 9016,
+      "sha256": "e9c8719d1b577f720261b23742af093f5eb98dc78d5d4c1e4b8397f18b2466b0"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,
@@ -23563,11 +23563,11 @@
     },
     "tests/tools/entity/damage_native_close_bundle.json": {
       "bytes": 4312,
-      "sha256": "1a889592ff6293c924112e946a093157ff077400ee5e584e41a6ecd55a55ea44"
+      "sha256": "605c56003d30c4aea2f6eea0da442957d26954121500d2ffc3327ead6d3b6469"
     },
     "tests/tools/entity/test_damage_native_close.py": {
       "bytes": 17605,
-      "sha256": "b15c7e7d2957dc6ade8e36ed2cee09628fd192b49f3bfbd9ece964d9ebbe6ee9"
+      "sha256": "5d57da2ac41269de7f11819b8220362260796901a6f7bb9a183e630b33ac0fd4"
     },
     "tests/world/runtime/world_access/test_damage_close_execution.c": {
       "bytes": 28929,
@@ -23596,6 +23596,62 @@
     "tests/world/runtime/test_arrow_tick_failures.c": {
       "bytes": 17869,
       "sha256": "13ffd37e68a1e9fafbbab04a254a1f9df295e690a1b2eb55a4a5e420bc9d6f68"
+    },
+    "cmake/tests/arrow_water_flight.cmake": {
+      "bytes": 1963,
+      "sha256": "49c8d59372723e7ccc1ee783d8711d2cb45fa73bec4720341397a8b463845958"
+    },
+    "cmake/tests/monster_damage.cmake": {
+      "bytes": 843,
+      "sha256": "521e5bc261bc0f41a797311cedbbece067d9f2b4b047330960ad9471a98481a8"
+    },
+    "docs/entity/monster-retaliation.md": {
+      "bytes": 2714,
+      "sha256": "2f55b3bda2340674861b4772d780548c1fbde8d23a99f61db1049ce3ab557e38"
+    },
+    "docs/wiki/Combat-and-projectiles.md": {
+      "bytes": 1735,
+      "sha256": "d1b56ebc780962e531f552050afe4df9769c9b30e6503eefebc25291cce2e3f1"
+    },
+    "tests/entity/mob/test_monster_damage.c": {
+      "bytes": 11751,
+      "sha256": "a3886b7c090dda7643ab7f658ab78445d3e8d58b6abc0df85507c2a4888e3dfb"
+    },
+    "tests/reference/entity/arrow_water/ArrowWaterOriginalObservation.java": {
+      "bytes": 15671,
+      "sha256": "2d51ff279a95ab7b1c00f12f1a3d9413bf8dee8935b253c0a804f99e73175f59"
+    },
+    "tests/reference/entity/arrow_water/README.md": {
+      "bytes": 4838,
+      "sha256": "c5d3be6390c0002c63b86232dc27140f732dcedc3ef30c112f4231ed0212b92e"
+    },
+    "tests/reference/entity/arrow_water/run.py": {
+      "bytes": 23553,
+      "sha256": "6552b9d011fedebbbdcd41f6cebdadebed10293a8ff98c630527977c1dfe1bc4"
+    },
+    "tests/reference/entity/monster_retaliation/MonsterDamageObservation.java": {
+      "bytes": 6386,
+      "sha256": "5abf5c334f795a26ea5f2ff467225d85701da536b680940c025e4c9e9862cef1"
+    },
+    "tests/reference/entity/monster_retaliation/README.md": {
+      "bytes": 3256,
+      "sha256": "75d4f931a24a6013b390dd67aad177dc791947099d43a0b9bd79b10bc103cd95"
+    },
+    "tests/reference/entity/monster_retaliation/capture_reference.py": {
+      "bytes": 13201,
+      "sha256": "6078ef9e273d832e980687a7044470bd1942bd4ba1610cd27e3532aca4b59b58"
+    },
+    "tests/tools/entity/test_monster_damage.py": {
+      "bytes": 4137,
+      "sha256": "cb42f7d5f2d3bef5ddd474a6aa7699c3d0516c06037717c40a4e6185eee808b3"
+    },
+    "tests/tools/world/test_arrow_water_flight.py": {
+      "bytes": 18422,
+      "sha256": "9bdc116b1974e4cf02e8b9947d018c0e9fa37da90a9d8ffb23949d31c0b12fd1"
+    },
+    "tests/world/runtime/test_arrow_water_flight.c": {
+      "bytes": 22728,
+      "sha256": "d6006ce9e5c17219ad68d3dabef1f4698a426ef224fedf583a6b3c8236ddc90f"
     }
   },
   "self_metadata_excluded": true,
@@ -39797,6 +39853,193 @@
           },
           "added": [],
           "current_count": 5899
+        }
+      }
+    },
+    {
+      "from_commit": "df9538d0bc0d32126b1ccec1699b3a4bbe0ada0e",
+      "role": "Current source admissions for Monster damage/retaliation, NULL particle callback classification and Arrow water controls. Historical suppliers and observations remain unchanged. Compilation, native results, original comparison and FPS require separate evidence.",
+      "previous_metadata": {
+        "bytes": 1756866,
+        "sha256": "47ce4b7234c224355b74afda7803530aeeae03559353bc5bf7a9f74ddffc56fc"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 343353,
+              "sha256": "f1dc60365fa546f33590b9fda6635595cde7058e0480670b172fd38cb37f5f05"
+            },
+            "docs/parity.md": {
+              "bytes": 229530,
+              "sha256": "7045c6fe6fbdbac3e5e8ced06c3ce46d9ad455317bf7e543cb42a6642993adc0"
+            },
+            "docs/status.md": {
+              "bytes": 137305,
+              "sha256": "fc3b0be2268a8f12c34c86e535086c74351185a5905220fbf5addee9d1dfae1a"
+            },
+            "src/entity/movement/effects.c": {
+              "bytes": 50490,
+              "sha256": "9b57bd08b00e7dfa77c1a814de886a8e54ec8c63abf02d4c5e038a749a87f835"
+            },
+            "src/world/runtime/world_access.c": {
+              "bytes": 58529,
+              "sha256": "889ced439238d4d8e656bdaebb8f4922deecc91d9083a4a05c8bc17fd7497815"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 770950,
+              "sha256": "382f9bf0197056351dbfaa4d0af8540e4cc8ddc80d6627f5e34ea73d74b9b699"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 872973,
+              "sha256": "25393d5443cc312606e594bf19c26a3a365bcc1c7ba251b8d3ace8780a8074de"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 767929,
+              "sha256": "77d89b2bf46fc912a1188dac1b95b340f1c9e08b7812534e85a693aaeef2498b"
+            },
+            "src/entity/mob/damage.c": {
+              "bytes": 41983,
+              "sha256": "a534c282f30981790a2f03dd51a037a2d06c78d745a02724d9ee35c0ed67b6c6"
+            },
+            "src/entity/mob/damage_internal.h": {
+              "bytes": 1708,
+              "sha256": "3bbff5f9640902ceaaa6e5cc4c2388f22f6a2c6cb90f5beb81e9d56da11ad189"
+            },
+            "tests/entity/test_zombie_null_damage.c": {
+              "bytes": 29229,
+              "sha256": "7bc7c096c14c700b101ab91b661655696e100df82c0147c261fe47bcedeeaf16"
+            },
+            "tests/reference/entity/zombie_null_damage/README.md": {
+              "bytes": 5469,
+              "sha256": "5a98bf9c5683232ce90714129a7bf4b503889a558d043140f8a9f955776c1860"
+            },
+            "tests/tools/entity/test_zombie_null_damage.py": {
+              "bytes": 58014,
+              "sha256": "503cf315d128941b42a4b562564a238cb873d5d6b478438f4a678c052d3d6ee7"
+            },
+            "docs/entity/living-damage.md": {
+              "bytes": 6462,
+              "sha256": "4f34e6af90cb1182553adedc65b793c1eda8eb95fc61fd28fb727a4572f155e2"
+            },
+            "tests/entity/mob/test_skeleton_null_damage.c": {
+              "bytes": 18361,
+              "sha256": "90ef1657e379e148a4a96c78d311d94dc77a258996c09ddd601c5181ef101f84"
+            },
+            "tests/entity/mob/test_creeper_null_damage.c": {
+              "bytes": 19111,
+              "sha256": "357852bf44f4e1bdae5befa4f24e832de700cce991d91483894dd4d3544cf92c"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 76712,
+              "sha256": "c2c0a0f694202a5d186da18abe4353db0ac5a6287cf7ab8a7b08030019e4b7ec"
+            },
+            "tests/tools/world/world_query_controls_bundle.json": {
+              "bytes": 53288,
+              "sha256": "27acec0477afbb58cf443d5ed15339eb8e23879fe6aff84ed417a0c4d070903e"
+            },
+            "tests/tools/client/arrow_world_tick_cleanup_bundle.json": {
+              "bytes": 3533,
+              "sha256": "be0494e8e5f501ebf15299e5c816629eca9126f34d07342efce2c5d052e0a48c"
+            },
+            "tests/tools/client/test_arrow_world_tick_cleanup.py": {
+              "bytes": 16782,
+              "sha256": "731ebd85507640c1e851eb2befbe3829d0aa408b11e9a2f4377aee3229f7bee7"
+            },
+            "docs/entity/arrow-flight.md": {
+              "bytes": 8565,
+              "sha256": "cbffc0f90f2ece4070463b52797720a44d738e3a335d301cc3626a4134088c23"
+            },
+            "tests/tools/entity/damage_native_close_bundle.json": {
+              "bytes": 4312,
+              "sha256": "1a889592ff6293c924112e946a093157ff077400ee5e584e41a6ecd55a55ea44"
+            },
+            "tests/tools/entity/test_damage_native_close.py": {
+              "bytes": 17605,
+              "sha256": "b15c7e7d2957dc6ade8e36ed2cee09628fd192b49f3bfbd9ece964d9ebbe6ee9"
+            }
+          },
+          "added": [
+            "cmake/tests/arrow_water_flight.cmake",
+            "cmake/tests/monster_damage.cmake",
+            "docs/entity/monster-retaliation.md",
+            "docs/wiki/Combat-and-projectiles.md",
+            "tests/entity/mob/test_monster_damage.c",
+            "tests/reference/entity/arrow_water/ArrowWaterOriginalObservation.java",
+            "tests/reference/entity/arrow_water/README.md",
+            "tests/reference/entity/arrow_water/run.py",
+            "tests/reference/entity/monster_retaliation/MonsterDamageObservation.java",
+            "tests/reference/entity/monster_retaliation/README.md",
+            "tests/reference/entity/monster_retaliation/capture_reference.py",
+            "tests/tools/entity/test_monster_damage.py",
+            "tests/tools/world/test_arrow_water_flight.py",
+            "tests/world/runtime/test_arrow_water_flight.c"
+          ],
+          "current_count": 5913
+        }
+      }
+    },
+    {
+      "from_commit": "df9538d0bc0d32126b1ccec1699b3a4bbe0ada0e",
+      "role": "Current source admissions for Monster damage/retaliation, NULL particle callback classification and Arrow water controls. Historical suppliers and observations remain unchanged. Compilation, native results, original comparison and FPS require separate evidence.",
+      "previous_metadata": {
+        "bytes": 1765180,
+        "sha256": "3d136ee03ae422a3fe2615ffe4886cb1973bd79c9e25313c54f8534a0f986e0e"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/status.md": {
+              "bytes": 137905,
+              "sha256": "ea10e801e8ca6e44d58c4d12fe8cb5f60c2245bbce6e528aba114b5af24b311c"
+            },
+            "docs/testing.md": {
+              "bytes": 597512,
+              "sha256": "cad45b13a0a21d41f8ccea4a8dafdda2a4855de243a8e8c390c58dd2f37a059e"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 775334,
+              "sha256": "53af869d55961d23f2faa9e7215d1c316adbf6e38792cecf5d68b16ec506028c"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 877515,
+              "sha256": "b8ba154c83bb17dee48f5d6d0c06c41ab9d18aa32c44d7ebad0aae0b42f5af49"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 772313,
+              "sha256": "7c04f87d1d8c61dbedfd414be884d03995659931c3366feac019c151b3ba8800"
+            },
+            "tests/reference/entity/arrow_water/ArrowWaterOriginalObservation.java": {
+              "bytes": 15683,
+              "sha256": "0c72abc8f9119042fd149d13b816c995bd58d06835f10fa4859dd04607ed46ad"
+            },
+            "tests/reference/entity/arrow_water/run.py": {
+              "bytes": 23554,
+              "sha256": "a55c30a19cc903e498e84722d07c4f4c4f6a33784d2bf8e2cd9560e39aba74c8"
+            }
+          },
+          "added": [],
+          "current_count": 5913
+        }
+      }
+    },
+    {
+      "from_commit": "df9538d0bc0d32126b1ccec1699b3a4bbe0ada0e",
+      "role": "Current source admissions after collector LF/whitespace publication and recorded Monster/water validation documentation. Runtime C and native fixture bytes remain those of the completed local test cohorts. Historical suppliers and observations retain their recorded identities; no whole-method or FPS qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 1767217,
+        "sha256": "3c443c92e3af68de3f00b3f63b5076c1d35c276abefc4c70fc88f2fa941b02e2"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "docs/testing.md": {
+              "bytes": 601395,
+              "sha256": "cd7bc5102211b10fd5657a8f52755928f8964f19d430790ae6b5923e2022f77c"
+            }
+          },
+          "added": [],
+          "current_count": 5913
         }
       }
     }

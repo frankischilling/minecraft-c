@@ -270,13 +270,33 @@ static bool gates_and_frontiers(skeleton_fixture *f) {
 
     CHECK(actor(f, MC_ENTITY_CLASS_KIND_SKELETON, false, &p));
     f->current = p;
-    answer = true;
+    answer = false;
     const int32_t before = p->mob->living.Y;
-    CHECK(mc_entity_effect_damage_in_context(p, f->base.registry, p, 1, &answer, &e) ==
-              MC_ENTITY_STATE_ERROR &&
-          answer && !e.living_damage.entered && e.damage_source_identity == (uintptr_t)p &&
-          e.damage_amount == 1 && e.damage_bytecode == 3 && p->mob->living.Y == before &&
-          e.cause == MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL);
+    mc_entity *self_target = NULL;
+    mc_entity_error target_error;
+    CHECK(actor(f, MC_ENTITY_CLASS_KIND_COW, false, &self_target) &&
+          mc_mob_creature_target_store(p, self_target, &target_error) == MC_ENTITY_OK);
+    const size_t self_holds = p->holds, self_target_holds = self_target->holds,
+                 self_sounds = f->sounds;
+    const uint64_t self_world_random = f->base.world->fields.r->state;
+    CHECK(mc_entity_effect_damage_with_math(p, f->base.registry, f->base.math, p, 1, &answer, &e) ==
+              MC_ENTITY_OK &&
+          answer && e.living_damage.entered && e.living_damage.returned &&
+          e.living_damage.living_returned && e.living_damage.result_stored &&
+          e.living_damage.result && e.living_damage.wrapper_pc == 38 &&
+          e.living_damage.living_pc == 363 && e.damage_source_identity == (uintptr_t)p &&
+          e.damage_amount == 1 && e.damage_bytecode == 3 && p->mob->living.Y == before - 1 &&
+          e.living_damage.direction_entered && e.living_damage.direction_returned &&
+          e.living_damage.direction_iterations > 0 &&
+          e.living_damage.shared_calls == e.living_damage.direction_iterations * 4 &&
+          e.living_damage.shared_attempts == e.living_damage.shared_calls &&
+          e.living_damage.source_hold_acquired && e.living_damage.source_hold_released &&
+          e.living_damage.source_identity == (uintptr_t)p && e.living_damage.knockback_returned &&
+          e.living_damage.sound_returned && e.living_damage.private_calls == 2 &&
+          p->holds == self_holds && p->mob->creature_target == self_target &&
+          p->mob->creature_target_hold == self_target && self_target->holds == self_target_holds &&
+          f->base.world->fields.r->state == self_world_random && f->sounds == self_sounds + 1 &&
+          !f->bad_callback && e.cause == MC_ENTITY_EFFECT_CAUSE_NONE);
 
     CHECK(actor(f, MC_ENTITY_CLASS_KIND_SKELETON, false, &p));
     f->current = p;

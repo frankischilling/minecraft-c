@@ -22,12 +22,15 @@ per VM. Its separate analysis retains188 same-VM scalar checks and fourteen raw
 Zombie/Cow constructor contexts. Default constructor entropy remains independent;
 no observed seed, clock, Random result or field value is an execution input.
 
-Six Native direct damage calls genuinely return (cases0..4 and11).
+Seven Native direct damage calls genuinely return (cases0..4,8 and11).
 Cases5/6 compare exact actual NULL failures LS4/343. Case7 compares the reached
 actual death-entry316 prefix after the real death sound; Original full death/drop
-and return remain retained separately. Case8 compares only actual inherited LS
-entry from GZ3 for its real nonNULL Cow operand; later Source knockback/return
-are beyond the Native body. Case10 compares actor-field prefix only: Native
+and return remain retained separately. Case8 now completes inherited Living
+damage and GZ retaliation for its real nonNULL Cow operand. The optional reader
+selects the original's full return, including deterministic knockback and the
+new target alias; this stronger comparison requires the external packet and a
+current native build receipt. Earlier recorded comparisons retain their original
+entry-prefix scope. Case10 compares actor-field prefix only: Native
 ordinary adapter IO and the authored Original IllegalStateException preserve
 different classifications, with no Throwable identity or producer equivalence.
 

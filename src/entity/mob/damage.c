@@ -349,6 +349,9 @@ static bool sound(mc_entity *p, mc_registry_classes *registry, bool fatal,
     } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_CREEPER)) {
         declaring_class = "gb";
         text = fatal ? "mob.creeperdeath" : "mob.creeper";
+    } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SPIDER)) {
+        declaring_class = "cn";
+        text = fatal ? "mob.spiderdeath" : "mob.spider";
     } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SHEEP)) {
         declaring_class = "dl";
         text = "mob.sheep";
@@ -731,7 +734,8 @@ static bool living_body(mc_entity *p, mc_registry_classes *registry, mc_math_cla
             child_at(e, "gb", "b", "(Lsn;)V", 2);
             return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
                                "Living damage actual Creeper death/drop body");
-        } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ZOMBIE) ||
+        } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SPIDER) ||
+                   mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ZOMBIE) ||
                    mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SKELETON))
             return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
                                "Living damage actual death/drop body");
@@ -784,20 +788,22 @@ bool mc_player_living_damage_entered(mc_entity *p, mc_registry_classes *registry
     return true;
 }
 
-bool mc_mob_monster_null_damage_entered(mc_entity *p, mc_registry_classes *registry, int32_t amount,
-                                        bool *out, mc_entity_effect_error *e) {
+bool mc_mob_monster_damage_entered(mc_entity *p, mc_registry_classes *registry,
+                                   mc_math_classes *math, mc_entity *source, int32_t amount,
+                                   bool *out, mc_entity_effect_error *e) {
     /* This check is native structural admission, never a Source preflight of
      * future World/Random/target/health operands. The facade owns a live hold. */
     if (e == NULL)
         return false;
-    if ((!mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ZOMBIE) &&
+    if ((!mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SPIDER) &&
+         !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ZOMBIE) &&
          !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SKELETON) &&
          !mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_CREEPER)) ||
         !mc_entity_has_mob(p) || p->classes->source != MC_ENTITY_CLIENT || out == NULL)
         return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_OWNER,
-                           "Monster NULL damage entered canonical owner contract");
+                           "Monster damage entered canonical owner contract");
     e->damage_arguments_stored = true;
-    e->damage_source_identity = 0;
+    e->damage_source_identity = (uintptr_t)source;
     e->damage_amount = amount;
     e->source_class = "gz";
     e->source_bytecode = e->damage_bytecode = 3;
@@ -806,26 +812,28 @@ bool mc_mob_monster_null_damage_entered(mc_entity *p, mc_registry_classes *regis
     bool answer = false;
     /* The symbolic II.a invokespecial resolves inherited LS directly: there
      * is no II declaration, entered body or intermediate return to credit. */
-    if (!living(p, registry, NULL, NULL, amount, &answer, e))
+    if (!living(p, registry, math, source, amount, &answer, e))
         return false;
     e->living_damage.living_returned = true;
     uint16_t pc = 40;
     if (answer) {
         /* Identity-only relationship comparisons do not dereference mounts.
-         * Default NULL aG returns26 without reading aH or the II target slot. */
-        if (p->base.aG == NULL)
+         * For a NULL source, default NULL aG returns26 without reading aH or
+         * the II target slot. Nonnull sources test the same actual identities. */
+        if (p->base.aG == source)
             pc = 26;
-        else if (p->base.aH == NULL)
+        else if (p->base.aH == source)
             pc = 26;
-        else {
+        else if (source != p) {
             e->source_bytecode = e->living_damage.wrapper_pc = 34;
             child_at(e, "gz", "a", "(Lsn;I)Z", 34);
-            const mc_entity_status status = mc_mob_creature_target_store(p, NULL, &e->entity);
+            const mc_entity_status status = mc_mob_creature_target_store(p, source, &e->entity);
             if (status != MC_ENTITY_OK)
                 return damage_fail(e, status, MC_ENTITY_EFFECT_CAUSE_OWNER,
                                    "Monster damage actual target owning store");
             pc = 38;
-        }
+        } else
+            pc = 38;
     }
     e->source_bytecode = e->living_damage.wrapper_pc = pc;
     child_at(e, "gz", "a", "(Lsn;I)Z", pc);

@@ -531,6 +531,11 @@ static mc_world_storage_status call_particle_body(mc_world_access *access, mc_wo
                                                   double vz, mc_world_storage_error *error,
                                                   mc_world_access_failure *failure) {
     *failure = (mc_world_access_failure){0};
+    if (access == NULL) {
+        failure->source_null_receiver = true;
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "World particle WorldAccess invocation");
+    }
     if (access != NULL && access->source_callbacks.particle != NULL) {
         const mc_world_storage_status status = access->source_callbacks.particle(
             access->context, world, name, x, y, z, vx, vy, vz, error, failure);

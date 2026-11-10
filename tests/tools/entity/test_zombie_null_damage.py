@@ -28,7 +28,7 @@ REFERENCE = Path(__file__).resolve().parents[2] / "reference/entity/zombie_null_
 NATIVE = Path(__file__).resolve().parents[2] / "entity/test_zombie_null_damage.c"
 RANDOM_CONSTRUCTOR_FIELDS = frozenset(("ls.F", "ls.G", "ls.aj"))
 FRESH = frozenset((0, 6, 7, 9, 10, 11))
-RETURNED = frozenset((0, 1, 2, 3, 4, 11))
+RETURNED = frozenset((0, 1, 2, 3, 4, 8, 11))
 MASK = (1 << 48) - 1
 
 
@@ -553,20 +553,25 @@ def native_oracles(index, phases, result):
         return 13
     e = result["effect"]
     returned = index in RETURNED
-    need(e["entered"] == (index != 8) and e["returned"] == returned and e["result_stored"] == returned and
+    need(e["entered"] and e["returned"] == returned and e["result_stored"] == returned and
          e["living_returned"] == returned and ((result["status"] == 0) == returned), "distinct full return/native prefix/failure outcomes")
     if returned:
         need(result["answer"] == (index not in (1, 2, 3)) == e["result"], "actual GZ boolean result")
-        need(e["wrapper_pc"] == (40 if index in (1, 2, 3) else 26) and
+        need(e["wrapper_pc"] == (40 if index in (1, 2, 3) else 38 if index == 8 else 26) and
              e["living_pc"] == {1:11, 2:25, 3:59}.get(index, 363), "actual LS/GZ return PCs")
     else:
         need(result["answer"] == result["answer_before"], "unreturned source invocation does not invent caller result")
     m = int(before["math_seed"], 16)
     r = None if before["own_seed"] == "-" else int(before["own_seed"], 16)
-    if index in FRESH:
-        m, shared = double_draw(m)
-        need(e["shared_attempts"] == e["shared_calls"] == 1 and e["shared_value"] == dword(shared) and
-             after["fields"]["ls.ac"] == fword(int(shared*2)*180), "actual same-process Math251/value/ac264 relation")
+    if index in FRESH or index == 8:
+        if index == 8:
+            need(e["shared_attempts"] == e["shared_calls"] == 0 and
+                 after["fields"]["ls.ac"] == {"F":"41b90a72"},
+                 "distant Cow direction uses actual atan2 and no shared Math.random")
+        else:
+            m, shared = double_draw(m)
+            need(e["shared_attempts"] == e["shared_calls"] == 1 and e["shared_value"] == dword(shared) and
+                 after["fields"]["ls.ac"] == fword(int(shared*2)*180), "actual same-process Math251/value/ac264 relation")
         if index != 6:
             need(e["sound_world"] == before["reference_roles"]["world"]["identity"] and
                  e["sound_name"] != "0000000000000000" and e["sound_world_captured"] and
@@ -595,7 +600,11 @@ def native_oracles(index, phases, result):
              "actual sound then unreturned death316 dependency")
     if index == 8:
         need(result["effect_source"] == before["reference_roles"]["secondary0"]["identity"] and
-             result["effect_amount"] == 1 and result["effect_damage_pc"] == 3, "actual nonNULL GZ3 invocation operands")
+             result["effect_amount"] == 1 and result["effect_damage_pc"] == 3 and result["effect_cause"] == 0 and
+             e["status_returned"] and e["attacked_returned"] and e["sound_returned"] and
+             before["fields"]["ii.d"] is None and
+             after["fields"]["ii.d"] == after["reference_roles"]["secondary0"],
+             "actual nonNULL GZ3 call completes Living direction/sound then publishes the same Cow target")
     if index == 10:
         need(e["native_policy"] and not e["source_exception"] and e["living_pc"] == 359 and
              not e["sound_returned"] and result["world_pc"] == result["world_access_pc"] == 53 and
@@ -673,12 +682,6 @@ def select_source(original, index):
         need(any(f["class"] == "ls" and f["descriptor"] == "(Lsn;I)Z" and f["pc"] == 316
                  for f in selected["source_frames"]), "actual missing death callsite316")
         mode = "native_prefix_at_actual_Source_death_entry316"
-    elif index == 8:
-        selected = one(events, lambda row: row["event"] == "prefix" and
-                       location(row,"ls","a","(Lsn;I)Z",0,"site"), "nonNULL actual damage entry")
-        need(selected["source_frames"][1]["class"] == "gz" and selected["source_frames"][1]["pc"] == 3,
-             "actual Source invokespecial resolution LS <- GZ3")
-        mode = "native_prefix_at_actual_Source_LS_entry_GZ3"
     elif index in (5,6,10):
         selected = one(events, lambda row: row["event"] == "exception", "actual reached Source failure")
         if index in (5,6):
@@ -711,6 +714,10 @@ def process_prefix_streams(index, before, selected):
         count += 1
         if index != 6:
             r, _ = float_draw(r); r, _ = float_draw(r)
+    elif index == 8:
+        # The distant nonnull attacker reaches atan2/knockback without the
+        # coincident-direction Math.random loop or the NULL-attacker draw251.
+        r, _ = float_draw(r); r, _ = float_draw(r)
     need(selected["math_seed"] == f"{m:012x}" and
          selected["own_seed"] == ("-" if r is None else f"{r:012x}") and
          selected["world_seed"] == before["world_seed"], "actual selected-prefix per-process shared/private/World progress")
@@ -767,7 +774,7 @@ def compare_original(native, original):
                 need(entry["arguments"][0] is None and result["effect_source"] == "0000000000000000",
                      "actual NULL attacker operand")
             checks += 2
-        if index in FRESH and index != 9:
+        if (index in FRESH or index == 8) and index != 9:
             sounds = [e for e in original["events"] if e.get("case") == index and e["event"] == "entry" and
                       location(e,"fd","a","(Lsn;Ljava/lang/String;FF)V")]
             if index == 6:
@@ -778,13 +785,13 @@ def compare_original(native, original):
                 checks += 2
         selections.append({"case":index,"scope":mode,"before":sb,"selected":selected})
     return {"typed_checks":checks,"identity_relations":identities,"separate_process_stream_checks":stream_checks,"profiles":12,
-            "full_direct_returns":6,"Source_NULL_failures":2,"native_child_entry_prefixes":2,
+            "full_direct_returns":7,"Source_NULL_failures":2,"native_child_entry_prefixes":1,
             "native_IO_vs_Source_Throwable_field_prefixes":1,"actual_nested_SN501_sound_prefixes":1,
             "Source_same_VM_scalar_analysis_checks_retained":188,"Native_same_process_scalar_checks":native["native_scalar_checks"],
             "independent_entropy_rebound":False,"scope_limits":[
                 "Constructor-derived LS.F/G/aj and namespace-local numeric Entity IDs are raw retained, excluded from cross-process field equality; native originals must remain unchanged through each call.",
                 "Shared/private/World seeds and stochastic ac/pitch are raw retained, never cross-process equated. Native same-process LCG, pitch and Math251/ac relations are checked separately; frozen Source analysis retains188 same-VM checks.",
-                "Case7 Original actually continues death/drop and returns; Native is compared at actual death-entry316 only. Case8 Original continues nonNULL knockback; Native is compared at actual LS entry GZ3 only.",
+                "Case7 Original actually continues death/drop and returns; Native is compared at actual death-entry316 only. Case8 compares the full nonNULL GZ return, deterministic direction/knockback and actual Cow target alias; independent private sound entropy remains separately observed.",
                 "Case9 Native executes a full real Mob tick with ordinary sunlight false; Original executes virtual LS.U. Pair only actual SN501 sound prefix and explicit fire/health/timer after fields; no whole-body equality or source skip.",
                 "Case10 native adapter IO and Original authored IllegalStateException retain distinct classifications. Pair deterministic actor prefix, not Source Throwable/receipt identity.",
                 "Watcher record index/type/scalar/dirty and watcher object identity are paired; no boxed Byte or internal Map/record object identities where Source exposes scalars only. Strings compare UTF16 values, not identity.",
@@ -826,6 +833,17 @@ def comparator_negatives(native, original):
         reject(name,lambda p=phases,r=result:native_oracles(0,p,r),passed)
     result=copy.deepcopy(native["results"][7]);result["effect"]["returned"]=True
     reject("missing_death_child_forged_return",lambda:native_oracles(7,native["phases"][7],result),passed)
+    _, source, _ = select_source(original,8)
+    expected = native["phases"][8]["after"]
+    def compare_nonnull(value): return compare_state(value,source["state"],"negative/nonnull-return",False)
+    for name, field, value in (("lost_new_Cow_target", "ii.d", None),
+                               ("wrong_nonnull_direction", "ls.ac", fword(90)),
+                               ("lost_nonnull_knockback_x", "sn.aP", dword(0)),
+                               ("lost_nonnull_knockback_z", "sn.aR", dword(0))):
+        wrong=copy.deepcopy(expected);wrong["fields"][field]=value
+        reject(name,lambda value=wrong:compare_nonnull(value),passed)
+    result=copy.deepcopy(native["results"][8]);result["answer"]=False
+    reject("nonnull_return_false",lambda:native_oracles(8,native["phases"][8],result),passed)
     return {"count":len(passed),"rejected":passed,"scope":"Pure copied-observation corruption controls exercising the actual field/class/role/alias/temporal/scalar/outcome comparators; no mutation executes a game body."}
 
 

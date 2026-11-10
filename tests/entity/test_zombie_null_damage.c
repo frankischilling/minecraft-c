@@ -373,21 +373,22 @@ static bool check_direct(damage_fixture *f, mc_entity_status status, bool before
     const unsigned int i = f->input.id;
     const mc_entity_living_damage_state *r = &f->effect->living_damage;
     mc_living_entity_fields *l = &f->actor->mob->living;
-    const bool returned = i == 0 || i == 1 || i == 2 || i == 3 || i == 4 || i == 11;
-    CHECK((status == MC_ENTITY_OK) == returned && r->entered == (i != 8) &&
-          r->returned == returned);
+    const bool returned = i == 0 || i == 1 || i == 2 || i == 3 || i == 4 || i == 8 || i == 11;
+    CHECK((status == MC_ENTITY_OK) == returned && r->entered && r->returned == returned);
     if (returned) {
         CHECK(r->result_stored && r->living_returned && answer == r->result &&
-              r->wrapper_pc == ((i >= 1 && i <= 3) ? 40 : 26) &&
+              r->wrapper_pc == ((i >= 1 && i <= 3) ? 40
+                                : i == 8           ? 38
+                                                   : 26) &&
               r->living_pc == (i == 1   ? 11
                                : i == 2 ? 25
                                : i == 3 ? 59
                                         : 363));
     } else
         CHECK(answer == before && !r->result_stored && !r->living_returned);
-    const bool fresh = i == 0 || i == 6 || i == 7 || i == 10 || i == 11;
-    CHECK(l->av == (i == 1 || i == 5 || i == 8 ? 17 : 0) &&
-          fbits(l->al) == fbits(i == 1 || i == 2 || i == 5 || i == 8 ? .25f : 1.5f));
+    const bool fresh = i == 0 || i == 6 || i == 7 || i == 8 || i == 10 || i == 11;
+    CHECK(l->av == (i == 1 || i == 5 ? 17 : 0) &&
+          fbits(l->al) == fbits(i == 1 || i == 2 || i == 5 ? .25f : 1.5f));
     CHECK(l->Y == (fresh ? f->input.health - 1 : i == 4 ? 18 : f->input.health));
     CHECK(l->au == (fresh    ? 1
                     : i == 4 ? 3
@@ -396,7 +397,7 @@ static bool check_direct(damage_fixture *f, mc_entity_status status, bool before
           f->actor->base.by == (fresh ? 20 : f->input.by) && f->actor->base.bb == fresh);
     uint64_t math = f->math_before, own = f->own_before;
     double shared = 0;
-    if (fresh) {
+    if (fresh && i != 8) {
         shared = oracle_double(&math);
         CHECK(r->shared_attempts == 1 && r->shared_calls == 1 &&
               dbits(shared) == dbits(r->shared_value) &&
@@ -404,7 +405,7 @@ static bool check_direct(damage_fixture *f, mc_entity_status status, bool before
               r->attacked_returned);
     } else
         CHECK(r->shared_attempts == 0 && r->shared_calls == 0 &&
-              fbits(l->ac) == fbits(i == 4 ? 0.f : 99.f));
+              fbits(l->ac) == (i == 8 ? UINT32_C(0x41b90a72) : fbits(i == 4 ? 0.f : 99.f)));
     const bool floats = fresh && i != 6;
     if (floats) {
         const float a = oracle_float(&own), b = oracle_float(&own);
@@ -427,10 +428,22 @@ static bool check_direct(damage_fixture *f, mc_entity_status status, bool before
     if (i == 7)
         CHECK(r->native_policy && !r->source_exception && r->living_pc == 316 &&
               r->death_invoke_reached && r->sound_returned && !f->actor->base.be);
-    if (i == 8)
-        CHECK(f->effect->cause == MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL &&
+    if (i == 8) {
+        mc_entity *target = NULL;
+        mc_entity_error e;
+        CHECK(f->effect->cause == MC_ENTITY_EFFECT_CAUSE_NONE && answer &&
               f->effect->damage_source_identity == (uintptr_t)f->cow &&
-              f->effect->damage_amount == 1 && f->effect->damage_bytecode == 3);
+              f->effect->damage_amount == 1 && f->effect->damage_bytecode == 3 &&
+              r->direction_entered && r->direction_returned && r->source_read &&
+              r->source_hold_acquired && r->source_hold_released &&
+              r->source_identity == (uintptr_t)f->cow && r->direction_x == 3.0 &&
+              r->direction_z == 4.0 && r->direction_iterations == 0 && r->knockback_entered &&
+              r->knockback_returned && r->knockback_pc == 121 && r->status_returned &&
+              r->attacked_returned && r->sound_returned &&
+              mc_mob_creature_target_get(f->actor, &target, &e) == MC_ENTITY_OK &&
+              target == f->cow && f->actor->mob->creature_target_hold == f->cow &&
+              f->cow->holds == f->cow_holds + 1);
+    }
     if (i == 10) {
         CHECK(f->callback_seen && f->sounds == 1 && !f->callback_bad);
         CHECK(r->native_policy && !r->source_exception && !r->sound_returned);
@@ -458,7 +471,8 @@ static bool check_direct(damage_fixture *f, mc_entity_status status, bool before
 
 static bool execute(damage_fixture *f) {
     mc_entity_status status;
-    bool answer = f->input.id != 0 && f->input.id != 4 && f->input.id != 11, before = answer;
+    bool answer = f->input.id != 0 && f->input.id != 4 && f->input.id != 8 && f->input.id != 11,
+         before = answer;
     const uint16_t base_pc = f->actor->base_bytecode;
     const unsigned int ctor_pc = f->actor->mob->constructor_pc;
     mc_mob_error ctor_error;
@@ -476,14 +490,15 @@ static bool execute(damage_fixture *f) {
         CHECK(f->callback_math == math && f->callback_own == own &&
               f->actor->mob->living.ac == (float)((int32_t)(draw * 2.0) * 180));
     } else {
-        status = mc_entity_effect_damage_in_context(f->actor, f->base.registry,
-                                                    f->input.id == 8 ? f->cow : NULL,
-                                                    f->input.amount, &answer, f->effect);
+        status = mc_entity_effect_damage_with_math(
+            f->actor, f->base.registry, f->input.id == 8 ? f->base.math : NULL,
+            f->input.id == 8 ? f->cow : NULL, f->input.amount, &answer, f->effect);
         CHECK(check_direct(f, status, before, answer));
     }
     CHECK(state(f, "after") && f->actor->holds == f->actor_holds &&
-          (!f->cow || f->cow->holds == f->cow_holds) && !f->actor->mob->tick_active &&
-          f->actor->base_bytecode == base_pc && f->actor->mob->constructor_pc == ctor_pc &&
+          (!f->cow || f->cow->holds == f->cow_holds + (f->input.id == 8 ? 1u : 0u)) &&
+          !f->actor->mob->tick_active && f->actor->base_bytecode == base_pc &&
+          f->actor->mob->constructor_pc == ctor_pc &&
           memcmp(&ctor_error, &f->actor->mob->failure, sizeof(ctor_error)) == 0);
     fprintf(output,
             "{\"event\":\"result\",\"case\":%u,\"status\":%d,\"answer_before\":%s,\"answer\":%s,"

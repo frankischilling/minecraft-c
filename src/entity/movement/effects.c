@@ -716,12 +716,12 @@ static bool damage(mc_entity *entity, mc_registry_classes *classes, mc_math_clas
              "Entity damage pending native child cleanup", 0);
         return false;
     }
-    if (source == NULL &&
-        (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ZOMBIE) ||
+    if ((mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SPIDER) ||
+         mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ZOMBIE) ||
          mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SKELETON) ||
          mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_CREEPER)) &&
         entity->classes->source == MC_ENTITY_CLIENT)
-        return mc_mob_monster_null_damage_entered(entity, classes, amount, out, error);
+        return mc_mob_monster_damage_entered(entity, classes, math, source, amount, out, error);
     if (entity->classes->source == MC_ENTITY_CLIENT &&
         (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SHEEP) ||
          mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PIG) ||

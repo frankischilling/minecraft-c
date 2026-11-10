@@ -5450,28 +5450,28 @@
       "sha256": "83fa124aab5972e55bb827ed95dbb5b1d239e16d18f55001b7a1024810a9768f"
     },
     "src/entity/mob/damage.c": {
-      "bytes": 41983,
-      "sha256": "a534c282f30981790a2f03dd51a037a2d06c78d745a02724d9ee35c0ed67b6c6"
+      "bytes": 42483,
+      "sha256": "76b3d6f4f64942820c68426bee76b0c2cfd1203b61a5bb28df55df196a22b6b9"
     },
     "src/entity/mob/damage_internal.h": {
-      "bytes": 1708,
-      "sha256": "3bbff5f9640902ceaaa6e5cc4c2388f22f6a2c6cb90f5beb81e9d56da11ad189"
+      "bytes": 1908,
+      "sha256": "7ec3b0e983ad35c3469b9b05d62f7154869bd30ab662dd87e653fa656cb28b7a"
     },
     "src/entity/movement/effects_internal.h": {
       "bytes": 2047,
       "sha256": "5295f36d8f9d11ff799d09a64489d3b6f989de1f19bf8e51f8e4fa6dceb88698"
     },
     "tests/entity/test_zombie_null_damage.c": {
-      "bytes": 29229,
-      "sha256": "7bc7c096c14c700b101ab91b661655696e100df82c0147c261fe47bcedeeaf16"
+      "bytes": 30141,
+      "sha256": "0f7da19a86226fedd439dc896c82e77c01481cb2b3767a27fa048e011a9abdf3"
     },
     "tests/entity/zombie_damage_transport.inc": {
       "bytes": 10954,
       "sha256": "8b74431da59af77684e59a2c9884d96764a3c752d47cea4f0ee78c7526c80128"
     },
     "tests/tools/entity/test_zombie_null_damage.py": {
-      "bytes": 58014,
-      "sha256": "503cf315d128941b42a4b562564a238cb873d5d6b478438f4a678c052d3d6ee7"
+      "bytes": 59329,
+      "sha256": "e02edfd6676d1dcc1e66ebc667029c6c7127a4940d68b988ef73997e04cccb05"
     },
     "src/client/render/living_draw/overlay.c": {
       "bytes": 6939,
@@ -6178,8 +6178,8 @@
       "sha256": "247b349413c93357430cf017927b1a60f91d770c8aef09a2ad3d0fd3a0419c81"
     },
     "tests/entity/mob/test_skeleton_null_damage.c": {
-      "bytes": 18361,
-      "sha256": "90ef1657e379e148a4a96c78d311d94dc77a258996c09ddd601c5181ef101f84"
+      "bytes": 19865,
+      "sha256": "cdedbc7d6fcca6fd9d932099eadbc9262153c62365a66fcfde3b554ab915322e"
     },
     "tests/item/use/test_use.c": {
       "bytes": 40810,
@@ -6990,8 +6990,8 @@
       "sha256": "1a6c7a150b03a2c64cad4e9f1f9ec1f39a1d9a2a658280eb6e0a4816f37512bd"
     },
     "tests/entity/mob/test_creeper_null_damage.c": {
-      "bytes": 19111,
-      "sha256": "357852bf44f4e1bdae5befa4f24e832de700cce991d91483894dd4d3544cf92c"
+      "bytes": 20615,
+      "sha256": "ce397950f38d45757aa1e4f39d00bee05315286bdb6214072761e84891623013"
     },
     "tests/inventory/workbench_interaction_original.c": {
       "bytes": 43953,
@@ -8090,8 +8090,8 @@
       "sha256": "ae15e8fb904b7fde7d0b92a22beea685aaf1a6ba0ac106c30a54c8c02662f2a2"
     },
     "src/entity/movement/effects.c": {
-      "bytes": 50490,
-      "sha256": "9b57bd08b00e7dfa77c1a814de886a8e54ec8c63abf02d4c5e038a749a87f835"
+      "bytes": 50540,
+      "sha256": "cba4223a1b18c09c362d56373da46e4cd9809fca0cf70d3263fe7a6e0c01b069"
     },
     "src/entity/player/damage.c": {
       "bytes": 4943,
@@ -9847,7 +9847,7 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76712,
-      "sha256": "c2c0a0f694202a5d186da18abe4353db0ac5a6287cf7ab8a7b08030019e4b7ec"
+      "sha256": "a2f9371c1b8780973d95354a16bf1cf8912d73884751badd4f7a0d9bb2ff0fe0"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -10027,7 +10027,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 16782,
-      "sha256": "731ebd85507640c1e851eb2befbe3829d0aa408b11e9a2f4377aee3229f7bee7"
+      "sha256": "d4ea9cd976c3c4f55d8456f7f8501e2892f7254bb872d9d00de07e7e1cf42e68"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,
@@ -10035,7 +10035,7 @@
     },
     "tests/tools/entity/test_damage_native_close.py": {
       "bytes": 17605,
-      "sha256": "b15c7e7d2957dc6ade8e36ed2cee09628fd192b49f3bfbd9ece964d9ebbe6ee9"
+      "sha256": "5d57da2ac41269de7f11819b8220362260796901a6f7bb9a183e630b33ac0fd4"
     },
     "tests/world/runtime/world_access/test_damage_close_execution.c": {
       "bytes": 28929,
@@ -10060,6 +10060,38 @@
     "tests/world/runtime/test_arrow_tick_failures.c": {
       "bytes": 17869,
       "sha256": "13ffd37e68a1e9fafbbab04a254a1f9df295e690a1b2eb55a4a5e420bc9d6f68"
+    },
+    "cmake/tests/arrow_water_flight.cmake": {
+      "bytes": 1963,
+      "sha256": "49c8d59372723e7ccc1ee783d8711d2cb45fa73bec4720341397a8b463845958"
+    },
+    "cmake/tests/monster_damage.cmake": {
+      "bytes": 843,
+      "sha256": "521e5bc261bc0f41a797311cedbbece067d9f2b4b047330960ad9471a98481a8"
+    },
+    "tests/entity/mob/test_monster_damage.c": {
+      "bytes": 11751,
+      "sha256": "a3886b7c090dda7643ab7f658ab78445d3e8d58b6abc0df85507c2a4888e3dfb"
+    },
+    "tests/reference/entity/arrow_water/run.py": {
+      "bytes": 23553,
+      "sha256": "6552b9d011fedebbbdcd41f6cebdadebed10293a8ff98c630527977c1dfe1bc4"
+    },
+    "tests/reference/entity/monster_retaliation/capture_reference.py": {
+      "bytes": 13201,
+      "sha256": "6078ef9e273d832e980687a7044470bd1942bd4ba1610cd27e3532aca4b59b58"
+    },
+    "tests/tools/entity/test_monster_damage.py": {
+      "bytes": 4137,
+      "sha256": "cb42f7d5f2d3bef5ddd474a6aa7699c3d0516c06037717c40a4e6185eee808b3"
+    },
+    "tests/tools/world/test_arrow_water_flight.py": {
+      "bytes": 18422,
+      "sha256": "9bdc116b1974e4cf02e8b9947d018c0e9fa37da90a9d8ffb23949d31c0b12fd1"
+    },
+    "tests/world/runtime/test_arrow_water_flight.c": {
+      "bytes": 22728,
+      "sha256": "d6006ce9e5c17219ad68d3dabef1f4698a426ef224fedf583a6b3c8236ddc90f"
     }
   },
   "authorities": {
@@ -17871,6 +17903,91 @@
             "tests/world/runtime/test_arrow_tick_failures.c"
           ],
           "current_count": 2515
+        }
+      }
+    },
+    {
+      "from_commit": "df9538d0bc0d32126b1ccec1699b3a4bbe0ada0e",
+      "role": "Current source admissions for Monster damage/retaliation, NULL particle callback classification and Arrow water controls. Historical suppliers and observations remain unchanged. Compilation, native results, original comparison and FPS require separate evidence.",
+      "previous_metadata": {
+        "bytes": 770950,
+        "sha256": "382f9bf0197056351dbfaa4d0af8540e4cc8ddc80d6627f5e34ea73d74b9b699"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "src/entity/mob/damage.c": {
+              "bytes": 41983,
+              "sha256": "a534c282f30981790a2f03dd51a037a2d06c78d745a02724d9ee35c0ed67b6c6"
+            },
+            "src/entity/mob/damage_internal.h": {
+              "bytes": 1708,
+              "sha256": "3bbff5f9640902ceaaa6e5cc4c2388f22f6a2c6cb90f5beb81e9d56da11ad189"
+            },
+            "tests/entity/test_zombie_null_damage.c": {
+              "bytes": 29229,
+              "sha256": "7bc7c096c14c700b101ab91b661655696e100df82c0147c261fe47bcedeeaf16"
+            },
+            "tests/tools/entity/test_zombie_null_damage.py": {
+              "bytes": 58014,
+              "sha256": "503cf315d128941b42a4b562564a238cb873d5d6b478438f4a678c052d3d6ee7"
+            },
+            "tests/entity/mob/test_skeleton_null_damage.c": {
+              "bytes": 18361,
+              "sha256": "90ef1657e379e148a4a96c78d311d94dc77a258996c09ddd601c5181ef101f84"
+            },
+            "tests/entity/mob/test_creeper_null_damage.c": {
+              "bytes": 19111,
+              "sha256": "357852bf44f4e1bdae5befa4f24e832de700cce991d91483894dd4d3544cf92c"
+            },
+            "src/entity/movement/effects.c": {
+              "bytes": 50490,
+              "sha256": "9b57bd08b00e7dfa77c1a814de886a8e54ec8c63abf02d4c5e038a749a87f835"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 76712,
+              "sha256": "c2c0a0f694202a5d186da18abe4353db0ac5a6287cf7ab8a7b08030019e4b7ec"
+            },
+            "tests/tools/client/test_arrow_world_tick_cleanup.py": {
+              "bytes": 16782,
+              "sha256": "731ebd85507640c1e851eb2befbe3829d0aa408b11e9a2f4377aee3229f7bee7"
+            },
+            "tests/tools/entity/test_damage_native_close.py": {
+              "bytes": 17605,
+              "sha256": "b15c7e7d2957dc6ade8e36ed2cee09628fd192b49f3bfbd9ece964d9ebbe6ee9"
+            }
+          },
+          "added": [
+            "cmake/tests/arrow_water_flight.cmake",
+            "cmake/tests/monster_damage.cmake",
+            "tests/entity/mob/test_monster_damage.c",
+            "tests/reference/entity/arrow_water/run.py",
+            "tests/reference/entity/monster_retaliation/capture_reference.py",
+            "tests/tools/entity/test_monster_damage.py",
+            "tests/tools/world/test_arrow_water_flight.py",
+            "tests/world/runtime/test_arrow_water_flight.c"
+          ],
+          "current_count": 2523
+        }
+      }
+    },
+    {
+      "from_commit": "df9538d0bc0d32126b1ccec1699b3a4bbe0ada0e",
+      "role": "Current source admissions for Monster damage/retaliation, NULL particle callback classification and Arrow water controls. Historical suppliers and observations remain unchanged. Compilation, native results, original comparison and FPS require separate evidence.",
+      "previous_metadata": {
+        "bytes": 775334,
+        "sha256": "53af869d55961d23f2faa9e7215d1c316adbf6e38792cecf5d68b16ec506028c"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            "tests/reference/entity/arrow_water/run.py": {
+              "bytes": 23554,
+              "sha256": "a55c30a19cc903e498e84722d07c4f4c4f6a33784d2bf8e2cd9560e39aba74c8"
+            }
+          },
+          "added": [],
+          "current_count": 2523
         }
       }
     }

@@ -10,6 +10,15 @@ Statuses: Not started; Under research; Partially implemented; Implemented but
 unverified; Verified for specified scenarios; Blocked (with a named dependency).
 The inventory expands the broad gameplay rows into concrete child behaviors.
 
+Client [Monster retaliation](entity/monster-retaliation.md) now includes nonnull
+attackers for Spider, Zombie, Skeleton and Creeper. Four fresh original calls
+match the declared native return fields. [Arrow water comparisons](../tests/reference/entity/arrow_water/README.md)
+retain exact deterministic state/event pairs, the original small-bounds wet/dry
+sequence and all independent-entropy differences. Native failure controls cover
+the corrected NULL particle-listener classification and checked cleanup. These
+finite results leave fatal Monster drops, full Arrow victim damage, pickup,
+riders, unrestricted presentation and sustained FPS unqualified.
+
 The [Skeleton firing parent](entity/skeleton-firing.md) now has a finite
 original/native comparison on Windows and sanitized Linux. Each host executes
 23 profiles: 21 complete outcomes match 7,929 scalars, two native callback

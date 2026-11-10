@@ -435,8 +435,8 @@
       "sha256": "2580d9bb2cae09d9f4e85aa44a55eb06d0ab88b0280a1802df26bd465637f14c"
     },
     "src/entity/mob/damage.c": {
-      "bytes": 41983,
-      "sha256": "a534c282f30981790a2f03dd51a037a2d06c78d745a02724d9ee35c0ed67b6c6"
+      "bytes": 42483,
+      "sha256": "76b3d6f4f64942820c68426bee76b0c2cfd1203b61a5bb28df55df196a22b6b9"
     },
     "src/entity/mob/damage_execution_internal.h": {
       "bytes": 6121,

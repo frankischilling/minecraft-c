@@ -1,6 +1,22 @@
 # Development status
 
-The current scoped increment adds actual Random constructor recording, strict
+Client [Monster retaliation](entity/monster-retaliation.md) now follows the
+original nonnull-attacker path for Spider, Zombie, Skeleton and Creeper.
+The [Arrow water controls](../tests/reference/entity/arrow_water/README.md)
+cover both transitions, preserve the original small-bounds water sequence and
+expose a corrected NULL particle-listener classification. Separate optional
+collectors compare finite original/native records while retaining every
+independent-entropy difference. Fatal Monster drops, full Arrow victim damage,
+unrestricted combat and original audiovisual/FPS parity remain open.
+
+The current validation passes all 890 configured Windows tests and 43 selected
+Linux sanitizer tests, with complete builds on both hosts. Fresh original
+Monster/water observations and a separate 409-check monitor-2 Zombie encounter
+retain their finite [test scopes](testing.md#monster-retaliation-and-arrow-water).
+Next combat work is the retained fatal-Monster continuation: ordinary drops,
+Skeleton's two drop loops, Creeper's late record drop and Player kill callbacks.
+
+The earlier recording increment added actual Random constructor recording, strict
 whole-input replay and early bootstrap binding with retirement receipts. Owned
 World material lookup now keeps its exact lower-query and native ownership
 results separate through checked unwind. The [combined validation](testing.md#constructor-recording-and-owned-material-lookup)

@@ -1,21 +1,31 @@
 # Zombie damage
 
-The client Zombie now handles damage with a NULL attacker through the actual
-Monster and LivingEntity methods. Environment damage, including the periodic
-fire call, reaches the same production body as a direct damage call.
+The client Zombie handles damage through the actual Monster and LivingEntity
+methods, including a nonnull attacker. Environment damage, including the
+periodic fire call, reaches the same production body as a direct damage call.
 
 The body preserves the remote-World and dead-Entity gates, hurt resistance,
 stronger repeated hits, health stores, hurt timers, attacked flag and direction.
-A full hit consumes the shared Math random stream before the private Random
-calls used for the hurt sound. Sound dispatch uses the captured World receiver,
-the actual Registry String and ordinary WorldAccess callbacks. A successful
+A full NULL-attacker hit consumes the shared Math random stream before the
+private Random calls used for the hurt sound. A nonnull attacker supplies the
+actual direction and knockback; a coincident horizontal position reaches the
+original shared-random retry loop. Sound dispatch uses the captured World
+receiver, the actual Registry String and ordinary WorldAccess callbacks. A successful
 NULL-attacker hit preserves an existing Cow target when the original Monster
 branch returns before the target store.
 
+After Living damage returns true, Monster compares the attacker with its
+current mounts and itself before storing that same attacker as its target.
+The owning store retains the new target before replacing the old occurrence.
+False Living returns and earlier failures do not change the target.
+The [Monster retaliation contract](monster-retaliation.md) records the four
+concrete receivers, owning-store behavior and separate fresh original comparison.
+
 This section records the canonical client Zombie implementation and its
-observations. [Skeleton NULL-attacker damage](skeleton-damage.md) now enters the
-same inherited body through its own receiver and sound declarations. Damage with a
-nonnull attacker remains unfinished. Fatal damage plays its reached death
+observations. Skeleton, Creeper and Spider enter the same inherited damage
+body through their own receiver and sound declarations. The earlier
+[Skeleton NULL-attacker observations](skeleton-damage.md) retain their finite
+scope. Fatal Spider, Zombie, Skeleton and Creeper damage plays its reached death
 sound, then stops at the actual death/drop invocation. It does not claim that
 the Zombie died or that an Item dropped. [Animal damage](animal-damage.md) now
 executes the inherited NULL and non-NULL-attacker body for client Sheep, Pig,
@@ -59,20 +69,28 @@ keeps retained-call retirement separate from its World-token close.
 
 Twelve authored CPU profiles use genuine Worlds, 25 stored Chunks, Registry
 classes and ordinary Zombie/Cow construction. They cover fresh and repeated
-hits, early returns, NULL World and Random failures, fatal and nonnull-attacker
-prefixes, a nested periodic-fire Mob tick, callback failure and an existing
-target alias. Constructor entropy stays independent; observed original seeds
+hits, early returns, NULL World and Random failures, a fatal prefix and one
+complete nonnull Cow-attacker call, a nested periodic-fire Mob tick, callback
+failure and an existing target alias. Constructor entropy stays independent; observed original seeds
 and field values are never inputs to the native execution.
 
-Windows MSVC Debug and Linux Clang18 ASan/UBSan each pass 2,179 native
-checks. Comparison with the unchanged original observations passes 3,544 typed checks, 3,861 identity relations and
-84 separate-process stream checks. Six direct calls genuinely return; two
-profiles match NULL failures. Fatal, nonnull-attacker and callback outcomes
-retain their narrower declared prefixes. The nested fire comparison covers the
-sound-entry prefix and named health/timer fields, rather than full tick equality.
+Before the nonnull-attacker extension, Windows MSVC Debug and Linux Clang18
+ASan/UBSan each passed 2,179 native checks. Comparison with the unchanged
+original observations passed 3,544 typed checks, 3,861 identity relations and
+84 separate-process stream checks. Six direct calls returned; two profiles
+matched NULL failures. Fatal, nonnull-attacker and callback outcomes
+retained their narrower declared prefixes. The updated case 8 requires a
+successful full return, unchanged shared Random, two private sound draws,
+actual direction and knockback, and the new Cow target's owning occurrence.
+Its optional original comparison selects the unchanged original's full return
+and compares all available deterministic fields and reference relations.
+The nested fire comparison covers the sound-entry prefix and named health/timer
+fields, rather than full tick equality.
 
-Eight comparator corruptions, three original-manifest corruptions and four
-build-record corruptions are rejected. An ordinary native sound callback
+Earlier controls rejected eight comparator corruptions, three original-manifest
+corruptions and four build-record corruptions. Five additional corruptions
+exercise the new target, direction, knockback and returned Boolean checks.
+An ordinary native sound callback
 returns a storage error with no Source invocation receipt. Its IO failure is
 kept distinct from the original fixture's Java exception.
 

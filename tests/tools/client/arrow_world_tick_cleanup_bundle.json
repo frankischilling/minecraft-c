@@ -66,8 +66,8 @@
       "sha256": "80d866a4df85af27011535b381728a1cae45bfbd24da103b2b453d5ed5056042"
     },
     "CMakeLists.txt": {
-      "bytes": 343353,
-      "sha256": "f1dc60365fa546f33590b9fda6635595cde7058e0480670b172fd38cb37f5f05"
+      "bytes": 343441,
+      "sha256": "dfa40dffd7cfde9dcd19da691fe48fa9f7f92f311f5d0a54cd70aa436323ab63"
     },
     "cmake/tests/arrow_world_tick_cleanup.cmake": {
       "bytes": 2831,
@@ -77,7 +77,7 @@
   "helpers": {
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76712,
-      "sha256": "c2c0a0f694202a5d186da18abe4353db0ac5a6287cf7ab8a7b08030019e4b7ec"
+      "sha256": "a2f9371c1b8780973d95354a16bf1cf8912d73884751badd4f7a0d9bb2ff0fe0"
     },
     "tests/tools/world/test_execution_ownership.py": {
       "bytes": 8350,

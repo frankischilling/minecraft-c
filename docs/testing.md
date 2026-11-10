@@ -1,5 +1,67 @@
 # Test scope and reproduction
 
+## Monster retaliation and Arrow water
+
+Spider, Zombie, Skeleton and Creeper now take nonnull-attacker damage through
+the original Living/Monster order. The [retaliation controls](entity/monster-retaliation.md)
+cover owning target replacement, stronger hits, both mounts, self damage,
+callback mutation/failure and reached native provenance refusal. The new
+four-kind fixture passes 166 checks per native host. Existing Zombie, Skeleton,
+Creeper, animal and held-Item attack regressions also pass.
+
+Six [Arrow water controls](../tests/reference/entity/arrow_water/README.md)
+pass 3,563 native checks per host. They cover wet flight, eight consecutive
+ticks, both air/water transitions, a reached native particle failure and an
+actual NULL listener. The latter exposed a missing Source null-receiver flag
+in the particle adapter; it now follows the existing sound adapter's handling.
+The original small-bounds wet/dry sequence remains intact. Normal and optimized
+Python each pass twelve transport positives and 276 refusals.
+
+Both complete configured builds pass: Windows x64 strict MSVC Release, and
+headless Linux x64 Clang 18 Debug with ASan and UBSan. Windows passes all 890
+configured tests in 570.21 seconds. Linux passes the same 43 selected combat, presentation, Arrow
+flight/failure and ownership tests in 74.96 seconds, with leak detection and
+halt-on-UB enabled. JUnit confirms unique names and no skipped or failed tests.
+The Linux run uses an exact 5,914-file source copy on ext4; all original ELF
+paths, working directories, selected names, limits and resource locks remain
+unchanged. Source and native artifact hashes match before and after. The first
+Windows-mounted-source cohort was deliberately interrupted after 29 completed
+tests because its source guards took 111–141 seconds per case; its partial
+results remain separate. This is test transport work, with no gameplay speedup
+claim. The full 729-test Linux configuration is not a local full-suite result.
+
+Fresh unchanged-original observations on both hosts match all four declared
+[Monster return records](../tests/reference/entity/monster_retaliation/README.md).
+Five Arrow scenarios compare thirteen selected snapshots and 79 callbacks:
+312 state cells and 994 callback cells match exactly. All 26 state differences
+and 270 callback differences remain recorded as independent Random values or
+the reached Base splash's stochastic arguments. Deterministic callback fields
+and absent-signature placeholders remain exact. A later Windows data-only
+audit tightens these allowances by callback signature and refuses four one-bit
+deterministic corruptions; Linux also executes the tightened collector afresh.
+These finite comparisons do not establish whole-method, heap, audio or pixel
+equality. Original captures, assets and binaries stay outside the repository.
+
+A fresh monitor-2 saved-Zombie scene passes 409 native checks through actual
+AI damage from health 20 to 15, returned terrain/HUD, SDK pause/save, independent
+NBT/statistics readback and checked shutdown. Both windows remain within the
+second monitor's `(-1920,0,1920,1040)` work area, and all three returned frame
+captures were inspected. The first ordinary terminal launch refused before
+world selection because Windows Terminal retained focus. A fresh hidden launch
+passes; the refused attempt remains unchanged. This scenario does not exercise
+Player attacks on the new Monster targets or sustained original presentation.
+
+Build `mc_test_monster_damage` and `mc_test_arrow_water_flight`, then run the
+new asset-independent cases with:
+
+```sh
+ctest --test-dir build -R 'arrow_water|^entity[.]monster_damage$' --output-on-failure
+```
+
+The optional original collectors have separate reproduction commands above.
+Fatal Monster death/drop, full Arrow victim damage, pickup/riders, broader
+combat and original audiovisual/FPS parity remain unfinished or unqualified.
+
 ## Uninstrumented Arrow World workload
 
 The optional [World tick baseline](performance/arrow-world-tick-baseline.md)

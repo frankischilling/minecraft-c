@@ -108,11 +108,18 @@ matched entropy still unqualified.
 
 ## Remaining behavior
 
+The [water controls](../../tests/reference/entity/arrow_water/README.md) separately
+exercise wet flight, air/water transitions and reached particle failures. The
+common tail emits four bubbles before applying water drag. Actual original
+observations retain the small Arrow bounds quirk: the eight-tick wet scene has
+four wet ticks, three dry ticks, then a wet tick with a new splash. The tests
+preserve that sequence rather than forcing a continuously wet result.
+
 At victim invocation 741 the parent has evaluated and held the real target and
 current nullable Living shooter. It does not enter damage, modify victim health,
 invent its Boolean or acquire victim cleanup. The Pig control checks that boundary
-and actual retirement. Full damage, alert/wake/death/drop composition, water
-flight, pickup/rider paths, foreign owner graphs and natural ranged encounters
+and actual retirement. Full damage, alert/wake/death/drop composition,
+pickup/rider paths, foreign owner graphs and natural ranged encounters
 remain unfinished or unqualified. The existing leaf controls have their own scope.
 
 The finite observations and native lifetime controls do not establish whole-method
