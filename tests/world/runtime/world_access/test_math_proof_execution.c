@@ -55,10 +55,22 @@ static const mc_math_execution_site mp_normal = {"gs", "a", "(Liz;Z)V", 132};
 static const mc_math_execution_site mp_retiring = {"native.math.proof", "retiring", "()V", 4};
 static const mc_math_execution_site mp_retired = {"native.math.proof", "retired", "()V", 5};
 static const mc_entity_tick_execution_site mp_native = {"native.math.proof", "forward", "()V", 6};
+/* Shared actual arguments make the two missing-owner proofs pointer-identical
+ * without depending on the compiler merging separate string literals. */
+static const char mp_missing_method[] = "b", mp_missing_descriptor[] = "(D)I";
 
 static bool mp_site_same(mc_math_execution_site a, mc_math_execution_site b) {
     return a.class_name == b.class_name && a.method == b.method && a.descriptor == b.descriptor &&
            a.pc == b.pc;
+}
+
+/* require and require_recorded materialize their own child labels. Their
+ * returned origins agree by text/PC; copied proof VALUES below still require
+ * exact pointer identity through mp_site_same and mp_failure_same. */
+static bool mp_child_text_same(mc_math_execution_site a, mc_math_execution_site b) {
+    return a.class_name != NULL && b.class_name != NULL && a.method != NULL && b.method != NULL &&
+           a.descriptor != NULL && b.descriptor != NULL && !strcmp(a.class_name, b.class_name) &&
+           !strcmp(a.method, b.method) && !strcmp(a.descriptor, b.descriptor) && a.pc == b.pc;
 }
 
 static bool mp_cause_same(mc_math_class_error a, mc_math_class_error b) {
@@ -110,6 +122,7 @@ static bool mp_proofs(mp_fixture *s) {
     size_t retains = mp_retains, ensures = mp_ensures;
     s->fresh_status =
         mc_math_execution_require_recorded(&s->first, mp_floor, "b", "(D)I", &s->fresh);
+    const mc_math_execution_failure first = s->first.first;
     MP_CHECK(
         s->fresh_status == MC_MATH_CLASS_LIMIT && mp_retains == retains + 1 &&
         mp_ensures == ensures + 1 && s->first.failed && s->first.owned == s->limited &&
@@ -117,7 +130,9 @@ static bool mp_proofs(mp_fixture *s) {
         !strcmp(s->fresh.child.class_name, "in") && !strcmp(s->fresh.child.method, "<clinit>") &&
         !strcmp(s->fresh.child.descriptor, "()V") && s->fresh.cause.status == MC_MATH_CLASS_LIMIT &&
         s->fresh.cause.source_pc == 2 && s->fresh.cause.initial_cause == MC_MATH_CLASS_OK &&
-        mp_failure_same(s->first.first, s->fresh));
+        mp_site_same(first.caller, s->fresh.caller) &&
+        mp_child_text_same(first.child, s->fresh.child) &&
+        mp_cause_same(first.cause, s->fresh.cause));
     mc_math_class_state state;
     MP_CHECK(mc_math_classes_state(s->limited, &state, NULL) == MC_MATH_CLASS_OK &&
              state.phase == MC_MATH_CLASS_FAILED && state.holds == 2 && state.source_a == NULL &&
@@ -129,8 +144,8 @@ static bool mp_proofs(mp_fixture *s) {
     MP_CHECK(s->sticky_status == MC_MATH_CLASS_LIMIT && mp_retains == retains &&
              mp_ensures == ensures && mp_site_same(s->sticky.caller, mp_scatter) &&
              mp_cause_same(s->sticky.cause, s->fresh.cause) &&
-             mp_site_same(s->sticky.child, s->fresh.child) &&
-             mp_failure_same(s->first.first, s->fresh) && s->limited->state.holds == 2);
+             mp_child_text_same(s->sticky.child, s->fresh.child) &&
+             mp_failure_same(s->first.first, first) && s->limited->state.holds == 2);
     retains = mp_retains;
     ensures = mp_ensures;
     s->prior_status =
@@ -145,15 +160,17 @@ static bool mp_proofs(mp_fixture *s) {
              s->limited->state.source_a == NULL);
     retains = mp_retains;
     ensures = mp_ensures;
-    s->missing_status =
-        mc_math_execution_require_recorded(&s->missing_a, mp_floor, "b", "(D)I", &s->missing_one);
-    const mc_math_class_status other_missing =
-        mc_math_execution_require_recorded(&s->missing_b, mp_floor, "b", "(D)I", &s->missing_two);
+    s->missing_status = mc_math_execution_require_recorded(
+        &s->missing_a, mp_floor, mp_missing_method, mp_missing_descriptor, &s->missing_one);
+    const mc_math_class_status other_missing = mc_math_execution_require_recorded(
+        &s->missing_b, mp_floor, mp_missing_method, mp_missing_descriptor, &s->missing_two);
     MP_CHECK(s->missing_status == MC_MATH_CLASS_INVALID_ARGUMENT &&
              other_missing == s->missing_status && mp_retains == retains + 2 &&
              mp_ensures == ensures && s->missing_a.failed && s->missing_b.failed &&
              s->missing_a.owned == NULL && s->missing_b.owned == NULL &&
              mp_failure_same(s->missing_one, s->missing_two) && s->missing_one.child.pc == -1 &&
+             s->missing_one.child.method == mp_missing_method &&
+             s->missing_one.child.descriptor == mp_missing_descriptor &&
              !strcmp(s->missing_one.child.method, "b") && s->missing_one.cause.source_pc == -1 &&
              s->missing_one.cause.operation != NULL);
     mc_math_execution_failure preserved = s->fresh;

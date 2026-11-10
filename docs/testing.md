@@ -105,6 +105,38 @@ actor-draw receipt was retained. Full Player wake, delayed Slime splitting,
 arbitrary cold/foreign graphs, original audiovisual equality, extended play and
 FPS remain unqualified.
 
+
+### Math proof fixture portability
+
+Hosted run [42887881031](https://github.com/frankischilling/minecraft-c/actions/runs/42887881031)
+checks `e3cfade5`. Formatting and both full Linux jobs pass: GCC completes 1,170
+tests in 480.00 seconds and Clang completes 1,170 in 799.45 seconds, with no
+skipped or unrun tests. Windows passes 1,108 of 1,111 and fails the three Math
+proof modes. The actual checkout merge tree equals the published head tree.
+
+The modes share a fixture comparison between independently materialized child
+labels in `require` and `require_recorded`. It incorrectly requires their string
+addresses to match. A local actual-fixture build with `/Od /Ob0 /GF-` reproduces
+check two in 0.25 seconds; enabling only `/GF` makes the same fixture pass.
+Those labels denote text and a bytecode position, while the requested caller,
+actual cause and stored proof snapshots have separate exact-value checks.
+
+The corrected fixture compares independent child labels by text/position and
+uses shared actual method/descriptor operands where full pointer-identical
+failure values are required. Stored first proofs, copied results, distinct Math
+owners and rejected-forward atomicity retain their exact checks. All three
+corrected modes pass with pooling disabled; five standard checks pass on Windows
+Release in 0.80 seconds and sanitized Linux in 0.91 seconds. Production proof
+validation retains its existing behavior.
+
+The failing hosted artifact omitted the new Math directory, and its console
+only showed the runner's unconditional PREPARING announcement. Bounded failure
+output now includes the real reason, native exit and escaped stderr; complete
+captures remain retained. Normal and optimized Python each reject 45 malformed
+receipts and pass four diagnostic controls. Both native CI artifact blocks now
+include the Math reports and all three raw capture files. Full hosted results
+for the follow-up remain a separate qualification.
+
 ## Shared execution for damage descendants and World metadata
 
 The [World scalar contract](world/blocks.md), [drop execution contract](entity/drop-execution.md)

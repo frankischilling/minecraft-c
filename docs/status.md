@@ -28,6 +28,12 @@ scenes establish neither original audiovisual equality nor a measured FPS gain.
 The [test record](testing.md#arrow-victim-damage-player-drops-and-presentation-ownership)
 retains the source freeze, failed attempts and exact remaining limits.
 
+The first hosted Windows Debug run exposes a Math fixture assumption about
+pooled string addresses. Independent labels now compare by text, while copied
+proofs and owner conflicts retain exact checks. Corrected unpooled, Release and
+sanitized controls pass; the [portability record](testing.md#math-proof-fixture-portability)
+keeps that follow-up separate from the earlier full-suite results.
+
 The preceding checkpoints below retain their original qualification scopes.
 
 The [quiet metadata setter](world/blocks.md) now writes the current Chunk's

@@ -10,8 +10,8 @@
       "sha256": "3bd8ab194c32f8fc5cddc52467b656152b4a411da75faa6a1c3402213f08cc33"
     },
     ".github/workflows/ci.yml": {
-      "bytes": 17770,
-      "sha256": "084f830bb006d24568465d9f31236d382063628c219e27db5aedf9cd5cfc23fd"
+      "bytes": 18266,
+      "sha256": "b7adda625305fecd9370f84463d862d27eefed105d5974db7f6b22804fb94448"
     },
     ".gitignore": {
       "bytes": 282,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 143198,
-      "sha256": "4fcc59aaa168a6d5d089034a445b31f48216234f1f9a0b80481c20d823e10937"
+      "bytes": 143592,
+      "sha256": "ce742f8b4406317c83568309d1a2cfdbf6dd8006e86ef3499d4f62113c6de668"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 627417,
-      "sha256": "1e122a881e29502556b4104b3340eee4dc4411f214e79c7853de941b0ffec2ae"
+      "bytes": 629365,
+      "sha256": "23018f3bf95531764d6bd634f5c50518cb3a9e7d722f485ede98f5f63bb16b05"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 823660,
-      "sha256": "d94987eabaf0394c86895f7e947d73d195cb6e65535eb4e9c1b4c08895f8e7b5"
+      "bytes": 826403,
+      "sha256": "bb4579d16b92065ce91c83fa8f496584549e097b6ec49b40b916e74e762407c0"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 945905,
-      "sha256": "e1a4975ec4643ba08d4d36047726a343f70eb4df888226636193ebe87f436042"
+      "bytes": 948650,
+      "sha256": "08cd72c3d71b4db841b46fa68e9ebaf7b0028d4140408492718d0c2c54350966"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 820639,
-      "sha256": "87ea0a67767550a2f4836097467274619e197c8aa0b474c9ae5910e7e80014a3"
+      "bytes": 823382,
+      "sha256": "c86728fc75675e9e1d2bfe4a9fb127d6bb0c8124cba4601be439a707aaa71d8b"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -24054,8 +24054,8 @@
       "sha256": "acf75e6a06f60c409e1d4ccc7565f071eff4465f1468b780c06a3f73dc481e3e"
     },
     "tests/tools/world/test_math_proof_execution.py": {
-      "bytes": 8416,
-      "sha256": "1f32f4d393d3de488aee3b45a8ea06b93ba32163f3e04e75e482d11157e981ed"
+      "bytes": 11022,
+      "sha256": "f5c1f753f6d963b74d915e893d759d0880fa81ed72d543482d7308c366a8ea0b"
     },
     "tests/tools/world/test_presentation_execution.py": {
       "bytes": 11646,
@@ -24090,8 +24090,8 @@
       "sha256": "305ace7f662e71107836f9a7633a9472f655565d01010a052301662e0fbcef0a"
     },
     "tests/world/runtime/world_access/test_math_proof_execution.c": {
-      "bytes": 20962,
-      "sha256": "9c821eb13b9bf46f02a96a8fef5e48dd5922d393cecb3b178d1c13ea2a19c6bf"
+      "bytes": 22173,
+      "sha256": "4984a6b31039faf2da072e24791e9ee326b1171b02d2ce2bc9379de2942a3410"
     },
     "tests/world/runtime/world_access/test_presentation_execution.c": {
       "bytes": 43704,
@@ -41598,6 +41598,66 @@
         "proof": "Exact normalized-byte identity; Python AST including locations identical; CTest inventories unchanged1099 Windows/945 Linux.",
         "current_affected_qualification": "Windows 40/40 PASS 5.77s; Linux 40/40 PASS 12.80s with Clang18 ASan/UBSan/leaks.",
         "prior_full_qualification": "Earlier 1099/1099 Windows and 251/251 Linux plus protected/gameplay remain bound to original 6025-source byte snapshot; no retrospective full-byte claim."
+      }
+    },
+    {
+      "from_commit": "e3cfade5a3156acec5cc9066d17b2a866d2a5a0c",
+      "role": "FIXTURE_PORTABILITY_ONLY admission bound to hosted e3cfade5a3156acec5cc9066d17b2a866d2a5a0c CI. Its original Windows cohort remains 1108/1111 with three failed Math-fixture modes; completed Linux GCC1170/1170 (480s), Clang1170/1170 (799.45s) and format PASS retain their original source/evidence scope. The isolated /Od /Ob0 /GF- red and /GF-only green identified an unqualified literal-pooling assumption in the fixture. Only the Math fixture and controller metadata were corrected: independently returned origin strings compare their text, while copied-proof and actual owner identity checks stay exact. New unpooled three-mode and five-control Windows/Linux focused runs qualify this portability correction only, not the failed original Windows cohort. CI adds the four Math capture globs to both existing artifact blocks; current status/testing prose records the exact failure, cause and results. Runtime/production code is unchanged. Historical authority, source-projection, capture, validation and prior admission records remain untouched; exact-head full CI is a separate qualification gate.",
+      "previous_metadata": {
+        "bytes": 1842349,
+        "sha256": "f5a1086c46771b22fde99c1e786c7d722bb9e2ea5d3db4f13d0c39c2e333f80a"
+      },
+      "groups": {
+        "source_files": {
+          "previous": {
+            ".github/workflows/ci.yml": {
+              "bytes": 17770,
+              "sha256": "084f830bb006d24568465d9f31236d382063628c219e27db5aedf9cd5cfc23fd"
+            },
+            "docs/status.md": {
+              "bytes": 143198,
+              "sha256": "4fcc59aaa168a6d5d089034a445b31f48216234f1f9a0b80481c20d823e10937"
+            },
+            "docs/testing.md": {
+              "bytes": 627417,
+              "sha256": "1e122a881e29502556b4104b3340eee4dc4411f214e79c7853de941b0ffec2ae"
+            },
+            "tests/reference/client/display_sdk/provenance.json": {
+              "bytes": 823660,
+              "sha256": "d94987eabaf0394c86895f7e947d73d195cb6e65535eb4e9c1b4c08895f8e7b5"
+            },
+            "tests/reference/client/loading_draw/provenance.json": {
+              "bytes": 945905,
+              "sha256": "e1a4975ec4643ba08d4d36047726a343f70eb4df888226636193ebe87f436042"
+            },
+            "tests/reference/client/render_resources/provenance.json": {
+              "bytes": 820639,
+              "sha256": "87ea0a67767550a2f4836097467274619e197c8aa0b474c9ae5910e7e80014a3"
+            },
+            "tests/tools/world/test_math_proof_execution.py": {
+              "bytes": 8416,
+              "sha256": "1f32f4d393d3de488aee3b45a8ea06b93ba32163f3e04e75e482d11157e981ed"
+            },
+            "tests/world/runtime/world_access/test_math_proof_execution.c": {
+              "bytes": 20962,
+              "sha256": "9c821eb13b9bf46f02a96a8fef5e48dd5922d393cecb3b178d1c13ea2a19c6bf"
+            }
+          },
+          "added": [],
+          "current_count": 6024
+        }
+      },
+      "admission_kind": "FIXTURE_PORTABILITY_ONLY",
+      "preserved_ci_scope": {
+        "ci_commit": "e3cfade5a3156acec5cc9066d17b2a866d2a5a0c",
+        "verified_source_commit": "41cf4a84db886457aab10f97777cd9fa49bf3192",
+        "hosted_merge_commit": "f4e6390d4de1a51a2cf2d51130c7c8d217ff0fc5",
+        "tree_relation": "Root verified hosted merge tree equals verified source commit tree.",
+        "original_windows": "1108/1111; three Math-fixture modes failed; preserved FAIL cohort.",
+        "original_linux_gcc": "1170/1170 PASS;480s.",
+        "original_linux_clang": "1170/1170 PASS;799.45s.",
+        "original_format": "PASS.",
+        "current_focused_portability": "Actual unpooled three modes plus five standard controls; Windows PASS0.80s, Linux Clang ASan/UBSan PASS0.91s; original cohorts not upgraded."
       }
     }
   ],

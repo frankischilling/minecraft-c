@@ -16,11 +16,31 @@ ROOT = Path(__file__).resolve().parents[3]
 MODES = ("require", "note", "forward")
 TIMEOUT = 90
 LIMIT = 1024 * 1024
+CONSOLE_REASON_LIMIT = 1024
+CONSOLE_NATIVE_LIMIT = 4096
 
 
 def require(value, message):
     if not value:
         raise ValueError(message)
+
+
+def console_excerpt(value, limit):
+    text = json.dumps(value, ensure_ascii=True, sort_keys=True)
+    suffix = "...[truncated]"
+    return text if len(text) <= limit else text[:limit - len(suffix)] + suffix
+
+
+def failure_console(report, native_stderr):
+    reasons = {key: report[key] for key in ("failure", "guard_failure", "retention_failure")
+               if key in report}
+    capture = report.get("capture", report.get("failed_capture", {}))
+    if type(capture) is dict and type(capture.get("exit")) is int:
+        reasons["native_exit"] = capture["exit"]
+    native = (native_stderr.decode("utf-8", errors="backslashreplace")
+              if type(native_stderr) is bytes else "not captured")
+    return ("MATH_PROOF_FAILURE " + console_excerpt(reasons, CONSOLE_REASON_LIMIT) +
+            "\nMATH_PROOF_NATIVE_STDERR " + console_excerpt(native, CONSOLE_NATIVE_LIMIT))
 
 
 def completed(child, mode, command):
@@ -89,7 +109,25 @@ def self_test():
             else:
                 raise ValueError("Malformed Math proof capture accepted")
     require(refused == len(MODES) * 15, "Every malformed Math transport refused")
-    print(f"PASS: {len(MODES)} Math proof protocols; {refused} malformed receipts refused")
+    failure = {"failure": {"type": "ValueError", "message": "Actual Math proof control failed"},
+               "capture": {"exit": 1}}
+    diagnostic = failure_console(failure, b"Math proof line120 check2: actual expression\n")
+    require('"native_exit": 1' in diagnostic and "line120 check2: actual expression" in diagnostic,
+            "Actual failure reason, native status and diagnostic reach the console")
+    long_failure = copy.deepcopy(failure)
+    long_failure["failure"]["message"] = "x" * LIMIT + "UNREACHED_REASON_TAIL"
+    diagnostic = failure_console(long_failure, b"y" * LIMIT + b"UNREACHED_NATIVE_TAIL")
+    require(len(diagnostic) <= CONSOLE_REASON_LIMIT + CONSOLE_NATIVE_LIMIT + 64 and
+            diagnostic.count("...[truncated]") == 2 and "UNREACHED_" not in diagnostic,
+            "Both console channels are bounded without printing oversized tails")
+    diagnostic = failure_console(failure, b"\x1b[31m\xff\nactual check\x00")
+    require("\x1b" not in diagnostic and "\x00" not in diagnostic and
+            "actual check" in diagnostic and "\\u001b" in diagnostic and "\\\\xff" in diagnostic,
+            "Native control characters and malformed UTF8 cannot break failure reporting")
+    require('"not captured"' in failure_console(failure, None),
+            "A missing native capture is never presented as an empty successful diagnostic")
+    print(f"PASS: {len(MODES)} Math proof protocols; {refused} malformed receipts refused; "
+          "4 bounded diagnostic controls")
 
 
 def load(name, relative):
@@ -170,6 +208,13 @@ def main():
                 fail("retention_failure", error)
         with (out / "report.json").open("x", encoding="utf-8", newline="\n") as stream:
             stream.write(json.dumps(report, indent=2) + "\n")
+    if report["status"] != "PASS":
+        native_stderr = None
+        try:
+            native_stderr = (out / "native.stderr").read_bytes()
+        except OSError:
+            pass
+        print(failure_console(report, native_stderr), file=sys.stderr)
     print(f"{report['status']}: actual Math proof control; retained {out / 'report.json'}")
     return 0 if report["status"] == "PASS" else 1
 

@@ -191,6 +191,10 @@ jobs:
             build/world-kernel-controls/**/native.capture.json
             build/world-kernel-controls/**/native.stdout
             build/world-kernel-controls/**/native.stderr
+            build/world-math-proof-controls/**/report.json
+            build/world-math-proof-controls/**/native.capture.json
+            build/world-math-proof-controls/**/native.stdout
+            build/world-math-proof-controls/**/native.stderr
             build/player-sleep-nbt-parent/**/report.json
             build/player-sleep-nbt-parent/**/native.capture.json
             build/player-sleep-nbt-parent/**/native.stdout
@@ -346,6 +350,10 @@ jobs:
             build/world-kernel-controls/**/native.capture.json
             build/world-kernel-controls/**/native.stdout
             build/world-kernel-controls/**/native.stderr
+            build/world-math-proof-controls/**/report.json
+            build/world-math-proof-controls/**/native.capture.json
+            build/world-math-proof-controls/**/native.stdout
+            build/world-math-proof-controls/**/native.stderr
             build/player-sleep-nbt-parent/**/report.json
             build/player-sleep-nbt-parent/**/native.capture.json
             build/player-sleep-nbt-parent/**/native.stdout
