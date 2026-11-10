@@ -28,7 +28,7 @@ REFERENCE = Path(__file__).resolve().parents[2] / "reference/entity/zombie_null_
 NATIVE = Path(__file__).resolve().parents[2] / "entity/test_zombie_null_damage.c"
 RANDOM_CONSTRUCTOR_FIELDS = frozenset(("ls.F", "ls.G", "ls.aj"))
 FRESH = frozenset((0, 6, 7, 9, 10, 11))
-RETURNED = frozenset((0, 1, 2, 3, 4, 8, 11))
+RETURNED = frozenset((0, 1, 2, 3, 4, 7, 8, 11))
 MASK = (1 << 48) - 1
 
 
@@ -94,6 +94,21 @@ def double_draw(seed):
 def float_draw(seed):
     seed = lcg(seed, 1)
     return seed, (seed >> 24) / 2**24
+
+
+def quantity_draw(seed):
+    while True:
+        seed = lcg(seed, 1)
+        bits = seed >> 17
+        value = bits % 3
+        if bits - value + 2 <= 0x7fffffff:
+            return seed, value
+
+
+def fatal_quantity(before):
+    seed, _ = float_draw(int(before['own_seed'], 16))
+    seed, _ = float_draw(seed)
+    return quantity_draw(seed)[1]
 
 
 def pitch(a, b):
@@ -507,13 +522,17 @@ def compare_entity(actual, expected, am, sm, label, exclude_direction):
     return count + 2
 
 
-def compare_state(native, source, label, exclude_direction=False):
+def compare_state(native, source, label, exclude_direction=False, independent_death=False):
     am, sm, identities = compare_role_models(native, source, label)
     count = compare_entity(native, source, am, sm, label, exclude_direction)
     need(len(native["secondary_entities"]) == len(source["secondary_entities"]), "all secondary actors: " + label)
     for i, (a, b) in enumerate(zip(native["secondary_entities"], source["secondary_entities"])):
         count += compare_entity(a, b, am, sm, f"{label}/secondary{i}", False)
     for key in ("box_cursor", "vector_cursor", "loaded_entities", "players", "cache_size"):
+        if key == "loaded_entities" and independent_death:
+            # Each exact count is checked against its own retained quantity draw
+            # below. Independent constructor seeds can produce different drops.
+            continue
         need(native[key] == source[key], "actual query/pool/publication state: " + label+"/"+key)
         count += 1
     # Independent constructor/private/World/shared seeds are retained raw. Their
@@ -532,8 +551,9 @@ def native_oracles(index, phases, result):
     need(before["fields"]["sn.aD"] == after["fields"]["sn.aD"], "namespace-local Entity id stable")
     for name in RANDOM_CONSTRUCTOR_FIELDS:
         need(before["fields"][name] == after["fields"][name], "independent raw constructor field preserved: " + name)
-    need(before["world_seed"] == after["world_seed"] and before["uniquifier"] == after["uniquifier"],
-         "actual World stream and default-entropy namespace unchanged")
+    need(before["world_seed"] == after["world_seed"] and
+         (index == 7 or before["uniquifier"] == after["uniquifier"]),
+         "actual World stream and nonconstructing default-entropy namespace unchanged")
     roles_before = {k:v for k,v in before["reference_roles"].items() if k != "actor.path"}
     roles_after = {k:v for k,v in after["reference_roles"].items() if k != "actor.path"}
     need(roles_before == roles_after, "actual permanent owner/alias identities unchanged")
@@ -587,6 +607,16 @@ def native_oracles(index, phases, result):
     else:
         need(e["shared_calls"] == e["shared_attempts"] == e["private_calls"] == e["private_attempts"] == 0,
              "early/repeat/entry-only has no new entropy draws")
+    if index == 7:
+        r, quantity = quantity_draw(r)
+        uniquifier = int(before['uniquifier'], 16)
+        for _ in range(quantity):
+            for _ in range(4):
+                m, _ = double_draw(m)
+            uniquifier = (uniquifier * 1181783497276652981) & ((1 << 64) - 1)
+        need(after['loaded_entities'] == before['loaded_entities'] + quantity and
+             after['uniquifier'] == f'{uniquifier:016x}',
+             'fatal quantity controls actual published Items and constructor namespace progress')
     need(after["math_seed"] == f"{m:012x}" and
          after["own_seed"] == ("-" if r is None else f"{r:012x}"), "actual per-process stream progress; no cross-VM seed equality")
     if index in (5, 6):
@@ -594,10 +624,10 @@ def native_oracles(index, phases, result):
              e["exception_class"] == "java/lang/NullPointerException" and e["living_pc"] == (4 if index == 5 else 343),
              "precise Source NULL failure classification")
     if index == 7:
-        need(e["native_policy"] and not e["source_exception"] and e["death_invoke_reached"] and
-             e["sound_returned"] and e["living_pc"] == 316 and
-             e["child_site"] == {"class":"ls","method":"b","descriptor":"(Lsn;)V","pc":0},
-             "actual sound then unreturned death316 dependency")
+        need(not e["native_policy"] and not e["source_exception"] and e["death_invoke_reached"] and
+             e["sound_returned"] and e["living_pc"] == 363 and after['fields']['ls.ah'] is True and
+             e["child_site"] == {"class":"gz","method":"a","descriptor":"(Lsn;I)Z","pc":26},
+             "actual fatal sound/death/drop continuation and full damage return")
     if index == 8:
         need(result["effect_source"] == before["reference_roles"]["secondary0"]["identity"] and
              result["effect_amount"] == 1 and result["effect_damage_pc"] == 3 and result["effect_cause"] == 0 and
@@ -656,7 +686,10 @@ def read_native(path):
              "actual native cleanup preserves source failure and construction diagnostics")
         checks += native_oracles(index, phases[index], results[index])
         for state in phases[index].values():
-            need(state["loaded_entities"] == (2 if index in (8,11) else 1) and state["players"] == 0 and state["cache_size"] == 25,
+            loaded = (2 if index in (8,11) else 1)
+            if index == 7 and state['phase'] != 'before':
+                loaded += fatal_quantity(phases[index]['before'])
+            need(state["loaded_entities"] == loaded and state["players"] == 0 and state["cache_size"] == 25,
                  "real ordinary Entity publication/25 stored Chunks/no synthetic Player")
     return {"phases": phases, "results": results, "constructors": constructors, "sounds": sounds,
             "records": len(rows), "native_scalar_checks": checks}
@@ -676,13 +709,7 @@ def one(rows, predicate, label):
 def select_source(original, index):
     events = [row for row in original["events"] if row.get("case") == index]
     before = one(events, lambda row: row["event"] == "active-entry", f"{index}/before")
-    if index == 7:
-        selected = one(events, lambda row: row["event"] == "prefix" and
-                       location(row,"ls","b","(Lsn;)V",0,"site"), "fatal actual death entry")
-        need(any(f["class"] == "ls" and f["descriptor"] == "(Lsn;I)Z" and f["pc"] == 316
-                 for f in selected["source_frames"]), "actual missing death callsite316")
-        mode = "native_prefix_at_actual_Source_death_entry316"
-    elif index in (5,6,10):
+    if index in (5,6,10):
         selected = one(events, lambda row: row["event"] == "exception", "actual reached Source failure")
         if index in (5,6):
             need(selected["class"] == "java.lang.NullPointerException" and
@@ -718,6 +745,17 @@ def process_prefix_streams(index, before, selected):
         # The distant nonnull attacker reaches atan2/knockback without the
         # coincident-direction Math.random loop or the NULL-attacker draw251.
         r, _ = float_draw(r); r, _ = float_draw(r)
+    if index == 7:
+        r, quantity = quantity_draw(r)
+        uniquifier = int(before['uniquifier'], 16)
+        for _ in range(quantity):
+            for _ in range(4):
+                m, _ = double_draw(m)
+            uniquifier = (uniquifier * 1181783497276652981) & ((1 << 64) - 1)
+        need(selected['loaded_entities'] == before['loaded_entities'] + quantity and
+             selected['uniquifier'] == f'{uniquifier:016x}',
+             'same-process full death quantity/publication/constructor progress')
+        count += 2
     need(selected["math_seed"] == f"{m:012x}" and
          selected["own_seed"] == ("-" if r is None else f"{r:012x}") and
          selected["world_seed"] == before["world_seed"], "actual selected-prefix per-process shared/private/World progress")
@@ -733,7 +771,8 @@ def compare_original(native, original):
         nb = phases["before"]
         na = phases["sound_callback"] if index == 9 else phases["after"]
         for phase, a, b in (("before",nb,sb["state"]),("selected",na,selected["state"])):
-            c, r = compare_state(a,b,f"{index}/{phase}",index in FRESH and phase == "selected")
+            c, r = compare_state(a,b,f"{index}/{phase}",index in FRESH and phase == "selected",
+                                 independent_death=index == 7 and phase == 'selected')
             checks += c; identities += r
         identities += compare_identity_transition(nb,na,sb["state"],selected["state"],f"{index}/actual-lifetime")
         stream_checks += process_prefix_streams(index,nb,na)
@@ -785,13 +824,13 @@ def compare_original(native, original):
                 checks += 2
         selections.append({"case":index,"scope":mode,"before":sb,"selected":selected})
     return {"typed_checks":checks,"identity_relations":identities,"separate_process_stream_checks":stream_checks,"profiles":12,
-            "full_direct_returns":7,"Source_NULL_failures":2,"native_child_entry_prefixes":1,
+            "full_direct_returns":8,"Source_NULL_failures":2,"native_child_entry_prefixes":0,
             "native_IO_vs_Source_Throwable_field_prefixes":1,"actual_nested_SN501_sound_prefixes":1,
             "Source_same_VM_scalar_analysis_checks_retained":188,"Native_same_process_scalar_checks":native["native_scalar_checks"],
             "independent_entropy_rebound":False,"scope_limits":[
                 "Constructor-derived LS.F/G/aj and namespace-local numeric Entity IDs are raw retained, excluded from cross-process field equality; native originals must remain unchanged through each call.",
                 "Shared/private/World seeds and stochastic ac/pitch are raw retained, never cross-process equated. Native same-process LCG, pitch and Math251/ac relations are checked separately; frozen Source analysis retains188 same-VM checks.",
-                "Case7 Original actually continues death/drop and returns; Native is compared at actual death-entry316 only. Case8 compares the full nonNULL GZ return, deterministic direction/knockback and actual Cow target alias; independent private sound entropy remains separately observed.",
+                "Case7 compares the full damage return and deterministic actor state. Each process independently checks quantity nextInt(3), four shared doubles and one JDK17 constructor namespace advance per published Item; independent private seeds may produce different Item counts. Item kinematics/graph are outside this packet. Case8 compares the full nonNULL GZ return, deterministic direction/knockback and actual Cow target alias; independent private sound entropy remains separately observed.",
                 "Case9 Native executes a full real Mob tick with ordinary sunlight false; Original executes virtual LS.U. Pair only actual SN501 sound prefix and explicit fire/health/timer after fields; no whole-body equality or source skip.",
                 "Case10 native adapter IO and Original authored IllegalStateException retain distinct classifications. Pair deterministic actor prefix, not Source Throwable/receipt identity.",
                 "Watcher record index/type/scalar/dirty and watcher object identity are paired; no boxed Byte or internal Map/record object identities where Source exposes scalars only. Strings compare UTF16 values, not identity.",
@@ -831,8 +870,15 @@ def comparator_negatives(native, original):
         phases=copy.deepcopy(native["phases"][0]);result=copy.deepcopy(native["results"][0]);mutate(phases,result)
         phases["after_cleanup"]=copy.deepcopy(phases["after"])
         reject(name,lambda p=phases,r=result:native_oracles(0,p,r),passed)
-    result=copy.deepcopy(native["results"][7]);result["effect"]["returned"]=True
-    reject("missing_death_child_forged_return",lambda:native_oracles(7,native["phases"][7],result),passed)
+    result=copy.deepcopy(native["results"][7]);result["effect"]["returned"]=False
+    reject("missing_fatal_damage_return",lambda:native_oracles(7,native["phases"][7],result),passed)
+    for name, field, value in (("wrong_fatal_publication_count", "loaded_entities",
+                                native["phases"][7]["after"]["loaded_entities"] + 1),
+                               ("wrong_fatal_constructor_namespace", "uniquifier", "0" * 16)):
+        phases=copy.deepcopy(native["phases"][7])
+        phases["after"][field]=value
+        phases["after_cleanup"]=copy.deepcopy(phases["after"])
+        reject(name,lambda p=phases:native_oracles(7,p,native["results"][7]),passed)
     _, source, _ = select_source(original,8)
     expected = native["phases"][8]["after"]
     def compare_nonnull(value): return compare_state(value,source["state"],"negative/nonnull-return",False)

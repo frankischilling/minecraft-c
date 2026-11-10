@@ -45,7 +45,8 @@ typedef struct mc_entity_drop_state {
  * allocation-free SN.b(int,int) wrapper record its invoke4 separately and pass
  * offset+0. The Stack entry preserves its exact nullable RAW/READY/failed owner
  * without reading fields. A NULL invocation receiver fails before source work.
- * The current closed receiver set is client FallingSand/Sheep/Pig/Cow/Chicken;
+ * The current closed receiver set is client FallingSand/Sheep/Pig/Cow/Chicken
+ * and Zombie/Spider/Skeleton/Creeper;
  * other virtual dispatch is refused as native admission, never approximated.
  *
  * Output is mandatory, starts NULL and stays live/disjoint through synchronous

@@ -24,9 +24,9 @@ that assertion changed after a passive measurement and original `SN.b` audit.
 Further controls cover independently derived Random progress/pitch, repeated
 and resisted damage, an existing target identity, remote/dead/nullable inputs,
 sound callback refusal and active-owner cleanup refusal. Nonnull attackers
-remain an explicit dependency. Fatal null-attacker damage preserves the real
-health, timers and death-sound prefix, then stops at the still-unimplemented
-death/drop child. It does not claim a completed Creeper death.
+now have their [separate retaliation scope](monster-retaliation.md). Fatal
+null-attacker damage now completes the [death/drop child](monster-death.md),
+with separate fresh original and native controls.
 
 These are authored native component controls. Original method identities and
 inheritance have [static archive evidence](../../tests/reference/entity/creeper_null_damage/README.md),

@@ -1,5 +1,69 @@
 # Test scope and reproduction
 
+## Monster death and Player kill callbacks
+
+The [death contract](entity/monster-death.md) and
+[optional original collector](../tests/reference/entity/monster_death/README.md)
+describe the finite source scope. The initial native Zombie regression failed
+at animal-only death admission in 0.19 seconds. Extending the controls exposed a
+second real admission gap in generic Entity drops. Both paths now accept the
+four supported concrete Monsters without changing their source drop bodies.
+The Player callback regression independently failed at the old achievement
+refusal before the callback was implemented.
+
+The fresh Windows component run passes 1,416 Monster death checks and 237 Player
+callback/fatal-attack checks. Twenty native non-Player records plus the two
+actual Player attack records match all 22 freshly executed original calls.
+The comparison verifies typed fields, order, complete row inventory and native
+completion; six negative controls reject altered records. Original constructor
+and Item entropy remain independent and retained outside the comparison.
+
+Linux Clang 18 Debug with ASan/UBSan and leak detection passes the two new
+components plus existing Monster damage and animal death (4/4, 6.80 seconds).
+The full sanitizer build first stopped at the 14 GB WSL filesystem limit during
+linking. Removing 333 unused executables recovered 5,198,199,680 bytes; original
+archives, source worktrees and unrelated projects were preserved. This focused
+rerun is not a successful full Linux suite.
+
+The first complete Windows headless run built successfully and executed all 732
+configured tests: 654 passed and 78 failed in 273.85 seconds. Its failures exposed
+stale current-source declaration pins, three local JDK selections and three old
+fatal-frontier expectations. Those failed artifacts remain retained. Subsequent
+validation is recorded below after declarations and expectations are updated.
+
+The complete native Windows client build also passes. Its first 890-test run
+passes 818 and refuses 72 source-bound admissions in 253.53 seconds. The refusal
+identifies a status-document edit made during the run, after its current public
+source map was frozen. This is a validation-order error; game code and native
+products are unchanged. The final pass freezes documentation and admission maps
+before launching tests, with no source edits during execution.
+
+The frozen rerun passes **890/890 configured Windows tests** in **335.22 seconds**,
+without skips, after the complete native MSVC Release client build. A separate
+Clang 18 Debug ASan/UBSan selection passes **20/20 Linux tests** in **19.42 seconds**
+with leak detection. It includes the new death/Player bodies, existing animal
+death, Monster/Living/Player damage, Wolf attacks and damage close protocols.
+This remains focused Linux coverage, not a successful full sanitizer build.
+
+Fresh unchanged-original Windows Java observations match all 22 records emitted
+by each native host. Linux outputs come from the sanitized native processes;
+the original JVM for that comparison runs on Windows. Formatting passes all
+2,321 C source/header/fragment files with clang-format 18.1.3. The final source
+audit preserves all 5,924 tracked/public file hashes throughout the frozen run.
+Afterward only result documentation and its current-public admission map change;
+native execution sources, products, test inputs and historical authorities stay
+unchanged. Publication rechecks the full admission maps and representative
+protected native calls against that final documentation.
+
+The collector's two preliminary setup failures and two native-record processing
+failures also remain retained. Native JSON is flushed before the next real
+Registry constructor, whose direct output can otherwise split a buffered row.
+No runtime behavior was changed to normalize comparison output.
+
+These are method/component checks. No new game window, original frame/audio
+comparison, delayed removal session, save/reload result or FPS measurement is
+claimed. The monitor-2 encounter below belongs to the preceding increment.
+
 ## Monster retaliation and Arrow water
 
 Spider, Zombie, Skeleton and Creeper now take nonnull-attacker damage through

@@ -22,10 +22,15 @@ per VM. Its separate analysis retains188 same-VM scalar checks and fourteen raw
 Zombie/Cow constructor contexts. Default constructor entropy remains independent;
 no observed seed, clock, Random result or field value is an execution input.
 
-Seven Native direct damage calls genuinely return (cases0..4,8 and11).
-Cases5/6 compare exact actual NULL failures LS4/343. Case7 compares the reached
-actual death-entry316 prefix after the real death sound; Original full death/drop
-and return remain retained separately. Case8 now completes inherited Living
+Eight Native direct damage calls genuinely return (cases0..4,7,8 and11).
+Cases5/6 compare exact actual NULL failures LS4/343. Case7 now completes the
+fatal sound, Living death/drop body and full damage return. Each process checks
+its own private `nextInt(3)` quantity, four shared Math doubles and one JDK17
+constructor namespace advance per published Item. Independent private seeds can
+produce different Item counts; the exact counts remain in the raw records and
+must equal each process's verified quantity. The comparison pairs the complete
+deterministic actor state and returned Boolean. Earlier observations retain
+their death-entry316 scope. Case8 now completes inherited Living
 damage and GZ retaliation for its real nonNULL Cow operand. The optional reader
 selects the original's full return, including deterministic knockback and the
 new target alias; this stronger comparison requires the external packet and a

@@ -21,6 +21,14 @@ null-reference classification. The [water reference collector](https://github.co
 records complete finite state/event pairs and every independent-entropy
 difference.
 
-Fatal Monster death/drop behavior, full Arrow victim damage, pickup/riders,
+Fatal Monster damage now completes ordinary drops, Skeleton's ordered Arrow/Bone
+loops, Creeper's late Skeleton-kill record and Player's achievement callback.
+Twenty-two finite records compare exactly with fresh original calls, including
+ordered Items and selected Player statistics. Native failure controls retain
+published drops through checked cleanup. See the
+[death contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/monster-death.md)
+for source ordering and the comparison's excluded independent entropy.
+
+Full Arrow victim damage, pickup/riders,
 unrestricted combat, original audiovisual equality and FPS remain unfinished
 or unqualified. These component checks do not establish complete playability.

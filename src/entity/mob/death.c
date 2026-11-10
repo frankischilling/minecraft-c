@@ -8,6 +8,7 @@
 #include "../player/combat_callbacks_internal.h"
 #include "internal.h"
 #include "mc/block/registry/runtime.h"
+#include "mc/core/java/java.h"
 #include "mc/entity/drop.h"
 #include "mc/item/registry/runtime.h"
 
@@ -38,6 +39,13 @@ static bool animal(const mc_entity *p) {
            mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_WOLF);
 }
 
+static bool monster(const mc_entity *p) {
+    return mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ZOMBIE) ||
+           mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SPIDER) ||
+           mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SKELETON) ||
+           mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_CREEPER);
+}
+
 static mc_mob_death_state view(const struct mc_mob_death_work *w) {
     mc_mob_death_state r = w->state;
     r.receiver = r.pending ? w->actor : NULL;
@@ -45,9 +53,9 @@ static mc_mob_death_state view(const struct mc_mob_death_work *w) {
         r.drop_error = &w->drop_error;
     mc_entity_drop_state drop;
     if (w->drop != NULL && mc_entity_drop_inspect(w->drop, &drop)) {
-        const size_t i = (size_t)r.index;
+        const size_t i = (size_t)r.drops_attempted - 1u;
         r.drop_error = drop.error;
-        if (i < 2) {
+        if (i < 4) {
             r.items[i] = (uintptr_t)drop.item;
             r.stacks[i] = (uintptr_t)drop.stack;
             r.constructor_worlds[i] = (uintptr_t)drop.constructor_world;
@@ -264,11 +272,11 @@ static bool callback(struct mc_mob_death_work *w, mc_entity *source, bool score,
             w->state.kill_callback_returned = true;
         return true;
     }
-    if (!animal(source))
+    if (!animal(source) && !monster(source))
         return failure(w, e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
                        score ? "Living death actual attacker score override"
                              : "Living death actual attacker kill override");
-    /* GI/DL/WH/BX/WW -> BG -> II -> LS declares neither descriptor. Both
+    /* Animal and Monster chains declare neither descriptor. Both
      * virtuals resolve directly to SN's actual literal return0 declarations. */
     w->state.child = site("sn", score ? "c" : "a", score ? "(Lsn;I)V" : "(Lls;)V", 0);
     if (score) {
@@ -435,6 +443,33 @@ returned:
     return true;
 }
 
+static bool item_id(struct mc_mob_death_work *w, const char *field, mc_entity_effect_error *e) {
+    if (!registry(w, e))
+        return false;
+    w->state.child = w->state.site;
+    const mc_item *item = NULL;
+    mc_registry_status status =
+        mc_registry_item_static_get(w->registry, field, &item, &e->registry);
+    if (status != MC_REGISTRY_OK)
+        return registry_failure(w, e, status, "Living death actual Item getstatic", true);
+    w->state.site.pc += 3;
+    w->state.child = w->state.site;
+    if (strcmp(w->state.site.method, "j") == 0)
+        w->state.j_pc = (uint16_t)w->state.site.pc;
+    else if (strcmp(w->state.site.method, "q") == 0)
+        w->state.q_pc = (uint16_t)w->state.site.pc;
+    else
+        w->state.creeper_pc = (uint16_t)w->state.site.pc;
+    status = mc_registry_item_source_id(w->registry, item, &w->state.drop_id, &e->registry);
+    if (status != MC_REGISTRY_OK) {
+        w->state.registry = e->registry;
+        if (status == MC_REGISTRY_NULL_REFERENCE)
+            return null_reference(w, e, "Living death null Item bf receiver");
+        return registry_failure(w, e, status, "Living death actual Item bf read", false);
+    }
+    return true;
+}
+
 static bool item_j(struct mc_mob_death_work *w, mc_entity_effect_error *e) {
     const mc_entity_class_kind kind = w->state.kind;
     if (kind == MC_ENTITY_CLASS_KIND_WOLF) {
@@ -442,31 +477,88 @@ static bool item_j(struct mc_mob_death_work *w, mc_entity_effect_error *e) {
         w->state.drop_id = -1;
         return true;
     }
-    const char *cl = kind == MC_ENTITY_CLASS_KIND_PIG   ? "wh"
-                     : kind == MC_ENTITY_CLASS_KIND_COW ? "bx"
-                                                        : "ww";
+    const char *cl = kind == MC_ENTITY_CLASS_KIND_PIG       ? "wh"
+                     : kind == MC_ENTITY_CLASS_KIND_COW     ? "bx"
+                     : kind == MC_ENTITY_CLASS_KIND_ZOMBIE  ? "uz"
+                     : kind == MC_ENTITY_CLASS_KIND_SPIDER  ? "cn"
+                     : kind == MC_ENTITY_CLASS_KIND_CREEPER ? "gb"
+                                                            : "ww";
     const bool burning = kind == MC_ENTITY_CLASS_KIND_PIG && w->actor->base.bv > 0;
-    const char *field = kind == MC_ENTITY_CLASS_KIND_PIG   ? (burning ? "ap" : "ao")
-                        : kind == MC_ENTITY_CLASS_KIND_COW ? "aD"
-                                                           : "J";
+    const char *field = kind == MC_ENTITY_CLASS_KIND_PIG       ? (burning ? "ap" : "ao")
+                        : kind == MC_ENTITY_CLASS_KIND_COW     ? "aD"
+                        : kind == MC_ENTITY_CLASS_KIND_SPIDER  ? "I"
+                        : kind == MC_ENTITY_CLASS_KIND_CREEPER ? "K"
+                                                               : "J";
     const uint16_t getstatic_pc = kind == MC_ENTITY_CLASS_KIND_PIG ? (burning ? 7u : 14u) : 0u;
     j_at(w, cl, getstatic_pc);
-    if (!registry(w, e))
+    if (!item_id(w, field, e))
         return false;
-    const mc_item *item = NULL;
-    mc_registry_status status =
-        mc_registry_item_static_get(w->registry, field, &item, &e->registry);
-    if (status != MC_REGISTRY_OK)
-        return registry_failure(w, e, status, "Animal death actual Item getstatic", true);
-    j_at(w, cl, (uint16_t)(getstatic_pc + 3u));
-    status = mc_registry_item_source_id(w->registry, item, &w->state.drop_id, &e->registry);
-    if (status != MC_REGISTRY_OK) {
-        w->state.registry = e->registry;
-        if (status == MC_REGISTRY_NULL_REFERENCE)
-            return null_reference(w, e, "Animal death null Item bf receiver");
-        return registry_failure(w, e, status, "Animal death actual Item bf read", false);
-    }
     j_at(w, cl, (uint16_t)(getstatic_pc + 6u));
+    return true;
+}
+
+static bool skeleton_q(struct mc_mob_death_work *w, mc_entity_effect_error *e) {
+    for (unsigned int loop = 0; loop < 2; ++loop) {
+        const bool second = loop != 0;
+        q_at(w, "fr", second ? 39u : 5u);
+        bool *attempted =
+            second ? &w->state.second_quantity_attempted : &w->state.quantity_attempted;
+        bool *returned = second ? &w->state.second_quantity_returned : &w->state.quantity_returned;
+        int32_t *quantity = second ? &w->state.second_quantity : &w->state.quantity;
+        *attempted = true;
+        mc_java_random *random = w->actor->random;
+        if (random == NULL)
+            return null_reference(w, e, "Skeleton death null quantity Random receiver");
+        if (!mc_java_random_next_bounded(random, 3, quantity))
+            return failure(w, e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_RANDOM,
+                           "Skeleton death actual quantity Random.nextInt(3)");
+        *returned = true;
+        for (w->state.index = 0; w->state.index < *quantity; ++w->state.index) {
+            q_at(w, "fr", second ? 51u : 17u);
+            if (!item_id(w, second ? "aV" : "j", e))
+                return false;
+            q_at(w, "fr", second ? 58u : 24u);
+            w->state.drop_wrapper_pc = 4;
+            w->state.child = site("sn", "b", "(II)Lhl;", 4);
+            if (!drop(w, true, e))
+                return false;
+        }
+    }
+    q_at(w, "fr", 68);
+    w->state.q_returned = true;
+    return true;
+}
+
+static bool creeper_tail(struct mc_mob_death_work *w, mc_entity *source,
+                         mc_entity_effect_error *e) {
+    w->state.creeper_pc = 6;
+    w->state.site = site("gb", "b", "(Lsn;)V", 6);
+    if (source != NULL && mc_entity_is_kind(source, MC_ENTITY_CLASS_KIND_SKELETON)) {
+        w->state.record_reached = true;
+        w->state.creeper_pc = 13;
+        w->state.site = site("gb", "b", "(Lsn;)V", 13);
+        if (!item_id(w, "bd", e))
+            return false;
+        w->state.creeper_pc = 24;
+        w->state.site = site("gb", "b", "(Lsn;)V", 24);
+        w->state.second_quantity_attempted = true;
+        mc_java_random *random = w->actor->random;
+        if (random == NULL)
+            return null_reference(w, e, "Creeper death null record Random receiver");
+        if (!mc_java_random_next_bounded(random, 2, &w->state.second_quantity))
+            return failure(w, e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_RANDOM,
+                           "Creeper death actual record Random.nextInt(2)");
+        w->state.second_quantity_returned = true;
+        w->state.drop_id = mc_java_i32_add(w->state.drop_id, w->state.second_quantity);
+        w->state.creeper_pc = 29;
+        w->state.site = site("gb", "b", "(Lsn;)V", 29);
+        w->state.drop_wrapper_pc = 4;
+        w->state.child = site("sn", "b", "(II)Lhl;", 4);
+        if (!drop(w, true, e))
+            return false;
+    }
+    w->state.creeper_pc = 33;
+    w->state.site = site("gb", "b", "(Lsn;)V", 33);
     return true;
 }
 
@@ -519,7 +611,9 @@ static bool body(struct mc_mob_death_work *w, mc_entity *source, mc_entity_effec
     if (!w->state.world_remote) {
         death_at(w, e, 45);
         w->state.q_entered = true;
-        if (!(w->state.kind == MC_ENTITY_CLASS_KIND_SHEEP ? sheep_q(w, e) : living_q(w, e)))
+        if (!(w->state.kind == MC_ENTITY_CLASS_KIND_SHEEP      ? sheep_q(w, e)
+              : w->state.kind == MC_ENTITY_CLASS_KIND_SKELETON ? skeleton_q(w, e)
+                                                               : living_q(w, e)))
             return false;
     }
     captured = w->actor->base.world; /* Actual independent World49 after q. */
@@ -532,6 +626,8 @@ static bool body(struct mc_mob_death_work *w, mc_entity *source, mc_entity_effec
     /* Client FD's entire status body is the actual return0. */
     w->state.status_returned = true;
     death_at(w, e, 57);
+    if (w->state.kind == MC_ENTITY_CLASS_KIND_CREEPER && !creeper_tail(w, source, e))
+        return false;
     w->state.returned = true;
     return true;
 }
@@ -593,8 +689,8 @@ bool mc_mob_death_entered(mc_entity *p, mc_registry_classes *registry_value, mc_
                           mc_entity_effect_error *e) {
     if (e == NULL)
         return false;
-    if (p == NULL || !mc_entity_has_mob(p) || !animal(p) || p->phase != MC_ENTITY_READY ||
-        p->classes->source != MC_ENTITY_CLIENT || p->holds == 0) {
+    if (p == NULL || !mc_entity_has_mob(p) || (!animal(p) && !monster(p)) ||
+        p->phase != MC_ENTITY_READY || p->classes->source != MC_ENTITY_CLIENT || p->holds == 0) {
         e->status = MC_ENTITY_STATE_ERROR;
         e->cause = MC_ENTITY_EFFECT_CAUSE_OWNER;
         e->operation = "Living death entered canonical client owner";

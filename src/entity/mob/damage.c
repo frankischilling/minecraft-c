@@ -728,18 +728,7 @@ static bool living_body(mc_entity *p, mc_registry_classes *registry, mc_math_cla
             child_at(e, "gs", "b", "(Lsn;)V", 2);
             if (!mc_player_death_entered(p, registry, math, source, e))
                 return false;
-        } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_CREEPER)) {
-            /* GB.b starts with its actual inherited LS death invocation.
-             * Its later Skeleton-killer record branch has not been reached. */
-            child_at(e, "gb", "b", "(Lsn;)V", 2);
-            return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
-                               "Living damage actual Creeper death/drop body");
-        } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SPIDER) ||
-                   mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_ZOMBIE) ||
-                   mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SKELETON))
-            return damage_fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
-                               "Living damage actual death/drop body");
-        else if (!mc_mob_death_entered(p, registry, source, e))
+        } else if (!mc_mob_death_entered(p, registry, source, e))
             return false;
     } else if (full_hit && !sound(p, registry, false, e, NULL))
         return false;

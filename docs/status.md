@@ -1,20 +1,35 @@
 # Development status
 
+Fatal [Monster death and drops](entity/monster-death.md) now complete for Spider,
+Zombie, Skeleton and Creeper, including Skeleton's separate Arrow/Bone loops,
+Creeper's late Skeleton-kill record and Player's Kill Enemy callback. Twenty-two
+finite native records match fresh unchanged-original calls. Player score,
+statistics, drops and actual World/Chunk membership have component coverage.
+Full Arrow victim damage, delayed death/removal sessions and unrestricted combat
+remain unfinished or unqualified. No FPS improvement is established.
+
+The complete Windows client build and all 890 configured tests pass. Linux
+Clang ASan/UBSan passes 20 selected damage/death/ownership tests; its full build
+first stops at the WSL disk limit. Fresh original observations match 22 finite
+records from each native host. [Validation details](testing.md#monster-death-and-player-kill-callbacks)
+retain the failed attempts, source freeze and exact comparison limits.
+
 Client [Monster retaliation](entity/monster-retaliation.md) now follows the
 original nonnull-attacker path for Spider, Zombie, Skeleton and Creeper.
 The [Arrow water controls](../tests/reference/entity/arrow_water/README.md)
 cover both transitions, preserve the original small-bounds water sequence and
 expose a corrected NULL particle-listener classification. Separate optional
 collectors compare finite original/native records while retaining every
-independent-entropy difference. Fatal Monster drops, full Arrow victim damage,
-unrestricted combat and original audiovisual/FPS parity remain open.
+independent-entropy difference. That preceding increment left fatal Monster drops,
+full Arrow victim damage, unrestricted combat and original audiovisual/FPS parity
+open.
 
-The current validation passes all 890 configured Windows tests and 43 selected
+The preceding validation passes all 890 configured Windows tests and 43 selected
 Linux sanitizer tests, with complete builds on both hosts. Fresh original
 Monster/water observations and a separate 409-check monitor-2 Zombie encounter
 retain their finite [test scopes](testing.md#monster-retaliation-and-arrow-water).
-Next combat work is the retained fatal-Monster continuation: ordinary drops,
-Skeleton's two drop loops, Creeper's late record drop and Player kill callbacks.
+Its fatal-Monster continuation is now described above; the earlier validation
+figures retain their original tested scope.
 
 The earlier recording increment added actual Random constructor recording, strict
 whole-input replay and early bootstrap binding with retirement receipts. Owned

@@ -25,9 +25,10 @@ This section records the canonical client Zombie implementation and its
 observations. Skeleton, Creeper and Spider enter the same inherited damage
 body through their own receiver and sound declarations. The earlier
 [Skeleton NULL-attacker observations](skeleton-damage.md) retain their finite
-scope. Fatal Spider, Zombie, Skeleton and Creeper damage plays its reached death
-sound, then stops at the actual death/drop invocation. It does not claim that
-the Zombie died or that an Item dropped. [Animal damage](animal-damage.md) now
+scope. Fatal Spider, Zombie, Skeleton and Creeper damage now completes its
+[death/drop continuation](monster-death.md), including Player callbacks and
+actual Item publication. The earlier sound/frontier observations below retain
+their recorded scope. [Animal damage](animal-damage.md) now
 executes the inherited NULL and non-NULL-attacker body for client Sheep, Pig,
 Cow and Chicken. Other concrete overrides retain their explicit dependencies.
 

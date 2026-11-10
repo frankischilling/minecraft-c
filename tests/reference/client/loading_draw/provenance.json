@@ -2,8 +2,8 @@
   "scope": "Current authored real-owner loading draw/update/yield/retirement controls; native results are recorded separately for their exact tested snapshots.",
   "native_sources": {
     "CMakeLists.txt": {
-      "bytes": 343441,
-      "sha256": "dfa40dffd7cfde9dcd19da691fe48fa9f7f92f311f5d0a54cd70aa436323ab63"
+      "bytes": 343529,
+      "sha256": "8fc4ccb8d7ddaae1730e6628fe03b488e4cfcd27f0f9d21a97c7eaeb1190765a"
     },
     "cmake/client_controllers.cmake": {
       "bytes": 1093,
@@ -7766,8 +7766,8 @@
       "sha256": "26637fb384220afd6a9922c5d42abe53337fcc3d41880d4da83ac4720acc49d1"
     },
     "src/entity/mob/damage.c": {
-      "bytes": 42483,
-      "sha256": "76b3d6f4f64942820c68426bee76b0c2cfd1203b61a5bb28df55df196a22b6b9"
+      "bytes": 41638,
+      "sha256": "5659378997a33f7611d61b3d4392a27447bd4babcce0aedd1e6a82bc1b28aabc"
     },
     "src/entity/mob/damage_internal.h": {
       "bytes": 1908,
@@ -7778,8 +7778,8 @@
       "sha256": "5295f36d8f9d11ff799d09a64489d3b6f989de1f19bf8e51f8e4fa6dceb88698"
     },
     "tests/entity/test_zombie_null_damage.c": {
-      "bytes": 30141,
-      "sha256": "0f7da19a86226fedd439dc896c82e77c01481cb2b3767a27fa048e011a9abdf3"
+      "bytes": 31213,
+      "sha256": "1d751148183407d5529f4be6948b0778f1441ddf3f08819e91ef9c83c3e199ae"
     },
     "tests/entity/zombie_damage_transport.inc": {
       "bytes": 10954,
@@ -8414,8 +8414,8 @@
       "sha256": "247b349413c93357430cf017927b1a60f91d770c8aef09a2ad3d0fd3a0419c81"
     },
     "tests/entity/mob/test_skeleton_null_damage.c": {
-      "bytes": 19865,
-      "sha256": "cdedbc7d6fcca6fd9d932099eadbc9262153c62365a66fcfde3b554ab915322e"
+      "bytes": 23285,
+      "sha256": "5c55ea3b011d9a19abf571652985a687e646e1e2e6c41f99cadb349d6357ec37"
     },
     "tests/item/use/test_use.c": {
       "bytes": 40810,
@@ -8694,28 +8694,28 @@
       "sha256": "9973682bab462837025568d8a0a65e2a9eff722450c1218b351ecc1de5ffcd5f"
     },
     "include/mc/entity/drop.h": {
-      "bytes": 3646,
-      "sha256": "ae8938970e0a1f3e5693008e0e2677b877962490c106b0d0eb38511eb7e11c1f"
+      "bytes": 3684,
+      "sha256": "e44e39087821af3246a2d25dc3be23a844c94b17959a9f98a3b45fa539b9c241"
     },
     "include/mc/entity/mob/death.h": {
-      "bytes": 2446,
-      "sha256": "f924d106711e76c2f02b50d08917d183ab865b8ed462e405fd2409e5f5f867e9"
+      "bytes": 2565,
+      "sha256": "2cfbd8b48200e7ef3d67745fc629795fd5f829e0e88f8f2328a31bb2ef89ed4f"
     },
     "src/entity/drop/drop.c": {
-      "bytes": 14778,
-      "sha256": "f0b8ef8fbd62e25e8f46ee2f09b590ea31d50ef7993b9d6bd209182f7092d148"
+      "bytes": 15057,
+      "sha256": "098d94a6868f2d0eb81c639275389f61f0713c7c9e00ab9f0bdeda12f2c1be16"
     },
     "src/entity/drop/internal.h": {
       "bytes": 509,
       "sha256": "846baad9b46c780e58508989ac2dbdc13835383cecc7ba44e2b0dfa203df299c"
     },
     "src/entity/mob/death.c": {
-      "bytes": 28209,
-      "sha256": "5019ca114acbf83865096ef5da99bda641aa8e11dbece04ddcf7b0635544e460"
+      "bytes": 32703,
+      "sha256": "8d1d1a5ba7dc3e6ca6d77f7bf36b0bb2142011eb940580e88851c4c783515834"
     },
     "src/entity/mob/death_internal.h": {
-      "bytes": 1811,
-      "sha256": "67c0434efce0efa407d0c54f3dec13495440fa6193ceec246fbb96a3a3403517"
+      "bytes": 1805,
+      "sha256": "a7e646485d92d8a350b0ffc8330926f2c012a5568d5b6f51bed19296c8cdb4bb"
     },
     "tests/entity/drop/test_drop.c": {
       "bytes": 17898,
@@ -8782,8 +8782,8 @@
       "sha256": "efe0ea7b2d351e0ffdea0a74f705494502cb142cdb1f66258a6b105a6485204c"
     },
     "src/entity/player/combat_callbacks.c": {
-      "bytes": 4451,
-      "sha256": "525c2e8ceaf07699af32cb8f5ab20e4f30014ddbb8df4b14107e553dac932554"
+      "bytes": 5284,
+      "sha256": "683ab28bcc12595c68bd1115fe81a933e64e004a15bcc5fba9167c5e47924e6b"
     },
     "src/entity/player/combat_callbacks_internal.h": {
       "bytes": 666,
@@ -9226,8 +9226,8 @@
       "sha256": "1a6c7a150b03a2c64cad4e9f1f9ec1f39a1d9a2a658280eb6e0a4816f37512bd"
     },
     "tests/entity/mob/test_creeper_null_damage.c": {
-      "bytes": 20615,
-      "sha256": "ce397950f38d45757aa1e4f39d00bee05315286bdb6214072761e84891623013"
+      "bytes": 23930,
+      "sha256": "09a1338dedd6659b45d2c212fcf8a6c93195544fa4920885381e96cd5aedc12e"
     },
     "tests/inventory/workbench_interaction_original.c": {
       "bytes": 43953,
@@ -11719,7 +11719,7 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76712,
-      "sha256": "a2f9371c1b8780973d95354a16bf1cf8912d73884751badd4f7a0d9bb2ff0fe0"
+      "sha256": "c4c94412b6db3e20c0a43894749770e28278d1c06b31e7927aebda402802ecd3"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -11895,7 +11895,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 16782,
-      "sha256": "d4ea9cd976c3c4f55d8456f7f8501e2892f7254bb872d9d00de07e7e1cf42e68"
+      "sha256": "8b59aafe304ca4d9258e5a4a5d7cbc73b2341e7a34443d2018af4d1d033e0cef"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,
@@ -11903,7 +11903,7 @@
     },
     "tests/tools/entity/test_damage_native_close.py": {
       "bytes": 17605,
-      "sha256": "5d57da2ac41269de7f11819b8220362260796901a6f7bb9a183e630b33ac0fd4"
+      "sha256": "4e0b58b25efc922497826cb75ac681e69a8675b614b6a10cff735d9e3273e027"
     },
     "tests/world/runtime/world_access/test_damage_close_execution.c": {
       "bytes": 28929,
@@ -11960,6 +11960,34 @@
     "tests/world/runtime/test_arrow_water_flight.c": {
       "bytes": 22728,
       "sha256": "d6006ce9e5c17219ad68d3dabef1f4698a426ef224fedf583a6b3c8236ddc90f"
+    },
+    "cmake/tests/monster_death.cmake": {
+      "bytes": 834,
+      "sha256": "530972b229b28d7c0631418529e813d1bcb6a8aacbfe36f580286fe335818998"
+    },
+    "cmake/tests/player_monster_kill.cmake": {
+      "bytes": 857,
+      "sha256": "f1b48ca1e2879e48e6d0bf8557eb4876a5546cdd4a49e66d7a826d4d7f158f5f"
+    },
+    "tests/entity/mob/test_monster_death.c": {
+      "bytes": 15348,
+      "sha256": "7840591e1031092c7538468ef89c40f24750a9e972415602ed26d8fadd28bc89"
+    },
+    "tests/entity/player/test_monster_kill.c": {
+      "bytes": 17205,
+      "sha256": "6d22bd5c9c4e2e61b581ba356216847a6ca01dd4bf120a083f7a7107b8e4e6b4"
+    },
+    "tests/reference/entity/monster_death/capture_reference.py": {
+      "bytes": 14380,
+      "sha256": "4c276c39752c23b967d33e4fac8fb31e882ce026eb81d0c0a69334e99b0b89f8"
+    },
+    "tests/tools/entity/test_monster_death.py": {
+      "bytes": 5230,
+      "sha256": "70f0103f479fe08bbe2ba14131d21dd545baf9808247f042bdd261b08308a246"
+    },
+    "tests/tools/entity/test_monster_kill.py": {
+      "bytes": 2701,
+      "sha256": "9306feadba97ad472557b07139f64dd096cea101ec92e612f24c3431a0cb3535"
     }
   },
   "actual_source_method": {
@@ -20598,6 +20626,114 @@
           },
           "added": [],
           "current_count": 2990
+        }
+      }
+    },
+    {
+      "from_commit": "9baa63b88f29bd99683cfbc520f8512aacc23221",
+      "role": "Current source admissions for fatal Monster drops, Skeleton dual loops, Creeper records and Player kill callbacks. Historical suppliers and executed observations retain their exact identities. Current compilation, native tests and original comparisons require separate evidence.",
+      "previous_metadata": {
+        "bytes": 878370,
+        "sha256": "4bdb5d06f2338ddde7e00de777a6020b8e910ed5780a6cfd7b543073789b2e36"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 343441,
+              "sha256": "dfa40dffd7cfde9dcd19da691fe48fa9f7f92f311f5d0a54cd70aa436323ab63"
+            },
+            "src/entity/mob/damage.c": {
+              "bytes": 42483,
+              "sha256": "76b3d6f4f64942820c68426bee76b0c2cfd1203b61a5bb28df55df196a22b6b9"
+            },
+            "tests/entity/test_zombie_null_damage.c": {
+              "bytes": 30141,
+              "sha256": "0f7da19a86226fedd439dc896c82e77c01481cb2b3767a27fa048e011a9abdf3"
+            },
+            "tests/entity/mob/test_skeleton_null_damage.c": {
+              "bytes": 19865,
+              "sha256": "cdedbc7d6fcca6fd9d932099eadbc9262153c62365a66fcfde3b554ab915322e"
+            },
+            "include/mc/entity/drop.h": {
+              "bytes": 3646,
+              "sha256": "ae8938970e0a1f3e5693008e0e2677b877962490c106b0d0eb38511eb7e11c1f"
+            },
+            "include/mc/entity/mob/death.h": {
+              "bytes": 2446,
+              "sha256": "f924d106711e76c2f02b50d08917d183ab865b8ed462e405fd2409e5f5f867e9"
+            },
+            "src/entity/drop/drop.c": {
+              "bytes": 14778,
+              "sha256": "f0b8ef8fbd62e25e8f46ee2f09b590ea31d50ef7993b9d6bd209182f7092d148"
+            },
+            "src/entity/mob/death.c": {
+              "bytes": 28209,
+              "sha256": "5019ca114acbf83865096ef5da99bda641aa8e11dbece04ddcf7b0635544e460"
+            },
+            "src/entity/mob/death_internal.h": {
+              "bytes": 1811,
+              "sha256": "67c0434efce0efa407d0c54f3dec13495440fa6193ceec246fbb96a3a3403517"
+            },
+            "src/entity/player/combat_callbacks.c": {
+              "bytes": 4451,
+              "sha256": "525c2e8ceaf07699af32cb8f5ab20e4f30014ddbb8df4b14107e553dac932554"
+            },
+            "tests/entity/mob/test_creeper_null_damage.c": {
+              "bytes": 20615,
+              "sha256": "ce397950f38d45757aa1e4f39d00bee05315286bdb6214072761e84891623013"
+            },
+            "tests/tools/world/test_world_query_controls.py": {
+              "bytes": 76712,
+              "sha256": "a2f9371c1b8780973d95354a16bf1cf8912d73884751badd4f7a0d9bb2ff0fe0"
+            },
+            "tests/tools/client/test_arrow_world_tick_cleanup.py": {
+              "bytes": 16782,
+              "sha256": "d4ea9cd976c3c4f55d8456f7f8501e2892f7254bb872d9d00de07e7e1cf42e68"
+            },
+            "tests/tools/entity/test_damage_native_close.py": {
+              "bytes": 17605,
+              "sha256": "5d57da2ac41269de7f11819b8220362260796901a6f7bb9a183e630b33ac0fd4"
+            }
+          },
+          "added": [
+            "cmake/tests/monster_death.cmake",
+            "cmake/tests/player_monster_kill.cmake",
+            "tests/entity/mob/test_monster_death.c",
+            "tests/entity/player/test_monster_kill.c",
+            "tests/reference/entity/monster_death/capture_reference.py",
+            "tests/tools/entity/test_monster_death.py",
+            "tests/tools/entity/test_monster_kill.py"
+          ],
+          "current_count": 2997
+        }
+      }
+    },
+    {
+      "from_commit": "9baa63b88f29bd99683cfbc520f8512aacc23221",
+      "role": "Current source admissions after fatal-damage legacy controls and Monster death documentation updates. Historical records retain their exact identities; these admissions do not claim prior compiled products or observations used the current inputs.",
+      "previous_metadata": {
+        "bytes": 883199,
+        "sha256": "cf95ea5b07bd3723bcc09b61198c83f564bf41557f98327a852213aea225060b"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "tests/entity/test_zombie_null_damage.c": {
+              "bytes": 31212,
+              "sha256": "007072aed220fc0f90aad4825ab44d69a2b6084306ca30f1763be57fe9d86e1e"
+            },
+            "tests/entity/mob/test_skeleton_null_damage.c": {
+              "bytes": 20173,
+              "sha256": "0de21da0610e91a3c6908d26d6da32cccb55f34e721c7f0183e3753468d203a4"
+            },
+            "tests/entity/mob/test_creeper_null_damage.c": {
+              "bytes": 20885,
+              "sha256": "f5c2770ed41f3ef002886b0ba38a3f6bc1a33b079f3c4c60e8d9e372128e0344"
+            }
+          },
+          "added": [],
+          "current_count": 2997
         }
       }
     }

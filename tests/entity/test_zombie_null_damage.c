@@ -59,6 +59,15 @@ static float oracle_float(uint64_t *state) {
     return (float)oracle_bits(state, 24) / 16777216.0f;
 }
 
+static int32_t oracle_quantity(uint64_t *state) {
+    uint32_t bits, value;
+    do {
+        bits = oracle_bits(state, 31);
+        value = bits % 3u;
+    } while (bits - value + 2u > INT32_MAX);
+    return (int32_t)value;
+}
+
 static float oracle_pitch(float a, float b) {
     volatile float difference = a - b;
     volatile float scaled = difference * .2f;
@@ -373,7 +382,8 @@ static bool check_direct(damage_fixture *f, mc_entity_status status, bool before
     const unsigned int i = f->input.id;
     const mc_entity_living_damage_state *r = &f->effect->living_damage;
     mc_living_entity_fields *l = &f->actor->mob->living;
-    const bool returned = i == 0 || i == 1 || i == 2 || i == 3 || i == 4 || i == 8 || i == 11;
+    const bool returned =
+        i == 0 || i == 1 || i == 2 || i == 3 || i == 4 || i == 7 || i == 8 || i == 11;
     CHECK((status == MC_ENTITY_OK) == returned && r->entered && r->returned == returned);
     if (returned) {
         CHECK(r->result_stored && r->living_returned && answer == r->result &&
@@ -417,17 +427,32 @@ static bool check_direct(damage_fixture *f, mc_entity_status status, bool before
               strcmp(r->sound_literal, i == 7 ? "mob.zombiedeath" : "mob.zombiehurt") == 0);
     } else
         CHECK(r->private_calls == 0 && r->private_attempts == (i == 6 ? 1 : 0));
+    uint64_t uniquifier = f->uniquifier_before;
+    if (i == 7) {
+        const int32_t quantity = oracle_quantity(&own);
+        CHECK(f->effect->death.returned && f->effect->death.q_returned &&
+              f->effect->death.quantity_returned && f->effect->death.quantity == quantity &&
+              f->effect->death.drops_returned == quantity &&
+              f->effect->death.drops_retired == quantity && !f->effect->death.pending &&
+              f->actor->mob->living.ah && f->base.world->fields.b->count == (size_t)quantity + 1u);
+        for (int32_t item = 0; item < quantity; ++item) {
+            for (unsigned int draw = 0; draw < 4; ++draw)
+                (void)oracle_double(&math);
+            uniquifier *= UINT64_C(1181783497276652981);
+        }
+    }
     CHECK(atomic_load(&f->base.profile->math->state) == math &&
           (f->actor->random ? f->actor->random : f->source_null_random)->state == own &&
           f->base.world->fields.r->state == f->world_before &&
-          atomic_load(&f->base.profile->uniquifier) == f->uniquifier_before);
+          atomic_load(&f->base.profile->uniquifier) == uniquifier);
     if (i == 5 || i == 6)
         CHECK(r->source_exception && !r->native_policy && r->exception_class &&
               strcmp(r->exception_class, "java/lang/NullPointerException") == 0 &&
               r->living_pc == (i == 5 ? 4 : 343));
     if (i == 7)
-        CHECK(r->native_policy && !r->source_exception && r->living_pc == 316 &&
-              r->death_invoke_reached && r->sound_returned && !f->actor->base.be);
+        CHECK(!r->native_policy && !r->source_exception && r->living_pc == 363 &&
+              r->death_invoke_reached && r->sound_returned && !f->actor->base.be &&
+              f->effect->cause == MC_ENTITY_EFFECT_CAUSE_NONE);
     if (i == 8) {
         mc_entity *target = NULL;
         mc_entity_error e;

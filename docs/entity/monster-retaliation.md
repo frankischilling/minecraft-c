@@ -41,5 +41,6 @@ returned Boolean, sound declaration and target alias are compared exactly.
 Constructor entropy stays independent. Sound pitch, complete heap state and
 whole-method equivalence are outside that comparison.
 
-Fatal Monster death/drop continuations, the full Arrow victim call, unrestricted
-combat sessions and original audiovisual or FPS parity remain unfinished.
+The [fatal death/drop continuation](monster-death.md) now has separate native
+and original controls. The full Arrow victim call, unrestricted combat sessions
+and original audiovisual or FPS parity remain unfinished or unqualified.

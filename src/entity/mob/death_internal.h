@@ -5,7 +5,7 @@
 #include "mc/entity/movement/effects.h"
 
 /* Actual LS.b(SN)V entered at the enclosing LS.a(SN,int) invoke316.
- * Canonical client Sheep/Pig/Cow/Chicken/Wolf; the facade already holds the
+ * Canonical client animals and Monsters; the facade already holds the
  * receiver. Allocate actor-resident pending work only at this reached entry.
  * Work owns an independent receiver occurrence and admits/retains nonnull
  * source only at its first reached callback17/26. Registry/World/Random are

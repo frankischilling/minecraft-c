@@ -7,12 +7,14 @@ int mc_creeper_damage_world_fixture_main(int argc, char **argv);
 #include "../../world/runtime/test_world_random_tick.c"
 #undef main
 
+#include "../../../src/entity/mob/death_internal.h"
 #include "../../../src/entity/mob/internal.h"
 #include "../../../src/entity/mob/references_internal.h"
 #include "../../../src/world/storage/generated_internal.h"
 #include "mc/entity/mob/construction.h"
 #include "mc/entity/mob/tick.h"
 #include "mc/entity/movement/effects.h"
+#include "mc/item/stack/stack.h"
 #include "mc/world/runtime/entity_tick.h"
 
 #undef CHECK
@@ -28,13 +30,44 @@ int mc_creeper_damage_world_fixture_main(int argc, char **argv);
 typedef struct creeper_fixture {
     random_fixture base;
     mc_entity *actors[16], *current;
-    size_t actor_count, sounds;
+    size_t actor_count, sounds, drops;
     mc_world_access *observer;
     bool bad_callback, fail_sound;
     const mc_registry_string *last_name;
     float volume, pitch;
     int32_t callback_health, callback_fire, callback_hurt;
 } creeper_fixture;
+
+static mc_world_storage_status creeper_added(void *context, mc_world_runtime *world,
+                                             mc_entity *item, mc_world_storage_error *error) {
+    creeper_fixture *f = context;
+    mc_item_stack_fields stack = {0};
+    mc_mob_death_state pending;
+    bool member = false;
+    size_t chunks = 0;
+    for (size_t i = 0; i < world->fields.b->count; ++i)
+        member |= world->fields.b->items[i] == item;
+    for (size_t i = 0; i < f->base.owned_count; ++i) {
+        const mc_world_chunk *chunk = mc_world_store_chunk_object(f->base.store, f->base.owned[i]);
+        for (size_t j = 0; j < chunk->m->length; ++j)
+            for (size_t k = 0; k < chunk->m->items[j]->count; ++k)
+                if (chunk->m->items[j]->items[k] == item)
+                    ++chunks;
+    }
+    if (world != f->base.world || f->current == NULL || item == NULL ||
+        !mc_entity_is_kind(item, MC_ENTITY_CLASS_KIND_ITEM) || !member || chunks != 1 ||
+        item->base.world != world || item->item.c != 10 || !f->current->mob->living.ah ||
+        !mc_mob_death_inspect(f->current, &pending) || !pending.active || !pending.pending ||
+        mc_item_stack_fields_get(item->stack, &stack) != MC_ITEM_STACK_OK || stack.id != 289 ||
+        stack.count != 1 || stack.damage != 0 ||
+        mc_entity_effect_cleanup(f->current, NULL) != MC_ENTITY_BUSY)
+        f->bad_callback = true;
+    ++f->drops;
+    *error = (mc_world_storage_error){
+        f->bad_callback ? MC_WORLD_STORAGE_IO_ERROR : MC_WORLD_STORAGE_OK,
+        f->bad_callback ? "authored Creeper published Item contract" : NULL, 0};
+    return error->status;
+}
 
 static mc_world_storage_status creeper_sound(void *context, mc_world_runtime *world,
                                              const mc_registry_string *name, double x, double y,
@@ -111,7 +144,8 @@ static bool prepare(creeper_fixture *f, const char *resources, const char *direc
             CHECK(state != NULL && mc_chunk_cache_publish(f->base.provider.cache, x, z, state));
             f->base.owned[f->base.owned_count++] = state;
         }
-    const mc_world_access_callbacks callbacks = {.sound = creeper_sound};
+    const mc_world_access_callbacks callbacks = {.sound = creeper_sound,
+                                                 .entity_added = creeper_added};
     CHECK(mc_world_access_create(&callbacks, f, &f->observer, NULL) == MC_WORLD_STORAGE_OK);
     return true;
 }
@@ -311,16 +345,37 @@ static bool gates_and_frontiers(creeper_fixture *f) {
     p->mob->living.Y = 1;
     answer = true;
     const size_t sounds = f->sounds;
-    CHECK(mc_entity_effect_damage_in_context(p, f->base.registry, NULL, 1, &answer, &e) ==
-              MC_ENTITY_STATE_ERROR &&
-          answer && !e.living_damage.returned && e.living_damage.death_invoke_reached &&
-          e.living_damage.living_pc == 316 && e.living_damage.sound_returned &&
-          strcmp(e.living_damage.sound_literal, "mob.creeperdeath") == 0 &&
-          strcmp(e.living_damage.child_site.class_name, "gb") == 0 &&
-          strcmp(e.living_damage.child_site.method, "b") == 0 &&
-          e.living_damage.child_site.pc == 2 && p->mob->living.Y == 0 && !p->base.be &&
-          f->sounds == sounds + 1 && !f->bad_callback &&
-          e.cause == MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL);
+    const mc_entity_status fatal_status =
+        mc_entity_effect_damage_in_context(p, f->base.registry, NULL, 1, &answer, &e);
+    const bool fatal_ok =
+        fatal_status == MC_ENTITY_OK && answer && e.living_damage.returned &&
+        e.living_damage.death_invoke_reached && e.living_damage.living_pc == 363 &&
+        e.living_damage.sound_returned &&
+        strcmp(e.living_damage.sound_literal, "mob.creeperdeath") == 0 &&
+        strcmp(e.living_damage.child_site.class_name, "gz") == 0 &&
+        strcmp(e.living_damage.child_site.method, "a") == 0 &&
+        e.living_damage.child_site.pc == 26 && p->mob->living.Y == 0 && p->mob->living.ah &&
+        !p->base.be && f->sounds == sounds + 1 && !f->bad_callback && e.death.returned &&
+        e.death.q_returned && e.death.creeper_pc == 33 && e.death.quantity_returned &&
+        e.death.drops_returned == e.death.quantity && f->drops == e.death.drops_returned &&
+        e.death.death_pc == 57 && e.death.drops_retired == e.death.drops_returned &&
+        !e.death.record_reached && !e.death.pending && e.cause == MC_ENTITY_EFFECT_CAUSE_NONE;
+    if (!fatal_ok)
+        fprintf(
+            stderr,
+            "Creeper fatal status=%d cause=%d native=%d answer=%d returned=%d pc=%u "
+            "death=%d q=%d qpc=%u cpc=%u quantity=%d flag=%d drops=%u/%u pending=%d "
+            "child=%s.%s:%u health=%d dying=%d dead=%d sounds=%zu/%zu callback=%d operation=%s\n",
+            (int)fatal_status, (int)e.cause, e.living_damage.native_policy, answer,
+            e.living_damage.returned, e.living_damage.living_pc, e.death.returned,
+            e.death.q_returned, e.death.q_pc, e.death.creeper_pc, e.death.quantity,
+            e.death.quantity_returned, (unsigned int)e.death.drops_returned,
+            (unsigned int)e.death.drops_retired, e.death.pending,
+            e.living_damage.child_site.class_name ? e.living_damage.child_site.class_name : "none",
+            e.living_damage.child_site.method ? e.living_damage.child_site.method : "none",
+            e.living_damage.child_site.pc, p->mob->living.Y, p->mob->living.ah, p->base.be,
+            f->sounds, sounds + 1, f->bad_callback, e.operation ? e.operation : "none");
+    CHECK(fatal_ok);
 
     CHECK(actor(f, MC_ENTITY_CLASS_KIND_CREEPER, false, &p));
     p->mob->living.Y = 1;
