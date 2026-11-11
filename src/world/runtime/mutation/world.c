@@ -6,6 +6,7 @@
 #include "../blocks_execution_internal.h"
 #include "../construction_internal.h"
 #include "../execution_children_internal.h"
+#include "../plants_execution_internal.h"
 #include "../solid_support_execution_internal.h"
 #include "chunk_execution_internal.h"
 #include "drops/execution_internal.h"
@@ -25,8 +26,10 @@ struct mc_world_mutation_execution_call {
     mc_world_mutation_execution_call *child;
     mc_world_mutation_drop_execution *drop;
     mc_world_solid_support_execution *support;
+    mc_world_plant_execution *plant;
     mc_world_storage_status support_status;
-    bool active, close_done, support_returned;
+    mc_world_storage_status plant_status;
+    bool active, close_done, support_returned, plant_returned;
 };
 
 static const mc_entity_tick_execution_site metadata_site = {"fd", "d", "(IIII)V", 0};
@@ -748,6 +751,7 @@ mc_world_mutation_execution_retire(mc_world_mutation_execution_call **slot) {
         return drop;
     free(call->chunk);
     free(call->support);
+    free(call->plant);
     free(call);
     *slot = NULL;
     return MC_WORLD_STORAGE_OK;
@@ -803,6 +807,59 @@ mc_world_mutation_execution_failed_support(const mc_world_mutation_execution_cal
         return NULL;
     *raw = call->support_status;
     return call->support;
+}
+
+bool mc_world_mutation_execution_plant_survives(mc_world_mutation_execution_call *call,
+                                                mc_world_runtime *world, const mc_block *block,
+                                                int32_t x, int32_t y, int32_t z, bool *out,
+                                                mc_world_storage_status *raw,
+                                                const mc_world_plant_execution **detail,
+                                                mc_entity_tick_execution_site site) {
+    if (!mc_world_mutation_execution_current(call, world, site))
+        return false;
+    if (call->plant != NULL || out == NULL || raw == NULL || detail == NULL) {
+        mc_world_runtime_execution_result_note(call->context.result, MC_WORLD_STORAGE_BUSY,
+                                               "Plant survival requires fresh caller work", site);
+        return false;
+    }
+    call->plant = calloc(1, sizeof(*call->plant));
+    if (call->plant == NULL) {
+        mc_world_runtime_execution_result_note(call->context.result,
+                                               MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                                               "World retained plant frame", site);
+        return false;
+    }
+    mc_world_plant_execution_init(call->plant, call->context.execution, call->context.code_classes,
+                                  call->context.code, call->context.world, site,
+                                  call->context.result);
+    const bool completed = mc_world_runtime_flower_survives_in_execution(
+        call->plant, world, block, x, y, z, out, &call->plant_status);
+    call->plant_returned = true;
+    *raw = call->plant_status;
+    if (!completed) {
+        *detail = call->plant;
+        return false;
+    }
+    free(call->plant);
+    call->plant = NULL;
+    call->plant_returned = false;
+    *detail = NULL;
+    return true;
+}
+
+const mc_world_plant_execution *
+mc_world_mutation_execution_failed_plant(const mc_world_mutation_execution_call *call,
+                                         mc_world_storage_status *raw) {
+    if (call == NULL || call->active || raw == NULL)
+        return NULL;
+    const mc_world_plant_execution *child =
+        mc_world_mutation_execution_failed_plant(call->child, raw);
+    if (child != NULL)
+        return child;
+    if (call->plant == NULL || !call->plant_returned)
+        return NULL;
+    *raw = call->plant_status;
+    return call->plant;
 }
 
 bool mc_world_mutation_execution_drop(mc_world_mutation_execution_call *call,

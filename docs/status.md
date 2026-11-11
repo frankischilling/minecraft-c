@@ -1,5 +1,27 @@
 # Development status
 
+The [Flower neighbor](world/plants.md#owned-flower-neighbor-during-player-wake)
+now shares the retained wake execution. Supported Flowers stay in place;
+support loss publishes an Item before notifying removal. Real Arrow hits and
+callback exceptions preserve each completed prefix through checked cleanup.
+Cold plant-light and sky-query controls distinguish actual Source exceptions
+from native ownership refusal, including a legitimately retained FAILED phase.
+
+The full Windows MSVC Release client suite passes 1,192 tests in 531.31 seconds.
+Linux Clang 18.1.8 Debug passes all 1,038 headless tests in 519.99 seconds with
+ASan, UBSan and leak detection. Each host matches 140 selected original values.
+The [test record](testing.md#flower-survival-and-removal-during-player-wake)
+keeps the first Minecart capture-parent failure, corrected full cohorts and
+comparison limits explicit. All game and fixture bytes remain unchanged during
+that CMake-only correction.
+
+Final monitor-2 scenes pass 2,489 Bed and 452 Arrow/Pig checks, with independent
+save readback, inspected images and complete window cleanup. Other owned plant
+kinds, unrestricted graphs, graphical damage wake, original audiovisual
+equality, general focus reliability and measured FPS remain open.
+
+The preceding Torch checkpoint follows.
+
 The [Torch neighbor](world/torch-placement.md#owned-neighbor-during-player-wake)
 now shares the retained Player wake execution. Both general support loss and
 attachment loss publish the Item before notifying removal. Callback exceptions

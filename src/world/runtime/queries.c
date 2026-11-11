@@ -5,8 +5,10 @@
 #include "../storage/objects_internal.h"
 #include "chunk_provider_state_internal.h"
 #include "construction_internal.h"
+#include "execution_children_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
+#include "queries_execution_internal.h"
 #include "runtime_internal.h"
 #include "saved_light_internal.h"
 
@@ -83,11 +85,39 @@ static mc_world_storage_status finish(mc_world_runtime *world, query_chunk *chun
     return frame->status;
 }
 
+static bool query_records_quiet(const mc_world_runtime_execution_result *owned) {
+    if (owned->root_pending || owned->math_failed)
+        return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (owned->pending[i].used)
+            return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (owned->closes[i].used)
+            return false;
+    return true;
+}
+
+static void query_selected_view(mc_world_query_execution *execution) {
+    if (!execution->owned->selection_ready)
+        return;
+    mc_entity_tick_execution_loader_view selected;
+    if (mc_entity_tick_execution_loader_read(execution->execution, &execution->owned->selection,
+                                             &selected))
+        execution->acquisition.source_chunk =
+            selected.status == MC_CHUNK_ACQUIRE_OK ? NULL : selected.failure;
+    else {
+        execution->acquisition.source_chunk = NULL;
+        mc_world_runtime_execution_result_note(execution->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                               "World query selected loader view",
+                                               execution->receiver_site);
+    }
+}
+
 /* World.c(II) invokes the provider's b getter, preserving pending on a hit
  * and the dedicated denied-load fallback. Store leases protect the captured
  * source local across later Registry active use, without blocking reentry. */
-static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, query_chunk *out,
-                    mc_world_query_error *error) {
+static bool acquire_query(mc_world_runtime *world, int32_t x, int32_t z, query_chunk *out,
+                          mc_world_query_error *error, mc_world_query_execution *execution) {
     error->provider_bytecode = 6;
     if (world->fields.v == NULL)
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World query provider receiver");
@@ -98,19 +128,53 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, query_chunk *
         &provider->pending != world->acquisition.pending || provider->store != world->options.store)
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                     "World query replacement provider binding");
-    mc_world_runtime_acquisition_error detail;
-    error->acquisition = mc_world_runtime_get_failure(world, mc_java_i32_shr(x, 4),
-                                                      mc_java_i32_shr(z, 4), &out->state, &detail);
+    mc_world_runtime_acquisition_error legacy;
+    mc_world_runtime_acquisition_error *const detail =
+        execution == NULL ? &legacy : &execution->acquisition;
+    if (execution == NULL)
+        error->acquisition = mc_world_runtime_get_failure(
+            world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &out->state, detail);
+    else {
+        execution->get_entered = true;
+        error->acquisition = mc_world_runtime_get_failure_in_execution(
+            execution->execution, world, execution->code, mc_java_i32_shr(x, 4),
+            mc_java_i32_shr(z, 4), &out->state, detail, execution->owned);
+        execution->get_status = error->acquisition;
+        execution->get_returned = true;
+        /* Successful failure-only output remains untouched. Only an actually
+         * failed getter supplies the full diagnostic and selected borrow. */
+        if (error->acquisition != MC_CHUNK_ACQUIRE_OK)
+            query_selected_view(execution);
+        execution->native_stopped = execution->owned->ownership_status != MC_WORLD_STORAGE_OK;
+    }
     if (error->acquisition != MC_CHUNK_ACQUIRE_OK) {
-        error->source_chunk = detail.source_chunk;
-        error->population = detail.population;
-        error->registry = detail.registry;
-        if (detail.cause.status != MC_WORLD_STORAGE_OK)
-            return storage_fail(error, &detail.cause);
+        error->source_chunk = detail->source_chunk;
+        error->population = detail->population;
+        error->registry = detail->registry;
+        if (detail->cause.status != MC_WORLD_STORAGE_OK)
+            return storage_fail(error, &detail->cause);
         if (error->acquisition == MC_CHUNK_ACQUIRE_LIMIT ||
             error->acquisition == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT)
             return fail(error, MC_WORLD_STORAGE_LIMIT, "World query acquisition limit");
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World query acquisition");
+    }
+    if (execution != NULL) {
+        if (!execution->native_stopped) {
+            if (execution->owned->selection_ready &&
+                execution->owned->selection.status == MC_CHUNK_ACQUIRE_OK &&
+                query_records_quiet(execution->owned))
+                execution->owned->selection_ready = false;
+            else {
+                mc_world_runtime_execution_result_note(
+                    execution->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                    "World query completed GET outcome", execution->receiver_site);
+                execution->native_stopped = true;
+            }
+        }
+        /* The raw getter succeeded; do not manufacture a Source error or
+         * inspect its Chunk when native completion refused. */
+        if (execution->native_stopped)
+            return false;
     }
     error->provider_bytecode = 0;
     if (out->state == NULL)
@@ -126,6 +190,11 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, query_chunk *
         return storage_fail(error, &cause);
     out->leased = true;
     return true;
+}
+
+static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, query_chunk *out,
+                    mc_world_query_error *error) {
+    return acquire_query(world, x, z, out, error, NULL);
 }
 
 static bool nibble(const mc_world_chunk_nibble *owner, int32_t x, int32_t y, int32_t z,
@@ -323,9 +392,9 @@ mc_world_storage_status mc_world_runtime_saved_light_canonical(mc_world_runtime 
     return status;
 }
 
-mc_world_storage_status mc_world_runtime_plant_light(mc_world_runtime *world, int32_t x, int32_t y,
-                                                     int32_t z, int32_t *out,
-                                                     mc_world_query_error *error) {
+static mc_world_storage_status plant_light(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
+                                           int32_t *out, mc_world_query_error *error,
+                                           mc_world_query_execution *execution) {
     mc_world_query_error frame = empty_error;
     if (!admit(world, out != NULL, &frame)) {
         if (error != NULL)
@@ -339,7 +408,7 @@ mc_world_storage_status mc_world_runtime_plant_light(mc_world_runtime *world, in
     if (y >= 128)
         y = 127;
     frame.bytecode = 23;
-    if (!acquire(world, x, z, &chunk, &frame))
+    if (!acquire_query(world, x, z, &chunk, &frame, execution))
         goto done;
     frame.bytecode = 36;
     if (chunk.state->blank)
@@ -349,17 +418,26 @@ mc_world_storage_status mc_world_runtime_plant_light(mc_world_runtime *world, in
     if (!nibble(chunk.object->f, (int32_t)((uint32_t)x & 15u), y, (int32_t)((uint32_t)z & 15u),
                 &sky, &frame))
         goto done;
-    if (sky > 0)
-        world->classes->chunk_a = true;
+    if (sky > 0) {
+        mc_world_runtime_classes *const classes =
+            execution == NULL ? world->classes : execution->code_classes;
+        classes->chunk_a = true;
+    }
     frame.chunk_bytecode = 35;
     if (!nibble(chunk.object->g, (int32_t)((uint32_t)x & 15u), y, (int32_t)((uint32_t)z & 15u),
                 &block, &frame))
         goto done;
     value = sky > block ? sky : block;
 done:
-    if (frame.status == MC_WORLD_STORAGE_OK)
+    if (frame.status == MC_WORLD_STORAGE_OK && (execution == NULL || !execution->native_stopped))
         *out = value;
     return finish(world, &chunk, &frame, error);
+}
+
+mc_world_storage_status mc_world_runtime_plant_light(mc_world_runtime *world, int32_t x, int32_t y,
+                                                     int32_t z, int32_t *out,
+                                                     mc_world_query_error *error) {
+    return plant_light(world, x, y, z, out, error, NULL);
 }
 
 static bool block_light_static(mc_world_runtime *world, const char *name, unsigned int capture_pc,
@@ -493,9 +571,9 @@ mc_world_storage_status mc_world_runtime_block_light(mc_world_runtime *world, in
     return finish(world, &chunk, &frame, error);
 }
 
-mc_world_storage_status mc_world_runtime_sky_visible(mc_world_runtime *world, int32_t x, int32_t y,
-                                                     int32_t z, bool *out,
-                                                     mc_world_query_error *error) {
+static mc_world_storage_status sky_visible(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
+                                           bool *out, mc_world_query_error *error,
+                                           mc_world_query_execution *execution) {
     mc_world_query_error frame = empty_error;
     if (!admit(world, out != NULL, &frame)) {
         if (error != NULL)
@@ -505,7 +583,7 @@ mc_world_storage_status mc_world_runtime_sky_visible(mc_world_runtime *world, in
     query_chunk chunk = {0};
     bool value = false;
     frame.bytecode = 7;
-    if (!acquire(world, x, z, &chunk, &frame))
+    if (!acquire_query(world, x, z, &chunk, &frame, execution))
         goto done;
     frame.bytecode = 19;
     if (!chunk.state->blank) {
@@ -519,9 +597,90 @@ mc_world_storage_status mc_world_runtime_sky_visible(mc_world_runtime *world, in
         value = y >= (int32_t)chunk.object->h[index];
     }
 done:
-    if (frame.status == MC_WORLD_STORAGE_OK)
+    if (frame.status == MC_WORLD_STORAGE_OK && (execution == NULL || !execution->native_stopped))
         *out = value;
     return finish(world, &chunk, &frame, error);
+}
+
+mc_world_storage_status mc_world_runtime_sky_visible(mc_world_runtime *world, int32_t x, int32_t y,
+                                                     int32_t z, bool *out,
+                                                     mc_world_query_error *error) {
+    return sky_visible(world, x, y, z, out, error, NULL);
+}
+
+void mc_world_query_execution_init(mc_world_query_execution *frame,
+                                   mc_entity_tick_execution *execution,
+                                   mc_world_runtime_classes *code_classes,
+                                   mc_world_runtime_execution_code code,
+                                   mc_entity_tick_execution_site site,
+                                   mc_world_runtime_execution_result *owned) {
+    if (frame != NULL)
+        *frame = (mc_world_query_execution){.execution = execution,
+                                            .code_classes = code_classes,
+                                            .code = code,
+                                            .receiver_site = site,
+                                            .owned = owned};
+}
+
+static bool query_execution_enter(mc_world_query_execution *frame, mc_world_runtime *world,
+                                  const void *out, const mc_world_storage_status *status) {
+    if (frame == NULL)
+        return false;
+    if (frame->execution == NULL || frame->execution->identity != frame->execution ||
+        world == NULL || frame->code_classes == NULL || frame->owned == NULL || out == NULL ||
+        status == NULL || frame->entered) {
+        mc_world_runtime_execution_result_note(frame->owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "World query execution/fresh outputs required",
+                                               frame->receiver_site);
+        return false;
+    }
+    if (frame->owned->ownership_status != MC_WORLD_STORAGE_OK || frame->owned->selection_ready ||
+        !query_records_quiet(frame->owned)) {
+        mc_world_runtime_execution_result_note(frame->owned, MC_WORLD_STORAGE_BUSY,
+                                               "World query quiet result required",
+                                               frame->receiver_site);
+        return false;
+    }
+    mc_world_access_failure_lease *unused = NULL;
+    const mc_world_storage_status admitted =
+        mc_world_execution_child_lease(frame->execution, world, &unused);
+    if (admitted != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(
+            frame->owned, admitted, "World query evaluated World ownership", frame->receiver_site);
+        return false;
+    }
+    frame->entered = true;
+    frame->detail = empty_error;
+    return true;
+}
+
+static bool query_execution_finish(mc_world_query_execution *frame, mc_world_storage_status actual,
+                                   mc_world_storage_status *status) {
+    frame->status = actual;
+    *status = actual;
+    frame->completed = actual == MC_WORLD_STORAGE_OK && !frame->native_stopped &&
+                       frame->owned->ownership_status == MC_WORLD_STORAGE_OK;
+    return frame->completed;
+}
+
+bool mc_world_runtime_plant_light_in_execution(mc_world_query_execution *frame,
+                                               mc_world_runtime *world, int32_t x, int32_t y,
+                                               int32_t z, int32_t *out,
+                                               mc_world_storage_status *status) {
+    if (!query_execution_enter(frame, world, out, status))
+        return false;
+    const mc_world_storage_status actual = plant_light(world, x, y, z, out, &frame->detail, frame);
+    return query_execution_finish(frame, actual, status);
+}
+
+bool mc_world_runtime_sky_visible_in_execution(mc_world_query_execution *frame,
+                                               mc_world_runtime *world, int32_t x, int32_t y,
+                                               int32_t z, bool *out,
+                                               mc_world_storage_status *status) {
+    if (!query_execution_enter(frame, world, out, status))
+        return false;
+    const mc_world_storage_status actual = sky_visible(world, x, y, z, out, &frame->detail, frame);
+    return query_execution_finish(frame, actual, status);
 }
 
 bool mc_world_runtime_chunk_light_seen(const mc_world_runtime_classes *classes) {

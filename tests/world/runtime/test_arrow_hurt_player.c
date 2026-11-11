@@ -16,6 +16,8 @@ int arrow_player_unused_drop_main(int, char **);
 #include "mc/world/runtime/players.h"
 #include "world/runtime/mutation/drops/execution_internal.h"
 
+#include <inttypes.h>
+
 typedef struct ap_fixture {
     pd_fixture player;
     mc_entity *arrow, *item;
@@ -43,16 +45,21 @@ static bool ap_torch(const ap_fixture *s) {
            ap_is(s, "wake-bed-torch-removal-source");
 }
 
+static bool ap_flower(const ap_fixture *s) {
+    return ap_is(s, "wake-bed-flower") || ap_is(s, "wake-bed-flower-source") ||
+           ap_is(s, "wake-bed-flower-removal-source");
+}
+
 static bool ap_attached_neighbor(const ap_fixture *s) {
-    return ap_ladder(s) || ap_torch(s);
+    return ap_ladder(s) || ap_torch(s) || ap_flower(s);
 }
 
 static uint8_t ap_neighbor_id(const ap_fixture *s) {
-    return ap_torch(s) ? 50 : 65;
+    return (uint8_t)(ap_flower(s) ? 37 : ap_torch(s) ? 50 : 65);
 }
 
 static uint8_t ap_neighbor_metadata(const ap_fixture *s) {
-    return ap_torch(s) ? 1 : 2;
+    return (uint8_t)(ap_flower(s) ? 0 : ap_torch(s) ? 1 : 2);
 }
 
 static bool ap_bed(const ap_fixture *s) {
@@ -124,6 +131,9 @@ static bool ap_enter_bed(ap_fixture *s) {
                   ap_attached_neighbor(s) ? ap_neighbor_metadata(s) : 0));
     if (ap_torch(s))
         CHECK(ap_cell(data, 7, 63, 8, 1, 0) && data->blocks[ap_index(6, 64, 8)] == 0);
+    if (ap_flower(s))
+        CHECK(ap_cell(data, 7, 63, 8, 0, 0) &&
+              mc_chunk_nibbles_set(data->block_light, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, 0));
     f->player->local_player->fields.player.private_a = 37;
     return true;
 }
@@ -148,14 +158,16 @@ static mc_world_storage_status ap_bed_cell(void *context, mc_world_runtime *worl
     ++s->cells;
     *cause = (mc_world_storage_error){0};
     if (s->valid && s->cells == 2 &&
-        (ap_is(s, "wake-bed-ladder-removal-source") || ap_is(s, "wake-bed-torch-removal-source"))) {
+        (ap_is(s, "wake-bed-ladder-removal-source") || ap_is(s, "wake-bed-torch-removal-source") ||
+         ap_is(s, "wake-bed-flower-removal-source"))) {
         const mc_world_storage_status status =
             mc_world_access_receipt_create(s->observer, NULL, &s->receipt, failure, cause);
         if (status != MC_WORLD_STORAGE_OK)
             return status;
         s->receipt->exception_class = "java/lang/IllegalStateException";
-        *cause =
-            (mc_world_storage_error){MC_WORLD_STORAGE_IO_ERROR, "Arrow Ladder cell observer", 37};
+        *cause = (mc_world_storage_error){
+            MC_WORLD_STORAGE_IO_ERROR,
+            ap_flower(s) ? "Arrow Flower cell observer" : "Arrow Ladder cell observer", 37};
         return cause->status;
     }
     return s->valid ? MC_WORLD_STORAGE_OK : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
@@ -244,7 +256,7 @@ static mc_world_storage_status ap_added(void *context, mc_world_runtime *world, 
             c->execution.leases[current.slot].phase == MC_WORLD_ACCESS_FAILURE_LEASE_ARMED;
         *cause = (mc_world_storage_error){0};
         if (s->valid && (ap_is(s, "wake-bed-foot-source") || ap_is(s, "wake-bed-ladder-source") ||
-                         ap_is(s, "wake-bed-torch-source"))) {
+                         ap_is(s, "wake-bed-torch-source") || ap_is(s, "wake-bed-flower-source"))) {
             const mc_world_storage_status status =
                 mc_world_access_receipt_create(s->observer, NULL, &s->receipt, failure, cause);
             if (status != MC_WORLD_STORAGE_OK)
@@ -288,6 +300,86 @@ static mc_world_storage_status ap_added(void *context, mc_world_runtime *world, 
     }
     *cause = (mc_world_storage_error){0};
     return MC_WORLD_STORAGE_OK;
+}
+
+static uint64_t ap_bits(double value) {
+    uint64_t bits;
+    _Static_assert(sizeof(bits) == sizeof(value), "Arrow receipt binary64");
+    memcpy(&bits, &value, sizeof(bits));
+    return bits;
+}
+
+static bool ap_random_same(mc_java_random a, mc_java_random b) {
+    return a.state == b.state && a.have_next_next_gaussian == b.have_next_next_gaussian &&
+           ap_bits(a.next_next_gaussian) == ap_bits(b.next_next_gaussian);
+}
+
+static bool ap_flower_input(ap_fixture *s) {
+    fixture *f = &s->player.game;
+    const mc_chunk_data *data = mc_world_chunk_state(s->player.chunk)->data;
+    uint8_t metadata = UINT8_MAX, sky = UINT8_MAX, block = UINT8_MAX;
+    CHECK(data->blocks[ap_index(7, 64, 8)] == 37 && data->blocks[ap_index(7, 63, 8)] == 0 &&
+          mc_chunk_nibbles_get(data->metadata, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &metadata) &&
+          metadata == 0 &&
+          mc_chunk_nibbles_get(data->skylight, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &sky) &&
+          sky == 15 &&
+          mc_chunk_nibbles_get(data->block_light, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &block) &&
+          block == 0 && data->heightmap[8u * 16u + 7u] == 64 && f->world->fields.f == 5 &&
+          f->player->local_player->fields.player.u &&
+          f->player->local_player->fields.player.private_a == 37 && s->arrow->base.x == 9.4 &&
+          s->arrow->base.y == 64.85 && s->arrow->base.z == f->player->base.z &&
+          s->arrow->base.velocity_x == -(double).6f);
+    printf("ARROW_FLOWER_INPUT flower=37:0 floor=0:0 sky=15 block=0 height=64 world-f=5 "
+           "sleeping=1 timer=37 arrow-x=%016" PRIx64 " arrow-y=%016" PRIx64 " arrow-vx=%016" PRIx64
+           "\n",
+           ap_bits(s->arrow->base.x), ap_bits(s->arrow->base.y),
+           ap_bits(s->arrow->base.velocity_x));
+    return true;
+}
+
+/* Read-only copies of the actual committed prefix. No Source call or Random
+ * draw occurs here, including after the typed wake diagnostic is retired. */
+static bool ap_flower_prefix(ap_fixture *s, const char *phase, bool expected_pending) {
+    fixture *f = &s->player.game;
+    const mc_chunk_data *data = mc_world_chunk_state(s->player.chunk)->data;
+    const bool normal = ap_is(s, "wake-bed-flower");
+    const bool removed = normal || ap_is(s, "wake-bed-flower-removal-source");
+    const mc_local_player_snapshot *player = &f->player->local_player->fields;
+    const bool pending = f->player->local_player->pending_damage_wake != NULL;
+    uint8_t metadata = UINT8_MAX, sky = UINT8_MAX, block = UINT8_MAX;
+    mc_item_stack_fields stack = {0};
+    CHECK(s->cells == (removed ? 2u : 1u) && s->additions == 1 &&
+          data->blocks[ap_index(7, 64, 8)] == (removed ? 0 : 37) &&
+          data->blocks[ap_index(7, 63, 8)] == 0 &&
+          mc_chunk_nibbles_get(data->metadata, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &metadata) &&
+          metadata == 0 &&
+          mc_chunk_nibbles_get(data->skylight, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &sky) &&
+          sky == 15 &&
+          mc_chunk_nibbles_get(data->block_light, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &block) &&
+          block == 0 && data->heightmap[8u * 16u + 7u] == 64 && f->world->fields.f == 5 &&
+          f->app.world_classes->chunk_a && player->player.u == !normal &&
+          player->player.private_a == (normal ? 0 : 37) && player->living.Y == (normal ? 16 : 20) &&
+          player->living.av == 0 && f->world->fields.J == !normal && pending == expected_pending &&
+          s->sounds == (normal ? 2u : 0u) && s->impacts == (normal ? 1u : 0u) && s->item != NULL &&
+          s->item->base.bF && !s->item->base.be &&
+          mc_item_stack_fields_get(s->item->stack, &stack) == MC_ITEM_STACK_OK && stack.id == 37 &&
+          stack.count == 1 && stack.damage == 0);
+    printf("ARROW_FLOWER_PREFIX phase=%s cells=%zu additions=%zu flower=%u metadata=%u "
+           "sleeping=%d timer=%" PRId32 " health=%" PRId32 " J=%d pending=%d "
+           "world-seed=%016" PRIx64 " player-seed=%016" PRIx64 " arrow-seed=%016" PRIx64
+           " world-cache=%d player-cache=%d arrow-cache=%d world-gaussian=%016" PRIx64
+           " player-gaussian=%016" PRIx64 " arrow-gaussian=%016" PRIx64 "\n",
+           phase, s->cells, s->additions, (unsigned int)data->blocks[ap_index(7, 64, 8)],
+           (unsigned int)metadata, (int)player->player.u, player->player.private_a,
+           player->living.Y, (int)f->world->fields.J, (int)pending, f->world->fields.r->state,
+           f->player->random->state, s->arrow->random->state,
+           (int)f->world->fields.r->have_next_next_gaussian,
+           (int)f->player->random->have_next_next_gaussian,
+           (int)s->arrow->random->have_next_next_gaussian,
+           ap_bits(f->world->fields.r->next_next_gaussian),
+           ap_bits(f->player->random->next_next_gaussian),
+           ap_bits(s->arrow->random->next_next_gaussian));
+    return true;
 }
 
 static bool ap_construct(ap_fixture *s) {
@@ -348,6 +440,8 @@ static bool ap_construct(ap_fixture *s) {
          * Player occurrence remains owned by the independent World ledger. */
         f->world->fields.d = NULL;
     }
+    if (ap_flower(s))
+        CHECK(ap_flower_input(s));
     return true;
 }
 
@@ -438,8 +532,9 @@ static bool ap_bed_failure(ap_fixture *s, mc_arrow_tick_state *state) {
     mc_arrow_tick_call *call = s->call;
     mc_arrow_tick_hurt_work *hurt = call->hurt;
     mc_entity_damage_execution_view damage = {0};
-    const bool removal =
-        ap_is(s, "wake-bed-ladder-removal-source") || ap_is(s, "wake-bed-torch-removal-source");
+    const bool removal = ap_is(s, "wake-bed-ladder-removal-source") ||
+                         ap_is(s, "wake-bed-torch-removal-source") ||
+                         ap_is(s, "wake-bed-flower-removal-source");
     const size_t cells = ap_attached_neighbor(s) && !removal ? 1u : 2u;
     CHECK(state->hurt_cleanup_acquired &&
           state->failure->classification == MC_ARROW_TICK_FAILURE_SOURCE_EXCEPTION &&
@@ -457,13 +552,28 @@ static bool ap_bed_failure(ap_fixture *s, mc_arrow_tick_state *state) {
             hurt->error.player_wake.error == NULL ? NULL : hurt->error.player_wake.error->occupancy;
         CHECK(drop == NULL && occupancy != NULL && occupancy->mutation != NULL &&
               occupancy->mutation->hook_class != NULL &&
-              strcmp(occupancy->mutation->hook_class, ap_torch(s) ? "vm" : "dp") == 0 &&
-              occupancy->mutation->hook_bytecode == (ap_torch(s) ? 164u : 123u));
+              strcmp(occupancy->mutation->hook_class, ap_flower(s)  ? "wb"
+                                                      : ap_torch(s) ? "vm"
+                                                                    : "dp") == 0 &&
+              occupancy->mutation->hook_bytecode == (ap_flower(s)  ? 17u
+                                                     : ap_torch(s) ? 164u
+                                                                   : 123u));
     } else {
         CHECK(drop != NULL && drop->entity == s->item && !drop->active &&
               drop->publication_returned && drop->insertion.observer_returned &&
               drop->publication_scope.consumed && drop->constructor_scope.consumed &&
               drop->publication.cause.system_error == 57);
+    }
+    if (ap_flower(s)) {
+        const mc_world_placement_error *occupancy =
+            hurt->error.player_wake.error == NULL ? NULL : hurt->error.player_wake.error->occupancy;
+        const mc_world_mutation_error *mutation = occupancy == NULL ? NULL : occupancy->mutation;
+        CHECK(mutation != NULL && mutation->hook_class != NULL &&
+              strcmp(mutation->hook_class, "wb") == 0 && mutation->hook_bytecode == 17 &&
+              mutation->cause_hook_class != NULL && strcmp(mutation->cause_hook_class, "wb") == 0 &&
+              mutation->cause_hook_method != NULL &&
+              strcmp(mutation->cause_hook_method, "h(Lfd;III)V") == 0 &&
+              mutation->cause_hook_bytecode == (removal ? 35u : 26u));
     }
     CHECK(!hurt->error.living_damage.entered && f->player->local_player->fields.player.u &&
           f->player->local_player->fields.player.private_a == 37 && f->world->fields.J &&
@@ -476,6 +586,8 @@ static bool ap_bed_failure(ap_fixture *s, mc_arrow_tick_state *state) {
         MC_ARROW_TICK_UNWIND_DIAGNOSTIC, MC_ARROW_TICK_UNWIND_CAPTURE,
         MC_ARROW_TICK_UNWIND_HURT_CLOSE, MC_ARROW_TICK_UNWIND_HURT_CLEANUP,
         MC_ARROW_TICK_UNWIND_QUIESCENT};
+    static const char *const phase_names[] = {"diagnostic", "capture", "hurt-close", "hurt-cleanup",
+                                              "quiescent"};
     for (size_t i = 0; i < sizeof(phases) / sizeof(phases[0]); ++i) {
         CHECK(ap_unwind_to(call, phases[i], i == 4, state) && s->cells == cells &&
               s->additions == 1 && s->sounds == 0 && s->impacts == 0 && s->item->base.bF &&
@@ -485,6 +597,11 @@ static bool ap_bed_failure(ap_fixture *s, mc_arrow_tick_state *state) {
               f->player->random->state == player_random.state &&
               s->arrow->random->state == arrow_random.state &&
               f->world->fields.r->state == world_random.state);
+        if (ap_flower(s))
+            CHECK(ap_random_same(*f->player->random, player_random) &&
+                  ap_random_same(*s->arrow->random, arrow_random) &&
+                  ap_random_same(*f->world->fields.r, world_random) &&
+                  ap_flower_prefix(s, phase_names[i], i < 3));
     }
     CHECK(state->failure->effect == NULL && !state->hurt_cleanup_acquired &&
           hurt->execution.cleaned && f->player->local_player->pending_damage_wake == NULL &&
@@ -506,7 +623,7 @@ static bool ap_run(ap_fixture *s) {
           !state.hurt_prior_pending && s->valid);
     mc_living_entity_fields *living = mc_entity_living_fields(f->player);
     if (ap_is(s, "live") || ap_is(s, "fatal") || ap_is(s, "wake") || ap_is(s, "wake-bed-foot") ||
-        ap_is(s, "wake-bed-ladder") || ap_is(s, "wake-bed-torch")) {
+        ap_is(s, "wake-bed-ladder") || ap_is(s, "wake-bed-torch") || ap_is(s, "wake-bed-flower")) {
         const bool fatal = ap_is(s, "fatal");
         CHECK(status == MC_ARROW_TICK_OK && state.source_returned && state.hurt_continued &&
               state.hurt_result && state.hurt_bytes == 0 && s->call->hurt == NULL &&
@@ -576,6 +693,8 @@ static bool ap_run(ap_fixture *s) {
                     f->player->local_player->fields.player.c->main_slots[0] == s->stack)));
         }
     }
+    if (ap_is(s, "wake-bed-flower"))
+        CHECK(ap_flower_prefix(s, "returned", false));
     CHECK(mc_arrow_tick_retire(&s->call) == MC_ARROW_TICK_OK && s->call == NULL &&
           s->arrow->arrow->tick_call == NULL);
     if (s->receipt != NULL)
@@ -593,6 +712,9 @@ int main(int argc, char **argv) {
          strcmp(argv[1], "wake-bed-ladder-removal-source") != 0 &&
          strcmp(argv[1], "wake-bed-torch") != 0 && strcmp(argv[1], "wake-bed-torch-source") != 0 &&
          strcmp(argv[1], "wake-bed-torch-removal-source") != 0 &&
+         strcmp(argv[1], "wake-bed-flower") != 0 &&
+         strcmp(argv[1], "wake-bed-flower-source") != 0 &&
+         strcmp(argv[1], "wake-bed-flower-removal-source") != 0 &&
          strcmp(argv[1], "wake-source-null-list") != 0) ||
         CD(argv[3]) != 0 || !mc_math_trig_init(&trig))
         return 2;

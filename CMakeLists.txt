@@ -4360,13 +4360,22 @@ if(BUILD_TESTING)
             "(result: ${MC_TEST_MINECART_STORAGE_PYTHON_RESULT}): "
             "${MC_TEST_MINECART_STORAGE_PYTHON_ERROR}")
     endif()
+    set(_mc_minecart_storage_work_parent "${CMAKE_CURRENT_BINARY_DIR}")
+    file(RELATIVE_PATH _mc_minecart_storage_build_relative
+        "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")
+    if(_mc_minecart_storage_build_relative MATCHES "^\\.local(/|$)")
+        # Private captures remain direct .local children, including nested builds.
+        set(_mc_minecart_storage_work_parent "${CMAKE_CURRENT_SOURCE_DIR}/.local")
+    endif()
     add_test(NAME entity.minecart_storage
         COMMAND "${MC_TEST_MINECART_STORAGE_PYTHON}"
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_minecart_storage.py"
         --executable "$<TARGET_FILE:mc_test_entity_minecart_storage>"
-        --work-dir "${CMAKE_CURRENT_BINARY_DIR}")
+        --work-dir "${_mc_minecart_storage_work_parent}")
     set_tests_properties(entity.minecart_storage PROPERTIES
         LABELS "public;integration;ownership;storage")
+    unset(_mc_minecart_storage_build_relative)
+    unset(_mc_minecart_storage_work_parent)
 
     add_test(NAME world.dungeon
         COMMAND "${Python3_EXECUTABLE}"
@@ -5759,6 +5768,7 @@ include(cmake/tests/metadata_set.cmake)
 include(cmake/tests/mob_death_execution.cmake)
 include(cmake/tests/world_bed_exit_execution.cmake)
 include(cmake/tests/world_mutation_support_execution.cmake)
+include(cmake/tests/world_plant_survival_execution.cmake)
 include(cmake/tests/world_notification_execution.cmake)
 include(cmake/tests/arrow_world_tick_cleanup.cmake)
 include(cmake/client_respawn.cmake)

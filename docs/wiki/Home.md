@@ -14,7 +14,9 @@ its Item before the notifying air setter removes the Ladder. Interrupted
 observers preserve each completed prefix and inserted Item. Prepared real
 Arrow hits cover wake and staged failure cleanup. The
 [ordinary Torch neighbor](Combat-and-projectiles#torch-removal-and-scene-inputs)
-shares that execution through both support-loss removal paths.
+shares that execution through both support-loss removal paths. The
+[Flower neighbor](Combat-and-projectiles#flower-survival-during-wake) keeps
+supported Flowers and orders unsupported removal after Item publication.
 
 [Slime removal](Combat-and-projectiles#slime-removal-and-splitting) runs through
 ordinary Mob ticks. Two Windows scenes use the usual controls to pause and

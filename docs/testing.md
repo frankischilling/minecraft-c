@@ -1,5 +1,92 @@
 # Test scope and reproduction
 
+## Flower survival and removal during Player wake
+
+Two fresh unchanged-original interpreters agree on supported Grass, unsupported
+Air and the Item-observer exception. The [packet](../tests/reference/entity/flower_wake/README.md)
+binds 32 classes and eighteen selected method bodies. The original light query
+uses literal zero subtraction; World field `f` remains a separate recorded
+input. Bright real sky changes the defining Chunk class's shared sky-seen flag.
+No original light or sky getter is replaced.
+
+The first native Windows selection passes seven Flower cases and fifteen
+preceding Torch/Ladder cases. The hidden-sky case stops at a real range
+notification missing from the fixture observer. Adding the exact callback
+checks `(7,64,8)` through `(7,65,8)`, one prior cell notification, one published
+Item, sleeping timer 37, and height 65 before its store. The rebuilt selection
+then passes all 23 tests in 1.25 seconds. Three native calls match 34 supported,
+57 unsupported and 49 publication-exception values with empty stderr and
+checked cleanup. Low-light controls remain separate from that bright original
+projection.
+
+Seven actual query controls cover cold acquisition with an outstanding
+descendant, an actual Source exception and both together; conditional sky
+visibility with asymmetric height indices; negative Y before acquisition; and
+a separate defining class's shared sky flag. The first Source-only call
+returns genuine IO with its outer token restored, but a later continuation
+lease probe incorrectly turns the retained FAILED phase into native refusal.
+Private diagnostics preserve all 31 linked libraries and identify that exact
+first failed predicate. Successful returns now perform the exact token/lease
+checks; failed lower calls preserve their already captured raw/native channels
+without probing another continuation lease. The unchanged seven-mode fixture
+then passes, alongside all 23 direct cases: 26 Windows tests in 2.70 seconds.
+
+A first Linux copy overlaps the reference packet's wording refresh and fails
+three closed-envelope checks. Copying the completed frozen packet passes all
+26 selected tests without another C change. With the Source-failure correction
+and query controls, sanitized Linux passes 31 tests in 7.92 seconds, including
+both packet modes and the three support controls. Three further real cold
+sky-query cases use negative Y: plant light returns zero before acquisition,
+then conditional sky visibility reaches the saved Item and the same failure
+combinations. All ten native query modes pass on Windows; normal and optimized
+readers reject 24 malformed receipts. MSVC first rejects two signed literal
+comparisons in the new fixture; explicit unsigned literals preserve their
+values and assertions and compile cleanly.
+
+Three real Arrow cases enter sleep, then exercise normal Flower removal and
+both publication and later cell-observer exceptions. They preserve the actual
+input light planes, selected Arrow operands, committed cell/Item/Player prefix
+and all three full Random states through five native unwind phases. The
+normal case finishes wake before four damage. The final focused Windows
+selection passes all 47 tests in 5.41 seconds, including all earlier Arrow,
+Torch and Ladder cases and both packet modes.
+
+The first full Windows suite passes 1,191 of 1,192 tests in 609.24 seconds.
+Minecart storage stops before native entry: its capture guard permits only
+direct `.local` children, while the build is nested beneath that directory.
+The same driver and executable pass with the admitted parent: 335 native
+checks, fourteen source cases and 314 independent disk checks. CMake now routes
+only builds nested beneath the source `.local` to that direct parent. The
+guard remains unchanged. The first sanitized Linux full suite passes all
+1,038 tests in 474.40 seconds; its external build parent already satisfies
+the contract. The correction and eight source-binding files are admitted
+separately; every game, fixture and original-packet byte remains unchanged.
+
+Both complete suites then pass against the requalified 6,106-file freeze:
+Windows MSVC Release passes all 1,192 tests in 531.31 seconds, and Linux
+Clang 18.1.8 Debug passes all 1,038 in 519.99 seconds with ASan, UBSan and leak
+detection. Each preserves every preceding name and adds exactly sixteen,
+without duplicates, skips or unrun cases. Each host matches all 140 selected
+original values with empty native stderr and checked cleanup. All 2,382 C
+files and fragments pass pinned formatting; all eight changed C units compile
+as actual strict GCC 13 sanitizer objects. Wider constructor entropy, Gaussian
+caches, Chunk planes and original stacks retain the packet's unpaired limits.
+
+Final compiled monitor-2 scenes pass 2,489 Bed and 452 Arrow/Pig checks. Bed
+records 100 completed World ticks from input to dawn. Arrow/Pig preserves the
+exact live cohort, observes Pig health six and no Arrow, then performs SDK
+pause/save. Full independent save readback and native window cleanup pass.
+Each scene retains 2,401 source/product inputs and all 413 assets unchanged;
+all six images are inspected. These are separate graphical regressions from
+the prepared Flower damage cases. Earlier focus and scene failures remain
+recorded; unrestricted play, general focus reliability, graphical damage wake,
+original audiovisual equality and measured FPS remain unqualified.
+
+Final publication controls pass 68 tests on Windows in 29.97 seconds and 66
+on sanitized Linux in 16.97 seconds, including the actual Minecart storage
+driver. Only five result pages and their source table change after full
+qualification. Game, fixture and original-packet bytes remain preserved.
+
 ## Torch removal during Player wake and loaded-scene fixtures
 
 The first actual Torch wake clears occupancy, then reaches the explicit owned

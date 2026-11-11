@@ -47,6 +47,49 @@ kinds, placement/survival branches, each reed/cactus neighbor direction and late
 nullable predicates. Their earlier verification scope is separate from the
 lifecycle work below.
 
+## Owned Flower neighbor during Player wake
+
+The retained wake execution now reaches the same ordinary Flower neighbor and
+final survival helper. The empty base neighbor returns before `wb.b:17` enters
+`wb.h`. That helper calls virtual survival at 6, reads current metadata at 23,
+publishes the inherited drop at 26, and invokes notifying removal at 35.
+The air setter's ordinary false return is discarded. Successful support does
+not draw Random or publish an Item.
+
+The shared survival body keeps plant light `fd.m` at `wb.g:5`, conditional
+sky visibility at 18, the below-cell ID at 32 and live virtual substrate at 35.
+Plant light passes literal subtraction zero to the actual Chunk body; World
+field `f` is recorded separately as sky subtraction. Positive real sky light
+sets the defining Chunk class's shared flag. No target-air or Y gate is added
+to Flower survival.
+
+Owned query and plant frames borrow the exact evaluated World token, defining
+classes, code and canonical result. Every reached acquisition keeps its actual
+lower diagnostics and raw return independently of native continuation. A
+native refusal stops before payload/output or the next Source operation. The
+mutation call retains failed frames through canonical drainage and checked
+close. A legitimate Source failure can retain a FAILED execution phase; it
+does not request the OPEN-only continuation lease again. Successful lower
+returns still require exact token/lease checks before another operation.
+Nested callers preserve a genuine lower World cause when their own projected
+detail remains empty.
+
+The [original packet](../../tests/reference/entity/flower_wake/README.md) records
+supported Grass, unsupported Air and an Item-observer exception. Native
+comparison selects 34, 57 and 49 values respectively, including actual light,
+height, floor and final Chunk flag. Wider Chunk planes, constructor entropy,
+Gaussian caches and original stacks remain unpaired. Direct native controls
+also cover independent scope, missing Math, later cell-observer failure,
+low-light visible sky and low-light hidden sky. The hidden case checks the
+real range notification before the height store. Separate actual query
+controls retain cold plant-light and cold sky-visible failures, including
+Source exceptions and outstanding descendants. Real Arrow cases preserve
+different publication/removal prefixes through all five native unwind phases.
+
+Other owned plant kinds, growth and addition/tick callers retain their separate
+frontiers. These prepared calls do not establish natural growth, graphical
+sleeping-Player damage, original audiovisual equality or an FPS change.
+
 ## Synchronous callbacks and ticks
 
 The [plant callback subsystem](../../src/world/runtime/mutation/plants) implements

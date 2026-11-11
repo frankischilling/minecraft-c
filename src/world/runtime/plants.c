@@ -2,9 +2,11 @@
 
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
+#include "execution_children_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
 #include "plant_substrate_internal.h"
+#include "plants_execution_internal.h"
 #include "runtime_internal.h"
 
 /* Concrete source receiver predicates over actual World and Registry owners. */
@@ -12,6 +14,7 @@ typedef struct plant_frame {
     mc_world_runtime *world;
     const mc_block *receiver;
     mc_world_plant_error *error;
+    mc_world_plant_execution *owned;
 } plant_frame;
 
 static mc_registry_error empty_registry(void) {
@@ -77,9 +80,156 @@ static void caller(plant_frame *frame, const char *client_class, const char *ser
     frame->error->caller_bytecode = pc;
 }
 
+static bool plant_quiet(const mc_world_runtime_execution_result *result) {
+    if (result->ownership_status != MC_WORLD_STORAGE_OK || result->selection_ready ||
+        result->math_failed || result->root_pending)
+        return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (result->pending[i].used)
+            return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (result->closes[i].used)
+            return false;
+    return true;
+}
+
+static bool plant_scope(mc_world_plant_execution *frame, mc_entity_tick_execution_site site) {
+    mc_entity_tick_execution_world_token token;
+    if (!mc_entity_tick_execution_current_world(frame->execution, &token) ||
+        token.owner != frame->world.owner || token.slot != frame->world.slot ||
+        token.generation != frame->world.generation) {
+        mc_world_runtime_execution_result_note(frame->owned, MC_WORLD_STORAGE_BUSY,
+                                               "Plant exact evaluated World token", site);
+        return false;
+    }
+    mc_world_access_failure_lease *lease = mc_entity_tick_execution_world_lease(frame->execution);
+    if (lease == NULL || (frame->lease != NULL && frame->lease != lease)) {
+        mc_world_runtime_execution_result_note(frame->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                               "Plant exact producer lease changed", site);
+        return false;
+    }
+    return true;
+}
+
+static bool plant_current(mc_world_plant_execution *frame, mc_world_runtime *world,
+                          mc_entity_tick_execution_site site) {
+    if (frame->owned->ownership_status != MC_WORLD_STORAGE_OK)
+        return false;
+    if (!plant_quiet(frame->owned)) {
+        mc_world_runtime_execution_result_note(frame->owned, MC_WORLD_STORAGE_BUSY,
+                                               "Plant continuation requires quiet result", site);
+        return false;
+    }
+    if (!plant_scope(frame, site))
+        return false;
+    mc_world_access_failure_lease *lease = NULL;
+    const mc_world_storage_status status =
+        mc_world_execution_child_lease(frame->execution, world, &lease);
+    mc_world_runtime_execution_result_note(frame->owned, status,
+                                           "Plant checked evaluated World lease", site);
+    if (status != MC_WORLD_STORAGE_OK)
+        return false;
+    if (frame->lease != NULL && frame->lease != lease) {
+        mc_world_runtime_execution_result_note(frame->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                               "Plant exact producer lease changed", site);
+        return false;
+    }
+    frame->lease = lease;
+    return true;
+}
+
+static mc_entity_tick_execution_site plant_site(const plant_frame *frame, unsigned int pc) {
+    return (mc_entity_tick_execution_site){frame->error->declaring_class,
+                                           frame->error->declaring_method, "(Lfd;III)Z", (int)pc};
+}
+
+static bool query_result(plant_frame *frame, bool completed, mc_entity_tick_execution_site site) {
+    mc_world_plant_execution *owned = frame->owned;
+    if (completed && plant_current(owned, frame->world, site))
+        return true;
+    /* A Source failure can retain its loader in FAILED phase. The ordinary
+     * continuation lease accessor intentionally admits only OPEN executions;
+     * do not turn that retained Throwable into another native refusal. */
+    owned->native_stopped =
+        owned->query.native_stopped || owned->owned->ownership_status != MC_WORLD_STORAGE_OK;
+    frame->error->status = owned->query_status;
+    if (!owned->native_stopped && owned->query_status != MC_WORLD_STORAGE_OK) {
+        frame->error->query = owned->query.detail;
+        frame->error->registry = owned->query.detail.registry;
+        return storage_fail(frame->error, &owned->query.detail.cause);
+    }
+    return false;
+}
+
+static bool flower_light(plant_frame *frame, int32_t x, int32_t y, int32_t z, int32_t *out) {
+    if (frame->owned == NULL) {
+        if (mc_world_runtime_plant_light(frame->world, x, y, z, out, &frame->error->query) ==
+            MC_WORLD_STORAGE_OK)
+            return true;
+        frame->error->registry = frame->error->query.registry;
+        return storage_fail(frame->error, &frame->error->query.cause);
+    }
+    mc_world_plant_execution *owned = frame->owned;
+    const mc_entity_tick_execution_site site = plant_site(frame, 5);
+    if (!plant_current(owned, frame->world, site)) {
+        owned->native_stopped = true;
+        return false;
+    }
+    mc_world_query_execution_init(&owned->query, owned->execution, owned->code_classes, owned->code,
+                                  site, owned->owned);
+    const bool completed = mc_world_runtime_plant_light_in_execution(
+        &owned->query, frame->world, x, y, z, out, &owned->query_status);
+    return query_result(frame, completed, site);
+}
+
+static bool flower_sky(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {
+    if (frame->owned == NULL) {
+        if (mc_world_runtime_sky_visible(frame->world, x, y, z, out, &frame->error->query) ==
+            MC_WORLD_STORAGE_OK)
+            return true;
+        frame->error->registry = frame->error->query.registry;
+        return storage_fail(frame->error, &frame->error->query.cause);
+    }
+    mc_world_plant_execution *owned = frame->owned;
+    const mc_entity_tick_execution_site site = plant_site(frame, 18);
+    if (!plant_current(owned, frame->world, site)) {
+        owned->native_stopped = true;
+        return false;
+    }
+    mc_world_query_execution_init(&owned->query, owned->execution, owned->code_classes, owned->code,
+                                  site, owned->owned);
+    const bool completed = mc_world_runtime_sky_visible_in_execution(
+        &owned->query, frame->world, x, y, z, out, &owned->query_status);
+    return query_result(frame, completed, site);
+}
+
 static bool block_get(plant_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z,
                       int32_t *out) {
     frame->error->bytecode = pc;
+    if (frame->owned != NULL) {
+        mc_world_plant_execution *owned = frame->owned;
+        const mc_entity_tick_execution_site site = plant_site(frame, pc);
+        if (!plant_current(owned, frame->world, site)) {
+            owned->native_stopped = true;
+            return false;
+        }
+        /* The scalar initializer owns/resets its result; this child borrows the
+         * already participating canonical result without initializing it. */
+        owned->block = (mc_world_block_execution){.execution = owned->execution,
+                                                  .code = owned->code,
+                                                  .receiver_site = site,
+                                                  .owned = owned->owned};
+        const bool completed = mc_world_runtime_block_get_in_execution(
+            &owned->block, frame->world, x, y, z, out, &owned->block_cause, &owned->block_status);
+        if (completed && plant_current(owned, frame->world, site))
+            return true;
+        owned->native_stopped =
+            owned->block.native_stopped || owned->owned->ownership_status != MC_WORLD_STORAGE_OK;
+        frame->error->status = owned->block_status;
+        if (!owned->native_stopped && owned->block_status != MC_WORLD_STORAGE_OK)
+            return storage_fail(frame->error, &owned->block_cause);
+        return false;
+    }
     mc_world_storage_error cause = {0};
     if (mc_world_runtime_block_get(frame->world, x, y, z, out, &cause) != MC_WORLD_STORAGE_OK)
         return storage_fail(frame->error, &cause);
@@ -151,6 +301,10 @@ static bool base_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, 
 /* wb.d / nw.c dispatches on the ACTUAL retained receiver. Mushroom and dead
  * bush select their own substrate body; tall grass inherits wb/nw. */
 static bool substrate(plant_frame *frame, int32_t id, bool *out) {
+    if (frame->owned != NULL && !plant_current(frame->owned, frame->world, plant_site(frame, 35))) {
+        frame->owned->native_stopped = true;
+        return false;
+    }
     mc_world_plant_substrate_error error;
     const mc_registry_status status = mc_world_plant_substrate(frame->receiver, id, out, &error);
     frame->error->declaring_class = error.class_name;
@@ -183,19 +337,13 @@ static bool flower_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z
 static bool flower_survives(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {
     stage(frame, "wb", "nw", "g", "f", 5);
     int32_t light;
-    if (mc_world_runtime_plant_light(frame->world, x, y, z, &light, &frame->error->query) !=
-        MC_WORLD_STORAGE_OK) {
-        frame->error->registry = frame->error->query.registry;
-        return storage_fail(frame->error, &frame->error->query.cause);
-    }
+    if (!flower_light(frame, x, y, z, &light))
+        return false;
     if (light < 8) {
         frame->error->bytecode = 18;
         bool visible;
-        if (mc_world_runtime_sky_visible(frame->world, x, y, z, &visible, &frame->error->query) !=
-            MC_WORLD_STORAGE_OK) {
-            frame->error->registry = frame->error->query.registry;
-            return storage_fail(frame->error, &frame->error->query.cause);
-        }
+        if (!flower_sky(frame, x, y, z, &visible))
+            return false;
         if (!visible) {
             *out = false;
             return true;
@@ -468,7 +616,7 @@ static mc_world_storage_status enter(mc_world_runtime *world, const mc_block *re
     if (receiver == NULL) {
         (void)fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Plant predicate receiver is null");
     } else {
-        plant_frame entered = {world, receiver, &frame};
+        plant_frame entered = {world, receiver, &frame, NULL};
         /* Both dispatchers set value only on complete normal source return. */
         if (placement)
             (void)can_place(&entered, x, y, z, &value);
@@ -499,4 +647,56 @@ mc_world_storage_status mc_world_runtime_plant_can_place(mc_world_runtime *world
                                                          int32_t y, int32_t z, bool *out,
                                                          mc_world_plant_error *error) {
     return enter(world, receiver, x, y, z, true, out, error);
+}
+
+void mc_world_plant_execution_init(mc_world_plant_execution *frame,
+                                   mc_entity_tick_execution *execution,
+                                   mc_world_runtime_classes *code_classes,
+                                   mc_world_runtime_execution_code code,
+                                   mc_entity_tick_execution_world_token world,
+                                   mc_entity_tick_execution_site receiver_site,
+                                   mc_world_runtime_execution_result *owned) {
+    if (frame != NULL)
+        *frame = (mc_world_plant_execution){.execution = execution,
+                                            .code_classes = code_classes,
+                                            .code = code,
+                                            .world = world,
+                                            .receiver_site = receiver_site,
+                                            .owned = owned};
+}
+
+bool mc_world_runtime_flower_survives_in_execution(mc_world_plant_execution *frame,
+                                                   mc_world_runtime *world,
+                                                   const mc_block *receiver, int32_t x, int32_t y,
+                                                   int32_t z, bool *out,
+                                                   mc_world_storage_status *raw) {
+    if (frame == NULL)
+        return false;
+    if (frame->execution == NULL || frame->execution->identity != frame->execution ||
+        frame->code_classes == NULL || frame->owned == NULL || frame->entered || world == NULL ||
+        receiver == NULL || receiver->classes == NULL || receiver->kind != MC_BLOCK_FLOWER ||
+        receiver->classes->options.side != MC_REGISTRY_CLIENT || out == NULL || raw == NULL ||
+        world->construction.mode != MC_WORLD_RUNTIME_GAME ||
+        world->construction.phase == MC_WORLD_RUNTIME_RETIRED) {
+        mc_world_runtime_execution_result_note(frame->owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "Flower survival execution/fresh outputs",
+                                               frame->receiver_site);
+        return false;
+    }
+    if (!plant_current(frame, world, frame->receiver_site))
+        return false;
+    frame->entered = true;
+    frame->detail = empty_error();
+    plant_frame source = {world, receiver, &frame->detail, frame};
+    bool value = false;
+    const bool returned = flower_survives(&source, x, y, z, &value);
+    *raw = frame->detail.status;
+    frame->completed = returned && plant_current(frame, world, frame->receiver_site);
+    if (!frame->completed) {
+        frame->native_stopped |= frame->owned->ownership_status != MC_WORLD_STORAGE_OK;
+        return false;
+    }
+    *out = value;
+    frame->detail = empty_error();
+    return true;
 }

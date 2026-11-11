@@ -254,6 +254,14 @@ typedef enum dw_recursive_mode {
     DW_RECURSIVE_TORCH_EARLY,
     DW_RECURSIVE_TORCH_EARLY_SOURCE,
     DW_RECURSIVE_TORCH_EARLY_REMOVAL_SOURCE,
+    DW_RECURSIVE_FLOWER,
+    DW_RECURSIVE_FLOWER_SOURCE,
+    DW_RECURSIVE_FLOWER_SCOPE,
+    DW_RECURSIVE_FLOWER_MATH_MISSING,
+    DW_RECURSIVE_FLOWER_REMOVAL_SOURCE,
+    DW_RECURSIVE_FLOWER_SUPPORTED,
+    DW_RECURSIVE_FLOWER_SKY_SUPPORTED,
+    DW_RECURSIVE_FLOWER_DARK,
 } dw_recursive_mode;
 
 static bool dw_foot(dw_recursive_mode mode) {
@@ -280,16 +288,24 @@ static bool dw_torch_early(dw_recursive_mode mode) {
            mode == DW_RECURSIVE_TORCH_EARLY_REMOVAL_SOURCE;
 }
 
+static bool dw_flower(dw_recursive_mode mode) {
+    return mode >= DW_RECURSIVE_FLOWER && mode <= DW_RECURSIVE_FLOWER_DARK;
+}
+
+static bool dw_flower_supported(dw_recursive_mode mode) {
+    return mode == DW_RECURSIVE_FLOWER_SUPPORTED || mode == DW_RECURSIVE_FLOWER_SKY_SUPPORTED;
+}
+
 static bool dw_attached_neighbor(dw_recursive_mode mode) {
-    return dw_ladder(mode) || dw_torch(mode);
+    return dw_ladder(mode) || dw_torch(mode) || dw_flower(mode);
 }
 
 static uint8_t dw_neighbor_id(dw_recursive_mode mode) {
-    return dw_torch(mode) ? 50 : 65;
+    return dw_flower(mode) ? 37 : dw_torch(mode) ? 50 : 65;
 }
 
 static uint8_t dw_neighbor_metadata(dw_recursive_mode mode) {
-    return dw_torch(mode) ? 1 : 2;
+    return dw_flower(mode) ? 0 : dw_torch(mode) ? 1 : 2;
 }
 
 typedef struct dw_recursive_cell_sample {
@@ -304,6 +320,7 @@ typedef struct dw_recursive_observation {
     dw_recursive_cell_sample publication_sample;
     size_t cells_at_addition;
     size_t cells;
+    size_t ranges;
     size_t additions;
     bool publication_valid;
     mc_entity *published_item; /* Borrowed from the actual published World occurrence. */
@@ -360,7 +377,8 @@ static mc_world_storage_status dw_recursive_added(void *context, mc_world_runtim
     *error = (mc_world_storage_error){0};
     if (o->publication_valid &&
         (o->mode == DW_RECURSIVE_FOOT_SOURCE || o->mode == DW_RECURSIVE_LADDER_SOURCE ||
-         o->mode == DW_RECURSIVE_TORCH_SOURCE || o->mode == DW_RECURSIVE_TORCH_EARLY_SOURCE)) {
+         o->mode == DW_RECURSIVE_TORCH_SOURCE || o->mode == DW_RECURSIVE_TORCH_EARLY_SOURCE ||
+         o->mode == DW_RECURSIVE_FLOWER_SOURCE)) {
         const mc_world_storage_status status =
             mc_world_access_receipt_create(o->listener, NULL, &o->receipt, failure, error);
         if (status != MC_WORLD_STORAGE_OK)
@@ -371,7 +389,7 @@ static mc_world_storage_status dw_recursive_added(void *context, mc_world_runtim
     }
     if (o->publication_valid &&
         (o->mode == DW_RECURSIVE_FOOT_SCOPE || o->mode == DW_RECURSIVE_LADDER_SCOPE ||
-         o->mode == DW_RECURSIVE_TORCH_SCOPE)) {
+         o->mode == DW_RECURSIVE_TORCH_SCOPE || o->mode == DW_RECURSIVE_FLOWER_SCOPE)) {
         const mc_world_storage_status status = mc_entity_tick_execution_push_world(
             o->execution, world, (mc_entity_tick_execution_site){"test", "added", "()V", 0},
             &o->external);
@@ -379,6 +397,33 @@ static mc_world_storage_status dw_recursive_added(void *context, mc_world_runtim
         return status;
     }
     return o->publication_valid ? MC_WORLD_STORAGE_OK : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+}
+
+static mc_world_storage_status dw_recursive_range(void *context, mc_world_runtime *world,
+                                                  int32_t min_x, int32_t min_y, int32_t min_z,
+                                                  int32_t max_x, int32_t max_y, int32_t max_z,
+                                                  mc_world_storage_error *error,
+                                                  mc_world_access_failure *failure) {
+    (void)failure;
+    dw_recursive_observation *o = context;
+    const mc_chunk_data *data = o->fixture->world->states[0]->data;
+    const mc_player_fields *p = &o->fixture->actor->local_player->fields.player;
+    const bool valid =
+        o->mode == DW_RECURSIVE_FLOWER_DARK && ++o->ranges == 1 &&
+        world == o->fixture->world->worlds[0] && min_x == 7 && max_x == 7 && min_z == 8 &&
+        max_z == 8 && min_y == 64 && max_y == 65 && o->cells == 1 && o->additions == 1 &&
+        o->publication_valid && data->blocks[boxes_index(7, 64, 8)] == 0 &&
+        data->heightmap[(8u << 4u) | 7u] == 65 && p->u && p->private_a == 37 && world->fields.J;
+    if (!valid) {
+        fprintf(stderr, "Flower range mismatch: (%d,%d,%d)-(%d,%d,%d) count=%zu\n", min_x, min_y,
+                min_z, max_x, max_y, max_z, o->ranges);
+        *error = (mc_world_storage_error){MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                          "Flower exact height-change observer", 0};
+        return error->status;
+    }
+    puts("FLOWER_WAKE_RANGE min=7,64,8 max=7,65,8 prior-cells=1 Item=1 height-before-store=65");
+    *error = (mc_world_storage_error){0};
+    return MC_WORLD_STORAGE_OK;
 }
 
 static mc_world_storage_status dw_recursive_cell(void *context, mc_world_runtime *world, int32_t x,
@@ -421,7 +466,8 @@ static mc_world_storage_status dw_recursive_cell(void *context, mc_world_runtime
         s->actor->base.world = NULL;
     if (o->mode == DW_RECURSIVE_OBSERVER_ERROR || o->mode == DW_RECURSIVE_LADDER_REMOVAL_SOURCE ||
         o->mode == DW_RECURSIVE_TORCH_REMOVAL_SOURCE ||
-        o->mode == DW_RECURSIVE_TORCH_EARLY_REMOVAL_SOURCE) {
+        o->mode == DW_RECURSIVE_TORCH_EARLY_REMOVAL_SOURCE ||
+        o->mode == DW_RECURSIVE_FLOWER_REMOVAL_SOURCE) {
         const mc_world_storage_status status =
             mc_world_access_receipt_create(o->listener, NULL, &o->receipt, failure, error);
         if (status != MC_WORLD_STORAGE_OK)
@@ -478,13 +524,26 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
         if (mode == DW_RECURSIVE_TORCH_SUPPORTED)
             CHECK(sw_cell(data, 6, 64, 8, 1, 0));
     }
+    if (dw_flower(mode)) {
+        CHECK(sw_cell(data, 7, 63, 8,
+                      dw_flower_supported(mode) || mode == DW_RECURSIVE_FLOWER_DARK ? 2 : 0, 0));
+        memset(data->skylight,
+               mode == DW_RECURSIVE_FLOWER_SKY_SUPPORTED || mode == DW_RECURSIVE_FLOWER_DARK ? 0
+                                                                                             : 255,
+               sizeof(data->skylight));
+        memset(data->block_light, 0, sizeof(data->block_light));
+        memset(data->heightmap, mode == DW_RECURSIVE_FLOWER_DARK ? 65 : 64,
+               sizeof(data->heightmap));
+        world->fields.f = 5;
+        f->classes[0]->chunk_a = false;
+    }
     if (mode == DW_RECURSIVE_NULL_CHUNK_WORLD) {
         observation.chunk = mc_world_store_chunk_object(world->options.store, f->states[0]);
         CHECK(observation.chunk != NULL && observation.chunk->d == world);
         observation.original_chunk_world = observation.chunk->d;
     }
-    const mc_world_access_source_callbacks callbacks = {.cell = dw_recursive_cell,
-                                                        .entity_added = dw_recursive_added};
+    const mc_world_access_source_callbacks callbacks = {
+        .cell = dw_recursive_cell, .range = dw_recursive_range, .entity_added = dw_recursive_added};
     CHECK(mc_world_access_source_create(&callbacks, &observation, &listener, NULL) ==
           MC_WORLD_STORAGE_OK);
     observation.listener = listener;
@@ -504,7 +563,8 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
         raw = mc_entity_effect_damage_in_context(p, f->registry[0], NULL, 0, &accepted, error);
     } else {
         if ((foot || attached) && mode != DW_RECURSIVE_FOOT_MATH_MISSING &&
-            mode != DW_RECURSIVE_LADDER_MATH_MISSING && mode != DW_RECURSIVE_TORCH_MATH_MISSING)
+            mode != DW_RECURSIVE_LADDER_MATH_MISSING && mode != DW_RECURSIVE_TORCH_MATH_MISSING &&
+            mode != DW_RECURSIVE_FLOWER_MATH_MISSING)
             CHECK(mc_math_classes_create(SIZE_MAX, &math_owner, NULL) == MC_MATH_CLASS_OK);
         mc_math_execution_init(&math, math_owner);
         mc_entity_tick_execution_init(execution, &math);
@@ -562,9 +622,10 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
                "\"player_seed\":\"%016" PRIx64 "\",\"item\":{"
                "\"position\":[\"%016" PRIx64 "\",\"%016" PRIx64 "\",\"%016" PRIx64 "\"],"
                "\"delay\":%d,\"stack\":[%d,%d,%d],\"inserted\":%s,\"world_same\":%s}}\n",
-               dw_torch(mode) ? "TORCH_WAKE_DROP"
-               : attached     ? "LADDER_WAKE_DROP"
-                              : "FOOT_WAKE_DROP",
+               dw_flower(mode)  ? "FLOWER_WAKE_DROP"
+               : dw_torch(mode) ? "TORCH_WAKE_DROP"
+               : attached       ? "LADDER_WAKE_DROP"
+                                : "FOOT_WAKE_DROP",
                world->fields.r->state, p->random->state, movement_double_bits(item->base.x),
                movement_double_bits(item->base.y), movement_double_bits(item->base.z), item->item.c,
                stack.id, stack.count, stack.damage, sw_bool(item->base.bF),
@@ -573,11 +634,15 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
             const dw_recursive_cell_sample *sample = &observation.publication_sample;
             printf("%s {\"head\":[%u,%u],\"%s\":[%u,%u],"
                    "\"sleeping\":%s,\"prior_cells\":%zu}\n",
-                   dw_torch(mode) ? "TORCH_WAKE_PUBLICATION" : "LADDER_WAKE_PUBLICATION",
+                   dw_flower(mode)  ? "FLOWER_WAKE_PUBLICATION"
+                   : dw_torch(mode) ? "TORCH_WAKE_PUBLICATION"
+                                    : "LADDER_WAKE_PUBLICATION",
                    (unsigned int)sample->head_id, (unsigned int)sample->head_metadata,
-                   dw_torch(mode) ? "torch" : "ladder", (unsigned int)sample->orphan_id,
-                   (unsigned int)sample->orphan_metadata, sw_bool(sample->sleeping),
-                   observation.cells_at_addition);
+                   dw_flower(mode)  ? "flower"
+                   : dw_torch(mode) ? "torch"
+                                    : "ladder",
+                   (unsigned int)sample->orphan_id, (unsigned int)sample->orphan_metadata,
+                   sw_bool(sample->sleeping), observation.cells_at_addition);
         }
     }
     if (dw_torch(mode)) {
@@ -590,6 +655,23 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
                (unsigned int)data->blocks[boxes_index(6, 64, 8)], (unsigned int)support_metadata,
                (unsigned int)data->blocks[boxes_index(7, 63, 8)], (unsigned int)floor_metadata);
     }
+    if (dw_flower(mode)) {
+        uint8_t floor_metadata = UINT8_MAX, sky = UINT8_MAX, block = UINT8_MAX;
+        CHECK(mc_chunk_nibbles_get(data->metadata, MC_CHUNK_NIBBLE_BYTES, 7, 63, 8,
+                                   &floor_metadata) &&
+              mc_chunk_nibbles_get(data->skylight, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &sky) &&
+              mc_chunk_nibbles_get(data->block_light, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &block));
+        printf("FLOWER_WAKE_ENV {\"flower_floor\":[%u,%u],\"light\":[%u,%u,%u],"
+               "\"sky_subtraction\":%d,\"chunk_light_seen\":%s,"
+               "\"world_seed\":\"%016" PRIx64 "\",\"player_seed\":\"%016" PRIx64 "\"}\n",
+               (unsigned int)data->blocks[boxes_index(7, 63, 8)], (unsigned int)floor_metadata,
+               (unsigned int)sky, (unsigned int)block,
+               (unsigned int)data->heightmap[(8u << 4u) | 7u], world->fields.f,
+               sw_bool(f->classes[0]->chunk_a), world->fields.r->state, p->random->state);
+        CHECK(f->classes[0]->chunk_a ==
+              (mode != DW_RECURSIVE_FLOWER_SKY_SUPPORTED && mode != DW_RECURSIVE_FLOWER_DARK));
+    }
+    CHECK(observation.ranges == (mode == DW_RECURSIVE_FLOWER_DARK ? 1u : 0u));
     if (null_exit) {
         const mc_entity_player_wake_state *wake = &error->player_wake;
         if (wake->child.pc != 4)
@@ -629,7 +711,8 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
         ok = true;
         goto cleanup;
     }
-    if (mode == DW_RECURSIVE_LADDER_SUPPORTED || mode == DW_RECURSIVE_TORCH_SUPPORTED) {
+    if (mode == DW_RECURSIVE_LADDER_SUPPORTED || mode == DW_RECURSIVE_TORCH_SUPPORTED ||
+        dw_flower_supported(mode)) {
         CHECK(continued && raw == MC_ENTITY_OK && !accepted && !fields->u &&
               fields->private_a == 0 && !world->fields.J && head_metadata == 8 &&
               orphan == dw_neighbor_id(mode) && orphan_metadata == dw_neighbor_metadata(mode) &&
@@ -640,7 +723,8 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
         goto cleanup;
     }
     if (mode == DW_RECURSIVE_LADDER_REMOVAL_SOURCE || mode == DW_RECURSIVE_TORCH_REMOVAL_SOURCE ||
-        mode == DW_RECURSIVE_TORCH_EARLY_REMOVAL_SOURCE) {
+        mode == DW_RECURSIVE_TORCH_EARLY_REMOVAL_SOURCE ||
+        mode == DW_RECURSIVE_FLOWER_REMOVAL_SOURCE) {
         mc_entity_damage_failure failure;
         const mc_world_placement_error *occupancy =
             error->player_wake.error == NULL ? NULL : error->player_wake.error->occupancy;
@@ -653,17 +737,21 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
               failure.source_proven && failure.site.pc == 34 &&
               strcmp(failure.exception_class, "java/lang/IllegalStateException") == 0 &&
               mutation != NULL && mutation->hook_class != NULL &&
-              strcmp(mutation->hook_class, dw_torch(mode) ? "vm" : "dp") == 0 &&
-              mutation->hook_bytecode == (dw_torch_early(mode) ? 6u
-                                          : dw_torch(mode)     ? 164u
-                                                               : 123u) &&
+              strcmp(mutation->hook_class, dw_flower(mode)  ? "wb"
+                                           : dw_torch(mode) ? "vm"
+                                                            : "dp") == 0 &&
+              mutation->hook_bytecode == (dw_flower(mode)        ? 17u
+                                          : dw_torch_early(mode) ? 6u
+                                          : dw_torch(mode)       ? 164u
+                                                                 : 123u) &&
               (!dw_torch_early(mode) || mutation->torch_survive_bytecode == 35));
         ok = true;
         goto cleanup;
     }
     if (foot || attached) {
         if (mode != DW_RECURSIVE_FOOT && mode != DW_RECURSIVE_LADDER &&
-            mode != DW_RECURSIVE_TORCH && mode != DW_RECURSIVE_TORCH_EARLY) {
+            mode != DW_RECURSIVE_TORCH && mode != DW_RECURSIVE_TORCH_EARLY &&
+            mode != DW_RECURSIVE_FLOWER && mode != DW_RECURSIVE_FLOWER_DARK) {
             mc_entity_damage_execution_view view = {0};
             CHECK(!continued && accepted && fields->u && fields->private_a == 37 &&
                   world->fields.J && head_metadata == 8 &&
@@ -678,7 +766,8 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
                   drop->constructor_scope.consumed && drop->publication_returned);
             if (mode == DW_RECURSIVE_FOOT_MATH_MISSING ||
                 mode == DW_RECURSIVE_LADDER_MATH_MISSING ||
-                mode == DW_RECURSIVE_TORCH_MATH_MISSING) {
+                mode == DW_RECURSIVE_TORCH_MATH_MISSING ||
+                mode == DW_RECURSIVE_FLOWER_MATH_MISSING) {
                 CHECK(raw == MC_ENTITY_OK && math.failed && damage->math_failed &&
                       view.result->math_failed && drop->insertion.entered &&
                       !drop->insertion.chunk_returned && observation.additions == 0 &&
@@ -687,7 +776,8 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
                 CHECK(observation.additions == 1 && observation.publication_valid &&
                       world->fields.b->count == entities + 1);
                 if (mode == DW_RECURSIVE_FOOT_SOURCE || mode == DW_RECURSIVE_LADDER_SOURCE ||
-                    mode == DW_RECURSIVE_TORCH_SOURCE || mode == DW_RECURSIVE_TORCH_EARLY_SOURCE) {
+                    mode == DW_RECURSIVE_TORCH_SOURCE || mode == DW_RECURSIVE_TORCH_EARLY_SOURCE ||
+                    mode == DW_RECURSIVE_FLOWER_SOURCE) {
                     mc_entity_damage_failure failure;
                     CHECK(raw != MC_ENTITY_OK && drop->publication_scope.consumed &&
                           drop->insertion.observer_returned &&
@@ -979,19 +1069,38 @@ int main(int argc, char **argv) {
             return 1;
         return printf("PASS: %u owned Block drop checks\n", checks) < 0;
     }
-    const char *const names[] = {
-        "owned-wake-recursion",           "owned-wake-null-exit",
-        "owned-wake-observer-error",      "owned-wake-scope-drift",
-        "owned-wake-null-chunk-world",    "owned-wake-foot",
-        "owned-wake-foot-source",         "owned-wake-foot-scope",
-        "owned-wake-foot-math-missing",   "owned-wake-ladder",
-        "owned-wake-ladder-source",       "owned-wake-ladder-scope",
-        "owned-wake-ladder-math-missing", "owned-wake-ladder-removal-source",
-        "owned-wake-ladder-supported",    "owned-wake-torch",
-        "owned-wake-torch-source",        "owned-wake-torch-scope",
-        "owned-wake-torch-math-missing",  "owned-wake-torch-removal-source",
-        "owned-wake-torch-supported",     "owned-wake-torch-early",
-        "owned-wake-torch-early-source",  "owned-wake-torch-early-removal-source"};
+    const char *const names[] = {"owned-wake-recursion",
+                                 "owned-wake-null-exit",
+                                 "owned-wake-observer-error",
+                                 "owned-wake-scope-drift",
+                                 "owned-wake-null-chunk-world",
+                                 "owned-wake-foot",
+                                 "owned-wake-foot-source",
+                                 "owned-wake-foot-scope",
+                                 "owned-wake-foot-math-missing",
+                                 "owned-wake-ladder",
+                                 "owned-wake-ladder-source",
+                                 "owned-wake-ladder-scope",
+                                 "owned-wake-ladder-math-missing",
+                                 "owned-wake-ladder-removal-source",
+                                 "owned-wake-ladder-supported",
+                                 "owned-wake-torch",
+                                 "owned-wake-torch-source",
+                                 "owned-wake-torch-scope",
+                                 "owned-wake-torch-math-missing",
+                                 "owned-wake-torch-removal-source",
+                                 "owned-wake-torch-supported",
+                                 "owned-wake-torch-early",
+                                 "owned-wake-torch-early-source",
+                                 "owned-wake-torch-early-removal-source",
+                                 "owned-wake-flower",
+                                 "owned-wake-flower-source",
+                                 "owned-wake-flower-scope",
+                                 "owned-wake-flower-math-missing",
+                                 "owned-wake-flower-removal-source",
+                                 "owned-wake-flower-supported",
+                                 "owned-wake-flower-sky-supported",
+                                 "owned-wake-flower-dark"};
     const dw_recursive_mode modes[] = {DW_RECURSIVE_READY,
                                        DW_RECURSIVE_OWNED_NULL,
                                        DW_RECURSIVE_OBSERVER_ERROR,
@@ -1015,7 +1124,15 @@ int main(int argc, char **argv) {
                                        DW_RECURSIVE_TORCH_SUPPORTED,
                                        DW_RECURSIVE_TORCH_EARLY,
                                        DW_RECURSIVE_TORCH_EARLY_SOURCE,
-                                       DW_RECURSIVE_TORCH_EARLY_REMOVAL_SOURCE};
+                                       DW_RECURSIVE_TORCH_EARLY_REMOVAL_SOURCE,
+                                       DW_RECURSIVE_FLOWER,
+                                       DW_RECURSIVE_FLOWER_SOURCE,
+                                       DW_RECURSIVE_FLOWER_SCOPE,
+                                       DW_RECURSIVE_FLOWER_MATH_MISSING,
+                                       DW_RECURSIVE_FLOWER_REMOVAL_SOURCE,
+                                       DW_RECURSIVE_FLOWER_SUPPORTED,
+                                       DW_RECURSIVE_FLOWER_SKY_SUPPORTED,
+                                       DW_RECURSIVE_FLOWER_DARK};
     _Static_assert(COUNT(names) == COUNT(modes), "Wake mode table sizes must agree");
     for (size_t i = 0; i < COUNT(names); ++i)
         if (strcmp(argv[1], names[i]) == 0) {

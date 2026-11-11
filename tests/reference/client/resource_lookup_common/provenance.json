@@ -18,8 +18,8 @@
       "sha256": "9eeb3e87dcdbb494450261c081496b816be8980fa131fb49ec93c63b53db6ba5"
     },
     "CMakeLists.txt": {
-      "bytes": 346161,
-      "sha256": "e87d51d8ca7d092e2f566678dcff819d459e1e6e8277d17a453d40cfb4a5ff70"
+      "bytes": 346765,
+      "sha256": "53954729f4dc13994c82ac69a188ede1f5b0368ec4c39efddd35910f06470a87"
     },
     "CONTEXT.md": {
       "bytes": 2107,
@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 239646,
-      "sha256": "3ac70f39fcf931de393411d86d1dedb6e287bd4443c1743a7c3def387ff4e5b5"
+      "bytes": 240430,
+      "sha256": "12333e2d6a029020fce3a48e38b61408c6ae884e88cfe63adb151d07b2f20200"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 149609,
-      "sha256": "0bb1734c91b3331e3468dd859f8db02265f711b058e4850a23218b83add3ecaf"
+      "bytes": 150914,
+      "sha256": "8230d4de6282bcda10bef821d216f0028d444372d7de089d5186f0b447601853"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 652541,
-      "sha256": "c0e3b9f1b90c16a6a60ca0755d623b789d411a2390a11786d8e48ab71c7a0975"
+      "bytes": 658238,
+      "sha256": "7b75ce3e8866389cfd39a54e02c38cade9a784110ea722966d7e9f95a2183a61"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
@@ -842,8 +842,8 @@
       "sha256": "1a6e3102bb80cb5dd798b7f389a94cd3308ecf7fd7315c052eb8496a61e38c79"
     },
     "docs/wiki/Home.md": {
-      "bytes": 2335,
-      "sha256": "57772629f0af98e4ed76d1fa482112018d6c1655ddd49f0842e66fff71bd2b53"
+      "bytes": 2488,
+      "sha256": "af9d7313f2dabb1537b64055a2c5bd3a4b2017bc64fb4b26094a96ab2f3b2e6a"
     },
     "docs/wiki/Startup.md": {
       "bytes": 7992,
@@ -970,8 +970,8 @@
       "sha256": "0316c40c2ff26c498033223dd99cf9e1b003aaff0ecf046a207695e0c8f0efef"
     },
     "docs/world/plants.md": {
-      "bytes": 5748,
-      "sha256": "2b9bbaddbd3e4ca114cdb7da7665d6c53471a63ad231a3d687187965a0c4b79e"
+      "bytes": 8385,
+      "sha256": "457cbbd7c919267da5df84cd51a1ba08bcd1266d4bbef48e564da6f9a68d367a"
     },
     "docs/world/player-publication.md": {
       "bytes": 6320,
@@ -4806,8 +4806,8 @@
       "sha256": "3778e9ffaa4a81dc03a79cef4387f75bc973a8e9cd478f4e7bbd2754a2d5771c"
     },
     "src/world/runtime/mutation/hooks.c": {
-      "bytes": 31292,
-      "sha256": "651ef6b962f9ac4357117730c0f80d0a9dff09c735540bd626e0fdd01b6ef5e2"
+      "bytes": 31780,
+      "sha256": "dce3210da31b770e96d1c84571d0edfd6c516f4517e0c7086a5f2c276ab57701"
     },
     "src/world/runtime/mutation/mutation_internal.h": {
       "bytes": 19643,
@@ -4830,16 +4830,16 @@
       "sha256": "92348c0af44a87b9ec3a585a2cbe6d29d98dde110ce7430ccf4ddd334dd4cff0"
     },
     "src/world/runtime/mutation/plants/plants_internal.h": {
-      "bytes": 3846,
-      "sha256": "01969fded056e0bf4032b7fb32969674815fe4781a8cb7b8d8dba296e0379fac"
+      "bytes": 3978,
+      "sha256": "4ff6774e6beea32c6497ed8da58bd18cb3f08e6fcf14e16f745abdba4098035a"
     },
     "src/world/runtime/mutation/plants/sapling.c": {
       "bytes": 7262,
       "sha256": "8b1434dd7e456033953a07c75137df4010ee115cfddfbc2676076dbed9d14885"
     },
     "src/world/runtime/mutation/plants/survival.c": {
-      "bytes": 10190,
-      "sha256": "26a85673f2153aaf59afcf963595c13654856d42c133b8f2532b618c1483b324"
+      "bytes": 14651,
+      "sha256": "416ae1d40d67b3f56ae6af3e48a6b3854b3de7b4931165d08478af4d8f37b057"
     },
     "src/world/runtime/mutation/plants/upright.c": {
       "bytes": 1449,
@@ -4934,12 +4934,12 @@
       "sha256": "8a3b4be08eda7e4a7719e8e3cd55aa903a0292f5388a859dcbfc07b68ce833be"
     },
     "src/world/runtime/mutation/world.c": {
-      "bytes": 40122,
-      "sha256": "8dbd4c942d151591021f7f5463a3660646175a9e29a4a941848c614967ec0e86"
+      "bytes": 42748,
+      "sha256": "e31e1f410bb8d84c50f52504e791e6f66b615e0fc30e0676979d87abe601a81d"
     },
     "src/world/runtime/plants.c": {
-      "bytes": 19458,
-      "sha256": "898c9dbc15be44e8cfcc60262b5356e648bc77ae7b68bd990c06fb895943742e"
+      "bytes": 29493,
+      "sha256": "7c5c051549cf801f4871ce91c023115f3dc03b7de272dcfac8a4f2dc4d98f26e"
     },
     "src/world/runtime/population/dungeon.c": {
       "bytes": 29178,
@@ -4998,8 +4998,8 @@
       "sha256": "3730334e71bbebc51c85c42cb22c00f45c44c6d844ab9e71b54799ebb5d5f221"
     },
     "src/world/runtime/queries.c": {
-      "bytes": 22580,
-      "sha256": "2520f3189e541be5a7af421bd97e117f2e1e03cbbcf99a69ddc4da04a66f4ee2"
+      "bytes": 30678,
+      "sha256": "d13af7c281501f6bd0551619fbbd2a5c1c7d9f006484f6217d4958e4791bfdf6"
     },
     "src/world/runtime/registry.c": {
       "bytes": 12242,
@@ -6406,8 +6406,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 853278,
-      "sha256": "9b574c64a7ebaf8d19346c533f9913772db4c652aaed18185237b812dbb58eb9"
+      "bytes": 855510,
+      "sha256": "9699a41ddc877b599136eef13f06f15ce86bece563cf69b131b438bbbbfc13d3"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6470,8 +6470,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 977561,
-      "sha256": "3a84a49add6c3bdaa4f97a3551a193ec4c2782c5d79fbef79fb75a89d39a45c1"
+      "bytes": 979793,
+      "sha256": "902548b29c0dbd8e8acf260bd5716e7884deb25f21dcb2e648ed139a0d1866e6"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6602,8 +6602,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 850257,
-      "sha256": "6e79dbc642f8a825bdd532774e2911b61a60e3299713aaaf99db2f0e5a071767"
+      "bytes": 852489,
+      "sha256": "03c5b3822506c820d2f953672d56a40ca571001011181c9f780f6b9a21e7a5db"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -21158,8 +21158,8 @@
       "sha256": "eb477a22925eb83fe2d2a0d7662dd0a437832ad2dcf619e8dbc465081e1f80d2"
     },
     "cmake/player_damage.cmake": {
-      "bytes": 12207,
-      "sha256": "45d55cabcac9639d70ed16c507e4ce5b07e7e3f8131b523983ced3f0ef087263"
+      "bytes": 12769,
+      "sha256": "1de3390a8492036a2ea5f4b465d2b562e17a86a54375b40dd0217bdd4463ff89"
     },
     "cmake/tests/armor.cmake": {
       "bytes": 739,
@@ -22206,8 +22206,8 @@
       "sha256": "0ed3cd234b94a18836156ea05fdefa80e8675d5e5edb262fe03f8417f799c78f"
     },
     "docs/entity/player-damage-wake.md": {
-      "bytes": 11213,
-      "sha256": "347b5ed471046046d0acadf30fcf3159925ba58b80d44a161b27071ffbf3bca0"
+      "bytes": 12396,
+      "sha256": "ede4e2c44c0196a1855720947f5f06fd17a59f8a6f03940bbe51fddee7715174"
     },
     "docs/performance/random-display.md": {
       "bytes": 5467,
@@ -22242,8 +22242,8 @@
       "sha256": "dffdaf6900506b82a36fe62046c219ad73854f1c4d9f15f34d11ff81c5765dc4"
     },
     "tests/entity/player/test_damage_wake.c": {
-      "bytes": 57663,
-      "sha256": "4b3d42e00e61ae26787de2f29d0a39b64508844ac520624bf844d51ee599d2ea"
+      "bytes": 64438,
+      "sha256": "f22451fc03ed01e02be66ec59c3843999273fd1acfd8323e3532f15fd24958d6"
     },
     "tests/entity/player/test_damage_wake_original.c": {
       "bytes": 18503,
@@ -22294,8 +22294,8 @@
       "sha256": "6dc9ed72bebee347fbda0d85b08e854a834d24ad9aab0456ba51ef35e6d827d1"
     },
     "tests/tools/entity/test_player_damage_wake.py": {
-      "bytes": 15690,
-      "sha256": "ae3b78537228d1cc39a85f4b424b8235a7c306a226b335eaf43e743e858aa71b"
+      "bytes": 22566,
+      "sha256": "79ccc5ecfd25289515a642170fe0e1a7396c494367055f6f0eb7c8fbe993cec3"
     },
     "tests/tools/world/benchmark_random_display.py": {
       "bytes": 17853,
@@ -23547,11 +23547,11 @@
     },
     "tests/tools/client/arrow_world_tick_cleanup_bundle.json": {
       "bytes": 10002,
-      "sha256": "1475fb3475ef7bf552e64503fdd28b196c0f7689d1195752f43b26d727e7c813"
+      "sha256": "dbd9058c3cf7f1460883e33cf81103f5d9c4d7ac17094df6cba6c5fa3ee9c962"
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "e6c5905da29d481f4680b94fc2c678a8b8613ba034f50104adee46230546de21"
+      "sha256": "77ee8a8624c60ba623d67ada3a7c4d2a810e3bc6d712673136442a3a9b14c320"
     },
     "docs/entity/arrow-flight.md": {
       "bytes": 12048,
@@ -23563,11 +23563,11 @@
     },
     "tests/tools/entity/damage_native_close_bundle.json": {
       "bytes": 12979,
-      "sha256": "869cf345007414ae8223447b0a60b832ea4bce7cd76c8fcfb535af79ae970250"
+      "sha256": "20e223b0654cbfd09e7ece840e75d7af60e219864745e917d10281011f3a60bd"
     },
     "tests/tools/entity/test_damage_native_close.py": {
       "bytes": 17605,
-      "sha256": "a0524d47bca0ae40c5bbcd61763d87d180b4e5ba746c6aef8920d30f7afbc87e"
+      "sha256": "586a1035f302a4bd443a99474ab8b36b8513342d17b7b4dccfccfd12a984994e"
     },
     "tests/world/runtime/world_access/test_damage_close_execution.c": {
       "bytes": 30398,
@@ -23610,8 +23610,8 @@
       "sha256": "21fc6bdf4be78a895a31dfae47562e74b2850fc87fd29837447ef56d57ec89aa"
     },
     "docs/wiki/Combat-and-projectiles.md": {
-      "bytes": 12183,
-      "sha256": "d7ec2839c7dd62eee328c218b99be54e64e8b098e863deb7780a61e16f61845f"
+      "bytes": 13387,
+      "sha256": "e75c84eba3cf37765089b424fde7ffcfd8fd2374fcf43b778c830bb0af21dd92"
     },
     "tests/entity/mob/test_monster_damage.c": {
       "bytes": 11751,
@@ -23938,8 +23938,8 @@
       "sha256": "0a3c822127a8ccca397581ce9f99d9523d3fab1c7028d2f552a2389b35cf3ae2"
     },
     "cmake/tests/arrow_hurt_player.cmake": {
-      "bytes": 1334,
-      "sha256": "6e58c020f38382002e0abc79687920791f00e74d8e5d531995df3ce5d9f51ca3"
+      "bytes": 1416,
+      "sha256": "37da7b1edd1ca837f04b06682c4ce261862d0b186a12663e47b63330c1da5511"
     },
     "cmake/tests/arrow_hurt_prior.cmake": {
       "bytes": 845,
@@ -24046,8 +24046,8 @@
       "sha256": "bae87edf26cd028c2d914245860ec6ddbbfb871715f22f89c10141d86acf999d"
     },
     "tests/tools/world/test_arrow_hurt_player.py": {
-      "bytes": 3022,
-      "sha256": "7cf05a75e2a1568c3e1e0a4c84b91a178bbf91e057c9b8594e81c6b27a7b786f"
+      "bytes": 6456,
+      "sha256": "3049de800d467689623bf81785ead67eea2cfcbb4b1b32e893533cf42916126f"
     },
     "tests/tools/world/test_arrow_hurt_prior.py": {
       "bytes": 2188,
@@ -24070,8 +24070,8 @@
       "sha256": "6710dc79e99ac974d7a86dc80492ebbd254f58ae0dc96a2040f759eccc1a9d5a"
     },
     "tests/world/runtime/test_arrow_hurt_player.c": {
-      "bytes": 34979,
-      "sha256": "94f68a638e6e96b299947201a2a5f6d28f64b047e87953215b488bdcc974c86d"
+      "bytes": 42357,
+      "sha256": "34cf25305f40cc31c41cf9271a88d3e2ea8b8c1a5038f03ed69fda67eef0daac"
     },
     "tests/world/runtime/test_arrow_hurt_prior.c": {
       "bytes": 6575,
@@ -24218,8 +24218,8 @@
       "sha256": "2a4050587d451af7d1fdff7ae5086c645d2fa6f9d59fec194d17fa9002f14def"
     },
     "src/world/runtime/mutation/world_execution_internal.h": {
-      "bytes": 7709,
-      "sha256": "4e9eab14963b9b1ce371eb1c875628c3bb57b37bf3a5acb63f76b27ca62e6395"
+      "bytes": 8749,
+      "sha256": "8f23aa6c5211fcb8cfa23ba8c884e7ac5caa6f4759f0665a3d3d5f9cd1465100"
     },
     "tests/reference/entity/player_recursive_wake/README.md": {
       "bytes": 2592,
@@ -24368,6 +24368,58 @@
     "tests/reference/entity/torch_wake/vm-pins.json": {
       "bytes": 5473,
       "sha256": "8e66527207bb65e02370167417b48017ebf1794429741c4cbb4e1f4b5d0ba826"
+    },
+    "cmake/tests/world_plant_survival_execution.cmake": {
+      "bytes": 1586,
+      "sha256": "fc0ec44434a9b18e41fd9d28cebfead7a5349ca1be82d5d413504bccead1e29a"
+    },
+    "src/world/runtime/plants_execution_internal.h": {
+      "bytes": 2258,
+      "sha256": "37fdfcca2ccddcd555e2ab1b9cf3706b34922766cf068ced42d2a087f0837755"
+    },
+    "src/world/runtime/queries_execution_internal.h": {
+      "bytes": 2493,
+      "sha256": "501a36dfb43b8a48ad5e72f89e7847d36bdc64a124049f869a02a10d6d3280d3"
+    },
+    "tests/reference/entity/flower_wake/FlowerWakeObservation.java": {
+      "bytes": 10382,
+      "sha256": "9c612ac27c936c85fa8ca8f43281a8b2be72081ae97a251ba0885caf08883724"
+    },
+    "tests/reference/entity/flower_wake/README.md": {
+      "bytes": 5499,
+      "sha256": "a05b4bfe3a928084e68e995a7008b442727e039361d538b714ef2b484c5cd839"
+    },
+    "tests/reference/entity/flower_wake/capture_reference.py": {
+      "bytes": 10464,
+      "sha256": "56b71270d3138be9ad9d603c5feb74da3b84b41064719c3fa0f83e2a47d8779c"
+    },
+    "tests/reference/entity/flower_wake/finite.json": {
+      "bytes": 44073,
+      "sha256": "74cebaf94689ef75d65e72d00f4140a5154d6a72590ffe1ecc59c9b21676b73a"
+    },
+    "tests/reference/entity/flower_wake/flower-pins.json": {
+      "bytes": 8602,
+      "sha256": "820904b6e5527a4279e362d60f9e915647426297c188689598f2140e9ff0c0ff"
+    },
+    "tests/reference/entity/flower_wake/packet.py": {
+      "bytes": 18930,
+      "sha256": "651ff819454a821bd655de4080ec8e0f7d171fa81cb1c51ef3a4625937d457f0"
+    },
+    "tests/reference/entity/flower_wake/provenance.json": {
+      "bytes": 7552,
+      "sha256": "931cb2386b3365f2417bfd12a35b458be3aa553e827bc5d1f447dd2a0bcbaeb9"
+    },
+    "tests/reference/entity/flower_wake/test_packet.py": {
+      "bytes": 9244,
+      "sha256": "9b6e9be9e99f8eea00683a33ccc8f49e428658c5af01c2329d4c75b565f339e4"
+    },
+    "tests/tools/world/test_plant_survival_execution.py": {
+      "bytes": 13729,
+      "sha256": "8ac7281a30fcc1f2801dea0f4399162ea97210114fe9092b3a1165d9a5fc3382"
+    },
+    "tests/world/runtime/world_access/test_plant_survival_execution.c": {
+      "bytes": 21146,
+      "sha256": "dfcfb24cec332bba60a9eed27e1c2278bf3365f8094d53250be0d6cbbc24c054"
     }
   },
   "self_metadata_excluded": true,

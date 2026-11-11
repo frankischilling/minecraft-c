@@ -140,6 +140,26 @@ their own controls. Real Arrow cases preserve health, sleep and each committed
 prefix through checked cleanup when publication or a later cell observer
 throws. These CPU cases do not qualify graphical sleeping-Player damage.
 
+## Flower survival and drop
+
+A Flower beside the occupied head now enters its existing neighbor/survival
+body through the retained wake execution. A supported Flower survives without
+an Item or Random draw. An unsupported Flower publishes Item37 while the
+Player remains asleep and the Flower still exists, then removes the Flower
+through the notifying air setter before wake finishes.
+
+The [original packet](../../tests/reference/entity/flower_wake/README.md) selects
+34 supported, 57 unsupported and 49 publication-exception values for native
+comparison. The exception preserves the Flower, inserted Item, sleeping flag,
+timer 37 and health 20; idle has already changed to zero. Actual light and
+height inputs, the separately recorded World sky subtraction and the defining
+Chunk class's sky-seen flag remain explicit. Real Arrow cases check both
+exceptions through five native unwind phases, retaining the committed prefix
+and complete World, Player and Arrow Random fields without replay. Later
+cell-observer failure and the native ownership controls preserve their own
+committed prefixes.
+See the [Flower contract](../world/plants.md#owned-flower-neighbor-during-player-wake).
+
 ## Original evidence
 
 The [component packet](../../tests/reference/entity/player_damage_wake/README.md)

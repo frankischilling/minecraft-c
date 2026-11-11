@@ -1,3 +1,4 @@
+#include "../../plants_execution_internal.h"
 #include "plants_internal.h"
 
 #include <stdlib.h>
@@ -7,8 +8,17 @@ mc_plant_frame mc_plant_frame_make(mc_world_runtime *world, const mc_block *bloc
                                    const char *server_class, const char *client_method,
                                    const char *server_method) {
     const bool client = block->classes->options.side == MC_REGISTRY_CLIENT;
-    return (mc_plant_frame){world, block, error, client ? client_class : server_class,
-                            client ? client_method : server_method};
+    return (mc_plant_frame){.world = world,
+                            .block = block,
+                            .error = error,
+                            .declaring_class = client ? client_class : server_class,
+                            .method = client ? client_method : server_method};
+}
+
+static mc_entity_tick_execution_site plant_site(const mc_plant_frame *frame, unsigned int pc) {
+    mc_entity_tick_execution_site site = frame->owned_site;
+    site.pc = (int)pc;
+    return site;
 }
 
 void mc_plant_at(const mc_plant_frame *frame, unsigned int pc) {
@@ -50,7 +60,10 @@ bool mc_plant_nested(const mc_plant_frame *frame, unsigned int pc,
         frame->error->cause_hook_method = captured.hook_method;
         frame->error->cause_hook_bytecode = captured.hook_bytecode;
     }
-    return mc_plant_storage_fail(frame, pc, captured.cause);
+    mc_plant_at(frame, pc);
+    if (frame->owned == NULL || captured.cause.status != MC_WORLD_STORAGE_OK)
+        return mc_plant_storage_fail(frame, pc, captured.cause);
+    return false;
 }
 
 bool mc_plant_random(const mc_plant_frame *frame, unsigned int pc, mc_java_random *random,
@@ -75,6 +88,9 @@ bool mc_plant_metadata(const mc_plant_frame *frame, unsigned int pc, int32_t x, 
                        int32_t z, int32_t *out) {
     mc_world_storage_error cause = {0};
     mc_plant_at(frame, pc);
+    if (frame->owned != NULL)
+        return mc_world_mutation_execution_get(frame->owned, frame->world, x, y, z, true, out,
+                                               frame->error, plant_site(frame, pc));
     return mc_world_runtime_metadata_get(frame->world, x, y, z, out, &cause) ==
                MC_WORLD_STORAGE_OK ||
            mc_plant_storage_fail(frame, pc, cause);
@@ -92,6 +108,24 @@ bool mc_plant_air(const mc_plant_frame *frame, unsigned int pc, int32_t x, int32
 bool mc_plant_survives(const mc_plant_frame *frame, unsigned int pc, int32_t x, int32_t y,
                        int32_t z, bool *out) {
     mc_plant_at(frame, pc);
+    if (frame->owned != NULL) {
+        mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
+        const mc_world_plant_execution *child = NULL;
+        if (mc_world_mutation_execution_plant_survives(frame->owned, frame->world, frame->block, x,
+                                                       y, z, out, &raw, &child,
+                                                       plant_site(frame, pc)))
+            return true;
+        frame->error->status = raw;
+        if (child != NULL && !child->native_stopped && raw != MC_WORLD_STORAGE_OK) {
+            frame->error->plant = child->detail;
+            frame->error->registry = child->detail.registry;
+            frame->error->query = child->detail.query;
+            frame->error->material = child->detail.material;
+            frame->error->population = child->detail.query.population;
+            return mc_plant_storage_fail(frame, pc, child->detail.cause);
+        }
+        return false;
+    }
     mc_world_plant_error lower = {0};
     if (mc_world_runtime_plant_survives(frame->world, frame->block, x, y, z, out, &lower) ==
         MC_WORLD_STORAGE_OK)
@@ -130,6 +164,19 @@ static mc_world_mutation_error *write_workspace(const mc_plant_frame *frame, uns
 
 bool mc_plant_set(const mc_plant_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z,
                   int32_t id) {
+    if (frame->owned != NULL) {
+        mc_plant_at(frame, pc);
+        if (id != 0) {
+            mc_world_runtime_execution_result_note(
+                mc_world_mutation_execution_result_of(frame->owned),
+                MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Plant owned notifying non-air setter",
+                plant_site(frame, pc));
+            return false;
+        }
+        return mc_world_mutation_execution_remove(frame->owned, frame->world, x, y, z, frame->error,
+                                                  plant_site(frame, pc)) ||
+               mc_plant_nested(frame, pc, frame->error);
+    }
     mc_world_mutation_error *lower = write_workspace(frame, pc);
     if (lower == NULL)
         return false;
@@ -166,34 +213,49 @@ static bool survival(const mc_plant_frame *frame, int32_t x, int32_t y, int32_t 
     if (!mc_plant_metadata(frame, 23, x, y, z, &metadata))
         return false;
     mc_plant_at(frame, 26);
-    if (!mc_world_mutation_drop(frame->world, frame->block, x, y, z, metadata, frame->error))
+    const bool dropped =
+        frame->owned == NULL
+            ? mc_world_mutation_drop(frame->world, frame->block, x, y, z, metadata, frame->error)
+            : mc_world_mutation_execution_drop(frame->owned, frame->world, frame->block, x, y, z,
+                                               metadata, frame->error, plant_site(frame, 26));
+    if (!dropped)
         return mc_plant_nested(frame, 26, frame->error);
     if (!mc_plant_set(frame, 35, x, y, z, 0))
         return false;
     return mc_plant_done(frame);
 }
 
-bool mc_plant_flower_survival(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
-                              int32_t z, mc_world_mutation_error *error) {
-    const mc_plant_frame frame =
+static bool flower_survival(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
+                            int32_t z, mc_world_mutation_error *error,
+                            mc_world_mutation_execution_call *owned) {
+    mc_plant_frame frame =
         mc_plant_frame_make(world, block, error, "wb", "nw", "h(Lfd;III)V", "g(Ldj;III)V");
+    frame.owned = owned;
+    frame.owned_site = (mc_entity_tick_execution_site){"wb", "h", "(Lfd;III)V", 0};
     return survival(&frame, x, y, z);
 }
 
-bool mc_world_mutation_plant_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
-                                      int32_t y, int32_t z, int32_t source_id,
-                                      mc_world_mutation_error *error) {
+bool mc_plant_flower_survival(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
+                              int32_t z, mc_world_mutation_error *error) {
+    return flower_survival(world, block, x, y, z, error, NULL);
+}
+
+static bool plant_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
+                           int32_t z, int32_t source_id, mc_world_mutation_error *error,
+                           mc_world_mutation_execution_call *owned) {
     (void)source_id;
     const bool cactus = block->kind == MC_BLOCK_CACTUS;
     const bool reed = block->kind == MC_BLOCK_SUGAR_CANE;
-    const mc_plant_frame frame = mc_plant_frame_make(world, block, error,
-                                                     cactus ? "or"
-                                                     : reed ? "ri"
-                                                            : "wb",
-                                                     cactus ? "je"
-                                                     : reed ? "ko"
-                                                            : "nw",
-                                                     "b(Lfd;IIII)V", "b(Ldj;IIII)V");
+    mc_plant_frame frame = mc_plant_frame_make(world, block, error,
+                                               cactus ? "or"
+                                               : reed ? "ri"
+                                                      : "wb",
+                                               cactus ? "je"
+                                               : reed ? "ko"
+                                                      : "nw",
+                                               "b(Lfd;IIII)V", "b(Ldj;IIII)V");
+    frame.owned = owned;
+    frame.owned_site = (mc_entity_tick_execution_site){"wb", "b", "(Lfd;IIII)V", 0};
     if (cactus)
         return survival(&frame, x, y, z);
     if (reed) {
@@ -203,10 +265,34 @@ bool mc_world_mutation_plant_neighbor(mc_world_runtime *world, const mc_block *b
             return mc_plant_nested(&frame, 6, error);
     } else {
         /* The invokespecial base neighbor at8 is a proved empty body. */
-        if (!mc_plant_flower_survival(world, block, x, y, z, error))
+        if (!flower_survival(world, block, x, y, z, error, owned))
             return mc_plant_nested(&frame, 17, error);
     }
     return mc_plant_done(&frame);
+}
+
+bool mc_world_mutation_plant_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                      int32_t y, int32_t z, int32_t source_id,
+                                      mc_world_mutation_error *error) {
+    return plant_neighbor(world, block, x, y, z, source_id, error, NULL);
+}
+
+bool mc_world_mutation_flower_neighbor_in_execution(mc_world_mutation_execution_call *owned,
+                                                    mc_world_runtime *world, const mc_block *block,
+                                                    int32_t x, int32_t y, int32_t z,
+                                                    int32_t source_id,
+                                                    mc_world_mutation_error *error) {
+    const mc_entity_tick_execution_site site = {"wb", "b", "(Lfd;IIII)V", 0};
+    if (!mc_world_mutation_execution_current(owned, world, site))
+        return false;
+    if (block == NULL || block->kind != MC_BLOCK_FLOWER ||
+        block->classes->options.side != MC_REGISTRY_CLIENT) {
+        mc_world_runtime_execution_result_note(mc_world_mutation_execution_result_of(owned),
+                                               MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                               "Owned Flower neighbor receiver", site);
+        return false;
+    }
+    return plant_neighbor(world, block, x, y, z, source_id, error, owned);
 }
 
 bool mc_world_mutation_plant_tick(mc_world_runtime *world, const mc_block *block, int32_t x,

@@ -3,6 +3,7 @@
 
 #include "../../../../block/registry/registry_internal.h"
 #include "../mutation_internal.h"
+#include "../world_execution_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
 
@@ -11,6 +12,8 @@ typedef struct mc_plant_frame {
     const mc_block *block;
     mc_world_mutation_error *error;
     const char *declaring_class, *method;
+    mc_world_mutation_execution_call *owned;
+    mc_entity_tick_execution_site owned_site;
 } mc_plant_frame;
 
 mc_plant_frame mc_plant_frame_make(mc_world_runtime *, const mc_block *, mc_world_mutation_error *,

@@ -67,6 +67,15 @@ bool mc_world_mutation_execution_support(mc_world_mutation_execution_call *, mc_
 const mc_world_solid_support_execution *
 mc_world_mutation_execution_failed_support(const mc_world_mutation_execution_call *,
                                            mc_world_storage_status *);
+typedef struct mc_world_plant_execution mc_world_plant_execution;
+bool mc_world_mutation_execution_plant_survives(mc_world_mutation_execution_call *,
+                                                mc_world_runtime *, const mc_block *, int32_t,
+                                                int32_t, int32_t, bool *, mc_world_storage_status *,
+                                                const mc_world_plant_execution **,
+                                                mc_entity_tick_execution_site);
+const mc_world_plant_execution *
+mc_world_mutation_execution_failed_plant(const mc_world_mutation_execution_call *,
+                                         mc_world_storage_status *);
 bool mc_world_mutation_execution_remove(mc_world_mutation_execution_call *, mc_world_runtime *,
                                         int32_t, int32_t, int32_t, mc_world_mutation_error *,
                                         mc_entity_tick_execution_site);
@@ -96,6 +105,10 @@ bool mc_world_mutation_torch_neighbor_in_execution(mc_world_mutation_execution_c
                                                    mc_world_runtime *, const mc_block *, int32_t,
                                                    int32_t, int32_t, int32_t,
                                                    mc_world_mutation_error *);
+bool mc_world_mutation_flower_neighbor_in_execution(mc_world_mutation_execution_call *,
+                                                    mc_world_runtime *, const mc_block *, int32_t,
+                                                    int32_t, int32_t, int32_t,
+                                                    mc_world_mutation_error *);
 
 bool mc_world_mutation_block_removed_in_execution(mc_world_runtime *, const mc_block *, int32_t,
                                                   int32_t, int32_t, mc_world_mutation_error *,

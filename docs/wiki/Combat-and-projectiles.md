@@ -1,5 +1,24 @@
 # Combat and projectiles
 
+## Flower survival during wake
+
+The retained Player wake now enters the ordinary Flower neighbor and survival
+body. Grass support keeps the Flower in place. Support loss publishes its Item
+before notifying removal. A publication exception leaves the Flower, Item and
+sleeping Player intact; a later cell exception preserves the removed cell.
+
+Two unchanged-original runs agree on three prepared cases. Each native host
+matches 140 selected values, including actual floor/light/height, World sky
+subtraction, the defining Chunk flag, callback order and selected Item state.
+Eight direct cases, ten actual query modes and three real Arrow cases pass
+their full suites: 1,192 Windows tests and 1,038 on sanitized Linux. A capture
+parent correction keeps the Minecart guard intact for nested private builds.
+
+Final monitor-2 scenes pass 2,489 Bed and 452 Arrow/Pig checks, with inspected
+images and independent save readback. Graphical sleeping-Player damage,
+unrestricted play, original audiovisual equality and measured FPS remain open.
+See the [Flower contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plants.md#owned-flower-neighbor-during-player-wake).
+
 ## Torch removal and scene inputs
 
 The retained Player wake now enters the existing ordinary Torch neighbor,
