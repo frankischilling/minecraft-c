@@ -1,5 +1,24 @@
 # Development status
 
+The [Player wake join](entity/player-damage-wake.md#wake-during-an-arrow-hit)
+connects GS35 to shared recursive World mutation. Clearing Bed occupancy can
+remove an orphan Bed head before the Player leaves sleep. Interrupted calls
+retain both committed block changes and the actual callback owner. Native
+retirement closes recorded work without an additional legacy producer retain
+or another Source callback.
+
+The complete Windows MSVC Release client suite passes 1,139 tests. Linux
+Clang 18.1.8 Debug passes all 985 headless tests with ASan, UBSan and leak
+detection. Three prepared cases on each host match 102 selected values from
+the original client.
+Fresh monitor-2 scenes pass 1,949 Bed sleep/dawn/save checks and 463 Arrow/Pig
+impact/pause/save checks, with independent state readback and inspected images.
+The [test record](testing.md#recursive-bed-notification-during-player-wake)
+separates those routes from graphical damage wake, other neighbor hooks,
+the Bed foot drop, original audiovisual equality and sustained FPS.
+
+The preceding checkpoints retain their original qualification scopes.
+
 The shared [Slime removal body](entity/slime-removal.md) now serves direct K
 dispatch and the Mob removal caller. It publishes four children before the
 parent dead store, preserves callback changes in source order and retains
@@ -25,7 +44,11 @@ impact to the existing Living, Monster, Wolf and Player bodies. Player drops,
 Inventory scatter and fatal death share that execution. Presentation loops stop
 before another Source read after scope drift. Math attribution records the actual
 failed require call; typed null-List faults retain their WorldAccess origin.
-Complete Player wake still reaches its dependency at `gs.a(Entity,int):35`.
+The [owned Player wake](entity/player-damage-wake.md#wake-during-an-arrow-hit)
+now enters GS35 before later damage. Its prepared Bed scene clears occupancy,
+removes an orphan head through the recursive notification, and then completes
+wake. The Arrow test also exercises cleanup after an actual failed World
+Player List read.
 
 The client [Ladder neighbor body](world/ladder.md) checks its metadata-selected
 support, performs the inherited drop, then invokes the notifying air setter.

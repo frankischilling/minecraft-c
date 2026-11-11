@@ -2,6 +2,8 @@
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
 #include "../../item/render/internal.h"
+#include "../../world/runtime/bed_occupancy_execution_internal.h"
+#include "../../world/runtime/bed_spawn_execution_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../classes/classes_internal.h"
 #include "../construction_internal.h"
@@ -16,13 +18,27 @@
 #include "mc/world/storage/source_chunk_loader.h"
 #include "nbt_internal.h"
 #include "player_internal.h"
+#include "sleep_execution_internal.h"
 #include "tick_math_internal.h"
 #include <stdlib.h>
 #include <string.h>
 
 enum { SLEEP_WORLDS = 8, SLEEP_RECEIPTS = 4 };
 
+typedef struct mc_player_wake_execution {
+    mc_entity_tick_execution *execution;
+    mc_world_runtime_classes *code_classes;
+    mc_world_runtime_execution_code code;
+    mc_world_runtime_execution_result result;
+    mc_world_block_execution scalar;
+    mc_world_bed_spawn_execution bed;
+    mc_world_mutation_execution_call *mutation;
+    mc_entity_tick_execution_world_token world;
+    bool world_open;
+} mc_player_wake_execution;
+
 struct mc_player_sleep_call {
+    mc_player_wake_execution *owned;
     mc_entity *player;
     mc_player_sleep_context context;
     mc_player_sleep_state state;
@@ -245,15 +261,97 @@ static bool hold_world(mc_player_sleep_call *c, mc_world_runtime *world, unsigne
     return true;
 }
 
-static mc_world_runtime *current_world(mc_player_sleep_call *c, unsigned int pc) {
+static bool capture_world(mc_player_sleep_call *c, unsigned int pc, bool nullable,
+                          mc_world_runtime **out) {
     at(c, pc);
     mc_world_runtime *world = c->player->base.world;
-    if (world == NULL) {
-        (void)call_fail(c, MC_PLAYER_SLEEP_SOURCE_NULL, "Sleep actual current World null receiver",
-                        pc, false);
-        return NULL;
+    if (world == NULL && !nullable)
+        return call_fail(c, MC_PLAYER_SLEEP_SOURCE_NULL, "Sleep actual current World null receiver",
+                         pc, false);
+    if (world != NULL && !hold_world(c, world, pc))
+        return false;
+    *out = world;
+    return true;
+}
+
+static mc_world_runtime *current_world(mc_player_sleep_call *c, unsigned int pc) {
+    mc_world_runtime *world = NULL;
+    return capture_world(c, pc, false, &world) ? world : NULL;
+}
+
+static mc_entity_tick_execution_site wake_site(unsigned int pc) {
+    return (mc_entity_tick_execution_site){"gs", "a", "(ZZZ)V", (int)pc};
+}
+
+static bool capture_wake_world(mc_player_sleep_call *c, unsigned int pc, mc_world_runtime **out) {
+    mc_player_wake_execution *w = c->owned;
+    if (w == NULL)
+        return capture_world(c, pc, true, out);
+    at(c, pc);
+    mc_world_runtime *world = c->player->base.world;
+    const mc_world_storage_status status =
+        w->world_open
+            ? MC_WORLD_STORAGE_BUSY
+            : mc_entity_tick_execution_push_world(w->execution, world, wake_site(pc), &w->world);
+    if (status != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(&w->result, status, "Wake actual World capture",
+                                               wake_site(pc));
+        return call_fail(c, world_status(status), "Wake actual World capture", pc, true);
     }
-    return hold_world(c, world, pc) ? world : NULL;
+    w->world_open = true;
+    *out = world;
+    return true;
+}
+
+static bool wake_records_pending(const mc_world_runtime_execution_result *result) {
+    if (result->root_pending)
+        return true;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (result->pending[i].used)
+            return true;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (result->closes[i].used)
+            return true;
+    return false;
+}
+
+static bool wake_same_world(const mc_entity_tick_execution_world_token *a,
+                            const mc_entity_tick_execution_world_token *b) {
+    return a->owner == b->owner && a->slot == b->slot && a->generation == b->generation;
+}
+
+static mc_world_storage_status close_wake_world(mc_player_wake_execution *w, bool failed) {
+    if (!w->world_open)
+        return MC_WORLD_STORAGE_OK;
+    mc_entity_tick_execution_world_token current;
+    if (wake_records_pending(&w->result) ||
+        !mc_entity_tick_execution_current_world(w->execution, &current) ||
+        !wake_same_world(&w->world, &current))
+        return MC_WORLD_STORAGE_BUSY;
+    const mc_world_storage_status status =
+        mc_entity_tick_execution_pop_world(w->execution, &w->world, failed);
+    const mc_entity_tick_execution_world_slot *slot = &w->execution->world_slots[w->world.slot];
+    if (slot->generation == w->world.generation &&
+        (slot->phase == MC_ENTITY_TICK_EXECUTION_WORLD_FREE ||
+         slot->phase == MC_ENTITY_TICK_EXECUTION_WORLD_RETAINED))
+        w->world_open = false;
+    return status;
+}
+
+static bool wake_world_returned(mc_player_sleep_call *c, unsigned int pc) {
+    if (c->owned == NULL)
+        return true;
+    mc_player_wake_execution *w = c->owned;
+    const mc_world_storage_status status =
+        w->result.ownership_status != MC_WORLD_STORAGE_OK ? w->result.ownership_status
+        : w->result.selection_ready || w->execution->phase != MC_ENTITY_TICK_EXECUTION_OPEN
+            ? MC_WORLD_STORAGE_BUSY
+            : close_wake_world(w, false);
+    if (status == MC_WORLD_STORAGE_OK)
+        return true;
+    mc_world_runtime_execution_result_note(&c->owned->result, status,
+                                           "Wake actual World checked close", wake_site(pc));
+    return call_fail(c, MC_PLAYER_SLEEP_OK, "Wake actual World checked close", pc, true);
 }
 
 static bool registry_failure(mc_player_sleep_call *c, unsigned int pc,
@@ -357,6 +455,29 @@ static bool query(mc_player_sleep_call *c, mc_world_runtime *world, int32_t x, i
             }
     }
     return status == MC_WORLD_STORAGE_OK && captured;
+}
+
+static bool wake_block_get(mc_player_sleep_call *c, mc_world_runtime *world,
+                           const mc_player_coordinates *position, int32_t *out) {
+    at(c, 48);
+    if (world == NULL)
+        return call_fail(c, MC_PLAYER_SLEEP_SOURCE_NULL, "Wake actual World block receiver", 48,
+                         false);
+    mc_player_wake_execution *w = c->owned;
+    if (w == NULL)
+        return query(c, world, position->x, position->y, position->z, false, 48, out);
+    mc_world_block_execution_init(&w->scalar, w->execution, w->code, wake_site(48), &w->result);
+    mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
+    if (!mc_world_runtime_block_get_in_execution(&w->scalar, world, position->x, position->y,
+                                                 position->z, out, &c->error.world, &raw)) {
+        if (w->scalar.get_returned && w->scalar.get_status != MC_CHUNK_ACQUIRE_OK)
+            c->error.acquisition = &w->scalar.acquisition;
+        return call_fail(c, raw == MC_WORLD_STORAGE_OK ? MC_PLAYER_SLEEP_OK : world_status(raw),
+                         c->error.world.operation != NULL ? c->error.world.operation
+                                                          : w->result.ownership_error.operation,
+                         48, true);
+    }
+    return wake_world_returned(c, 48);
 }
 
 static bool fp(mc_player_sleep_call *c, unsigned int pc) {
@@ -536,9 +657,9 @@ static void wake(mc_player_sleep_call *c, bool reset_timer, bool update, bool se
         return;
     if (c->local4 != NULL) {
         const mc_player_coordinates *local4 = &c->local4->value;
-        mc_world_runtime *world = current_world(c, 48);
+        mc_world_runtime *world = NULL;
         int32_t id = 0;
-        if (world == NULL || !query(c, world, local4->x, local4->y, local4->z, false, 48, &id) ||
+        if (!capture_wake_world(c, 30, &world) || !wake_block_get(c, world, local4, &id) ||
             !code_registry(c, 51))
             return;
         const mc_block *bed = NULL;
@@ -554,9 +675,11 @@ static void wake(mc_player_sleep_call *c, bool reset_timer, bool update, bool se
             return;
         }
         if (id == bed->fields.bn) {
-            world = current_world(c, 80);
-            if (world == NULL)
+            /* VE.a is static. Its World operand is captured before the
+             * coordinate arguments, and its actual getter checks null at 4. */
+            if (!capture_wake_world(c, 61, &world))
                 return;
+            at(c, 80);
             c->occupancy = calloc(1, sizeof(*c->occupancy));
             if (c->occupancy == NULL) {
                 (void)call_fail(c, MC_PLAYER_SLEEP_ALLOCATION_FAILED,
@@ -564,12 +687,35 @@ static void wake(mc_player_sleep_call *c, bool reset_timer, bool update, bool se
                 return;
             }
             c->error.occupancy = c->occupancy;
-            const mc_world_storage_status occupied = mc_world_bed_set_occupied(
-                c->registry, world, local4->x, local4->y, local4->z, false, c->occupancy);
-            if (occupied != MC_WORLD_STORAGE_OK) {
+            mc_world_storage_status occupied = MC_WORLD_STORAGE_OK;
+            bool occupancy_returned;
+            mc_player_wake_execution *w = c->owned;
+            if (w == NULL) {
+                occupied = mc_world_bed_set_occupied(c->registry, world, local4->x, local4->y,
+                                                     local4->z, false, c->occupancy);
+                occupancy_returned = occupied == MC_WORLD_STORAGE_OK;
+            } else {
+                const mc_world_mutation_execution_context context = {.execution = w->execution,
+                                                                     .code_classes =
+                                                                         w->code_classes,
+                                                                     .code = w->code,
+                                                                     .result = &w->result,
+                                                                     .world = w->world};
+                mc_world_bed_occupancy_execution occupancy = {
+                    .context = &context, .scalar = &w->scalar, .mutation = &w->mutation};
+                occupancy_returned = mc_world_bed_set_occupied_in_execution(
+                    c->registry, world, local4->x, local4->y, local4->z, false, c->occupancy,
+                    &occupancy, &occupied);
+            }
+            if (!occupancy_returned) {
                 c->error.world = c->occupancy->cause;
-                (void)call_fail(c, world_status(occupied), c->occupancy->operation, 80,
-                                c->occupancy->native_policy);
+                const bool null_receiver =
+                    world == NULL && c->occupancy->source_exception && c->occupancy->site.pc == 4;
+                (void)call_fail(c,
+                                null_receiver                     ? MC_PLAYER_SLEEP_SOURCE_NULL
+                                : occupied == MC_WORLD_STORAGE_OK ? MC_PLAYER_SLEEP_OK
+                                                                  : world_status(occupied),
+                                c->occupancy->operation, 80, c->occupancy->native_policy);
                 c->error.child =
                     (mc_player_site){c->occupancy->site.class_name, c->occupancy->site.method,
                                      c->occupancy->site.descriptor, c->occupancy->site.pc};
@@ -578,9 +724,13 @@ static void wake(mc_player_sleep_call *c, bool reset_timer, bool update, bool se
                 c->error.exception_class = c->occupancy->exception_class;
                 return;
             }
-            world = current_world(c, 103);
-            if (world == NULL)
+            if (!wake_world_returned(c, 80))
                 return;
+            /* Reload the actual operand. Occupancy notifications can change
+             * Player.World before the separate static exit search. */
+            if (!capture_wake_world(c, 84, &world))
+                return;
+            at(c, 103);
             c->bed = malloc(sizeof(*c->bed));
             if (c->bed == NULL) {
                 (void)call_fail(c, MC_PLAYER_SLEEP_ALLOCATION_FAILED,
@@ -589,12 +739,32 @@ static void wake(mc_player_sleep_call *c, bool reset_timer, bool update, bool se
             }
             mc_world_bed_spawn_error_init(c->bed);
             c->error.bed = c->bed;
-            const mc_world_storage_status searched = mc_world_bed_spawn_exit(
-                world, c->registry, local4->x, local4->y, local4->z, 0, NULL, &c->exit, c->bed);
-            if (searched != MC_WORLD_STORAGE_OK) {
+            mc_world_storage_status searched = MC_WORLD_STORAGE_OK;
+            bool exit_returned;
+            if (w == NULL) {
+                searched = mc_world_bed_spawn_exit(world, c->registry, local4->x, local4->y,
+                                                   local4->z, 0, NULL, &c->exit, c->bed);
+                exit_returned = searched == MC_WORLD_STORAGE_OK;
+            } else {
+                mc_world_bed_spawn_execution_init(&w->bed, w->execution, w->code_classes, w->code,
+                                                  wake_site(84), &w->result);
+                exit_returned = mc_world_bed_spawn_exit_in_execution(
+                    &w->bed, world, c->registry, local4->x, local4->y, local4->z, 0, NULL, &c->exit,
+                    c->bed, &searched);
+            }
+            if (!exit_returned) {
                 c->error.world = c->bed->cause;
-                (void)call_fail(c, world_status(searched), c->bed->operation, 103,
-                                c->bed->native_policy);
+                const char *operation = c->bed->operation;
+                if (operation == NULL && w != NULL)
+                    operation = w->result.ownership_error.operation;
+                const bool null_receiver =
+                    world == NULL && c->bed->source_exception && c->bed->pc == 4;
+                (void)call_fail(c,
+                                null_receiver                     ? MC_PLAYER_SLEEP_SOURCE_NULL
+                                : searched == MC_WORLD_STORAGE_OK ? MC_PLAYER_SLEEP_OK
+                                                                  : world_status(searched),
+                                operation, 103,
+                                searched == MC_WORLD_STORAGE_OK || c->bed->native_policy);
                 c->error.child =
                     (mc_player_site){c->bed->source_class, "f", "(Lfd;IIII)Lbr;", c->bed->pc};
                 c->error.source_exception = c->bed->source_exception;
@@ -602,7 +772,7 @@ static void wake(mc_player_sleep_call *c, bool reset_timer, bool update, bool se
                 c->error.exception_class = c->bed->exception_class;
                 return;
             }
-            if (!discard_local5(c))
+            if (!wake_world_returned(c, 103) || !discard_local5(c))
                 return;
             const mc_player_coordinates *local5 = c->exit;
             if (local5 == NULL) {
@@ -633,8 +803,14 @@ static void wake(mc_player_sleep_call *c, bool reset_timer, bool update, bool se
     if (world == NULL)
         return;
     if (!world->fields.B && update) {
-        world = current_world(c, 201);
-        if (world == NULL || !update_sleeping(c, world, 201))
+        if (!capture_wake_world(c, 198, &world))
+            return;
+        if (world == NULL) {
+            (void)call_fail(c, MC_PLAYER_SLEEP_SOURCE_NULL, "Wake actual World sleeping receiver",
+                            201, false);
+            return;
+        }
+        if (!update_sleeping(c, world, 201) || !wake_world_returned(c, 201))
             return;
     }
     at(c, reset_timer ? 210u : 219u);
@@ -659,7 +835,8 @@ static void wake(mc_player_sleep_call *c, bool reset_timer, bool update, bool se
 static mc_player_sleep_status begin(mc_entity *p, int32_t x, int32_t y, int32_t z, bool waking,
                                     bool reset_timer, bool update, bool set_spawn,
                                     const mc_player_sleep_context *context,
-                                    mc_player_sleep_call **out, mc_player_sleep_error *error) {
+                                    mc_player_sleep_call **out, mc_player_sleep_error *error,
+                                    mc_player_wake_execution *owned) {
     mc_player_sleep_error admission = {0};
     if (out == NULL || *out != NULL) {
         admission.status = MC_PLAYER_SLEEP_ARGUMENT;
@@ -679,6 +856,7 @@ static mc_player_sleep_status begin(mc_entity *p, int32_t x, int32_t y, int32_t 
         return admission.status;
     }
     *out = c;
+    c->owned = owned;
     c->state.active = true;
     c->state.wake = waking;
     c->state.receiver_identity = (uintptr_t)p;
@@ -718,14 +896,76 @@ mc_player_sleep_status mc_player_try_sleep_begin(mc_entity *p, int32_t x, int32_
                                                  const mc_player_sleep_context *context,
                                                  mc_player_sleep_call **out,
                                                  mc_player_sleep_error *error) {
-    return begin(p, x, y, z, false, false, false, false, context, out, error);
+    return begin(p, x, y, z, false, false, false, false, context, out, error, NULL);
 }
 
 mc_player_sleep_status mc_player_wake_begin(mc_entity *p, bool reset_timer, bool update,
                                             bool set_spawn, const mc_player_sleep_context *context,
                                             mc_player_sleep_call **out,
                                             mc_player_sleep_error *error) {
-    return begin(p, 0, 0, 0, true, reset_timer, update, set_spawn, context, out, error);
+    return begin(p, 0, 0, 0, true, reset_timer, update, set_spawn, context, out, error, NULL);
+}
+
+mc_player_sleep_status mc_player_wake_begin_in_execution(
+    mc_entity *p, const mc_player_sleep_context *context, mc_entity_tick_execution *execution,
+    mc_world_runtime_classes *code_classes, mc_world_runtime_execution_code code,
+    mc_player_sleep_call **out, mc_player_sleep_error *error) {
+    if (execution == NULL || code_classes == NULL || out == NULL || *out != NULL || error == NULL)
+        return MC_PLAYER_SLEEP_ARGUMENT;
+    mc_player_wake_execution *w = calloc(1, sizeof(*w));
+    if (w == NULL) {
+        *error = (mc_player_sleep_error){.status = MC_PLAYER_SLEEP_ALLOCATION_FAILED,
+                                         .operation = "Wake retained execution allocation",
+                                         .native_policy = true};
+        return error->status;
+    }
+    mc_world_runtime_execution_result_init(&w->result);
+    w->execution = execution;
+    w->code_classes = code_classes;
+    w->code = code;
+    const mc_player_sleep_status status =
+        begin(p, 0, 0, 0, true, true, true, false, context, out, error, w);
+    if (*out == NULL)
+        free(w);
+    return status;
+}
+
+mc_world_runtime_execution_result *mc_player_wake_execution_result(mc_player_sleep_call *c) {
+    return c == NULL || c->owned == NULL ? NULL : &c->owned->result;
+}
+
+bool mc_player_wake_execution_owns_world(const mc_player_sleep_call *c,
+                                         const mc_entity_tick_execution_world_token *world) {
+    if (c == NULL || c->owned == NULL || world == NULL || c->state.active)
+        return false;
+    const mc_player_wake_execution *w = c->owned;
+    return (w->world_open && wake_same_world(&w->world, world)) ||
+           mc_world_mutation_execution_owns_world(w->mutation, world);
+}
+
+bool mc_player_wake_execution_source_null(const mc_player_sleep_call *c,
+                                          mc_entity_tick_execution_site *site) {
+    return c != NULL && c->owned != NULL && !c->state.active &&
+           mc_world_mutation_execution_source_null(c->owned->mutation, site);
+}
+
+const mc_world_notification_execution *
+mc_player_wake_execution_failure_observer(const mc_player_sleep_call *c) {
+    return c == NULL || c->owned == NULL || c->state.active
+               ? NULL
+               : mc_world_mutation_execution_failure_observer(c->owned->mutation);
+}
+
+mc_world_storage_status mc_player_wake_execution_native_close(mc_player_sleep_call *c) {
+    if (c == NULL || c->owned == NULL)
+        return MC_WORLD_STORAGE_OK;
+    mc_player_wake_execution *w = c->owned;
+    if (c->state.active || wake_records_pending(&w->result))
+        return MC_WORLD_STORAGE_BUSY;
+    const mc_world_storage_status status = mc_world_mutation_execution_native_close(w->mutation);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
+    return close_wake_world(w, !c->state.returned);
 }
 
 bool mc_player_sleep_inspect(const mc_player_sleep_call *c, mc_player_sleep_state *out) {
@@ -770,6 +1010,14 @@ mc_player_sleep_status mc_player_sleep_retire(mc_player_sleep_call **slot,
         if (out != NULL)
             *out = c->cleanup;
         return MC_PLAYER_SLEEP_BUSY;
+    }
+    if (c->owned != NULL) {
+        c->cleanup.world.status = mc_player_wake_execution_native_close(c);
+        if (c->cleanup.world.status == MC_WORLD_STORAGE_OK)
+            c->cleanup.world.status = mc_world_mutation_execution_retire(&c->owned->mutation);
+        if (c->cleanup.world.status != MC_WORLD_STORAGE_OK)
+            return cleanup_fail(c, MC_PLAYER_SLEEP_CLEANUP_WORLD, "Wake exact native retirement",
+                                out);
     }
     if (!capture_query(c)) {
         c->cleanup.acquisition = c->query;
@@ -840,6 +1088,7 @@ mc_player_sleep_status mc_player_sleep_retire(mc_player_sleep_call **slot,
     while (c->world_count != 0)
         mc_world_runtime_binding_release(c->worlds[--c->world_count]);
     mc_entity_release(c->player);
+    free(c->owned);
     free(c);
     *slot = NULL;
     if (out != NULL)

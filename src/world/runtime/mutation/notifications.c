@@ -1,5 +1,6 @@
 #include "mutation_internal.h"
 #include "notifications_execution_internal.h"
+#include "world_execution_internal.h"
 
 #include "../../../block/registry/runtime_internal.h"
 #include "../construction_internal.h"
@@ -18,7 +19,7 @@ static bool world_access_failure(mc_world_runtime *world, mc_world_mutation_erro
 }
 
 static bool notification_quiet(const mc_world_runtime_execution_result *owned) {
-    if (owned->selection_ready || owned->root_pending)
+    if (owned->selection_ready || owned->root_pending || owned->math_failed)
         return false;
     for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
         if (owned->pending[i].used)
@@ -152,13 +153,20 @@ bool mc_world_mutation_observe_range(mc_world_runtime *world, int32_t min_x, int
     return observe_range(world, min_x, min_y, min_z, max_x, max_y, max_z, error, NULL);
 }
 
+void mc_world_notification_execution_init_borrowed(mc_world_notification_execution *frame,
+                                                   mc_entity_tick_execution *execution,
+                                                   mc_entity_tick_execution_site receiver_site,
+                                                   mc_world_runtime_execution_result *owned) {
+    if (frame != NULL)
+        *frame = (mc_world_notification_execution){
+            .execution = execution, .owned = owned, .receiver_site = receiver_site};
+}
+
 void mc_world_notification_execution_init(mc_world_notification_execution *frame,
                                           mc_entity_tick_execution *execution,
                                           mc_entity_tick_execution_site receiver_site,
                                           mc_world_runtime_execution_result *owned) {
-    if (frame != NULL)
-        *frame = (mc_world_notification_execution){
-            .execution = execution, .owned = owned, .receiver_site = receiver_site};
+    mc_world_notification_execution_init_borrowed(frame, execution, receiver_site, owned);
     mc_world_runtime_execution_result_init(owned);
 }
 
@@ -209,13 +217,15 @@ bool mc_world_mutation_observe_range_in_execution(mc_world_notification_executio
                                                   mc_world_storage_status *status) {
     if (!notification_enter(frame, world, error, status))
         return false;
+    frame->range = true;
     const bool completed =
         observe_range(world, min_x, min_y, min_z, max_x, max_y, max_z, error, frame);
     return notification_finish(frame, completed, error, status);
 }
 
-bool mc_world_mutation_observe_column(mc_world_runtime *world, int32_t x, int32_t z, int32_t a,
-                                      int32_t b, mc_world_mutation_error *error) {
+static bool observe_column(mc_world_runtime *world, int32_t x, int32_t z, int32_t a, int32_t b,
+                           mc_world_mutation_error *error, mc_world_notification_execution *frame,
+                           mc_world_storage_status *raw) {
     /* fd.h/dj.g(IIII)V: source arguments are x,z,yA,yB. In particular callers
      * in incremental Chunk.g supply LOCAL x/z; do not correct them here. */
     if (a > b) {
@@ -223,7 +233,22 @@ bool mc_world_mutation_observe_column(mc_world_runtime *world, int32_t x, int32_
         b = a;
         a = temporary;
     }
-    return mc_world_mutation_observe_range(world, x, a, z, x, b, z, error);
+    return frame == NULL ? mc_world_mutation_observe_range(world, x, a, z, x, b, z, error)
+                         : mc_world_mutation_observe_range_in_execution(frame, world, x, a, z, x, b,
+                                                                        z, error, raw);
+}
+
+bool mc_world_mutation_observe_column(mc_world_runtime *world, int32_t x, int32_t z, int32_t a,
+                                      int32_t b, mc_world_mutation_error *error) {
+    return observe_column(world, x, z, a, b, error, NULL, NULL);
+}
+
+bool mc_world_mutation_observe_column_in_execution(mc_world_notification_execution *frame,
+                                                   mc_world_runtime *world, int32_t x, int32_t z,
+                                                   int32_t a, int32_t b,
+                                                   mc_world_mutation_error *error,
+                                                   mc_world_storage_status *raw) {
+    return frame != NULL && observe_column(world, x, z, a, b, error, frame, raw);
 }
 
 static bool neighbor_success(mc_world_mutation_error *error) {
@@ -233,9 +258,14 @@ static bool neighbor_success(mc_world_mutation_error *error) {
 }
 
 static bool neighbor(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int32_t source_id,
-                     unsigned int call_pc, mc_world_mutation_error *error) {
+                     unsigned int call_pc, mc_world_mutation_error *error,
+                     mc_world_mutation_execution_call *owned) {
     error->neighbor_call_bytecode = call_pc;
     error->neighbor_bytecode = 1;
+    if (owned != NULL &&
+        !mc_world_mutation_execution_current(
+            owned, world, (mc_entity_tick_execution_site){"fd", "l", "(IIII)V", 1}))
+        return false;
     if (world->fields.o)
         return neighbor_success(error);
     error->neighbor_bytecode = 8;
@@ -248,7 +278,8 @@ static bool neighbor(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, i
     error->neighbor_bytecode = 15;
     mc_registry_block_m_view array;
     mc_registry_error registry = mc_world_mutation_empty_registry();
-    mc_registry_classes *classes = mc_world_runtime_registry(world);
+    mc_registry_classes *classes = owned == NULL ? mc_world_runtime_registry(world)
+                                                 : mc_world_mutation_execution_registry(owned);
     if (classes == NULL) {
         registry.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
         registry.message = "World neighbor Registry binding";
@@ -260,15 +291,21 @@ static bool neighbor(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, i
 
     error->neighbor_bytecode = 22;
     int32_t id;
-    mc_world_storage_error cause = {0};
-    const mc_world_storage_status status = mc_world_runtime_block_get(world, x, y, z, &id, &cause);
-    if (status != MC_WORLD_STORAGE_OK) {
-        mc_world_mutation_fail(world, error, status, cause.operation);
-        /* fail creates a fresh native diagnostic. Restore the actual returned
-         * acquisition cause, including its native system_error. */
-        error->cause = cause;
-        world->last_error = cause;
-        return false;
+    if (owned == NULL) {
+        mc_world_storage_error cause = {0};
+        const mc_world_storage_status status =
+            mc_world_runtime_block_get(world, x, y, z, &id, &cause);
+        if (status != MC_WORLD_STORAGE_OK) {
+            mc_world_mutation_fail(world, error, status, cause.operation);
+            /* Preserve the actual returned acquisition cause and system error. */
+            error->cause = cause;
+            world->last_error = cause;
+            return false;
+        }
+    } else {
+        const mc_entity_tick_execution_site site = {"fd", "l", "(IIII)V", 22};
+        if (!mc_world_mutation_execution_get(owned, world, x, y, z, false, &id, error, site))
+            return false;
     }
 
     error->neighbor_bytecode = 25;
@@ -281,19 +318,35 @@ static bool neighbor(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, i
         return neighbor_success(error);
 
     error->neighbor_bytecode = 41;
-    if (!mc_world_mutation_block_neighbor(world, block, x, y, z, source_id, error))
+    const bool completed =
+        owned == NULL ? mc_world_mutation_block_neighbor(world, block, x, y, z, source_id, error)
+                      : mc_world_mutation_block_neighbor_in_execution(owned, world, block, x, y, z,
+                                                                      source_id, error);
+    if (!completed)
         return false;
     return neighbor_success(error);
 }
 
-bool mc_world_mutation_neighbors(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
-                                 int32_t id, mc_world_mutation_error *error) {
+static bool neighbors(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int32_t id,
+                      mc_world_mutation_error *error, mc_world_mutation_execution_call *owned) {
     /* The source invokes each private operation synchronously. Each later
      * call rereads flags/registry/World and observes completed earlier effects. */
-    return neighbor(world, mc_java_i32_sub(x, 1), y, z, id, 8, error) &&
-           neighbor(world, mc_java_i32_add(x, 1), y, z, id, 19, error) &&
-           neighbor(world, x, mc_java_i32_sub(y, 1), z, id, 30, error) &&
-           neighbor(world, x, mc_java_i32_add(y, 1), z, id, 41, error) &&
-           neighbor(world, x, y, mc_java_i32_sub(z, 1), id, 52, error) &&
-           neighbor(world, x, y, mc_java_i32_add(z, 1), id, 63, error);
+    return neighbor(world, mc_java_i32_sub(x, 1), y, z, id, 8, error, owned) &&
+           neighbor(world, mc_java_i32_add(x, 1), y, z, id, 19, error, owned) &&
+           neighbor(world, x, mc_java_i32_sub(y, 1), z, id, 30, error, owned) &&
+           neighbor(world, x, mc_java_i32_add(y, 1), z, id, 41, error, owned) &&
+           neighbor(world, x, y, mc_java_i32_sub(z, 1), id, 52, error, owned) &&
+           neighbor(world, x, y, mc_java_i32_add(z, 1), id, 63, error, owned);
+}
+
+bool mc_world_mutation_neighbors(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
+                                 int32_t id, mc_world_mutation_error *error) {
+    return neighbors(world, x, y, z, id, error, NULL);
+}
+
+bool mc_world_mutation_neighbors_in_execution(mc_world_mutation_execution_call *owned,
+                                              mc_world_runtime *world, int32_t x, int32_t y,
+                                              int32_t z, int32_t id,
+                                              mc_world_mutation_error *error) {
+    return owned != NULL && neighbors(world, x, y, z, id, error, owned);
 }

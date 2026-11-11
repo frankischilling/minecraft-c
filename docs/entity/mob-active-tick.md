@@ -55,7 +55,7 @@ These are reached dependencies, not successful empty implementations:
 | `ww.o:217` | Actual Item drop after egg sound and Egg static-field access. |
 | Living/Monster/Sheep/Wolf hurt entries | [Animal damage](animal-damage.md) runs for Sheep/Pig/Cow/Chicken; [Zombie](living-damage.md) and [Skeleton](skeleton-damage.md) retain their NULL-attacker qualification. Other concrete overrides, death and drop work remain unfinished. |
 | Selected Wolf children | Owner following, selected-Item interest and other reached behavior still requiring its own body. |
-| Selected movement children | Mounting, contact attack, Slime splitting and other unimplemented subtype effects. |
+| Selected movement children | Mounting, contact attack and other unimplemented subtype effects. [Delayed Slime splitting](slime-removal.md) has separate component and loaded-scene coverage. |
 
 The diagnostics retain actual evaluated path coordinates or target/range,
 Egg item/count, and hurt source/amount. Path results come from the complete

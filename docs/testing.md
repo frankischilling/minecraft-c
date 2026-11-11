@@ -1,5 +1,78 @@
 # Test scope and reproduction
 
+## Recursive Bed notification during Player wake
+
+The [wake contract](entity/player-damage-wake.md#wake-during-an-arrow-hit)
+covers actual owned GS35 with a direction-zero Bed and a nearby orphan head.
+The initial positive test fails at GS35 before entering wake. No observer
+runs and both cells retain their original values. After the join, the
+metadata observer sees the occupied head clear first. The recursive ID
+observer then sees the orphan already removed.
+
+The [original packet](../tests/reference/entity/player_recursive_wake/README.md)
+runs two fresh JDK 17 interpreters. Both execute three calls and agree on 405
+selected values. Native execution compares 34 values per case for normal
+wake, observer exception, and a callback that clears Player.World before the
+exit search. The common fields include raw position and dimension words,
+cell changes, observer order, return or exception, and the Player and World
+sleep flags. Java stack frames and the wider original state stay in the
+reference packet.
+
+Separate native controls leave a foreign scope open from the second
+observer, clear the Chunk's World from the first observer, and stop an actual
+Arrow hit at the World Player List read after wake has started. These check
+the exact retained child and committed prefix. Cleanup must refuse the
+foreign scope, preserve the cell changes, and run no new callbacks. The
+height cases exercise a rise, a fall, an actual range observer failure,
+and scope drift from that range observer.
+
+The first coherent Windows and Linux sanitizer selections pass 56 tests
+per host. An earlier Linux copy catches a header and implementation during
+different edits and stops at compilation. No tests run in that attempt.
+A later Windows selection passes the new height case and the two packet
+integrity modes. The five direct wake modes pass again after adding typed
+Chunk World null attribution.
+
+The first full Windows sweep passes 1,138 of 1,139 tests in 600.07 seconds;
+Linux passes 984 of 985 in 625.48 seconds. Both failures are the same
+receipt-limit cleanup control. Owned occupancy retirement incorrectly enters
+legacy capture and requests another hold on the already protected callback
+producer. The fix leaves that ownership with the execution. The five direct
+wake modes then pass on Windows in 0.35 seconds. The final fixture also requires
+the saturated receipt count to remain unchanged through successful cleanup.
+
+The final complete Windows MSVC Release client build and all 1,139 tests pass
+in 526.20 seconds, without skips or unrun cases. Every preceding test name
+remains and nine are added. Its three original-comparison controls pass 102
+selected scalar comparisons with empty native stderr and checked cleanup.
+The full Linux Clang 18.1.8 Debug headless suite passes all 985 tests in
+585.73 seconds with ASan, UBSan and leak detection, without skips or unrun
+cases. Its three wake comparisons also match all 102 selected scalars and
+complete checked cleanup with empty native stderr.
+A fresh pair of unchanged-original Windows JDK17 captures reproduces the
+public three-case packet byte for byte. Java's four SecurityManager deprecation
+warnings remain in each original capture; they are separate from native stderr.
+
+Two rebuilt-client Windows scenes run on physical monitor 2. Bed placement,
+ordinary sleep ticks, dawn wake and independent saved-Player readback pass
+1,949 checks. The saved Arrow/Pig encounter passes 463 checks: health ten to
+six, Arrow removal, returned terrain/HUD, SDK pause/save, independent NBT and
+window cleanup. All six images were inspected. The Bed scene follows the
+ordinary World wake route; the Arrow scene hits an awake Pig. Neither is a
+graphical sleeping-Player damage or recursive orphan-head comparison.
+
+The runtime qualification freezes 6,064 public inputs. All 2,376 C
+source/header/fragment files pass clang-format 18.1.3. Subsequent result documentation and its source-binding
+tables have separate final admission checks; they do not change qualified
+runtime bytes. Cleanup removes 1,708,534,049 bytes of obsolete Windows build
+artifacts and 69,868,082 bytes of Linux build artifacts. Test captures, logs,
+configuration, shared dependency inputs and historical Linux products remain.
+
+These CPU cases use prepared Worlds and actual runtime entry points. Natural
+nighttime damage, graphical wake from damage, unjoined neighbor hooks, and
+the Bed foot drop remain separate. Original audiovisual equality, unrestricted
+play and sustained FPS remain unqualified.
+
 ## Slime removal and splitting
 
 The [removal contract](entity/slime-removal.md) connects direct effect K and the

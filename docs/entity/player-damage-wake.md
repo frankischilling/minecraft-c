@@ -21,6 +21,48 @@ Registry, coordinates and occupancy work live until retirement succeeds.
 Successful wake retires before later damage work. Cleanup retries retirement;
 it does not repeat wake, damage statistics or health changes.
 
+## Wake during an Arrow hit
+
+The explicit damage execution used by Arrow enters the same wake body as
+direct Player damage. The Player retains the wake invocation and its actual
+World operands. GS loads the World for the block check at 30, for occupancy
+at 61, for the exit search at 84, and for the sleeping List update at 198.
+The two static Bed methods activate before checking their nullable World
+argument at their own metadata call. An observer can change Player.World
+during occupancy, and the exit search uses the later value.
+
+Clearing the occupied bit calls the notifying metadata setter. It reads the
+changed Block ID and the actual Block.t entry, notifies the live WorldAccess
+List when required, then visits neighbors in the original order. A nearby
+orphan Bed head reads its own direction and checks its foot. It removes itself
+through the notifying ID setter. The acquired Chunk keeps its own lease
+through the write, lighting, height and column work. The outer World operand
+remains the same throughout these recursive calls.
+
+In the prepared direction-zero case, the first cell observer sees the original
+head at metadata eight and the orphan still present. The next observer sees the
+orphan already removed. The Player remains asleep at both callbacks. A normal
+return then finds the exit, moves the Player, clears sleeping and the timer,
+and updates the live Player List. A callback exception preserves both cell
+changes and stops before exit search. A callback that clears Player.World and
+returns normally permits the recursive write to finish, then fails at the
+actual exit search.
+
+The retained wake exposes the actual failed child result for native cleanup.
+Arrow saves the exception information while the producing receipt is still
+live, services recorded acquisitions, and closes only the World tokens the wake
+or its children opened. A callback can leave a separate scope open. Cleanup
+refuses until that scope's owner closes it, then releases the recorded wake
+work without running another cell callback.
+
+Owned occupancy diagnostics borrow the execution's protected callback owner.
+Their retirement does not enter the legacy diagnostic capture or acquire a new
+producer hold. The receipt-limit control forces the count to `SIZE_MAX` during
+cleanup, requires successful retirement with the count unchanged, then restores
+the actual count before retiring the execution. The preceding failing runs
+reached an unnecessary legacy retain after the block changes had already
+committed; the Source prefix and callback count stay unchanged by the fix.
+
 ## Original evidence
 
 The [component packet](../../tests/reference/entity/player_damage_wake/README.md)

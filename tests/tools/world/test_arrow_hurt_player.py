@@ -11,7 +11,8 @@ import tempfile
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--mode', choices=('live', 'fatal', 'fatal-source', 'wake'), required=True)
+    parser.add_argument('--mode', choices=('live', 'fatal', 'fatal-source', 'wake',
+                                          'wake-source-null-list'), required=True)
     parser.add_argument('--executable', type=Path, required=True)
     parser.add_argument('--work-dir', type=Path, required=True)
     args = parser.parse_args()
@@ -41,7 +42,7 @@ def main():
     report = {'mode': args.mode, 'exit': child.returncode, 'capture': child.capture_report,
               'stderr_empty': child.stderr == b'',
               'executable_unchanged': hashlib.sha256(executable.read_bytes()).hexdigest() == before,
-              'scope': 'Actual Arrow finite Player hits/fatal work; reached GS35 remains open'}
+              'scope': 'Actual Arrow finite Player hit, fatal work and wake controls'}
     report['passed'] = bool(child.returncode == 0 and footer and not child.stderr and
                             report['executable_unchanged'])
     (out / 'report.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')

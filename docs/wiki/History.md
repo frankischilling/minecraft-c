@@ -1,5 +1,181 @@
 # History
 
+## Slime removal and splitting
+
+Wiki checkpoint `6ca1df2` recorded delayed Slime removal.
+
+A C17 implementation of Minecraft Beta 1.7.3 for x86-64 Windows and Linux.
+Development focuses on the single-player client. Full parity and unrestricted
+playability remain incomplete; multiplayer and the dedicated server follow
+the client work. Account authentication is the only approved gameplay exception.
+
+[Slime removal](Combat-and-projectiles#slime-removal-and-splitting) now runs
+through ordinary Mob ticks. A loaded Arrow reduces a Slime from four health to
+zero, then four children replace it at World tick 26. Both Windows scenes
+pause and save through the usual controls. Independent readback finds four
+living Slimes and no parent or Arrow.
+
+Earlier [combat work](Combat-and-projectiles) connects Arrow impact to the
+shared damage and drop bodies. [World simulation](World-simulation) covers
+Ladder support and drop order. Full owned Mob environment and particle work,
+complete Player wake, original audiovisual equality and measured FPS remain
+open.
+
+## Arrow and Ladder: previous Home checkpoint
+
+Wiki checkpoint `1a1fe8b` recorded the Arrow damage and Ladder update.
+
+A C17 implementation of Minecraft Beta 1.7.3 for x86-64 Windows and Linux.
+Development focuses on the single-player client. Full parity and unrestricted
+playability remain incomplete; multiplayer and the dedicated server follow
+the client work. Account authentication is the only approved gameplay exception.
+
+The latest [combat work](Combat-and-projectiles) connects actual Arrow hits to
+Living, Monster, Wolf and Player damage through the existing bodies. Player
+Inventory scatter and fatal drops preserve their actual published effects
+through checked cleanup. The [World work](World-simulation) adds the Ladder's
+metadata-selected support and drop-before-removal behavior. Complete sleeping
+Player wake still needs its recursive mutation descendants.
+
+Earlier work adds Wolf, Slime, Squid and
+Ghast hurt/sound/drop paths, including Wolf pack/owner decisions and counted
+UTF16 comparison. Ten finite records match unchanged original calls. Earlier
+Monster death, Skeleton Arrow/Bone loops, Creeper's record and Player kill
+callbacks keep their separate comparison. Constructor and Item entropy remain
+independent; no original audiovisual equality or FPS improvement is established.
+
+## Start here
+
+- [Startup and controls](Startup)
+- [Build and resource import](Build-and-tests)
+- [Combat and projectiles](Combat-and-projectiles)
+- [World simulation](World-simulation)
+- [Storage and reference evidence](Storage-and-reference)
+- [Architecture](Architecture)
+- [Current status](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md)
+- [Parity matrix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md)
+- [Test results and limits](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
+- [Earlier evidence](History)
+
+Import original resources locally. After import, ordinary runtime operation needs
+no JVM, original archive or account services. Original resources and reference
+binaries remain outside the distributed project.
+
+## Shared execution and metadata: previous Home checkpoint
+
+Published wiki checkpoint `f3ac075` preceded the Arrow damage and Ladder work.
+
+A C17 implementation of Minecraft Beta 1.7.3 for x86-64 Windows and Linux.
+Development focuses on the single-player client. Full parity and unrestricted
+playability remain incomplete; multiplayer and the dedicated server follow
+the client work. Account authentication is the only approved gameplay exception.
+
+The latest [combat work](Combat-and-projectiles) joins shared-execution drops,
+Mob death and damage descendants while preserving actual failed work through
+checked cleanup. Quiet metadata writes now follow the current Chunk NibbleArray,
+with fifteen finite unchanged-original comparisons. Complete Arrow damage and
+Player wake remain unfinished.
+
+Earlier work adds Wolf, Slime, Squid and
+Ghast hurt/sound/drop paths, including Wolf pack/owner decisions and counted
+UTF16 comparison. Ten finite records match unchanged original calls. Earlier
+Monster death, Skeleton Arrow/Bone loops, Creeper's record and Player kill
+callbacks keep their separate comparison. Constructor and Item entropy remain
+independent; no original audiovisual equality or FPS improvement is established.
+
+## Start here
+
+- [Startup and controls](Startup)
+- [Build and resource import](Build-and-tests)
+- [Combat and projectiles](Combat-and-projectiles)
+- [World simulation](World-simulation)
+- [Storage and reference evidence](Storage-and-reference)
+- [Architecture](Architecture)
+- [Current status](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md)
+- [Parity matrix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md)
+- [Test results and limits](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
+- [Earlier evidence](History)
+
+Import original resources locally. After import, ordinary runtime operation needs
+no JVM, original archive or account services. Original resources and reference
+binaries remain outside the distributed project.
+
+
+## Remaining Living damage: previous Home checkpoint
+
+Published wiki checkpoint `84bbfe1` preceded the shared-execution and metadata work.
+
+A C17 implementation of Minecraft Beta 1.7.3 for x86-64 Windows and Linux.
+Development focuses on the single-player client. Full parity and unrestricted
+playability remain incomplete; multiplayer and the dedicated server follow
+the client work. Account authentication is the only approved gameplay exception.
+
+The latest [combat work](Combat-and-projectiles) adds Wolf, Slime, Squid and
+Ghast hurt/sound/drop paths, including Wolf pack/owner decisions and counted
+UTF16 comparison. Ten finite records match unchanged original calls. Earlier
+Monster death, Skeleton Arrow/Bone loops, Creeper's record and Player kill
+callbacks keep their separate comparison. Constructor and Item entropy remain
+independent; no original audiovisual equality or FPS improvement is established.
+
+## Start here
+
+- [Startup and controls](Startup)
+- [Build and resource import](Build-and-tests)
+- [Combat and projectiles](Combat-and-projectiles)
+- [World simulation](World-simulation)
+- [Storage and reference evidence](Storage-and-reference)
+- [Architecture](Architecture)
+- [Current status](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md)
+- [Parity matrix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md)
+- [Test results and limits](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
+- [Earlier evidence](History)
+
+Import original resources locally. After import, ordinary runtime operation needs
+no JVM, original archive or account services. Original resources and reference
+binaries remain outside the distributed project.
+
+## Activation close continuations: previous Home checkpoint
+
+The current published commit,
+[af6b08b0](https://github.com/frankischilling/minecraft-c/commit/af6b08b00506ad3a57674bf8deabe24a009af2f2),
+adds [activation close continuations](Activation-close). An actual failed scope
+close returns its exact callee-created token and drained phase, even when that
+child made no get. Native recovery closes that one recorded scope and completes
+the actual parent query without replaying source work.
+
+Both native hosts pass **114 new recovery checks** and **913 native query/close
+checks** in sixteen fresh processes. The common 18-test selection and disjoint
+broader runs pass **112 unique Windows tests** and **110 sanitized Linux tests**,
+preserving every preceding name without skips or unrun cases. Both builds,
+formatting of **2,286 files** and three actual GCC recipes pass. Exact returned
+captures, literal inputs and source/product/helper/six-table guards remain intact.
+
+Published head [`af6b08b0`](https://github.com/frankischilling/minecraft-c/commit/af6b08b00506ad3a57674bf8deabe24a009af2f2) passes [hosted run 42545472462](https://github.com/frankischilling/minecraft-c/actions/runs/42545472462), attempt 1: **Windows 825/825**, **GCC 884/884**, **Clang 884/884**, and formatting of **2,286 files**. Actual Passed names are unique, contain no skipped or unrun tests, and preserve every preceding hosted test name. All four actual checkouts use merge `7ad293abc602e8101b8aea7cb71b2488a2ebf1b7`; its tree `a8377468f7ea7cff5571561ce0622d3cde80364c` equals the published head.
+
+The first broader run retained eight setup refusals from an older kernel bundle
+that still pinned the preceding source. An explicit five-file source projection
+and approved bundle/selection literals restore those controls without changing
+native fixtures, recipes, assertions or guards. All four old programs then run
+and pass on both hosts. The initial refusals receive no native execution credit.
+
+Tile refused-close, consumed-nonOK, direct close wrong-current/matching-child-get
+and unrecorded descendants remain unqualified where no genuine case was reached.
+Arrow parent/result/classifier/unwind, foreign World/joint Store, full flight,
+pickup and World-tick dispatch remain unfinished. Unrestricted play, original
+audiovisual equality and sustained FPS remain unqualified. These controls add no
+original JVM or visible game observation.
+
+Earlier [owned block values](World-block-values),
+[acquisition and Tile calls](World-acquisition-execution),
+[nested ownership](World-execution), [callback ownership](World-callback-ownership),
+[Math/base](Arrow-base), [collision boxes](Arrow-collision) and
+[Skeleton firing](Skeleton-firing) retain separate evidence in [History](History)
+and the [testing record](https://github.com/frankischilling/minecraft-c/blob/af6b08b00506ad3a57674bf8deabe24a009af2f2/docs/testing.md).
+
+## Hosted sleeping Player NBT checkpoint
+
+Latest hosted checkpoint: [`4cfe4dc4`](https://github.com/frankischilling/minecraft-c/commit/4cfe4dc4964dc231b0dfac940a93bccb72aa79ba). All four jobs pass [run 42266346440](https://github.com/frankischilling/minecraft-c/actions/runs/42266346440): Windows 729/729 in 338.67 seconds, GCC 787/787 in 673.68 seconds and Clang 787/787 in 673.97 seconds, plus formatting of 2,189 files. Every preceding native test name remains, exactly four are added per host, none is skipped, and all four actual checkout trees equal pushed tree `0758d8c4e10f37a1a39c2bcf79d205a37508aac0`. Earlier failed full, fixture-binding and output-contract attempts retain their own scope.
+
 ## Sleeping Player NBT continuation
 
 The real GS93 wake now returns into fresh Spawn and DC Score reads. Failed
@@ -1068,3 +1244,105 @@ The former sidebar is retained below so its detailed links remain available.
 
 - [Entity movement](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/movement.md)
 - [Paired movement source map](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/entity-movement.md)
+
+## Random recording Home checkpoint
+
+
+A C17 client matching Minecraft Beta 1.7.3, with current development focused on
+a playable single-player session. Full parity remains incomplete; multiplayer
+and the dedicated server follow the client work. Account authentication is the
+only approved gameplay exception.
+
+This increment adds [Random constructor recording](Random-recording) and
+[owned World material lookup](World-material), with separate observation,
+lower-query and native ownership results.
+
+**Source revision: [f732094f](https://github.com/frankischilling/minecraft-c/commit/f732094f3554c0073c293193ea11d6d9338df821). [Hosted CI](https://github.com/frankischilling/minecraft-c/actions/runs/42587387204): passed.**
+
+Hosted attempt 1 passes **Windows 830/830**, **GCC 889/889**, **Clang 889/889**,
+and formatting of **2,290 files**. All preceding test names are preserved,
+with exactly five new tests per native host and no skipped or unrun cases.
+All four jobs check out merge `7209eb0a5018d1d727e4d50083d8773325f50826`;
+its tree equals the published source revision.
+
+
+The local Windows Release graph passes all **820 configured tests**:
+26 focused and 794 disjoint remaining cases, with no skips or unrun cases.
+The local Linux Clang ASan/UBSan graph passes **25 targeted tests** with leak detection;
+this is not a Linux full-suite or GCC result, and its runtime graph has no
+bootstrap admission target. Windows passes 14 no-window bootstrap checks.
+
+Both local hosts pass 1,079 native query checks across nineteen modes, including
+166 material checks. Actual local fixed thread cohorts qualify both overlap cases
+without retry. Exact formatting covers 2,290 files. After execution, only five
+documents and their publication-admission metadata change; code and test inputs
+remain exact. [Details and limits](Random-recording) retain the separate counts.
+
+The earlier healthy monitor2 recording and sole replay with 227 unused inputs
+remain separate evidence; the replay is unqualified and no new replay is counted.
+Nullable material, foreign graphs and complete Arrow parent/flight/pickup remain
+unfinished. Original audiovisual equality, unrestricted play and sustained FPS
+remain unqualified. Prior published results are preserved in [History](History).
+
+## Start here
+
+- [Client startup and controls](Startup)
+- [Build and resource import](Build-and-tests)
+- [World simulation](World-simulation)
+- [Storage and reference evidence](Storage-and-reference)
+- [Architecture](Architecture)
+- [Current status and remaining dependencies](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md)
+- [Parity matrix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md)
+
+## Behavior and evidence
+
+- [Random constructor recording](Random-recording)
+- [Owned World material lookup](World-material)
+- [Skeleton firing](Skeleton-firing)
+- [Arrow collision boxes](Arrow-collision)
+- [Owned World block values](World-block-values)
+- [Activation close continuations](Activation-close)
+- [Arrow inherited base and Math](Arrow-base)
+- [Protected World callback ownership](World-callback-ownership)
+- [Nested World ownership and Entity activation](World-execution)
+- [Monster melee behavior and ownership](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/monster-melee.md)
+- [Original Monster parent comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/monster-damage.md)
+- [Player ally-alert behavior and ownership](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-ally-alert.md)
+- [Original ally-alert comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/reference/player-ally-alert.md)
+- [Cleanup measurements and raw receipts](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/player-ally-retire.md)
+- [Mob diagnostic CPU comparison](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/mob-tick-diagnostics.md)
+
+Import original resources locally. The normal C runtime then needs no JVM or
+original archive. Original audio/pixel equality, unrestricted play and
+sustained FPS remain unqualified.
+
+## Monster death Home checkpoint
+
+
+A C17 implementation of Minecraft Beta 1.7.3 for x86-64 Windows and Linux.
+Development focuses on the single-player client. Full parity and unrestricted
+playability remain incomplete; multiplayer and the dedicated server follow
+the client work. Account authentication is the only approved gameplay exception.
+
+The latest [combat work](Combat-and-projectiles) completes fatal Monster drops,
+Skeleton's ordered Arrow/Bone loops, Creeper's Skeleton-kill record and Player
+kill callbacks. Twenty-two finite records match unchanged original calls.
+The comparison keeps constructor and Item entropy independent. It establishes
+no original audiovisual equality or FPS improvement.
+
+## Start here
+
+- [Startup and controls](Startup)
+- [Build and resource import](Build-and-tests)
+- [Combat and projectiles](Combat-and-projectiles)
+- [World simulation](World-simulation)
+- [Storage and reference evidence](Storage-and-reference)
+- [Architecture](Architecture)
+- [Current status](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/status.md)
+- [Parity matrix](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/parity.md)
+- [Test results and limits](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md)
+- [Earlier evidence](History)
+
+Import original resources locally. After import, ordinary runtime operation needs
+no JVM, original archive or account services. Original resources and reference
+binaries remain outside the distributed project.

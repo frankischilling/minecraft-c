@@ -4,6 +4,8 @@
 #include "../../../src/core/java/random_profile_internal.h"
 #include "../../../src/world/runtime/chunk_provider_internal.h"
 #include "../../../src/world/runtime/construction_internal.h"
+#include "../../../src/world/runtime/lighting_execution_internal.h"
+#include "../../../src/world/runtime/runtime_internal.h"
 
 #include <limits.h>
 #include <stdio.h>
@@ -740,6 +742,132 @@ cleanup:
     return ok;
 }
 
+typedef enum owned_light_case {
+    OWNED_LIGHT_PRESENT,
+    OWNED_LIGHT_ABSENT,
+    OWNED_LIGHT_WRONG_WORLD,
+    OWNED_LIGHT_LOADER_BUSY
+} owned_light_case;
+
+typedef struct owned_light_fixture {
+    mc_entity_tick_execution execution;
+    mc_world_light_execution frame;
+    mc_world_runtime_execution_result result;
+} owned_light_fixture;
+
+static bool test_owned_leaf(fixture *f, bool submit, owned_light_case mode) {
+    bool ok = false, captured = false, reserved = false;
+    owned_light_fixture *leaf = calloc(1, sizeof(*leaf));
+    mc_world_runtime *const world = f->worlds[0];
+    mc_world_runtime *const captured_world = mode == OWNED_LIGHT_WRONG_WORLD ? f->worlds[1] : world;
+    mc_entity_tick_execution_world_token token = {0};
+    mc_entity_tick_execution_loader_attempt attempt = {0};
+    mc_world_light_list_view before = {0};
+    const int32_t coordinate = mode == OWNED_LIGHT_ABSENT ? 96 : 8;
+    const mc_light_bounds bounds = {coordinate, 64, coordinate, coordinate, 64, coordinate};
+    const mc_entity_tick_execution_site site =
+        submit ? (mc_entity_tick_execution_site){"lm", "a", "(IIII)Z", 178}
+               : (mc_entity_tick_execution_site){"lm", "f", "(III)V", 1};
+    const mc_world_runtime_execution_code code = {{"lm", "e", "()V", 6}, {"lm", "e", "()V", 33}};
+    const mc_world_storage_error marker = {MC_WORLD_STORAGE_IO_ERROR, "owned light sentinel", 7};
+    mc_world_light_error error = {.status = marker.status, .bytecode = 999, .cause = marker};
+    mc_world_storage_status raw = MC_WORLD_STORAGE_LIMIT;
+    mc_light_submit_result submitted = MC_LIGHT_SUBMIT_FULL;
+    int32_t height = -123;
+    CHECK(leaf != NULL);
+    mc_entity_tick_execution_init(&leaf->execution, NULL);
+    CHECK(mc_world_runtime_light_list_get(world, &before, NULL) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_entity_tick_execution_push_world(&leaf->execution, captured_world, site, &token) ==
+          MC_WORLD_STORAGE_OK);
+    captured = true;
+    if (mode == OWNED_LIGHT_LOADER_BUSY) {
+        CHECK(mc_entity_tick_execution_loader_begin(&leaf->execution, &token, &attempt) ==
+              MC_WORLD_STORAGE_OK);
+        reserved = true;
+    }
+    const size_t chunks = mc_world_store_chunk_count(f->store);
+    const size_t calls = world->active_calls;
+    mc_world_light_execution_init(&leaf->frame, &leaf->execution, code, site, &leaf->result);
+    const bool completed =
+        submit ? mc_world_runtime_light_submit_in_execution(
+                     &leaf->frame, world, f->types[0][0], &bounds, false, &submitted, &error, &raw)
+               : mc_world_runtime_height_in_execution(&leaf->frame, world, coordinate, coordinate,
+                                                      &height, &error, &raw);
+    mc_entity_tick_execution_world_token current = {0};
+    CHECK(mc_entity_tick_execution_current_world(&leaf->execution, &current) &&
+          current.owner == token.owner && current.slot == token.slot &&
+          current.generation == token.generation && world->active_calls == calls &&
+          depth_is(f, 0) && mc_world_store_chunk_count(f->store) == chunks &&
+          !leaf->result.root_pending && !leaf->result.selection_ready);
+    const bool appended = submit && mode == OWNED_LIGHT_PRESENT;
+    CHECK(list_is(world, before.identity, before.count + (appended ? 1u : 0u)));
+    if (mode == OWNED_LIGHT_WRONG_WORLD) {
+        CHECK(!completed && !leaf->frame.entered && !leaf->frame.get_entered &&
+              !leaf->frame.get_returned &&
+              leaf->result.ownership_status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+              raw == MC_WORLD_STORAGE_LIMIT && error.status == marker.status &&
+              error.bytecode == 999 && same_error(&error.cause, &marker) &&
+              submitted == MC_LIGHT_SUBMIT_FULL && height == -123);
+    } else if (mode == OWNED_LIGHT_LOADER_BUSY) {
+        CHECK(!completed && leaf->frame.entered && leaf->frame.get_entered &&
+              leaf->frame.get_returned && leaf->frame.native_stopped &&
+              leaf->frame.get_status == MC_CHUNK_ACQUIRE_STATE_ERROR &&
+              leaf->result.ownership_status == MC_WORLD_STORAGE_BUSY &&
+              raw == MC_WORLD_STORAGE_BUSY && error.status == raw &&
+              error.bytecode == (submit ? 87u : 48u) && error.provider_bytecode == 6 &&
+              error.acquisition == MC_CHUNK_ACQUIRE_STATE_ERROR &&
+              submitted == MC_LIGHT_SUBMIT_FULL && height == -123);
+    } else {
+        const bool present = mode == OWNED_LIGHT_PRESENT;
+        CHECK(completed && leaf->frame.entered && leaf->frame.completed &&
+              leaf->frame.get_entered == present && leaf->frame.get_returned == present &&
+              !leaf->frame.native_stopped && leaf->result.ownership_status == MC_WORLD_STORAGE_OK &&
+              raw == MC_WORLD_STORAGE_OK && error.status == MC_WORLD_STORAGE_OK &&
+              (present ? leaf->frame.get_status == MC_CHUNK_ACQUIRE_OK : error.bytecode == 0));
+        CHECK(submit ? submitted == (present ? MC_LIGHT_SUBMIT_APPENDED : MC_LIGHT_SUBMIT_SKIPPED)
+                     : height == (present ? 73 : 0));
+        if (appended)
+            CHECK(region_is(world, before.count, NULL, f->types[0][0], &bounds));
+    }
+    ok = true;
+cleanup:
+    if (leaf == NULL)
+        return false;
+    if (reserved) {
+        /* Complete only the caller's previously reserved actual cached GET. */
+        mc_chunk_state *chunk = NULL;
+        const mc_chunk_acquire_status acquired =
+            mc_world_runtime_get_detailed(world, 0, 0, &chunk, NULL);
+        mc_entity_tick_execution_loader_selection selected = {0};
+        const mc_world_storage_status finished = mc_entity_tick_execution_loader_finish(
+            &leaf->execution, &attempt, acquired, NULL, &selected);
+        if (finished != MC_WORLD_STORAGE_OK || acquired != MC_CHUNK_ACQUIRE_OK ||
+            chunk != f->chunks[0])
+            ok = false;
+    }
+    if (captured && mc_entity_tick_execution_pop_world(
+                        &leaf->execution, &token, leaf->frame.entered && !leaf->frame.completed) !=
+                        MC_WORLD_STORAGE_OK)
+        ok = false;
+    leaf->frame = (mc_world_light_execution){0};
+    leaf->result = (mc_world_runtime_execution_result){0};
+    if (mc_entity_tick_execution_retire(&leaf->execution) != MC_WORLD_STORAGE_OK) {
+        fputs("owned light fixture execution retirement refused\n", stderr);
+        return false;
+    }
+    free(leaf);
+    return ok;
+}
+
+static bool test_owned_leaves(fixture *f) {
+    f->chunks[0]->data->heightmap[8 * 16 + 8] = 73;
+    for (owned_light_case mode = OWNED_LIGHT_PRESENT; mode <= OWNED_LIGHT_LOADER_BUSY;
+         mode = (owned_light_case)(mode + 1))
+        if (!test_owned_leaf(f, false, mode) || !test_owned_leaf(f, true, mode))
+            return false;
+    return true;
+}
+
 static bool cleanup_fixture(fixture *f) {
     if (f == NULL)
         return true;
@@ -857,6 +985,7 @@ int main(int argc, char **argv) {
     CHECK(test_nonempty_growth(f, base, record));
     CHECK(test_no_sky_and_raw(f));
     CHECK(test_million(f));
+    CHECK(test_owned_leaves(f));
     CHECK(test_retained_queue_retirement(f));
     result = 0;
 cleanup:

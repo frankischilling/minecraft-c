@@ -1,5 +1,240 @@
 # Build and tests
 
+## Recursive wake validation
+
+Two unchanged original client runs agree on 405 values across three prepared
+wake cases. Native tests compare 34 values per case, including both callback
+snapshots, final Bed cells, raw pose and size words, the sleeping flags and
+the return or exception. Native controls also check height changes, a failed
+range observer, and cleanup of the actual retained wake during an Arrow hit.
+
+The complete Windows MSVC Release client suite passes all 1,139 tests in
+526.20 seconds. All earlier names remain and nine tests are added. The first
+full sweep catches a redundant legacy producer retain during owned wake
+cleanup. The final control saturates the receipt count and requires successful
+retirement without changing that count or replaying a callback.
+
+Linux Clang 18.1.8 Debug passes all 985 headless tests in 585.73 seconds with
+ASan, UBSan and leak detection. Neither final suite skips or leaves tests
+unrun. Each host matches all 102 selected original wake values and finishes
+checked cleanup with empty native stderr. The earlier failed sweeps remain
+separate in the detailed test record.
+
+Two fresh monitor-2 scenes pass 1,949 Bed placement/sleep/dawn/save checks and
+463 Arrow/Pig impact/pause/save checks. Independent state readback, window
+cleanup and inspection of all six images pass. These scenes exercise ordinary
+World wake and damage to an awake Pig; graphical sleeping-Player damage remains
+unqualified. Formatting checks all 2,376 source/header/fragment files.
+[Testing details](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#recursive-bed-notification-during-player-wake)
+
+## Slime removal validation
+
+The focused native tests cover signed size, exact-zero health, callback
+mutation, publication order, Math refusal and checked cleanup. They also prove
+that retiring a rejected call leaves the older work alive. Eleven ordered
+records per native host match an unchanged client capture made with Windows
+JDK17. Child constructor entropy is separate.
+
+The final Windows MSVC Release client suite passes all 1,130 tests in 571.08
+seconds. The final Linux Clang 18.1.8 Debug headless suite passes all 976 tests
+in 592.10 seconds with ASan, UBSan and leak detection.
+
+The two monitor-2 scenes pass 863 and 712 checks with ordinary Timer and World
+ticks. Each returns terrain and HUD, pauses and saves through the SDK, and
+independently reads four living size-one Slimes from committed NBT. Both
+windows are gone after cleanup. The split, pause and title images were
+inspected. Direct call receipts and original comparisons come from separate
+tests.
+
+The [test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#slime-removal-and-splitting)
+keeps the focused runs, broader runs and earlier setup refusals separate.
+
+## Arrow damage and Ladder qualification
+
+The complete strict Windows MSVC Release client build passes all 1,099
+configured tests in 475.42 seconds. Linux Clang18 Debug with ASan, UBSan and leak
+detection passes all 251 selected tests in 85.93 seconds. Neither run has failed,
+skipped or unrun tests; full Linux-suite qualification remains separate.
+
+Twenty fresh unchanged-original Ladder records match each native host. Both
+original runs use Windows JDK17. Native fixtures pass 434 checks each, including
+ordinary drops and failures; the original remote-World fixture excludes Item
+construction and keeps notification counts separate.
+
+Two rebuilt monitor-2 scenes pass: Arrow/Pig with 462 checks and Zombie with
+466 checks. Pig health changes from ten to six with no surviving Arrow. Zombie damage changes Player
+health from twenty to fifteen and statistic 2021 by five. SDK pause/save,
+independent committed-state readback and absent windows pass. All six captures
+were inspected. The first hit frames qualify terrain/HUD and state; actors are
+visible in the paused frames, without an individual actor-draw receipt. The
+Arrow scene is causal evidence, not a direct receipt for bytecode 741.
+
+The 6,025-file public inventory stays frozen through builds, tests, original
+comparisons and gameplay. Six current maps cover 14,641 entries and 6,024 files;
+five bundles retain 224 source/helper pins and five exact digests. All 2,362 C
+files pass the pinned formatter. Each scene preserves 2,374 source/product
+inputs and 413 assets during execution. After those frozen runs, two
+presentation inputs are normalized from CRLF to their exact staged LF bytes.
+Python AST and exact Windows/Linux test inventories remain identical; all forty
+affected tests pass again on Windows and sanitized Linux. Runtime/native C
+sources and scene executables keep their qualified bytes. Three result documents
+and four current maps record that successor without a retrospective byte claim.
+Two admitted old-fixture failures and the strict-Clang conversion failures remain recorded; final thirteen protected
+compatibility tests pass in 29.21 seconds.
+
+The [current test record](https://github.com/frankischilling/minecraft-c/blob/0eefdcf476d3630cf5566b9fac56cce3a3cc201b/docs/testing.md#arrow-victim-damage-player-drops-and-presentation-ownership)
+keeps finite native modes, historical comparisons and the remaining GS35 wake,
+cold/foreign graph, delayed Slime, audiovisual and FPS limits separate.
+Historical results below retain their original scopes.
+
+The first exact-head hosted run passes formatting and both full Linux jobs
+(1,170 tests each), but Windows Debug exposes three Math fixture comparisons
+that assume pooled string addresses. The corrected fixture preserves exact
+copied-proof and owner checks while comparing independent labels by text.
+All three unpooled modes and five ordinary checks per host pass locally.
+Bounded console diagnostics and retained CI Math captures now expose future
+failures directly. [Follow-up run 42895038271](https://github.com/frankischilling/minecraft-c/actions/runs/42895038271)
+passes exact head [`0eefdcf4`](https://github.com/frankischilling/minecraft-c/commit/0eefdcf476d3630cf5566b9fac56cce3a3cc201b):
+all four jobs succeed. Windows passes 1,111 tests in 688.43 seconds, GCC passes
+1,170 in 872.82 seconds and Clang passes 1,170 in 593.62 seconds. Formatting
+checks all 2,362 C files. There are no skipped or unrun tests. The actual checkout
+merge tree equals the published head tree. This includes the corrected Math
+controls under Windows Debug; the earlier failure keeps its original scope.
+
+## Arrow early-failure regressions
+
+Six retained-parent modes now cover nullable World/code/Math, failed and cold
+Math, and admission/FP refusal with real construction, typed inspection and
+checked retirement. Local Windows MSVC Release and Linux Clang18 Debug with
+ASan, UBSan and leak detection each pass the same 32 selected tests without
+skips, in 55.24 and 34.04 seconds. The six new native modes pass 1,194 checks
+per host; each normal/optimized Python protocol control passes twelve synthetic
+positives and 205 refusals. The [testing record](https://github.com/frankischilling/minecraft-c/blob/df9538d0bc0d32126b1ccec1699b3a4bbe0ada0e/docs/testing.md#arrow-early-failure-controls)
+retains the exact scope. These are targeted tests, not a full-suite or FPS result.
+
+[Hosted run 42714384900](https://github.com/frankischilling/minecraft-c/actions/runs/42714384900)
+passes this exact head: Windows 891 tests in 670.71 seconds, GCC 950 in
+582.16 seconds, Clang 950 in 477.32 seconds, and formatting of 2,317 files.
+There are no skipped or unrun tests. Every prior name remains, with exactly
+eight additions per platform; the tested checkout tree equals the published
+head. All three jobs compile and link the new fixture. The optional Arrow
+workload is not compiled by these Debug jobs; its local Release comparison
+retains its separate scope.
+
+Repeated [Arrow World intervals](https://github.com/frankischilling/minecraft-c/blob/67a8dfe8cf6c5f1bd4980551fb2e03fa34445ad5/docs/performance/arrow-world-tick-baseline.md), [`67a8dfe8`](https://github.com/frankischilling/minecraft-c/commit/67a8dfe8cf6c5f1bd4980551fb2e03fa34445ad5):
+twelve strict Windows Release processes pass 276 fresh intervals, 2,208 World
+returns and 437,184 checks. Each process retains two warmups, 21 measurements
+and 64 separate raw clock pairs; complete observations and checked cleanup pass.
+Independent retained-data replay and source/product guards verify. Eighteen
+affected regressions pass in 26.42 seconds. The eight-Arrow process medians
+range 8.0175–8.2700 ms per eight-call interval. This is a local baseline,
+without allocator attribution, an optimized comparison or FPS/Linux-workload
+qualification. [Hosted run 42691268404](https://github.com/frankischilling/minecraft-c/actions/runs/42691268404)
+passes Windows 883, GCC 942, Clang 942 and formatting 2316. No tests are
+skipped or unrun; every prior test name remains, and the actual checkout
+tree equals this head. Hosted Debug jobs do not enable the optional
+benchmark, so this adds no Linux benchmark runtime qualification.
+
+
+Optional [Arrow World tick workload](https://github.com/frankischilling/minecraft-c/blob/446fc86af727cb99278d727e01d3f5069f561b14/docs/performance/arrow-world-tick-baseline.md), [`446fc86a`](https://github.com/frankischilling/minecraft-c/commit/446fc86af727cb99278d727e01d3f5069f561b14):
+three fresh Windows Release cells qualify empty/one/eight Arrows with thirty
+loaded Chunks and eight real World calls each. All 4,752 checks and checked
+cleanup pass; eighteen affected regressions pass in 27.81 seconds. Raw clocks
+and complete observations are retained. These are single cold intervals,
+without allocator attribution, repeated-cohort, Linux benchmark or FPS
+qualification. [Hosted run 42686436401](https://github.com/frankischilling/minecraft-c/actions/runs/42686436401)
+passes Windows 883, GCC 942, Clang 942 and formatting 2316 with no skipped
+or unrun tests and the same prior test names. Its Debug jobs did not
+compile the optional benchmark; local Release qualification stays separate.
+
+
+Recorded Native close: [`c72316cb`](https://github.com/frankischilling/minecraft-c/commit/c72316cb3c02b16f1cb1f8e79f289f09badaceb7).
+Windows MSVC Release and Linux Clang18 Debug ASan/UBSan with leak detection
+each pass eighteen selected tests in 25.74 and 19.20 seconds, with no skips
+or failures. Four real direct modes perform 175 checks; two existing SDK
+modes add 390 checks and six World C entries. All seven target products,
+complete captures, current Source and dependency/ownership guards verify.
+The final eighteen-test logs are retained. The initial fixture compiler
+failure and earlier missing-summary-log limitations remain documented.
+
+[Hosted run 42677382059](https://github.com/frankischilling/minecraft-c/actions/runs/42677382059) passes this head:
+Windows 883/883 in 666.00 seconds, GCC 942/942 in 603.70 seconds,
+Clang 942/942 in 752.11 seconds and formatting of 2,315 files. Complete
+logs show no skipped or unrun tests. All preceding names remain; exactly
+six damage-close tests are added per platform. The checkout merge tree
+equals the pushed head tree.
+The [Living sound contract](https://github.com/frankischilling/minecraft-c/blob/c72316cb3c02b16f1cb1f8e79f289f09badaceb7/docs/entity/living-damage.md#recorded-native-close)
+and [Player ally contract](https://github.com/frankischilling/minecraft-c/blob/c72316cb3c02b16f1cb1f8e79f289f09badaceb7/docs/entity/player-ally-alert.md#recorded-native-close)
+describe the exact token and saved operand. Canonical ally fault branches,
+consumed-nonOK, full victim741, unrestricted play and FPS remain open.
+
+
+Arrow flight checkpoint: [`309f4d86`](https://github.com/frankischilling/minecraft-c/commit/309f4d86ab932747d4f49f9eb346cb4134e68e23).
+Windows MSVC Release and Linux Clang 18 Debug with ASan, UBSan and leak detection
+each pass fifteen selected flight/SDK/protocol/regression tests in 42.31 and
+21.32 seconds. Each host executes six new native modes with 1,170 checks and
+21 World C entries, without failures or skips. Source, actual runtime products,
+complete captures and applicable input guards pass. Only final documentation
+and its global admission record change after native execution.
+
+The [finite original/native observations](Arrow-flight) retain all 126 fields at
+seventeen paired snapshots, plus six unpaired original stages. Exactly 1,615 of
+1,666 primitive cells match; constructor clock/entropy, Random, representation
+and input differences remain visible. No whole-method or FPS claim follows.
+The [new-head hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/42657228869)
+passes this exact head: Windows 877/877 in 486.90 seconds, GCC 936/936 in
+778.15 seconds, Clang 936/936 in 443.02 seconds and formatting of 2,314 files.
+Complete retained logs confirm unique passed names and no skipped or unrun
+tests. The prior green run below qualifies its own head only.
+
+Saved-encounter reader: [`809b9637`](https://github.com/frankischilling/minecraft-c/commit/809b9637a99a1d7d8fc917060f4ac7b29cef0307).
+[Hosted run 42667830526](https://github.com/frankischilling/minecraft-c/actions/runs/42667830526)
+passes this head: Windows 877/877 in 557.14 seconds, GCC 936/936 in
+792.64 seconds, Clang 936/936 in 796.74 seconds and formatting of 2,314 files.
+Complete retained logs confirm unique passed names and no skipped or unrun
+tests. The completed flight results above qualify `309f4d86`.
+
+A fresh visible saved-Zombie encounter passes 435 native checks on physical
+monitor 2, with genuine focus, health 20 to 15, statistic 2021 plus 5, returned
+terrain/HUD, SDK pause/save/title, independent NBT/statistics, screenshots and
+checked shutdown. All 384 saved Chunks remain inventoried: the target Zombie
+and an additional Creeper in Chunk (4,-9) are retained. Source5890, assets413
+and native products stay unchanged.
+
+The preceding native child passes 430 checks, but its controller fails an
+incorrect assumption that the save contains only one Zombie: it has the target
+in Chunk (0,0) and another Zombie in (6,-9). Matching every paused tag and value
+with exact types now requires one target match while retaining all extras.
+Normal and optimized Python controls pass. Corrected processing of those old
+files is separate from the later fresh whole-scene PASS; the original FAIL
+remains retained. This supplies no FPS, unrestricted combat or original
+audiovisual qualification.
+
+Preceding repair: [`1a1ce139`](https://github.com/frankischilling/minecraft-c/commit/1a1ce139fd851c8c8404a20b3a504a8c8a1a9453).
+[Repair run 42625153592](https://github.com/frankischilling/minecraft-c/actions/runs/42625153592)
+passes Windows 867/867 in 673.85 seconds, GCC 926/926 in 603.63 seconds,
+Clang 926/926 in 714.28 seconds and formatting of 2,306 files. It updates
+stale selected controller/helper/source pins and
+retains the omitted failure reports. A coherent five-target Windows MSVC rebuild
+passes all twelve affected CTests in 39.56 seconds, with 807 native assertions,
+complete captures and unchanged source/literal-input guards.
+
+[Run 42620910071](https://github.com/frankischilling/minecraft-c/actions/runs/42620910071)
+for `3ea96305` failed eight nested/activation/kernel preflight checks per platform:
+Windows ran 867 tests, GCC and Clang 926 each; formatting passed.
+Local Windows passes 56 tests in 222.28 seconds,
+then nineteen new/shared checks in 93.86 seconds, covering 73 unique names.
+Linux Clang Debug ASan/UBSan passes all 73 together in 142.60 seconds. The 56
+query modes pass 3,173 native checks per host, without failures or skips. Both
+selected builds pass; this is targeted coverage. The file guard's measured local
+mean falls from 4.6294 to 2.5890 seconds with identical maps, without a hosted
+duration or gameplay FPS claim.
+
+The preceding [f732094f hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/42587387204)
+passed Windows 830, GCC 889, Clang 889 and formatting 2,290 on attempt 1.
+
+Earlier hosted checkpoint: [`4cfe4dc4`](https://github.com/frankischilling/minecraft-c/commit/4cfe4dc4964dc231b0dfac940a93bccb72aa79ba). All four jobs pass [run 42266346440](https://github.com/frankischilling/minecraft-c/actions/runs/42266346440): Windows 729/729 in 338.67 seconds, GCC 787/787 in 673.68 seconds and Clang 787/787 in 673.97 seconds, plus formatting of 2,189 files. Every preceding native test name remains, exactly four are added per host, none is skipped, and all four actual checkout trees equal pushed tree `0758d8c4e10f37a1a39c2bcf79d205a37508aac0`. Earlier failed full, fixture-binding and output-contract attempts retain their own scope.
+
 The [sleeping Player reader](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-nbt.md)
 adds four public cases: normal/optimized portable packet controls, native
 ownership controls and the forty-row parent replay. Two fresh original VMs
@@ -1905,14 +2140,3 @@ The [former build page](https://github.com/frankischilling/minecraft-c/blob/feat
 [normal-generation checks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-builds.md#normal-generation-checks),
 retains older commands, counts and their original scope. Current reproduction
 commands and finite comparison limits are in the [test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md).
-
-## Arrow early-failure regressions
-
-Six retained-parent modes now cover nullable World/code/Math, failed and cold
-Math, and admission/FP refusal with real construction, typed inspection and
-checked retirement. Local Windows MSVC Release and Linux Clang18 Debug with
-ASan, UBSan and leak detection each pass the same 32 selected tests without
-skips, in 55.24 and 34.04 seconds. The six new native modes pass 1,194 checks
-per host; each normal/optimized Python protocol control passes twelve synthetic
-positives and 205 refusals. The [testing record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#arrow-early-failure-controls)
-retains the exact scope. These are targeted tests, not a full-suite or FPS result.

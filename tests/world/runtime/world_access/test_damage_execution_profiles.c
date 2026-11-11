@@ -560,6 +560,11 @@ static bool dp_player(dp_fixture *s, const char *mode) {
     player->local_player->fields.player.u = wake;
     f->worlds[0]->fields.B = false;
     f->worlds[0]->fields.q = 2;
+    if (wake) {
+        DNC_CHECK(player->local_player->fields.player.v == NULL);
+        player->local_player->fields.player.private_a = 37;
+        f->worlds[0]->fields.J = true;
+    }
     /* Authored nullable actual getstatic values. DC's null-stat return4 is
      * exercised; no invented application/StatsWriter is supplied. */
     if (!statistic)
@@ -583,17 +588,6 @@ static bool dp_player(dp_fixture *s, const char *mode) {
                   failure.source_proven && !failure.unresolved &&
                   strcmp(failure.exception_class, "java/lang/NullPointerException") == 0 &&
                   !s->base.base.math.selected);
-    } else if (wake) {
-        mc_entity_damage_failure failure;
-        DNC_CHECK(!completed && !s->answer && s->base.base.raw == MC_ENTITY_STATE_ERROR &&
-                  living->Y == 20 && player->local_player->fields.player.u &&
-                  s->base.damage.child == MC_ENTITY_DAMAGE_CHILD_WAKE_DEPENDENCY &&
-                  !s->base.base.effect.player_wake.entered &&
-                  player->local_player->pending_damage_wake == NULL &&
-                  !s->base.base.math.selected &&
-                  mc_entity_damage_execution_source_failure(&s->base.damage, &failure) &&
-                  failure.kind == MC_ENTITY_DAMAGE_FAILURE_NATIVE && !failure.source_proven &&
-                  failure.site.pc == 35);
     } else if (missing) {
         mc_entity_damage_execution_view view;
         mc_entity_damage_failure failure;
@@ -606,13 +600,29 @@ static bool dp_player(dp_fixture *s, const char *mode) {
                   failure.kind == MC_ENTITY_DAMAGE_FAILURE_NATIVE && failure.math != NULL &&
                   failure.math->caller.pc == 91 &&
                   strcmp(failure.math->caller.class_name, "gs") == 0);
-    } else
+    } else {
         DNC_CHECK(completed && s->answer && s->base.base.raw == MC_ENTITY_OK &&
                   living->Y == (fatal ? 0 : 16) && s->base.base.effect.damage_statistic_returned &&
                   s->base.base.effect.living_damage.player_health.returned &&
                   s->base.base.effect.living_damage.returned &&
                   (!fatal || s->base.base.effect.player_death.returned) &&
                   !mc_entity_effect_has_pending(player));
+        if (wake) {
+            const mc_entity_player_wake_state *receipt = &s->base.base.effect.player_wake;
+            DNC_CHECK(
+                receipt->entered && receipt->returned && receipt->status == MC_ENTITY_OK &&
+                receipt->site.pc == 234 && !receipt->active && !receipt->pending &&
+                receipt->receiver == NULL && receipt->error == NULL && receipt->cleanup == NULL &&
+                player->local_player->pending_damage_wake == NULL &&
+                !player->local_player->fields.player.u &&
+                player->local_player->fields.player.private_a == 0 && player->base.width == .6f &&
+                player->base.height == 1.8f && player->base.offset == 1.62f &&
+                !f->worlds[0]->fields.J && s->base.base.effect.living_damage.sound_returned &&
+                s->base.damage.owned.ownership_status == MC_WORLD_STORAGE_OK &&
+                !s->base.base.execution.world_open && s->base.base.execution.world_count == 0 &&
+                s->base.base.execution.lease_count == 0);
+        }
+    }
     DNC_CHECK(dp_close(s));
     mc_entity_release(source);
     return true;

@@ -3,9 +3,9 @@
 
 /* Concrete published owned children used by the complete parent. Each direct
  * World call uses the exact scope captured before its arguments; no NULL owner
- * chooses legacy behavior. The full victim damage join remains a reached741
- * dependency rather than a declaration with no implementation. No success shim
- * or Source replay is supplied for that unfinished descendant. */
+ * chooses legacy behavior. Victim damage at 741 shares the retained damage,
+ * wake, alert and death bodies. Unjoined reached descendants stop explicitly;
+ * no success shim or Source replay supplies their behavior. */
 #include "../../world/runtime/collision/entities_execution_internal.h"
 #include "../tick/execution_internal.h"
 #include "mc/entity/movement/effects.h"
@@ -23,8 +23,8 @@
  * Their bool is the continuation condition; a raw Source status is independent. */
 /* Actual owned Ray entry/view, not an unresolved declaration. */
 #include "../../world/runtime/raytrace_execution_internal.h"
-/* Full victim damage is a reached dependency in tick_children, NOT an
- * unresolved link or fake successful implementation. Its later join must use
- * the actual same entered damage/wake/alert/death bodies and stable result. */
+/* Victim damage uses the same entered bodies and stable result through
+ * damage_execution_internal.h. Its remaining limits belong to the actual
+ * reached descendants, including unjoined recursive neighbor hooks. */
 
 #endif

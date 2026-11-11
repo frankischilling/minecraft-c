@@ -1,29 +1,99 @@
 """Run actual Player damage/wake controls without display or original assets."""
 import argparse
+import importlib.util
+import json
 from pathlib import Path
 import re
 import subprocess
 import tempfile
 
 
+AFTER_FIELDS = ('sleeping', 'timer', 'health', 'idle', 'head', 'orphan',
+                'world_sleeping', 'world_same', 'position', 'dimensions')
+CALLBACK_FIELDS = ('xyz', 'head', 'orphan', 'sleeping')
+ORIGINAL_MODES = {'owned-wake-recursion': 'success',
+                  'owned-wake-null-exit': 'null-exit',
+                  'owned-wake-observer-error': 'observer-error'}
+
+
+def compare_original(mode, native, output):
+    directory = (Path(__file__).resolve().parents[3] /
+                 'tests/reference/entity/player_recursive_wake')
+    spec = importlib.util.spec_from_file_location('player_recursive_wake_packet',
+                                                  directory / 'packet.py')
+    packet = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(packet)
+    finite_path = directory / 'finite.json'
+    finite = packet.P.load(finite_path)
+    packet.validate(finite['rows'])
+    digest = packet.P.digest(finite_path)
+    proof = packet.P.load(directory / 'provenance.json')
+    if digest != proof['finite_sha256']:
+        raise RuntimeError('Original recursive wake digest differs from its capture')
+    selected = next(row for row in finite['rows'] if row['mode'] == ORIGINAL_MODES[mode])
+    expected = {'result': selected['result'], 'exception': selected['exception'],
+                'after': {key: selected['after'][key] for key in AFTER_FIELDS},
+                'callbacks': [{key: row[key] for key in CALLBACK_FIELDS}
+                              for row in selected['callbacks']]}
+    observed = {key: native[key] for key in expected}
+    matched = packet.P.exact(observed, expected)
+    report = {'mode': mode, 'finite_sha256': digest, 'matched': matched,
+              'compared_scalars': packet.P.scalars(expected),
+              'expected': expected, 'observed': observed}
+    (output / 'original-comparison.json').write_text(json.dumps(report, indent=2) + '\n',
+                                                      encoding='utf-8')
+    if not matched:
+        raise RuntimeError('Original recursive wake mismatch in ' + str(output))
+    return report['compared_scalars']
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--mode', choices=('damage-wake', 'owned-wake-recursion',
+                                           'owned-wake-null-exit', 'owned-wake-observer-error',
+                                           'owned-wake-scope-drift', 'owned-wake-null-chunk-world'),
+                        default='damage-wake')
     parser.add_argument('--executable', type=Path, required=True)
     parser.add_argument('--work-dir', type=Path, required=True)
     args = parser.parse_args()
     args.work_dir.mkdir(parents=True, exist_ok=True)
     output = Path(tempfile.mkdtemp(prefix='damage-wake-', dir=args.work_dir.resolve()))
-    child = subprocess.run([args.executable.resolve(strict=True), 'damage-wake',
+    child = subprocess.run([args.executable.resolve(strict=True), args.mode,
                             str(output).encode('utf-8').hex()], capture_output=True, timeout=120)
     (output / 'native.stdout').write_bytes(child.stdout)
     (output / 'native.stderr').write_bytes(child.stderr)
     if child.returncode != 0 or child.stderr:
-        raise RuntimeError('Player damage wake failed: ' + child.stderr.decode('utf-8', 'replace'))
+        raise RuntimeError('Player damage wake failed in ' + str(output) + '\n' +
+                           child.stderr.decode('utf-8', 'replace'))
     lines = child.stdout.splitlines()
-    if (not lines or re.fullmatch(rb'PASS: [1-9][0-9]* Player damage wake checks', lines[-1]) is None
-            or any(line not in (b'16 achievements', b'151 recipes') for line in lines[:-1])):
+    compared = 0
+    if args.mode != 'damage-wake':
+        expected = rb'PASS: [1-9][0-9]* owned Player wake recursion checks'
+        diagnostics = [line for line in lines if line.startswith(b'OWNED_WAKE_RECURSION ')]
+        cleanup = b'OWNED_WAKE_RECURSION_CLEANUP complete=1'
+        if len(diagnostics) != 1 or lines.count(cleanup) != 1:
+            raise RuntimeError('Expected one owned wake observation and checked cleanup in ' + str(output))
+        native = json.loads(diagnostics[0].partition(b' ')[2])
+        if (type(native) is not dict or
+                set(native) != {'continued', 'raw', 'pc', 'wake_entered', 'pending',
+                                'result', 'exception', 'after', 'callbacks'} or
+                type(native['after']) is not dict or set(native['after']) != set(AFTER_FIELDS) or
+                type(native['callbacks']) is not list or len(native['callbacks']) != (1 if args.mode == 'owned-wake-null-chunk-world' else 2) or
+                any(type(row) is not dict or set(row) != set(CALLBACK_FIELDS)
+                    for row in native['callbacks'])):
+            raise RuntimeError('Invalid owned wake observation in ' + str(output))
+        if args.mode in ORIGINAL_MODES:
+            compared = compare_original(args.mode, native, output)
+        lines.remove(diagnostics[0])
+        lines.remove(cleanup)
+    else:
+        expected = rb'PASS: [1-9][0-9]* Player damage wake checks'
+    if (not lines or re.fullmatch(expected, lines[-1]) is None or
+            any(line not in (b'16 achievements', b'151 recipes') for line in lines[:-1])):
         raise RuntimeError('Unexpected Player damage wake output')
     print(lines[-1].decode('ascii') + '; capture=' + str(output))
+    if compared:
+        print(f'Original recursive wake matches {compared} selected values')
 
 
 if __name__ == '__main__':

@@ -3,6 +3,8 @@
 #include "../../platform/text/stdout.h"
 #include "chunk_provider_internal.h"
 #include "construction_internal.h"
+#include "execution_children_internal.h"
+#include "lighting_execution_internal.h"
 #include "lighting_internal.h"
 #include "mc/core/java/java.h"
 #include "runtime_internal.h"
@@ -35,6 +37,131 @@ static mc_world_storage_status result(mc_world_light_error *error,
                                         .acquisition = acquisition,
                                         .cause = *cause};
     return cause->status;
+}
+
+static bool light_records_quiet(const mc_world_runtime_execution_result *owned) {
+    if (owned->root_pending || owned->math_failed)
+        return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (owned->pending[i].used)
+            return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (owned->closes[i].used)
+            return false;
+    return true;
+}
+
+void mc_world_light_execution_init(mc_world_light_execution *frame,
+                                   mc_entity_tick_execution *execution,
+                                   mc_world_runtime_execution_code code,
+                                   mc_entity_tick_execution_site receiver_site,
+                                   mc_world_runtime_execution_result *owned) {
+    if (frame != NULL)
+        *frame = (mc_world_light_execution){
+            .execution = execution, .code = code, .receiver_site = receiver_site, .owned = owned};
+    mc_world_runtime_execution_result_init(owned);
+}
+
+bool mc_world_light_execution_enter(mc_world_light_execution *frame, mc_world_runtime *world,
+                                    const void *out, const mc_world_light_error *error,
+                                    const mc_world_storage_status *status) {
+    if (frame == NULL)
+        return false;
+    if (frame->execution == NULL || frame->execution->identity != frame->execution ||
+        frame->owned == NULL || out == NULL || error == NULL || status == NULL || frame->entered) {
+        mc_world_runtime_execution_result_note(frame->owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "World light execution/fresh outputs required",
+                                               frame->receiver_site);
+        return false;
+    }
+    if (frame->owned->ownership_status != MC_WORLD_STORAGE_OK || frame->owned->selection_ready ||
+        !light_records_quiet(frame->owned)) {
+        mc_world_runtime_execution_result_note(frame->owned, MC_WORLD_STORAGE_BUSY,
+                                               "World light fresh result required",
+                                               frame->receiver_site);
+        return false;
+    }
+    mc_world_access_failure_lease *unused = NULL;
+    const mc_world_storage_status admitted =
+        mc_world_execution_child_lease(frame->execution, world, &unused);
+    if (admitted != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(
+            frame->owned, admitted, "World light evaluated World ownership", frame->receiver_site);
+        return false;
+    }
+    frame->entered = true;
+    return true;
+}
+
+bool mc_world_light_execution_finish(mc_world_light_execution *frame,
+                                     mc_world_storage_status actual,
+                                     mc_world_storage_status *status) {
+    *status = actual;
+    frame->completed = actual == MC_WORLD_STORAGE_OK && !frame->native_stopped &&
+                       frame->owned->ownership_status == MC_WORLD_STORAGE_OK;
+    return frame->completed;
+}
+
+static void light_acquisition_cause(mc_chunk_acquire_status acquired,
+                                    const mc_world_runtime_acquisition_error *detail,
+                                    mc_world_storage_error *cause,
+                                    mc_world_population_context *population) {
+    if (acquired != MC_CHUNK_ACQUIRE_OK) {
+        *cause = detail->cause;
+        *population = detail->population;
+    }
+}
+
+static mc_chunk_acquire_status light_get_legacy(mc_world_runtime *world, int32_t x, int32_t z,
+                                                mc_chunk_state **chunk,
+                                                mc_world_storage_error *cause,
+                                                mc_world_population_context *population) {
+    mc_world_runtime_acquisition_error detail;
+    const mc_chunk_acquire_status acquired =
+        mc_world_runtime_get_detailed(world, x, z, chunk, &detail);
+    light_acquisition_cause(acquired, &detail, cause, population);
+    return acquired;
+}
+
+mc_chunk_acquire_status mc_world_light_get_chunk(mc_world_light_execution *frame,
+                                                 mc_world_runtime *world, int32_t x, int32_t z,
+                                                 mc_chunk_state **chunk,
+                                                 mc_world_storage_error *cause,
+                                                 mc_world_population_context *population) {
+    if (frame == NULL)
+        return light_get_legacy(world, x, z, chunk, cause, population);
+
+    frame->get_entered = true;
+    const mc_chunk_acquire_status acquired = mc_world_runtime_get_in_execution(
+        frame->execution, world, frame->code, x, z, chunk, &frame->acquisition, frame->owned);
+    frame->get_status = acquired;
+    frame->get_returned = true;
+    if (acquired != MC_CHUNK_ACQUIRE_OK) {
+        frame->acquisition.source_chunk = NULL;
+        if (frame->owned->selection_ready) {
+            mc_entity_tick_execution_loader_view selected;
+            if (mc_entity_tick_execution_loader_read(frame->execution, &frame->owned->selection,
+                                                     &selected))
+                frame->acquisition.source_chunk =
+                    selected.status == MC_CHUNK_ACQUIRE_OK ? NULL : selected.failure;
+            else
+                mc_world_runtime_execution_result_note(
+                    frame->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                    "World light selected loader view", frame->receiver_site);
+        }
+        light_acquisition_cause(acquired, &frame->acquisition, cause, population);
+    } else if (frame->owned->ownership_status == MC_WORLD_STORAGE_OK) {
+        if (frame->owned->selection_ready &&
+            frame->owned->selection.status == MC_CHUNK_ACQUIRE_OK &&
+            light_records_quiet(frame->owned))
+            frame->owned->selection_ready = false;
+        else
+            mc_world_runtime_execution_result_note(frame->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                                   "World light completed GET outcome",
+                                                   frame->receiver_site);
+    }
+    frame->native_stopped = frame->owned->ownership_status != MC_WORLD_STORAGE_OK;
+    return acquired;
 }
 
 mc_world_storage_status mc_world_runtime_light_type_get(mc_world_runtime_classes *classes,
@@ -242,11 +369,10 @@ static bool same_class_type(const mc_world_runtime_classes *classes,
     return type->classes == classes;
 }
 
-mc_world_storage_status mc_world_runtime_light_submit(mc_world_runtime *runtime,
-                                                      const mc_world_light_type *type,
-                                                      const mc_light_bounds *bounds, bool coalesce,
-                                                      mc_light_submit_result *out,
-                                                      mc_world_light_error *error) {
+static mc_world_storage_status
+light_submit(mc_world_runtime *runtime, const mc_world_light_type *type,
+             const mc_light_bounds *bounds, bool coalesce, mc_light_submit_result *out,
+             mc_world_light_error *error, mc_world_light_execution *execution) {
     if (runtime == NULL || bounds == NULL || out == NULL || runtime->classes == NULL) {
         const mc_world_storage_error cause =
             native_error(MC_WORLD_STORAGE_INVALID_ARGUMENT, "World light submit arguments");
@@ -315,19 +441,21 @@ mc_world_storage_status mc_world_runtime_light_submit(mc_world_runtime *runtime,
         goto failed;
     }
     mc_chunk_state *chunk = NULL;
-    mc_world_runtime_acquisition_error detail;
-    acquisition = mc_world_runtime_get_detailed(runtime, chunk_x, chunk_z, &chunk, &detail);
+    acquisition =
+        mc_world_light_get_chunk(execution, runtime, chunk_x, chunk_z, &chunk, &cause, &population);
     if (acquisition != MC_CHUNK_ACQUIRE_OK) {
-        population = detail.population;
-        if (detail.cause.status != MC_WORLD_STORAGE_OK)
-            cause = detail.cause;
-        else if (acquisition == MC_CHUNK_ACQUIRE_LIMIT ||
-                 acquisition == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT)
-            cause = native_error(MC_WORLD_STORAGE_LIMIT, "World light getter acquisition limit");
-        else
+        if (cause.status == MC_WORLD_STORAGE_OK)
             cause =
-                native_error(MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World light getter acquisition");
+                acquisition == MC_CHUNK_ACQUIRE_LIMIT ||
+                        acquisition == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT
+                    ? native_error(MC_WORLD_STORAGE_LIMIT, "World light getter acquisition limit")
+                    : native_error(MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                   "World light getter acquisition");
         goto failed;
+    }
+    if (execution != NULL && execution->native_stopped) {
+        status = result(error, &cause, bytecode, provider_bytecode, acquisition);
+        goto leave;
     }
     bytecode = 90;
     provider_bytecode = 0;
@@ -428,4 +556,23 @@ leave:
         runtime->classes->enqueue_depth = mc_java_i32_sub(runtime->classes->enqueue_depth, 1);
     mc_world_runtime_call_leave(runtime);
     return status;
+}
+
+mc_world_storage_status mc_world_runtime_light_submit(mc_world_runtime *runtime,
+                                                      const mc_world_light_type *type,
+                                                      const mc_light_bounds *bounds, bool coalesce,
+                                                      mc_light_submit_result *out,
+                                                      mc_world_light_error *error) {
+    return light_submit(runtime, type, bounds, coalesce, out, error, NULL);
+}
+
+bool mc_world_runtime_light_submit_in_execution(
+    mc_world_light_execution *frame, mc_world_runtime *world, const mc_world_light_type *type,
+    const mc_light_bounds *bounds, bool coalesce, mc_light_submit_result *out,
+    mc_world_light_error *error, mc_world_storage_status *status) {
+    if (!mc_world_light_execution_enter(frame, world, out, error, status))
+        return false;
+    const mc_world_storage_status actual =
+        light_submit(world, type, bounds, coalesce, out, error, frame);
+    return mc_world_light_execution_finish(frame, actual, status);
 }

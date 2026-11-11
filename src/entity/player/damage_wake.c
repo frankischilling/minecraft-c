@@ -1,5 +1,6 @@
 #include "damage_wake_internal.h"
 
+#include "../movement/damage_execution_internal.h"
 #include "mc/entity/player/sleep.h"
 #include "player_internal.h"
 
@@ -32,6 +33,12 @@ static mc_entity_player_wake_state view(const struct mc_player_damage_wake_work 
     state.error = state.pending ? &w->error : NULL;
     state.cleanup = state.pending ? &w->cleanup : NULL;
     return state;
+}
+
+mc_player_sleep_call *mc_player_damage_wake_call(const mc_entity *p) {
+    if (p == NULL || p->local_player == NULL || p->local_player->pending_damage_wake == NULL)
+        return NULL;
+    return p->local_player->pending_damage_wake->call;
 }
 
 bool mc_player_damage_wake_inspect(const mc_entity *p, mc_entity_player_wake_state *out) {
@@ -82,8 +89,8 @@ mc_entity_status mc_player_damage_wake_cleanup(mc_entity *p, mc_entity_effect_er
     return MC_ENTITY_OK;
 }
 
-bool mc_player_damage_wake_entered(mc_entity *p, mc_registry_classes *registry,
-                                   mc_entity_effect_error *e) {
+static bool wake_entered(mc_entity *p, mc_registry_classes *registry, mc_entity_effect_error *e,
+                         mc_entity_damage_execution *owned) {
     struct mc_player_damage_wake_work *w = calloc(1, sizeof(*w));
     if (w == NULL) {
         e->status = MC_ENTITY_ALLOCATION_FAILED;
@@ -103,10 +110,23 @@ bool mc_player_damage_wake_entered(mc_entity *p, mc_registry_classes *registry,
         .entered = true, .pending = true, .active = true, .receiver = p};
     p->local_player->pending_damage_wake = w;
     const mc_player_sleep_context context = {.code_registry = registry};
-    const mc_player_sleep_status status =
-        mc_player_wake_begin(p, true, true, false, &context, &w->call, &w->error);
+    mc_player_sleep_status status;
+    bool returned;
+    if (owned == NULL) {
+        status = mc_player_wake_begin(p, true, true, false, &context, &w->call, &w->error);
+        returned = status == MC_PLAYER_SLEEP_OK;
+    } else {
+        status = mc_player_wake_begin_in_execution(
+            p, &context, owned->execution, owned->code_classes, owned->code, &w->call, &w->error);
+        mc_player_sleep_state state;
+        returned = mc_player_sleep_inspect(w->call, &state) && state.returned;
+        const mc_world_runtime_execution_result *result = mc_player_wake_execution_result(w->call);
+        if (result != NULL)
+            mc_entity_damage_execution_note(owned, result);
+        mc_entity_damage_execution_returned(owned);
+    }
     w->state.active = false;
-    w->state.returned = status == MC_PLAYER_SLEEP_OK;
+    w->state.returned = returned;
     w->state.status = status_of(status);
     w->state.operation = w->error.operation;
     w->state.site = w->error.site;
@@ -116,12 +136,24 @@ bool mc_player_damage_wake_entered(mc_entity *p, mc_registry_classes *registry,
     w->state.source_error = w->error.source_error;
     w->state.exception_class = w->error.exception_class;
     e->player_wake = view(w);
-    if (status != MC_PLAYER_SLEEP_OK) {
+    if (!returned) {
         e->status = status_of(status);
         e->cause = status == MC_PLAYER_SLEEP_SOURCE_NULL ? MC_ENTITY_EFFECT_CAUSE_NULL_REFERENCE
+                   : status == MC_PLAYER_SLEEP_OK        ? MC_ENTITY_EFFECT_CAUSE_OWNER
                                                          : MC_ENTITY_EFFECT_CAUSE_WORLD;
         e->operation = w->error.operation;
         return false;
     }
     return mc_player_damage_wake_cleanup(p, e) == MC_ENTITY_OK;
+}
+
+bool mc_player_damage_wake_entered(mc_entity *p, mc_registry_classes *registry,
+                                   mc_entity_effect_error *e) {
+    return wake_entered(p, registry, e, NULL);
+}
+
+bool mc_player_damage_wake_entered_in_execution(mc_entity *p, mc_registry_classes *registry,
+                                                mc_entity_effect_error *e,
+                                                mc_entity_damage_execution *owned) {
+    return wake_entered(p, registry, e, owned);
 }

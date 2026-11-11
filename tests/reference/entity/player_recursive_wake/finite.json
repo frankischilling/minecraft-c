@@ -1,0 +1,685 @@
+{
+  "schema": "PLAYER_RECURSIVE_WAKE_V1",
+  "rows": [
+    {
+      "mode": "success",
+      "result": false,
+      "exception": "NONE",
+      "exception_frames": [],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "health": 20,
+        "idle": 17,
+        "world_sleeping": true,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "141cccbeeb5ad6c69fff4d77f8cdcc4a9f7fca7500b361a2caa671a33894713a",
+          "metadata": "7b6c62429a30506d15ef4b5b689d24e507fefb2b01d405bc65e8c4324f97d27a",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": [],
+        "orphan": [
+          26,
+          8
+        ]
+      },
+      "after": {
+        "position": [
+          "401e000000000000",
+          "40506e1480000000",
+          "401e000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "health": 20,
+        "idle": 0,
+        "world_sleeping": false,
+        "head": [
+          26,
+          8
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "3e5713050bc2e2d592b7cff89295ef90c4c415ea0ca72ffcddbe2759214a89bc",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": [],
+        "orphan": [
+          0,
+          0
+        ]
+      },
+      "callbacks": [
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "head": [
+            26,
+            8
+          ],
+          "orphan": [
+            26,
+            8
+          ],
+          "sleeping": true,
+          "frames": [
+            "fd.j",
+            "fd.g",
+            "fd.d",
+            "ve.a",
+            "gs.a",
+            "gs.a"
+          ]
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "head": [
+            26,
+            8
+          ],
+          "orphan": [
+            0,
+            0
+          ],
+          "sleeping": true,
+          "frames": [
+            "fd.j",
+            "fd.g",
+            "fd.f",
+            "ve.b",
+            "fd.l",
+            "fd.i",
+            "fd.g",
+            "fd.d",
+            "ve.a",
+            "gs.a",
+            "gs.a"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "observer-error",
+      "result": null,
+      "exception": "java/lang/IllegalStateException",
+      "exception_frames": [
+        "RecursiveWakeObservation$Observer.a",
+        "fd.j",
+        "fd.g",
+        "fd.f",
+        "ve.b",
+        "fd.l",
+        "fd.i",
+        "fd.g",
+        "fd.d",
+        "ve.a",
+        "gs.a",
+        "gs.a"
+      ],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "health": 20,
+        "idle": 17,
+        "world_sleeping": true,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "141cccbeeb5ad6c69fff4d77f8cdcc4a9f7fca7500b361a2caa671a33894713a",
+          "metadata": "7b6c62429a30506d15ef4b5b689d24e507fefb2b01d405bc65e8c4324f97d27a",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": [],
+        "orphan": [
+          26,
+          8
+        ]
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "health": 20,
+        "idle": 0,
+        "world_sleeping": true,
+        "head": [
+          26,
+          8
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "3e5713050bc2e2d592b7cff89295ef90c4c415ea0ca72ffcddbe2759214a89bc",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": [],
+        "orphan": [
+          0,
+          0
+        ]
+      },
+      "callbacks": [
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "head": [
+            26,
+            8
+          ],
+          "orphan": [
+            26,
+            8
+          ],
+          "sleeping": true,
+          "frames": [
+            "fd.j",
+            "fd.g",
+            "fd.d",
+            "ve.a",
+            "gs.a",
+            "gs.a"
+          ]
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "head": [
+            26,
+            8
+          ],
+          "orphan": [
+            0,
+            0
+          ],
+          "sleeping": true,
+          "frames": [
+            "fd.j",
+            "fd.g",
+            "fd.f",
+            "ve.b",
+            "fd.l",
+            "fd.i",
+            "fd.g",
+            "fd.d",
+            "ve.a",
+            "gs.a",
+            "gs.a"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "null-exit",
+      "result": null,
+      "exception": "java/lang/NullPointerException",
+      "exception_frames": [
+        "ve.f",
+        "gs.a",
+        "gs.a"
+      ],
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "health": 20,
+        "idle": 17,
+        "world_sleeping": true,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "141cccbeeb5ad6c69fff4d77f8cdcc4a9f7fca7500b361a2caa671a33894713a",
+          "metadata": "7b6c62429a30506d15ef4b5b689d24e507fefb2b01d405bc65e8c4324f97d27a",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": [],
+        "orphan": [
+          26,
+          8
+        ]
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "world_same": false,
+        "bounds_same": true,
+        "health": 20,
+        "idle": 0,
+        "world_sleeping": true,
+        "head": [
+          26,
+          8
+        ],
+        "planes": {
+          "blocks": "117aba97a5daaecd87c665ed7de9c47e1744c33267fadfd544ab773885296e3f",
+          "metadata": "3e5713050bc2e2d592b7cff89295ef90c4c415ea0ca72ffcddbe2759214a89bc",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": [],
+        "orphan": [
+          0,
+          0
+        ]
+      },
+      "callbacks": [
+        {
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "head": [
+            26,
+            8
+          ],
+          "orphan": [
+            26,
+            8
+          ],
+          "sleeping": true,
+          "frames": [
+            "fd.j",
+            "fd.g",
+            "fd.d",
+            "ve.a",
+            "gs.a",
+            "gs.a"
+          ]
+        },
+        {
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "head": [
+            26,
+            8
+          ],
+          "orphan": [
+            0,
+            0
+          ],
+          "sleeping": true,
+          "frames": [
+            "fd.j",
+            "fd.g",
+            "fd.f",
+            "ve.b",
+            "fd.l",
+            "fd.i",
+            "fd.g",
+            "fd.d",
+            "ve.a",
+            "gs.a",
+            "gs.a"
+          ]
+        }
+      ]
+    }
+  ]
+}

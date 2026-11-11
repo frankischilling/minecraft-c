@@ -5,18 +5,19 @@ Development focuses on the single-player client. Full parity and unrestricted
 playability remain incomplete; multiplayer and the dedicated server follow
 the client work. Account authentication is the only approved gameplay exception.
 
-The latest [combat work](Combat-and-projectiles) joins shared-execution drops,
-Mob death and damage descendants while preserving actual failed work through
-checked cleanup. Quiet metadata writes now follow the current Chunk NibbleArray,
-with fifteen finite unchanged-original comparisons. Complete Arrow damage and
-Player wake remain unfinished.
+[Player wake during damage](Combat-and-projectiles#recursive-bed-notification-during-wake)
+now reaches the original Bed update through the same wake body as direct Player
+damage. A nearby orphan head removes itself through the recursive neighbor
+call. An interrupted observer leaves both completed block changes in place.
 
-Earlier work adds Wolf, Slime, Squid and
-Ghast hurt/sound/drop paths, including Wolf pack/owner decisions and counted
-UTF16 comparison. Ten finite records match unchanged original calls. Earlier
-Monster death, Skeleton Arrow/Bone loops, Creeper's record and Player kill
-callbacks keep their separate comparison. Constructor and Item entropy remain
-independent; no original audiovisual equality or FPS improvement is established.
+[Slime removal](Combat-and-projectiles#slime-removal-and-splitting) runs through
+ordinary Mob ticks. Two Windows scenes use the usual controls to pause and
+save after four children replace the parent. Independent readback finds the
+four living Slimes.
+
+Graphical wake from damage, other neighbor hooks, the Bed foot drop, full Mob
+environment and particles, original audiovisual equality, and measured FPS
+remain open.
 
 ## Start here
 

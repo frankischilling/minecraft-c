@@ -26,8 +26,8 @@
       "sha256": "ba74e695188cdf04de5cf52e12f59e82cc6439c6d9153c95580443eb52b1e9e2"
     },
     "src/entity/arrow/tick.c": {
-      "bytes": 36364,
-      "sha256": "cb503a7c838b0febd59d2e6ad0b2fd4b8daa2e098fb7e0a492ed9bdaded666a8"
+      "bytes": 36465,
+      "sha256": "22d92c3db9685c6dd47ba7c6c7aa0643dcf4f24126191e9918d78048ede5bec1"
     },
     "src/entity/arrow/tick_body.c": {
       "bytes": 29442,
@@ -38,8 +38,8 @@
       "sha256": "137ef45ce8e853e8959e65712fd122a3dfa2f192ff52772aca5ac3c924b1823b"
     },
     "src/entity/arrow/tick_execution_dependencies.h": {
-      "bytes": 1712,
-      "sha256": "f6e35a1aeea69e34c968de68f3dae97224a0a06f1eb49825b70e3e6b90ddacf3"
+      "bytes": 1697,
+      "sha256": "1e132b99f21904a46835465d3d4de043b802a927a0f12cf6a17021330053b239"
     },
     "src/entity/arrow/tick_internal.h": {
       "bytes": 8740,
@@ -66,8 +66,8 @@
       "sha256": "80d866a4df85af27011535b381728a1cae45bfbd24da103b2b453d5ed5056042"
     },
     "CMakeLists.txt": {
-      "bytes": 345322,
-      "sha256": "4abc1faff12fab607d8b0a1ccd743bb1b5fbaccab9831b2fc6d9c3d9ab00d4a0"
+      "bytes": 346052,
+      "sha256": "fd57855dacbf87c5199b9e468d4b2930e53cf661e53c5ad7e3675ad6ac5f8e66"
     },
     "cmake/tests/arrow_world_tick_cleanup.cmake": {
       "bytes": 2831,
@@ -106,12 +106,12 @@
       "sha256": "82fa360d0522c59a7937cf3f02709d068a085e208e675c86a4f77e4f559c24c9"
     },
     "src/entity/movement/damage_execution_internal.h": {
-      "bytes": 7280,
-      "sha256": "10fee661579a6587e4f5fa4f9d9ecae478b630c6de9d38974db3931e5fcf4981"
+      "bytes": 7332,
+      "sha256": "5601732b52306d176047e197f8f55938874a6d0fc6e0b57b08dd9775161e7b74"
     },
     "src/entity/movement/effects.c": {
-      "bytes": 84670,
-      "sha256": "c9f5e14fad32e881ae552374b9cc0775fd5d2d78538d266c2c5f11b780f7fd8c"
+      "bytes": 87438,
+      "sha256": "a6552cba4764088d2fb847fba1d7d58631154705173f1941d0bc36fa618243a7"
     },
     "src/entity/player/death.c": {
       "bytes": 32084,
@@ -190,44 +190,38 @@
   },
   "prospective_source_successor": {
     "schema": "CURRENT_SOURCE_ADMISSION_SUCCESSOR_V1",
-    "from_commit": "0eefdcf476d3630cf5566b9fac56cce3a3cc201b",
+    "from_commit": "fc7b0418f24b5c302dab1a114a3bebb0a0f1670f",
+    "role": "Current source admission for the execution-owned Player wake, recursive Bed mutation and lighting paths, and their Arrow damage continuation. The declared inputs include the native controls, authored original recursive wake packet and current scope documents. Earlier authority, supplier, source projection, native validation, captures and qualification records retain their original identities and scopes.",
     "previous_metadata": {
-      "bytes": 11923,
-      "sha256": "948e7af2accbdc937506f102e931fa06024bf2c9c41445c68a18abe4c1b7dbd6"
+      "bytes": 10176,
+      "sha256": "0250c448c856e5e15b86df2f53abf014b702d5915061b099d35b4df6f796d7ef"
     },
-    "role": "Current Slime removal implementation, finite original/native control inputs, delayed-removal controls and authored Arrow/Slime SDK scene inputs. Current source admission only. Historical authority, supplier, source_projection, native_validation, captures and prior qualification records retain their exact recorded identities and scopes. New compilation/execution and direct comparisons are separately bound; authored GUI inputs have no execution qualification from this update. No unrestricted gameplay, original audiovisual or FPS qualification is inherited.",
     "groups": {
       "sources": {
         "previous": {
-          "src/world/runtime/terminal_inventory.c": {
-            "bytes": 45298,
-            "sha256": "9856c9a3c53686219f7b26b90471caab72d382ff28c50441a1ae16e82d689892"
+          "src/entity/arrow/tick.c": {
+            "bytes": 36364,
+            "sha256": "cb503a7c838b0febd59d2e6ad0b2fd4b8daa2e098fb7e0a492ed9bdaded666a8"
           },
           "CMakeLists.txt": {
-            "bytes": 345142,
-            "sha256": "3cf33e3a6a3c8a69eb5c0eadc66633a631123780410b7e366bdd4d81538464b0"
+            "bytes": 345322,
+            "sha256": "4abc1faff12fab607d8b0a1ccd743bb1b5fbaccab9831b2fc6d9c3d9ab00d4a0"
+          },
+          "src/entity/movement/damage_execution_internal.h": {
+            "bytes": 7280,
+            "sha256": "10fee661579a6587e4f5fa4f9d9ecae478b630c6de9d38974db3931e5fcf4981"
           },
           "src/entity/movement/effects.c": {
-            "bytes": 83630,
-            "sha256": "5a4fcea3aae52da911c9aee86b573f759079c213fc7aa1d2cb490f503c855cfb"
+            "bytes": 84670,
+            "sha256": "c9f5e14fad32e881ae552374b9cc0775fd5d2d78538d266c2c5f11b780f7fd8c"
           }
         },
         "added": [],
         "current_count": 41
-      },
-      "helpers": {
-        "previous": {
-          "tests/tools/world/test_world_query_controls.py": {
-            "bytes": 76712,
-            "sha256": "ada889e19bb6669fbc158046acc0ed2aa14bb267f9a6a6feb8074af59a69f9f8"
-          }
-        },
-        "added": [],
-        "current_count": 3
       }
     },
     "current_semantics": {
-      "scope": "The current natural victim-frontier source now invokes the actual owned hurt child at Arrow victim741; the inherited victim Boolean is consumed only after that actual child continuation and its native cleanup. Failed children retain their actual typed diagnostics, Math-return proof and exact explicit cleanup records. This prospective source successor does not describe the behavior or qualification of the preserved historical supplier cohorts. Current pins also bind the declared Slime removal dispatch and terminal inventory changes. Slime removal admission for retiring actors leaves earlier removal work with its existing cleanup owner.",
+      "scope": "The current natural victim-frontier source now invokes the actual owned hurt child at Arrow victim741; the inherited victim Boolean is consumed only after that actual child continuation and its native cleanup. Failed children retain their actual typed diagnostics, Math-return proof and exact explicit cleanup records. This prospective source successor does not describe the behavior or qualification of the preserved historical supplier cohorts. Current pins also bind the declared Slime removal dispatch and terminal inventory changes. Slime removal admission for retiring actors leaves earlier removal work with its existing cleanup owner. The current declared sources include the Arrow continuation into the execution-owned Player wake path.",
       "qualification": "Current source admission. Existing suppliers, captures and native or original results retain their recorded input identities and qualification."
     }
   }

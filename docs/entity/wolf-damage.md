@@ -79,6 +79,8 @@ failure and checked cleanup without source-field repair.
 The existing public damage facade and the owned Arrow impact route share this
 wrapper. Their authored group, owner and cleanup controls retain their separate
 finite scopes; the original component captures are not retroactively expanded by
-the join. Complete Player wake, delayed Slime splitting and arbitrary cold/foreign
-graphs remain outside the complete owned combat path. These results do not
-establish unrestricted Wolf behavior, original audiovisual equality or FPS parity.
+the join. [Player wake](player-damage-wake.md) and [delayed Slime splitting](slime-removal.md)
+have separate finite controls. Other wake neighbor hooks, the Bed foot drop and
+arbitrary cold/foreign graphs remain outside the complete owned combat path.
+These results do not establish unrestricted Wolf behavior, original audiovisual
+equality or FPS parity.

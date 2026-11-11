@@ -1,13 +1,69 @@
 # Combat and projectiles
 
-Shared-execution Entity drops and Mob death now use the actual caller's Math
-and retained World publication frames. Native refusal stops the same drop loop
-and preserves earlier Items; cleanup does not replay it. World scalar, Bed exit
-and cell/range notification descendants have matching ownership controls.
-Complete Arrow impact and sleeping-Player damage still need the remaining
-notifying mutation, Player drop/scatter and victim-wrapper joins. The
-[drop contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/drop-execution.md)
-records the current boundary.
+## Recursive Bed notification during wake
+
+Actual Player damage wakes a sleeping Player before processing the hit. The
+wake clears Bed occupancy, visits the neighboring orphan head, and removes
+it through the actual World ID setter. The first observer sees the occupancy
+change. The second sees the orphan already removed, with the Player still
+asleep. A normally returned wake finds the exit and clears the timer.
+
+The original client and native tests cover the return, an observer exception,
+and a callback that clears Player.World before exit search. The native
+tests also cover height changes, independent World scopes and the Player List
+exception reached during an actual Arrow hit. Checked retirement keeps both
+block writes and does not replay the callbacks. [Wake contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-damage-wake.md#wake-during-an-arrow-hit)
+
+The execution retains the callback owner through native retirement. Owned Bed
+diagnostics no longer request an extra legacy producer hold during cleanup.
+Other neighbor hooks and the Bed foot drop still need their owned descendants;
+these finite controls do not establish unrestricted combat or an FPS gain.
+
+## Slime removal and splitting
+
+The same removal body serves direct effects and the normal Mob caller. It
+reads the signed size through DataWatcher, checks the current World's remote
+flag, and splits only when size exceeds one and health is exactly zero. Each
+child runs the real constructor and setter, reads the parent's current pose
+and Random, and enters ordinary World publication. The parent's dead flag is
+stored after all four publications. World removes the parent later.
+
+The explicit execution entry shares that body. Refused publication or cleanup
+leaves the actual pending work available for checked retirement. Cleanup keeps
+already published children and never repeats the loop. A rejected call grants
+no right to retire earlier work.
+
+The original client supplies 25 direct calls across 24 profiles. Eleven
+ordered records on each native host match the unchanged original. A separate
+Mob fixture advances 21 real ticks after fatal damage and observes twenty
+death particles after the split. Both loaded Windows scenes find four surviving
+children at tick 26, then pass pause, save and independent NBT readback. The [removal contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/slime-removal.md)
+describes the source order and qualification limits.
+
+## Arrow damage and earlier work
+
+Actual Arrow impact now passes its current nullable Living shooter and damage
+four to the shared damage entry. Living, Monster, Wolf and Player keep their
+existing production bodies. Accepted hits use the original `random.drr` sound
+and death marker; rejected hits take the original reflection path.
+
+Player drops, all forty Inventory slots and fatal death share that execution.
+Native refusal stops before another slot clear, publication or callback while
+preserving earlier Items and actual Random progress. Presentation loops verify
+their recorded scope before another Source read. Math diagnostics identify the
+actual failed require call; null listener-List faults retain their actual origin.
+The [damage contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/damage-execution.md)
+records canonical ownership and the remaining limits. Complete Player wake
+still reaches its explicit GS35 dependency; recursive Bed mutation, arbitrary
+cold and foreign graphs and full owned Mob environment and particles remain open.
+
+The rebuilt monitor-2 Arrow/Pig scene passes 462 checks through ordinary World
+ticks: the loaded Pig changes from health ten to six and the Arrow disappears.
+A fresh Zombie regression passes 466 checks through natural damage, SDK
+pause/save, independent NBT/statistics and cleanup. All six captures were
+inspected. These are causal state and terrain/HUD observations; the first hit
+frames have no individual actor-draw receipt, and the Arrow scene has no direct
+741 receipt. Headless controls cover that actual call separately.
 
 Wolf, Slime, Squid and Ghast now reach their actual hurt/sound/drop methods.
 Wolf clears sitting before the inherited parent, adjusts the original damage
@@ -19,7 +75,7 @@ consumes both private pitch draws; Ghast keeps volume 10.
 Ten finite records match fresh original calls for return, state, sound and
 ordered Item publication. The [remaining hurt contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/remaining-damage.md)
 separates that comparison from authored populated-pack and failure controls.
-A fresh rebuilt-client monitor-2 saved-Zombie regression passes 478 checks through returned
+The preceding monitor-2 saved-Zombie regression passed 478 checks through returned
 World/HUD, pause/save, independent state readback and cleanup. It does not
 exercise ordinary Player attacks on the four newly admitted victims.
 
@@ -52,6 +108,6 @@ published drops through checked cleanup. See the
 [death contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/monster-death.md)
 for source ordering and the comparison's excluded independent entropy.
 
-Full Arrow victim damage, pickup/riders,
+Complete Player wake, pickup/riders,
 unrestricted combat, original audiovisual equality and FPS remain unfinished
 or unqualified. These component checks do not establish complete playability.

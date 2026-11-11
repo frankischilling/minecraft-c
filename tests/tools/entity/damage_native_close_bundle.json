@@ -13,8 +13,8 @@
       "sha256": "54d9f163904767d003b962ccfe478992a31d255983a802df10cd653b035aadc9"
     },
     "CMakeLists.txt": {
-      "bytes": 345322,
-      "sha256": "4abc1faff12fab607d8b0a1ccd743bb1b5fbaccab9831b2fc6d9c3d9ab00d4a0"
+      "bytes": 346052,
+      "sha256": "fd57855dacbf87c5199b9e468d4b2930e53cf661e53c5ad7e3675ad6ac5f8e66"
     },
     "tests/entity/player/test_ally_alert_ownership.c": {
       "bytes": 11240,
@@ -237,6 +237,26 @@
             "CMakeLists.txt": {
               "bytes": 345142,
               "sha256": "3cf33e3a6a3c8a69eb5c0eadc66633a631123780410b7e366bdd4d81538464b0"
+            }
+          },
+          "added": [],
+          "current_count": 25
+        }
+      }
+    },
+    {
+      "from_commit": "fc7b0418f24b5c302dab1a114a3bebb0a0f1670f",
+      "role": "Current source admission for the execution-owned Player wake, recursive Bed mutation and lighting paths, and their Arrow damage continuation. The declared inputs include the native controls, authored original recursive wake packet and current scope documents. Earlier authority, supplier, source projection, native validation, captures and qualification records retain their original identities and scopes.",
+      "previous_metadata": {
+        "bytes": 12017,
+        "sha256": "f3264ac9cbe05f58cab18f3c5eb49d0e3128abd23fd642df572daaf36e1c1f65"
+      },
+      "groups": {
+        "files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 345322,
+              "sha256": "4abc1faff12fab607d8b0a1ccd743bb1b5fbaccab9831b2fc6d9c3d9ab00d4a0"
             }
           },
           "added": [],

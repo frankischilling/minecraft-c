@@ -23,6 +23,7 @@
 #include "../../client/input/movement_input_internal.h"
 #include "../../item/render/internal.h"
 #include "../../world/runtime/collision/blocks_internal.h"
+#include "../../world/runtime/mutation/notifications_execution_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../../world/runtime/world_access_internal.h"
 #include "../entity_internal.h"
@@ -32,6 +33,7 @@
 #include "mc/block/registry/step_sound.h"
 #include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
+#include "mc/world/runtime/placement.h"
 
 #include <float.h>
 #include <limits.h>
@@ -800,20 +802,20 @@ static bool damage_body(mc_entity *entity, mc_registry_classes *classes, mc_math
             }
             if (!entity->base.world->fields.B) {
                 error->source_bytecode = error->player_bytecode = 35;
-                if (owned != NULL) {
-                    mc_entity_damage_execution_select(owned,
-                                                      MC_ENTITY_DAMAGE_CHILD_WAKE_DEPENDENCY);
-                    mc_world_runtime_execution_result_note(
-                        &owned->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                        "Player actual GS35 wake owned mutation dependency; callee not entered",
-                        (mc_entity_tick_execution_site){"gs", "a", "(Lsn;I)Z", 35});
-                    fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
-                         "Player actual GS35 wake owned mutation dependency; callee not entered",
-                         35);
-                    return false;
+                if (owned == NULL) {
+                    if (!mc_player_damage_wake_entered(entity, classes, error))
+                        return false;
+                } else {
+                    mc_entity_damage_execution_select(owned, MC_ENTITY_DAMAGE_CHILD_WAKE);
+                    if (!mc_player_damage_wake_entered_in_execution(entity, classes, error,
+                                                                    owned)) {
+                        if (entity->local_player->pending_damage_wake != NULL) {
+                            owned->work_kind = MC_ENTITY_DAMAGE_WORK_WAKE;
+                            owned->acquired_work = entity->local_player->pending_damage_wake;
+                        }
+                        return false;
+                    }
                 }
-                if (!mc_player_damage_wake_entered(entity, classes, error))
-                    return false;
             }
         }
         /* Source instanceof first occurs at38, after the health/sleep prefix.
@@ -1012,6 +1014,9 @@ static bool damage_work_matches(const mc_entity_damage_execution *frame) {
             return mc_entity_has_mob(p) && p->mob->pending_wolf_damage == frame->acquired_work;
         case MC_ENTITY_DAMAGE_WORK_MOB_DEATH:
             return mc_entity_has_mob(p) && p->mob->pending_death == frame->acquired_work;
+        case MC_ENTITY_DAMAGE_WORK_WAKE:
+            return p->local_player != NULL &&
+                   p->local_player->pending_damage_wake == frame->acquired_work;
         case MC_ENTITY_DAMAGE_WORK_ALERT:
             return p->local_player != NULL &&
                    p->local_player->pending_damage_alert == frame->acquired_work;
@@ -1102,6 +1107,15 @@ bool mc_entity_damage_execution_inspect(mc_entity_damage_execution *frame,
                 if (!mc_player_ally_alert_inspect(view.alert, &state))
                     return false;
                 view.nearby = &state.error->nearby;
+            }
+            break;
+        case MC_ENTITY_DAMAGE_CHILD_WAKE:
+            if (frame->work_kind == MC_ENTITY_DAMAGE_WORK_WAKE) {
+                view.wake = mc_player_damage_wake_call(frame->victim);
+                mc_world_runtime_execution_result *result =
+                    mc_player_wake_execution_result(view.wake);
+                if (result != NULL)
+                    view.result = result;
             }
             break;
         case MC_ENTITY_DAMAGE_CHILD_WOLF_QUERY: {
@@ -1295,6 +1309,42 @@ bool mc_entity_damage_execution_source_failure(mc_entity_damage_execution *frame
             }
         }
     }
+    if (view.wake != NULL) {
+        const mc_entity_player_wake_state *wake = &error->player_wake;
+        if (wake->source_exception || wake->source_error) {
+            const mc_player_site *site =
+                wake->child.class_name == NULL ? &wake->site : &wake->child;
+            damage_named_failure(&failure, wake->exception_class, wake->operation,
+                                 (mc_entity_tick_execution_site){site->class_name, site->method,
+                                                                 site->descriptor, (int)site->pc});
+            *out = failure;
+            return true;
+        }
+        mc_entity_tick_execution_site mutation_site;
+        if (mc_player_wake_execution_source_null(view.wake, &mutation_site)) {
+            damage_named_failure(&failure, "java/lang/NullPointerException", wake->operation,
+                                 mutation_site);
+            *out = failure;
+            return true;
+        }
+        const mc_world_notification_execution *observer =
+            mc_player_wake_execution_failure_observer(view.wake);
+        const mc_world_mutation_error *mutation =
+            wake->error != NULL && wake->error->occupancy != NULL ? wake->error->occupancy->mutation
+                                                                  : NULL;
+        if (observer != NULL && observer->callback_status != MC_WORLD_STORAGE_OK &&
+            mutation != NULL &&
+            damage_protected_source(frame->execution, observer->world,
+                                    &mutation->world_access_failure, &mutation->cause, &name)) {
+            damage_named_failure(
+                &failure, name, mutation->cause.operation,
+                (mc_entity_tick_execution_site){"fd", observer->range ? "b" : "j",
+                                                observer->range ? "(IIIIII)V" : "(III)V",
+                                                (int)mutation->world_access_bytecode});
+            *out = failure;
+            return true;
+        }
+    }
     /* Query Source classification remains unresolved below unless a current
      * direct typed fault or independent actual native/Math return proves more.
      * No legacy copied query classifier runs. */
@@ -1405,7 +1455,9 @@ mc_world_storage_status mc_entity_damage_execution_native_close(mc_entity_damage
             frame->victim->local_player->pending_death == frame->death_work &&
             mc_player_death_execution_inspect(frame->victim, &child) && child.drop != NULL)
             status = mc_local_player_drop_native_close(child.drop);
-    } else if (frame->work_kind == MC_ENTITY_DAMAGE_WORK_ALERT)
+    } else if (frame->work_kind == MC_ENTITY_DAMAGE_WORK_WAKE)
+        status = mc_player_wake_execution_native_close(mc_player_damage_wake_call(frame->victim));
+    else if (frame->work_kind == MC_ENTITY_DAMAGE_WORK_ALERT)
         status =
             mc_player_ally_alert_native_close(frame->victim->local_player->pending_damage_alert);
     else if (frame->work_kind == MC_ENTITY_DAMAGE_WORK_WOLF &&

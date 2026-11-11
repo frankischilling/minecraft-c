@@ -51,7 +51,8 @@ static bool bed_activation_player(mc_world_placement_error *e, mc_entity *player
 }
 
 static bool bed_activation_write(mc_world_placement_error *e, mc_world_runtime *world, int32_t x,
-                                 int32_t y, int32_t z, int32_t metadata, bool remove) {
+                                 int32_t y, int32_t z, int32_t metadata, bool remove,
+                                 mc_world_bed_occupancy_execution *owned) {
     if (e->work->mutation == NULL) {
         e->work->mutation = malloc(sizeof(*e->work->mutation));
         if (e->work->mutation == NULL) {
@@ -62,6 +63,22 @@ static bool bed_activation_write(mc_world_placement_error *e, mc_world_runtime *
     }
     mc_world_mutation_error *child = e->work->mutation;
     mc_world_mutation_error_init(child);
+    if (owned != NULL) {
+        mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
+        if (mc_world_runtime_metadata_set_in_execution(owned->context, world, x, y, z, metadata,
+                                                       owned->mutation, &raw, child))
+            return true;
+        const mc_world_runtime_execution_result *result = owned->context->result;
+        fail(e, raw,
+             child->operation != NULL ? child->operation : result->ownership_error.operation, true);
+        e->cause = child->cause;
+        e->registry = child->registry;
+        if (e->registry.status != MC_REGISTRY_OK)
+            registry_failed_in(e, mc_world_runtime_registry(world));
+        if (child->bed_source_null)
+            null_reference(e, child->operation);
+        return false;
+    }
     bool ignored;
     const mc_world_storage_status status =
         remove ? mc_world_runtime_block_set(world, x, y, z, 0, &ignored, child)
@@ -86,7 +103,8 @@ static bool bed_activation_write(mc_world_placement_error *e, mc_world_runtime *
 }
 
 static bool bed_set_occupied(mc_world_placement_error *e, mc_world_runtime *world, int32_t x,
-                             int32_t y, int32_t z, bool occupied) {
+                             int32_t y, int32_t z, bool occupied,
+                             mc_world_bed_occupancy_execution *owned) {
     e->site = site("ve", "a", "(Lfd;IIIZ)V", 0);
     if (mc_registry_bed_active_use(e->work->registry, &e->registry) != MC_REGISTRY_OK) {
         registry_failed(e);
@@ -94,12 +112,41 @@ static bool bed_set_occupied(mc_world_placement_error *e, mc_world_runtime *worl
     }
     e->site.pc = 4;
     int32_t metadata;
-    if (!value_get(e, world, e->query_count, x, y, z, true, &metadata))
-        return false;
+    if (owned == NULL) {
+        if (!value_get(e, world, e->query_count, x, y, z, true, &metadata))
+            return false;
+    } else {
+        if (world == NULL) {
+            null_reference(e, "Bed occupancy actual World null receiver");
+            return false;
+        }
+        const mc_world_mutation_execution_context *context = owned->context;
+        mc_world_block_execution_init(owned->scalar, context->execution, context->code,
+                                      (mc_entity_tick_execution_site){"ve", "a", "(Lfd;IIIZ)V", 4},
+                                      context->result);
+        mc_world_storage_error cause = {0};
+        mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
+        if (!mc_world_runtime_metadata_get_in_execution(owned->scalar, world, x, y, z, &metadata,
+                                                        &cause, &raw)) {
+            fail(e, raw,
+                 cause.operation != NULL ? cause.operation
+                                         : context->result->ownership_error.operation,
+                 true);
+            e->cause = cause;
+            if (owned->scalar->get_returned && owned->scalar->get_status != MC_CHUNK_ACQUIRE_OK)
+                e->acquisition = &owned->scalar->acquisition;
+            if (owned->scalar->source.source_exception) {
+                e->source_exception = true;
+                e->exception_class = owned->scalar->source.exception_class;
+                e->native_policy = false;
+            }
+            return false;
+        }
+    }
     metadata = occupied ? (int32_t)((uint32_t)metadata | UINT32_C(4))
                         : (int32_t)((uint32_t)metadata & ~UINT32_C(4));
     e->site.pc = 36;
-    if (!bed_activation_write(e, world, x, y, z, metadata, false))
+    if (!bed_activation_write(e, world, x, y, z, metadata, false, owned))
         return false;
     e->site.pc = 39;
     return true;
@@ -108,7 +155,7 @@ static bool bed_set_occupied(mc_world_placement_error *e, mc_world_runtime *worl
 static bool bed_occupancy_clear(mc_world_placement_error *e, mc_world_runtime *world, int32_t x,
                                 int32_t y, int32_t z) {
     e->caller = e->site;
-    if (!bed_set_occupied(e, world, x, y, z, false))
+    if (!bed_set_occupied(e, world, x, y, z, false, NULL))
         return false;
     e->bed_occupancy_cleared = true;
     return true;
@@ -372,7 +419,7 @@ static bool bed_activate(mc_world_placement_error *e, const mc_block *block,
         volatile double center_x = (double)x + 0.5, center_y = (double)y + 0.5;
         volatile double center_z = (double)z + 0.5;
         bed_activation_at(e, 126);
-        if (!bed_activation_write(e, world, x, y, z, 0, true))
+        if (!bed_activation_write(e, world, x, y, z, 0, true, NULL))
             return false;
         int32_t dx, dz;
         if (!bed_activation_direction(e, e->bed_direction, 0, 138, 143, 145, &dx))
@@ -388,7 +435,7 @@ static bool bed_activate(mc_world_placement_error *e, const mc_block *block,
         bed_activation_at(e, 170);
         if (partner == block->fields.bn) {
             bed_activation_at(e, 182);
-            if (!bed_activation_write(e, world, x, y, z, 0, true))
+            if (!bed_activation_write(e, world, x, y, z, 0, true, NULL))
                 return false;
             if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
                 bed_activation_at(e, 190);
@@ -479,7 +526,7 @@ static bool bed_activate(mc_world_placement_error *e, const mc_block *block,
         /* A nullable/replaced actual CW.a can select this source arm. The
          * genuine occupancy setter still runs; no sleep result is invented. */
         e->caller = site("ve", "a", "(Lfd;IIILgs;)Z", 407);
-        if (!bed_set_occupied(e, world, x, y, z, true))
+        if (!bed_set_occupied(e, world, x, y, z, true, NULL))
             return false;
         bed_activation_at(e, 411);
         return true;

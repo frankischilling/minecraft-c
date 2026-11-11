@@ -97,9 +97,13 @@ or published close capsules, then the child's recorded scopes and actor work.
 Forwarded summaries confer no close authority. Unrecorded descendants refuse;
 the helper neither discovers arbitrary scopes nor replays Source work.
 
-Complete Player wake still reaches an explicit dependency at `gs.a(Entity,int):35`.
-Its notifying Bed occupancy and recursive mutation, hook, lighting and scheduling
-descendants need the same execution join. Delayed Slime splitting, arbitrary cold
-import/generation and foreign graph ownership retain their separate limits.
-These finite joins do not establish unrestricted combat, original audiovisual
-equality, extended play or a measured FPS gain.
+The reached Player wake at `gs.a(Entity,int):35` shares the existing
+GS body. Its retained execution covers the occupied Bed update, recursive
+orphan head removal, and the live Player List read after waking. Arrow closes
+the actual failed wake work through its existing unwind. Other reached
+neighbor hooks, the Bed foot drop, arbitrary cold import or generation, and
+foreign graph ownership retain their separate limits. See the
+[Player wake contract](player-damage-wake.md#wake-during-an-arrow-hit).
+
+Unrestricted combat, original audiovisual equality, extended play and
+measured FPS remain unqualified.

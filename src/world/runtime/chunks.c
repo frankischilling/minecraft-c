@@ -5,6 +5,7 @@
 #include "../storage/generated_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/world/dimension/world_provider.h"
+#include "mutation/chunk_execution_internal.h"
 #include "runtime_internal.h"
 
 static mc_world_storage_error native_error(mc_world_storage_status status, const char *operation) {
@@ -113,16 +114,42 @@ static bool opacity(mc_world_chunk *chunk, mc_world_runtime *world, size_t block
 }
 
 static bool interval(mc_world_chunk *chunk, int32_t x, int32_t z, int32_t local_height,
-                     unsigned int column_pc, mc_world_chunk_error *frame) {
+                     unsigned int column_pc, mc_world_chunk_error *frame,
+                     mc_world_mutation_chunk_execution *execution) {
     mc_world_chunk_fields fields;
     (void)mc_world_chunk_fields_get(chunk, &fields);
     mc_world_runtime *world = fields.d;
     int32_t height;
     frame->column_bytecode = column_pc;
+    if (execution != NULL) {
+        frame->interval_bytecode = 1;
+        if (!mc_world_mutation_chunk_capture(
+                execution, world,
+                mc_world_mutation_chunk_site(execution, MC_WORLD_MUTATION_CHUNK_INTERVAL, 1)))
+            return false;
+    }
     frame->interval_bytecode = 6;
-    if (mc_world_runtime_height(world, x, z, &height, &frame->light) != MC_WORLD_STORAGE_OK) {
-        frame->cause = frame->light.cause;
-        return false;
+    if (execution == NULL) {
+        if (mc_world_runtime_height(world, x, z, &height, &frame->light) != MC_WORLD_STORAGE_OK) {
+            frame->cause = frame->light.cause;
+            return false;
+        }
+    } else {
+        if (world == NULL) {
+            mc_world_mutation_chunk_null(execution, MC_WORLD_MUTATION_CHUNK_INTERVAL, 6);
+            frame->cause = native_error(MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                        "Chunk interval height World receiver is null");
+            return mc_world_mutation_chunk_close(execution, false);
+        }
+        mc_world_light_execution_init(&execution->light, execution->execution, execution->code,
+                                      execution->scope.site, execution->owned);
+        mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
+        const bool completed = mc_world_runtime_height_in_execution(&execution->light, world, x, z,
+                                                                    &height, &frame->light, &raw);
+        if (raw != MC_WORLD_STORAGE_OK)
+            frame->cause = frame->light.cause;
+        if (!mc_world_mutation_chunk_close(execution, completed))
+            return false;
     }
     if (height == local_height)
         return true;
@@ -131,33 +158,34 @@ static bool interval(mc_world_chunk *chunk, int32_t x, int32_t z, int32_t local_
      * after the height comparison, before the six-coordinate World call. */
     (void)mc_world_chunk_fields_get(chunk, &fields);
     world = fields.d;
-    const mc_world_light_type *sky = NULL;
-    frame->interval_bytecode = height > local_height ? 21u : 52u;
-    if (mc_world_runtime_light_type_get(world->classes, MC_LIGHT_SKY, &sky, &frame->cause) !=
-        MC_WORLD_STORAGE_OK) {
-        world->last_error = frame->cause;
-        return false;
+    const bool raises = height > local_height;
+    if (execution != NULL) {
+        const unsigned int world_pc = raises ? 18u : 49u;
+        frame->interval_bytecode = world_pc;
+        if (!mc_world_mutation_chunk_capture(
+                execution, world,
+                mc_world_mutation_chunk_site(execution, MC_WORLD_MUTATION_CHUNK_INTERVAL,
+                                             world_pc)))
+            return false;
     }
     const mc_light_bounds bounds = {.min_x = x,
-                                    .min_y = height > local_height ? local_height : height,
+                                    .min_y = raises ? local_height : height,
                                     .min_z = z,
                                     .max_x = x,
-                                    .max_y = height > local_height ? height : local_height,
+                                    .max_y = raises ? height : local_height,
                                     .max_z = z};
-    mc_light_submit_result submitted;
-    frame->interval_bytecode = height > local_height ? 31u : 62u;
-    if (mc_world_runtime_light_submit(world, sky, &bounds, true, &submitted, &frame->light) !=
-        MC_WORLD_STORAGE_OK) {
-        frame->cause = frame->light.cause;
+    if (!mc_world_mutation_chunk_submit(execution, world, MC_LIGHT_SKY, &bounds,
+                                        MC_WORLD_MUTATION_CHUNK_INTERVAL, &frame->interval_bytecode,
+                                        raises ? 21u : 52u, raises ? 31u : 62u, &frame->light,
+                                        &frame->cause))
         return false;
-    }
     /* A normal void return reaches o36/67 even when enqueue skipped. */
     mc_world_chunk_state(chunk)->dirty = true;
     return true;
 }
 
-bool mc_world_runtime_chunk_column(mc_world_chunk *chunk, int32_t x, int32_t z,
-                                   mc_world_chunk_error *frame) {
+static bool column(mc_world_chunk *chunk, int32_t x, int32_t z, mc_world_chunk_error *frame,
+                   mc_world_mutation_chunk_execution *execution) {
     mc_world_chunk_fields fields;
     (void)mc_world_chunk_fields_get(chunk, &fields);
     const int32_t index = mc_java_i32_shl(z, 4) | x;
@@ -170,10 +198,21 @@ bool mc_world_runtime_chunk_column(mc_world_chunk *chunk, int32_t x, int32_t z,
     const int32_t local = (int32_t)fields.h[(size_t)index];
     const int32_t world_x = mc_java_i32_add(mc_java_i32_mul(fields.j, 16), x);
     const int32_t world_z = mc_java_i32_add(mc_java_i32_mul(fields.k, 16), z);
-    return interval(chunk, mc_java_i32_sub(world_x, 1), world_z, local, 37, frame) &&
-           interval(chunk, mc_java_i32_add(world_x, 1), world_z, local, 48, frame) &&
-           interval(chunk, world_x, mc_java_i32_sub(world_z, 1), local, 59, frame) &&
-           interval(chunk, world_x, mc_java_i32_add(world_z, 1), local, 70, frame);
+    return interval(chunk, mc_java_i32_sub(world_x, 1), world_z, local, 37, frame, execution) &&
+           interval(chunk, mc_java_i32_add(world_x, 1), world_z, local, 48, frame, execution) &&
+           interval(chunk, world_x, mc_java_i32_sub(world_z, 1), local, 59, frame, execution) &&
+           interval(chunk, world_x, mc_java_i32_add(world_z, 1), local, 70, frame, execution);
+}
+
+bool mc_world_runtime_chunk_column(mc_world_chunk *chunk, int32_t x, int32_t z,
+                                   mc_world_chunk_error *frame) {
+    return column(chunk, x, z, frame, NULL);
+}
+
+bool mc_world_runtime_chunk_column_in_execution(mc_world_mutation_chunk_execution *execution,
+                                                mc_world_chunk *chunk, int32_t x, int32_t z,
+                                                mc_world_chunk_error *frame) {
+    return column(chunk, x, z, frame, execution);
 }
 
 mc_world_storage_status mc_world_runtime_chunk_finish(mc_world_chunk *chunk,

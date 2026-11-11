@@ -7,7 +7,9 @@ int arrow_player_unused_drop_main(int, char **);
 #include "entity/arrow/tick_internal.h"
 #include "entity/living/fields_internal.h"
 #include "entity/player/death_execution_internal.h"
+#include "entity/player/sleep_execution_internal.h"
 #include "inventory/player/source_internal.h"
+#include "mc/world/runtime/players.h"
 
 typedef struct ap_fixture {
     pd_fixture player;
@@ -19,7 +21,7 @@ typedef struct ap_fixture {
     const char *mode;
     uint64_t occurrence;
     size_t sounds, impacts, additions;
-    bool valid, removed;
+    bool valid, removed, wake_before_sound;
 } ap_fixture;
 
 static bool ap_is(const ap_fixture *s, const char *mode) {
@@ -55,8 +57,21 @@ static mc_world_storage_status ap_sound(void *context, mc_world_runtime *world,
         ++s->impacts;
         s->valid &= volume == 1.f && c->hurt == NULL && c->hurt_bytes == 0 &&
                     c->state.hurt_returned && c->state.hurt_continued && c->state.hurt_result;
-    } else
+    } else {
         s->valid &= c->hurt != NULL && !c->hurt->returned && c->hurt_target == f->player;
+        if (ap_is(s, "wake") && c->hurt != NULL) {
+            const mc_entity_player_wake_state *receipt = &c->hurt->error.player_wake;
+            s->wake_before_sound =
+                receipt->entered && receipt->returned && receipt->status == MC_ENTITY_OK &&
+                receipt->site.pc == 234 && !receipt->active && !receipt->pending &&
+                receipt->receiver == NULL && receipt->error == NULL && receipt->cleanup == NULL &&
+                f->player->local_player->pending_damage_wake == NULL &&
+                !f->player->local_player->fields.player.u &&
+                f->player->local_player->fields.player.private_a == 0 &&
+                f->player->base.width == .6f && f->player->base.height == 1.8f &&
+                f->player->base.offset == 1.62f && !world->fields.J;
+        }
+    }
     ++s->sounds;
     *cause = (mc_world_storage_error){0};
     return MC_WORLD_STORAGE_OK;
@@ -111,6 +126,9 @@ static mc_world_storage_status ap_added(void *context, mc_world_runtime *world, 
 
 static bool ap_construct(ap_fixture *s) {
     fixture *f = &s->player.game;
+    const bool null_list = ap_is(s, "wake-source-null-list");
+    const bool wakes = ap_is(s, "wake") || null_list;
+    const bool fatal = ap_is(s, "fatal") || ap_is(s, "fatal-source");
     bool inserted = false;
     mc_arrow_error error = {0};
     CHECK(pd_chunk(&s->player) &&
@@ -121,14 +139,20 @@ static bool ap_construct(ap_fixture *s) {
               MC_WORLD_STORAGE_OK &&
           inserted);
     mc_living_entity_fields *living = mc_entity_living_fields(f->player);
-    living->Y = ap_is(s, "live") || ap_is(s, "wake") ? 20 : 4;
+    living->Y = fatal ? 4 : 20;
     living->E = 20;
     living->au = f->player->base.by = 0;
     living->av = 71;
-    f->player->local_player->fields.player.u = ap_is(s, "wake");
+    f->player->local_player->fields.player.u = wakes;
     f->world->fields.B = false;
     f->world->fields.q = 2;
-    if (!ap_is(s, "live") && !ap_is(s, "wake"))
+    if (wakes) {
+        CHECK(f->player->local_player->fields.player.v == NULL);
+        f->player->local_player->fields.player.private_a = 37;
+        CHECK(mc_world_runtime_update_player_sleeping(f->world, NULL) == MC_WORLD_STORAGE_OK &&
+              f->world->fields.J);
+    }
+    if (fatal)
         CHECK(pd_stack(3, 2, 7, &s->stack) &&
               mc_inventory_player_source_set(f->player->local_player->fields.player.c, 0, s->stack,
                                              NULL) == MC_INVENTORY_OK);
@@ -145,6 +169,97 @@ static bool ap_construct(ap_fixture *s) {
     CHECK(mc_world_access_source_create(&callbacks, s, &s->observer, NULL) == MC_WORLD_STORAGE_OK &&
           mc_world_access_add_receipted(f->world, s->observer, &s->occurrence, NULL) ==
               MC_WORLD_STORAGE_OK);
+    if (null_list) {
+        CHECK(f->world->fields.d != NULL &&
+              f->world->fields.d == f->world->player_membership.list &&
+              f->world->player_membership.count == 1 &&
+              f->world->player_membership.entries[0] == f->player);
+        /* FD.y first dereferences this nullable Source operand. The actual
+         * Player occurrence remains owned by the independent World ledger. */
+        f->world->fields.d = NULL;
+    }
+    return true;
+}
+
+static bool ap_unwind_to(mc_arrow_tick_call *call, mc_arrow_tick_native_unwind_phase phase,
+                         bool expected_quiet, mc_arrow_tick_state *state) {
+    bool quiet = !expected_quiet;
+    return mc_arrow_tick_native_unwind_step(call, &quiet) == MC_ARROW_TICK_OK &&
+           quiet == expected_quiet && mc_arrow_tick_inspect(call, state) &&
+           state->query_unwind == phase;
+}
+
+static bool ap_wake_failure(ap_fixture *s, mc_arrow_tick_state *state) {
+    fixture *f = &s->player.game;
+    mc_arrow_tick_call *call = s->call;
+    mc_arrow_tick_hurt_work *hurt = call->hurt;
+    mc_local_player_state *player = f->player->local_player;
+    const mc_entity_player_wake_state *wake = &hurt->error.player_wake;
+    mc_entity_damage_execution_view damage = {0};
+    mc_entity_tick_execution_world_token token = {0};
+    CHECK(state->hurt_cleanup_acquired && !state->direct_world_open &&
+          state->failure->classification == MC_ARROW_TICK_FAILURE_SOURCE_EXCEPTION &&
+          state->failure->source_exception && !state->failure->native_policy &&
+          state->failure->exception_class != NULL &&
+          strcmp(state->failure->exception_class, "java/lang/NullPointerException") == 0 &&
+          state->failure->child_site.class_name != NULL &&
+          strcmp(state->failure->child_site.class_name, "fd") == 0 &&
+          state->failure->child_site.method != NULL &&
+          strcmp(state->failure->child_site.method, "y") == 0 &&
+          state->failure->child_site.pc == 5);
+    CHECK(wake->entered && !wake->active && wake->pending && !wake->returned &&
+          wake->receiver == f->player && wake->site.pc == 201 && wake->child.pc == 5 &&
+          wake->error != NULL && wake->error->status == MC_PLAYER_SLEEP_SOURCE_NULL &&
+          wake->error->world_sleep != NULL && wake->error->world_sleep->source_null &&
+          wake->error->world_sleep->bytecode == 5 && !hurt->error.living_damage.entered &&
+          mc_entity_damage_execution_inspect(&hurt->execution, &damage) &&
+          damage.child == MC_ENTITY_DAMAGE_CHILD_WAKE && damage.execution == &call->execution &&
+          damage.acquired_work != NULL && damage.acquired_work == player->pending_damage_wake &&
+          damage.wake != NULL && damage.result == mc_player_wake_execution_result(damage.wake) &&
+          damage.result != &hurt->execution.owned && damage.result != &call->query_result &&
+          mc_entity_tick_execution_current_world(&call->execution, &token) &&
+          token.owner == &call->execution &&
+          mc_player_wake_execution_owns_world(damage.wake, &token));
+    const mc_entity_tick_execution_world_slot *slot = &call->execution.world_slots[token.slot];
+    CHECK(slot->phase == MC_ENTITY_TICK_EXECUTION_WORLD_OPEN && slot->world == f->world &&
+          slot->site.pc == 198 && slot->generation == token.generation &&
+          !player->fields.player.u && player->fields.player.private_a == 37 && f->world->fields.J &&
+          f->world->fields.d == NULL && player->fields.living.Y == 20 &&
+          player->fields.living.av == 0 && s->sounds == 0 && s->additions == 0 &&
+          pd_statistic(f, 18, 0));
+
+    const mc_java_random player_random = *f->player->random, arrow_random = *s->arrow->random;
+    CHECK(ap_unwind_to(call, MC_ARROW_TICK_UNWIND_DIAGNOSTIC, false, state) &&
+          state->failure->exception_class == call->exception_storage &&
+          state->failure->effect == &hurt->error &&
+          slot->phase == MC_ENTITY_TICK_EXECUTION_WORLD_OPEN);
+    CHECK(ap_unwind_to(call, MC_ARROW_TICK_UNWIND_CAPTURE, false, state) &&
+          call->captured_worlds[token.slot].owner == token.owner &&
+          call->captured_worlds[token.slot].slot == token.slot &&
+          call->captured_worlds[token.slot].generation == token.generation &&
+          slot->phase == MC_ENTITY_TICK_EXECUTION_WORLD_OPEN && wake->pending);
+    CHECK(ap_unwind_to(call, MC_ARROW_TICK_UNWIND_HURT_CLOSE, false, state) &&
+          !call->execution.world_open && slot->phase == MC_ENTITY_TICK_EXECUTION_WORLD_RETAINED &&
+          slot->generation == token.generation && slot->world == f->world && wake->pending &&
+          player->pending_damage_wake == damage.acquired_work);
+    CHECK(ap_unwind_to(call, MC_ARROW_TICK_UNWIND_HURT_CLEANUP, false, state) &&
+          state->failure->effect == NULL && !state->hurt_cleanup_acquired &&
+          hurt->execution.cleaned && player->pending_damage_wake == NULL && !wake->pending &&
+          wake->receiver == NULL && wake->error == NULL && wake->cleanup == NULL &&
+          !mc_entity_effect_has_pending(f->player));
+    CHECK(ap_unwind_to(call, MC_ARROW_TICK_UNWIND_QUIESCENT, true, state) &&
+          state->source_pc == 741 && state->failure->child_site.pc == 5 &&
+          strcmp(state->failure->exception_class, "java/lang/NullPointerException") == 0 &&
+          slot->phase == MC_ENTITY_TICK_EXECUTION_WORLD_RETAINED &&
+          slot->generation == token.generation && !player->fields.player.u &&
+          player->fields.player.private_a == 37 && player->fields.living.Y == 20 &&
+          f->world->fields.d == NULL && f->world->fields.J &&
+          f->world->player_membership.count == 1 &&
+          f->world->player_membership.entries[0] == f->player &&
+          f->player->random->state == player_random.state &&
+          s->arrow->random->state == arrow_random.state && s->arrow->base.x == 8.5 &&
+          !s->arrow->base.be && s->sounds == 0 && s->impacts == 0 && s->additions == 0 &&
+          pd_statistic(f, 18, 0));
     return true;
 }
 
@@ -158,7 +273,7 @@ static bool ap_run(ap_fixture *s) {
           mc_arrow_tick_inspect(s->call, &state) && state.hurt_invoked && state.hurt_returned &&
           !state.hurt_prior_pending && s->valid);
     mc_living_entity_fields *living = mc_entity_living_fields(f->player);
-    if (ap_is(s, "live") || ap_is(s, "fatal")) {
+    if (ap_is(s, "live") || ap_is(s, "fatal") || ap_is(s, "wake")) {
         const bool fatal = ap_is(s, "fatal");
         CHECK(status == MC_ARROW_TICK_OK && state.source_returned && state.hurt_continued &&
               state.hurt_result && state.hurt_bytes == 0 && s->call->hurt == NULL &&
@@ -176,23 +291,17 @@ static bool ap_run(ap_fixture *s) {
                   pd_statistic(f, 16, 1) && pd_statistic(f, 19, 1));
         else
             CHECK(s->additions == 0 && pd_statistic(f, 16, 0) && pd_statistic(f, 19, 0));
+        if (ap_is(s, "wake"))
+            CHECK(s->wake_before_sound && !f->player->local_player->fields.player.u &&
+                  f->player->local_player->fields.player.private_a == 0 && !f->world->fields.J);
     } else {
         CHECK(status != MC_ARROW_TICK_OK && !state.source_returned && state.source_pc == 741 &&
               !state.hurt_continued && !state.hurt_result && !s->arrow->base.be &&
               s->arrow->base.x == 8.5 && state.hurt_bytes == sizeof(mc_arrow_tick_hurt_work) &&
               state.failure->effect == &s->call->hurt->error && s->impacts == 0);
-        if (ap_is(s, "wake"))
-            CHECK(living->Y == 20 && living->av == 0 && s->sounds == 0 && s->additions == 0 &&
-                  f->player->local_player->fields.player.u &&
-                  s->call->hurt->execution.child == MC_ENTITY_DAMAGE_CHILD_WAKE_DEPENDENCY &&
-                  s->call->hurt->execution.acquired_work == NULL && !state.hurt_cleanup_acquired &&
-                  state.failure->native_policy &&
-                  state.failure->classification == MC_ARROW_TICK_FAILURE_NATIVE &&
-                  strcmp(state.failure->child_site.class_name, "gs") == 0 &&
-                  state.failure->child_site.pc == 35 &&
-                  !state.failure->effect->player_wake.entered &&
-                  f->player->local_player->pending_damage_wake == NULL && pd_statistic(f, 18, 0));
-        else {
+        if (ap_is(s, "wake-source-null-list")) {
+            CHECK(ap_wake_failure(s, &state));
+        } else {
             mc_entity_damage_execution_view view = {0};
             mc_player_drop_state drop = {0};
             CHECK(living->Y == 0 && s->sounds == 1 && s->additions == 1 && s->item != NULL &&
@@ -207,24 +316,25 @@ static bool ap_run(ap_fixture *s) {
                   f->player->local_player->fields.player.c->main_slots[0] == s->stack &&
                   pd_statistic(f, 18, 4) && pd_statistic(f, 16, 0) && pd_statistic(f, 19, 0) &&
                   mc_world_access_receipt_retire(&s->receipt, NULL) == MC_WORLD_STORAGE_BUSY);
+            const mc_java_random player_random = *f->player->random,
+                                 arrow_random = *s->arrow->random;
+            const size_t sounds = s->sounds, additions = s->additions;
+            bool quiet = false;
+            size_t steps = 0;
+            while (!quiet && steps++ < 48)
+                CHECK(mc_arrow_tick_native_unwind_step(s->call, &quiet) == MC_ARROW_TICK_OK);
+            CHECK(quiet && steps < 48 && mc_arrow_tick_inspect(s->call, &state) &&
+                  state.failure->effect == NULL &&
+                  state.hurt_bytes == sizeof(mc_arrow_tick_hurt_work) &&
+                  s->call->hurt->execution.cleaned && !mc_entity_effect_has_pending(f->player) &&
+                  s->sounds == sounds && s->additions == additions &&
+                  f->player->random->state == player_random.state &&
+                  s->arrow->random->state == arrow_random.state && s->arrow->base.x == 8.5 &&
+                  !s->arrow->base.be &&
+                  (s->stack == NULL ||
+                   (s->item->stack == s->stack && s->item->base.bF &&
+                    f->player->local_player->fields.player.c->main_slots[0] == s->stack)));
         }
-        const mc_java_random player_random = *f->player->random, arrow_random = *s->arrow->random;
-        const size_t sounds = s->sounds, additions = s->additions;
-        bool quiet = false;
-        size_t steps = 0;
-        while (!quiet && steps++ < 48)
-            CHECK(mc_arrow_tick_native_unwind_step(s->call, &quiet) == MC_ARROW_TICK_OK);
-        CHECK(quiet && steps < 48 && mc_arrow_tick_inspect(s->call, &state) &&
-              state.failure->effect == NULL &&
-              state.hurt_bytes == sizeof(mc_arrow_tick_hurt_work) &&
-              s->call->hurt->execution.cleaned && !mc_entity_effect_has_pending(f->player) &&
-              s->sounds == sounds && s->additions == additions &&
-              f->player->random->state == player_random.state &&
-              s->arrow->random->state == arrow_random.state && s->arrow->base.x == 8.5 &&
-              !s->arrow->base.be &&
-              (s->stack == NULL ||
-               (s->item->stack == s->stack && s->item->base.bF &&
-                f->player->local_player->fields.player.c->main_slots[0] == s->stack)));
     }
     CHECK(mc_arrow_tick_retire(&s->call) == MC_ARROW_TICK_OK && s->call == NULL &&
           s->arrow->arrow->tick_call == NULL);
@@ -236,7 +346,8 @@ static bool ap_run(ap_fixture *s) {
 int main(int argc, char **argv) {
     if (argc != 4 ||
         (strcmp(argv[1], "live") != 0 && strcmp(argv[1], "fatal") != 0 &&
-         strcmp(argv[1], "fatal-source") != 0 && strcmp(argv[1], "wake") != 0) ||
+         strcmp(argv[1], "fatal-source") != 0 && strcmp(argv[1], "wake") != 0 &&
+         strcmp(argv[1], "wake-source-null-list") != 0) ||
         CD(argv[3]) != 0 || !mc_math_trig_init(&trig))
         return 2;
     ap_fixture *s = calloc(1, sizeof(*s));

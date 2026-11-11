@@ -281,6 +281,8 @@ static bool hurt_owns_current(mc_entity_damage_execution_view *view,
                               const mc_entity_tick_execution_world_token *current) {
     if (view->world_created && view->world_open && unwind_same_token(&view->world, current))
         return true;
+    if (view->wake != NULL)
+        return mc_player_wake_execution_owns_world(view->wake, current);
     if (view->mob_drop != NULL) {
         mc_entity_drop_execution_view drop;
         return mc_entity_drop_execution_inspect(view->mob_drop, &drop) &&

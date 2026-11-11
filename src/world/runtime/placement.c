@@ -5,6 +5,7 @@
 #include "../../entity/entity_internal.h"
 #include "../../entity/player/nbt_internal.h"
 #include "../../item/render/internal.h"
+#include "bed_occupancy_execution_internal.h"
 #include "block_queries_internal.h"
 #include "collision/blocks_internal.h"
 #include "construction_internal.h"
@@ -49,7 +50,7 @@ struct mc_world_placement_work {
     const mc_world_source_chunk_error *source_identities[PLACEMENT_SOURCES];
     mc_world_access_failure receipts[PLACEMENT_RECEIPTS];
     size_t source_count, receipt_count;
-    bool active;
+    bool active, execution_children;
 };
 
 static mc_world_placement_site site(const char *owner, const char *method, const char *descriptor,
@@ -739,19 +740,39 @@ static mc_world_storage_status finish(mc_world_placement_error *e, bool returned
     return e->status;
 }
 
-mc_world_storage_status mc_world_bed_set_occupied(mc_registry_classes *registry,
-                                                  mc_world_runtime *world, int32_t x, int32_t y,
-                                                  int32_t z, bool occupied,
-                                                  mc_world_placement_error *e) {
+static mc_world_storage_status bed_occupancy(mc_registry_classes *registry, mc_world_runtime *world,
+                                             int32_t x, int32_t y, int32_t z, bool occupied,
+                                             mc_world_placement_error *e,
+                                             mc_world_bed_occupancy_execution *owned) {
     if (e == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     if (e->work != NULL)
         return MC_WORLD_STORAGE_BUSY;
     if (!allocate(e, site("ve", "a", "(Lfd;IIIZ)V", 0)))
         return e->status;
+    e->work->execution_children = owned != NULL;
     if (!hold_registry(e, registry))
         return finish(e, false, false, NULL);
-    return finish(e, bed_set_occupied(e, world, x, y, z, occupied), false, NULL);
+    return finish(e, bed_set_occupied(e, world, x, y, z, occupied, owned), false, NULL);
+}
+
+mc_world_storage_status mc_world_bed_set_occupied(mc_registry_classes *registry,
+                                                  mc_world_runtime *world, int32_t x, int32_t y,
+                                                  int32_t z, bool occupied,
+                                                  mc_world_placement_error *e) {
+    return bed_occupancy(registry, world, x, y, z, occupied, e, NULL);
+}
+
+bool mc_world_bed_set_occupied_in_execution(mc_registry_classes *registry, mc_world_runtime *world,
+                                            int32_t x, int32_t y, int32_t z, bool occupied,
+                                            mc_world_placement_error *e,
+                                            mc_world_bed_occupancy_execution *owned,
+                                            mc_world_storage_status *raw) {
+    if (e == NULL || raw == NULL || owned == NULL || owned->context == NULL ||
+        owned->scalar == NULL || owned->mutation == NULL || *owned->mutation != NULL)
+        return false;
+    *raw = bed_occupancy(registry, world, x, y, z, occupied, e, owned);
+    return *raw == MC_WORLD_STORAGE_OK && e->returned;
 }
 
 mc_world_storage_status mc_world_runtime_can_place(mc_world_runtime *world, int32_t id, int32_t x,
@@ -1096,7 +1117,10 @@ bool mc_world_placement_error_retire(mc_world_placement_error *e) {
                                               "Placement active native retirement", 0};
         return false;
     }
-    if (!capture(e))
+    /* Owned Bed children borrow the execution's retained diagnostics. Their
+     * caller drains that canonical work before retiring this placement frame.
+     * Legacy capture would add a new producer hold during native cleanup. */
+    if (!w->execution_children && !capture(e))
         return false;
     if (w->box != NULL) {
         e->cleanup_bounds = mc_entity_bounds_release(w->box_owner, w->box);

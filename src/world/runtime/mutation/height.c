@@ -1,3 +1,4 @@
+#include "chunk_execution_internal.h"
 #include "mutation_internal.h"
 
 #include "../../../block/registry/runtime_internal.h"
@@ -20,10 +21,12 @@ static mc_registry_error registry_error(mc_registry_status status, const char *m
 /* Capture is deliberately separate from byte/getter evaluation. Passing an
  * already evaluated ID to a combined helper would move that read before the
  * source getstatic and its actual initializer callbacks. */
-static bool capture_q(mc_world_runtime *world, unsigned int pc, mc_registry_block_q_view *out,
+static bool capture_q(mc_world_runtime *world, mc_world_mutation_chunk_execution *execution,
+                      unsigned int pc, mc_registry_block_q_view *out,
                       mc_world_mutation_error *error) {
     error->height_bytecode = pc;
-    mc_registry_classes *classes = mc_world_runtime_registry(world);
+    mc_registry_classes *classes =
+        execution == NULL ? mc_world_runtime_registry(world) : execution->registry;
     mc_registry_error cause = registry_error(MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
                                              "Chunk incremental height Registry binding");
     const mc_registry_status status =
@@ -86,14 +89,48 @@ static bool block_get(mc_world_chunk *chunk, mc_world_runtime *world, int32_t x,
     return block_byte(chunk, world, index, pc, pc, out, error);
 }
 
-bool mc_world_mutation_height(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z,
-                              mc_world_mutation_error *error) {
+static bool height_world(mc_world_chunk *chunk, mc_world_mutation_chunk_execution *execution,
+                         unsigned int pc, mc_world_runtime **out, mc_world_mutation_error *error) {
+    error->height_bytecode = pc;
+    mc_world_chunk_fields fields;
+    (void)mc_world_chunk_fields_get(chunk, &fields);
+    *out = fields.d;
+    return execution == NULL ||
+           mc_world_mutation_chunk_capture(
+               execution, fields.d,
+               mc_world_mutation_chunk_site(execution, MC_WORLD_MUTATION_CHUNK_HEIGHT, pc));
+}
+
+static bool height_observe(mc_world_mutation_chunk_execution *execution, mc_world_runtime *world,
+                           int32_t x, int32_t z, int32_t height, int32_t old_height,
+                           mc_world_mutation_error *error) {
+    error->height_bytecode = 92;
+    if (execution == NULL)
+        return mc_world_mutation_observe_column(world, x, z, height, old_height, error);
+    if (world == NULL) {
+        mc_world_mutation_chunk_null(execution, MC_WORLD_MUTATION_CHUNK_HEIGHT, 92);
+        (void)mc_world_mutation_fail(execution->initiating_world, error,
+                                     MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                     "Chunk incremental range World receiver is null");
+        return mc_world_mutation_chunk_close(execution, false);
+    }
+    mc_world_notification_execution_init_borrowed(&execution->height_observer, execution->execution,
+                                                  execution->scope.site, execution->owned);
+    mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
+    const bool completed = mc_world_mutation_observe_column_in_execution(
+        &execution->height_observer, world, x, z, height, old_height, error, &raw);
+    return mc_world_mutation_chunk_close(execution, completed);
+}
+
+static bool incremental_height(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z,
+                               mc_world_mutation_error *error,
+                               mc_world_mutation_chunk_execution *execution) {
     /* Enclosing concrete setter already holds this World and exact Chunk.
      * This passive binding supplies the native Registry/error context only;
      * each reached source field below is still evaluated at its own point. */
     mc_world_chunk_fields fields;
     (void)mc_world_chunk_fields_get(chunk, &fields);
-    mc_world_runtime *world = fields.d;
+    mc_world_runtime *world = execution == NULL ? fields.d : execution->initiating_world;
     const int32_t column = or_bits(mc_java_i32_shl(z, 4), x);
     int32_t old_height;
     if (!height_byte(chunk, world, column, 1, 9, &old_height, error))
@@ -105,7 +142,7 @@ bool mc_world_mutation_height(mc_world_chunk *chunk, int32_t x, int32_t y, int32
 
     while (height > 0) {
         mc_registry_block_q_view array;
-        if (!capture_q(world, 45, &array, error))
+        if (!capture_q(world, execution, 45, &array, error))
             return false;
         int32_t id, opacity;
         const int32_t index = mc_java_i32_sub(mc_java_i32_add(base, height), 1);
@@ -121,12 +158,12 @@ bool mc_world_mutation_height(mc_world_chunk *chunk, int32_t x, int32_t y, int32
         return true;
     }
 
-    error->height_bytecode = 83;
-    (void)mc_world_chunk_fields_get(chunk, &fields);
-    world = fields.d;
-    error->height_bytecode = 92;
-    if (!mc_world_mutation_observe_column(world, x, z, height, old_height, error))
+    mc_world_runtime *receiver;
+    if (!height_world(chunk, execution, 83, &receiver, error) ||
+        !height_observe(execution, receiver, x, z, height, old_height, error))
         return false;
+    if (execution == NULL)
+        world = receiver;
 
     error->height_bytecode = 96;
     (void)mc_world_chunk_fields_get(chunk, &fields);
@@ -179,17 +216,19 @@ bool mc_world_mutation_height(mc_world_chunk *chunk, int32_t x, int32_t y, int32
                 return false;
         }
     } else {
-        error->height_bytecode = 270;
-        (void)mc_world_chunk_fields_get(chunk, &fields);
-        world = fields.d;
+        if (!height_world(chunk, execution, 270, &receiver, error))
+            return false;
+        if (execution == NULL)
+            world = receiver;
         const mc_light_bounds bounds = {.min_x = world_x,
                                         .min_y = old_height,
                                         .min_z = world_z,
                                         .max_x = world_x,
                                         .max_y = height,
                                         .max_z = world_z};
-        if (!mc_world_mutation_submit(world, MC_LIGHT_SKY, &bounds, &error->height_bytecode, 273,
-                                      288, error))
+        if (!mc_world_mutation_submit_scoped(execution, receiver, MC_LIGHT_SKY, &bounds,
+                                             MC_WORLD_MUTATION_CHUNK_HEIGHT,
+                                             &error->height_bytecode, 273, 288, error))
             return false;
         for (int32_t fill_y = old_height; fill_y < height; fill_y = mc_java_i32_add(fill_y, 1)) {
             error->height_bytecode = 303;
@@ -205,7 +244,7 @@ bool mc_world_mutation_height(mc_world_chunk *chunk, int32_t x, int32_t y, int32
     while (height > 0 && light > 0) {
         height = mc_java_i32_sub(height, 1); /* Source338 precedes q capture. */
         mc_registry_block_q_view array;
-        if (!capture_q(world, 341, &array, error))
+        if (!capture_q(world, execution, 341, &array, error))
             return false;
         int32_t id, opacity;
         if (!block_get(chunk, world, x, height, z, 349, &id, error) ||
@@ -224,7 +263,7 @@ bool mc_world_mutation_height(mc_world_chunk *chunk, int32_t x, int32_t y, int32
     }
     while (height > 0) {
         mc_registry_block_q_view array;
-        if (!capture_q(world, 399, &array, error))
+        if (!capture_q(world, execution, 399, &array, error))
             return false;
         int32_t id, opacity;
         if (!block_get(chunk, world, x, mc_java_i32_sub(height, 1), z, 409, &id, error) ||
@@ -235,21 +274,32 @@ bool mc_world_mutation_height(mc_world_chunk *chunk, int32_t x, int32_t y, int32
         height = mc_java_i32_sub(height, 1);
     }
     if (height != saved_height) {
-        error->height_bytecode = 430;
-        (void)mc_world_chunk_fields_get(chunk, &fields);
-        world = fields.d;
+        if (!height_world(chunk, execution, 430, &receiver, error))
+            return false;
         const mc_light_bounds bounds = {.min_x = mc_java_i32_sub(world_x, 1),
                                         .min_y = height,
                                         .min_z = mc_java_i32_sub(world_z, 1),
                                         .max_x = mc_java_i32_add(world_x, 1),
                                         .max_y = saved_height,
                                         .max_z = mc_java_i32_add(world_z, 1)};
-        if (!mc_world_mutation_submit(world, MC_LIGHT_SKY, &bounds, &error->height_bytecode, 433,
-                                      456, error))
+        if (!mc_world_mutation_submit_scoped(execution, receiver, MC_LIGHT_SKY, &bounds,
+                                             MC_WORLD_MUTATION_CHUNK_HEIGHT,
+                                             &error->height_bytecode, 433, 456, error))
             return false;
     }
     error->height_bytecode = 461;
     mc_world_chunk_state(chunk)->dirty = true;
     error->height_bytecode = 0; /* Ordinary return464; caller's frame is retained. */
     return true;
+}
+
+bool mc_world_mutation_height(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z,
+                              mc_world_mutation_error *error) {
+    return incremental_height(chunk, x, y, z, error, NULL);
+}
+
+bool mc_world_mutation_height_in_execution(mc_world_mutation_chunk_execution *execution,
+                                           mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z,
+                                           mc_world_mutation_error *error) {
+    return incremental_height(chunk, x, y, z, error, execution);
 }

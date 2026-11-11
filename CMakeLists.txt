@@ -2266,6 +2266,8 @@ if(BUILD_TESTING)
 
     add_executable(mc_test_world_mutations tests/world/runtime/test_mutations.c)
     target_link_libraries(mc_test_world_mutations PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_executable(mc_test_world_mutation_height_execution tests/world/runtime/test_mutation_height_execution.c)
+    target_link_libraries(mc_test_world_mutation_height_execution PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_pressure_plate tests/world/runtime/test_pressure_plate.c)
     target_link_libraries(mc_test_world_pressure_plate PRIVATE mc_simulation mc_c_atomics mc_build_options)
@@ -4113,6 +4115,14 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-mutation-contracts")
     set_tests_properties(world.mutations PROPERTIES
         LABELS "public;integration;ownership;mutation" TIMEOUT 90)
+
+    add_test(NAME world.mutation_height_execution
+        COMMAND "${Python3_EXECUTABLE}" -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_mutation_height_execution.py"
+        --executable "$<TARGET_FILE:mc_test_world_mutation_height_execution>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-mutation-height-execution-contracts")
+    set_tests_properties(world.mutation_height_execution PROPERTIES
+        LABELS "public;integration;ownership;mutation;lighting" TIMEOUT 90)
 
     add_test(NAME world.pressure_plate
         COMMAND "${Python3_EXECUTABLE}"

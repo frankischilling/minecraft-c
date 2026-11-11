@@ -1,6 +1,7 @@
 #include "mc/world/runtime/lighting.h"
 
 #include "chunk_provider_internal.h"
+#include "lighting_execution_internal.h"
 #include "mc/core/java/java.h"
 #include "runtime_internal.h"
 
@@ -22,8 +23,9 @@ static mc_world_storage_error native_error(mc_world_storage_status status, const
     return (mc_world_storage_error){status, operation, 0};
 }
 
-mc_world_storage_status mc_world_runtime_height(mc_world_runtime *runtime, int32_t x, int32_t z,
-                                                int32_t *out, mc_world_light_error *error) {
+static mc_world_storage_status height_get(mc_world_runtime *runtime, int32_t x, int32_t z,
+                                          int32_t *out, mc_world_light_error *error,
+                                          mc_world_light_execution *execution) {
     if (runtime == NULL || out == NULL) {
         const mc_world_storage_error cause =
             native_error(MC_WORLD_STORAGE_INVALID_ARGUMENT, "World height owner/output");
@@ -67,19 +69,21 @@ mc_world_storage_status mc_world_runtime_height(mc_world_runtime *runtime, int32
         goto failed;
     }
     mc_chunk_state *chunk = NULL;
-    mc_world_runtime_acquisition_error detail;
-    acquisition = mc_world_runtime_get_detailed(runtime, chunk_x, chunk_z, &chunk, &detail);
+    acquisition =
+        mc_world_light_get_chunk(execution, runtime, chunk_x, chunk_z, &chunk, &cause, &population);
     if (acquisition != MC_CHUNK_ACQUIRE_OK) {
-        population = detail.population;
-        if (detail.cause.status != MC_WORLD_STORAGE_OK)
-            cause = detail.cause;
-        else if (acquisition == MC_CHUNK_ACQUIRE_LIMIT ||
-                 acquisition == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT)
-            cause = native_error(MC_WORLD_STORAGE_LIMIT, "World height getter acquisition limit");
-        else
+        if (cause.status == MC_WORLD_STORAGE_OK)
             cause =
-                native_error(MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World height getter acquisition");
+                acquisition == MC_CHUNK_ACQUIRE_LIMIT ||
+                        acquisition == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT
+                    ? native_error(MC_WORLD_STORAGE_LIMIT, "World height getter acquisition limit")
+                    : native_error(MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                   "World height getter acquisition");
         goto failed;
+    }
+    if (execution != NULL && execution->native_stopped) {
+        status = result(error, &cause, bytecode, provider_bytecode, acquisition);
+        goto leave;
     }
     bytecode = 61;
     provider_bytecode = 0;
@@ -106,4 +110,19 @@ failed:
 leave:
     mc_world_runtime_call_leave(runtime);
     return status;
+}
+
+mc_world_storage_status mc_world_runtime_height(mc_world_runtime *runtime, int32_t x, int32_t z,
+                                                int32_t *out, mc_world_light_error *error) {
+    return height_get(runtime, x, z, out, error, NULL);
+}
+
+bool mc_world_runtime_height_in_execution(mc_world_light_execution *frame, mc_world_runtime *world,
+                                          int32_t x, int32_t z, int32_t *out,
+                                          mc_world_light_error *error,
+                                          mc_world_storage_status *status) {
+    if (!mc_world_light_execution_enter(frame, world, out, error, status))
+        return false;
+    const mc_world_storage_status actual = height_get(world, x, z, out, error, frame);
+    return mc_world_light_execution_finish(frame, actual, status);
 }

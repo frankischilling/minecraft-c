@@ -136,9 +136,11 @@ their existing bodies. The [damage execution contract](damage-execution.md) reco
 the distinct outcomes, actual failure evidence and cleanup order. The prior Pig
 frontier above remains evidence of its earlier checkpoint.
 
-Complete sleeping Player wake still stops at the actually reached GS35 dependency;
-its notifying Bed metadata and recursive mutation tree are not joined. Delayed
-Slime splitting, arbitrary cold import/generation, foreign owner graphs,
+The [Player wake join](player-damage-wake.md#wake-during-an-arrow-hit) now enters
+GS35, clears Bed occupancy and removes an orphan head through recursive neighbor
+notification. Other neighbor hooks and the Bed foot drop still need owned
+descendants. [Delayed Slime splitting](slime-removal.md) has separate component
+and loaded-scene coverage. Arbitrary cold import/generation, foreign owner graphs,
 pickup/rider paths and broader natural combat encounters remain unfinished or
 unqualified. The existing component controls retain their own scope.
 

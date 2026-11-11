@@ -3,6 +3,7 @@
 
 #include "../mob/damage_execution_internal.h"
 #include "../player/ally_alert_execution_internal.h"
+#include "../player/sleep_execution_internal.h"
 
 typedef struct mc_entity_drop_call mc_entity_drop_call;
 typedef struct mc_player_drop_call mc_player_drop_call;
@@ -15,13 +16,14 @@ typedef enum mc_entity_damage_child {
     MC_ENTITY_DAMAGE_CHILD_WOLF_QUERY,
     MC_ENTITY_DAMAGE_CHILD_MOB_DEATH,
     MC_ENTITY_DAMAGE_CHILD_PLAYER_DEATH,
-    MC_ENTITY_DAMAGE_CHILD_WAKE_DEPENDENCY
+    MC_ENTITY_DAMAGE_CHILD_WAKE
 } mc_entity_damage_child;
 
 typedef enum mc_entity_damage_work_kind {
     MC_ENTITY_DAMAGE_WORK_NONE,
     MC_ENTITY_DAMAGE_WORK_WOLF,
     MC_ENTITY_DAMAGE_WORK_ALERT,
+    MC_ENTITY_DAMAGE_WORK_WAKE,
     MC_ENTITY_DAMAGE_WORK_MOB_DEATH,
     MC_ENTITY_DAMAGE_WORK_PLAYER_DEATH
 } mc_entity_damage_work_kind;
@@ -43,9 +45,8 @@ typedef enum mc_entity_damage_work_kind {
  * bool is Source AND native continuation; raw Entity status and gameplay bool
  * are independent. A false child (including raw OK / native or Math refusal)
  * stops before later stores, wrapper result or callbacks. No Source retry,
- * victim-kind/health whitelist or owned-to-legacy fallback is supplied. GS35
- * wake remains an explicit actually reached dependency until its recursive
- * notifying mutation tree has an owned entry.
+ * victim-kind/health whitelist or owned-to-legacy fallback is supplied. The
+ * reached GS35 wake retains its own mutation and exact World occurrences.
  *
  * owned is a native-first SUMMARY ONLY: it contains no close authority.
  * inspect exposes the actual child result. Forwarded death result VALUE is
@@ -84,6 +85,7 @@ typedef struct mc_entity_damage_execution_view {
     const void *acquired_work;
     mc_living_damage_execution *sound;
     mc_player_ally_alert_call *alert;
+    mc_player_sleep_call *wake;
     mc_entity_drop_call *mob_drop;
     mc_player_drop_call *player_drop;
     const mc_world_nearby_error *nearby;

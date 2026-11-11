@@ -1,4 +1,5 @@
 #include "mutation_internal.h"
+#include "world_execution_internal.h"
 
 #include "../../../block/registry/registry_internal.h"
 #include "../../../block/registry/runtime_internal.h"
@@ -29,12 +30,17 @@ static bool bed_nested(mc_world_runtime *world, mc_world_mutation_error *e, unsi
 }
 
 static bool bed_value(mc_world_runtime *world, mc_world_mutation_error *e, unsigned int pc,
-                      int32_t x, int32_t y, int32_t z, bool metadata, int32_t *out) {
+                      int32_t x, int32_t y, int32_t z, bool metadata, int32_t *out,
+                      mc_world_mutation_execution_call *owned) {
     bed_at(e, pc);
     if (world == NULL) {
         e->bed_source_null = true;
         return mc_world_mutation_fail(world, e, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "Bed neighbor actual World null receiver");
+    }
+    if (owned != NULL) {
+        const mc_entity_tick_execution_site site = {"ve", "b", "(Lfd;IIII)V", (int)pc};
+        return mc_world_mutation_execution_get(owned, world, x, y, z, metadata, out, e, site);
     }
     mc_world_collision_error *child = malloc(sizeof(*child));
     if (child == NULL)
@@ -87,12 +93,12 @@ static bool bed_direction(mc_world_runtime *world, const mc_block *block,
     return true;
 }
 
-bool mc_world_mutation_bed_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
-                                    int32_t y, int32_t z, int32_t changed_id,
-                                    mc_world_mutation_error *e) {
+static bool bed_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
+                         int32_t z, int32_t changed_id, mc_world_mutation_error *e,
+                         mc_world_mutation_execution_call *owned) {
     (void)changed_id;
     int32_t metadata;
-    if (!bed_value(world, e, 5, x, y, z, true, &metadata))
+    if (!bed_value(world, e, 5, x, y, z, true, &metadata, owned))
         return false;
     const int32_t direction = (int32_t)((uint32_t)metadata & 3u);
     const bool head = ((uint32_t)metadata & 8u) != 0;
@@ -106,29 +112,46 @@ bool mc_world_mutation_bed_neighbor(mc_world_runtime *world, const mc_block *blo
         return false;
     const int32_t pz = head ? mc_java_i32_sub(z, dz) : mc_java_i32_add(z, dz);
     int32_t partner;
-    if (!bed_value(world, e, head ? 48u : 94u, px, y, pz, false, &partner))
+    if (!bed_value(world, e, head ? 48u : 94u, px, y, pz, false, &partner, owned))
         return false;
     bed_at(e, head ? 52u : 98u);
     if (partner != block->fields.bn) {
         const unsigned int setter_pc = head ? 64u : 110u;
         bed_at(e, setter_pc);
-        mc_world_mutation_error *child = malloc(sizeof(*child));
-        if (child == NULL)
-            return mc_world_mutation_fail(world, e, MC_WORLD_STORAGE_ALLOCATION_FAILED,
-                                          "Bed neighbor notifying child diagnostic");
-        mc_world_mutation_error_init(child);
-        bool ignored;
-        const mc_world_storage_status status =
-            mc_world_runtime_block_set(world, x, y, z, 0, &ignored, child);
-        if (status != MC_WORLD_STORAGE_OK)
-            (void)bed_nested(world, e, setter_pc, child);
-        free(child);
-        if (status != MC_WORLD_STORAGE_OK)
-            return false;
+        if (owned != NULL) {
+            const mc_entity_tick_execution_site site = {"ve", "b", "(Lfd;IIII)V", (int)setter_pc};
+            if (!mc_world_mutation_execution_remove(owned, world, x, y, z, e, site)) {
+                if (e->status != MC_WORLD_STORAGE_OK)
+                    return bed_nested(world, e, setter_pc, e);
+                bed_at(e, setter_pc);
+                return false;
+            }
+        } else {
+            mc_world_mutation_error *child = malloc(sizeof(*child));
+            if (child == NULL)
+                return mc_world_mutation_fail(world, e, MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                                              "Bed neighbor notifying child diagnostic");
+            mc_world_mutation_error_init(child);
+            bool ignored;
+            const mc_world_storage_status status =
+                mc_world_runtime_block_set(world, x, y, z, 0, &ignored, child);
+            if (status != MC_WORLD_STORAGE_OK)
+                (void)bed_nested(world, e, setter_pc, child);
+            free(child);
+            if (status != MC_WORLD_STORAGE_OK)
+                return false;
+        }
         if (!head) {
             bed_at(e, 115);
             if (!world->fields.B) {
                 bed_at(e, 129);
+                if (owned != NULL) {
+                    mc_world_runtime_execution_result_note(
+                        mc_world_mutation_execution_result_of(owned),
+                        MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Bed drop requires owned execution",
+                        (mc_entity_tick_execution_site){"ve", "b", "(Lfd;IIII)V", 129});
+                    return false;
+                }
                 if (!mc_world_mutation_drop(world, block, x, y, z, metadata, e))
                     return bed_nested(world, e, 129, e);
             }
@@ -137,4 +160,17 @@ bool mc_world_mutation_bed_neighbor(mc_world_runtime *world, const mc_block *blo
     e->hook_class = e->hook_method = NULL;
     e->hook_bytecode = 0;
     return true;
+}
+
+bool mc_world_mutation_bed_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                    int32_t y, int32_t z, int32_t changed_id,
+                                    mc_world_mutation_error *e) {
+    return bed_neighbor(world, block, x, y, z, changed_id, e, NULL);
+}
+
+bool mc_world_mutation_bed_neighbor_in_execution(mc_world_mutation_execution_call *owned,
+                                                 mc_world_runtime *world, const mc_block *block,
+                                                 int32_t x, int32_t y, int32_t z,
+                                                 int32_t changed_id, mc_world_mutation_error *e) {
+    return owned != NULL && bed_neighbor(world, block, x, y, z, changed_id, e, owned);
 }

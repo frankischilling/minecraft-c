@@ -121,8 +121,10 @@ separate hidden hand-rendering profiles cover this diagnostic adapter without
 replaying a getter or adding a large stack record.
 
 The current Arrow hurt route supplies the evaluated nullable Living shooter to
-the shared damage body. Complete GS35 sleeping wake and arbitrary cold/foreign
-graphs remain open. These components do not establish loaded hostile encounters,
+the shared damage body. The [GS35 wake join](player-damage-wake.md) covers Bed
+occupancy and recursive orphan-head removal. Other neighbor hooks, the Bed foot
+drop and arbitrary cold/foreign graphs remain open. These components do not
+establish loaded hostile encounters,
 unrestricted combat, original audiovisual output or sustained FPS.
 Ghast construction has its [separate scope](ghast.md); Ghast flight and attacks
 remain unfinished.

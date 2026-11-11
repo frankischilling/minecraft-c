@@ -88,9 +88,10 @@ ally mode, whose returning scope is freed normally.
 That record does not retroactively qualify the later damage join. The current
 22 damage-execution modes pass, including the typed null-List and both Entity-sound
 scope controls. Canonical ally initial-pop/capture callback faults and consumed-nonOK
-retain their separate limits. Complete GS35 wake, delayed Slime splitting,
-arbitrary cold/foreign graphs, original full-method comparison, audiovisual equality
-and FPS remain OPEN.
+retain their separate limits. The [GS35 wake join](player-damage-wake.md) and
+[delayed Slime splitting](slime-removal.md) have separate finite controls.
+Unjoined neighbor hooks, the Bed foot drop, arbitrary cold/foreign graphs,
+original full-method comparison, audiovisual equality and FPS remain open.
 The [Player ally ownership contract](player-ally-alert.md#recorded-native-close)
 keeps retained-call retirement separate from its World-token close.
 

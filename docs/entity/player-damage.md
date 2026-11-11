@@ -139,9 +139,9 @@ The [sleeping wake](player-damage-wake.md) and
 [Living ally-alert body](player-ally-alert.md) have separate finite source,
 ownership and comparison scopes. The owned Arrow damage join now includes the
 actual shooter argument and shared Player drop/death entries; their contract is
-recorded in [damage execution](damage-execution.md). Complete sleeping wake still
-reaches the explicit GS35 dependency until notifying Bed occupancy and its full
-recursive mutation tree use that same execution.
+recorded in [damage execution](damage-execution.md). The reached GS35 wake now
+shares the notifying Bed occupancy and recursive orphan-head removal bodies.
+Other neighbor hooks and the Bed foot drop retain explicit owned dependencies.
 Original runtime comparisons for broader fatal inputs and
 scattered Inventories remain separate work. The supported loaded Overworld
 respawn route has its [declared scope](../client/death-respawn.md), including
@@ -149,6 +149,7 @@ saved-Bed validation, exact placement and missing-Bed notification. Prepared
 [Bed use and sleep/wake scenes](../client/bed-sleep.md) retain their own scope.
 Unrestricted sleep gameplay, Nether transition and centered
 ChunkProvider branches remain unavailable.
-Arbitrary cold/foreign graphs and delayed Slime splitting retain their separate
-limits. These results do not establish full combat, unrestricted survival, audio
-output equality or a frame-rate improvement.
+Arbitrary cold/foreign graphs and full owned Mob environment and particle work
+retain their separate limits. [Delayed Slime splitting](slime-removal.md) has its
+own finite qualification. These results do not establish full combat,
+unrestricted survival, audio output equality or a frame-rate improvement.

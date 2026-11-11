@@ -32,12 +32,18 @@ typedef struct mc_world_notification_execution {
     mc_world_access_failure_lease *lease;
     mc_world_storage_status callback_status;
     size_t callbacks_returned;
-    bool entered, completed;
+    bool entered, range, completed;
 } mc_world_notification_execution;
 
 void mc_world_notification_execution_init(mc_world_notification_execution *,
                                           mc_entity_tick_execution *, mc_entity_tick_execution_site,
                                           mc_world_runtime_execution_result *);
+/* The surrounding mutation owns the canonical result. Only initialize the
+ * local leaf, then require a quiet result at actual notification admission. */
+void mc_world_notification_execution_init_borrowed(mc_world_notification_execution *,
+                                                   mc_entity_tick_execution *,
+                                                   mc_entity_tick_execution_site,
+                                                   mc_world_runtime_execution_result *);
 bool mc_world_mutation_observe_cell_in_execution(mc_world_notification_execution *,
                                                  mc_world_runtime *, int32_t, int32_t, int32_t,
                                                  mc_world_mutation_error *,
@@ -47,5 +53,9 @@ bool mc_world_mutation_observe_range_in_execution(mc_world_notification_executio
                                                   int32_t, int32_t, int32_t,
                                                   mc_world_mutation_error *,
                                                   mc_world_storage_status *);
+bool mc_world_mutation_observe_column_in_execution(mc_world_notification_execution *,
+                                                   mc_world_runtime *, int32_t, int32_t, int32_t,
+                                                   int32_t, mc_world_mutation_error *,
+                                                   mc_world_storage_status *);
 
 #endif
