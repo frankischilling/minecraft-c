@@ -1,7 +1,11 @@
 /* Caller holds the actual World and live Registry/Block owners. Reached Entity
  * publication uses the actual World/Chunk owners; TileEntity lookup remains a
  * distinct unfinished descendant. */
+#include "../construction_internal.h"
+#include "../execution_children_internal.h"
+#include "drops/execution_internal.h"
 #include "mutation_internal.h"
+#include <stdlib.h>
 
 #include "../../../block/registry/registry_internal.h"
 #include "../../../entity/entity_internal.h"
@@ -19,6 +23,7 @@ typedef struct drop_frame {
     const mc_block *block;
     mc_world_mutation_error *error;
     const char *class_name, *method;
+    mc_world_mutation_drop_execution *owned;
 } drop_frame;
 
 static const char *drop_probability_method(const mc_block *block) {
@@ -37,9 +42,40 @@ static const char *drop_damage_method(const mc_block *block) {
 static drop_frame drop_frame_make(mc_world_runtime *world, const mc_block *block,
                                   const char *client, const char *server, const char *method,
                                   mc_world_mutation_error *error) {
-    return (drop_frame){world, block, error,
-                        block->classes->options.side == MC_REGISTRY_CLIENT ? client : server,
-                        method};
+    return (drop_frame){
+        world,  block, error, block->classes->options.side == MC_REGISTRY_CLIENT ? client : server,
+        method, NULL};
+}
+
+static drop_frame drop_owned_frame(mc_world_runtime *world, const mc_block *block,
+                                   const char *client, const char *server, const char *method,
+                                   mc_world_mutation_error *error,
+                                   mc_world_mutation_drop_execution *owned) {
+    drop_frame frame = drop_frame_make(world, block, client, server, method, error);
+    frame.owned = owned;
+    return frame;
+}
+
+static mc_entity_tick_execution_site drop_site(const drop_frame *frame, unsigned int pc) {
+    return (mc_entity_tick_execution_site){frame->class_name, "a", frame->method + 1, (int)pc};
+}
+
+static void release_item(const drop_frame *frame, mc_entity *entity, bool completed) {
+    if (frame->owned != NULL && !completed) {
+        frame->owned->entity = entity; /* Transfer this actual local occurrence. */
+        return;
+    }
+    mc_entity_release(entity);
+    if (frame->owned != NULL)
+        frame->owned->entity = NULL;
+}
+
+static void release_stack(const drop_frame *frame, mc_item_stack *stack, bool completed) {
+    if (frame->owned != NULL && !completed) {
+        frame->owned->stack = stack; /* Transfer the allocating caller's occurrence. */
+        return;
+    }
+    mc_item_stack_release(stack);
 }
 
 static void drop_at(const drop_frame *frame, unsigned int pc) {
@@ -467,7 +503,9 @@ static bool drop_entity_failed(const drop_frame *frame, unsigned int pc, mc_enti
 
 static bool drop_entity_allocate(const drop_frame *frame, unsigned int pc, mc_entity **out) {
     drop_at(frame, pc);
-    mc_entity_classes *classes = mc_world_runtime_entities(frame->world);
+    mc_entity_classes *classes = frame->owned == NULL
+                                     ? mc_world_runtime_entities(frame->world)
+                                     : frame->owned->context.code_classes->registry->entities;
     if (classes == NULL)
         return drop_fail(frame, pc, "Block drop EntityClasses binding is unavailable");
     const mc_entity_status status = mc_item_entity_allocate(classes, out, &frame->error->entity);
@@ -504,14 +542,41 @@ static bool drop_publish(const drop_frame *frame, unsigned int pc, mc_entity *en
     drop_at(frame, pc);
     bool inserted;
     mc_world_mutation_error *error = frame->error;
-    const mc_world_storage_status status =
-        mc_world_runtime_insert_entity(frame->world, entity, &inserted, &error->publication);
+    mc_world_storage_status status;
+    bool completed;
+    mc_world_mutation_drop_execution *owned = frame->owned;
+    if (owned == NULL) {
+        status =
+            mc_world_runtime_insert_entity(frame->world, entity, &inserted, &error->publication);
+        completed = status == MC_WORLD_STORAGE_OK;
+    } else {
+        owned->publication_site = drop_site(frame, pc == 119 ? 116u : 157u);
+        if (!mc_world_mutation_drop_capture(owned, frame->world, owned->publication_site,
+                                            &owned->publication_scope))
+            return false;
+        mc_world_entity_insert_execution_init(&owned->insertion, owned->context.execution,
+                                              owned->context.code_classes, owned->context.code,
+                                              owned->publication_site, owned->context.result);
+        completed = mc_world_runtime_insert_entity_in_execution(
+            &owned->insertion, frame->world, entity, &inserted, &owned->publication,
+            &owned->publication_status);
+        owned->publication_returned = true;
+        status = owned->publication_status;
+        error->publication = owned->publication;
+    }
+    if (status != MC_WORLD_STORAGE_OK) {
+        error->status = status;
+        error->operation = error->publication.operation;
+        error->cause = error->publication.cause;
+        frame->world->last_error = error->cause;
+    }
+    if (owned != NULL) {
+        completed = mc_world_mutation_drop_close(owned, &owned->publication_scope,
+                                                 owned->publication_site, completed);
+        return completed;
+    }
     if (status == MC_WORLD_STORAGE_OK)
         return true; /* Original pop discards ordinary false as well as true. */
-    error->status = status;
-    error->operation = error->publication.operation;
-    error->cause = error->publication.cause;
-    frame->world->last_error = error->cause;
     return false;
 }
 
@@ -524,9 +589,10 @@ static void drop_spawn_at(const drop_frame *frame, unsigned int pc) {
  * body. new Entity precedes evaluation of its constructor coordinates; the
  * three offset calculations precede new Entity, as in the source. */
 static bool drop_spawn(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
-                       int32_t z, mc_item_stack *stack, mc_world_mutation_error *error) {
+                       int32_t z, mc_item_stack *stack, mc_world_mutation_error *error,
+                       mc_world_mutation_drop_execution *owned) {
     const drop_frame frame =
-        drop_frame_make(world, block, "uu", "na", drop_spawn_method(block), error);
+        drop_owned_frame(world, block, "uu", "na", drop_spawn_method(block), error, owned);
     bool remote;
     drop_spawn_at(&frame, 1);
     if (!drop_remote(&frame, 1, &remote))
@@ -564,32 +630,48 @@ static bool drop_spawn(mc_world_runtime *world, const mc_block *block, int32_t x
     drop_spawn_at(&frame, 81);
     if (!drop_entity_allocate(&frame, 81, &entity))
         return false;
+    if (owned != NULL) {
+        owned->constructor_site = drop_site(&frame, 85);
+        if (!mc_world_mutation_drop_capture(owned, world, owned->constructor_site,
+                                            &owned->constructor_scope)) {
+            release_item(&frame, entity, false);
+            return false;
+        }
+    }
     const double position_x = (double)x + offset_x;
     const double position_y = (double)y + offset_y;
     const double position_z = (double)z + offset_z;
     drop_spawn_at(&frame, 104);
     mc_entity_status status = mc_item_entity_construct(entity, world, position_x, position_y,
                                                        position_z, stack, &error->entity);
+    if (owned != NULL &&
+        !mc_world_mutation_drop_close(owned, &owned->constructor_scope, owned->constructor_site,
+                                      status == MC_ENTITY_OK)) {
+        if (status != MC_ENTITY_OK)
+            (void)drop_entity_failed(&frame, 104, status);
+        release_item(&frame, entity, false);
+        return false;
+    }
     if (status != MC_ENTITY_OK) {
         (void)drop_entity_failed(&frame, 104, status);
-        mc_entity_release(entity);
+        release_item(&frame, entity, false);
         return false;
     }
     drop_spawn_at(&frame, 113);
     if (!drop_pickup_delay(&frame, 113, entity)) {
-        mc_entity_release(entity);
+        release_item(&frame, entity, false);
         return false;
     }
     drop_spawn_at(&frame, 119);
     const bool completed = drop_publish(&frame, 119, entity);
-    mc_entity_release(entity);
+    release_item(&frame, entity, completed);
     return completed;
 }
 
 bool mc_world_mutation_drop_stack(mc_world_runtime *world, const mc_block *block, int32_t x,
                                   int32_t y, int32_t z, mc_item_stack *stack,
                                   mc_world_mutation_error *error) {
-    return drop_spawn(world, block, x, y, z, stack, error) && drop_done(error);
+    return drop_spawn(world, block, x, y, z, stack, error, NULL) && drop_done(error);
 }
 
 bool mc_world_mutation_snow_harvest_drop(mc_world_runtime *world, const mc_block *block, int32_t x,
@@ -659,15 +741,17 @@ bool mc_world_mutation_snow_harvest_drop(mc_world_runtime *world, const mc_block
 
 static bool drop_probability(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
                              int32_t z, int32_t metadata, float chance,
-                             mc_world_mutation_error *error);
+                             mc_world_mutation_error *error,
+                             mc_world_mutation_drop_execution *owned);
 
 /* invokespecial paths below enter this base body directly while its quantity,
  * item, damage and spawn calls remain virtual on the original actual Block. */
 static bool drop_base_probability(mc_world_runtime *world, const mc_block *block, int32_t x,
                                   int32_t y, int32_t z, int32_t metadata, float chance,
-                                  mc_world_mutation_error *error) {
+                                  mc_world_mutation_error *error,
+                                  mc_world_mutation_drop_execution *owned) {
     const drop_frame frame =
-        drop_frame_make(world, block, "uu", "na", drop_probability_method(block), error);
+        drop_owned_frame(world, block, "uu", "na", drop_probability_method(block), error, owned);
     bool remote;
     if (!drop_remote(&frame, 1, &remote))
         return false;
@@ -702,20 +786,20 @@ static bool drop_base_probability(mc_world_runtime *world, const mc_block *block
         drop_at(&frame, 80);
         error->drop_call_bytecode = 80;
         if (!drop_damage(world, block, metadata, &damage, error)) {
-            mc_item_stack_release(stack);
+            release_stack(&frame, stack, false);
             return false;
         }
         drop_at(&frame, 83);
         status = mc_item_stack_construct(stack, item, 1, damage);
         if (status != MC_ITEM_STACK_OK) {
             (void)drop_stack_failed(&frame, 83, status);
-            mc_item_stack_release(stack);
+            release_stack(&frame, stack, false);
             return false;
         }
         drop_at(&frame, 86);
         error->drop_call_bytecode = 86;
-        const bool completed = drop_spawn(world, block, x, y, z, stack, error);
-        mc_item_stack_release(stack);
+        const bool completed = drop_spawn(world, block, x, y, z, stack, error, owned);
+        release_stack(&frame, stack, completed);
         if (!completed)
             return false;
     }
@@ -727,12 +811,13 @@ static bool drop_base_probability(mc_world_runtime *world, const mc_block *block
  * 111 precedes new Stack135 and the actual Item.Q active use139. */
 static bool drop_crop_probability(mc_world_runtime *world, const mc_block *block, int32_t x,
                                   int32_t y, int32_t z, int32_t metadata, float chance,
-                                  mc_world_mutation_error *error) {
+                                  mc_world_mutation_error *error,
+                                  mc_world_mutation_drop_execution *owned) {
     const drop_frame frame =
-        drop_frame_make(world, block, "ni", "ij", drop_probability_method(block), error);
+        drop_owned_frame(world, block, "ni", "ij", drop_probability_method(block), error, owned);
     drop_at(&frame, 10);
     error->drop_call_bytecode = 10;
-    if (!drop_base_probability(world, block, x, y, z, metadata, chance, error))
+    if (!drop_base_probability(world, block, x, y, z, metadata, chance, error, owned))
         return false;
     bool remote;
     if (!drop_remote(&frame, 14, &remote))
@@ -770,6 +855,14 @@ static bool drop_crop_probability(mc_world_runtime *world, const mc_block *block
         mc_entity *entity = NULL;
         if (!drop_entity_allocate(&frame, 111, &entity))
             return false;
+        if (owned != NULL) {
+            owned->constructor_site = drop_site(&frame, 115);
+            if (!mc_world_mutation_drop_capture(owned, world, owned->constructor_site,
+                                                &owned->constructor_scope)) {
+                release_item(&frame, entity, false);
+                return false;
+            }
+        }
         const float float_x = (float)x + offset_x;
         const float float_y = (float)y + offset_y;
         const float float_z = (float)z + offset_z;
@@ -778,13 +871,13 @@ static bool drop_crop_probability(mc_world_runtime *world, const mc_block *block
         mc_item_stack_status item_status = mc_item_stack_allocate(&stack);
         if (item_status != MC_ITEM_STACK_OK) {
             (void)drop_stack_failed(&frame, 135, item_status);
-            mc_entity_release(entity);
+            release_item(&frame, entity, false);
             return false;
         }
         const mc_item *item_value;
         if (!drop_item_static(&frame, "Q", 139, &item_value)) {
-            mc_item_stack_release(stack);
-            mc_entity_release(entity);
+            release_stack(&frame, stack, false);
+            release_item(&frame, entity, false);
             return false;
         }
         drop_at(&frame, 142);
@@ -800,34 +893,42 @@ static bool drop_crop_probability(mc_world_runtime *world, const mc_block *block
             cause.constructor_pc = 2;
             error->drop_call_bytecode = 142;
             (void)drop_registry_fail(&frame, 142, &cause);
-            mc_item_stack_release(stack);
-            mc_entity_release(entity);
+            release_stack(&frame, stack, false);
+            release_item(&frame, entity, false);
             return false;
         }
         const int32_t item = mc_item_fields_get(item_value)->bf;
         item_status = mc_item_stack_construct(stack, item, 1, 0);
         if (item_status != MC_ITEM_STACK_OK) {
             (void)drop_stack_failed(&frame, 142, item_status);
-            mc_item_stack_release(stack);
-            mc_entity_release(entity);
+            release_stack(&frame, stack, false);
+            release_item(&frame, entity, false);
             return false;
         }
         drop_at(&frame, 145);
         const mc_entity_status entity_status =
             mc_item_entity_construct(entity, world, (double)float_x, (double)float_y,
                                      (double)float_z, stack, &error->entity);
-        mc_item_stack_release(stack);
+        release_stack(&frame, stack, entity_status == MC_ENTITY_OK);
+        if (owned != NULL &&
+            !mc_world_mutation_drop_close(owned, &owned->constructor_scope, owned->constructor_site,
+                                          entity_status == MC_ENTITY_OK)) {
+            if (entity_status != MC_ENTITY_OK)
+                (void)drop_entity_failed(&frame, 145, entity_status);
+            release_item(&frame, entity, false);
+            return false;
+        }
         if (entity_status != MC_ENTITY_OK) {
             (void)drop_entity_failed(&frame, 145, entity_status);
-            mc_entity_release(entity);
+            release_item(&frame, entity, false);
             return false;
         }
         if (!drop_pickup_delay(&frame, 154, entity)) {
-            mc_entity_release(entity);
+            release_item(&frame, entity, false);
             return false;
         }
         const bool completed = drop_publish(&frame, 160, entity);
-        mc_entity_release(entity);
+        release_item(&frame, entity, completed);
         if (!completed)
             return false;
     }
@@ -836,36 +937,49 @@ static bool drop_crop_probability(mc_world_runtime *world, const mc_block *block
 
 static bool drop_probability(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
                              int32_t z, int32_t metadata, float chance,
-                             mc_world_mutation_error *error) {
+                             mc_world_mutation_error *error,
+                             mc_world_mutation_drop_execution *owned) {
+    if (owned != NULL && block->classes != owned->context.code_classes->registry) {
+        const mc_entity_tick_execution_site caller = {
+            error->drop_class == NULL ? "uu" : error->drop_class,
+            error->drop_class == NULL ? "g" : "a",
+            error->drop_class == NULL ? "(Lfd;IIII)V" : error->drop_method + 1,
+            (int)error->drop_call_bytecode};
+        mc_world_runtime_execution_result_note(
+            owned->context.result, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+            "Block drop reached foreign defining dispatch", caller);
+        return false;
+    }
     drop_frame frame =
-        drop_frame_make(world, block, "uu", "na", drop_probability_method(block), error);
+        drop_owned_frame(world, block, "uu", "na", drop_probability_method(block), error, owned);
     if (!drop_kind(&frame))
         return false;
     bool remote;
     switch (block->kind) {
         case MC_BLOCK_JUKEBOX:
-            frame =
-                drop_frame_make(world, block, "fo", "dt", drop_probability_method(block), error);
+            frame = drop_owned_frame(world, block, "fo", "dt", drop_probability_method(block),
+                                     error, owned);
             if (!drop_remote(&frame, 1, &remote))
                 return false;
             if (remote)
                 return true;
             drop_at(&frame, 18);
             error->drop_call_bytecode = 18;
-            return drop_base_probability(world, block, x, y, z, metadata, chance, error);
+            return drop_base_probability(world, block, x, y, z, metadata, chance, error, owned);
         case MC_BLOCK_CROPS:
-            return drop_crop_probability(world, block, x, y, z, metadata, chance, error);
+            return drop_crop_probability(world, block, x, y, z, metadata, chance, error, owned);
         case MC_BLOCK_STAIRS:
-            frame =
-                drop_frame_make(world, block, "ss", "lu", drop_probability_method(block), error);
+            frame = drop_owned_frame(world, block, "ss", "lu", drop_probability_method(block),
+                                     error, owned);
             drop_at(&frame, 13);
             if (block->subtype.ss.a == NULL)
                 return drop_fail(&frame, 13, "Block delegated probability receiver is null");
             error->drop_call_bytecode = 13;
-            return drop_probability(world, block->subtype.ss.a, x, y, z, metadata, chance, error);
+            return drop_probability(world, block->subtype.ss.a, x, y, z, metadata, chance, error,
+                                    owned);
         case MC_BLOCK_MOVING_PISTON:
-            frame =
-                drop_frame_make(world, block, "ut", "mz", drop_probability_method(block), error);
+            frame = drop_owned_frame(world, block, "ut", "mz", drop_probability_method(block),
+                                     error, owned);
             if (!drop_remote(&frame, 1, &remote))
                 return false;
             if (remote)
@@ -876,18 +990,19 @@ static bool drop_probability(mc_world_runtime *world, const mc_block *block, int
         case MC_BLOCK_BED:
             if (((uint32_t)metadata & 8u) != 0)
                 return true;
-            frame =
-                drop_frame_make(world, block, "ve", "nj", drop_probability_method(block), error);
+            frame = drop_owned_frame(world, block, "ve", "nj", drop_probability_method(block),
+                                     error, owned);
             drop_at(&frame, 18);
             error->drop_call_bytecode = 18;
-            return drop_base_probability(world, block, x, y, z, metadata, chance, error);
+            return drop_base_probability(world, block, x, y, z, metadata, chance, error, owned);
         default:
-            return drop_base_probability(world, block, x, y, z, metadata, chance, error);
+            return drop_base_probability(world, block, x, y, z, metadata, chance, error, owned);
     }
 }
 
-bool mc_world_mutation_drop(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
-                            int32_t z, int32_t metadata, mc_world_mutation_error *error) {
+static bool drop_body(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
+                      int32_t z, int32_t metadata, mc_world_mutation_error *error,
+                      mc_world_mutation_drop_execution *owned) {
     error->publication = (mc_world_entity_error){0};
     error->drop_class = NULL;
     error->drop_method = NULL;
@@ -900,7 +1015,65 @@ bool mc_world_mutation_drop(mc_world_runtime *world, const mc_block *block, int3
         return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "Block final drop receiver is null");
     error->drop_call_bytecode = 9; /* actual final g invokes virtual probability */
-    if (!drop_probability(world, block, x, y, z, metadata, 1.0f, error))
+    if (!drop_probability(world, block, x, y, z, metadata, 1.0f, error, owned))
         return false;
     return drop_done(error);
+}
+
+bool mc_world_mutation_drop(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
+                            int32_t z, int32_t metadata, mc_world_mutation_error *error) {
+    return drop_body(world, block, x, y, z, metadata, error, NULL);
+}
+
+bool mc_world_mutation_drop_in_execution(const mc_world_mutation_execution_context *context,
+                                         mc_world_runtime *world, const mc_block *block, int32_t x,
+                                         int32_t y, int32_t z, int32_t metadata,
+                                         mc_world_mutation_drop_execution **slot,
+                                         mc_world_mutation_error *error,
+                                         mc_world_storage_status *raw) {
+    if (context == NULL || context->result == NULL)
+        return false;
+    const mc_entity_tick_execution_site site = {"uu", "g", "(Lfd;IIII)V", 0};
+    mc_world_access_failure_lease *lease = NULL;
+    mc_entity_tick_execution_world_token token;
+    if (slot == NULL || *slot != NULL || error == NULL || raw == NULL || block == NULL ||
+        context->execution == NULL || context->execution->identity != context->execution ||
+        context->code_classes == NULL || context->code_classes->registry != block->classes ||
+        !mc_entity_tick_execution_current_world(context->execution, &token) ||
+        token.owner != context->world.owner || token.slot != context->world.slot ||
+        token.generation != context->world.generation) {
+        mc_world_runtime_execution_result_note(context->result, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "Block drop required defining context and World",
+                                               site);
+        return false;
+    }
+    const mc_world_storage_status lease_status =
+        mc_world_execution_child_lease(context->execution, world, &lease);
+    if (lease_status != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(context->result, lease_status,
+                                               "Block drop evaluated World lease", site);
+        return false;
+    }
+    if (!mc_world_mutation_drop_result_quiet(context->result)) {
+        mc_world_runtime_execution_result_note(context->result, MC_WORLD_STORAGE_BUSY,
+                                               "Block drop prior canonical work", site);
+        return false;
+    }
+    mc_world_mutation_drop_execution *call = calloc(1, sizeof(*call));
+    if (call == NULL) {
+        mc_world_runtime_execution_result_note(context->result, MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                                               "Block retained drop invocation", site);
+        return false;
+    }
+    call->context = *context;
+    call->entered = call->active = true;
+    *slot = call;
+    const bool returned = drop_body(world, block, x, y, z, metadata, error, call);
+    if (call->constructor_scope.created && !call->constructor_scope.close_attempted)
+        (void)mc_world_mutation_drop_close(call, &call->constructor_scope, call->constructor_site,
+                                           false);
+    call->active = false;
+    *raw = error->status;
+    call->completed = returned && mc_world_mutation_drop_result_quiet(context->result);
+    return call->completed;
 }

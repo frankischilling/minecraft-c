@@ -751,6 +751,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/mutation/rails/power_search.c
     src/world/runtime/mutation/rails/wrapper_transport.c
     src/world/runtime/mutation/drops.c
+    src/world/runtime/mutation/drops/execution.c
     src/world/runtime/mutation/world.c
     src/world/runtime/chunk_provider.c
     src/world/runtime/saved_data.c

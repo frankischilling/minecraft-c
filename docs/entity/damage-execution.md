@@ -99,9 +99,9 @@ the helper neither discovers arbitrary scopes nor replays Source work.
 
 The reached Player wake at `gs.a(Entity,int):35` shares the existing
 GS body. Its retained execution covers the occupied Bed update, recursive
-orphan head removal, and the live Player List read after waking. Arrow closes
-the actual failed wake work through its existing unwind. Other reached
-neighbor hooks, the Bed foot drop, arbitrary cold import or generation, and
+orphan head or foot removal, the foot's Item publication, and the live Player
+List read after waking. Arrow closes the actual failed wake work through its
+existing unwind. Other reached neighbor hooks, arbitrary cold import or generation, and
 foreign graph ownership retain their separate limits. See the
 [Player wake contract](player-damage-wake.md#wake-during-an-arrow-hit).
 

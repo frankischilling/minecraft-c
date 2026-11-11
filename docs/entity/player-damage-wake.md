@@ -63,6 +63,49 @@ the actual count before retiring the execution. The preceding failing runs
 reached an unnecessary legacy retain after the block changes had already
 committed; the Source prefix and callback count stay unchanged by the fix.
 
+## Orphan foot drop
+
+An orphan foot at `(7,64,8)`, beside the occupied head at `(8,64,8)`,
+reaches the actual Bed drop call at `ve.b:129`. The owned entry uses the
+existing [Block probability and spawn bodies](../../src/world/runtime/mutation/drops.c),
+with [retained scopes](../../src/world/runtime/mutation/drops/execution.c).
+It does not substitute the
+Entity drop method, whose coordinate arithmetic and Random reads differ.
+The World Random supplies the chance draw and three offsets. Item construction
+uses its defining Entity classes and independent constructor entropy.
+
+The retained drop records the actual constructor World load at `uu.a:85`
+and publication load at `uu.a:116`. A failed publication keeps its real
+insertion frame, Item local, callback receipt and raw return status. Native
+retirement closes only those recorded occurrences after canonical acquisition
+work has drained. A separate callback scope must be closed by its owner first.
+Already consumed tokens are never popped again. Cleanup performs no new
+constructor, insertion, Random read or callback.
+
+The [foot packet](../../tests/reference/entity/bed_foot_wake/README.md) retains
+two unchanged-original runs of normal return and an Item observer exception.
+The native projection compares 44 values per case: Player pose and sleep
+state, both committed cells, ordered cell callbacks, World and Player seeds,
+and Item position, Stack, delay and publication flags. Item motion, yaw, phase,
+Random Gaussian caches and Java stacks remain outside this native projection.
+The original packet keeps those selected observations and thirty class pins.
+
+Native Arrow cases enter sleep through the real sleep call, then cross the
+sleeping bounds above the Bed. The successful hit clears occupancy, removes
+the orphan foot, publishes one Bed Item, wakes the Player and applies four
+damage. The observer-exception case preserves both cell changes and the inserted
+Item while leaving health and sleep unchanged. It checks each native unwind
+phase through diagnostic capture, hurt close, cleanup and quiescence without
+replaying work. These are prepared CPU tests, separate from graphical evidence.
+
+Additional native controls compare legacy and owned entries to the same Block
+bodies for Bed, double slab, clay and mature crops. They check multiple Item
+publications, crop-specific argument evaluation, selected Item fields and
+World Random consumption. They are ownership regressions, not independent
+original observations. Missing Math ownership and an outstanding callback
+scope have separate controls. Moving-piston TileEntity lookup and other
+unjoined neighbor hooks remain explicit frontiers.
+
 ## Original evidence
 
 The [component packet](../../tests/reference/entity/player_damage_wake/README.md)

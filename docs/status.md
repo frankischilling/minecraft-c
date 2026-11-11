@@ -1,5 +1,21 @@
 # Development status
 
+The [orphan Bed foot drop](entity/player-damage-wake.md#orphan-foot-drop) now
+shares the owned wake execution. Prepared real Arrow hits enter sleep, clear
+occupancy, remove the orphan, publish a Bed Item, then wake before damage.
+An Item observer exception retains both committed cell changes and the inserted
+Item through staged native unwind. The original comparison selects 44 values
+for each of two cases; constructor entropy and graphical damage wake stay separate.
+
+The final Windows MSVC Release client suite passes 1,148 tests in 545.26 seconds.
+Linux Clang 18.1.8 Debug passes all 994 headless tests in 538.29 seconds with
+ASan, UBSan and leak detection. Both native hosts match 88 selected original
+foot-drop values. Fresh monitor-2 scenes pass 1,515 Bed sleep/dawn/save checks
+and 396 Arrow/Pig checks. The [test record](testing.md#orphan-bed-foot-drop-during-player-wake)
+keeps the initial fixture leak, final cohorts and graphical limits explicit.
+
+The preceding recursive head checkpoint follows.
+
 The [Player wake join](entity/player-damage-wake.md#wake-during-an-arrow-hit)
 connects GS35 to shared recursive World mutation. Clearing Bed occupancy can
 remove an orphan Bed head before the Player leaves sleep. Interrupted calls
@@ -15,7 +31,7 @@ Fresh monitor-2 scenes pass 1,949 Bed sleep/dawn/save checks and 463 Arrow/Pig
 impact/pause/save checks, with independent state readback and inspected images.
 The [test record](testing.md#recursive-bed-notification-during-player-wake)
 separates those routes from graphical damage wake, other neighbor hooks,
-the Bed foot drop, original audiovisual equality and sustained FPS.
+original audiovisual equality and sustained FPS.
 
 The preceding checkpoints retain their original qualification scopes.
 

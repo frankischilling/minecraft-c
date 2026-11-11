@@ -92,8 +92,8 @@
       "sha256": "5601732b52306d176047e197f8f55938874a6d0fc6e0b57b08dd9775161e7b74"
     },
     "src/entity/movement/effects.c": {
-      "bytes": 87438,
-      "sha256": "a6552cba4764088d2fb847fba1d7d58631154705173f1941d0bc36fa618243a7"
+      "bytes": 88343,
+      "sha256": "fb215d5321d190015ec169bacd592fcf41ab42f583d1b6b5a59a799fa1b17eb5"
     },
     "src/entity/player/death.c": {
       "bytes": 32084,

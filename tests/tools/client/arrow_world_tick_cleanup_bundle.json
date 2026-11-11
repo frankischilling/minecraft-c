@@ -66,8 +66,8 @@
       "sha256": "80d866a4df85af27011535b381728a1cae45bfbd24da103b2b453d5ed5056042"
     },
     "CMakeLists.txt": {
-      "bytes": 346052,
-      "sha256": "fd57855dacbf87c5199b9e468d4b2930e53cf661e53c5ad7e3675ad6ac5f8e66"
+      "bytes": 346101,
+      "sha256": "d0d9c64a738142025fc9bd2f2f74790b616dd4dc06b0c74d687474f42bbf55ff"
     },
     "cmake/tests/arrow_world_tick_cleanup.cmake": {
       "bytes": 2831,
@@ -110,8 +110,8 @@
       "sha256": "5601732b52306d176047e197f8f55938874a6d0fc6e0b57b08dd9775161e7b74"
     },
     "src/entity/movement/effects.c": {
-      "bytes": 87438,
-      "sha256": "a6552cba4764088d2fb847fba1d7d58631154705173f1941d0bc36fa618243a7"
+      "bytes": 88343,
+      "sha256": "fb215d5321d190015ec169bacd592fcf41ab42f583d1b6b5a59a799fa1b17eb5"
     },
     "src/entity/player/death.c": {
       "bytes": 32084,

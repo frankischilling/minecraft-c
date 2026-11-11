@@ -146,14 +146,14 @@ static bool bed_neighbor(mc_world_runtime *world, const mc_block *block, int32_t
             if (!world->fields.B) {
                 bed_at(e, 129);
                 if (owned != NULL) {
-                    mc_world_runtime_execution_result_note(
-                        mc_world_mutation_execution_result_of(owned),
-                        MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Bed drop requires owned execution",
-                        (mc_entity_tick_execution_site){"ve", "b", "(Lfd;IIII)V", 129});
-                    return false;
+                    const mc_entity_tick_execution_site site = {"ve", "b", "(Lfd;IIII)V", 129};
+                    if (!mc_world_mutation_execution_drop(owned, world, block, x, y, z, metadata, e,
+                                                          site))
+                        return false;
+                } else {
+                    if (!mc_world_mutation_drop(world, block, x, y, z, metadata, e))
+                        return bed_nested(world, e, 129, e);
                 }
-                if (!mc_world_mutation_drop(world, block, x, y, z, metadata, e))
-                    return bed_nested(world, e, 129, e);
             }
         }
     }

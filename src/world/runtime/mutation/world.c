@@ -7,6 +7,7 @@
 #include "../construction_internal.h"
 #include "../execution_children_internal.h"
 #include "chunk_execution_internal.h"
+#include "drops/execution_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/world/runtime/blocks.h"
 
@@ -21,6 +22,7 @@ struct mc_world_mutation_execution_call {
     mc_world_runtime_acquisition_error acquisition;
     mc_world_mutation_chunk_execution *chunk;
     mc_world_mutation_execution_call *child;
+    mc_world_mutation_drop_execution *drop;
     bool active, close_done;
 };
 
@@ -678,7 +680,8 @@ bool mc_world_mutation_execution_owns_world(const mc_world_mutation_execution_ca
                                             const mc_entity_tick_execution_world_token *world) {
     if (call == NULL || world == NULL || call->close_done)
         return false;
-    return mc_world_mutation_execution_owns_world(call->child, world) ||
+    return mc_world_mutation_drop_owns_world(call->drop, world) ||
+           mc_world_mutation_execution_owns_world(call->child, world) ||
            (call->chunk != NULL &&
             mc_world_mutation_chunk_execution_owns_world(call->chunk, world));
 }
@@ -720,6 +723,8 @@ mc_world_mutation_execution_native_close(mc_world_mutation_execution_call *call)
     mc_world_storage_status status = mc_world_mutation_execution_native_close(call->child);
     if (status == MC_WORLD_STORAGE_OK && call->chunk != NULL)
         status = mc_world_mutation_chunk_native_close(call->chunk);
+    if (status == MC_WORLD_STORAGE_OK)
+        status = mc_world_mutation_drop_native_close(call->drop);
     call->close_done = status == MC_WORLD_STORAGE_OK;
     return status;
 }
@@ -735,8 +740,38 @@ mc_world_mutation_execution_retire(mc_world_mutation_execution_call **slot) {
     const mc_world_storage_status child = mc_world_mutation_execution_retire(&call->child);
     if (child != MC_WORLD_STORAGE_OK)
         return child;
+    const mc_world_storage_status drop = mc_world_mutation_drop_retire(&call->drop);
+    if (drop != MC_WORLD_STORAGE_OK)
+        return drop;
     free(call->chunk);
     free(call);
     *slot = NULL;
     return MC_WORLD_STORAGE_OK;
+}
+
+bool mc_world_mutation_execution_drop(mc_world_mutation_execution_call *call,
+                                      mc_world_runtime *world, const mc_block *block, int32_t x,
+                                      int32_t y, int32_t z, int32_t metadata,
+                                      mc_world_mutation_error *error,
+                                      mc_entity_tick_execution_site site) {
+    if (!mc_world_mutation_execution_current(call, world, site))
+        return false;
+    mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
+    const bool completed = mc_world_mutation_drop_in_execution(
+        &call->context, world, block, x, y, z, metadata, &call->drop, error, &raw);
+    if (!completed)
+        return false;
+    const mc_world_storage_status status = mc_world_mutation_drop_retire(&call->drop);
+    mc_world_runtime_execution_result_note(call->context.result, status,
+                                           "Block completed drop retirement", site);
+    return status == MC_WORLD_STORAGE_OK;
+}
+
+const mc_world_mutation_drop_execution *
+mc_world_mutation_execution_failed_drop(const mc_world_mutation_execution_call *call) {
+    if (call == NULL || call->active)
+        return NULL;
+    const mc_world_mutation_drop_execution *child =
+        mc_world_mutation_execution_failed_drop(call->child);
+    return child != NULL ? child : call->drop;
 }

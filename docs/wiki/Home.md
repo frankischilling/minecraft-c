@@ -7,15 +7,17 @@ the client work. Account authentication is the only approved gameplay exception.
 
 [Player wake during damage](Combat-and-projectiles#recursive-bed-notification-during-wake)
 now reaches the original Bed update through the same wake body as direct Player
-damage. A nearby orphan head removes itself through the recursive neighbor
-call. An interrupted observer leaves both completed block changes in place.
+damage. A nearby orphan head or foot removes itself through the recursive
+neighbor call. The foot publishes one Bed Item before wake finishes. An
+interrupted observer leaves both completed block changes and the inserted
+Item in place. Prepared real Arrow hits cover wake and staged failure cleanup.
 
 [Slime removal](Combat-and-projectiles#slime-removal-and-splitting) runs through
 ordinary Mob ticks. Two Windows scenes use the usual controls to pause and
 save after four children replace the parent. Independent readback finds the
 four living Slimes.
 
-Graphical wake from damage, other neighbor hooks, the Bed foot drop, full Mob
+Graphical wake from damage, other neighbor hooks, full Mob
 environment and particles, original audiovisual equality, and measured FPS
 remain open.
 

@@ -1,5 +1,28 @@
 # Build and tests
 
+## Orphan Bed foot validation
+
+Two fresh unchanged-original JDK17 runs agree on the normal wake and an Item
+publication exception. Native comparisons select 44 values per case. Separate
+controls exercise multiple drops, crop constructor order, a missing Math owner,
+an outstanding callback scope and staged cleanup of a real sleeping-Player
+Arrow hit. Ordinary and optimized Python reject nineteen damaged packet inputs.
+[Testing details](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#orphan-bed-foot-drop-during-player-wake)
+
+The complete Windows client suite passes 1,148 tests in 545.26 seconds. The
+Linux Clang 18.1.8 Debug headless suite passes all 994 in 538.29 seconds with
+ASan, UBSan and leak detection. All earlier names remain, nine are added on
+each host, and none is skipped or unrun. Both native hosts match 88 selected
+original values with checked cleanup. The first Linux sweep finds a leaked
+Math hold in the multiple-drop test fixture; the corrected fixture retires
+both occurrences before its final release.
+
+Fresh monitor-2 scenes pass 1,515 Bed sleep/dawn/save checks and 396 Arrow/Pig
+checks, with independent save readback, window cleanup and six inspected
+images. The runtime qualification freezes 6,074 public files; formatting checks
+all 2,378 C source/header/fragment files. These scenes cover ordinary wake and
+an awake Pig. Graphical sleeping-Player Arrow damage remains unqualified.
+
 ## Recursive wake validation
 
 Two unchanged original client runs agree on 405 values across three prepared

@@ -16,8 +16,30 @@ block writes and does not replay the callbacks. [Wake contract](https://github.c
 
 The execution retains the callback owner through native retirement. Owned Bed
 diagnostics no longer request an extra legacy producer hold during cleanup.
-Other neighbor hooks and the Bed foot drop still need their owned descendants;
-these finite controls do not establish unrestricted combat or an FPS gain.
+Other neighbor hooks still need their owned descendants; these finite controls
+do not establish unrestricted combat or an FPS gain.
+
+## Orphan Bed foot drop
+
+The same Block drop bodies now use the retained execution for an orphan foot
+reached during Player wake. They construct and publish one Bed Item before
+wake finishes. An Item observer exception preserves both changed cells, Item
+membership, health and sleep. Native cleanup retires the recorded work without
+another insertion, callback or Random draw.
+
+Two unchanged original client runs agree on normal return and publication
+exception. Native comparison selects 44 values per case: Player pose and sleep,
+both cell changes and ordered callbacks, World and Player seeds, and the Item's
+position, Stack, delay and publication flags. Item motion, yaw, phase, Gaussian
+caches and Java stacks remain unpaired.
+
+Prepared real Arrow hits enter sleep through the Bed method and cross the
+sleeping bounds above the Bed. Success finishes the drop and wake before four
+damage. The observer exception stops before damage; five staged unwind phases
+preserve the committed prefix through quiescence. Native controls also cover
+an outstanding callback scope, missing Math, multiple Items and mature crops.
+These CPU cases remain separate from graphical sleeping-Player damage.
+[Drop contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/entity/player-damage-wake.md#orphan-foot-drop)
 
 ## Slime removal and splitting
 

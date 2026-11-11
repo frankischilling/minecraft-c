@@ -67,9 +67,16 @@ if(BUILD_TESTING)
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_player_damage_wake.py"
         --executable "$<TARGET_FILE:mc_test_player_damage_wake>"
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/player-damage-wake-contracts")
+    add_test(NAME entity.block_drop_execution COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_player_damage_wake.py"
+        --mode owned-block-drops --executable "$<TARGET_FILE:mc_test_player_damage_wake>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/block-drop-execution-contracts")
+    set_tests_properties(entity.block_drop_execution PROPERTIES
+        LABELS "public;integration;entity;world;ownership" TIMEOUT 180)
     set_tests_properties(entity.player_damage_wake PROPERTIES
         LABELS "public;integration;entity;world;ownership" TIMEOUT 180)
-    foreach(wake_mode IN ITEMS recursion null-exit observer-error scope-drift null-chunk-world)
+    foreach(wake_mode IN ITEMS recursion null-exit observer-error scope-drift null-chunk-world
+                               foot foot-source foot-scope foot-math-missing)
         string(REPLACE "-" "_" wake_name "${wake_mode}")
         add_test(NAME "entity.player_damage_wake_owned_${wake_name}" COMMAND Python3::Interpreter -B
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_player_damage_wake.py"
@@ -102,6 +109,11 @@ if(BUILD_TESTING)
             ${_mc_damage_wake_python_options}
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/player_recursive_wake/packet.py")
         set_tests_properties("tools.player_recursive_wake_packet_${mode}" PROPERTIES
+            LABELS "public;unit;entity;world;reference;tools" TIMEOUT 90)
+        add_test(NAME "tools.bed_foot_wake_packet_${mode}" COMMAND Python3::Interpreter
+            ${_mc_damage_wake_python_options}
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/bed_foot_wake/test_packet.py")
+        set_tests_properties("tools.bed_foot_wake_packet_${mode}" PROPERTIES
             LABELS "public;unit;entity;world;reference;tools" TIMEOUT 90)
     endforeach()
     add_executable(mc_test_player_death tests/entity/player/test_death.c)

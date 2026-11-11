@@ -137,9 +137,11 @@ the distinct outcomes, actual failure evidence and cleanup order. The prior Pig
 frontier above remains evidence of its earlier checkpoint.
 
 The [Player wake join](player-damage-wake.md#wake-during-an-arrow-hit) now enters
-GS35, clears Bed occupancy and removes an orphan head through recursive neighbor
-notification. Other neighbor hooks and the Bed foot drop still need owned
-descendants. [Delayed Slime splitting](slime-removal.md) has separate component
+GS35, clears Bed occupancy and removes an orphan head or foot through recursive
+neighbor notification. Prepared sleeping-Player hits also publish the foot's
+Bed Item and retain an actual publication exception through native unwind.
+Other neighbor hooks still need owned descendants.
+[Delayed Slime splitting](slime-removal.md) has separate component
 and loaded-scene coverage. Arbitrary cold import/generation, foreign owner graphs,
 pickup/rider paths and broader natural combat encounters remain unfinished or
 unqualified. The existing component controls retain their own scope.

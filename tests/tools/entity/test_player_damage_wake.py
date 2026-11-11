@@ -49,9 +49,11 @@ def compare_original(mode, native, output):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--mode', choices=('damage-wake', 'owned-wake-recursion',
+    parser.add_argument('--mode', choices=('damage-wake', 'owned-block-drops', 'owned-wake-recursion',
                                            'owned-wake-null-exit', 'owned-wake-observer-error',
-                                           'owned-wake-scope-drift', 'owned-wake-null-chunk-world'),
+                                           'owned-wake-scope-drift', 'owned-wake-null-chunk-world',
+                                           'owned-wake-foot', 'owned-wake-foot-source',
+                                           'owned-wake-foot-scope', 'owned-wake-foot-math-missing'),
                         default='damage-wake')
     parser.add_argument('--executable', type=Path, required=True)
     parser.add_argument('--work-dir', type=Path, required=True)
@@ -67,7 +69,9 @@ def main():
                            child.stderr.decode('utf-8', 'replace'))
     lines = child.stdout.splitlines()
     compared = 0
-    if args.mode != 'damage-wake':
+    if args.mode == 'owned-block-drops':
+        expected = rb'PASS: [1-9][0-9]* owned Block drop checks'
+    elif args.mode != 'damage-wake':
         expected = rb'PASS: [1-9][0-9]* owned Player wake recursion checks'
         diagnostics = [line for line in lines if line.startswith(b'OWNED_WAKE_RECURSION ')]
         cleanup = b'OWNED_WAKE_RECURSION_CLEANUP complete=1'
@@ -84,6 +88,45 @@ def main():
             raise RuntimeError('Invalid owned wake observation in ' + str(output))
         if args.mode in ORIGINAL_MODES:
             compared = compare_original(args.mode, native, output)
+        drop_lines = [line for line in lines if line.startswith(b'FOOT_WAKE_DROP ')]
+        foot_modes = ('owned-wake-foot', 'owned-wake-foot-source', 'owned-wake-foot-scope')
+        if args.mode in foot_modes:
+            if len(drop_lines) != 1:
+                raise RuntimeError('One actual foot Item observation required')
+            drop = json.loads(drop_lines[0].partition(b' ')[2])
+            if (type(drop) is not dict or set(drop) != {'world_seed', 'player_seed', 'item'} or
+                    type(drop['item']) is not dict or
+                    set(drop['item']) != {'position', 'delay', 'stack', 'inserted', 'world_same'}):
+                raise RuntimeError('Exact foot Item observation fields required')
+            if args.mode != 'owned-wake-foot-scope':
+                directory = Path(__file__).resolve().parents[3] / 'tests/reference/entity/bed_foot_wake'
+                spec = importlib.util.spec_from_file_location('bed_foot_comparison', directory / 'packet.py')
+                packet = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(packet)
+                packet.check()
+                rows = packet.P.load(directory / 'finite.json')['rows']
+                row = rows[0 if args.mode == 'owned-wake-foot' else 1]
+                keys = ('position', 'dimensions', 'sleeping', 'timer', 'health', 'idle',
+                        'world_sleeping', 'head', 'orphan')
+                selected = {'result': row['result'], 'exception': row['exception'],
+                            'after': {key: row['after'][key] for key in keys},
+                            'callbacks': [{key: event[key] for key in CALLBACK_FIELDS}
+                                          for event in row['events'][:2]],
+                            'world_seed': row['after']['world_random'][0],
+                            'player_seed': row['after']['player_random'][0],
+                            'item': {key: row['after']['items'][0][key] for key in drop['item']}}
+                actual = {'result': native['result'], 'exception': native['exception'],
+                          'after': {key: native['after'][key] for key in keys},
+                          'callbacks': native['callbacks'], **drop}
+                report = {'matched': packet.P.exact(actual, selected), 'expected': selected,
+                          'observed': actual, 'compared_scalars': packet.P.scalars(selected)}
+                (output / 'foot-original-comparison.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
+                if not report['matched']:
+                    raise RuntimeError('Original foot wake/drop state differs: ' + str(output))
+                compared = report['compared_scalars']
+            lines.remove(drop_lines[0])
+        elif drop_lines:
+            raise RuntimeError('Unexpected foot Item observation')
         lines.remove(diagnostics[0])
         lines.remove(cleanup)
     else:
@@ -93,7 +136,7 @@ def main():
         raise RuntimeError('Unexpected Player damage wake output')
     print(lines[-1].decode('ascii') + '; capture=' + str(output))
     if compared:
-        print(f'Original recursive wake matches {compared} selected values')
+        print(f'Original wake matches {compared} selected values')
 
 
 if __name__ == '__main__':

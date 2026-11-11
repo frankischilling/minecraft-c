@@ -23,6 +23,7 @@
 #include "../../client/input/movement_input_internal.h"
 #include "../../item/render/internal.h"
 #include "../../world/runtime/collision/blocks_internal.h"
+#include "../../world/runtime/mutation/drops/execution_internal.h"
 #include "../../world/runtime/mutation/notifications_execution_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../../world/runtime/world_access_internal.h"
@@ -1311,6 +1312,20 @@ bool mc_entity_damage_execution_source_failure(mc_entity_damage_execution *frame
     }
     if (view.wake != NULL) {
         const mc_entity_player_wake_state *wake = &error->player_wake;
+        const mc_world_mutation_drop_execution *drop =
+            mc_player_wake_execution_failed_drop(view.wake);
+        if (drop != NULL && drop->publication_returned && drop->insertion.observer_returned &&
+            drop->publication_status != MC_WORLD_STORAGE_OK &&
+            damage_protected_source(frame->execution, drop->publication_scope.world,
+                                    &drop->publication.world_access_failure,
+                                    &drop->publication.cause, &name)) {
+            damage_named_failure(
+                &failure, name, drop->publication.cause.operation,
+                (mc_entity_tick_execution_site){"fd", "c", "(Lsn;)V",
+                                                (int)drop->publication.world_access_bytecode});
+            *out = failure;
+            return true;
+        }
         if (wake->source_exception || wake->source_error) {
             const mc_player_site *site =
                 wake->child.class_name == NULL ? &wake->site : &wake->child;

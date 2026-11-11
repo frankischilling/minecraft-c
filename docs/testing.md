@@ -1,5 +1,60 @@
 # Test scope and reproduction
 
+## Orphan Bed foot drop during Player wake
+
+The first owned foot test stops after both cell changes at the explicit Bed
+drop frontier. The shared drop join then passes normal return, actual Item
+observer exception, callback scope drift and missing Math ownership. A fresh
+pair of unchanged-original JDK17 interpreters agrees on normal return and
+publication exception. Native comparison selects 44 values per case, including
+raw Player and Item positions, both Random seeds and the ordered cell callbacks.
+The [packet](../tests/reference/entity/bed_foot_wake/README.md) declares unpaired
+constructor entropy, Gaussian caches and Java stacks explicitly.
+
+The packet reader checks complete selected schemas, callback and exception
+stacks, original class/Code bindings, helper identities and process receipts.
+Sixteen damaged observations and three malformed JSON transports must be
+rejected in both ordinary and optimized Python.
+
+Prepared Arrow cases use real application, statistics, Inventory, normal Chunk
+and Player owners. The Player enters the Bed through the real sleep method;
+the Arrow ray then crosses its actual sleeping bounds above the Bed collision
+box. Success publishes the Bed Item before waking and applying damage. An
+actual publication exception retains health and sleep while preserving both
+cell changes and Item membership. Each recorded unwind phase must finish
+without another callback, insertion or Random read.
+
+A separate native comparison exercises both legacy and owned entries to the
+same drop bodies for Bed, double slab, clay and mature crops. It checks the
+selected Item fields and World Random consumption across repeated publications.
+This control is separate from unchanged-original comparison. Existing graphical
+Bed and awake-Pig scenes do not qualify sleeping-Player Arrow damage.
+
+The first complete Windows sweep passes all 1,148 tests in 550.15 seconds.
+The first Linux sanitizer sweep passes 993 of 994 in 476.40 seconds. Its only
+failure is a leaked Math hold in the new multiple-drop fixture: the fixture
+releases its own occurrence without retiring the execution's selected occurrence.
+The corrected cleanup retires both and requires exactly one hold before the
+final release. These initial runs remain separate from final qualification.
+
+The final complete Windows MSVC Release client build passes all 1,148 tests
+in 545.26 seconds. Linux Clang 18.1.8 Debug passes all 994 headless tests in
+538.29 seconds with ASan, UBSan and leak detection. Every preceding test name
+remains, nine are added per host, and none is skipped or left unrun. Each native
+host matches all 88 selected original values and completes checked cleanup with
+empty stderr. Both original VMs agree on all 271 recorded values.
+
+The retained drop frame measures 5,544 bytes on both x86-64 hosts. It is allocated
+when the owned Block drop is reached and reused across that Block's Items.
+The runtime qualification freezes 6,074 public files; all 2,378 C source, header
+and fragment files pass clang-format 18.1.3.
+
+Rebuilt monitor-2 scenes pass 1,515 Bed placement/sleep/dawn/save checks and 396
+saved Arrow/Pig checks. Save readback, SDK pause/save, window cleanup and all six
+inspected images pass. Each scene's 2,395 source/product inputs match
+the final qualified candidate. These cover ordinary wake and awake-Pig damage;
+graphical sleeping-Player Arrow damage and sustained FPS remain unqualified.
+
 ## Recursive Bed notification during Player wake
 
 The [wake contract](entity/player-damage-wake.md#wake-during-an-arrow-hit)

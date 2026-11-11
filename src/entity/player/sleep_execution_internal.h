@@ -20,6 +20,9 @@ bool mc_player_wake_execution_source_null(const mc_player_sleep_call *,
 typedef struct mc_world_notification_execution mc_world_notification_execution;
 const mc_world_notification_execution *
 mc_player_wake_execution_failure_observer(const mc_player_sleep_call *);
+typedef struct mc_world_mutation_drop_execution mc_world_mutation_drop_execution;
+const mc_world_mutation_drop_execution *
+mc_player_wake_execution_failed_drop(const mc_player_sleep_call *);
 mc_world_storage_status mc_player_wake_execution_native_close(mc_player_sleep_call *);
 
 #endif

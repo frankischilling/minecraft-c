@@ -57,6 +57,12 @@ bool mc_world_mutation_execution_get(mc_world_mutation_execution_call *, mc_worl
 bool mc_world_mutation_execution_remove(mc_world_mutation_execution_call *, mc_world_runtime *,
                                         int32_t, int32_t, int32_t, mc_world_mutation_error *,
                                         mc_entity_tick_execution_site);
+bool mc_world_mutation_execution_drop(mc_world_mutation_execution_call *, mc_world_runtime *,
+                                      const mc_block *, int32_t, int32_t, int32_t, int32_t,
+                                      mc_world_mutation_error *, mc_entity_tick_execution_site);
+typedef struct mc_world_mutation_drop_execution mc_world_mutation_drop_execution;
+const mc_world_mutation_drop_execution *
+mc_world_mutation_execution_failed_drop(const mc_world_mutation_execution_call *);
 
 bool mc_world_mutation_neighbors_in_execution(mc_world_mutation_execution_call *,
                                               mc_world_runtime *, int32_t, int32_t, int32_t,

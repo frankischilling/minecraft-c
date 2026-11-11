@@ -12,7 +12,8 @@ import tempfile
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--mode', choices=('live', 'fatal', 'fatal-source', 'wake',
-                                          'wake-source-null-list'), required=True)
+                                          'wake-source-null-list', 'wake-bed-foot',
+                                          'wake-bed-foot-source'), required=True)
     parser.add_argument('--executable', type=Path, required=True)
     parser.add_argument('--work-dir', type=Path, required=True)
     args = parser.parse_args()
