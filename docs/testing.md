@@ -53,6 +53,21 @@ Bed and Arrow images are inspected. Each final scene binds 2,397 unchanged
 source/product inputs. These cover ordinary wake and awake-Pig damage, not
 graphical sleeping-Player Arrow damage, original audiovisual equality or FPS.
 
+The hosted GCC 13.3 build of `454162f7` stops before tests at two sign-conversion
+warnings in the new support fixture's nibble assertions. Local GCC 13.4 reproduces
+them while compiling the actual sanitizer object; syntax-only probes do not.
+Explicitly widening each unsigned byte before its shift preserves both masks
+and assertions. The same strict object compile then passes. Rebuilt Windows
+and sanitized Clang each pass all three support/controller tests in 1.39 and
+1.66 seconds respectively. These are follow-up fixture checks; the complete
+sweeps above retain their earlier checkpoint scope.
+
+After the fixture-only adjustment, another monitor-2 Bed run passes 2,394
+checks and all three images are inspected. Its Arrow/Pig repeat fails the
+scene-validity assertion before a hit receipt. That failed opportunity remains
+separate from the earlier 423-check pass. No gameplay code changes between
+these opportunities, and neither repeat establishes general scene reliability.
+
 ## Orphan Bed foot drop during Player wake
 
 The first owned foot test stops after both cell changes at the explicit Bed

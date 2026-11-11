@@ -179,8 +179,10 @@ static int ms_run(ms_fixture *s) {
            world->fields.b->count == 1 && world->fields.b->items[0] == s->item &&
            mc_world_mutation_execution_failed_drop(s->call) == NULL &&
            data->blocks[cell(15, 64, 8)] == 65 &&
-           ((data->metadata[cell(15, 64, 8) >> 1] >> ((cell(15, 64, 8) & 1u) * 4u)) & 15u) == 4 &&
-           ((data->metadata[cell(14, 64, 8) >> 1] >> ((cell(14, 64, 8) & 1u) * 4u)) & 15u) == 1 &&
+           (((unsigned int)data->metadata[cell(15, 64, 8) >> 1] >> ((cell(15, 64, 8) & 1u) * 4u)) &
+            15u) == 4 &&
+           (((unsigned int)data->metadata[cell(14, 64, 8) >> 1] >> ((cell(14, 64, 8) & 1u) * 4u)) &
+            15u) == 1 &&
            f->providers[0].cache->count == 2 && f->providers[0].cache->insertion_count == 2 &&
            mc_world_store_chunk_count(f->stores[0]) == 2 && world->active_calls == 0);
     size_t closes = 0, close_index = SIZE_MAX;
