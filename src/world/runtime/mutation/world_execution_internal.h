@@ -92,6 +92,10 @@ bool mc_world_mutation_ladder_neighbor_in_execution(mc_world_mutation_execution_
                                                     mc_world_runtime *, const mc_block *, int32_t,
                                                     int32_t, int32_t, int32_t,
                                                     mc_world_mutation_error *);
+bool mc_world_mutation_torch_neighbor_in_execution(mc_world_mutation_execution_call *,
+                                                   mc_world_runtime *, const mc_block *, int32_t,
+                                                   int32_t, int32_t, int32_t,
+                                                   mc_world_mutation_error *);
 
 bool mc_world_mutation_block_removed_in_execution(mc_world_runtime *, const mc_block *, int32_t,
                                                   int32_t, int32_t, mc_world_mutation_error *,

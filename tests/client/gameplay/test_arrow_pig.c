@@ -305,7 +305,7 @@ static int arrow_pig_run(fixture *f) {
     CHECK(arrow_pig_monitor(f) == 0 && repeat_statistics_controls(f, true) == 0 &&
           mc_client_menu_loop_create(f->bootstrap, &f->loop) &&
           mc_client_menu_loop_inspect(f->loop, &f->state) && ticks(f, 2) == 0);
-    puts("ARROW_PIG_INPUTS chunks=289 glowstone-y=63 saved-Pig=1 saved-Arrow=1 time=13000 "
+    puts("ARROW_PIG_INPUTS chunks=441 glowstone-y=63 saved-Pig=1 saved-Arrow=1 time=13000 "
          "player-health=20 pig-health=10 pre-bootstrap-only=1");
     CHECK(bed_choose(f) == 0 && arrow_pig_hit_frame(f) == 0 && arrow_pig_pause_save(f) == 0);
     return 0;

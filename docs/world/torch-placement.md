@@ -40,6 +40,41 @@ producers until checked retirement. The shared Fence comparison performs only
 the reached live static-field operations. Mutation callbacks preserve current
 and deepest concrete sites without imposing a source recursion limit.
 
+## Owned neighbor during Player wake
+
+The retained mutation dispatcher enters the same neighbor, survival,
+can-place and floor bodies. Reached World queries borrow the caller's execution
+and defining namespace. An owned invocation without its retained call refuses
+before entering the legacy body. Addition, placement and tick keep their
+separate caller contracts.
+
+An unsupported west attachment above a Stone floor passes general survival,
+then reaches the later fresh metadata read at `vm.b:152`, inherited drop at
+155 and notifying air setter at 164. Without any general support, removal
+instead occurs inside `vm.i` at 26/35 before the neighbor tail. Both paths
+publish the Item before removing the Torch. The ordinary air-setter Boolean
+remains discarded.
+
+The [wake packet](../../tests/reference/entity/torch_wake/README.md) binds two
+fresh unchanged-original runs. Native replay selects 54 normal-return values
+and 46 publication-exception values, including the actual west/floor cells,
+publication snapshot and callback order. Wider original state, constructor
+entropy, Gaussian caches and Java stacks keep their separate scope.
+
+Native controls cover supported attachment, both removal paths, publication
+and later cell-observer exceptions, independent callback scopes and missing
+Math ownership. Real Arrow hits enter sleep through its actual method and
+exercise successful damage and both interrupted prefixes through checked
+unwind. Cleanup preserves committed cells and Items without another Source
+callback, insertion or Random draw.
+
+A cold-support control enters `vm.a:22`, then fails through `vm.i:6` and
+`vm.b:6` with a genuine outstanding descendant. The retained lower query keeps
+its actual raw result while native-stopped support detail remains empty.
+Nested diagnostics preserve the World error from that lower query. They do
+not overwrite it with empty detail. These are finite ownership controls;
+unrestricted graphs, original frames and FPS remain separately unqualified.
+
 ## Original comparison and component checks
 
 Two fresh ordinary VMs execute 193 calls covering the seven unchanged Torch

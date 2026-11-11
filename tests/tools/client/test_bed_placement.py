@@ -70,10 +70,11 @@ def grass_arrays():
                 BlockLight=bytes(16384), HeightMap=bytes([64] * 256))
 
 
-def author_regions(world, directory, arrays_for_chunk=None):
+def author_regions(world, directory, arrays_for_chunk=None, *, chunk_radius=8):
+    require(type(chunk_radius) is int and chunk_radius >= 0, 'Nonnegative integral authored Chunk radius')
     arrays, regions = grass_arrays(), {}
-    for x in range(-8, 9):
-        for z in range(-8, 9):
+    for x in range(-chunk_radius, chunk_radius + 1):
+        for z in range(-chunk_radius, chunk_radius + 1):
             if arrays_for_chunk is not None:
                 arrays = arrays_for_chunk(x, z)
             level = world.tag(3, 'xPos', struct.pack('>i', x)) + world.tag(3, 'zPos', struct.pack('>i', z))

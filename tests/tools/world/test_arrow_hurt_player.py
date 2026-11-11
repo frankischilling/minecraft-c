@@ -14,7 +14,7 @@ def main():
     parser.add_argument('--mode', choices=('live', 'fatal', 'fatal-source', 'wake',
                                           'wake-source-null-list', 'wake-bed-foot',
                                           'wake-bed-foot-source', 'wake-bed-ladder',
-                                          'wake-bed-ladder-source', 'wake-bed-ladder-removal-source'), required=True)
+                                          'wake-bed-ladder-source', 'wake-bed-ladder-removal-source', 'wake-bed-torch', 'wake-bed-torch-source', 'wake-bed-torch-removal-source'), required=True)
     parser.add_argument('--executable', type=Path, required=True)
     parser.add_argument('--work-dir', type=Path, required=True)
     args = parser.parse_args()

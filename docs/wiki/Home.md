@@ -12,7 +12,9 @@ neighbor call. The foot publishes one Bed Item before wake finishes. The
 [Ladder neighbor](Combat-and-projectiles#ladder-drop-during-wake) also publishes
 its Item before the notifying air setter removes the Ladder. Interrupted
 observers preserve each completed prefix and inserted Item. Prepared real
-Arrow hits cover wake and staged failure cleanup.
+Arrow hits cover wake and staged failure cleanup. The
+[ordinary Torch neighbor](Combat-and-projectiles#torch-removal-and-scene-inputs)
+shares that execution through both support-loss removal paths.
 
 [Slime removal](Combat-and-projectiles#slime-removal-and-splitting) runs through
 ordinary Mob ticks. Two Windows scenes use the usual controls to pause and

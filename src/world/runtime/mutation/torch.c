@@ -1,8 +1,10 @@
 #include "mutation_internal.h"
+#include "world_execution_internal.h"
 
 #include "../../../block/registry/registry_internal.h"
 #include "../block_queries_internal.h"
 #include "../collision/blocks_internal.h"
+#include "../solid_support_execution_internal.h"
 #include "../torch_support_internal.h"
 #include "mc/core/java/java.h"
 
@@ -22,7 +24,17 @@ typedef struct torch_frame {
     const mc_block *block;
     mc_world_mutation_error *error;
     torch_method method;
+    mc_world_mutation_execution_call *owned;
 } torch_frame;
+
+static mc_entity_tick_execution_site torch_site(const torch_frame *f, unsigned int pc) {
+    static const char *const methods[] = {"a", "h", "i", "c", "b", "a"};
+    static const char *const descriptors[] = {"(Lfd;III)Z",  "(Lfd;III)Z",
+                                              "(Lfd;III)Z",  "(Lfd;III)V",
+                                              "(Lfd;IIII)V", "(Lfd;IIILjava/util/Random;)V"};
+    return (mc_entity_tick_execution_site){"vm", methods[f->method], descriptors[f->method],
+                                           (int)pc};
+}
 
 static void torch_at(const torch_frame *f, unsigned int pc) {
     mc_world_mutation_error *e = f->error;
@@ -93,7 +105,7 @@ static bool torch_nested(const torch_frame *f, unsigned int pc,
         f->error->cause_hook_bytecode = f->error->hook_bytecode;
     }
     torch_at(f, pc);
-    if (f->world != NULL)
+    if (f->world != NULL && (f->owned == NULL || f->error->cause.status != MC_WORLD_STORAGE_OK))
         f->world->last_error = f->error->cause;
     return false;
 }
@@ -115,6 +127,9 @@ static void torch_access(mc_world_mutation_error *e, const mc_world_nearby_error
 static bool torch_value(const torch_frame *f, unsigned int pc, int32_t x, int32_t y, int32_t z,
                         bool metadata, int32_t *out) {
     torch_at(f, pc);
+    if (f->owned != NULL)
+        return mc_world_mutation_execution_get(f->owned, f->world, x, y, z, metadata, out, f->error,
+                                               torch_site(f, pc));
     if (f->world == NULL)
         return torch_null(f, pc);
     mc_world_collision_error *child = malloc(sizeof(*child));
@@ -136,6 +151,24 @@ static bool torch_value(const torch_frame *f, unsigned int pc, int32_t x, int32_
 static bool torch_solid(const torch_frame *f, unsigned int pc, int32_t x, int32_t y, int32_t z,
                         bool *out) {
     torch_at(f, pc);
+    if (f->owned != NULL) {
+        mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
+        const mc_world_solid_support_execution *child = NULL;
+        const bool completed = mc_world_mutation_execution_support(f->owned, f->world, x, y, z, out,
+                                                                   &raw, &child, torch_site(f, pc));
+        if (completed)
+            return true;
+        /* Keep the actual raw C return separate from an unprojected lower
+         * frame when native ownership stopped the support continuation. */
+        f->error->status = raw;
+        if (child != NULL && !child->native_stopped && raw != MC_WORLD_STORAGE_OK) {
+            torch_access(f->error, &child->detail.access);
+            f->error->support_bytecode = child->detail.error.bytecode;
+            f->error->registry = child->detail.error.registry;
+            return torch_storage(f, pc, child->detail.error.cause);
+        }
+        return false;
+    }
     if (f->world == NULL)
         return torch_null(f, pc);
     mc_world_solid_support_detail *child = malloc(sizeof(*child));
@@ -154,10 +187,10 @@ static bool torch_solid(const torch_frame *f, unsigned int pc, int32_t x, int32_
     return status == MC_WORLD_STORAGE_OK;
 }
 
-bool mc_world_mutation_torch_floor(mc_world_runtime *world, const mc_block *block, int32_t x,
-                                   int32_t y, int32_t z, bool *out,
-                                   mc_world_mutation_error *error) {
-    const torch_frame f = {world, block, error, TORCH_FLOOR};
+static bool torch_floor(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
+                        int32_t z, bool *out, mc_world_mutation_error *error,
+                        mc_world_mutation_execution_call *owned) {
+    const torch_frame f = {world, block, error, TORCH_FLOOR, owned};
     bool value;
     if (!torch_solid(&f, 5, x, y, z, &value))
         return false;
@@ -177,10 +210,16 @@ bool mc_world_mutation_torch_floor(mc_world_runtime *world, const mc_block *bloc
     return torch_done(error);
 }
 
-bool mc_world_mutation_torch_can_place(mc_world_runtime *world, const mc_block *block, int32_t x,
-                                       int32_t y, int32_t z, bool *out,
-                                       mc_world_mutation_error *error) {
-    const torch_frame f = {world, block, error, TORCH_CAN_PLACE};
+bool mc_world_mutation_torch_floor(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                   int32_t y, int32_t z, bool *out,
+                                   mc_world_mutation_error *error) {
+    return torch_floor(world, block, x, y, z, out, error, NULL);
+}
+
+static bool torch_can_place(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
+                            int32_t z, bool *out, mc_world_mutation_error *error,
+                            mc_world_mutation_execution_call *owned) {
+    const torch_frame f = {world, block, error, TORCH_CAN_PLACE, owned};
     const unsigned int pcs[] = {7, 22, 37, 52};
     const int32_t xs[] = {mc_java_i32_sub(x, 1), mc_java_i32_add(x, 1), x, x};
     const int32_t zs[] = {z, z, mc_java_i32_sub(z, 1), mc_java_i32_add(z, 1)};
@@ -191,11 +230,16 @@ bool mc_world_mutation_torch_can_place(mc_world_runtime *world, const mc_block *
         if (value)
             break;
     }
-    if (!value &&
-        !mc_world_mutation_torch_floor(world, block, x, mc_java_i32_sub(y, 1), z, &value, error))
+    if (!value && !torch_floor(world, block, x, mc_java_i32_sub(y, 1), z, &value, error, owned))
         return torch_nested(&f, 68, error);
     *out = value;
     return torch_done(error);
+}
+
+bool mc_world_mutation_torch_can_place(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                       int32_t y, int32_t z, bool *out,
+                                       mc_world_mutation_error *error) {
+    return torch_can_place(world, block, x, y, z, out, error, NULL);
 }
 
 static mc_world_mutation_error *torch_workspace(const torch_frame *f, unsigned int pc) {
@@ -223,6 +267,25 @@ static bool torch_remove(const torch_frame *f, unsigned int metadata_pc, unsigne
     if (!torch_value(f, metadata_pc, x, y, z, true, &metadata))
         return false;
     torch_at(f, drop_pc);
+    if (f->owned != NULL) {
+        if (!mc_world_mutation_execution_drop(f->owned, f->world, f->block, x, y, z, metadata,
+                                              f->error, torch_site(f, drop_pc))) {
+            if (f->error->status != MC_WORLD_STORAGE_OK)
+                return torch_nested(f, drop_pc, f->error);
+            torch_at(f, drop_pc);
+            return false;
+        }
+        torch_at(f, remove_pc);
+        if (!mc_world_mutation_execution_remove(f->owned, f->world, x, y, z, f->error,
+                                                torch_site(f, remove_pc))) {
+            if (f->error->status != MC_WORLD_STORAGE_OK)
+                return torch_nested(f, remove_pc, f->error);
+            torch_at(f, remove_pc);
+            return false;
+        }
+        /* The original setter Boolean is discarded, including false. */
+        return true;
+    }
     if (!mc_world_mutation_drop(f->world, f->block, x, y, z, metadata, f->error))
         return torch_nested(f, drop_pc, f->error);
     mc_world_mutation_error *child = torch_workspace(f, remove_pc);
@@ -234,17 +297,23 @@ static bool torch_remove(const torch_frame *f, unsigned int metadata_pc, unsigne
                            MC_WORLD_STORAGE_OK);
 }
 
-bool mc_world_mutation_torch_survive(mc_world_runtime *world, const mc_block *block, int32_t x,
-                                     int32_t y, int32_t z, bool *out,
-                                     mc_world_mutation_error *error) {
-    const torch_frame f = {world, block, error, TORCH_SURVIVE};
+static bool torch_survive(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
+                          int32_t z, bool *out, mc_world_mutation_error *error,
+                          mc_world_mutation_execution_call *owned) {
+    const torch_frame f = {world, block, error, TORCH_SURVIVE, owned};
     bool supported;
-    if (!mc_world_mutation_torch_can_place(world, block, x, y, z, &supported, error))
+    if (!torch_can_place(world, block, x, y, z, &supported, error, owned))
         return torch_nested(&f, 6, error);
     if (!supported && !torch_remove(&f, 23, 26, 35, x, y, z))
         return false;
     *out = supported;
     return torch_done(error);
+}
+
+bool mc_world_mutation_torch_survive(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                     int32_t y, int32_t z, bool *out,
+                                     mc_world_mutation_error *error) {
+    return torch_survive(world, block, x, y, z, out, error, NULL);
 }
 
 static bool torch_metadata(const torch_frame *f, unsigned int pc, int32_t x, int32_t y, int32_t z,
@@ -259,7 +328,7 @@ static bool torch_metadata(const torch_frame *f, unsigned int pc, int32_t x, int
 
 bool mc_world_mutation_torch_added(mc_world_runtime *world, const mc_block *block, int32_t x,
                                    int32_t y, int32_t z, mc_world_mutation_error *error) {
-    const torch_frame f = {world, block, error, TORCH_ADDED};
+    const torch_frame f = {world, block, error, TORCH_ADDED, NULL};
     const unsigned int reads[] = {7, 32, 57, 82};
     const unsigned int writes[] = {19, 44, 69, 94};
     const int32_t xs[] = {mc_java_i32_sub(x, 1), mc_java_i32_add(x, 1), x, x};
@@ -287,13 +356,12 @@ bool mc_world_mutation_torch_added(mc_world_runtime *world, const mc_block *bloc
     return torch_done(error);
 }
 
-bool mc_world_mutation_torch_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
-                                      int32_t y, int32_t z, int32_t source_id,
-                                      mc_world_mutation_error *error) {
-    (void)source_id;
-    const torch_frame f = {world, block, error, TORCH_NEIGHBOR};
+static bool torch_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
+                           int32_t z, mc_world_mutation_error *error,
+                           mc_world_mutation_execution_call *owned) {
+    const torch_frame f = {world, block, error, TORCH_NEIGHBOR, owned};
     bool survives;
-    if (!mc_world_mutation_torch_survive(world, block, x, y, z, &survives, error))
+    if (!torch_survive(world, block, x, y, z, &survives, error, owned))
         return torch_nested(&f, 6, error);
     if (!survives)
         return torch_done(error);
@@ -312,7 +380,7 @@ bool mc_world_mutation_torch_neighbor(mc_world_runtime *world, const mc_block *b
             detached = true;
     }
     bool floor;
-    if (!mc_world_mutation_torch_floor(world, block, x, mc_java_i32_sub(y, 1), z, &floor, error))
+    if (!torch_floor(world, block, x, mc_java_i32_sub(y, 1), z, &floor, error, owned))
         return torch_nested(&f, 121, error);
     if (!floor && metadata == 5)
         detached = true;
@@ -321,11 +389,30 @@ bool mc_world_mutation_torch_neighbor(mc_world_runtime *world, const mc_block *b
     return torch_done(error);
 }
 
+bool mc_world_mutation_torch_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                      int32_t y, int32_t z, int32_t source_id,
+                                      mc_world_mutation_error *error) {
+    (void)source_id;
+    return torch_neighbor(world, block, x, y, z, error, NULL);
+}
+
+bool mc_world_mutation_torch_neighbor_in_execution(mc_world_mutation_execution_call *owned,
+                                                   mc_world_runtime *world, const mc_block *block,
+                                                   int32_t x, int32_t y, int32_t z,
+                                                   int32_t source_id,
+                                                   mc_world_mutation_error *error) {
+    (void)source_id;
+    if (!mc_world_mutation_execution_current(
+            owned, world, (mc_entity_tick_execution_site){"vm", "b", "(Lfd;IIII)V", 0}))
+        return false;
+    return torch_neighbor(world, block, x, y, z, error, owned);
+}
+
 bool mc_world_mutation_torch_tick(mc_world_runtime *world, const mc_block *block, int32_t x,
                                   int32_t y, int32_t z, mc_java_random *random,
                                   mc_world_mutation_error *error) {
     (void)random; /* invokespecial UU tick8 is empty; VM never draws Random. */
-    const torch_frame f = {world, block, error, TORCH_TICK};
+    const torch_frame f = {world, block, error, TORCH_TICK, NULL};
     int32_t metadata;
     if (!torch_value(&f, 16, x, y, z, true, &metadata))
         return false;

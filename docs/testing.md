@@ -1,5 +1,91 @@
 # Test scope and reproduction
 
+## Torch removal during Player wake and loaded-scene fixtures
+
+The first actual Torch wake clears occupancy, then reaches the explicit owned
+neighbor refusal. Its checked cleanup preserves the Torch and sleep. The shared
+neighbor/survival/can-place/floor join then passes normal wake, supported
+attachment, publication exception, later cell-observer exception, independent
+scope and missing Math. Separate no-support cases take the early survival
+removal, including both exceptions.
+
+Two fresh unchanged-original interpreters agree on the prepared normal and
+publication-exception calls. The [packet](../tests/reference/entity/torch_wake/README.md)
+binds 31 original classes and all four reached Torch method bodies. Native
+comparison selects 54 normal-return and 46 exception values, including actual
+west/floor cells, the publication snapshot and callback order. Wider state,
+constructor entropy, Gaussian caches and Java stacks remain unpaired. Normal
+and optimized Python reject 41 finite mutations, 40 provenance mutations and
+four malformed JSON inputs.
+
+Three real Arrow cases enter sleep through the actual method and exercise a
+successful hit, publication exception and later cell-observer exception. Each
+interrupted case preserves its committed prefix through native unwind without
+another callback, Item insertion or Random draw. The first Windows focus passes
+29 tests, including the preceding Ladder and Arrow cases and the 193-row legacy
+Torch replay. Sanitized Clang passes the same selection plus both packet modes:
+31 tests in 10.37 seconds. These focused results precede final qualification.
+
+Cold-support controls also enter nested `vm.a:22`, `vm.i:6`, `vm.b:6` with an
+actual saved Item, outstanding descendant and optional real observer exception.
+The raw result remains independent of canonical native refusal while support
+detail stays unprojected. Reintroducing only the old unconditional nested
+projection erases the genuine World cause in both cases. Restoring the exact
+correct source passes the four actual Ladder/Torch processes and both parser
+modes. This is an executed diagnostic regression, not a synthesized status.
+
+Two private monitor-2 opportunities reproduce the Arrow/Pig scene's sticky
+validity failure. Both reject two extra live Entities, with valid focus,
+namespace, World and subject identities. The second reads an actual Chicken
+and Sheep beyond the authored Chunk border. The first extra-literal Squid
+mapping remains an inference. Candidate spawn positions can move by four
+cumulative `nextInt(6)-nextInt(6)` differences, extending block coordinates to
+`[-148,163]`. The corrected builder supplies all 441 Chunks in `[-10,10]` before
+bootstrap and verifies every input plane and saved halo. The runtime predicates
+remain unchanged. The first corrected scene passes 457 checks through SDK
+pause/save and independent readback; all three images are inspected. Twenty-four
+fixture corruptions are rejected in both Python modes, including the old
+289-Chunk input and damaged halo records. Other builders retain their default.
+
+A separate Bed diagnostic adds two real delayed rendered frames before its
+watch begins. The Player reaches timer 23 before the watch, then correctly
+wakes 77 ticks later at timer 100. Only the watch's demand for 90 more ticks
+fails; all seventeen other dawn predicates pass. World field `f` is sky
+subtraction, not World time. This establishes a measurement-window defect;
+it does not identify the earlier opportunity whose failed conjunct was not
+captured. The corrected fixture captures completed World ticks immediately
+before the SDK sleep input, preserving the threshold and all other checks.
+The same two-delay stress then passes with 101 World ticks from that boundary,
+complete save/readback and cleanup. Normal and optimized readers reject short,
+malformed and old ambiguous receipts.
+
+The final full Windows MSVC Release client suite passes all 1,176 tests in
+628.24 seconds. Linux Clang 18.1.8 Debug passes all 1,022 headless tests in
+472.53 seconds with ASan, UBSan and leak detection. Both retain every previous
+test name and add exactly fourteen, without duplicate, skipped or unrun cases.
+Each host matches all 100 selected original values with empty native stderr
+and checked cleanup. All 6,093 frozen public inputs remain unchanged during
+these runs. Pinned clang-format 18.1.3 accepts all 2,379 C files and fragments.
+GCC 13.4 also compiles the five changed non-graphical C units as actual strict
+sanitizer objects; hosted results remain a separate qualification.
+
+The final compiled Windows Bed scene passes 2,424 checks on monitor 2. It
+records 100 completed World ticks from input to dawn, performs full save and
+independent readback, and closes both native windows. All three images are
+inspected. A final Arrow/Pig opportunity stops before World load: Remote
+Desktop owns the foreground while SDL reports no keyboard focus, and the
+existing focus assertion refuses to continue. That failed opportunity remains
+separate from the earlier 457-check corrected-halo pass. Source, native
+products and all 413 assets retain their recorded hashes in both final
+opportunities. General focus reliability, graphical sleeping-Player damage,
+unrestricted play, original audiovisual equality and measured FPS remain open.
+
+Final publication controls pass 51 tests on Windows in 30.89 seconds and 49
+on sanitized Linux in 13.38 seconds. Only result documentation and its source
+table change after full runtime qualification. The earlier corrected Arrow
+pass predates the full rebuild and the final Bed/mixed-support fixture
+refinements; it retains its own product and input hashes.
+
 ## Ladder drop during Player wake
 
 The initial real wake reaches the explicit owned Ladder refusal after head

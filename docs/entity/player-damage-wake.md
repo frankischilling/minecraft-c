@@ -123,6 +123,23 @@ callback's outstanding independent scope. Real Arrow cases check the successful
 hit and both exception prefixes through checked native unwind. No cleanup path
 replays publication, removal or Random consumption.
 
+## Torch drop
+
+An ordinary Torch beside the occupied head reaches its existing
+[neighbor and support bodies](../world/torch-placement.md#owned-neighbor-during-player-wake)
+through the retained execution. A Torch with missing west attachment and a
+Stone floor publishes its Item after occupancy clears, while the Torch still
+exists and the Player remains asleep. The notifying air setter follows.
+The separate no-support route removes it during general survival instead.
+
+The [original packet](../../tests/reference/entity/torch_wake/README.md) compares
+54 selected values for normal wake and 46 for an Item observer exception.
+The native projection includes actual west/floor cells. Native early/late
+removal cases, supported attachment, independent scope and Math failures keep
+their own controls. Real Arrow cases preserve health, sleep and each committed
+prefix through checked cleanup when publication or a later cell observer
+throws. These CPU cases do not qualify graphical sleeping-Player damage.
+
 ## Original evidence
 
 The [component packet](../../tests/reference/entity/player_damage_wake/README.md)

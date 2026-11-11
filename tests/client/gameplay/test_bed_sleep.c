@@ -27,13 +27,14 @@ static int sleep_monitor(fixture *f) {
     return 0;
 }
 
-static int sleep_tap(fixture *f) {
+static int sleep_tap(fixture *f, uint64_t *input_world_ticks) {
     bed_scene->phase = "sleep-entry";
     CHECK(bed_recent(f, f->state.ticks, 5) == 0 && repeat_focus_state(f, "sleep-entry") == 0 &&
           bed_hit(f, true) == 0 && bed_cells(f, true));
     const uint64_t clicks = f->state.gameplay_right_clicks, blocks = f->state.gameplay_block_uses,
                    air = f->state.gameplay_air_uses, used = f->state.gameplay_used_statistics,
                    counts = f->state.gameplay_stack_count_stores;
+    *input_world_ticks = f->state.world_tick_returns;
     CHECK(bed_button(f, true, true) == 0 && bed_button(f, true, false) == 0);
     bool returned = false;
     for (size_t i = 0; i < 64 && SDL_GetTicks() < bed_scene->deadline; ++i) {
@@ -84,9 +85,8 @@ static int sleep_tap(fixture *f) {
     return 0;
 }
 
-static int sleep_natural_dawn(fixture *f) {
+static int sleep_natural_dawn(fixture *f, uint64_t input_world_ticks) {
     bed_scene->phase = "natural-sleep";
-    const uint64_t ticks_before = f->state.ticks;
     int32_t highest = 0;
     size_t transitions = 0, overlays = 0;
     bool dawn = false;
@@ -112,15 +112,15 @@ static int sleep_natural_dawn(fixture *f) {
                   f->state.nightmare_true_returns == 0 && f->state.nightmare_wake_returns == 0 &&
                   f->state.sleep_wake_calls == 1 && f->state.sleep_wake_returns == 1 &&
                   highest >= 90 && transitions >= 10 && overlays > 0 &&
-                  f->state.ticks - ticks_before >= 90 && player.player.private_a >= 100 &&
-                  player.player.private_b != NULL && player.player.private_b != player.player.v &&
-                  player.player.private_b->x == 0 && player.player.private_b->y == 64 &&
-                  player.player.private_b->z == 3 && !f->app->active_world->fields.J &&
-                  f->app->active_world->fields.f < 4);
-            printf("BED_SLEEP_DAWN natural-player-ticks=%" PRIu64 " highest-observed=%" PRId32
+                  f->state.world_tick_returns - input_world_ticks >= 90 &&
+                  player.player.private_a >= 100 && player.player.private_b != NULL &&
+                  player.player.private_b != player.player.v && player.player.private_b->x == 0 &&
+                  player.player.private_b->y == 64 && player.player.private_b->z == 3 &&
+                  !f->app->active_world->fields.J && f->app->active_world->fields.f < 4);
+            printf("BED_SLEEP_DAWN input-to-dawn-world-ticks=%" PRIu64 " highest-observed=%" PRId32
                    " timer-transitions=%zu overlays=%zu CQ-calls=1 CQ-returns=1 CQ-result=0 "
                    "wake-calls=1 wake-returns=1 copied-spawn=0,64,3 health=20\n",
-                   f->state.ticks - ticks_before, highest, transitions, overlays);
+                   f->state.world_tick_returns - input_world_ticks, highest, transitions, overlays);
             dawn = true;
             break;
         }
@@ -143,14 +143,16 @@ static int sleep_run(fixture *f) {
           mc_client_menu_loop_inspect(f->loop, &f->state) && ticks(f, 2) == 0 &&
           bed_choose(f) == 0);
     const mc_item_stack *before = NULL, *placed = NULL;
+    uint64_t input_world_ticks = 0;
     CHECK(bed_player(f, 2, 0, &before) == 0 && bed_cells(f, false) &&
           !f->app->active_world->fields.B && f->app->active_world->fields.f >= 4 &&
           f->app->active_world->fields.q == 2);
     puts("BED_SLEEP_INPUTS chunks=289 glowstone-y=63 Bed=absent item=355 count=2 "
          "time=13000 pre-bootstrap-only=1");
     CHECK(bed_draw(f, "before") == 0 && bed_tap(f, true) == 0 &&
-          bed_player(f, 1, 1, &placed) == 0 && before == placed && sleep_tap(f) == 0 &&
-          sleep_natural_dawn(f) == 0 && bed_player_nbt(f, "bed-player-awake.nbt") == 0 &&
+          bed_player(f, 1, 1, &placed) == 0 && before == placed &&
+          sleep_tap(f, &input_world_ticks) == 0 && sleep_natural_dawn(f, input_world_ticks) == 0 &&
+          bed_player_nbt(f, "bed-player-awake.nbt") == 0 &&
           mc_client_menu_loop_retire_completed_draws(f->loop));
     mc_world_runtime_lifecycle_error *saving = calloc(1, sizeof(*saving));
     CHECK(saving != NULL);

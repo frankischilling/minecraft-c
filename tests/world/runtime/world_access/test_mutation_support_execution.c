@@ -21,7 +21,8 @@ typedef struct ms_fixture {
     mc_world_chunk *generated;
     mc_world_storage_status raw;
     size_t callbacks, cells;
-    bool source, callback_valid;
+    const char *mode;
+    bool source, torch, callback_valid;
 } ms_fixture;
 
 static const mc_entity_tick_execution_site ms_site = {"native.mutation.support", "run", "()V", 0};
@@ -69,10 +70,10 @@ static int ms_open(ms_fixture *s) {
            !mc_chunk_cache_contains(f->providers[0].cache, 1, 0));
     mc_chunk_data *data = f->states[0]->data;
     VERIFY(data != NULL && s->generated->storage_kind == CHUNK_STORAGE_GENERATED);
-    data->blocks[cell(14, 64, 8)] = 1;
-    data->blocks[cell(15, 64, 8)] = 65;
+    data->blocks[cell(14, 64, 8)] = (uint8_t)(s->torch ? 0 : 1);
+    data->blocks[cell(15, 64, 8)] = (uint8_t)(s->torch ? 50 : 65);
     const size_t index = cell(15, 64, 8);
-    data->metadata[index >> 1] = (uint8_t)(4u << ((index & 1u) * 4u));
+    data->metadata[index >> 1] = (uint8_t)((s->torch ? 2u : 4u) << ((index & 1u) * 4u));
     return 0;
 }
 
@@ -167,10 +168,17 @@ static int ms_run(ms_fixture *s) {
                 (int)expected, (int)s->raw, (int)support_raw, (int)s->owned.ownership_status);
     VERIFY(!continued && s->call != NULL && s->raw == expected && s->error.status == expected &&
            support != NULL && support_raw == expected && support->entered &&
-           support->native_stopped && !support->completed && support->receiver_site.pc == 70 &&
-           strcmp(support->receiver_site.class_name, "dp") == 0 &&
+           support->native_stopped && !support->completed &&
+           support->receiver_site.pc == (s->torch ? 22 : 70) &&
+           support->receiver_site.class_name != NULL &&
+           strcmp(support->receiver_site.class_name, s->torch ? "vm" : "dp") == 0 &&
+           support->receiver_site.method != NULL &&
+           strcmp(support->receiver_site.method, s->torch ? "a" : "b") == 0 &&
            support->detail.error.bytecode == 7 &&
+           support->detail.error.status == MC_WORLD_STORAGE_OK &&
+           support->detail.error.operation == NULL &&
            support->detail.error.cause.status == MC_WORLD_STORAGE_OK &&
+           support->detail.access.query.cause.status == MC_WORLD_STORAGE_OK &&
            support->detail.error.registry.status == MC_REGISTRY_OK &&
            support->lower.nearby.query.cause.status == expected &&
            support->lower.nearby.query.acquisition == MC_CHUNK_ACQUIRE_CALLBACK_FAILED &&
@@ -178,13 +186,39 @@ static int ms_run(ms_fixture *s) {
            !s->owned.selection_ready && s->callbacks == 1 && s->callback_valid &&
            world->fields.b->count == 1 && world->fields.b->items[0] == s->item &&
            mc_world_mutation_execution_failed_drop(s->call) == NULL &&
-           data->blocks[cell(15, 64, 8)] == 65 &&
+           data->blocks[cell(14, 64, 8)] == (s->torch ? 0 : 1) &&
+           data->blocks[cell(15, 64, 8)] == (s->torch ? 50 : 65) &&
            (((unsigned int)data->metadata[cell(15, 64, 8) >> 1] >> ((cell(15, 64, 8) & 1u) * 4u)) &
-            15u) == 4 &&
+            15u) == (s->torch ? 2u : 4u) &&
            (((unsigned int)data->metadata[cell(14, 64, 8) >> 1] >> ((cell(14, 64, 8) & 1u) * 4u)) &
             15u) == 1 &&
            f->providers[0].cache->count == 2 && f->providers[0].cache->insertion_count == 2 &&
            mc_world_store_chunk_count(f->stores[0]) == 2 && world->active_calls == 0);
+    if (s->torch) {
+        VERIFY(support->receiver_site.descriptor != NULL &&
+               strcmp(support->receiver_site.descriptor, "(Lfd;III)Z") == 0 &&
+               support->lower.x == 16 && support->lower.y == 64 && support->lower.z == 8 &&
+               s->error.hook_class != NULL && strcmp(s->error.hook_class, "vm") == 0 &&
+               s->error.hook_method != NULL && strcmp(s->error.hook_method, "b(Lfd;IIII)V") == 0 &&
+               s->error.hook_bytecode == 6 && s->error.torch_neighbor_bytecode == 6 &&
+               s->error.torch_can_place_bytecode == 22 && s->error.torch_survive_bytecode == 6 &&
+               s->error.cause_hook_class != NULL && strcmp(s->error.cause_hook_class, "vm") == 0 &&
+               s->error.cause_hook_method != NULL &&
+               strcmp(s->error.cause_hook_method, "a(Lfd;III)Z") == 0 &&
+               s->error.cause_hook_bytecode == 22 && s->error.cause.status == MC_WORLD_STORAGE_OK);
+        /* register_entities_run stores the actual activation cause in both
+         * World.last_error and per-attempt acquisition.cause. Collision acquire
+         * retains that same cause here. Native-stopped support detail is empty;
+         * neither nested Torch caller may overwrite this genuine lower cause. */
+        const mc_world_storage_error lower = support->lower.nearby.query.cause;
+        if (!bs_error_same(world->last_error, lower))
+            fprintf(stderr, "MUTATION_SUPPORT_WORLD_ERROR expected=%d/%s/%lu actual=%d/%s/%lu\n",
+                    (int)lower.status, lower.operation == NULL ? "null" : lower.operation,
+                    (unsigned long)lower.system_error, (int)world->last_error.status,
+                    world->last_error.operation == NULL ? "null" : world->last_error.operation,
+                    (unsigned long)world->last_error.system_error);
+        VERIFY(bs_error_same(world->last_error, lower));
+    }
     size_t closes = 0, close_index = SIZE_MAX;
     for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
         if (s->owned.closes[i].used) {
@@ -219,7 +253,7 @@ static int ms_run(ms_fixture *s) {
            support_raw == expected && s->raw == expected && s->error.status == expected &&
            support->native_stopped && !support->completed && s->callbacks == 1 &&
            support->detail.error.cause.status == MC_WORLD_STORAGE_OK &&
-           data->blocks[cell(15, 64, 8)] == 65 &&
+           data->blocks[cell(15, 64, 8)] == (s->torch ? 50 : 65) &&
            mc_world_mutation_execution_failed_drop(s->call) == NULL);
     if (s->source) {
         const mc_world_access_failure *protected = NULL;
@@ -230,10 +264,15 @@ static int ms_run(ms_fixture *s) {
                mc_world_access_failure_source_exception(protected, &exception) &&
                strcmp(exception, "java/lang/IllegalStateException") == 0);
     }
-    printf("MUTATION_SUPPORT_RESULT mode=%s raw=%s support_raw=%s native=BUSY callbacks=1 "
-           "ladder=65 metadata=4 retained=1 drained=1 replay=0\n",
-           s->source ? "source-descendant" : "descendant", s->source ? "IO_ERROR" : "BUSY",
-           s->source ? "IO_ERROR" : "BUSY");
+    if (s->torch)
+        printf("MUTATION_SUPPORT_RESULT mode=%s raw=%s support_raw=%s native=BUSY callbacks=1 "
+               "torch=50 metadata=2 support=vm.a22 outer=vm.b6 can-place=22 survive=6 "
+               "world-error=lower-query retained=1 drained=1 replay=0\n",
+               s->mode, s->source ? "IO_ERROR" : "BUSY", s->source ? "IO_ERROR" : "BUSY");
+    else
+        printf("MUTATION_SUPPORT_RESULT mode=%s raw=%s support_raw=%s native=BUSY callbacks=1 "
+               "ladder=65 metadata=4 retained=1 drained=1 replay=0\n",
+               s->mode, s->source ? "IO_ERROR" : "BUSY", s->source ? "IO_ERROR" : "BUSY");
     VERIFY(mc_world_mutation_execution_native_close(s->call) == MC_WORLD_STORAGE_OK &&
            mc_world_mutation_execution_retire(&s->call) == MC_WORLD_STORAGE_OK && s->call == NULL);
     support = NULL;
@@ -284,12 +323,18 @@ static int ms_finish(ms_fixture *s) {
 
 int main(int argc, char **argv) {
     VERIFY(argc == 3 &&
-           (strcmp(argv[1], "descendant") == 0 || strcmp(argv[1], "source-descendant") == 0));
+           (strcmp(argv[1], "descendant") == 0 || strcmp(argv[1], "source-descendant") == 0 ||
+            strcmp(argv[1], "torch-descendant") == 0 ||
+            strcmp(argv[1], "torch-source-descendant") == 0));
     printf("MUTATION_SUPPORT_BEGIN schema=1 mode=%s\n", argv[1]);
     fflush(stdout);
     ms_fixture *s = calloc(1, sizeof(*s));
     VERIFY(s != NULL);
-    s->source = strcmp(argv[1], "source-descendant") == 0;
+    s->mode = argv[1];
+    s->torch =
+        strcmp(argv[1], "torch-descendant") == 0 || strcmp(argv[1], "torch-source-descendant") == 0;
+    s->source = strcmp(argv[1], "source-descendant") == 0 ||
+                strcmp(argv[1], "torch-source-descendant") == 0;
     VERIFY(ss_setup(&s->scalar.cq.source, argv[2]) == 0 && cq_files(&s->scalar.cq, true) == 0 &&
            ms_open(s) == 0 && ms_run(s) == 0 && ms_finish(s) == 0);
     free(s);

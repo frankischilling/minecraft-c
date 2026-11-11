@@ -150,6 +150,30 @@ The finite observations and native lifetime controls do not establish whole-meth
 equality, visible-game qualification, sustained play or FPS. The refused
 whole-frame replay remains unchanged and is not retried.
 
+## Saved Arrow/Pig fixture coverage
+
+Two retained monitor-2 failures reject extra live Entities outside the prepared
+terrain. The later diagnostic reads an actual Chicken and Sheep in the correct
+World and namespace, beyond the authored Chunk range. Pig/Player identities
+remain stable; focus and returned rendering are valid. The failed predicate
+is the scene's exact global cohort check.
+
+The preceding fixture supplies 289 Chunks in `[-8,8]` on both axes. Initial
+spawn positions in that range can move by four cumulative differences of two
+`nextInt(6)` draws. Their block-coordinate envelope is `[-148,163]`. The fixture
+now authors 441 populated Glowstone Chunks in `[-10,10]`, covering blocks
+`[-160,175]` before bootstrap. Every input plane and the full saved halo are
+checked independently. Existing callers of the shared builder retain their
+289-Chunk default.
+
+The runtime cohort, health, namespace, source and save assertions stay intact.
+Native spawning, terrain generation, timing and work budgets are unchanged.
+The correction prevents these controlled spawn probes from entering generated
+border terrain. Normal and optimized Python reject the old incomplete fixture,
+missing halo records and corrupted halo planes alongside the existing controls.
+This fixture correction establishes no gameplay FPS gain; the earlier uncaptured Bed
+dawn assertion retains its separate evidence.
+
 ## Retained frame allocation experiment
 
 The parent still allocates its retained frame with `calloc`. A private

@@ -1,5 +1,33 @@
 # Combat and projectiles
 
+## Torch removal and scene inputs
+
+The retained Player wake now enters the existing ordinary Torch neighbor,
+survival, can-place and floor bodies. Early general support loss and later
+attachment loss both publish the Torch Item before notifying removal. Native
+cleanup preserves each completed prefix after a callback exception.
+
+Two unchanged-original runs agree on the prepared wake cases. Native replay
+selects 54 normal and 46 publication-exception values, including actual support
+and floor cells. Real Arrow hits and cold support refusals have separate native
+controls. Nested diagnostics retain the actual lower World cause.
+
+Loaded-scene diagnostics also identify two fixture defects. Arrow/Pig spawn
+trials leave the old prepared border, so its input now covers the complete
+441-Chunk halo while keeping the exact runtime cohort checks. Bed measurement
+now starts before the sleep input, including rendered setup frames that have
+already advanced sleep. The threshold and dawn checks remain intact.
+See the [Torch contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/torch-placement.md#owned-neighbor-during-player-wake)
+and [test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#torch-removal-during-player-wake-and-loaded-scene-fixtures).
+The full Windows client suite passes 1,176 tests; Linux passes all 1,022
+headless tests with ASan, UBSan and leak detection. Each host matches all 100
+selected original values. The corrected Arrow/Pig scene passes 457 checks,
+and the final compiled Bed scene passes 2,424 on monitor 2 with inspected
+images and independent save readback. The final Arrow opportunity stops at
+the native focus assertion before World load, with Remote Desktop holding
+focus. General focus reliability, original frames, unrestricted play and FPS
+remain separately unqualified.
+
 ## Ladder drop during wake
 
 The retained wake execution now reaches the existing Ladder neighbor body.

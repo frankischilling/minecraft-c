@@ -27,6 +27,20 @@ import test_zombie_damage as zombie
 require = bed.require
 metadata = zombie.metadata
 
+# Player (.5, .5) is in Chunk(0,0). CQ candidates use Chunk offsets[-8,8]
+# and in-Chunk offsets[0,15]. Four cumulative nextInt(6)-nextInt(6) steps
+# extend either axis by at most20: [-8*16-20, 8*16+15+20] = [-148,163].
+# Radius10 authors blocks[-160,175], covering that complete trial extent.
+CHUNK_RADIUS = 10
+CHUNK_COUNT = (2 * CHUNK_RADIUS + 1) ** 2
+SPAWN_BLOCK_EXTENT = [-8 * 16 - 4 * 5, 8 * 16 + 15 + 4 * 5]
+AUTHORED_BLOCK_EXTENT = [-CHUNK_RADIUS * 16, CHUNK_RADIUS * 16 + 15]
+
+
+def chunk_coordinates():
+    return {(x, z) for x in range(-CHUNK_RADIUS, CHUNK_RADIUS + 1)
+            for z in range(-CHUNK_RADIUS, CHUNK_RADIUS + 1)}
+
 
 def base_entity(world, name, position, motion, grounded):
     result = world.tag(8, 'id', world.string(name))
@@ -56,7 +70,11 @@ def arrow_payload(world):
 
 def author_regions(world, helper, directory):
     arrays = night.glowstone_arrays()
-    bed.author_regions(world, directory, lambda x, z: arrays)
+    bed.author_regions(world, directory, lambda x, z: arrays, chunk_radius=CHUNK_RADIUS)
+    author_entities(world, helper, directory)
+
+
+def author_entities(world, helper, directory):
     path = directory / 'r.0.0.mcr'
     original, image = path.read_bytes(), bytearray(8192)
     for slot, location in enumerate(struct.unpack_from('>1024I', original)):
@@ -98,6 +116,29 @@ def entity_inputs(entities):
             'Exactly one canonical Pig10 then one in-flight Arrow; no target, shooter or entropy input')
 
 
+def region_levels(nbt, helper, directory, *, exact_extent):
+    records, expected_coordinates = helper.region_records(directory), chunk_coordinates()
+    require(set(records) == expected_coordinates if exact_extent else expected_coordinates <= set(records),
+            'Complete441-Chunk radius10 Glowstone halo' + (' input extent' if exact_extent else ' retained in save'))
+    expected = night.glowstone_arrays()
+    for coordinate, record in records.items():
+        raw = helper.record_raw(record)
+        level = nbt.Nbt(raw).root()['Level'][1]
+        x, z = coordinate
+        entities = level['Entities']
+        require(level['xPos'] == [3, x] and level['zPos'] == [3, z] and
+                entities[0] == 9 and (entities[1][0] == 10 or
+                (not exact_extent and entities == [9, [1, []]])),
+                'Canonical Chunk coordinates and Entity list; source empty lists may use byte subtype1')
+        if coordinate in expected_coordinates:
+            empty_tiles = level['TileEntities'] == [9, [10, []]] or (
+                not exact_extent and level['TileEntities'] == [9, [1, []]])
+            require(level['TerrainPopulated'] == [1, 1] and empty_tiles and
+                    all(level[name] == [7, value] for name, value in expected.items()),
+                    'Complete radius10 Glowstone/light/metadata/height planes and no TileEntities')
+        yield coordinate, raw, level
+
+
 def input_check(nbt, helper, level_path, directory):
     data = nbt.inflate(nbt.read(level_path), 31)['Data'][1]
     player = data['Player'][1]
@@ -107,23 +148,18 @@ def input_check(nbt, helper, level_path, directory):
             player['Pos'] == [9, [6, zombie.bits((.5, saved_y, .5), 'd')]] and
             player['Motion'] == [9, [6, [0, 0, 0]]] and player['Rotation'] == [9, [5, [0, 0]]],
             'Awake unarmored Player20, night and exact pre-bootstrap pose')
-    records = helper.region_records(directory)
-    require(set(records) == {(x, z) for x in range(-8, 9) for z in range(-8, 9)},
-            '289 pre-bootstrap normal Chunks')
     expected, entities = night.glowstone_arrays(), []
-    for (x, z), record in records.items():
-        level = nbt.Nbt(helper.record_raw(record)).root()['Level'][1]
-        require(level['xPos'] == [3, x] and level['zPos'] == [3, z] and
-                level['TerrainPopulated'] == [1, 1] and level['TileEntities'] == [9, [10, []]] and
-                all(level[name] == [7, value] for name, value in expected.items()) and
-                level['Entities'][0] == 9 and level['Entities'][1][0] == 10,
-                'Complete Glowstone/light planes and canonical compound Entity lists')
+    for (x, z), _, level in region_levels(nbt, helper, directory, exact_extent=True):
         if (x, z) == (0, 0):
             entities = level['Entities'][1][1]
         else:
             require(level['Entities'][1][1] == [], 'No other saved NPC or projectile')
     entity_inputs(entities)
-    return dict(chunks=289, time=13000, player_health=20, pig_health=10, pigs=1, arrows=1,
+    require(AUTHORED_BLOCK_EXTENT[0] <= SPAWN_BLOCK_EXTENT[0] and
+            SPAWN_BLOCK_EXTENT[1] <= AUTHORED_BLOCK_EXTENT[1], 'Authored halo covers complete spawn trial extent')
+    return dict(chunks=CHUNK_COUNT, chunk_radius=CHUNK_RADIUS, chunk_extent=[-CHUNK_RADIUS, CHUNK_RADIUS],
+                authored_block_extent=AUTHORED_BLOCK_EXTENT, spawn_trial_block_extent=SPAWN_BLOCK_EXTENT,
+                player_chunk=[0, 0], time=13000, player_health=20, pig_health=10, pigs=1, arrows=1,
                 pig_position=[.5, 64., 3.5], arrow_position=[.5, 64.45, 2.4],
                 arrow_motion=[0., 0., .6], shooter=None, armor=0, inventory=[],
                 plane_sha256={name: hashlib.sha256(value).hexdigest() for name, value in expected.items()})
@@ -137,7 +173,7 @@ def receipts(stdout, monitor):
         require(len(rows) == 1 and rows[0].endswith(' target=' + bounds),
                 'Both source windows on physical monitor2')
     ordered = (
-        'ARROW_PIG_INPUTS chunks=289 glowstone-y=63 saved-Pig=1 saved-Arrow=1 time=13000 player-health=20 pig-health=10 pre-bootstrap-only=1',
+        'ARROW_PIG_INPUTS chunks=441 glowstone-y=63 saved-Pig=1 saved-Arrow=1 time=13000 player-health=20 pig-health=10 pre-bootstrap-only=1',
         'ARROW_PIG_CAUSAL saved-pig-health=10 observed-health=6 arrow-members=0 ordinary-world-ticks=1 direct741-receipt=0',
         'ARROW_PIG_FRAME phase=hit terrain=1 HUD=1 player-health=20 pig-health=6 empty-slots=9 source-px=1013 source-uq=2101',
         'ARROW_PIG_PAUSE escape-sdk=1 source-pause=1 keyboard-drained=1 simulation-paused=1 player-health=20 pig-health=6 arrow-members=0',
@@ -181,9 +217,7 @@ def readback(nbt, helper, saves, evidence):
                  'Sleeping', 'SleepTimer', 'HurtTime', 'DeathTime', 'AttackTime'):
         require(zombie.same_tagged_value(player[name], saved_player[name]), 'Paused Player matches save: ' + name)
     entities, inventory = [], []
-    for coordinate, record in helper.region_records(saves / 'alpha/region').items():
-        raw = helper.record_raw(record)
-        level = nbt.Nbt(raw).root()['Level'][1]
+    for coordinate, raw, level in region_levels(nbt, helper, saves / 'alpha/region', exact_extent=False):
         rows = level['Entities'][1][1]
         entities.extend(rows)
         inventory.append(dict(coordinate=list(coordinate), bytes=len(raw),
@@ -191,11 +225,14 @@ def readback(nbt, helper, saves, evidence):
     saved_pig(entities, pig)
     require(pig['DeathTime'] == [2, 0], 'Surviving Pig, no fatal drop or replacement subject')
     return dict(time=data['Time'][1], player_health=20, pig_health=6, pigs=1, arrows=0,
-                snapshots_match_save=True, complete_entity_inventory=entities, chunks=inventory)
+                snapshots_match_save=True, complete_entity_inventory=entities, chunks=inventory,
+                authored_chunks=CHUNK_COUNT, authored_chunk_extent=[-CHUNK_RADIUS, CHUNK_RADIUS],
+                authored_planes_preserved=True)
 
 
 def self_test():
     world, nbt, helper = bed.modules()
+    refused = 0
     with tempfile.TemporaryDirectory(prefix='arrow-pig-input-') as name:
         root = Path(name)
         region = root / 'region'; region.mkdir()
@@ -203,7 +240,77 @@ def self_test():
         raw = metadata(world, 'Arrow Pig encounter', 1304000000000)
         level.write_bytes(gzip.compress(raw, mtime=0))
         author_regions(world, helper, region)
-        require(input_check(nbt, helper, level, region)['arrows'] == 1, 'Independent actual input roundtrip')
+        inputs = input_check(nbt, helper, level, region)
+        require(inputs['arrows'] == 1 and inputs['chunks'] == 441 and
+                inputs['spawn_trial_block_extent'] == [-148, 163] and
+                inputs['authored_block_extent'] == [-160, 175] and inputs['player_chunk'] == [0, 0],
+                'Independent441-Chunk input roundtrip and full cumulative spawn jitter extent')
+        require(len(list(region_levels(nbt, helper, region, exact_extent=False))) == 441,
+                'Saved-region reader requires the same full authored halo and planes')
+        old_region = root / 'old289'; old_region.mkdir()
+        arrays = night.glowstone_arrays()
+        bed.author_regions(world, old_region, lambda x, z: arrays)
+        author_entities(world, helper, old_region)
+        require(len(helper.region_records(old_region)) == 289, 'Unchanged shared default authors actual old289 input')
+        try:
+            input_check(nbt, helper, level, old_region)
+        except ValueError:
+            refused += 1
+        else:
+            raise ValueError('Actual old289-Chunk Arrow/Pig input accepted before bootstrap')
+        # Mutate real compressed halo records, not a synthetic receipt/dictionary.
+        halo = region / 'r.0.0.mcr'
+        original = halo.read_bytes()
+        corner = 10 + 10 * 32
+        missing = bytearray(original)
+        struct.pack_into('>I', missing, corner * 4, 0)
+        raw_corner = helper.record_raw(helper.region_records(region)[10, 10])
+        def replaced_corner(raw_chunk):
+            body = b'\2' + zlib.compress(raw_chunk)
+            body = struct.pack('>I', len(body)) + body
+            sectors = (len(body) + 4095) // 4096
+            image = bytearray(original)
+            struct.pack_into('>I', image, corner * 4, ((len(image) // 4096) << 8) | sectors)
+            image.extend(body + bytes(sectors * 4096 - len(body)))
+            return bytes(image)
+        # Actual saved empty NBT lists are written with subtype1 (nbt.c1199);
+        # untouched authored records retain subtype10. Both must read back.
+        saved_corner = raw_corner
+        for list_name in ('Entities', 'TileEntities'):
+            authored_empty = world.tag(9, list_name, b'\x0a' + bytes(4))
+            require(saved_corner.count(authored_empty) == 1, 'One complete halo empty list: ' + list_name)
+            saved_corner = saved_corner.replace(authored_empty, world.tag(9, list_name, b'\x01' + bytes(4)), 1)
+        halo.write_bytes(replaced_corner(saved_corner))
+        try:
+            require(len(list(region_levels(nbt, helper, region, exact_extent=False))) == 441,
+                    'Canonical source-written empty lists preserve complete saved halo')
+            try:
+                input_check(nbt, helper, level, region)
+            except ValueError:
+                refused += 1
+            else:
+                raise ValueError('Source-written empty list substituted for declared authored input')
+        finally:
+            halo.write_bytes(original)
+        corruptions = [('missing-corner', bytes(missing))]
+        for plane, count, cell in (('Blocks', 32768, 63), ('BlockLight', 16384, 63 // 2)):
+            offset = helper.array_offset(world, raw_corner, plane, count) + cell
+            corrupt = raw_corner[:offset] + bytes([raw_corner[offset] ^ 1]) + raw_corner[offset + 1:]
+            corruptions.append((plane, replaced_corner(corrupt)))
+        for label, image in corruptions:
+            halo.write_bytes(image)
+            try:
+                for reader in (lambda: input_check(nbt, helper, level, region),
+                               lambda: list(region_levels(nbt, helper, region, exact_extent=False))):
+                    try:
+                        reader()
+                    except ValueError:
+                        refused += 1
+                    else:
+                        raise ValueError('Corrupt halo accepted by input/save reader: ' + label)
+            finally:
+                halo.write_bytes(original)
+        require(input_check(nbt, helper, level, region)['chunks'] == 441, 'Restored complete halo remains valid')
         bad = raw.replace(world.tag(2, 'Health', struct.pack('>h', 20)),
                           world.tag(2, 'Health', struct.pack('>h', 19)), 1)
         level.write_bytes(gzip.compress(bad, mtime=0))
@@ -213,7 +320,6 @@ def self_test():
             pass
         else:
             raise ValueError('Wrong initial Player health accepted')
-    refused = 0
     for key, value in (('Health', [2, 6]), ('Motion', [9, [6, [0, 0, 0]]]),
                         ('inGround', [1, 1]), ('Shooter', [4, 1])):
         actors = copy.deepcopy(expected_entities())
@@ -238,7 +344,7 @@ def self_test():
     lines = [f'ARROW_PIG_MONITOR window={name} x=100 y=200 width=854 height=480 target=100,200,1920,1080'
              for name in ('frame', 'canvas')]
     lines += [
-        'ARROW_PIG_INPUTS chunks=289 glowstone-y=63 saved-Pig=1 saved-Arrow=1 time=13000 player-health=20 pig-health=10 pre-bootstrap-only=1',
+        'ARROW_PIG_INPUTS chunks=441 glowstone-y=63 saved-Pig=1 saved-Arrow=1 time=13000 player-health=20 pig-health=10 pre-bootstrap-only=1',
         'ARROW_PIG_CAUSAL saved-pig-health=10 observed-health=6 arrow-members=0 ordinary-world-ticks=1 direct741-receipt=0',
         'ARROW_PIG_OBSERVE initial10-seen=0 arrow-seen=0 world-ticks=1',
         'ARROW_PIG_FRAME phase=hit terrain=1 HUD=1 player-health=20 pig-health=6 empty-slots=9 source-px=1013 source-uq=2101',
@@ -248,6 +354,7 @@ def self_test():
     good = '\n'.join(lines)
     require(receipts(good, monitor)['direct_741_receipt'] is False, 'Causal scope is not direct741 proof')
     for bad in (good.replace('direct741-receipt=0', 'direct741-receipt=1'),
+                good.replace('chunks=441', 'chunks=289'),
                 good.replace('observed-health=6', 'observed-health=7'),
                 good.replace('arrow-members=0', 'arrow-members=1'),
                 good.replace('source-leave=366', 'source-leave=0'),
@@ -258,7 +365,7 @@ def self_test():
             refused += 1
         else:
             raise ValueError('Corrupted causal/focus/save/cleanup receipt accepted')
-    print(f'PASS: Arrow/Pig289-chunk input/readback/causal receipt controls; {refused} corruption refusals; no native process')
+    print(f'PASS: Arrow/Pig441-chunk halo input/readback/causal receipt controls; {refused} corruption refusals; no native process')
 
 
 def main():

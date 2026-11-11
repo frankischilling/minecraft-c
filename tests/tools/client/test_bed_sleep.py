@@ -121,9 +121,10 @@ def receipts(stdout, monitor):
         r'BED_SLEEP_ENTRY SDK-right-tap=1 source-returned=1 sleeping=1 timer=([0-9]+) bed=0,64,3 saved-spawn=null difficulty=2 hostiles=1', entry[0]),
         'genuine nighttime SDK Bed activation')
     dawn = [line for line in lines if line.startswith('BED_SLEEP_DAWN ')]
-    match = re.fullmatch(r'BED_SLEEP_DAWN natural-player-ticks=([0-9]+) highest-observed=([0-9]+) timer-transitions=([0-9]+) overlays=([0-9]+) CQ-calls=1 CQ-returns=1 CQ-result=0 wake-calls=1 wake-returns=1 copied-spawn=0,64,3 health=20', dawn[0]) if len(dawn) == 1 else None
+    match = re.fullmatch(r'BED_SLEEP_DAWN input-to-dawn-world-ticks=([0-9]+) highest-observed=([0-9]+) timer-transitions=([0-9]+) overlays=([0-9]+) CQ-calls=1 CQ-returns=1 CQ-result=0 wake-calls=1 wake-returns=1 copied-spawn=0,64,3 health=20', dawn[0]) if len(dawn) == 1 else None
     require(match is not None and int(match[1]) >= 90 and int(match[2]) >= 90 and
-            int(match[3]) >= 10 and int(match[4]) > 0, 'natural timer progression and complete source dawn')
+            int(match[3]) >= 10 and int(match[4]) > 0,
+            'completed input-to-dawn World ticks, natural timer progression and complete source dawn')
     for phase in ('before', 'sleeping', 'dawn'):
         require(any(line.startswith('BED_PLACEMENT_FRAME phase=' + phase + ' ') for line in lines),
                 'returned actual World/HUD frame ' + phase)
@@ -132,7 +133,7 @@ def receipts(stdout, monitor):
             'source full save and checked terminal cleanup')
     require(not any(line.startswith(('BED_PLACEMENT_FAILURE', 'WORLD_NATIVE_FOCUS', 'WORLD_REPEAT_FOCUS_FAILURE')) for line in lines),
             'no repaired/failed focus or source opportunities')
-    return dict(natural_ticks=int(match[1]), highest_observed_timer=int(match[2]),
+    return dict(input_to_dawn_world_ticks=int(match[1]), highest_observed_timer=int(match[2]),
                 timer_transitions=int(match[3]), overlays=int(match[4]), nightmare_result=False,
                 source_wake_returns=1, monitor2=True, cleanup=True)
 
@@ -186,7 +187,51 @@ def self_test():
             pass
         else:
             raise ValueError('daytime corruption accepted')
-    print('Bed sleep inputs:289 complete Glowstone Chunks, source night/Player/Stack and corruption refusal; no native process')
+    monitor = dict(selected=dict(work=[100, 200, 1920, 1080]))
+    lines = [f'BED_SLEEP_MONITOR window={name} x=100 y=200 width=854 height=480 target=100,200,1920,1080'
+             for name in ('frame', 'canvas')]
+    dawn = ('BED_SLEEP_DAWN input-to-dawn-world-ticks=100 highest-observed=99 timer-transitions=72 '
+            'overlays=158 CQ-calls=1 CQ-returns=1 CQ-result=0 wake-calls=1 wake-returns=1 '
+            'copied-spawn=0,64,3 health=20')
+    lines += [
+        'BED_SLEEP_INPUTS chunks=289 glowstone-y=63 Bed=absent item=355 count=2 time=13000 pre-bootstrap-only=1',
+        'BED_SLEEP_ENTRY SDK-right-tap=1 source-returned=1 sleeping=1 timer=1 bed=0,64,3 saved-spawn=null difficulty=2 hostiles=1',
+        *(f'BED_PLACEMENT_FRAME phase={phase} terrain=1 HUD=1 health=20 selected=0 item-slots=1 chat=0'
+          for phase in ('before', 'sleeping', 'dawn')), dawn,
+        'BED_SLEEP_SAVE source-full-save=1 live-player=1 SDK-save-menu=0 timer=0 sleeping=0',
+        'BED_SLEEP_FINISH cleanup=1 windows-absent=1 checks=1']
+    good = '\n'.join(lines)
+    result = receipts(good, monitor)
+    require(type(result['input_to_dawn_world_ticks']) is int and
+            result['input_to_dawn_world_ticks'] == 100 and 'natural_ticks' not in result,
+            'Precise typed input-to-dawn completed World-tick JSON field')
+    require(receipts(good.replace('input-to-dawn-world-ticks=100',
+                                  'input-to-dawn-world-ticks=90'), monitor)['input_to_dawn_world_ticks'] == 90,
+            'Original90 completed World-tick threshold retained')
+    refused = 0
+    for bad in (
+            good.replace('input-to-dawn-world-ticks=100', 'input-to-dawn-world-ticks=89'),
+            good.replace('input-to-dawn-world-ticks=', 'natural-player-ticks='),
+            good.replace('input-to-dawn-world-ticks=100', 'input-to-dawn-world-ticks=True'),
+            good.replace('input-to-dawn-world-ticks=100', 'input-to-dawn-world-ticks=100.0'),
+            good.replace('input-to-dawn-world-ticks=100', 'input-to-dawn-world-ticks="100"'),
+            good.replace('highest-observed=99', 'highest-observed=89'),
+            good.replace('timer-transitions=72', 'timer-transitions=9'),
+            good.replace('overlays=158', 'overlays=0'),
+            good.replace('CQ-result=0', 'CQ-result=1'),
+            good.replace('wake-calls=1', 'wake-calls=0'),
+            good.replace('copied-spawn=0,64,3', 'copied-spawn=0,64,2'),
+            good.replace('health=20', 'health=19'),
+            '\n'.join(lines[:-1]), good + '\nWORLD_NATIVE_FOCUS failed', good + '\n' + dawn):
+        try:
+            receipts(bad, monitor)
+        except ValueError:
+            refused += 1
+        else:
+            raise ValueError('Corrupt input-boundary/progression/dawn/cleanup receipt accepted')
+    require(refused == 15, 'Every malformed synthetic dawn receipt refused')
+    print('Bed sleep inputs:289 complete Glowstone Chunks, source night/Player/Stack and daytime refusal; '
+          '15 input-to-dawn/progression/typed receipt controls refused; no native process')
 
 
 def main():

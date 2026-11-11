@@ -1,5 +1,27 @@
 # Development status
 
+The [Torch neighbor](world/torch-placement.md#owned-neighbor-during-player-wake)
+now shares the retained Player wake execution. Both general support loss and
+attachment loss publish the Item before notifying removal. Callback exceptions
+preserve their completed prefix, and failed cold support retains the actual
+lower World cause through checked cleanup.
+
+The full Windows MSVC Release client suite passes 1,176 tests in 628.24 seconds.
+Linux Clang 18.1.8 Debug passes all 1,022 headless tests in 472.53 seconds with
+ASan, UBSan and leak detection. Each host matches 100 selected original Torch
+wake values. The [test record](testing.md#torch-removal-during-player-wake-and-loaded-scene-fixtures)
+separates those finite comparisons from broader missing behavior.
+
+The Arrow/Pig fixture now supplies the full 441-Chunk spawn halo. Bed tick
+measurement starts before sleep input and retains the existing dawn checks.
+The corrected Arrow scene passes 457 checks; the final compiled Bed scene
+passes 2,424 on monitor 2 with inspected images and independent save readback.
+A final Arrow opportunity fails the native focus check before World load,
+with Remote Desktop holding focus. Its failure remains recorded. Unrestricted
+play, general focus reliability and measured FPS remain unqualified.
+
+The preceding Ladder checkpoint follows.
+
 The [Ladder neighbor](world/ladder.md#owned-wake-and-recursive-support) now shares
 the retained Player wake execution. Support loss publishes its Item before the
 notifying air setter removes the Ladder. Publication and later cell-observer

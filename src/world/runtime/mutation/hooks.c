@@ -495,10 +495,11 @@ static bool block_neighbor(mc_world_runtime *world, const mc_block *block, int32
             return unavailable(world, block, "ah", "t", "Block neighbor hook", error, owned);
         case MC_BLOCK_TORCH:
             if (block->classes->options.side == MC_REGISTRY_CLIENT)
-                return owned == NULL
-                           ? mc_world_mutation_torch_neighbor(world, block, x, y, z, source_id,
-                                                              error)
-                           : unjoined(owned, "Torch neighbor hook requires owned execution");
+                return owned == NULL  ? mc_world_mutation_torch_neighbor(world, block, x, y, z,
+                                                                         source_id, error)
+                       : call != NULL ? mc_world_mutation_torch_neighbor_in_execution(
+                                            call, world, block, x, y, z, source_id, error)
+                                      : unjoined(owned, "Torch neighbor requires retained caller");
             return unavailable(world, block, "vm", "np", "Block neighbor hook", error, owned);
         case MC_BLOCK_FIRE:
             return unavailable(world, block, "yq", "pt", "Block fire neighbor hook", error, owned);

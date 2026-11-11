@@ -78,7 +78,9 @@ if(BUILD_TESTING)
     foreach(wake_mode IN ITEMS recursion null-exit observer-error scope-drift null-chunk-world
                                foot foot-source foot-scope foot-math-missing
                                ladder ladder-source ladder-scope ladder-math-missing ladder-removal-source
-                               ladder-supported)
+                               ladder-supported torch torch-source torch-scope torch-math-missing
+                               torch-removal-source torch-supported torch-early
+                               torch-early-source torch-early-removal-source)
         string(REPLACE "-" "_" wake_name "${wake_mode}")
         add_test(NAME "entity.player_damage_wake_owned_${wake_name}" COMMAND Python3::Interpreter -B
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_player_damage_wake.py"
@@ -121,6 +123,11 @@ if(BUILD_TESTING)
             ${_mc_damage_wake_python_options}
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/ladder_wake/test_packet.py")
         set_tests_properties("tools.ladder_wake_packet_${mode}" PROPERTIES
+            LABELS "public;unit;entity;world;reference;tools" TIMEOUT 90)
+        add_test(NAME "tools.torch_wake_packet_${mode}" COMMAND Python3::Interpreter
+            ${_mc_damage_wake_python_options}
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/torch_wake/test_packet.py")
+        set_tests_properties("tools.torch_wake_packet_${mode}" PROPERTIES
             LABELS "public;unit;entity;world;reference;tools" TIMEOUT 90)
     endforeach()
     add_executable(mc_test_player_death tests/entity/player/test_death.c)

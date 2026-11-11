@@ -1,4 +1,4 @@
-"""Retain real boundary-Ladder support refusal controls and bounded receipts."""
+"""Retain real boundary Ladder/Torch support refusal controls and bounded receipts."""
 import argparse
 import copy
 import hashlib
@@ -14,7 +14,7 @@ import zlib
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[3]
 TIMEOUT = 180
-MODES = ('descendant', 'source-descendant')
+MODES = ('descendant', 'source-descendant', 'torch-descendant', 'torch-source-descendant')
 RECEIPT_KEYS = {'command', 'exit', 'timeout_seconds', 'timed_out', 'pipe_capture_complete',
                 'reader_errors', 'output_overflow', 'stdout_file', 'stderr_file', 'stdout_bytes',
                 'stderr_bytes', 'stdout_sha256', 'stderr_sha256', 'stdout_limit', 'stderr_limit'}
@@ -95,14 +95,19 @@ def prepared():
 
 
 def result_line(mode):
-    raw = 'IO_ERROR' if mode == 'source-descendant' else 'BUSY'
+    require(type(mode) is str and mode in MODES, 'Declared finite mutation support mode')
+    raw = 'IO_ERROR' if mode in ('source-descendant', 'torch-source-descendant') else 'BUSY'
+    block = ('torch=50 metadata=2 support=vm.a22 outer=vm.b6 can-place=22 survive=6 '
+             'world-error=lower-query' if mode.startswith('torch-') else 'ladder=65 metadata=4')
     return (f'MUTATION_SUPPORT_RESULT mode={mode} raw={raw} support_raw={raw} native=BUSY '
-            'callbacks=1 ladder=65 metadata=4 retained=1 drained=1 replay=0')
+            f'callbacks=1 {block} retained=1 drained=1 replay=0')
 
 
 def validate_receipt(receipt, command, output, mode):
+    require(type(mode) is str and mode in MODES, 'Declared finite mutation support mode')
     require(type(receipt) is dict and set(receipt) == RECEIPT_KEYS, 'Closed process receipt')
-    require(type(receipt['command']) is list and receipt['command'] == command and
+    require(type(command) is list and len(command) == 3 and command[1] == mode and
+            type(receipt['command']) is list and receipt['command'] == command and
             all(type(word) is str for word in command), 'Actual process command')
     require(type(receipt['exit']) is int and receipt['exit'] == 0 and
             type(receipt['timeout_seconds']) is int and receipt['timeout_seconds'] == TIMEOUT and
@@ -142,20 +147,24 @@ def self_test():
             all(type(value) is bytes and value for value in inputs.values()), 'Closed authored inputs')
     with tempfile.TemporaryDirectory(prefix='mutation-support-schema-') as work:
         output = Path(work)
+        cases = {}
+        for mode in MODES:
+            stdout = ('\n'.join([f'MUTATION_SUPPORT_BEGIN schema=1 mode={mode}', '16 achievements',
+                '151 recipes', result_line(mode), 'MUTATION_SUPPORT_OPEN finite-native-boundary/full-wake/Arrow',
+                f'PASS: 1 actual owned mutation support checks;mode={mode}']) + '\n').encode('ascii')
+            (output / (mode + '.stdout')).write_bytes(stdout)
+            (output / (mode + '.stderr')).write_bytes(b'')
+            command = ['synthetic-native', mode, 'synthetic-input']
+            receipt = {'command': command, 'exit': 0, 'timeout_seconds': TIMEOUT, 'timed_out': False,
+                'pipe_capture_complete': True, 'reader_errors': {}, 'output_overflow': False,
+                'stdout_file': mode + '.stdout', 'stderr_file': mode + '.stderr',
+                'stdout_bytes': len(stdout), 'stderr_bytes': 0, 'stdout_sha256': pin(output / (mode + '.stdout')),
+                'stderr_sha256': pin(output / (mode + '.stderr')), 'stdout_limit': 4 * 1024 * 1024,
+                'stderr_limit': 1024 * 1024}
+            require(validate_receipt(receipt, command, output, mode) == 1, 'Synthetic receipt positive: ' + mode)
+            cases[mode] = command, receipt
         mode = MODES[0]
-        stdout = ('\n'.join([f'MUTATION_SUPPORT_BEGIN schema=1 mode={mode}', '16 achievements',
-            '151 recipes', result_line(mode), 'MUTATION_SUPPORT_OPEN finite-native-boundary/full-wake/Arrow',
-            f'PASS: 1 actual owned mutation support checks;mode={mode}']) + '\n').encode('ascii')
-        (output / (mode + '.stdout')).write_bytes(stdout)
-        (output / (mode + '.stderr')).write_bytes(b'')
-        command = ['synthetic-native', mode, 'synthetic-input']
-        receipt = {'command': command, 'exit': 0, 'timeout_seconds': TIMEOUT, 'timed_out': False,
-            'pipe_capture_complete': True, 'reader_errors': {}, 'output_overflow': False,
-            'stdout_file': mode + '.stdout', 'stderr_file': mode + '.stderr',
-            'stdout_bytes': len(stdout), 'stderr_bytes': 0, 'stdout_sha256': pin(output / (mode + '.stdout')),
-            'stderr_sha256': pin(output / (mode + '.stderr')), 'stdout_limit': 4 * 1024 * 1024,
-            'stderr_limit': 1024 * 1024}
-        require(validate_receipt(receipt, command, output, mode) == 1, 'Synthetic receipt positive')
+        command, receipt = cases[mode]
         refused = 0
         for key, value in (('extra', 1), ('exit', False), ('exit', 1), ('timed_out', True),
                 ('pipe_capture_complete', False), ('output_overflow', True),
@@ -170,7 +179,50 @@ def self_test():
             else:
                 raise ValueError('Malformed synthetic process receipt accepted: ' + key)
         require(refused == 11, 'Every malformed synthetic receipt refused')
-    print('PASS: authored slot1 Item input; 11 malformed synthetic receipts refused; no native run')
+        mode_refused = 0
+        for bad_mode in ('torch', False):
+            try:
+                validate_receipt(receipt, command, output, bad_mode)
+            except ValueError:
+                mode_refused += 1
+            else:
+                raise ValueError('Undeclared or non-string mutation mode accepted')
+        torch_command, torch_receipt = cases['torch-descendant']
+        wrong_command = list(torch_command)
+        wrong_command[1] = 'descendant'
+        wrong_receipt = copy.deepcopy(torch_receipt)
+        wrong_receipt['command'] = wrong_command
+        try:
+            validate_receipt(wrong_receipt, wrong_command, output, 'torch-descendant')
+        except ValueError:
+            mode_refused += 1
+        else:
+            raise ValueError('Torch mode accepted with different actual process mode')
+        for mode, before, after in (
+                ('torch-source-descendant', 'raw=IO_ERROR support_raw=IO_ERROR',
+                 'raw=BUSY support_raw=BUSY'),
+                ('torch-descendant', 'support=vm.a22', 'support=vm.b54'),
+                ('torch-descendant', ' world-error=lower-query', '')):
+            command, receipt = cases[mode]
+            path = output / (mode + '.stdout')
+            original = path.read_bytes()
+            require(original.count(before.encode('ascii')) == 1, 'One declared Torch receipt field')
+            path.write_bytes(original.replace(before.encode('ascii'), after.encode('ascii'), 1))
+            bad = copy.deepcopy(receipt)
+            bad['stdout_bytes'] = path.stat().st_size
+            bad['stdout_sha256'] = pin(path)
+            try:
+                try:
+                    validate_receipt(bad, command, output, mode)
+                except ValueError:
+                    mode_refused += 1
+                else:
+                    raise ValueError('Corrupt Torch raw/site/World-cause receipt accepted')
+            finally:
+                path.write_bytes(original)
+        require(mode_refused == 6, 'Every mode-specific malformed synthetic receipt refused')
+    print('PASS: authored slot1 Item input; 4 synthetic modes; 11 malformed receipts and '
+          '6 mode/Torch controls refused; no native run')
 
 
 def main():
@@ -190,7 +242,7 @@ def main():
     capture_path = ROOT / 'tests/reference/client/controller/capture.py'
     capture = module('mutation_support_bounded_capture', capture_path)
     report = {'schema': 'MUTATION_SUPPORT_EXECUTION_RUN_V1', 'status': 'FAIL', 'modes': {},
-        'scope': 'Two native boundary controls with actual SourceSaving Item activation and opaque mutation calls. '
+        'scope': 'Four native Ladder/Torch boundary controls with actual SourceSaving Item activation and opaque mutation calls. '
                  'No original comparison, terrain-generation, full wake or Arrow qualification.'}
     before = None
     paths = []
@@ -234,7 +286,7 @@ def main():
         (output / 'run.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
         if before is not None:
             require(report['inputs_unchanged'], 'Executed input preservation')
-    print('PASS: 2 actual owned mutation support modes; capture=' + str(output))
+    print('PASS: 4 actual owned mutation support modes; capture=' + str(output))
 
 
 if __name__ == '__main__':

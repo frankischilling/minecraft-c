@@ -38,16 +38,33 @@ static bool ap_ladder(const ap_fixture *s) {
            ap_is(s, "wake-bed-ladder-removal-source");
 }
 
+static bool ap_torch(const ap_fixture *s) {
+    return ap_is(s, "wake-bed-torch") || ap_is(s, "wake-bed-torch-source") ||
+           ap_is(s, "wake-bed-torch-removal-source");
+}
+
+static bool ap_attached_neighbor(const ap_fixture *s) {
+    return ap_ladder(s) || ap_torch(s);
+}
+
+static uint8_t ap_neighbor_id(const ap_fixture *s) {
+    return ap_torch(s) ? 50 : 65;
+}
+
+static uint8_t ap_neighbor_metadata(const ap_fixture *s) {
+    return ap_torch(s) ? 1 : 2;
+}
+
 static bool ap_bed(const ap_fixture *s) {
-    return ap_is(s, "wake-bed-foot") || ap_is(s, "wake-bed-foot-source") || ap_ladder(s);
+    return ap_is(s, "wake-bed-foot") || ap_is(s, "wake-bed-foot-source") || ap_attached_neighbor(s);
 }
 
 static double ap_arrow_x(const ap_fixture *s) {
-    return ap_ladder(s) ? 9.4 : ap_bed(s) ? 7.6 : 8.5;
+    return ap_attached_neighbor(s) ? 9.4 : ap_bed(s) ? 7.6 : 8.5;
 }
 
 static double ap_arrow_velocity(const ap_fixture *s) {
-    return ap_ladder(s) ? -(double).6f : (double).6f;
+    return ap_attached_neighbor(s) ? -(double).6f : (double).6f;
 }
 
 static size_t ap_index(int32_t x, int32_t y, int32_t z) {
@@ -103,7 +120,10 @@ static bool ap_enter_bed(ap_fixture *s) {
           f->player->base.width == .2f && f->player->base.height == .2f &&
           mc_player_sleep_retire(&call, NULL) == MC_PLAYER_SLEEP_OK &&
           ap_cell(data, 8, 64, 8, 26, 12) &&
-          ap_cell(data, 7, 64, 8, ap_ladder(s) ? 65 : 26, ap_ladder(s) ? 2 : 0));
+          ap_cell(data, 7, 64, 8, ap_attached_neighbor(s) ? ap_neighbor_id(s) : 26,
+                  ap_attached_neighbor(s) ? ap_neighbor_metadata(s) : 0));
+    if (ap_torch(s))
+        CHECK(ap_cell(data, 7, 63, 8, 1, 0) && data->blocks[ap_index(6, 64, 8)] == 0);
     f->player->local_player->fields.player.private_a = 37;
     return true;
 }
@@ -116,18 +136,19 @@ static mc_world_storage_status ap_bed_cell(void *context, mc_world_runtime *worl
     fixture *f = &s->player.game;
     mc_chunk_data *data = mc_world_chunk_state(s->player.chunk)->data;
     uint8_t metadata = UINT8_MAX;
-    s->valid &=
-        ap_bed(s) && world == f->world && s->cells < 2 && x == (s->cells == 0 ? 8 : 7) && y == 64 &&
-        z == 8 && f->player->local_player->fields.player.u &&
-        f->player->local_player->fields.player.private_a == 37 &&
-        f->player->local_player->fields.living.Y == 20 &&
-        mc_chunk_nibbles_get(data->metadata, MC_CHUNK_NIBBLE_BYTES, 8, 64, 8, &metadata) &&
-        metadata == 8 &&
-        data->blocks[ap_index(7, 64, 8)] == (s->cells == 0 ? (ap_ladder(s) ? 65 : 26) : 0) &&
-        s->additions == (ap_ladder(s) && s->cells == 1 ? 1u : 0u);
+    s->valid &= ap_bed(s) && world == f->world && s->cells < 2 && x == (s->cells == 0 ? 8 : 7) &&
+                y == 64 && z == 8 && f->player->local_player->fields.player.u &&
+                f->player->local_player->fields.player.private_a == 37 &&
+                f->player->local_player->fields.living.Y == 20 &&
+                mc_chunk_nibbles_get(data->metadata, MC_CHUNK_NIBBLE_BYTES, 8, 64, 8, &metadata) &&
+                metadata == 8 &&
+                data->blocks[ap_index(7, 64, 8)] ==
+                    (s->cells == 0 ? (ap_attached_neighbor(s) ? ap_neighbor_id(s) : 26) : 0) &&
+                s->additions == (ap_attached_neighbor(s) && s->cells == 1 ? 1u : 0u);
     ++s->cells;
     *cause = (mc_world_storage_error){0};
-    if (s->valid && s->cells == 2 && ap_is(s, "wake-bed-ladder-removal-source")) {
+    if (s->valid && s->cells == 2 &&
+        (ap_is(s, "wake-bed-ladder-removal-source") || ap_is(s, "wake-bed-torch-removal-source"))) {
         const mc_world_storage_status status =
             mc_world_access_receipt_create(s->observer, NULL, &s->receipt, failure, cause);
         if (status != MC_WORLD_STORAGE_OK)
@@ -207,19 +228,23 @@ static mc_world_storage_status ap_added(void *context, mc_world_runtime *world, 
         const mc_chunk_data *data = mc_world_chunk_state(s->player.chunk)->data;
         uint8_t metadata = UINT8_MAX;
         s->valid &=
-            world == f->world && s->additions == 1 && s->cells == (ap_ladder(s) ? 1u : 2u) &&
-            item != NULL && item->base.bF && item->item.c == 10 &&
+            world == f->world && s->additions == 1 &&
+            s->cells == (ap_attached_neighbor(s) ? 1u : 2u) && item != NULL && item->base.bF &&
+            item->item.c == 10 &&
             mc_item_stack_fields_get(item->stack, &stack) == MC_ITEM_STACK_OK &&
-            stack.id == (ap_ladder(s) ? 65 : 355) && stack.count == 1 && stack.damage == 0 &&
-            data->blocks[ap_index(7, 64, 8)] == (ap_ladder(s) ? 65 : 0) &&
+            stack.id == (ap_attached_neighbor(s) ? ap_neighbor_id(s) : 355) && stack.count == 1 &&
+            stack.damage == 0 &&
+            data->blocks[ap_index(7, 64, 8)] == (ap_attached_neighbor(s) ? ap_neighbor_id(s) : 0) &&
             mc_chunk_nibbles_get(data->metadata, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &metadata) &&
-            metadata == (ap_ladder(s) ? 2 : 0) && f->player->local_player->fields.player.u &&
+            metadata == (ap_attached_neighbor(s) ? ap_neighbor_metadata(s) : 0) &&
+            f->player->local_player->fields.player.u &&
             f->player->local_player->fields.player.private_a == 37 &&
             f->player->local_player->fields.living.Y == 20 && c != NULL && c->hurt != NULL &&
             !c->hurt->returned && current_world &&
             c->execution.leases[current.slot].phase == MC_WORLD_ACCESS_FAILURE_LEASE_ARMED;
         *cause = (mc_world_storage_error){0};
-        if (s->valid && (ap_is(s, "wake-bed-foot-source") || ap_is(s, "wake-bed-ladder-source"))) {
+        if (s->valid && (ap_is(s, "wake-bed-foot-source") || ap_is(s, "wake-bed-ladder-source") ||
+                         ap_is(s, "wake-bed-torch-source"))) {
             const mc_world_storage_status status =
                 mc_world_access_receipt_create(s->observer, NULL, &s->receipt, failure, cause);
             if (status != MC_WORLD_STORAGE_OK)
@@ -303,8 +328,8 @@ static bool ap_construct(ap_fixture *s) {
           mc_arrow_construct_position(s->arrow, f->world, ap_arrow_x(s), ap_bed(s) ? 64.85 : 66,
                                       ap_bed(s) ? f->player->base.z : 8.5,
                                       &error) == MC_ENTITY_OK &&
-          mc_arrow_heading(s->arrow, s->player.math_owner, ap_ladder(s) ? -1 : 1, 0, 0, .6f, 0,
-                           &error) == MC_ENTITY_OK);
+          mc_arrow_heading(s->arrow, s->player.math_owner, ap_attached_neighbor(s) ? -1 : 1, 0, 0,
+                           .6f, 0, &error) == MC_ENTITY_OK);
     inserted = false;
     CHECK(mc_world_runtime_insert_entity(f->world, s->arrow, &inserted, NULL) ==
               MC_WORLD_STORAGE_OK &&
@@ -413,8 +438,9 @@ static bool ap_bed_failure(ap_fixture *s, mc_arrow_tick_state *state) {
     mc_arrow_tick_call *call = s->call;
     mc_arrow_tick_hurt_work *hurt = call->hurt;
     mc_entity_damage_execution_view damage = {0};
-    const bool removal = ap_is(s, "wake-bed-ladder-removal-source");
-    const size_t cells = ap_ladder(s) && !removal ? 1u : 2u;
+    const bool removal =
+        ap_is(s, "wake-bed-ladder-removal-source") || ap_is(s, "wake-bed-torch-removal-source");
+    const size_t cells = ap_attached_neighbor(s) && !removal ? 1u : 2u;
     CHECK(state->hurt_cleanup_acquired &&
           state->failure->classification == MC_ARROW_TICK_FAILURE_SOURCE_EXCEPTION &&
           strcmp(state->failure->exception_class, "java/lang/IllegalStateException") == 0 &&
@@ -431,8 +457,8 @@ static bool ap_bed_failure(ap_fixture *s, mc_arrow_tick_state *state) {
             hurt->error.player_wake.error == NULL ? NULL : hurt->error.player_wake.error->occupancy;
         CHECK(drop == NULL && occupancy != NULL && occupancy->mutation != NULL &&
               occupancy->mutation->hook_class != NULL &&
-              strcmp(occupancy->mutation->hook_class, "dp") == 0 &&
-              occupancy->mutation->hook_bytecode == 123);
+              strcmp(occupancy->mutation->hook_class, ap_torch(s) ? "vm" : "dp") == 0 &&
+              occupancy->mutation->hook_bytecode == (ap_torch(s) ? 164u : 123u));
     } else {
         CHECK(drop != NULL && drop->entity == s->item && !drop->active &&
               drop->publication_returned && drop->insertion.observer_returned &&
@@ -480,7 +506,7 @@ static bool ap_run(ap_fixture *s) {
           !state.hurt_prior_pending && s->valid);
     mc_living_entity_fields *living = mc_entity_living_fields(f->player);
     if (ap_is(s, "live") || ap_is(s, "fatal") || ap_is(s, "wake") || ap_is(s, "wake-bed-foot") ||
-        ap_is(s, "wake-bed-ladder")) {
+        ap_is(s, "wake-bed-ladder") || ap_is(s, "wake-bed-torch")) {
         const bool fatal = ap_is(s, "fatal");
         CHECK(status == MC_ARROW_TICK_OK && state.source_returned && state.hurt_continued &&
               state.hurt_result && state.hurt_bytes == 0 && s->call->hurt == NULL &&
@@ -565,6 +591,8 @@ int main(int argc, char **argv) {
          strcmp(argv[1], "wake-bed-ladder") != 0 &&
          strcmp(argv[1], "wake-bed-ladder-source") != 0 &&
          strcmp(argv[1], "wake-bed-ladder-removal-source") != 0 &&
+         strcmp(argv[1], "wake-bed-torch") != 0 && strcmp(argv[1], "wake-bed-torch-source") != 0 &&
+         strcmp(argv[1], "wake-bed-torch-removal-source") != 0 &&
          strcmp(argv[1], "wake-source-null-list") != 0) ||
         CD(argv[3]) != 0 || !mc_math_trig_init(&trig))
         return 2;

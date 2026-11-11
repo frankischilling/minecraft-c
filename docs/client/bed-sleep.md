@@ -76,6 +76,24 @@ opportunity qualifies its prepared loaded-night route. Unrestricted night,
 uninterrupted focus across other processes, original pixels/audio, Linux loaded
 play and sustained FPS remain unqualified.
 
+## Sleep observation boundary
+
+A private stress run lets two ordinary rendered frames finish before the dawn
+watch begins, with real host delays between frames. Sleep has already reached
+timer 23 at that boundary. Natural dawn correctly arrives 77 ticks later at
+timer 100, with all wake, spawn and sky checks satisfied. Requiring 90 further
+ticks after that late boundary rejects correct behavior.
+
+The fixture now captures completed World ticks immediately before the SDK
+sleep gestures and passes that local marker through the observation. The
+receipt names the measurement `input-to-dawn-world-ticks`. The threshold 90,
+observed timer progression, overlay, nightmare/wake counters, copied spawn,
+sleep flags and sky assertions remain. No game call, scheduler, clock or
+runtime field changes. The same delayed-frame stress passes with 101 completed
+World ticks from the input boundary and all predicates intact. This explains
+the demonstrated measurement flaw; the earlier uncaptured failure retains its
+own scope.
+
 ## Reproduction
 
 Build `mc_test_bed_sleep` with the Windows client. Run with locally imported
