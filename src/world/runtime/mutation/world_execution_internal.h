@@ -54,6 +54,19 @@ bool mc_world_mutation_execution_current(const mc_world_mutation_execution_call 
 bool mc_world_mutation_execution_get(mc_world_mutation_execution_call *, mc_world_runtime *,
                                      int32_t, int32_t, int32_t, bool, int32_t *,
                                      mc_world_mutation_error *, mc_entity_tick_execution_site);
+typedef struct mc_world_solid_support_execution mc_world_solid_support_execution;
+/* Retain the actual lower frame and raw C return before projection. A native
+ * stop can accompany a non-OK raw return while support detail stays empty;
+ * callers inspect that frame and the canonical result before projecting it.
+ * False preserves the ordinary Boolean. Only a completed frame is discarded. */
+bool mc_world_mutation_execution_support(mc_world_mutation_execution_call *, mc_world_runtime *,
+                                         int32_t, int32_t, int32_t, bool *,
+                                         mc_world_storage_status *,
+                                         const mc_world_solid_support_execution **,
+                                         mc_entity_tick_execution_site);
+const mc_world_solid_support_execution *
+mc_world_mutation_execution_failed_support(const mc_world_mutation_execution_call *,
+                                           mc_world_storage_status *);
 bool mc_world_mutation_execution_remove(mc_world_mutation_execution_call *, mc_world_runtime *,
                                         int32_t, int32_t, int32_t, mc_world_mutation_error *,
                                         mc_entity_tick_execution_site);
@@ -75,6 +88,10 @@ bool mc_world_mutation_bed_neighbor_in_execution(mc_world_mutation_execution_cal
                                                  mc_world_runtime *, const mc_block *, int32_t,
                                                  int32_t, int32_t, int32_t,
                                                  mc_world_mutation_error *);
+bool mc_world_mutation_ladder_neighbor_in_execution(mc_world_mutation_execution_call *,
+                                                    mc_world_runtime *, const mc_block *, int32_t,
+                                                    int32_t, int32_t, int32_t,
+                                                    mc_world_mutation_error *);
 
 bool mc_world_mutation_block_removed_in_execution(mc_world_runtime *, const mc_block *, int32_t,
                                                   int32_t, int32_t, mc_world_mutation_error *,

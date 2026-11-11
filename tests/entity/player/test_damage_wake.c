@@ -239,11 +239,23 @@ typedef enum dw_recursive_mode {
     DW_RECURSIVE_FOOT_SOURCE,
     DW_RECURSIVE_FOOT_SCOPE,
     DW_RECURSIVE_FOOT_MATH_MISSING,
+    DW_RECURSIVE_LADDER,
+    DW_RECURSIVE_LADDER_SOURCE,
+    DW_RECURSIVE_LADDER_SCOPE,
+    DW_RECURSIVE_LADDER_MATH_MISSING,
+    DW_RECURSIVE_LADDER_REMOVAL_SOURCE,
+    DW_RECURSIVE_LADDER_SUPPORTED,
 } dw_recursive_mode;
 
 static bool dw_foot(dw_recursive_mode mode) {
     return mode == DW_RECURSIVE_FOOT || mode == DW_RECURSIVE_FOOT_SOURCE ||
            mode == DW_RECURSIVE_FOOT_SCOPE || mode == DW_RECURSIVE_FOOT_MATH_MISSING;
+}
+
+static bool dw_ladder(dw_recursive_mode mode) {
+    return mode == DW_RECURSIVE_LADDER || mode == DW_RECURSIVE_LADDER_SOURCE ||
+           mode == DW_RECURSIVE_LADDER_SCOPE || mode == DW_RECURSIVE_LADDER_MATH_MISSING ||
+           mode == DW_RECURSIVE_LADDER_REMOVAL_SOURCE || mode == DW_RECURSIVE_LADDER_SUPPORTED;
 }
 
 typedef struct dw_recursive_cell_sample {
@@ -255,6 +267,8 @@ typedef struct dw_recursive_cell_sample {
 typedef struct dw_recursive_observation {
     sw_fixture *fixture;
     dw_recursive_cell_sample samples[2];
+    dw_recursive_cell_sample publication_sample;
+    size_t cells_at_addition;
     size_t cells;
     size_t additions;
     bool publication_valid;
@@ -275,21 +289,42 @@ static mc_world_storage_status dw_recursive_added(void *context, mc_world_runtim
     (void)failure;
     dw_recursive_observation *o = context;
     o->published_item = item;
+    const mc_chunk_data *data = o->fixture->world->states[0]->data;
+    uint8_t head_metadata = UINT8_MAX, neighbor_metadata = UINT8_MAX;
+    const bool cells_read =
+        mc_chunk_nibbles_get(data->metadata, MC_CHUNK_NIBBLE_BYTES, 8, 64, 8, &head_metadata) &&
+        mc_chunk_nibbles_get(data->metadata, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &neighbor_metadata);
+    o->publication_sample =
+        (dw_recursive_cell_sample){7,
+                                   64,
+                                   8,
+                                   data->blocks[boxes_index(8, 64, 8)],
+                                   head_metadata,
+                                   data->blocks[boxes_index(7, 64, 8)],
+                                   neighbor_metadata,
+                                   o->fixture->actor->local_player->fields.player.u};
+    o->cells_at_addition = o->cells;
     mc_item_stack_fields stack = {0};
     mc_entity_tick_execution_world_token token;
     o->publication_valid =
-        ++o->additions == 1 && dw_foot(o->mode) && o->cells == 2 && o->order_valid &&
+        ++o->additions == 1 && (dw_foot(o->mode) || dw_ladder(o->mode)) &&
+        o->cells == (dw_ladder(o->mode) ? 1u : 2u) && o->order_valid && cells_read &&
+        o->publication_sample.head_id == 26 && head_metadata == 8 &&
+        o->publication_sample.orphan_id == (dw_ladder(o->mode) ? 65 : 0) &&
+        neighbor_metadata == (dw_ladder(o->mode) ? 2 : 0) &&
         world == o->fixture->world->worlds[0] && o->fixture->actor->local_player->fields.player.u &&
         world->fields.J && item != NULL && mc_entity_is_kind(item, MC_ENTITY_CLASS_KIND_ITEM) &&
         item->base.bF && item->item.c == 10 &&
-        mc_item_stack_fields_get(item->stack, &stack) == MC_ITEM_STACK_OK && stack.id == 355 &&
-        stack.count == 1 && stack.damage == 0 && item->base.x >= 7.15 && item->base.x < 7.85 &&
-        item->base.y >= 64.15 && item->base.y < 64.85 && item->base.z >= 8.15 &&
-        item->base.z < 8.85 && world->fields.b->items[world->fields.b->count - 1] == item &&
+        mc_item_stack_fields_get(item->stack, &stack) == MC_ITEM_STACK_OK &&
+        stack.id == (dw_ladder(o->mode) ? 65 : 355) && stack.count == 1 && stack.damage == 0 &&
+        item->base.x >= 7.15 && item->base.x < 7.85 && item->base.y >= 64.15 &&
+        item->base.y < 64.85 && item->base.z >= 8.15 && item->base.z < 8.85 &&
+        world->fields.b->items[world->fields.b->count - 1] == item &&
         mc_entity_tick_execution_current_world(o->execution, &token) &&
         o->execution->leases[token.slot].phase == MC_WORLD_ACCESS_FAILURE_LEASE_ARMED;
     *error = (mc_world_storage_error){0};
-    if (o->publication_valid && o->mode == DW_RECURSIVE_FOOT_SOURCE) {
+    if (o->publication_valid &&
+        (o->mode == DW_RECURSIVE_FOOT_SOURCE || o->mode == DW_RECURSIVE_LADDER_SOURCE)) {
         const mc_world_storage_status status =
             mc_world_access_receipt_create(o->listener, NULL, &o->receipt, failure, error);
         if (status != MC_WORLD_STORAGE_OK)
@@ -298,7 +333,8 @@ static mc_world_storage_status dw_recursive_added(void *context, mc_world_runtim
         *error = (mc_world_storage_error){MC_WORLD_STORAGE_IO_ERROR, "Bed Item observer", 57};
         return error->status;
     }
-    if (o->publication_valid && o->mode == DW_RECURSIVE_FOOT_SCOPE) {
+    if (o->publication_valid &&
+        (o->mode == DW_RECURSIVE_FOOT_SCOPE || o->mode == DW_RECURSIVE_LADDER_SCOPE)) {
         const mc_world_storage_status status = mc_entity_tick_execution_push_world(
             o->execution, world, (mc_entity_tick_execution_site){"test", "added", "()V", 0},
             &o->external);
@@ -317,6 +353,7 @@ static mc_world_storage_status dw_recursive_cell(void *context, mc_world_runtime
     const mc_chunk_data *data = s->world->states[0]->data;
     const mc_player_fields *player = &s->actor->local_player->fields.player;
     const bool head = o->cells == 0;
+    const bool ladder = dw_ladder(o->mode);
     const uint8_t orphan = data->blocks[boxes_index(7, 64, 8)];
     const uint8_t head_id = data->blocks[boxes_index(8, 64, 8)];
     uint8_t metadata = UINT8_MAX, orphan_metadata = UINT8_MAX;
@@ -327,9 +364,14 @@ static mc_world_storage_status dw_recursive_cell(void *context, mc_world_runtime
         o->samples[o->cells] = (dw_recursive_cell_sample){
             x, y, z, head_id, metadata, orphan, orphan_metadata, player->u};
     o->order_valid &= o->cells < 2 && world == s->world->worlds[0] && x == (head ? 8 : 7) &&
-                      y == 64 && z == 8 && orphan == (head ? 26 : 0) && read && head_id == 26 &&
-                      metadata == 8 && orphan_metadata == (head && !dw_foot(o->mode) ? 8 : 0) &&
-                      player->u && player->private_a == 37 && world->fields.J;
+                      y == 64 && z == 8 && orphan == (head ? (ladder ? 65 : 26) : 0) && read &&
+                      head_id == 26 && metadata == 8 &&
+                      orphan_metadata == (head ? (ladder             ? 2
+                                                  : dw_foot(o->mode) ? 0
+                                                                     : 8)
+                                               : 0) &&
+                      player->u && player->private_a == 37 && world->fields.J &&
+                      (!ladder || o->additions == (head ? 0u : 1u));
     ++o->cells;
     *error = (mc_world_storage_error){0};
     if (head) {
@@ -339,7 +381,7 @@ static mc_world_storage_status dw_recursive_cell(void *context, mc_world_runtime
     }
     if (o->mode == DW_RECURSIVE_LEGACY_NULL || o->mode == DW_RECURSIVE_OWNED_NULL)
         s->actor->base.world = NULL;
-    if (o->mode == DW_RECURSIVE_OBSERVER_ERROR) {
+    if (o->mode == DW_RECURSIVE_OBSERVER_ERROR || o->mode == DW_RECURSIVE_LADDER_REMOVAL_SOURCE) {
         const mc_world_storage_status status =
             mc_world_access_receipt_create(o->listener, NULL, &o->receipt, failure, error);
         if (status != MC_WORLD_STORAGE_OK)
@@ -382,8 +424,14 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
     /* Direction zero points along +Z. The sleeping Player's Bed has a foot
      * at (8,64,7). The other head's own foot cell (7,64,7) remains air. */
     const bool foot = dw_foot(mode);
-    CHECK(sw_cell(data, 7, 64, 8, 26, foot ? 0 : 8) &&
-          data->blocks[boxes_index(7, 64, foot ? 9 : 7)] == 0);
+    const bool ladder = dw_ladder(mode);
+    CHECK(sw_cell(data, 7, 64, 8, ladder ? 65 : 26,
+                  ladder ? 2
+                  : foot ? 0
+                         : 8) &&
+          data->blocks[boxes_index(7, 64, foot || ladder ? 9 : 7)] == 0);
+    if (mode == DW_RECURSIVE_LADDER_SUPPORTED)
+        CHECK(sw_cell(data, 7, 64, 9, 1, 0));
     if (mode == DW_RECURSIVE_NULL_CHUNK_WORLD) {
         observation.chunk = mc_world_store_chunk_object(world->options.store, f->states[0]);
         CHECK(observation.chunk != NULL && observation.chunk->d == world);
@@ -398,6 +446,7 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
     registered = true;
     const size_t holds = p->holds, entities = world->fields.b->count;
     const uint64_t random = p->random->state;
+    const uint64_t world_random = world->fields.r->state;
     mc_java_random drop_random = *world->fields.r;
     for (size_t i = 0; i < 4; ++i)
         (void)mc_java_random_next_float(&drop_random);
@@ -408,7 +457,8 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
     if (legacy) {
         raw = mc_entity_effect_damage_in_context(p, f->registry[0], NULL, 0, &accepted, error);
     } else {
-        if (foot && mode != DW_RECURSIVE_FOOT_MATH_MISSING)
+        if ((foot || ladder) && mode != DW_RECURSIVE_FOOT_MATH_MISSING &&
+            mode != DW_RECURSIVE_LADDER_MATH_MISSING)
             CHECK(mc_math_classes_create(SIZE_MAX, &math_owner, NULL) == MC_MATH_CLASS_OK);
         mc_math_execution_init(&math, math_owner);
         mc_entity_tick_execution_init(execution, &math);
@@ -458,18 +508,27 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
         }
         puts("]}");
     }
-    if (foot && observation.published_item != NULL) {
+    if ((foot || ladder) && observation.published_item != NULL) {
         const mc_entity *item = observation.published_item;
         mc_item_stack_fields stack = {0};
         CHECK(mc_item_stack_fields_get(item->stack, &stack) == MC_ITEM_STACK_OK);
-        printf("FOOT_WAKE_DROP {\"world_seed\":\"%016" PRIx64 "\","
+        printf("%s {\"world_seed\":\"%016" PRIx64 "\","
                "\"player_seed\":\"%016" PRIx64 "\",\"item\":{"
                "\"position\":[\"%016" PRIx64 "\",\"%016" PRIx64 "\",\"%016" PRIx64 "\"],"
                "\"delay\":%d,\"stack\":[%d,%d,%d],\"inserted\":%s,\"world_same\":%s}}\n",
-               world->fields.r->state, p->random->state, movement_double_bits(item->base.x),
+               ladder ? "LADDER_WAKE_DROP" : "FOOT_WAKE_DROP", world->fields.r->state,
+               p->random->state, movement_double_bits(item->base.x),
                movement_double_bits(item->base.y), movement_double_bits(item->base.z), item->item.c,
                stack.id, stack.count, stack.damage, sw_bool(item->base.bF),
                sw_bool(item->base.world == world));
+        if (ladder) {
+            const dw_recursive_cell_sample *sample = &observation.publication_sample;
+            printf("LADDER_WAKE_PUBLICATION {\"head\":[%u,%u],\"ladder\":[%u,%u],"
+                   "\"sleeping\":%s,\"prior_cells\":%zu}\n",
+                   (unsigned int)sample->head_id, (unsigned int)sample->head_metadata,
+                   (unsigned int)sample->orphan_id, (unsigned int)sample->orphan_metadata,
+                   sw_bool(sample->sleeping), observation.cells_at_addition);
+        }
     }
     if (null_exit) {
         const mc_entity_player_wake_state *wake = &error->player_wake;
@@ -510,19 +569,48 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
         ok = true;
         goto cleanup;
     }
-    if (foot) {
-        if (mode != DW_RECURSIVE_FOOT) {
+    if (mode == DW_RECURSIVE_LADDER_SUPPORTED) {
+        CHECK(continued && raw == MC_ENTITY_OK && !accepted && !fields->u &&
+              fields->private_a == 0 && !world->fields.J && head_metadata == 8 && orphan == 65 &&
+              orphan_metadata == 2 && observation.cells == 1 && observation.additions == 0 &&
+              observation.order_valid && p->random->state == random &&
+              world->fields.r->state == world_random && world->fields.b->count == entities &&
+              !mc_entity_effect_has_pending(p));
+        ok = true;
+        goto cleanup;
+    }
+    if (mode == DW_RECURSIVE_LADDER_REMOVAL_SOURCE) {
+        mc_entity_damage_failure failure;
+        const mc_world_placement_error *occupancy =
+            error->player_wake.error == NULL ? NULL : error->player_wake.error->occupancy;
+        const mc_world_mutation_error *mutation = occupancy == NULL ? NULL : occupancy->mutation;
+        CHECK(!continued && raw != MC_ENTITY_OK && accepted && fields->u &&
+              fields->private_a == 37 && world->fields.J && head_metadata == 8 && orphan == 0 &&
+              orphan_metadata == 0 && observation.cells == 2 && observation.additions == 1 &&
+              observation.order_valid && observation.publication_valid &&
+              mc_entity_damage_execution_source_failure(damage, &failure) &&
+              failure.source_proven && failure.site.pc == 34 &&
+              strcmp(failure.exception_class, "java/lang/IllegalStateException") == 0 &&
+              mutation != NULL && mutation->hook_class != NULL &&
+              strcmp(mutation->hook_class, "dp") == 0 && mutation->hook_bytecode == 123);
+        ok = true;
+        goto cleanup;
+    }
+    if (foot || ladder) {
+        if (mode != DW_RECURSIVE_FOOT && mode != DW_RECURSIVE_LADDER) {
             mc_entity_damage_execution_view view = {0};
             CHECK(!continued && accepted && fields->u && fields->private_a == 37 &&
-                  world->fields.J && head_metadata == 8 && orphan == 0 && orphan_metadata == 0 &&
-                  observation.order_valid && observation.cells == 2 &&
+                  world->fields.J && head_metadata == 8 && orphan == (ladder ? 65 : 0) &&
+                  orphan_metadata == (ladder ? 2 : 0) && observation.order_valid &&
+                  observation.cells == (ladder ? 1u : 2u) &&
                   world->fields.r->state == drop_random.state && p->random->state == random &&
                   mc_entity_damage_execution_inspect(damage, &view) && view.wake != NULL);
             const mc_world_mutation_drop_execution *drop =
                 mc_player_wake_execution_failed_drop(view.wake);
             CHECK(drop != NULL && !drop->active && drop->entity != NULL &&
                   drop->constructor_scope.consumed && drop->publication_returned);
-            if (mode == DW_RECURSIVE_FOOT_MATH_MISSING) {
+            if (mode == DW_RECURSIVE_FOOT_MATH_MISSING ||
+                mode == DW_RECURSIVE_LADDER_MATH_MISSING) {
                 CHECK(raw == MC_ENTITY_OK && math.failed && damage->math_failed &&
                       view.result->math_failed && drop->insertion.entered &&
                       !drop->insertion.chunk_returned && observation.additions == 0 &&
@@ -530,7 +618,7 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
             } else {
                 CHECK(observation.additions == 1 && observation.publication_valid &&
                       world->fields.b->count == entities + 1);
-                if (mode == DW_RECURSIVE_FOOT_SOURCE) {
+                if (mode == DW_RECURSIVE_FOOT_SOURCE || mode == DW_RECURSIVE_LADDER_SOURCE) {
                     mc_entity_damage_failure failure;
                     CHECK(raw != MC_ENTITY_OK && drop->publication_scope.consumed &&
                           drop->insertion.observer_returned &&
@@ -551,7 +639,7 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
         }
         if (!continued)
             fprintf(stderr,
-                    "Foot drop stopped: raw=%d callbacks=%zu ownership=%d operation=%s child=%s "
+                    "Block drop stopped: raw=%d callbacks=%zu ownership=%d operation=%s child=%s "
                     "math=%d\n",
                     (int)raw, observation.cells, (int)damage->owned.ownership_status,
                     damage->owned.ownership_error.operation == NULL
@@ -823,13 +911,29 @@ int main(int argc, char **argv) {
         return printf("PASS: %u owned Block drop checks\n", checks) < 0;
     }
     const char *const names[] = {
-        "owned-wake-recursion",   "owned-wake-null-exit",        "owned-wake-observer-error",
-        "owned-wake-scope-drift", "owned-wake-null-chunk-world", "owned-wake-foot",
-        "owned-wake-foot-source", "owned-wake-foot-scope",       "owned-wake-foot-math-missing"};
-    const dw_recursive_mode modes[] = {
-        DW_RECURSIVE_READY,       DW_RECURSIVE_OWNED_NULL,       DW_RECURSIVE_OBSERVER_ERROR,
-        DW_RECURSIVE_SCOPE_DRIFT, DW_RECURSIVE_NULL_CHUNK_WORLD, DW_RECURSIVE_FOOT,
-        DW_RECURSIVE_FOOT_SOURCE, DW_RECURSIVE_FOOT_SCOPE,       DW_RECURSIVE_FOOT_MATH_MISSING};
+        "owned-wake-recursion",           "owned-wake-null-exit",
+        "owned-wake-observer-error",      "owned-wake-scope-drift",
+        "owned-wake-null-chunk-world",    "owned-wake-foot",
+        "owned-wake-foot-source",         "owned-wake-foot-scope",
+        "owned-wake-foot-math-missing",   "owned-wake-ladder",
+        "owned-wake-ladder-source",       "owned-wake-ladder-scope",
+        "owned-wake-ladder-math-missing", "owned-wake-ladder-removal-source",
+        "owned-wake-ladder-supported"};
+    const dw_recursive_mode modes[] = {DW_RECURSIVE_READY,
+                                       DW_RECURSIVE_OWNED_NULL,
+                                       DW_RECURSIVE_OBSERVER_ERROR,
+                                       DW_RECURSIVE_SCOPE_DRIFT,
+                                       DW_RECURSIVE_NULL_CHUNK_WORLD,
+                                       DW_RECURSIVE_FOOT,
+                                       DW_RECURSIVE_FOOT_SOURCE,
+                                       DW_RECURSIVE_FOOT_SCOPE,
+                                       DW_RECURSIVE_FOOT_MATH_MISSING,
+                                       DW_RECURSIVE_LADDER,
+                                       DW_RECURSIVE_LADDER_SOURCE,
+                                       DW_RECURSIVE_LADDER_SCOPE,
+                                       DW_RECURSIVE_LADDER_MATH_MISSING,
+                                       DW_RECURSIVE_LADDER_REMOVAL_SOURCE,
+                                       DW_RECURSIVE_LADDER_SUPPORTED};
     for (size_t i = 0; i < COUNT(names); ++i)
         if (strcmp(argv[1], names[i]) == 0) {
             if (!dw_recursive(root, modes[i]))

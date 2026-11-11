@@ -47,13 +47,51 @@ def compare_original(mode, native, output):
     return report['compared_scalars']
 
 
+def compare_ladder_original(mode, native, drop, publication, output):
+    directory = Path(__file__).resolve().parents[3] / 'tests/reference/entity/ladder_wake'
+    spec = importlib.util.spec_from_file_location('ladder_wake_comparison', directory / 'packet.py')
+    packet = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(packet)
+    packet.check()
+    finite = directory / 'finite.json'
+    rows = packet.P.load(finite)['rows']
+    row = rows[0 if mode == 'owned-wake-ladder' else 1]
+    keys = ('position', 'dimensions', 'sleeping', 'timer', 'health', 'idle', 'world_sleeping', 'head')
+    added = next(event for event in row['events'] if event['kind'] == 'added')
+    expected = {'result': row['result'], 'exception': row['exception'],
+                'after': {**{key: row['after'][key] for key in keys}, 'ladder': row['after']['ladder']},
+                'world_seed': row['after']['world_random'][0],
+                'player_seed': row['after']['player_random'][0],
+                'item': {key: row['after']['items'][0][key] for key in drop['item']},
+                'callbacks': [{key: event[key] for key in ('xyz', 'head', 'ladder', 'sleeping')}
+                              for event in row['events'] if event['kind'] == 'cell'],
+                'publication': {**{key: added[key] for key in ('head', 'ladder', 'sleeping')},
+                    'prior_cells': sum(event['kind'] == 'cell'
+                                       for event in row['events'][:row['events'].index(added)])}}
+    actual = {'result': native['result'], 'exception': native['exception'],
+              'after': {**{key: native['after'][key] for key in keys}, 'ladder': native['after']['orphan']},
+              **drop, 'publication': publication,
+              'callbacks': [{**{key: event[key] for key in ('xyz', 'head', 'sleeping')},
+                             'ladder': event['orphan']} for event in native['callbacks']]}
+    report = {'mode': mode, 'finite_sha256': packet.P.digest(finite),
+              'matched': packet.P.exact(actual, expected), 'compared_scalars': packet.P.scalars(expected),
+              'expected': expected, 'observed': actual}
+    (output / 'ladder-original-comparison.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
+    if not report['matched']:
+        raise RuntimeError('Original Ladder wake/drop state differs: ' + str(output))
+    return report['compared_scalars']
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--mode', choices=('damage-wake', 'owned-block-drops', 'owned-wake-recursion',
                                            'owned-wake-null-exit', 'owned-wake-observer-error',
                                            'owned-wake-scope-drift', 'owned-wake-null-chunk-world',
                                            'owned-wake-foot', 'owned-wake-foot-source',
-                                           'owned-wake-foot-scope', 'owned-wake-foot-math-missing'),
+                                           'owned-wake-foot-scope', 'owned-wake-foot-math-missing',
+                                           'owned-wake-ladder', 'owned-wake-ladder-source',
+                                           'owned-wake-ladder-scope', 'owned-wake-ladder-math-missing',
+                                           'owned-wake-ladder-removal-source', 'owned-wake-ladder-supported'),
                         default='damage-wake')
     parser.add_argument('--executable', type=Path, required=True)
     parser.add_argument('--work-dir', type=Path, required=True)
@@ -82,7 +120,10 @@ def main():
                 set(native) != {'continued', 'raw', 'pc', 'wake_entered', 'pending',
                                 'result', 'exception', 'after', 'callbacks'} or
                 type(native['after']) is not dict or set(native['after']) != set(AFTER_FIELDS) or
-                type(native['callbacks']) is not list or len(native['callbacks']) != (1 if args.mode == 'owned-wake-null-chunk-world' else 2) or
+                type(native['callbacks']) is not list or len(native['callbacks']) != (1 if args.mode in (
+                    'owned-wake-null-chunk-world', 'owned-wake-ladder-source',
+                    'owned-wake-ladder-scope', 'owned-wake-ladder-math-missing',
+                    'owned-wake-ladder-supported') else 2) or
                 any(type(row) is not dict or set(row) != set(CALLBACK_FIELDS)
                     for row in native['callbacks'])):
             raise RuntimeError('Invalid owned wake observation in ' + str(output))
@@ -127,6 +168,30 @@ def main():
             lines.remove(drop_lines[0])
         elif drop_lines:
             raise RuntimeError('Unexpected foot Item observation')
+        if args.mode in ('owned-wake-ladder', 'owned-wake-ladder-source', 'owned-wake-ladder-scope',
+                         'owned-wake-ladder-removal-source'):
+            ladder_lines = [line for line in lines if line.startswith(b'LADDER_WAKE_DROP ')]
+            if len(ladder_lines) != 1:
+                raise RuntimeError('Expected one actual Ladder Item publication')
+            lines.remove(ladder_lines[0])
+            publication_lines = [line for line in lines if line.startswith(b'LADDER_WAKE_PUBLICATION ')]
+            if len(publication_lines) != 1:
+                raise RuntimeError('Expected actual Ladder cell state at publication')
+            publication = json.loads(publication_lines[0].partition(b' ')[2])
+            if (type(publication) is not dict or
+                    publication != {'head': [26, 8], 'ladder': [65, 2], 'sleeping': True, 'prior_cells': 1} or
+                    publication['sleeping'] is not True or type(publication['prior_cells']) is not int or
+                    any(type(publication[key]) is not list or any(type(v) is not int for v in publication[key])
+                        for key in ('head', 'ladder'))):
+                raise RuntimeError('Ladder publication prefix differs')
+            drop = json.loads(ladder_lines[0].partition(b' ')[2])
+            if (type(drop) is not dict or set(drop) != {'world_seed', 'player_seed', 'item'} or
+                    type(drop['item']) is not dict or
+                    set(drop['item']) != {'position', 'delay', 'stack', 'inserted', 'world_same'}):
+                raise RuntimeError('Exact Ladder Item observation required')
+            if args.mode in ('owned-wake-ladder', 'owned-wake-ladder-source'):
+                compared = compare_ladder_original(args.mode, native, drop, publication, output)
+            lines.remove(publication_lines[0])
         lines.remove(diagnostics[0])
         lines.remove(cleanup)
     else:

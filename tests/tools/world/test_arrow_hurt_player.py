@@ -13,7 +13,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--mode', choices=('live', 'fatal', 'fatal-source', 'wake',
                                           'wake-source-null-list', 'wake-bed-foot',
-                                          'wake-bed-foot-source'), required=True)
+                                          'wake-bed-foot-source', 'wake-bed-ladder',
+                                          'wake-bed-ladder-source', 'wake-bed-ladder-removal-source'), required=True)
     parser.add_argument('--executable', type=Path, required=True)
     parser.add_argument('--work-dir', type=Path, required=True)
     args = parser.parse_args()

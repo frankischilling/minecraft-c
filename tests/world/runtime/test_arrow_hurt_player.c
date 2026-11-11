@@ -12,6 +12,7 @@ int arrow_player_unused_drop_main(int, char **);
 #include "inventory/player/source_internal.h"
 #include "mc/entity/player/sleep.h"
 #include "mc/world/chunk/nibbles.h"
+#include "mc/world/runtime/placement.h"
 #include "mc/world/runtime/players.h"
 #include "world/runtime/mutation/drops/execution_internal.h"
 
@@ -32,8 +33,21 @@ static bool ap_is(const ap_fixture *s, const char *mode) {
     return strcmp(s->mode, mode) == 0;
 }
 
+static bool ap_ladder(const ap_fixture *s) {
+    return ap_is(s, "wake-bed-ladder") || ap_is(s, "wake-bed-ladder-source") ||
+           ap_is(s, "wake-bed-ladder-removal-source");
+}
+
 static bool ap_bed(const ap_fixture *s) {
-    return ap_is(s, "wake-bed-foot") || ap_is(s, "wake-bed-foot-source");
+    return ap_is(s, "wake-bed-foot") || ap_is(s, "wake-bed-foot-source") || ap_ladder(s);
+}
+
+static double ap_arrow_x(const ap_fixture *s) {
+    return ap_ladder(s) ? 9.4 : ap_bed(s) ? 7.6 : 8.5;
+}
+
+static double ap_arrow_velocity(const ap_fixture *s) {
+    return ap_ladder(s) ? -(double).6f : (double).6f;
 }
 
 static size_t ap_index(int32_t x, int32_t y, int32_t z) {
@@ -88,7 +102,8 @@ static bool ap_enter_bed(ap_fixture *s) {
           f->player->local_player->fields.player.u && f->world->fields.J &&
           f->player->base.width == .2f && f->player->base.height == .2f &&
           mc_player_sleep_retire(&call, NULL) == MC_PLAYER_SLEEP_OK &&
-          ap_cell(data, 8, 64, 8, 26, 12) && ap_cell(data, 7, 64, 8, 26, 0));
+          ap_cell(data, 8, 64, 8, 26, 12) &&
+          ap_cell(data, 7, 64, 8, ap_ladder(s) ? 65 : 26, ap_ladder(s) ? 2 : 0));
     f->player->local_player->fields.player.private_a = 37;
     return true;
 }
@@ -101,14 +116,27 @@ static mc_world_storage_status ap_bed_cell(void *context, mc_world_runtime *worl
     fixture *f = &s->player.game;
     mc_chunk_data *data = mc_world_chunk_state(s->player.chunk)->data;
     uint8_t metadata = UINT8_MAX;
-    s->valid &= ap_bed(s) && world == f->world && s->cells < 2 && x == (s->cells == 0 ? 8 : 7) &&
-                y == 64 && z == 8 && f->player->local_player->fields.player.u &&
-                f->player->local_player->fields.player.private_a == 37 &&
-                f->player->local_player->fields.living.Y == 20 &&
-                mc_chunk_nibbles_get(data->metadata, MC_CHUNK_NIBBLE_BYTES, 8, 64, 8, &metadata) &&
-                metadata == 8 && data->blocks[ap_index(7, 64, 8)] == (s->cells == 0 ? 26 : 0);
+    s->valid &=
+        ap_bed(s) && world == f->world && s->cells < 2 && x == (s->cells == 0 ? 8 : 7) && y == 64 &&
+        z == 8 && f->player->local_player->fields.player.u &&
+        f->player->local_player->fields.player.private_a == 37 &&
+        f->player->local_player->fields.living.Y == 20 &&
+        mc_chunk_nibbles_get(data->metadata, MC_CHUNK_NIBBLE_BYTES, 8, 64, 8, &metadata) &&
+        metadata == 8 &&
+        data->blocks[ap_index(7, 64, 8)] == (s->cells == 0 ? (ap_ladder(s) ? 65 : 26) : 0) &&
+        s->additions == (ap_ladder(s) && s->cells == 1 ? 1u : 0u);
     ++s->cells;
     *cause = (mc_world_storage_error){0};
+    if (s->valid && s->cells == 2 && ap_is(s, "wake-bed-ladder-removal-source")) {
+        const mc_world_storage_status status =
+            mc_world_access_receipt_create(s->observer, NULL, &s->receipt, failure, cause);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
+        s->receipt->exception_class = "java/lang/IllegalStateException";
+        *cause =
+            (mc_world_storage_error){MC_WORLD_STORAGE_IO_ERROR, "Arrow Ladder cell observer", 37};
+        return cause->status;
+    }
     return s->valid ? MC_WORLD_STORAGE_OK : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
 }
 
@@ -176,17 +204,22 @@ static mc_world_storage_status ap_added(void *context, mc_world_runtime *world, 
         c != NULL && mc_entity_tick_execution_current_world(&c->execution, &current);
     if (ap_bed(s)) {
         mc_item_stack_fields stack = {0};
-        s->valid &= world == f->world && s->additions == 1 && s->cells == 2 && item != NULL &&
-                    item->base.bF && item->item.c == 10 &&
-                    mc_item_stack_fields_get(item->stack, &stack) == MC_ITEM_STACK_OK &&
-                    stack.id == 355 && stack.count == 1 && stack.damage == 0 &&
-                    f->player->local_player->fields.player.u &&
-                    f->player->local_player->fields.player.private_a == 37 &&
-                    f->player->local_player->fields.living.Y == 20 && c != NULL &&
-                    c->hurt != NULL && !c->hurt->returned && current_world &&
-                    c->execution.leases[current.slot].phase == MC_WORLD_ACCESS_FAILURE_LEASE_ARMED;
+        const mc_chunk_data *data = mc_world_chunk_state(s->player.chunk)->data;
+        uint8_t metadata = UINT8_MAX;
+        s->valid &=
+            world == f->world && s->additions == 1 && s->cells == (ap_ladder(s) ? 1u : 2u) &&
+            item != NULL && item->base.bF && item->item.c == 10 &&
+            mc_item_stack_fields_get(item->stack, &stack) == MC_ITEM_STACK_OK &&
+            stack.id == (ap_ladder(s) ? 65 : 355) && stack.count == 1 && stack.damage == 0 &&
+            data->blocks[ap_index(7, 64, 8)] == (ap_ladder(s) ? 65 : 0) &&
+            mc_chunk_nibbles_get(data->metadata, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &metadata) &&
+            metadata == (ap_ladder(s) ? 2 : 0) && f->player->local_player->fields.player.u &&
+            f->player->local_player->fields.player.private_a == 37 &&
+            f->player->local_player->fields.living.Y == 20 && c != NULL && c->hurt != NULL &&
+            !c->hurt->returned && current_world &&
+            c->execution.leases[current.slot].phase == MC_WORLD_ACCESS_FAILURE_LEASE_ARMED;
         *cause = (mc_world_storage_error){0};
-        if (s->valid && ap_is(s, "wake-bed-foot-source")) {
+        if (s->valid && (ap_is(s, "wake-bed-foot-source") || ap_is(s, "wake-bed-ladder-source"))) {
             const mc_world_storage_status status =
                 mc_world_access_receipt_create(s->observer, NULL, &s->receipt, failure, cause);
             if (status != MC_WORLD_STORAGE_OK)
@@ -267,11 +300,11 @@ static bool ap_construct(ap_fixture *s) {
     if (ap_bed(s))
         CHECK(ap_enter_bed(s));
     CHECK(mc_arrow_allocate(f->app.entities, &s->arrow, NULL) == MC_ENTITY_OK &&
-          mc_arrow_construct_position(s->arrow, f->world, ap_bed(s) ? 7.6 : 8.5,
-                                      ap_bed(s) ? 64.85 : 66, ap_bed(s) ? f->player->base.z : 8.5,
+          mc_arrow_construct_position(s->arrow, f->world, ap_arrow_x(s), ap_bed(s) ? 64.85 : 66,
+                                      ap_bed(s) ? f->player->base.z : 8.5,
                                       &error) == MC_ENTITY_OK &&
-          mc_arrow_heading(s->arrow, s->player.math_owner, 1, 0, 0, .6f, 0, &error) ==
-              MC_ENTITY_OK);
+          mc_arrow_heading(s->arrow, s->player.math_owner, ap_ladder(s) ? -1 : 1, 0, 0, .6f, 0,
+                           &error) == MC_ENTITY_OK);
     inserted = false;
     CHECK(mc_world_runtime_insert_entity(f->world, s->arrow, &inserted, NULL) ==
               MC_WORLD_STORAGE_OK &&
@@ -380,25 +413,37 @@ static bool ap_bed_failure(ap_fixture *s, mc_arrow_tick_state *state) {
     mc_arrow_tick_call *call = s->call;
     mc_arrow_tick_hurt_work *hurt = call->hurt;
     mc_entity_damage_execution_view damage = {0};
+    const bool removal = ap_is(s, "wake-bed-ladder-removal-source");
+    const size_t cells = ap_ladder(s) && !removal ? 1u : 2u;
     CHECK(state->hurt_cleanup_acquired &&
           state->failure->classification == MC_ARROW_TICK_FAILURE_SOURCE_EXCEPTION &&
           strcmp(state->failure->exception_class, "java/lang/IllegalStateException") == 0 &&
           strcmp(state->failure->child_site.class_name, "fd") == 0 &&
-          strcmp(state->failure->child_site.method, "c") == 0 &&
-          state->failure->child_site.pc == 29 &&
+          strcmp(state->failure->child_site.method, removal ? "j" : "c") == 0 &&
+          state->failure->child_site.pc == (removal ? 34 : 29) &&
           mc_entity_damage_execution_inspect(&hurt->execution, &damage) && damage.wake != NULL &&
           damage.execution == &call->execution && damage.result != &call->query_result &&
           damage.result != &hurt->execution.owned);
     const mc_world_mutation_drop_execution *drop =
         mc_player_wake_execution_failed_drop(damage.wake);
-    CHECK(drop != NULL && drop->entity == s->item && !drop->active && drop->publication_returned &&
-          drop->insertion.observer_returned && drop->publication_scope.consumed &&
-          drop->constructor_scope.consumed && drop->publication.cause.system_error == 57 &&
-          !hurt->error.living_damage.entered && f->player->local_player->fields.player.u &&
+    if (removal) {
+        const mc_world_placement_error *occupancy =
+            hurt->error.player_wake.error == NULL ? NULL : hurt->error.player_wake.error->occupancy;
+        CHECK(drop == NULL && occupancy != NULL && occupancy->mutation != NULL &&
+              occupancy->mutation->hook_class != NULL &&
+              strcmp(occupancy->mutation->hook_class, "dp") == 0 &&
+              occupancy->mutation->hook_bytecode == 123);
+    } else {
+        CHECK(drop != NULL && drop->entity == s->item && !drop->active &&
+              drop->publication_returned && drop->insertion.observer_returned &&
+              drop->publication_scope.consumed && drop->constructor_scope.consumed &&
+              drop->publication.cause.system_error == 57);
+    }
+    CHECK(!hurt->error.living_damage.entered && f->player->local_player->fields.player.u &&
           f->player->local_player->fields.player.private_a == 37 && f->world->fields.J &&
-          f->player->local_player->fields.living.Y == 20 && s->cells == 2 && s->additions == 1 &&
-          s->sounds == 0 && s->impacts == 0 && s->item->base.bF && s->item->item.c == 10 &&
-          pd_statistic(f, 18, 0));
+          f->player->local_player->fields.living.Y == 20 && s->cells == cells &&
+          s->additions == 1 && s->sounds == 0 && s->impacts == 0 && s->item->base.bF &&
+          s->item->item.c == 10 && pd_statistic(f, 18, 0));
     const mc_java_random player_random = *f->player->random, arrow_random = *s->arrow->random,
                          world_random = *f->world->fields.r;
     const mc_arrow_tick_native_unwind_phase phases[] = {
@@ -406,8 +451,8 @@ static bool ap_bed_failure(ap_fixture *s, mc_arrow_tick_state *state) {
         MC_ARROW_TICK_UNWIND_HURT_CLOSE, MC_ARROW_TICK_UNWIND_HURT_CLEANUP,
         MC_ARROW_TICK_UNWIND_QUIESCENT};
     for (size_t i = 0; i < sizeof(phases) / sizeof(phases[0]); ++i) {
-        CHECK(ap_unwind_to(call, phases[i], i == 4, state) && s->cells == 2 && s->additions == 1 &&
-              s->sounds == 0 && s->impacts == 0 && s->item->base.bF &&
+        CHECK(ap_unwind_to(call, phases[i], i == 4, state) && s->cells == cells &&
+              s->additions == 1 && s->sounds == 0 && s->impacts == 0 && s->item->base.bF &&
               f->player->local_player->fields.player.u &&
               f->player->local_player->fields.player.private_a == 37 && f->world->fields.J &&
               f->player->local_player->fields.living.Y == 20 &&
@@ -418,7 +463,7 @@ static bool ap_bed_failure(ap_fixture *s, mc_arrow_tick_state *state) {
     CHECK(state->failure->effect == NULL && !state->hurt_cleanup_acquired &&
           hurt->execution.cleaned && f->player->local_player->pending_damage_wake == NULL &&
           !mc_entity_effect_has_pending(f->player) && state->source_pc == 741 &&
-          state->failure->child_site.pc == 29 &&
+          state->failure->child_site.pc == (removal ? 34 : 29) &&
           strcmp(state->failure->exception_class, "java/lang/IllegalStateException") == 0 &&
           pd_statistic(f, 18, 0));
     return true;
@@ -434,7 +479,8 @@ static bool ap_run(ap_fixture *s) {
           mc_arrow_tick_inspect(s->call, &state) && state.hurt_invoked && state.hurt_returned &&
           !state.hurt_prior_pending && s->valid);
     mc_living_entity_fields *living = mc_entity_living_fields(f->player);
-    if (ap_is(s, "live") || ap_is(s, "fatal") || ap_is(s, "wake") || ap_is(s, "wake-bed-foot")) {
+    if (ap_is(s, "live") || ap_is(s, "fatal") || ap_is(s, "wake") || ap_is(s, "wake-bed-foot") ||
+        ap_is(s, "wake-bed-ladder")) {
         const bool fatal = ap_is(s, "fatal");
         CHECK(status == MC_ARROW_TICK_OK && state.source_returned && state.hurt_continued &&
               state.hurt_result && state.hurt_bytes == 0 && s->call->hurt == NULL &&
@@ -442,8 +488,8 @@ static bool ap_run(ap_fixture *s) {
               living->Y == (fatal ? 0 : 16) && living->av == 0 && s->sounds == 2 &&
               s->impacts == 1 && s->arrow->base.be && s->arrow->base.bt == 1 &&
               s->arrow->arrow->fields.k == 1 &&
-              s->arrow->base.x == (ap_bed(s) ? 7.6 : 8.5) + (double).6f &&
-              s->arrow->base.velocity_x == (double).6f * (double).99f &&
+              s->arrow->base.x == ap_arrow_x(s) + ap_arrow_velocity(s) &&
+              s->arrow->base.velocity_x == ap_arrow_velocity(s) * (double).99f &&
               s->arrow->base.velocity_y == -(double).03f &&
               !mc_entity_effect_has_pending(f->player) && pd_statistic(f, 18, 4));
         if (fatal)
@@ -462,7 +508,7 @@ static bool ap_run(ap_fixture *s) {
     } else {
         CHECK(status != MC_ARROW_TICK_OK && !state.source_returned && state.source_pc == 741 &&
               !state.hurt_continued && !state.hurt_result && !s->arrow->base.be &&
-              s->arrow->base.x == (ap_bed(s) ? 7.6 : 8.5) &&
+              s->arrow->base.x == ap_arrow_x(s) &&
               state.hurt_bytes == sizeof(mc_arrow_tick_hurt_work) &&
               state.failure->effect == &s->call->hurt->error && s->impacts == 0);
         if (ap_is(s, "wake-source-null-list")) {
@@ -516,6 +562,9 @@ int main(int argc, char **argv) {
         (strcmp(argv[1], "live") != 0 && strcmp(argv[1], "fatal") != 0 &&
          strcmp(argv[1], "fatal-source") != 0 && strcmp(argv[1], "wake") != 0 &&
          strcmp(argv[1], "wake-bed-foot") != 0 && strcmp(argv[1], "wake-bed-foot-source") != 0 &&
+         strcmp(argv[1], "wake-bed-ladder") != 0 &&
+         strcmp(argv[1], "wake-bed-ladder-source") != 0 &&
+         strcmp(argv[1], "wake-bed-ladder-removal-source") != 0 &&
          strcmp(argv[1], "wake-source-null-list") != 0) ||
         CD(argv[3]) != 0 || !mc_math_trig_init(&trig))
         return 2;

@@ -106,6 +106,23 @@ original observations. Missing Math ownership and an outstanding callback
 scope have separate controls. Moving-piston TileEntity lookup and other
 unjoined neighbor hooks remain explicit frontiers.
 
+## Ladder drop
+
+An unsupported metadata-two Ladder beside the occupied head uses the same
+[Ladder neighbor body](../world/ladder.md#owned-wake-and-recursive-support).
+The head occupancy observer returns first. Item publication then observes the
+Ladder still present and the Player asleep. Only after publication returns does
+the notifying air setter remove the Ladder and wake continue.
+
+The [unchanged-original packet](../../tests/reference/entity/ladder_wake/README.md)
+pairs 50 normal-return values and 42 publication-exception values with native
+execution. A publication exception keeps the Ladder, inserted Item and sleep;
+a later cell-observer exception keeps the Item and already removed Ladder.
+Separate native cases cover an attached Ladder, missing Math ownership and a
+callback's outstanding independent scope. Real Arrow cases check the successful
+hit and both exception prefixes through checked native unwind. No cleanup path
+replays publication, removal or Random consumption.
+
 ## Original evidence
 
 The [component packet](../../tests/reference/entity/player_damage_wake/README.md)

@@ -1,5 +1,58 @@
 # Test scope and reproduction
 
+## Ladder drop during Player wake
+
+The initial real wake reaches the explicit owned Ladder refusal after head
+occupancy clears. Connecting the existing Ladder body passes normal wake,
+Item-observer exception, unrelated scope, missing Math, later cell-observer
+exception and supported-Ladder controls. The supported case preserves the
+Ladder and both Random seeds without publishing an Item.
+
+Two fresh original interpreters agree on normal wake and publication exception.
+The [packet](../tests/reference/entity/ladder_wake/README.md) binds 31 original
+classes and eleven selected Code bodies, including the 139-byte Ladder method.
+Native comparison selects 50 normal-return and 42 exception values. It checks
+the actual publication cell snapshot, ordered callbacks, Player state, World
+and Player seeds and selected Item fields. Twenty damaged observations and
+three malformed JSON transports are rejected in normal and optimized Python.
+
+Three real Arrow cases enter sleep, hit the actual sleeping bounds above the
+Bed, then exercise return, Item-observer exception and later cell-observer
+exception. All ten Arrow/Player cases pass the focused Windows run. Each failed
+case preserves its actual committed prefix through diagnostic capture, hurt
+close, cleanup and quiescence, without replaying Source work.
+
+The new cold-support control loads a saved Item while checking a boundary
+Ladder. A genuine descendant scope makes checked close fail; a second mode
+also returns an actual observer exception. The retained raw return stays
+independent of the canonical native refusal. Reintroducing only the old empty
+detail projection makes the actual wrapper report raw OK instead of BUSY.
+Restoring the native-stop guard passes the same process. All three Windows
+support/controller tests pass; eleven malformed receipts are rejected in each
+Python mode. This is an executed regression, not a synthesized error record.
+
+The complete Windows MSVC Release client suite passes all 1,162 tests in
+560.92 seconds. Linux Clang 18.1.8 Debug passes all 1,008 headless tests in
+480.82 seconds with ASan, UBSan and leak detection. Both preserve every preceding
+test name and add exactly fourteen, with no skipped or unrun cases. Each host
+matches all 92 selected original values with empty native stderr and checked
+cleanup. The freeze binds 6,085 public files; all 2,379 C files and fragments
+pass clang-format 18.1.3.
+
+The first monitor-2 Bed opportunity reaches sleep, then fails its aggregate
+dawn assertion. Its captured state does not isolate which conjunct failed.
+A separate diagnostic executable reports every dawn value and passes 1,726
+checks. After both host sweeps finish, the unchanged qualified executable
+passes 2,407 placement/sleep/dawn/save checks in an isolated repeat. The failed
+opportunity stays failed; neither later pass establishes general scene
+reliability or identifies its cause.
+
+The rebuilt monitor-2 Arrow/Pig scene passes 423 checks through actual damage,
+SDK pause/save, independent NBT readback and window cleanup. All six final
+Bed and Arrow images are inspected. Each final scene binds 2,397 unchanged
+source/product inputs. These cover ordinary wake and awake-Pig damage, not
+graphical sleeping-Player Arrow damage, original audiovisual equality or FPS.
+
 ## Orphan Bed foot drop during Player wake
 
 The first owned foot test stops after both cell changes at the explicit Bed

@@ -1,5 +1,28 @@
 # Combat and projectiles
 
+## Ladder drop during wake
+
+The retained wake execution now reaches the existing Ladder neighbor body.
+After Bed occupancy clears, an unsupported Ladder publishes its Item while the
+Ladder still exists and the Player is asleep. Publication returns before the
+notifying air setter removes the Ladder and wake continues. A supported Ladder
+stays attached without a drop or Random draw.
+
+Two unchanged-original runs agree on normal wake and Item-observer exception.
+Native comparison selects 50 normal values and 42 exception values, including
+the publication snapshot and callback order. Real Arrow controls preserve the
+different committed prefixes after publication or later cell-observer failure.
+The cold-support control retains a genuine outstanding descendant and an
+independent raw failure through checked cleanup. Wider original state,
+unrestricted graphs, graphical sleeping-Player damage and FPS remain separate.
+The complete Windows client suite passes 1,162 tests; Linux passes all 1,008
+headless tests with ASan, UBSan and leak detection. Each host matches the 92
+selected original values. Final monitor-2 scenes pass 2,407 Bed and 423 Arrow/Pig
+checks with inspected images and independent save readback. An earlier Bed
+dawn assertion failed and remains separately recorded; graphical sleeping-Player
+damage and general scene reliability remain unqualified.
+See the [Ladder contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/ladder.md#owned-wake-and-recursive-support).
+
 ## Recursive Bed notification during wake
 
 Actual Player damage wakes a sleeping Player before processing the hit. The

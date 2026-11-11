@@ -517,10 +517,11 @@ static bool block_neighbor(mc_world_runtime *world, const mc_block *block, int32
             return unavailable(world, block, "le", "hc", "Block neighbor hook", error, owned);
         case MC_BLOCK_LADDER:
             if (block->classes->options.side == MC_REGISTRY_CLIENT)
-                return owned == NULL
-                           ? mc_world_mutation_ladder_neighbor(world, block, x, y, z, source_id,
-                                                               error)
-                           : unjoined(owned, "Ladder neighbor hook requires owned execution");
+                return owned == NULL  ? mc_world_mutation_ladder_neighbor(world, block, x, y, z,
+                                                                          source_id, error)
+                       : call != NULL ? mc_world_mutation_ladder_neighbor_in_execution(
+                                            call, world, block, x, y, z, source_id, error)
+                                      : unjoined(owned, "Ladder neighbor requires retained caller");
             return unavailable(world, block, "dp", "cg", "Block neighbor hook", error, owned);
         case MC_BLOCK_LEVER:
             if (block->classes->options.side == MC_REGISTRY_CLIENT)

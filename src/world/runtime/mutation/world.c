@@ -6,6 +6,7 @@
 #include "../blocks_execution_internal.h"
 #include "../construction_internal.h"
 #include "../execution_children_internal.h"
+#include "../solid_support_execution_internal.h"
 #include "chunk_execution_internal.h"
 #include "drops/execution_internal.h"
 #include "mc/core/java/java.h"
@@ -23,7 +24,9 @@ struct mc_world_mutation_execution_call {
     mc_world_mutation_chunk_execution *chunk;
     mc_world_mutation_execution_call *child;
     mc_world_mutation_drop_execution *drop;
-    bool active, close_done;
+    mc_world_solid_support_execution *support;
+    mc_world_storage_status support_status;
+    bool active, close_done, support_returned;
 };
 
 static const mc_entity_tick_execution_site metadata_site = {"fd", "d", "(IIII)V", 0};
@@ -744,9 +747,62 @@ mc_world_mutation_execution_retire(mc_world_mutation_execution_call **slot) {
     if (drop != MC_WORLD_STORAGE_OK)
         return drop;
     free(call->chunk);
+    free(call->support);
     free(call);
     *slot = NULL;
     return MC_WORLD_STORAGE_OK;
+}
+
+bool mc_world_mutation_execution_support(mc_world_mutation_execution_call *call,
+                                         mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
+                                         bool *out, mc_world_storage_status *raw,
+                                         const mc_world_solid_support_execution **detail,
+                                         mc_entity_tick_execution_site site) {
+    if (!mc_world_mutation_execution_current(call, world, site))
+        return false;
+    if (call->support != NULL || out == NULL || raw == NULL || detail == NULL) {
+        mc_world_runtime_execution_result_note(call->context.result, MC_WORLD_STORAGE_BUSY,
+                                               "World support requires fresh caller work", site);
+        return false;
+    }
+    call->support = calloc(1, sizeof(*call->support));
+    if (call->support == NULL) {
+        mc_world_runtime_execution_result_note(call->context.result,
+                                               MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                                               "World retained support frame", site);
+        return false;
+    }
+    mc_world_solid_support_execution_init(call->support, call->context.execution,
+                                          call->context.code_classes, call->context.code, site,
+                                          call->context.result);
+    const bool completed = mc_world_solid_support_detailed_held_in_execution(
+        call->support, world, x, y, z, out, &call->support_status);
+    call->support_returned = true;
+    *raw = call->support_status;
+    if (!completed) {
+        *detail = call->support;
+        return false;
+    }
+    free(call->support);
+    call->support = NULL;
+    call->support_returned = false;
+    *detail = NULL;
+    return true;
+}
+
+const mc_world_solid_support_execution *
+mc_world_mutation_execution_failed_support(const mc_world_mutation_execution_call *call,
+                                           mc_world_storage_status *raw) {
+    if (call == NULL || call->active || raw == NULL)
+        return NULL;
+    const mc_world_solid_support_execution *child =
+        mc_world_mutation_execution_failed_support(call->child, raw);
+    if (child != NULL)
+        return child;
+    if (call->support == NULL || !call->support_returned)
+        return NULL;
+    *raw = call->support_status;
+    return call->support;
 }
 
 bool mc_world_mutation_execution_drop(mc_world_mutation_execution_call *call,

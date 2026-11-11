@@ -44,6 +44,38 @@ remain separate because prepared lighting differs between the two fixtures.
 
 The native `world.ladder` fixture also exercises ordinary Item publication,
 drop-before-removal callbacks, failure after the air write, actual null metadata
-and null World ordering. These are finite contracts. The complete recursive
-mutation execution join and unrestricted Ladder interactions remain separate
-work. An owned mutation caller still needs that join through these descendants.
+and null World ordering. These are finite contracts.
+
+## Owned wake and recursive support
+
+The owned mutation dispatcher enters this same Ladder body. Metadata, support,
+inherited drop and the recursive notifying setter borrow the caller's execution
+and defining namespace. A supported metadata-two Ladder returns without a drop,
+removal or World Random draw. Unsupported metadata two reaches Item publication
+before the Ladder cell changes to air.
+
+The [wake packet](../../tests/reference/entity/ladder_wake/README.md) retains two
+fresh unchanged-original runs. Native comparison selects 50 values for normal
+wake and 42 for an Item observer exception. The publication snapshot explicitly
+keeps the Ladder present and the Player asleep after occupancy clears. Wider
+original state, constructor entropy and Java stacks remain outside this native
+projection.
+
+Actual support calls retain their complete failed lower frame and raw C return
+before projection. A native refusal can coexist with a non-OK raw return while
+the lower detail remains empty. Copying that empty detail would erase the raw
+failure. The adapter checks the actual native-stop flag and keeps the retained
+frame for diagnosis and checked retirement.
+
+A cold support-Chunk control loads an actual saved Item. Its observer leaves a
+genuine descendant World scope current, optionally returning an actual observer
+exception too. The surrounding metadata write preserves its committed prefix,
+Ladder and Item while retaining the independent raw status and canonical native
+refusal. Only the external scope's owner closes it. Recorded acquisition and
+close work then drain without another load, callback, drop or removal.
+
+Prepared Arrow hits enter real sleep and cross the sleeping bounds above the
+Bed. Normal return publishes the Ladder Item, removes the Ladder, wakes, then
+applies damage. Publication and later cell-observer exceptions retain their
+different committed prefixes through all native unwind phases. These CPU
+controls do not qualify unrestricted Ladder gameplay, original frames or FPS.

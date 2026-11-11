@@ -1,5 +1,23 @@
 # Development status
 
+The [Ladder neighbor](world/ladder.md#owned-wake-and-recursive-support) now shares
+the retained Player wake execution. Support loss publishes its Item before the
+notifying air setter removes the Ladder. Publication and later cell-observer
+exceptions preserve their different committed prefixes through native unwind.
+Actual failed support retains its full lower frame and raw status independently
+of a canonical native refusal.
+
+The complete Windows MSVC Release client suite passes 1,162 tests in 560.92
+seconds. Linux Clang 18.1.8 Debug passes all 1,008 headless tests in 480.82 seconds
+with ASan, UBSan and leak detection. Both native hosts match 92 selected original
+Ladder wake values. Final monitor-2 scenes pass 2,407 Bed and 423 Arrow/Pig checks;
+the first Bed opportunity fails its dawn assertion and remains separately
+recorded. The [test record](testing.md#ladder-drop-during-player-wake) keeps
+comparison, failure and graphical limits explicit. Full parity and measured
+FPS remain unqualified.
+
+The preceding foot-drop checkpoint follows.
+
 The [orphan Bed foot drop](entity/player-damage-wake.md#orphan-foot-drop) now
 shares the owned wake execution. Prepared real Arrow hits enter sleep, clear
 occupancy, remove the orphan, publish a Bed Item, then wake before damage.

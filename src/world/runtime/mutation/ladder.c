@@ -1,7 +1,9 @@
 #include "mutation_internal.h"
+#include "world_execution_internal.h"
 
 #include "../block_queries_internal.h"
 #include "../collision/blocks_internal.h"
+#include "../solid_support_execution_internal.h"
 #include "mc/core/java/java.h"
 
 #include <stdlib.h>
@@ -17,6 +19,7 @@ typedef struct ladder_frame {
     const mc_block *block;
     mc_world_mutation_error *error;
     ladder_scratch *scratch;
+    mc_world_mutation_execution_call *owned;
 } ladder_frame;
 
 static void ladder_at(ladder_frame *f, unsigned int pc) {
@@ -62,6 +65,12 @@ static bool ladder_storage(ladder_frame *f, mc_world_storage_error cause) {
 }
 
 static bool ladder_metadata(ladder_frame *f, int32_t x, int32_t y, int32_t z, int32_t *out) {
+    if (f->owned != NULL) {
+        ladder_at(f, 5);
+        return mc_world_mutation_execution_get(
+            f->owned, f->world, x, y, z, true, out, f->error,
+            (mc_entity_tick_execution_site){"dp", "b", "(Lfd;IIII)V", 5});
+    }
     if (!ladder_workspace(f, 5))
         return false;
     mc_world_collision_error *child = &f->scratch->value;
@@ -76,6 +85,27 @@ static bool ladder_metadata(ladder_frame *f, int32_t x, int32_t y, int32_t z, in
 
 static bool ladder_solid(ladder_frame *f, unsigned int pc, int32_t x, int32_t y, int32_t z,
                          bool *out) {
+    if (f->owned != NULL) {
+        ladder_at(f, pc);
+        mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
+        const mc_world_solid_support_execution *child = NULL;
+        const bool completed = mc_world_mutation_execution_support(
+            f->owned, f->world, x, y, z, out, &raw, &child,
+            (mc_entity_tick_execution_site){"dp", "b", "(Lfd;IIII)V", (int)pc});
+        if (completed)
+            return true;
+        /* The raw C result can be non-OK alongside a native refusal. The
+         * support detail is deliberately unprojected in that case; keep its
+         * actual retained lower frame and do not turn empty detail into OK. */
+        f->error->status = raw;
+        if (child != NULL && !child->native_stopped && raw != MC_WORLD_STORAGE_OK) {
+            ladder_access(f->error, &child->detail.access);
+            f->error->registry = child->detail.error.registry;
+            f->error->support_bytecode = child->detail.error.bytecode;
+            return ladder_storage(f, child->detail.error.cause);
+        }
+        return false;
+    }
     if (!ladder_workspace(f, pc))
         return false;
     mc_world_solid_support_detail *child = &f->scratch->solid;
@@ -120,17 +150,33 @@ static bool ladder_neighbor(ladder_frame *f, int32_t x, int32_t y, int32_t z) {
     }
     if (!supported) {
         ladder_at(f, 114);
-        if (!mc_world_mutation_drop(f->world, f->block, x, y, z, metadata, f->error))
-            return ladder_nested(f, 114, f->error);
-        if (!ladder_workspace(f, 123))
-            return false;
-        mc_world_mutation_error *child = &f->scratch->mutation;
-        mc_world_mutation_error_init(child);
-        bool ignored;
-        if (mc_world_runtime_block_set(f->world, x, y, z, 0, &ignored, child) !=
-            MC_WORLD_STORAGE_OK)
-            return ladder_nested(f, 123, child);
-        /* The ordinary setter Boolean is discarded at 126. */
+        if (f->owned != NULL) {
+            if (!mc_world_mutation_execution_drop(
+                    f->owned, f->world, f->block, x, y, z, metadata, f->error,
+                    (mc_entity_tick_execution_site){"dp", "b", "(Lfd;IIII)V", 114}))
+                return false;
+            ladder_at(f, 123);
+            if (!mc_world_mutation_execution_remove(
+                    f->owned, f->world, x, y, z, f->error,
+                    (mc_entity_tick_execution_site){"dp", "b", "(Lfd;IIII)V", 123})) {
+                if (f->error->status != MC_WORLD_STORAGE_OK)
+                    return ladder_nested(f, 123, f->error);
+                ladder_at(f, 123);
+                return false;
+            }
+        } else {
+            if (!mc_world_mutation_drop(f->world, f->block, x, y, z, metadata, f->error))
+                return ladder_nested(f, 114, f->error);
+            if (!ladder_workspace(f, 123))
+                return false;
+            mc_world_mutation_error *child = &f->scratch->mutation;
+            mc_world_mutation_error_init(child);
+            bool ignored;
+            if (mc_world_runtime_block_set(f->world, x, y, z, 0, &ignored, child) !=
+                MC_WORLD_STORAGE_OK)
+                return ladder_nested(f, 123, child);
+            /* The ordinary setter Boolean is discarded at 126. */
+        }
     }
     /* The reached invokespecial135 is the literal base return0. */
     f->error->hook_class = f->error->hook_method = NULL;
@@ -142,8 +188,21 @@ bool mc_world_mutation_ladder_neighbor(mc_world_runtime *world, const mc_block *
                                        int32_t y, int32_t z, int32_t source_id,
                                        mc_world_mutation_error *error) {
     (void)source_id;
-    ladder_frame frame = {world, block, error, NULL};
+    ladder_frame frame = {world, block, error, NULL, NULL};
     const bool completed = ladder_neighbor(&frame, x, y, z);
     free(frame.scratch);
     return completed;
+}
+
+bool mc_world_mutation_ladder_neighbor_in_execution(mc_world_mutation_execution_call *owned,
+                                                    mc_world_runtime *world, const mc_block *block,
+                                                    int32_t x, int32_t y, int32_t z,
+                                                    int32_t source_id,
+                                                    mc_world_mutation_error *error) {
+    (void)source_id;
+    if (!mc_world_mutation_execution_current(
+            owned, world, (mc_entity_tick_execution_site){"dp", "b", "(Lfd;IIII)V", 0}))
+        return false;
+    ladder_frame frame = {world, block, error, NULL, owned};
+    return ladder_neighbor(&frame, x, y, z);
 }
