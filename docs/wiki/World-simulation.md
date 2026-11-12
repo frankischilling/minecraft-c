@@ -1,5 +1,22 @@
 # World simulation
 
+## Sapling and Tall Grass wake neighbors
+
+[Retained plant neighbors](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plants.md#owned-sapling-and-tall-grass-neighbors-during-player-wake)
+share the Flower survival body while keeping actual virtual drops. Saplings
+preserve metadata; Tall Grass selects Seeds or removes itself without an Item.
+The no-Item branch needs no Math owner. Publication and removal exceptions
+preserve their committed prefixes through checked native cleanup.
+
+Two unchanged-original VMs agree on eight prepared cases. Windows and sanitized
+Linux each match 379 selected values. Fifteen direct native modes cover both
+plant families, support and failure branches. Seven actual Arrow cases also
+preserve completed effects and all three Random streams through native cleanup.
+Growth, unrestricted plant
+graphs, graphical sleeping-Player damage, original pixels/audio and measured
+FPS retain separate scopes. See the [test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#sapling-and-tall-grass-during-player-wake)
+for full validation.
+
 ## Redstone Torch lifecycle
 
 [Client Torches 75/76](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/redstone-torch.md) now run addition, removal, neighbor scheduling, directional power and burnout through the actual World services. The defining class owns one shared, reclaimable burnout List across Worlds. Windows and sanitized Linux match all 203 finite cases against two original repeats, including age100/101, wrapped time, callback failures and shared history.

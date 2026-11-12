@@ -18,6 +18,11 @@ shares that execution through both support-loss removal paths. The
 [Flower neighbor](Combat-and-projectiles#flower-survival-during-wake) keeps
 supported Flowers and orders unsupported removal after Item publication.
 
+[Sapling and Tall Grass neighbors](Combat-and-projectiles#sapling-and-tall-grass-during-wake)
+now share that retained survival path with their actual virtual drops. Tall
+Grass can remove itself without publishing an Item or requiring Math. Finite
+original comparisons and actual Arrow-hit controls retain separate scopes.
+
 [Slime removal](Combat-and-projectiles#slime-removal-and-splitting) runs through
 ordinary Mob ticks. Two Windows scenes use the usual controls to pause and
 save after four children replace the parent. Independent readback finds the

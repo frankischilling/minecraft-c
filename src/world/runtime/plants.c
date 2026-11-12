@@ -674,7 +674,9 @@ bool mc_world_runtime_flower_survives_in_execution(mc_world_plant_execution *fra
         return false;
     if (frame->execution == NULL || frame->execution->identity != frame->execution ||
         frame->code_classes == NULL || frame->owned == NULL || frame->entered || world == NULL ||
-        receiver == NULL || receiver->classes == NULL || receiver->kind != MC_BLOCK_FLOWER ||
+        receiver == NULL || receiver->classes == NULL ||
+        (receiver->kind != MC_BLOCK_FLOWER && receiver->kind != MC_BLOCK_SAPLING &&
+         receiver->kind != MC_BLOCK_TALL_GRASS) ||
         receiver->classes->options.side != MC_REGISTRY_CLIENT || out == NULL || raw == NULL ||
         world->construction.mode != MC_WORLD_RUNTIME_GAME ||
         world->construction.phase == MC_WORLD_RUNTIME_RETIRED) {

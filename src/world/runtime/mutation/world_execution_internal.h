@@ -105,10 +105,10 @@ bool mc_world_mutation_torch_neighbor_in_execution(mc_world_mutation_execution_c
                                                    mc_world_runtime *, const mc_block *, int32_t,
                                                    int32_t, int32_t, int32_t,
                                                    mc_world_mutation_error *);
-bool mc_world_mutation_flower_neighbor_in_execution(mc_world_mutation_execution_call *,
-                                                    mc_world_runtime *, const mc_block *, int32_t,
-                                                    int32_t, int32_t, int32_t,
-                                                    mc_world_mutation_error *);
+bool mc_world_mutation_plant_neighbor_in_execution(mc_world_mutation_execution_call *,
+                                                   mc_world_runtime *, const mc_block *, int32_t,
+                                                   int32_t, int32_t, int32_t,
+                                                   mc_world_mutation_error *);
 
 bool mc_world_mutation_block_removed_in_execution(mc_world_runtime *, const mc_block *, int32_t,
                                                   int32_t, int32_t, mc_world_mutation_error *,

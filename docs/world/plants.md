@@ -90,6 +90,41 @@ Other owned plant kinds, growth and addition/tick callers retain their separate
 frontiers. These prepared calls do not establish natural growth, graphical
 sleeping-Player damage, original audiovisual equality or an FPS change.
 
+## Owned Sapling and Tall Grass neighbors during Player wake
+
+Saplings and Tall Grass share the retained Flower neighbor and survival
+bodies. Original client classes `he` and `ru` inherit `wb.b`, `wb.h`, `wb.g`
+and `wb.d`; the retained entry admits those actual client receivers. Drop
+dispatch keeps the concrete receiver. Sapling metadata uses `he.b_(I)I`
+with mask 3. Tall Grass uses `ru.a(ILjava/util/Random;)I`, consuming
+`nextInt(8)` before reading its live Seed Item reference or returning -1.
+The inherited chance float still runs before that selector.
+
+Supported plants draw no Random. Unsupported plants publish their Item
+before notifying removal. A no-Item Tall Grass branch removes the plant
+without constructing an Item or requiring Math. Source observer exceptions
+retain their different publication/removal prefixes; independent execution
+scope and missing-Math refusals retain the actual pending native children.
+Checked cleanup leaves completed cells, Items, Player state and Random
+progress intact.
+
+The [original packet](../../tests/reference/entity/sapling_tall_grass_wake/README.md)
+contains eight prepared profiles from two fresh unchanged-original VMs.
+Native projection compares 379 selected values per host, including Sapling
+metadata 2, Tall Grass metadata 1, the Seed damage 0, ordered callbacks,
+actual light operands and World/Player Random state. Fifteen direct native
+modes cover both plant families and the failure branches above. Seven prepared
+real Arrow hits separately cover both families' normal, publication-exception
+and removal-exception routes, plus Tall Grass without an Item. Normal hits wake
+before four damage. Interrupted hits keep health 20 and preserve the committed
+prefix and complete World/Player/Arrow Random state through all five native
+unwind observations. These Arrow controls do not inherit the original wake
+packet's runtime comparison. Wider
+constructor entropy, Gaussian caches, complete Chunk planes and original
+exception stacks remain unpaired. This qualification does not establish
+growth, unrestricted plant graphs, graphical sleeping-Player damage,
+original audiovisual equality or an FPS improvement.
+
 ## Synchronous callbacks and ticks
 
 The [plant callback subsystem](../../src/world/runtime/mutation/plants) implements

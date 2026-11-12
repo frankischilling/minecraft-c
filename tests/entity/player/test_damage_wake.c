@@ -262,6 +262,21 @@ typedef enum dw_recursive_mode {
     DW_RECURSIVE_FLOWER_SUPPORTED,
     DW_RECURSIVE_FLOWER_SKY_SUPPORTED,
     DW_RECURSIVE_FLOWER_DARK,
+    DW_RECURSIVE_SAPLING,
+    DW_RECURSIVE_SAPLING_SOURCE,
+    DW_RECURSIVE_SAPLING_SCOPE,
+    DW_RECURSIVE_SAPLING_MATH_MISSING,
+    DW_RECURSIVE_SAPLING_REMOVAL_SOURCE,
+    DW_RECURSIVE_SAPLING_SUPPORTED,
+    DW_RECURSIVE_TALL_GRASS,
+    DW_RECURSIVE_TALL_GRASS_SOURCE,
+    DW_RECURSIVE_TALL_GRASS_SCOPE,
+    DW_RECURSIVE_TALL_GRASS_MATH_MISSING,
+    DW_RECURSIVE_TALL_GRASS_REMOVAL_SOURCE,
+    DW_RECURSIVE_TALL_GRASS_SUPPORTED,
+    DW_RECURSIVE_TALL_GRASS_SEED1234,
+    DW_RECURSIVE_TALL_GRASS_NO_ITEM,
+    DW_RECURSIVE_TALL_GRASS_NO_ITEM_MATH_MISSING,
 } dw_recursive_mode;
 
 static bool dw_foot(dw_recursive_mode mode) {
@@ -296,16 +311,99 @@ static bool dw_flower_supported(dw_recursive_mode mode) {
     return mode == DW_RECURSIVE_FLOWER_SUPPORTED || mode == DW_RECURSIVE_FLOWER_SKY_SUPPORTED;
 }
 
+static bool dw_sapling(dw_recursive_mode mode) {
+    return mode >= DW_RECURSIVE_SAPLING && mode <= DW_RECURSIVE_SAPLING_SUPPORTED;
+}
+
+static bool dw_tall_grass(dw_recursive_mode mode) {
+    return mode >= DW_RECURSIVE_TALL_GRASS && mode <= DW_RECURSIVE_TALL_GRASS_NO_ITEM_MATH_MISSING;
+}
+
+static bool dw_family(dw_recursive_mode mode) {
+    return dw_sapling(mode) || dw_tall_grass(mode);
+}
+
+static bool dw_family_supported(dw_recursive_mode mode) {
+    return mode == DW_RECURSIVE_SAPLING_SUPPORTED || mode == DW_RECURSIVE_TALL_GRASS_SUPPORTED;
+}
+
+static bool dw_family_no_item(dw_recursive_mode mode) {
+    return mode == DW_RECURSIVE_TALL_GRASS_NO_ITEM ||
+           mode == DW_RECURSIVE_TALL_GRASS_NO_ITEM_MATH_MISSING;
+}
+
+static bool dw_family_math_missing(dw_recursive_mode mode) {
+    return mode == DW_RECURSIVE_SAPLING_MATH_MISSING ||
+           mode == DW_RECURSIVE_TALL_GRASS_MATH_MISSING ||
+           mode == DW_RECURSIVE_TALL_GRASS_NO_ITEM_MATH_MISSING;
+}
+
+static bool dw_family_normal(dw_recursive_mode mode) {
+    return mode == DW_RECURSIVE_SAPLING || mode == DW_RECURSIVE_TALL_GRASS ||
+           mode == DW_RECURSIVE_TALL_GRASS_SEED1234 || dw_family_no_item(mode);
+}
+
+static int64_t dw_family_seed(dw_recursive_mode mode) {
+    return dw_family_no_item(mode)                    ? INT64_C(0x7fffffff)
+           : mode == DW_RECURSIVE_TALL_GRASS_SEED1234 ? INT64_C(0x1234)
+                                                      : INT64_C(1);
+}
+
+/* Independent unsigned Java LCG model. It predicts only declared Random
+ * consumption, never World getter answers or the source predicate result. */
+static uint32_t dw_family_bits(uint64_t *state, unsigned int bits) {
+    *state = (*state * UINT64_C(0x5deece66d) + UINT64_C(11)) & UINT64_C(0xffffffffffff);
+    return (uint32_t)(*state >> (48u - bits));
+}
+
+static bool dw_family_random(dw_recursive_mode mode, uint64_t before, uint64_t *after,
+                             unsigned int *draws) {
+    *after = before;
+    *draws = 0;
+    if (dw_family_supported(mode))
+        return false;
+    (void)dw_family_bits(after, 24); /* Inherited chance float, even at chance1. */
+    ++*draws;
+    bool item = true;
+    if (dw_tall_grass(mode)) {
+        const uint32_t bits = dw_family_bits(after, 31);
+        ++*draws;
+        item = ((UINT64_C(8) * bits) >> 31u) == 0;
+    }
+    if (item)
+        for (size_t i = 0; i < 3; ++i) {
+            (void)dw_family_bits(after, 24);
+            ++*draws;
+        }
+    return item;
+}
+
 static bool dw_attached_neighbor(dw_recursive_mode mode) {
-    return dw_ladder(mode) || dw_torch(mode) || dw_flower(mode);
+    return dw_ladder(mode) || dw_torch(mode) || dw_flower(mode) || dw_family(mode);
 }
 
 static uint8_t dw_neighbor_id(dw_recursive_mode mode) {
-    return dw_flower(mode) ? 37 : dw_torch(mode) ? 50 : 65;
+    return (uint8_t)(dw_sapling(mode)      ? 6
+                     : dw_tall_grass(mode) ? 31
+                     : dw_flower(mode)     ? 37
+                     : dw_torch(mode)      ? 50
+                                           : 65);
 }
 
 static uint8_t dw_neighbor_metadata(dw_recursive_mode mode) {
-    return dw_flower(mode) ? 0 : dw_torch(mode) ? 1 : 2;
+    return (uint8_t)(dw_sapling(mode)      ? 2
+                     : dw_tall_grass(mode) ? 1
+                     : dw_flower(mode)     ? 0
+                     : dw_torch(mode)      ? 1
+                                           : 2);
+}
+
+static int32_t dw_neighbor_item_id(dw_recursive_mode mode) {
+    return dw_tall_grass(mode) ? 295 : (int32_t)dw_neighbor_id(mode);
+}
+
+static int32_t dw_neighbor_item_damage(dw_recursive_mode mode) {
+    return dw_sapling(mode) ? 2 : 0;
 }
 
 typedef struct dw_recursive_cell_sample {
@@ -368,17 +466,20 @@ static mc_world_storage_status dw_recursive_added(void *context, mc_world_runtim
         world->fields.J && item != NULL && mc_entity_is_kind(item, MC_ENTITY_CLASS_KIND_ITEM) &&
         item->base.bF && item->item.c == 10 &&
         mc_item_stack_fields_get(item->stack, &stack) == MC_ITEM_STACK_OK &&
-        stack.id == (dw_attached_neighbor(o->mode) ? dw_neighbor_id(o->mode) : 355) &&
-        stack.count == 1 && stack.damage == 0 && item->base.x >= 7.15 && item->base.x < 7.85 &&
-        item->base.y >= 64.15 && item->base.y < 64.85 && item->base.z >= 8.15 &&
-        item->base.z < 8.85 && world->fields.b->items[world->fields.b->count - 1] == item &&
+        !dw_family_no_item(o->mode) &&
+        stack.id == (dw_attached_neighbor(o->mode) ? dw_neighbor_item_id(o->mode) : 355) &&
+        stack.count == 1 && stack.damage == dw_neighbor_item_damage(o->mode) &&
+        item->base.x >= 7.15 && item->base.x < 7.85 && item->base.y >= 64.15 &&
+        item->base.y < 64.85 && item->base.z >= 8.15 && item->base.z < 8.85 &&
+        world->fields.b->items[world->fields.b->count - 1] == item &&
         mc_entity_tick_execution_current_world(o->execution, &token) &&
         o->execution->leases[token.slot].phase == MC_WORLD_ACCESS_FAILURE_LEASE_ARMED;
     *error = (mc_world_storage_error){0};
     if (o->publication_valid &&
         (o->mode == DW_RECURSIVE_FOOT_SOURCE || o->mode == DW_RECURSIVE_LADDER_SOURCE ||
          o->mode == DW_RECURSIVE_TORCH_SOURCE || o->mode == DW_RECURSIVE_TORCH_EARLY_SOURCE ||
-         o->mode == DW_RECURSIVE_FLOWER_SOURCE)) {
+         o->mode == DW_RECURSIVE_FLOWER_SOURCE || o->mode == DW_RECURSIVE_SAPLING_SOURCE ||
+         o->mode == DW_RECURSIVE_TALL_GRASS_SOURCE)) {
         const mc_world_storage_status status =
             mc_world_access_receipt_create(o->listener, NULL, &o->receipt, failure, error);
         if (status != MC_WORLD_STORAGE_OK)
@@ -389,7 +490,8 @@ static mc_world_storage_status dw_recursive_added(void *context, mc_world_runtim
     }
     if (o->publication_valid &&
         (o->mode == DW_RECURSIVE_FOOT_SCOPE || o->mode == DW_RECURSIVE_LADDER_SCOPE ||
-         o->mode == DW_RECURSIVE_TORCH_SCOPE || o->mode == DW_RECURSIVE_FLOWER_SCOPE)) {
+         o->mode == DW_RECURSIVE_TORCH_SCOPE || o->mode == DW_RECURSIVE_FLOWER_SCOPE ||
+         o->mode == DW_RECURSIVE_SAPLING_SCOPE || o->mode == DW_RECURSIVE_TALL_GRASS_SCOPE)) {
         const mc_world_storage_status status = mc_entity_tick_execution_push_world(
             o->execution, world, (mc_entity_tick_execution_site){"test", "added", "()V", 0},
             &o->external);
@@ -454,7 +556,7 @@ static mc_world_storage_status dw_recursive_cell(void *context, mc_world_runtime
                                                                      : 8)
                                                : 0) &&
                       player->u && player->private_a == 37 && world->fields.J &&
-                      (!attached || o->additions == (head ? 0u : 1u));
+                      (!attached || o->additions == (head || dw_family_no_item(o->mode) ? 0u : 1u));
     ++o->cells;
     *error = (mc_world_storage_error){0};
     if (head) {
@@ -467,7 +569,9 @@ static mc_world_storage_status dw_recursive_cell(void *context, mc_world_runtime
     if (o->mode == DW_RECURSIVE_OBSERVER_ERROR || o->mode == DW_RECURSIVE_LADDER_REMOVAL_SOURCE ||
         o->mode == DW_RECURSIVE_TORCH_REMOVAL_SOURCE ||
         o->mode == DW_RECURSIVE_TORCH_EARLY_REMOVAL_SOURCE ||
-        o->mode == DW_RECURSIVE_FLOWER_REMOVAL_SOURCE) {
+        o->mode == DW_RECURSIVE_FLOWER_REMOVAL_SOURCE ||
+        o->mode == DW_RECURSIVE_SAPLING_REMOVAL_SOURCE ||
+        o->mode == DW_RECURSIVE_TALL_GRASS_REMOVAL_SOURCE) {
         const mc_world_storage_status status =
             mc_world_access_receipt_create(o->listener, NULL, &o->receipt, failure, error);
         if (status != MC_WORLD_STORAGE_OK)
@@ -537,6 +641,15 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
         world->fields.f = 5;
         f->classes[0]->chunk_a = false;
     }
+    if (dw_family(mode)) {
+        CHECK(sw_cell(data, 7, 63, 8, dw_family_supported(mode) ? 2 : 0, 0));
+        memset(data->skylight, 255, sizeof(data->skylight));
+        memset(data->block_light, 0, sizeof(data->block_light));
+        memset(data->heightmap, 64, sizeof(data->heightmap));
+        world->fields.f = 5;
+        f->classes[0]->chunk_a = false;
+        mc_java_random_reseed(world->fields.r, dw_family_seed(mode));
+    }
     if (mode == DW_RECURSIVE_NULL_CHUNK_WORLD) {
         observation.chunk = mc_world_store_chunk_object(world->options.store, f->states[0]);
         CHECK(observation.chunk != NULL && observation.chunk->d == world);
@@ -553,8 +666,15 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
     const uint64_t random = p->random->state;
     const uint64_t world_random = world->fields.r->state;
     mc_java_random drop_random = *world->fields.r;
-    for (size_t i = 0; i < 4; ++i)
-        (void)mc_java_random_next_float(&drop_random);
+    unsigned int family_draws = 0;
+    if (dw_family(mode)) {
+        const bool modeled_item =
+            dw_family_random(mode, world_random, &drop_random.state, &family_draws);
+        CHECK(modeled_item == (!dw_family_supported(mode) && !dw_family_no_item(mode)));
+    } else {
+        for (size_t i = 0; i < 4; ++i)
+            (void)mc_java_random_next_float(&drop_random);
+    }
     p->local_player->fields.living.av = 99;
     mc_entity_status raw = MC_ENTITY_BUSY;
     bool accepted = true, continued = false;
@@ -564,7 +684,7 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
     } else {
         if ((foot || attached) && mode != DW_RECURSIVE_FOOT_MATH_MISSING &&
             mode != DW_RECURSIVE_LADDER_MATH_MISSING && mode != DW_RECURSIVE_TORCH_MATH_MISSING &&
-            mode != DW_RECURSIVE_FLOWER_MATH_MISSING)
+            mode != DW_RECURSIVE_FLOWER_MATH_MISSING && !dw_family_math_missing(mode))
             CHECK(mc_math_classes_create(SIZE_MAX, &math_owner, NULL) == MC_MATH_CLASS_OK);
         mc_math_execution_init(&math, math_owner);
         mc_entity_tick_execution_init(execution, &math);
@@ -580,6 +700,8 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
     CHECK(mc_chunk_nibbles_get(data->metadata, MC_CHUNK_NIBBLE_BYTES, 8, 64, 8, &head_metadata) &&
           mc_chunk_nibbles_get(data->metadata, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &orphan_metadata));
     const uint8_t orphan = data->blocks[boxes_index(7, 64, 8)];
+    if (dw_family(mode))
+        CHECK(error->player_wake.entered && error->player_bytecode == 35);
     if (!legacy) {
         mc_entity_damage_failure failure;
         const char *exception =
@@ -622,10 +744,11 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
                "\"player_seed\":\"%016" PRIx64 "\",\"item\":{"
                "\"position\":[\"%016" PRIx64 "\",\"%016" PRIx64 "\",\"%016" PRIx64 "\"],"
                "\"delay\":%d,\"stack\":[%d,%d,%d],\"inserted\":%s,\"world_same\":%s}}\n",
-               dw_flower(mode)  ? "FLOWER_WAKE_DROP"
-               : dw_torch(mode) ? "TORCH_WAKE_DROP"
-               : attached       ? "LADDER_WAKE_DROP"
-                                : "FOOT_WAKE_DROP",
+               dw_family(mode)   ? "PLANT_FAMILY_WAKE_DROP"
+               : dw_flower(mode) ? "FLOWER_WAKE_DROP"
+               : dw_torch(mode)  ? "TORCH_WAKE_DROP"
+               : attached        ? "LADDER_WAKE_DROP"
+                                 : "FOOT_WAKE_DROP",
                world->fields.r->state, p->random->state, movement_double_bits(item->base.x),
                movement_double_bits(item->base.y), movement_double_bits(item->base.z), item->item.c,
                stack.id, stack.count, stack.damage, sw_bool(item->base.bF),
@@ -634,13 +757,15 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
             const dw_recursive_cell_sample *sample = &observation.publication_sample;
             printf("%s {\"head\":[%u,%u],\"%s\":[%u,%u],"
                    "\"sleeping\":%s,\"prior_cells\":%zu}\n",
-                   dw_flower(mode)  ? "FLOWER_WAKE_PUBLICATION"
-                   : dw_torch(mode) ? "TORCH_WAKE_PUBLICATION"
-                                    : "LADDER_WAKE_PUBLICATION",
+                   dw_family(mode)   ? "PLANT_FAMILY_WAKE_PUBLICATION"
+                   : dw_flower(mode) ? "FLOWER_WAKE_PUBLICATION"
+                   : dw_torch(mode)  ? "TORCH_WAKE_PUBLICATION"
+                                     : "LADDER_WAKE_PUBLICATION",
                    (unsigned int)sample->head_id, (unsigned int)sample->head_metadata,
-                   dw_flower(mode)  ? "flower"
-                   : dw_torch(mode) ? "torch"
-                                    : "ladder",
+                   dw_family(mode)   ? "plant"
+                   : dw_flower(mode) ? "flower"
+                   : dw_torch(mode)  ? "torch"
+                                     : "ladder",
                    (unsigned int)sample->orphan_id, (unsigned int)sample->orphan_metadata,
                    sw_bool(sample->sleeping), observation.cells_at_addition);
         }
@@ -670,6 +795,27 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
                sw_bool(f->classes[0]->chunk_a), world->fields.r->state, p->random->state);
         CHECK(f->classes[0]->chunk_a ==
               (mode != DW_RECURSIVE_FLOWER_SKY_SUPPORTED && mode != DW_RECURSIVE_FLOWER_DARK));
+    }
+    if (dw_family(mode)) {
+        uint8_t floor_metadata = UINT8_MAX, sky = UINT8_MAX, block = UINT8_MAX;
+        CHECK(mc_chunk_nibbles_get(data->metadata, MC_CHUNK_NIBBLE_BYTES, 7, 63, 8,
+                                   &floor_metadata) &&
+              mc_chunk_nibbles_get(data->skylight, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &sky) &&
+              mc_chunk_nibbles_get(data->block_light, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &block));
+        printf("PLANT_FAMILY_WAKE_ENV {\"family\":\"%s\",\"plant_floor\":[%u,%u],"
+               "\"light\":[%u,%u,%u],\"sky_subtraction\":%d,\"chunk_light_seen\":%s,"
+               "\"world_seed\":\"%016" PRIx64 "\",\"player_seed\":\"%016" PRIx64 "\","
+               "\"seed_input\":%" PRId64 ",\"items\":%zu,\"math_owned\":%s,\"model_draws\":%u}\n",
+               dw_sapling(mode) ? "sapling" : "tall-grass",
+               (unsigned int)data->blocks[boxes_index(7, 63, 8)], (unsigned int)floor_metadata,
+               (unsigned int)sky, (unsigned int)block,
+               (unsigned int)data->heightmap[(8u << 4u) | 7u], world->fields.f,
+               sw_bool(f->classes[0]->chunk_a), world->fields.r->state, p->random->state,
+               dw_family_seed(mode), observation.additions, sw_bool(math_owner != NULL),
+               family_draws);
+        CHECK(sky == 15 && block == 0 && data->heightmap[(8u << 4u) | 7u] == 64 &&
+              world->fields.f == 5 && f->classes[0]->chunk_a &&
+              world->fields.r->state == drop_random.state && p->random->state == random);
     }
     CHECK(observation.ranges == (mode == DW_RECURSIVE_FLOWER_DARK ? 1u : 0u));
     if (null_exit) {
@@ -712,7 +858,7 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
         goto cleanup;
     }
     if (mode == DW_RECURSIVE_LADDER_SUPPORTED || mode == DW_RECURSIVE_TORCH_SUPPORTED ||
-        dw_flower_supported(mode)) {
+        dw_flower_supported(mode) || dw_family_supported(mode)) {
         CHECK(continued && raw == MC_ENTITY_OK && !accepted && !fields->u &&
               fields->private_a == 0 && !world->fields.J && head_metadata == 8 &&
               orphan == dw_neighbor_id(mode) && orphan_metadata == dw_neighbor_metadata(mode) &&
@@ -724,7 +870,8 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
     }
     if (mode == DW_RECURSIVE_LADDER_REMOVAL_SOURCE || mode == DW_RECURSIVE_TORCH_REMOVAL_SOURCE ||
         mode == DW_RECURSIVE_TORCH_EARLY_REMOVAL_SOURCE ||
-        mode == DW_RECURSIVE_FLOWER_REMOVAL_SOURCE) {
+        mode == DW_RECURSIVE_FLOWER_REMOVAL_SOURCE || mode == DW_RECURSIVE_SAPLING_REMOVAL_SOURCE ||
+        mode == DW_RECURSIVE_TALL_GRASS_REMOVAL_SOURCE) {
         mc_entity_damage_failure failure;
         const mc_world_placement_error *occupancy =
             error->player_wake.error == NULL ? NULL : error->player_wake.error->occupancy;
@@ -737,19 +884,19 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
               failure.source_proven && failure.site.pc == 34 &&
               strcmp(failure.exception_class, "java/lang/IllegalStateException") == 0 &&
               mutation != NULL && mutation->hook_class != NULL &&
-              strcmp(mutation->hook_class, dw_flower(mode)  ? "wb"
-                                           : dw_torch(mode) ? "vm"
-                                                            : "dp") == 0 &&
-              mutation->hook_bytecode == (dw_flower(mode)        ? 17u
-                                          : dw_torch_early(mode) ? 6u
-                                          : dw_torch(mode)       ? 164u
-                                                                 : 123u) &&
+              strcmp(mutation->hook_class, dw_flower(mode) || dw_family(mode) ? "wb"
+                                           : dw_torch(mode)                   ? "vm"
+                                                                              : "dp") == 0 &&
+              mutation->hook_bytecode == (dw_flower(mode) || dw_family(mode) ? 17u
+                                          : dw_torch_early(mode)             ? 6u
+                                          : dw_torch(mode)                   ? 164u
+                                                                             : 123u) &&
               (!dw_torch_early(mode) || mutation->torch_survive_bytecode == 35));
         ok = true;
         goto cleanup;
     }
     if (foot || attached) {
-        if (mode != DW_RECURSIVE_FOOT && mode != DW_RECURSIVE_LADDER &&
+        if (!dw_family_normal(mode) && mode != DW_RECURSIVE_FOOT && mode != DW_RECURSIVE_LADDER &&
             mode != DW_RECURSIVE_TORCH && mode != DW_RECURSIVE_TORCH_EARLY &&
             mode != DW_RECURSIVE_FLOWER && mode != DW_RECURSIVE_FLOWER_DARK) {
             mc_entity_damage_execution_view view = {0};
@@ -767,7 +914,7 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
             if (mode == DW_RECURSIVE_FOOT_MATH_MISSING ||
                 mode == DW_RECURSIVE_LADDER_MATH_MISSING ||
                 mode == DW_RECURSIVE_TORCH_MATH_MISSING ||
-                mode == DW_RECURSIVE_FLOWER_MATH_MISSING) {
+                mode == DW_RECURSIVE_FLOWER_MATH_MISSING || dw_family_math_missing(mode)) {
                 CHECK(raw == MC_ENTITY_OK && math.failed && damage->math_failed &&
                       view.result->math_failed && drop->insertion.entered &&
                       !drop->insertion.chunk_returned && observation.additions == 0 &&
@@ -777,7 +924,8 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
                       world->fields.b->count == entities + 1);
                 if (mode == DW_RECURSIVE_FOOT_SOURCE || mode == DW_RECURSIVE_LADDER_SOURCE ||
                     mode == DW_RECURSIVE_TORCH_SOURCE || mode == DW_RECURSIVE_TORCH_EARLY_SOURCE ||
-                    mode == DW_RECURSIVE_FLOWER_SOURCE) {
+                    mode == DW_RECURSIVE_FLOWER_SOURCE || mode == DW_RECURSIVE_SAPLING_SOURCE ||
+                    mode == DW_RECURSIVE_TALL_GRASS_SOURCE) {
                     mc_entity_damage_failure failure;
                     CHECK(raw != MC_ENTITY_OK && drop->publication_scope.consumed &&
                           drop->insertion.observer_returned &&
@@ -808,9 +956,15 @@ static bool dw_recursive(const char *root, dw_recursive_mode mode) {
         CHECK(continued && raw == MC_ENTITY_OK && !accepted && !fields->u &&
               fields->private_a == 0 && !world->fields.J && head_metadata == 8 && orphan == 0 &&
               orphan_metadata == 0 && observation.order_valid && observation.cells == 2 &&
-              world->fields.b->count == entities + 1 && !mc_entity_effect_has_pending(p) &&
-              observation.additions == 1 && observation.publication_valid &&
+              world->fields.b->count == entities + (dw_family_no_item(mode) ? 0u : 1u) &&
+              !mc_entity_effect_has_pending(p) &&
+              observation.additions == (dw_family_no_item(mode) ? 0u : 1u) &&
+              observation.publication_valid == !dw_family_no_item(mode) &&
               p->random->state == random && world->fields.r->state == drop_random.state);
+        if (dw_family_no_item(mode))
+            CHECK(observation.published_item == NULL && observation.receipt == NULL &&
+                  !observation.external_open && !math.failed && !damage->math_failed &&
+                  (mode != DW_RECURSIVE_TALL_GRASS_NO_ITEM_MATH_MISSING || math_owner == NULL));
         ok = true;
         goto cleanup;
     }
@@ -867,6 +1021,13 @@ cleanup:
             MC_WORLD_STORAGE_OK)
         return false;
     if (damage_entered) {
+        const uint64_t family_world_random = s.world->worlds[0]->fields.r->state;
+        const uint64_t family_player_random = s.actor->random->state;
+        const size_t family_entities = s.world->worlds[0]->fields.b->count;
+        const size_t family_cells = observation.cells, family_additions = observation.additions;
+        const uint8_t family_plant = s.world->states[0]->data->blocks[boxes_index(7, 64, 8)];
+        const bool family_sleeping = s.actor->local_player->fields.player.u;
+        const int32_t family_timer = s.actor->local_player->fields.player.private_a;
         const size_t receipt_holds = observation.receipt == NULL ? 0 : observation.receipt->holds;
         /* The canonical execution already holds this producer. Native cleanup
          * must finish without adding a legacy diagnostic occurrence. */
@@ -884,6 +1045,15 @@ cleanup:
             ok = false;
         }
         if (!receipt_unchanged || !damage->cleaned || mc_entity_effect_has_pending(s.actor))
+            return false;
+        if (dw_family(mode) &&
+            (s.world->worlds[0]->fields.r->state != family_world_random ||
+             s.actor->random->state != family_player_random ||
+             s.world->worlds[0]->fields.b->count != family_entities ||
+             observation.cells != family_cells || observation.additions != family_additions ||
+             s.world->states[0]->data->blocks[boxes_index(7, 64, 8)] != family_plant ||
+             s.actor->local_player->fields.player.u != family_sleeping ||
+             s.actor->local_player->fields.player.private_a != family_timer))
             return false;
     }
     if (legacy && s.actor != NULL && mc_entity_effect_has_pending(s.actor) &&
@@ -1100,7 +1270,22 @@ int main(int argc, char **argv) {
                                  "owned-wake-flower-removal-source",
                                  "owned-wake-flower-supported",
                                  "owned-wake-flower-sky-supported",
-                                 "owned-wake-flower-dark"};
+                                 "owned-wake-flower-dark",
+                                 "owned-wake-sapling",
+                                 "owned-wake-sapling-source",
+                                 "owned-wake-sapling-scope",
+                                 "owned-wake-sapling-math-missing",
+                                 "owned-wake-sapling-removal-source",
+                                 "owned-wake-sapling-supported",
+                                 "owned-wake-tall-grass",
+                                 "owned-wake-tall-grass-source",
+                                 "owned-wake-tall-grass-scope",
+                                 "owned-wake-tall-grass-math-missing",
+                                 "owned-wake-tall-grass-removal-source",
+                                 "owned-wake-tall-grass-supported",
+                                 "owned-wake-tall-grass-seed1234",
+                                 "owned-wake-tall-grass-no-item",
+                                 "owned-wake-tall-grass-no-item-math-missing"};
     const dw_recursive_mode modes[] = {DW_RECURSIVE_READY,
                                        DW_RECURSIVE_OWNED_NULL,
                                        DW_RECURSIVE_OBSERVER_ERROR,
@@ -1132,7 +1317,22 @@ int main(int argc, char **argv) {
                                        DW_RECURSIVE_FLOWER_REMOVAL_SOURCE,
                                        DW_RECURSIVE_FLOWER_SUPPORTED,
                                        DW_RECURSIVE_FLOWER_SKY_SUPPORTED,
-                                       DW_RECURSIVE_FLOWER_DARK};
+                                       DW_RECURSIVE_FLOWER_DARK,
+                                       DW_RECURSIVE_SAPLING,
+                                       DW_RECURSIVE_SAPLING_SOURCE,
+                                       DW_RECURSIVE_SAPLING_SCOPE,
+                                       DW_RECURSIVE_SAPLING_MATH_MISSING,
+                                       DW_RECURSIVE_SAPLING_REMOVAL_SOURCE,
+                                       DW_RECURSIVE_SAPLING_SUPPORTED,
+                                       DW_RECURSIVE_TALL_GRASS,
+                                       DW_RECURSIVE_TALL_GRASS_SOURCE,
+                                       DW_RECURSIVE_TALL_GRASS_SCOPE,
+                                       DW_RECURSIVE_TALL_GRASS_MATH_MISSING,
+                                       DW_RECURSIVE_TALL_GRASS_REMOVAL_SOURCE,
+                                       DW_RECURSIVE_TALL_GRASS_SUPPORTED,
+                                       DW_RECURSIVE_TALL_GRASS_SEED1234,
+                                       DW_RECURSIVE_TALL_GRASS_NO_ITEM,
+                                       DW_RECURSIVE_TALL_GRASS_NO_ITEM_MATH_MISSING};
     _Static_assert(COUNT(names) == COUNT(modes), "Wake mode table sizes must agree");
     for (size_t i = 0; i < COUNT(names); ++i)
         if (strcmp(argv[1], names[i]) == 0) {

@@ -1,5 +1,65 @@
 # Test scope and reproduction
 
+## Sapling and Tall Grass during Player wake
+
+Two fresh unchanged-original JDK17 interpreters agree on eight prepared wake
+profiles, including support, publication exceptions, a second Seed-producing
+seed and no Item. The [packet](../tests/reference/entity/sapling_tall_grass_wake/README.md)
+binds 34 original classes and the actual inherited/overridden methods. Its
+complete bounded captures retain unchanged inputs, helpers and class bindings.
+No original game class or light getter is replaced.
+
+Each native host matches 379 selected original values across all eight cases.
+Fifteen direct modes also check scope refusal, missing Math, later removal
+exceptions and no-Item continuation without Math. Receipts require actual wake
+entry at GS35; normal and optimized readers each refuse 24 malformed inputs.
+Running the same fifteen cases with the preceding four production files fails
+every case before the retained plant work. Restoring the implementation passes
+all nineteen initial native/reader tests. The failed baseline remains retained.
+
+Seven additional real Arrow hits exercise both plant families' normal,
+publication-exception and removal-exception routes, plus Tall Grass without an
+Item. They check actual sleep entry, virtual drops, independent LCG progress
+and complete World/Player/Arrow Random fields. Four interrupted cases preserve
+all five native unwind snapshots without replaying callbacks or draws. Their
+normal and optimized receipt controls each reject 37 corruptions. These native
+Arrow controls are separate from the original packet's selected wake comparison.
+
+The complete Windows MSVC Release client suite passes 1,214 tests in 608.16
+seconds. Linux Clang 18.1.8 Debug passes all 1,066 headless tests in 429.83
+seconds with ASan, UBSan and leak detection. Both use the same 6,114-file source
+snapshot; JUnit names are unique, every status is run, and no tests fail, skip
+or remain disabled. Display tests are off in these full cohorts; the loaded
+Windows scenes below are separate qualifications.
+
+Those full runs precede a fixture-only GCC correction. The
+[preceding hosted GCC build](https://github.com/frankischilling/minecraft-c/actions/runs/43110935722/job/130826446107)
+fails before testing because the imported fluid fixture's `child` typedef
+collides with an inline acquisition helper local under `-Wshadow -Werror`.
+An actual GCC13 sanitizer compilation reproduces that exact error. Renaming
+the fixture type to `fluid_chunk`, including both dependent zero initializers,
+keeps all warning flags and runtime statements intact. Both failing source
+units and the optional random-block benchmark then compile under the same
+strict GCC13 sanitizer flags. This is compile evidence, not GCC runtime credit.
+
+After rebuilding all affected native targets, each host passes the same 87
+selected tests: Windows in 13.05 seconds and sanitized Linux in 37.63 seconds.
+They include all eighty wake/Arrow/reader cases plus fluids, falling, snow,
+random Blocks and both plant-lifecycle routes. The only later changes are
+documentation and their declared source bindings. The status page now keeps
+current work separate from [earlier checkpoints](history/status-checkpoints.md);
+all 192 historical relative link targets remain unchanged.
+
+Fresh monitor-2 scenes pass 1,423 Bed and 406 Arrow/Pig checks. Bed completes 105
+World ticks from sleep input to dawn; independent saved NBT has Time 24011,
+health 20, cleared occupancy, one Bed Item and spawn `(0,64,3)`. Arrow/Pig saves
+health 6 and no Arrow after actual SDK pause/save. Both preserve all 2,401
+source/product inputs and 413 assets; those exact inputs still match after
+the fixture correction. Six images are inspected and native windows are gone.
+These are prepared loaded scenes. Graphical sleeping-Player damage,
+unrestricted play, broader plant metadata/growth, original audiovisual equality
+and measured FPS remain unqualified.
+
 ## Flower survival and removal during Player wake
 
 Two fresh unchanged-original interpreters agree on supported Grass, unsupported

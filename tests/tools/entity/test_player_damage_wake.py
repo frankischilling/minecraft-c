@@ -1,5 +1,6 @@
 """Run actual Player damage/wake controls without display or original assets."""
 import argparse
+import copy
 import importlib.util
 import json
 from pathlib import Path
@@ -14,6 +15,170 @@ CALLBACK_FIELDS = ('xyz', 'head', 'orphan', 'sleeping')
 ORIGINAL_MODES = {'owned-wake-recursion': 'success',
                   'owned-wake-null-exit': 'null-exit',
                   'owned-wake-observer-error': 'observer-error'}
+
+FAMILY_MODES = tuple('owned-wake-' + name for name in (
+    'sapling', 'sapling-source', 'sapling-scope', 'sapling-math-missing',
+    'sapling-removal-source', 'sapling-supported', 'tall-grass', 'tall-grass-source',
+    'tall-grass-scope', 'tall-grass-math-missing', 'tall-grass-removal-source',
+    'tall-grass-supported', 'tall-grass-seed1234', 'tall-grass-no-item',
+    'tall-grass-no-item-math-missing'))
+FAMILY_ORIGINAL = {
+    'owned-wake-sapling-supported': 'sapling-supported',
+    'owned-wake-sapling': 'sapling-unsupported',
+    'owned-wake-sapling-source': 'sapling-publication-error',
+    'owned-wake-tall-grass-supported': 'tallgrass-supported',
+    'owned-wake-tall-grass': 'tallgrass-unsupported',
+    'owned-wake-tall-grass-source': 'tallgrass-publication-error',
+    'owned-wake-tall-grass-seed1234': 'tallgrass-unsupported-seed1234',
+    'owned-wake-tall-grass-no-item': 'tallgrass-unsupported-seed7fffffff'}
+
+
+def family_require(value, message):
+    if not value:
+        raise ValueError(message)
+
+
+def family_exact(actual, expected):
+    if type(actual) is not type(expected):
+        return False
+    if type(expected) is dict:
+        return set(actual) == set(expected) and all(family_exact(actual[k], v) for k, v in expected.items())
+    if type(expected) is list:
+        return len(actual) == len(expected) and all(family_exact(a, b) for a, b in zip(actual, expected))
+    return actual == expected
+
+
+def family_json(value):
+    def pairs(rows):
+        result = {}
+        for key, entry in rows:
+            family_require(key not in result, 'Duplicate family JSON key')
+            result[key] = entry
+        return result
+    def constant(_):
+        raise ValueError('Nonfinite family JSON number')
+    return json.loads(value, object_pairs_hook=pairs, parse_constant=constant)
+
+
+def family_spec(mode):
+    family_require(type(mode) is str and mode in FAMILY_MODES, 'Declared family mode required')
+    sapling = mode.startswith('owned-wake-sapling')
+    supported = mode.endswith('-supported')
+    no_item = '-no-item' in mode
+    missing_math = mode.endswith('-math-missing')
+    publication = mode.endswith('-source') and not mode.endswith('-removal-source')
+    removal = mode.endswith('-removal-source')
+    scope = mode.endswith('-scope')
+    normal = not (missing_math and not no_item or publication or removal or scope)
+    seed = 0x7fffffff if no_item else 0x1234 if mode.endswith('-seed1234') else 1
+    state = (seed ^ 0x5deece66d) & ((1 << 48) - 1)
+    draws = 0
+    def bits(count):
+        nonlocal state, draws
+        state = (state * 0x5deece66d + 11) & ((1 << 48) - 1)
+        draws += 1
+        return state >> (48 - count)
+    item = False
+    if not supported:
+        bits(24)
+        item = True if sapling else (8 * bits(31)) >> 31 == 0
+        if item:
+            for _ in range(3):
+                bits(24)
+    family_require(item == (not supported and not no_item), 'Declared Java LCG drop operand')
+    added = int(item and not missing_math)
+    cells = 1 if supported or publication or scope or missing_math and not no_item else 2
+    return dict(sapling=sapling, family='sapling' if sapling else 'tall-grass',
+                plant=[6, 2] if sapling else [31, 1], stack=[6, 1, 2] if sapling else [295, 1, 0],
+                supported=supported, no_item=no_item, math_owned=not missing_math,
+                normal=normal, publication=publication, removal=removal, scope=scope,
+                seed=seed, state=state, draws=draws, added=added, cells=cells)
+
+
+def family_receipts(mode, native, environment, drop, publication):
+    s = family_spec(mode)
+    expected_env = {'family': s['family'], 'plant_floor': [2 if s['supported'] else 0, 0],
+                   'light': [15, 0, 64], 'sky_subtraction': 5, 'chunk_light_seen': True,
+                   'world_seed': f"{s['state']:016x}",
+                   'player_seed': f'{38 ^ 0x5deece66d:016x}', 'seed_input': s['seed'],
+                   'items': s['added'], 'math_owned': s['math_owned'], 'model_draws': s['draws']}
+    family_require(family_exact(environment, expected_env), 'Exact family input/environment/LCG receipt')
+    family_require(type(native) is dict and set(native) == {'continued', 'raw', 'pc', 'wake_entered',
+        'pending', 'result', 'exception', 'after', 'callbacks'}, 'Exact family native envelope')
+    family_require(all(type(native[k]) is bool for k in ('continued', 'wake_entered', 'pending')) and
+        type(native['raw']) is int and type(native['pc']) is int and native['pc'] == 35 and
+        native['wake_entered'] is True and
+        native['continued'] is s['normal'] and native['pending'] is (not s['normal']) and
+        family_exact(native['result'], False if s['normal'] else None) and
+        native['exception'] == ('java/lang/IllegalStateException' if s['publication'] or s['removal'] else 'NONE') and
+        (native['raw'] != 0 if s['publication'] or s['removal'] else native['raw'] == 0),
+        'Actual family continuation/Source/native outcome')
+    after = native['after']
+    family_require(type(after) is dict and set(after) == set(AFTER_FIELDS), 'Exact family Player fields')
+    removed = not s['supported'] and (s['normal'] or s['removal'])
+    prefix = {'sleeping': not s['normal'], 'timer': 0 if s['normal'] else 37, 'health': 20, 'idle': 0,
+              'head': [26, 8], 'orphan': [0, 0] if removed else s['plant'],
+              'world_sleeping': not s['normal'], 'world_same': True}
+    family_require(all(family_exact(after[k], v) for k, v in prefix.items()), 'Committed family wake prefix')
+    for key, size, width in (('position', 3, 16), ('dimensions', 3, 8)):
+        family_require(type(after[key]) is list and len(after[key]) == size and
+            all(type(v) is str and re.fullmatch(f'[0-9a-f]{{{width}}}', v) for v in after[key]),
+            'Actual family raw pose fields')
+    callbacks = native['callbacks']
+    expected_callbacks = [dict(xyz=[8, 64, 8], head=[26, 8], orphan=s['plant'], sleeping=True)]
+    if s['cells'] == 2:
+        expected_callbacks.append(dict(xyz=[7, 64, 8], head=[26, 8], orphan=[0, 0], sleeping=True))
+    family_require(family_exact(callbacks, expected_callbacks), 'Ordered family cell callbacks')
+    if s['added']:
+        family_require(type(drop) is dict and set(drop) == {'world_seed', 'player_seed', 'item'} and
+            drop['world_seed'] == environment['world_seed'] and drop['player_seed'] == environment['player_seed'],
+            'Exact actual family Item seeds')
+        item = drop['item']
+        family_require(type(item) is dict and set(item) == {'position', 'delay', 'stack', 'inserted', 'world_same'} and
+            type(item['position']) is list and len(item['position']) == 3 and
+            all(type(v) is str and re.fullmatch('[0-9a-f]{16}', v) for v in item['position']) and
+            all(family_exact(item[k], v) for k, v in {'delay': 10, 'stack': s['stack'], 'inserted': True, 'world_same': True}.items()),
+            'Actual family Item ID/damage independent of Block metadata')
+        family_require(family_exact(publication, {'head': [26, 8], 'plant': s['plant'], 'sleeping': True, 'prior_cells': 1}),
+            'Actual Item publication precedes plant removal')
+    else:
+        family_require(drop is None and publication is None, 'No actual Item callback or invented Item receipt')
+    return s
+
+
+def compare_family_original(mode, native, drop, publication, environment, output):
+    directory = Path(__file__).resolve().parents[3] / 'tests/reference/entity/sapling_tall_grass_wake'
+    spec = importlib.util.spec_from_file_location('plant_family_wake_comparison', directory / 'packet.py')
+    packet = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(packet)
+    row = next(r for r in packet.read_reference()['rows'] if r['mode'] == FAMILY_ORIGINAL[mode])
+    keys = ('position', 'dimensions', 'sleeping', 'timer', 'health', 'idle', 'world_sleeping', 'head')
+    light = row['after']['light_inputs']
+    expected = {'result': row['result'], 'exception': row['exception'],
+                'after': {**{k: row['after'][k] for k in keys}, 'plant': row['after']['plant']},
+                'environment': {'plant_floor': row['after']['plant_floor'],
+                    'light': [light['sky_nibble'], light['block_light_nibble'], light['height']],
+                    'sky_subtraction': light['world_f_sky_subtraction'], 'chunk_light_seen': light['chunk_sky_seen_static'],
+                    'world_seed': row['after']['world_random'][0], 'player_seed': row['after']['player_random'][0]},
+                'items': [{k: item[k] for k in ('position', 'delay', 'stack', 'inserted', 'world_same')} for item in row['after']['items']],
+                'callbacks': [{k: event[k] for k in ('xyz', 'head', 'plant', 'sleeping')} for event in row['events'] if event['kind'] == 'cell']}
+    actual = {'result': native['result'], 'exception': native['exception'],
+              'after': {**{k: native['after'][k] for k in keys}, 'plant': native['after']['orphan']},
+              'environment': {k: environment[k] for k in expected['environment']},
+              'items': [] if drop is None else [drop['item']],
+              'callbacks': [{**{k: event[k] for k in ('xyz', 'head', 'sleeping')}, 'plant': event['orphan']} for event in native['callbacks']]}
+    if drop is not None:
+        added = next(e for e in row['events'] if e['kind'] == 'added')
+        expected['publication'] = {**{k: added[k] for k in ('head', 'plant', 'sleeping')},
+            'prior_cells': sum(e['kind'] == 'cell' for e in row['events'][:row['events'].index(added)])}
+        actual['publication'] = publication
+    report = {'mode': mode, 'profile': FAMILY_ORIGINAL[mode], 'matched': packet.P.exact(actual, expected),
+              'finite_sha256': packet.P.digest(directory / 'finite.json'), 'compared_scalars': packet.P.scalars(expected),
+              'expected': expected, 'observed': actual,
+              'scope': 'Selected state/callback/Item/seed values only; wider original observations remain unpaired.'}
+    (output / 'plant-family-original-comparison.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
+    family_require(report['matched'], 'Original Sapling/Tall Grass selected projection differs')
+    return report['compared_scalars']
 
 
 def compare_original(mode, native, output):
@@ -149,8 +314,79 @@ def compare_flower_original(mode, native, drop, publication, environment, output
     return report['compared_scalars']
 
 
+def family_parser_controls():
+    def case(mode):
+        s = family_spec(mode)
+        env = {'family': s['family'], 'plant_floor': [2 if s['supported'] else 0, 0],
+               'light': [15, 0, 64], 'sky_subtraction': 5, 'chunk_light_seen': True,
+               'world_seed': f"{s['state']:016x}", 'player_seed': f'{38 ^ 0x5deece66d:016x}',
+               'seed_input': s['seed'], 'items': s['added'], 'math_owned': s['math_owned'], 'model_draws': s['draws']}
+        removed = not s['supported'] and (s['normal'] or s['removal'])
+        after = dict(sleeping=not s['normal'], timer=0 if s['normal'] else 37, health=20, idle=0,
+            head=[26, 8], orphan=[0, 0] if removed else s['plant'], world_sleeping=not s['normal'],
+            world_same=True, position=['401e000000000000'] * 3, dimensions=['3f19999a', '3fe66666', '3fcf5c29'])
+        callbacks = [dict(xyz=[8, 64, 8], head=[26, 8], orphan=s['plant'], sleeping=True)]
+        if s['cells'] == 2:
+            callbacks.append(dict(xyz=[7, 64, 8], head=[26, 8], orphan=[0, 0], sleeping=True))
+        native = dict(continued=s['normal'], raw=1 if s['publication'] or s['removal'] else 0,
+            pc=35, wake_entered=True, pending=not s['normal'], result=False if s['normal'] else None,
+            exception='java/lang/IllegalStateException' if s['publication'] or s['removal'] else 'NONE',
+            after=after, callbacks=callbacks)
+        drop = dict(world_seed=env['world_seed'], player_seed=env['player_seed'], item=dict(
+            position=['401ce19e82000000', '40501bf8bc000000', '4020ded390000000'], delay=10,
+            stack=s['stack'], inserted=True, world_same=True)) if s['added'] else None
+        publication = dict(head=[26, 8], plant=s['plant'], sleeping=True, prior_cells=1) if s['added'] else None
+        return [native, env, drop, publication]
+    for mode in FAMILY_MODES:
+        n, e, d, p = case(mode)
+        family_receipts(mode, n, e, d, p)
+    changes = (
+        ('owned-wake-sapling', lambda c: c[0].update(wake_entered=False)),
+        ('owned-wake-sapling-source', lambda c: c[0].update(pc=34)),
+        ('owned-wake-tall-grass-no-item', lambda c: c[0].update(pc=36)),
+        ('owned-wake-sapling', lambda c: c[1].update(items=True)),
+        ('owned-wake-sapling', lambda c: c[1].update(model_draws=3)),
+        ('owned-wake-sapling', lambda c: c[2]['item'].update(stack=[6, 1, 0])),
+        ('owned-wake-sapling', lambda c: c[3].update(plant=[6, 0])),
+        ('owned-wake-sapling', lambda c: c[0]['after'].update(timer=True)),
+        ('owned-wake-sapling-source', lambda c: c[0].update(raw=0)),
+        ('owned-wake-sapling-source', lambda c: c[0].update(pending=False)),
+        ('owned-wake-sapling-scope', lambda c: c[0].update(exception='java/lang/IllegalStateException')),
+        ('owned-wake-tall-grass', lambda c: c[2]['item'].update(stack=[31, 1, 1])),
+        ('owned-wake-tall-grass', lambda c: c[1].update(world_seed='0' * 16)),
+        ('owned-wake-tall-grass', lambda c: c[0]['callbacks'].reverse()),
+        ('owned-wake-tall-grass-no-item', lambda c: c.__setitem__(2, {})),
+        ('owned-wake-tall-grass-no-item', lambda c: c[1].update(items=1)),
+        ('owned-wake-tall-grass-no-item-math-missing', lambda c: c[1].update(math_owned=True)),
+        ('owned-wake-tall-grass-supported', lambda c: c[1].update(model_draws=1)),
+        ('owned-wake-tall-grass-supported', lambda c: c[0]['after'].update(orphan=[0, 0])),
+        ('owned-wake-tall-grass-removal-source', lambda c: c[0]['callbacks'].pop()),
+        ('owned-wake-tall-grass-math-missing', lambda c: c[1].update(light=[True, 0, 64])),
+    )
+    refused = 0
+    for mode, change in changes:
+        values = copy.deepcopy(case(mode))
+        change(values)
+        try:
+            family_receipts(mode, *values)
+        except ValueError:
+            refused += 1
+        else:
+            raise ValueError('Corrupt family receipt accepted: ' + mode)
+    for text in ('{"a":0,"a":1}', '{"a":NaN}', '{"a":Infinity}'):
+        try:
+            family_json(text)
+        except ValueError:
+            refused += 1
+        else:
+            raise ValueError('Malformed family JSON accepted')
+    family_require(refused == 24, 'Every malformed family receipt refused')
+    print('PASS: 15 synthetic family modes; 24 malformed receipts refused; no native process')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--self-test', action='store_true')
     parser.add_argument('--mode', choices=('damage-wake', 'owned-block-drops', 'owned-wake-recursion',
                                            'owned-wake-null-exit', 'owned-wake-observer-error',
                                            'owned-wake-scope-drift', 'owned-wake-null-chunk-world',
@@ -167,11 +403,16 @@ def main():
                                            'owned-wake-flower', 'owned-wake-flower-source',
                                            'owned-wake-flower-scope', 'owned-wake-flower-math-missing',
                                            'owned-wake-flower-removal-source', 'owned-wake-flower-supported',
-                                           'owned-wake-flower-sky-supported', 'owned-wake-flower-dark'),
+                                           'owned-wake-flower-sky-supported', 'owned-wake-flower-dark') + FAMILY_MODES,
                         default='damage-wake')
-    parser.add_argument('--executable', type=Path, required=True)
-    parser.add_argument('--work-dir', type=Path, required=True)
+    parser.add_argument('--executable', type=Path)
+    parser.add_argument('--work-dir', type=Path)
     args = parser.parse_args()
+    if args.self_test:
+        family_parser_controls()
+        return
+    if args.executable is None or args.work_dir is None:
+        parser.error('--executable and --work-dir are required for native runs')
     args.work_dir.mkdir(parents=True, exist_ok=True)
     output = Path(tempfile.mkdtemp(prefix='damage-wake-', dir=args.work_dir.resolve()))
     child = subprocess.run([args.executable.resolve(strict=True), args.mode,
@@ -191,12 +432,13 @@ def main():
         cleanup = b'OWNED_WAKE_RECURSION_CLEANUP complete=1'
         if len(diagnostics) != 1 or lines.count(cleanup) != 1:
             raise RuntimeError('Expected one owned wake observation and checked cleanup in ' + str(output))
-        native = json.loads(diagnostics[0].partition(b' ')[2])
+        native = (family_json if args.mode in FAMILY_MODES else json.loads)(diagnostics[0].partition(b' ')[2])
+        family = family_spec(args.mode) if args.mode in FAMILY_MODES else None
         if (type(native) is not dict or
                 set(native) != {'continued', 'raw', 'pc', 'wake_entered', 'pending',
                                 'result', 'exception', 'after', 'callbacks'} or
                 type(native['after']) is not dict or set(native['after']) != set(AFTER_FIELDS) or
-                type(native['callbacks']) is not list or len(native['callbacks']) != (1 if args.mode in (
+                type(native['callbacks']) is not list or len(native['callbacks']) != (family['cells'] if family is not None else 1 if args.mode in (
                     'owned-wake-null-chunk-world', 'owned-wake-ladder-source',
                     'owned-wake-ladder-scope', 'owned-wake-ladder-math-missing',
                     'owned-wake-ladder-supported', 'owned-wake-torch-source', 'owned-wake-torch-scope',
@@ -312,6 +554,22 @@ def main():
             lines.remove(publication_lines[0])
         if args.mode == 'owned-wake-flower-supported':
             compared = compare_flower_original(args.mode, native, None, None, environment, output)
+        family_environment = [line for line in lines if line.startswith(b'PLANT_FAMILY_WAKE_ENV ')]
+        family_drops = [line for line in lines if line.startswith(b'PLANT_FAMILY_WAKE_DROP ')]
+        family_publications = [line for line in lines if line.startswith(b'PLANT_FAMILY_WAKE_PUBLICATION ')]
+        if family is not None:
+            family_require(len(family_environment) == 1 and len(family_drops) == family['added'] and
+                len(family_publications) == family['added'], 'Exact family receipt occurrence counts')
+            env = family_json(family_environment[0].partition(b' ')[2])
+            drop = family_json(family_drops[0].partition(b' ')[2]) if family_drops else None
+            publication = family_json(family_publications[0].partition(b' ')[2]) if family_publications else None
+            family_receipts(args.mode, native, env, drop, publication)
+            if args.mode in FAMILY_ORIGINAL:
+                compared = compare_family_original(args.mode, native, drop, publication, env, output)
+            for line in family_environment + family_drops + family_publications:
+                lines.remove(line)
+        elif family_environment or family_drops or family_publications:
+            raise RuntimeError('Unexpected family receipt')
         lines.remove(diagnostics[0])
         lines.remove(cleanup)
     else:

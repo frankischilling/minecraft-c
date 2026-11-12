@@ -82,7 +82,12 @@ if(BUILD_TESTING)
                                torch-removal-source torch-supported torch-early
                                torch-early-source torch-early-removal-source
                                flower flower-source flower-scope flower-math-missing
-                               flower-removal-source flower-supported flower-sky-supported flower-dark)
+                               flower-removal-source flower-supported flower-sky-supported flower-dark
+                               sapling sapling-source sapling-scope sapling-math-missing
+                               sapling-removal-source sapling-supported
+                               tall-grass tall-grass-source tall-grass-scope tall-grass-math-missing
+                               tall-grass-removal-source tall-grass-supported tall-grass-seed1234
+                               tall-grass-no-item tall-grass-no-item-math-missing)
         string(REPLACE "-" "_" wake_name "${wake_mode}")
         add_test(NAME "entity.player_damage_wake_owned_${wake_name}" COMMAND Python3::Interpreter -B
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_player_damage_wake.py"
@@ -135,6 +140,16 @@ if(BUILD_TESTING)
             ${_mc_damage_wake_python_options}
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/flower_wake/test_packet.py")
         set_tests_properties("tools.flower_wake_packet_${mode}" PROPERTIES
+            LABELS "public;unit;entity;world;reference;tools" TIMEOUT 90)
+        add_test(NAME "tools.plant_family_wake_receipts_${mode}" COMMAND Python3::Interpreter
+            ${_mc_damage_wake_python_options}
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_player_damage_wake.py" --self-test)
+        set_tests_properties("tools.plant_family_wake_receipts_${mode}" PROPERTIES
+            LABELS "public;unit;entity;world;tools" TIMEOUT 60)
+        add_test(NAME "tools.sapling_tall_grass_wake_packet_${mode}" COMMAND Python3::Interpreter
+            ${_mc_damage_wake_python_options}
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/sapling_tall_grass_wake/test_packet.py")
+        set_tests_properties("tools.sapling_tall_grass_wake_packet_${mode}" PROPERTIES
             LABELS "public;unit;entity;world;reference;tools" TIMEOUT 90)
     endforeach()
     add_executable(mc_test_player_death tests/entity/player/test_death.c)

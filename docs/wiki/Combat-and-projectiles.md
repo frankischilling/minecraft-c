@@ -1,5 +1,25 @@
 # Combat and projectiles
 
+## Sapling and Tall Grass during wake
+
+Saplings and Tall Grass now share retained Flower survival while preserving
+their actual drops. Saplings keep metadata; Tall Grass selects Seeds or removes
+itself without an Item. Source exceptions preserve publication and removal as
+distinct completed prefixes through all five checked native unwind phases.
+
+Two fresh unchanged-original VMs agree on eight prepared profiles. Windows and
+sanitized Linux each match 379 selected values. Fifteen direct modes cover
+support, scope and Math refusal; seven real Arrow-hit cases cover normal wake,
+publication/removal exceptions and no Item. The full suites pass 1,214 Windows
+and 1,066 Linux tests before the separate fixture-only GCC naming correction.
+See the [current test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#sapling-and-tall-grass-during-player-wake)
+for that correction's follow-up checks and exact qualification scope.
+
+Monitor-2 Bed and Arrow/Pig scenes pass 1,423 and 406 checks, with independent
+save readback, six inspected images and complete window cleanup. Graphical
+sleeping-Player damage, unrestricted play, original audiovisual equality and
+measured FPS remain open.
+
 ## Flower survival during wake
 
 The retained Player wake now enters the ordinary Flower neighbor and survival

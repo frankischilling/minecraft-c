@@ -56,10 +56,10 @@ typedef struct resources {
     bool bad;
 } resources;
 
-typedef struct child {
+typedef struct fluid_chunk {
     mc_world_store *store;
     mc_chunk_state *state;
-} child;
+} fluid_chunk;
 
 typedef struct fixture {
     mc_materials *materials;
@@ -75,7 +75,7 @@ typedef struct fixture {
     mc_world_provider *dimensions[4];
     mc_chunk_provider_fields providers[4];
     bool bound[4];
-    child children[32];
+    fluid_chunk children[32];
     mc_chunk_state *chunks[4][2][2];
 } fixture;
 
@@ -116,7 +116,7 @@ static bool remember(fixture *f, size_t slot) {
             return false;
         if (f->children[i].state != NULL && f->children[i].store != f->stores[slot])
             return false;
-        f->children[i] = (child){f->stores[slot], state};
+        f->children[i] = (fluid_chunk){f->stores[slot], state};
     }
     return true;
 }
@@ -1176,7 +1176,7 @@ static bool cleanup_fixture(fixture *f) {
             if (mc_world_store_retire_chunk(f->children[i].store, f->children[i].state, NULL) !=
                 MC_WORLD_STORAGE_OK)
                 return false;
-            f->children[i] = (child){0};
+            f->children[i] = (fluid_chunk){0};
         }
     for (size_t i = 0; i < COUNT(f->worlds); ++i)
         if (f->worlds[i] != NULL &&
@@ -1281,7 +1281,7 @@ int main(int argc, char **argv) {
         if (f->children[i].state != NULL) {
             CHECK(mc_world_store_retire_chunk(f->children[i].store, f->children[i].state, NULL) ==
                   MC_WORLD_STORAGE_OK);
-            f->children[i] = (child){0};
+            f->children[i] = (fluid_chunk){0};
         }
     for (size_t side = 0; side < 2; ++side)
         CHECK(drop_publication(f, side));

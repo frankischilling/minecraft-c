@@ -447,21 +447,21 @@ static bool block_neighbor(mc_world_runtime *world, const mc_block *block, int32
         case MC_BLOCK_GLOWSTONE:
         case MC_BLOCK_LOCKED_CHEST:
             return hook_return(error); /* uu/na.b(World,IIII): return0. */
-        case MC_BLOCK_SAPLING:
-        case MC_BLOCK_TALL_GRASS:
         case MC_BLOCK_DEAD_BUSH:
         case MC_BLOCK_MUSHROOM:
         case MC_BLOCK_CROPS:
             return owned == NULL
                        ? mc_world_mutation_plant_neighbor(world, block, x, y, z, source_id, error)
                        : unjoined(owned, "Plant neighbor hook requires owned execution");
+        case MC_BLOCK_SAPLING:
+        case MC_BLOCK_TALL_GRASS:
         case MC_BLOCK_FLOWER:
             if (owned == NULL)
                 return mc_world_mutation_plant_neighbor(world, block, x, y, z, source_id, error);
             if (call != NULL && block->classes->options.side == MC_REGISTRY_CLIENT)
-                return mc_world_mutation_flower_neighbor_in_execution(call, world, block, x, y, z,
-                                                                      source_id, error);
-            return unjoined(owned, "Flower neighbor requires retained client caller");
+                return mc_world_mutation_plant_neighbor_in_execution(call, world, block, x, y, z,
+                                                                     source_id, error);
+            return unjoined(owned, "Plant neighbor requires retained client caller");
         case MC_BLOCK_FLOWING_FLUID:
         case MC_BLOCK_STILL_FLUID:
             return owned == NULL

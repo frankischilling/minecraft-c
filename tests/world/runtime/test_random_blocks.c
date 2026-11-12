@@ -750,7 +750,7 @@ static bool leaf_close_world(fixture *f) {
             if (mc_world_store_retire_chunk(f->children[i].store, f->children[i].state, NULL) !=
                 MC_WORLD_STORAGE_OK)
                 return false;
-            f->children[i] = (child){0};
+            f->children[i] = (fluid_chunk){0};
         }
     if (mc_world_runtime_retire_world(f->worlds[0], NULL) != MC_WORLD_STORAGE_OK ||
         mc_world_runtime_free(f->worlds[0], NULL) != MC_WORLD_STORAGE_OK)

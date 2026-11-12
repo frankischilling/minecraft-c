@@ -277,19 +277,21 @@ bool mc_world_mutation_plant_neighbor(mc_world_runtime *world, const mc_block *b
     return plant_neighbor(world, block, x, y, z, source_id, error, NULL);
 }
 
-bool mc_world_mutation_flower_neighbor_in_execution(mc_world_mutation_execution_call *owned,
-                                                    mc_world_runtime *world, const mc_block *block,
-                                                    int32_t x, int32_t y, int32_t z,
-                                                    int32_t source_id,
-                                                    mc_world_mutation_error *error) {
+bool mc_world_mutation_plant_neighbor_in_execution(mc_world_mutation_execution_call *owned,
+                                                   mc_world_runtime *world, const mc_block *block,
+                                                   int32_t x, int32_t y, int32_t z,
+                                                   int32_t source_id,
+                                                   mc_world_mutation_error *error) {
     const mc_entity_tick_execution_site site = {"wb", "b", "(Lfd;IIII)V", 0};
     if (!mc_world_mutation_execution_current(owned, world, site))
         return false;
-    if (block == NULL || block->kind != MC_BLOCK_FLOWER ||
+    if (block == NULL || block->classes == NULL ||
+        (block->kind != MC_BLOCK_FLOWER && block->kind != MC_BLOCK_SAPLING &&
+         block->kind != MC_BLOCK_TALL_GRASS) ||
         block->classes->options.side != MC_REGISTRY_CLIENT) {
         mc_world_runtime_execution_result_note(mc_world_mutation_execution_result_of(owned),
                                                MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                               "Owned Flower neighbor receiver", site);
+                                               "Owned plant neighbor receiver", site);
         return false;
     }
     return plant_neighbor(world, block, x, y, z, source_id, error, owned);
