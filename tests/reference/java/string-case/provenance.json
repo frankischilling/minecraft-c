@@ -1,0 +1,25 @@
+{
+  "schema": "STRING_CASE_OBSERVATION_V1",
+  "runtime": "Temurin17.0.17+10 Windows x86-64",
+  "operation": "String.toUpperCase(Locale.ENGLISH) on every single code-point value, including lone surrogate values",
+  "code_points": 1114112,
+  "changed": 1485,
+  "maximum_units": 3,
+  "observation": {
+    "bytes": 22526,
+    "sha256": "3af1cdd042a7c7725bc0b2128c1de89807d967cee45f8b50a3cb47a002b4dbe8"
+  },
+  "helper_sha256": "d65ecf319d6416d878d474e9d90b385a2ab15c58bb5e9d74b835343372c57c27",
+  "jdk_profile": {
+    "java": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "javac": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "jvm": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "java_native": "18b105254c16e1d83614ff4e32cd62ce402fbe6339bdd1b24ccc7d999fed7f5f",
+    "source_archive": "5d0afb30b29d1eff95502604e9415d361f0f503553f32416320c58c1f0619e1e",
+    "release": "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+  },
+  "three_modes_equal": true,
+  "capture_receipt_sha256": "b5c0edf1dfe3ce2a1a80bdeb17875d938f3e517d32a2b6aa04cd90f7b03c61e4",
+  "limits": "English full uppercase for this pinned Unicode/runtime profile. English composition is source-derived from the per-code-point loop; other locales are not claimed."
+}

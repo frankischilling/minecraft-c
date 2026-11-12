@@ -12,8 +12,7 @@
 static mc_light_region storage[PROBE_CAPACITY];
 static bool token_error;
 
-static bool token(char *value, size_t capacity)
-{
+static bool token(char *value, size_t capacity) {
     int c;
     do {
         c = getchar();
@@ -33,8 +32,7 @@ static bool token(char *value, size_t capacity)
     return true;
 }
 
-static bool integer(int32_t *value)
-{
+static bool integer(int32_t *value) {
     char input[32], *end;
     if (!token(input, sizeof(input)))
         return false;
@@ -46,14 +44,12 @@ static bool integer(int32_t *value)
     return true;
 }
 
-static bool bounds(mc_light_bounds *value)
-{
+static bool bounds(mc_light_bounds *value) {
     return integer(&value->min_x) && integer(&value->min_y) && integer(&value->min_z) &&
            integer(&value->max_x) && integer(&value->max_y) && integer(&value->max_z);
 }
 
-static bool region(mc_light_region *value)
-{
+static bool region(mc_light_region *value) {
     int32_t kind;
     if (!integer(&kind) || (kind != 0 && kind != 1) || !bounds(&value->bounds))
         return false;
@@ -61,14 +57,12 @@ static bool region(mc_light_region *value)
     return true;
 }
 
-static void print_bounds(const mc_light_bounds *value)
-{
+static void print_bounds(const mc_light_bounds *value) {
     printf(" %" PRId32 " %" PRId32 " %" PRId32 " %" PRId32 " %" PRId32 " %" PRId32, value->min_x,
            value->min_y, value->min_z, value->max_x, value->max_y, value->max_z);
 }
 
-int main(void)
-{
+int main(void) {
     char command[8];
     mc_light_queue queue;
     if (!mc_light_queue_init(&queue, storage, PROBE_CAPACITY))

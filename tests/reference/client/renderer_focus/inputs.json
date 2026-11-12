@@ -1,0 +1,13 @@
+{
+  "sensitivity_bits": ["00000000", "3f000000", "3f800000"],
+  "deltas": [[24, -13], [-70, 41], [0, 0], [200, -200], [-500, 500], [1, -1]],
+  "mode": "((sensitivity_index * 2 + invert) * 2 + smooth)",
+  "initial_player": {"yaw": 17.25, "pitch": 87.5, "previous_yaw": -9.0, "previous_pitch": 2.5},
+  "initial_filters": {"horizontal": [0.0, 0.0, 0.0], "vertical": [0.0, 0.0, 0.0]},
+  "focused": true,
+  "skip_rendering": true,
+  "partial_tick": 0.375,
+  "original_H": "Long.MAX_VALUE",
+  "float_columns": ["yaw", "pitch", "previous_yaw", "previous_pitch", "horizontal.a", "horizontal.b", "horizontal.c", "vertical.a", "vertical.b", "vertical.c"],
+  "integer_columns": ["MouseHelper.a", "MouseHelper.b", "remaining_Mouse.dx", "remaining_Mouse.dy"]
+}

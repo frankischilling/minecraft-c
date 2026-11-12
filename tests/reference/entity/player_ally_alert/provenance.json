@@ -1,0 +1,118 @@
+{
+  "schema": "PLAYER_ALLY_ALERT_PROVENANCE_V1",
+  "scope": "40 prepared complete unchanged-original calls: 32 Player damage calls and eight direct ally-alert calls; no ticks, frames, loaded combat, original presentation or FPS qualification.",
+  "archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "original_sources": {
+    "PlayerAllyAlertObservation.java": "389229e14e387309fdd9bc8adf9690b24256a905a45ca6a76f0f022011a3209e",
+    "PlayerAllyAlertJdi.java": "0e2688828e796caef0d4dcb44709f0212e3acf62fb1f943a736251fa392f1c0c",
+    "capture_reference.py": "dd4aecf321a6645e495ee2a9e045ebc1ace4295fc67b094e0cb8f656260bc490",
+    "profiles.tsv": "0c801c74e3c4d360a95c7610b31c01cbd34d43e40a22802c8de3298d234c6493",
+    "class-names.txt": "9e664fc0ffe41ed68c3d5c1da70ce6c87ea00740d46cd366630e3d2add825cae",
+    "source-pins.json": "ba5f9a4abc0cacc5ea39a10747e489e699ffc394f869102566a1145f2f60d525"
+  },
+  "processing_sources": {
+    "observation.py": "85383b8d0ec8860969d540aa8143889b1a3566c80983c389b00599137032a1ca",
+    "packet.py": "402f177b3409fbdea963ccfbb2161cbcb8da3a308600e243b65a22629d56e3a0",
+    "export_reference.py": "e68f59656140adafebff840668daf7122be1db916e7ee419642110105935eccb"
+  },
+  "finite_sha256": "9ec77dc96ffda8fd0b07b748e4b7c8337c36dee6cf3ed80343a1693509384d73",
+  "capture_sha256": "5d7d178d79b04c7de730ecca258fb2b55219c580a251b3326194c1680e68eb95",
+  "runs": [
+    {
+      "kind": "ordinary",
+      "stdout": {
+        "name": "ordinary-0.stdout",
+        "bytes": 2675619,
+        "sha256": "8fb45e7676dd01f659114e6c4b170773a779d0d8aaaa4a55ecc783fa429c5021"
+      },
+      "calls": 40,
+      "summary": {
+        "calls": 40,
+        "damage_calls": 32,
+        "direct_calls": 8,
+        "normal_returns": 19,
+        "damage_true": 9,
+        "damage_false": 3,
+        "exceptions": 21,
+        "selected_scalars": 57691
+      }
+    },
+    {
+      "kind": "ordinary",
+      "stdout": {
+        "name": "ordinary-1.stdout",
+        "bytes": 2675619,
+        "sha256": "20cc150b1254e7541ad2cadf580df8b4d3a54d95e5e5e962e5539982e929e593"
+      },
+      "calls": 40,
+      "summary": {
+        "calls": 40,
+        "damage_calls": 32,
+        "direct_calls": 8,
+        "normal_returns": 19,
+        "damage_true": 9,
+        "damage_false": 3,
+        "exceptions": 21,
+        "selected_scalars": 57691
+      }
+    },
+    {
+      "kind": "debugger",
+      "stdout": {
+        "name": "debugger-0/target.stdout",
+        "bytes": 2675619,
+        "sha256": "a66547a6058cbb81e55d3c7ebeaa4492172795af47a3cf85b843c5220f11a6b7"
+      },
+      "calls": 40,
+      "summary": {
+        "calls": 40,
+        "damage_calls": 32,
+        "direct_calls": 8,
+        "normal_returns": 19,
+        "damage_true": 9,
+        "damage_false": 3,
+        "exceptions": 21,
+        "selected_scalars": 57691
+      },
+      "journal": {
+        "name": "debugger-0/journal.jsonl",
+        "bytes": 447265,
+        "sha256": "b954eb21a9f364f05a646c2736d0941df90f9edc9bd2365b6df3f900207ff527"
+      }
+    },
+    {
+      "kind": "debugger",
+      "stdout": {
+        "name": "debugger-1/target.stdout",
+        "bytes": 2675619,
+        "sha256": "3cac10744d8debdf6867b5d5457432475eb5b8a8a2418ce46dcb39d31a07b96d"
+      },
+      "calls": 40,
+      "summary": {
+        "calls": 40,
+        "damage_calls": 32,
+        "direct_calls": 8,
+        "normal_returns": 19,
+        "damage_true": 9,
+        "damage_false": 3,
+        "exceptions": 21,
+        "selected_scalars": 57691
+      },
+      "journal": {
+        "name": "debugger-1/journal.jsonl",
+        "bytes": 447265,
+        "sha256": "8b3e0082e50e8f54ab5969ce95be1940965c3a5dc3d186359be4977a75451f99"
+      }
+    }
+  ],
+  "summary": {
+    "calls": 40,
+    "damage_calls": 32,
+    "direct_calls": 8,
+    "normal_returns": 19,
+    "damage_true": 9,
+    "damage_false": 3,
+    "exceptions": 21,
+    "selected_scalars": 57691
+  }
+}

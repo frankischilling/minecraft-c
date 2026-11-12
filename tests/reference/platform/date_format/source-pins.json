@@ -1,0 +1,42 @@
+{
+  "source_calls": {
+    "rq.<init>(da)": 9,
+    "mg.a(int,int,int,int,nw)": 114
+  },
+  "jdk_profile": "java.text.SimpleDateFormat() SHORT/SHORT, English and en_US",
+  "pattern": "M/d/yy, h:mm a",
+  "utc_millis_range": {
+    "inclusive_min": -94694400000,
+    "exclusive_max": 4102444800000
+  },
+  "zones": [
+    "America/New_York",
+    "UTC"
+  ],
+  "vectors": {
+    "count": 2926,
+    "bytes": 518554,
+    "sha256": "fb3da22d0b5e2e83098f46cecfd7e82ad0cf1e1cb178a587cd2ef212f15636a2"
+  },
+  "observer": {
+    "bytes": 3702,
+    "sha256": "37b9c73906b5be2f44c932765404c9064f9f4bddebbe2c3da371260840916d6c"
+  },
+  "observed_profiles": [
+    {
+      "platform": "Windows x86-64",
+      "runtime": "Temurin 17.0.17+10",
+      "FORMAT_locale": "en-US",
+      "default_zone": "America/New_York",
+      "native": "MSVC19.51 /W4 /WX /fp:strict"
+    },
+    {
+      "platform": "Linux x86-64",
+      "runtime": "OpenJDK 17.0.20.1+1-1-24.04-Ubuntu",
+      "FORMAT_locale": "en-US",
+      "default_zone": "America/New_York",
+      "native": "GCC13.3 and Clang18 ASan/UBSan; default zone and TZ=UTC"
+    }
+  ],
+  "scope": "Captured native locale/timezone; exact UTF16 results for supplied timestamps; no JVM at runtime; other profiles/ranges explicit refusals"
+}

@@ -1,0 +1,228 @@
+{
+  "schema": "ARROW_WORLD_SDK_CLEANUP_BINDINGS_V1",
+  "target": "mc_test_arrow_world_tick_cleanup",
+  "required_parent": "05a1335fe4992e203398388234f672d3a5f439a4d37751303ae681011b31ccad",
+  "required_natural": "4521b32257c2e7e7a0008bacc32bd0996ba17d96469f5ca8564c906bee15b597",
+  "required_sdk": "5870a6e2cdbb5d072d09d4a697d26c1e1c64c98d707ddb706b05e427e9517faa",
+  "supplier_protocol": {
+    "bytes": 2037,
+    "sha256": "ba1eb984e15aacaa4b07b29ca989b48bbabb40e63941783d6bbc0a228e17a0a0"
+  },
+  "sources": {
+    "include/mc/entity/arrow/tick.h": {
+      "bytes": 10264,
+      "sha256": "b8e36bd83ca8869a407abcd283d05fd300a80664bee7ed2c9acbce9f697b3a40"
+    },
+    "include/mc/world/runtime/entity_tick.h": {
+      "bytes": 8014,
+      "sha256": "a5e341ee59b1f3b1dcb75ab01ab481e01d145299d5636c8010dc76a427020b38"
+    },
+    "src/client/runtime/world_tick.c": {
+      "bytes": 20532,
+      "sha256": "8526f85902e7cfb75ee2ec1f4b12b038cb0e9b059c80f6de5dd794440ceba8b4"
+    },
+    "src/entity/arrow/internal.h": {
+      "bytes": 2085,
+      "sha256": "ba74e695188cdf04de5cf52e12f59e82cc6439c6d9153c95580443eb52b1e9e2"
+    },
+    "src/entity/arrow/tick.c": {
+      "bytes": 36465,
+      "sha256": "22d92c3db9685c6dd47ba7c6c7aa0643dcf4f24126191e9918d78048ede5bec1"
+    },
+    "src/entity/arrow/tick_body.c": {
+      "bytes": 29442,
+      "sha256": "f1827a6f4becd64bf634363c7fd4442c1a77bf5b71a7e66731a277136c6f92ee"
+    },
+    "src/entity/arrow/tick_children.c": {
+      "bytes": 53285,
+      "sha256": "137ef45ce8e853e8959e65712fd122a3dfa2f192ff52772aca5ac3c924b1823b"
+    },
+    "src/entity/arrow/tick_execution_dependencies.h": {
+      "bytes": 1697,
+      "sha256": "1e132b99f21904a46835465d3d4de043b802a927a0f12cf6a17021330053b239"
+    },
+    "src/entity/arrow/tick_internal.h": {
+      "bytes": 8740,
+      "sha256": "ecc11ed7cecd1a973fe31d62b3b4abd13c37b2b8a617840213024d33e0373101"
+    },
+    "src/world/runtime/entity_tick.c": {
+      "bytes": 12480,
+      "sha256": "2e22aadf1a418e0eebe4729eee2196c4742f4d01eaf70d3d23c5277299aec90b"
+    },
+    "src/world/runtime/entity_tick_dispatch.c": {
+      "bytes": 16532,
+      "sha256": "c2bc52972d5cabdf108f5694672a9814de129f9a002731cd146b6d066363666b"
+    },
+    "src/world/runtime/terminal_inventory.c": {
+      "bytes": 45552,
+      "sha256": "c582292cef314081feac27fe93acb38f9a93b12a015336b28461f33235b70815"
+    },
+    "tests/world/runtime/test_arrow_natural_flight.c": {
+      "bytes": 19352,
+      "sha256": "ef30933831986c962b9f27512a66462a41ee65d01b15220fc83b3ce57f282e47"
+    },
+    "tests/client/gameplay/test_arrow_world_tick_cleanup.c": {
+      "bytes": 13403,
+      "sha256": "80d866a4df85af27011535b381728a1cae45bfbd24da103b2b453d5ed5056042"
+    },
+    "CMakeLists.txt": {
+      "bytes": 346765,
+      "sha256": "53954729f4dc13994c82ac69a188ede1f5b0368ec4c39efddd35910f06470a87"
+    },
+    "cmake/tests/arrow_world_tick_cleanup.cmake": {
+      "bytes": 2831,
+      "sha256": "ff5e2737be85e20ddb162217da97669bd620bb827ed7380b137620a36d10f7b3"
+    },
+    "include/mc/world/runtime/movement.h": {
+      "bytes": 5465,
+      "sha256": "16b31d42c9899f07f81691d90d3ddc28750ee057ed6adbb7d75f4b7851e1fcfd"
+    },
+    "include/mc/world/runtime/world_access_error.h": {
+      "bytes": 2776,
+      "sha256": "09a4829a8f9f56c1d68ab26355d844b8377fd1c3aac5ea8e9028cbbd3a167bfe"
+    },
+    "src/core/math/execution_internal.h": {
+      "bytes": 7418,
+      "sha256": "ff3cf04e9bcfb028e2e372fc328da5a1277f30e7edb4b1346925312fb1970abb"
+    },
+    "src/entity/mob/damage.c": {
+      "bytes": 50991,
+      "sha256": "c3a0faac915e3df191894b57006f09b551df5277033093622d112a2606f90d2e"
+    },
+    "src/entity/mob/damage_execution_internal.h": {
+      "bytes": 6121,
+      "sha256": "73d0b58e7d6fdde6d63580c61fbeb84b20157aeaca5dad8fcd4be879ce3b38e4"
+    },
+    "src/entity/mob/damage_internal.h": {
+      "bytes": 3564,
+      "sha256": "e85d4c867790c488b2d36d053693d4536706f8945a79d48bdc7cf62d219c6a85"
+    },
+    "src/entity/mob/wolf_damage.c": {
+      "bytes": 42666,
+      "sha256": "c65e6384d021ec696ee4a6daca30012c6bf81c748d350ca99f6fe7d257f6cd30"
+    },
+    "src/entity/mob/wolf_damage_execution_internal.h": {
+      "bytes": 864,
+      "sha256": "82fa360d0522c59a7937cf3f02709d068a085e208e675c86a4f77e4f559c24c9"
+    },
+    "src/entity/movement/damage_execution_internal.h": {
+      "bytes": 7332,
+      "sha256": "5601732b52306d176047e197f8f55938874a6d0fc6e0b57b08dd9775161e7b74"
+    },
+    "src/entity/movement/effects.c": {
+      "bytes": 88343,
+      "sha256": "fb215d5321d190015ec169bacd592fcf41ab42f583d1b6b5a59a799fa1b17eb5"
+    },
+    "src/entity/player/death.c": {
+      "bytes": 32084,
+      "sha256": "40b862f457380f6371b86dd0a63b6cbaf4faa437cf44b684d53ed31025084b3f"
+    },
+    "src/entity/player/death_execution_internal.h": {
+      "bytes": 2898,
+      "sha256": "bfb504d3e0251dd0c96bddc2e0e275e2c7b277beaedc6d26851dff1cb4c54bc6"
+    },
+    "src/entity/player/drop.c": {
+      "bytes": 37436,
+      "sha256": "0b0fbde2148dc718d9d538650bceb4c28d860c3b85eedabe13bb8c25666b2098"
+    },
+    "src/entity/player/drop_execution_internal.h": {
+      "bytes": 3957,
+      "sha256": "f8e2bc3dd99f6ee23fb949126f619e1f4e0fbdc21ce88c0335392d403e5e0a7c"
+    },
+    "src/inventory/runtime/scatter.c": {
+      "bytes": 8759,
+      "sha256": "14642de8bda69dd7fcb304a0c0dc8a7a48bc70f87f0dfa2dd8697a88eda7f419"
+    },
+    "src/inventory/runtime/scatter_internal.h": {
+      "bytes": 1939,
+      "sha256": "3334a415fd7ba07140dca944f5cadb856a07d7cabe6fa58802c61fc466dc1263"
+    },
+    "src/world/runtime/collision/class_entities.c": {
+      "bytes": 26478,
+      "sha256": "255dd0b05f85742528504cd7f2775926e6500d16b1ac64592001aa8e2d195705"
+    },
+    "src/world/runtime/entity_publication.c": {
+      "bytes": 56160,
+      "sha256": "c99cc55bf66073d9011b16232a7424ffd96c8143fb7d1c5a677cbb43e084e1f5"
+    },
+    "src/world/runtime/movement.c": {
+      "bytes": 29751,
+      "sha256": "8a9b441be8788d514cfe896c49a024ab7380b9f85aaaf418d0ba1762f43c05f3"
+    },
+    "src/world/runtime/presentation.c": {
+      "bytes": 22937,
+      "sha256": "213129f7a912d449632d2e2e319a892c6b2980efbcd4bc6602ce3272f1277e2b"
+    },
+    "src/world/runtime/presentation_execution_internal.h": {
+      "bytes": 4096,
+      "sha256": "33470313a5e2f6741eddd064be8f2d994ae1d0b07b8c9b0e4188fbed669c26e5"
+    },
+    "src/world/runtime/runtime_execution.c": {
+      "bytes": 20205,
+      "sha256": "39ebbb88f6bd90dbc3662fdaa2fda9978759cf02fc06b0543bd8a6c7472c9e7f"
+    },
+    "src/world/runtime/runtime_execution_internal.h": {
+      "bytes": 11563,
+      "sha256": "7ad9fb3f900dc93e9f0be3bddb07cf8a0dbe8d034370f9ce6d7edd7ff4860fc3"
+    },
+    "src/world/runtime/world_access.c": {
+      "bytes": 59580,
+      "sha256": "06734754032eadb1a92414dd244bc8a2a785ef2113bbb96d23907e629c7a2134"
+    },
+    "src/world/runtime/world_access_internal.h": {
+      "bytes": 8532,
+      "sha256": "dfdcb4e00705520d8c9521c0444834512afbbc543bafafe0845d94d3088e878f"
+    }
+  },
+  "helpers": {
+    "tests/tools/world/test_world_query_controls.py": {
+      "bytes": 76712,
+      "sha256": "6241e269fa6d19a3a9e754a0e868ee92b744fc5d779406db790db7728d7ee9b9"
+    },
+    "tests/tools/world/test_execution_ownership.py": {
+      "bytes": 8350,
+      "sha256": "1d3616472c10b0c253e881fdd08c33d198765922d5e75bc45ec3f955ece5275e"
+    },
+    "tests/reference/client/statistics/support.py": {
+      "bytes": 7123,
+      "sha256": "1ac10e26456a6a8c9ba21751f49499549ec8ed322874c0d5c07be74c5fed4fa1"
+    }
+  },
+  "prospective_source_successor": {
+    "schema": "CURRENT_SOURCE_ADMISSION_SUCCESSOR_V1",
+    "from_commit": "fc7b0418f24b5c302dab1a114a3bebb0a0f1670f",
+    "role": "Current source admission for the execution-owned Player wake, recursive Bed mutation and lighting paths, and their Arrow damage continuation. The declared inputs include the native controls, authored original recursive wake packet and current scope documents. Earlier authority, supplier, source projection, native validation, captures and qualification records retain their original identities and scopes.",
+    "previous_metadata": {
+      "bytes": 10176,
+      "sha256": "0250c448c856e5e15b86df2f53abf014b702d5915061b099d35b4df6f796d7ef"
+    },
+    "groups": {
+      "sources": {
+        "previous": {
+          "src/entity/arrow/tick.c": {
+            "bytes": 36364,
+            "sha256": "cb503a7c838b0febd59d2e6ad0b2fd4b8daa2e098fb7e0a492ed9bdaded666a8"
+          },
+          "CMakeLists.txt": {
+            "bytes": 345322,
+            "sha256": "4abc1faff12fab607d8b0a1ccd743bb1b5fbaccab9831b2fc6d9c3d9ab00d4a0"
+          },
+          "src/entity/movement/damage_execution_internal.h": {
+            "bytes": 7280,
+            "sha256": "10fee661579a6587e4f5fa4f9d9ecae478b630c6de9d38974db3931e5fcf4981"
+          },
+          "src/entity/movement/effects.c": {
+            "bytes": 84670,
+            "sha256": "c9f5e14fad32e881ae552374b9cc0775fd5d2d78538d266c2c5f11b780f7fd8c"
+          }
+        },
+        "added": [],
+        "current_count": 41
+      }
+    },
+    "current_semantics": {
+      "scope": "The current natural victim-frontier source now invokes the actual owned hurt child at Arrow victim741; the inherited victim Boolean is consumed only after that actual child continuation and its native cleanup. Failed children retain their actual typed diagnostics, Math-return proof and exact explicit cleanup records. This prospective source successor does not describe the behavior or qualification of the preserved historical supplier cohorts. Current pins also bind the declared Slime removal dispatch and terminal inventory changes. Slime removal admission for retiring actors leaves earlier removal work with its existing cleanup owner. The current declared sources include the Arrow continuation into the execution-owned Player wake path.",
+      "qualification": "Current source admission. Existing suppliers, captures and native or original results retain their recorded input identities and qualification."
+    }
+  }
+}

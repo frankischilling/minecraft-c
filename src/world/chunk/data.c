@@ -2,8 +2,7 @@
 
 #include <string.h>
 
-bool mc_chunk_data_init(mc_chunk_data *data, uint8_t *blocks, size_t blocks_capacity)
-{
+bool mc_chunk_data_init(mc_chunk_data *data, uint8_t *blocks, size_t blocks_capacity) {
     if (data == NULL || blocks == NULL || blocks_capacity < MC_CHUNK_BLOCKS) {
         return false;
     }
@@ -19,8 +18,7 @@ bool mc_chunk_data_init(mc_chunk_data *data, uint8_t *blocks, size_t blocks_capa
 }
 
 bool mc_chunk_data_rebuild_height_skylight(mc_chunk_data *data, const int32_t *opacity,
-                                           size_t opacity_length, bool skylight_enabled)
-{
+                                           size_t opacity_length, bool skylight_enabled) {
     if (data == NULL || data->blocks == NULL || data->blocks_capacity < MC_CHUNK_BLOCKS ||
         opacity == NULL || opacity_length < 256u) {
         return false;

@@ -2,10 +2,12 @@
 
 The verified client class `qj` and server class `jx` implement the original
 region record storage. Their [JAR fingerprints](binaries.md) remain pinned.
-This module implements a read-only byte-span reader and CLI. Filename parsing,
-global chunk coordinates, cache lifetime and world schemas remain outside this
-evidence. Original classes accept a `File`; their local indexing alone does not
-establish those caller behaviors.
+The byte-span reader and CLI covered by the original observations below are
+read-only. Filename parsing, global chunk coordinates, cache lifetime and world
+schemas remain outside that evidence. Original classes accept a `File`; their
+local indexing alone does not establish those caller behaviors. The later
+[client source transport](#current-client-source-transport) has separate
+implementation limits and authored qualification.
 
 The recorded investigation used 36 synthetic fixture definitions and 49 queries
 per side/runtime on Temurin 17 and Oracle 21, producing 196 query records. Each
@@ -215,3 +217,118 @@ and explicit mode `recorded_observations`. Its live original-region check stays
 pipeline above records fresh original execution separately. Historical replay
 and live observations both retain the read-only scope; neither establishes full
 region/save parity.
+
+## Current client source transport
+
+The client `mx`/`ld` route now uses
+[`mc_world_source_chunk_loader`](../../include/mc/world/storage/source_chunk_loader.h)
+and a shared
+[`mc_world_source_regions`](../../include/mc/world/storage/source_regions.h)
+RegionFileCache owner for `rj`. This route uses the handler's same Store and
+File namespace.
+Ordinary `ld.a` holds the actual world File; the Nether factory constructs the
+actual `DIM-1` child before storing it. Construction holds the File without
+opening a region. [SaveHandler ownership](../world/save-handler.md) describes
+the enclosing World and loader lifetimes.
+
+At the reached `rj.c` read, the source cache constructs the region directory
+File and `r.<x >> 5>.<z >> 5>.mcr` File through the existing UTF-16 File owners.
+Equal File keys reuse the same `qj` owner before `exists` or `mkdirs` is called.
+Different Worlds and dimensions share the bound namespace. At 256 entries, a
+new key reaches the source flush before its `qj` constructor. An explicit
+flush closes the retained `qj` descriptors before clearing the map. This
+implements the shared `rj.a()` body; SaveFormat's `hi.c()` caller remains an
+explicit dependency. The legacy
+`mc_world_regions` cache still owns whole-file images under its separate UTF-8
+root-path API.
+
+Each source `qj` retains its File,
+[`mc_java_random_access`](../../include/mc/world/storage/java_random_access.h),
+location and timestamp arrays, free-sector state, growth counter and last
+modification value. Reads seek and consume bytes from that live descriptor;
+they do not read from a retained whole-file image. Cached header entries remain
+cached while a later body read can observe an external in-place change. File
+keys and descriptors keep their own native occurrences until flush or final
+retirement.
+
+This constructor is writable. It opens `RandomAccessFile(File,"rw")`, writes
+the source 8192-byte header when the initial length is below 4096, and retains
+the original padding loop at the current cursor. It does not silently replace
+that loop with an alignment repair. Signed location math, source sector/length
+checks and selector decisions remain in their reached order. Missing or
+source-rejected records return null. The compressed byte array starts zeroed,
+and `qj` makes one bulk descriptor read whose returned byte count is ignored,
+as in the source. Native bounds, allocation failures and unsupported providers
+remain failures rather than null records.
+
+Selector 1 uses GZIPInputStream over that byte array; selector 2 uses the default
+wrapped InflaterInputStream. The incremental NBT parser reads the actual
+compressed stream. `ld` neither closes that stream nor drains it after parsing.
+The decoder adopts the completed document into the existing GAME payload,
+then the canonical import code and final `lm.i` run. Native retirement releases
+the stream and document occurrences without inventing a source close or
+reading an unrequested trailer. The corrupt-trailer control parses a complete
+NBT record successfully, then detects its CRC error only on a later explicit
+read.
+
+The Windows provider uses the selected JDK 17 read/write sharing flags without
+delete sharing. Renaming an open region is therefore refused on Windows.
+Unix permits the rename and keeps the opened file attached to the descriptor.
+POSIX opens use `O_RDWR | O_CREAT | O_CLOEXEC`; the source declares the required
+POSIX.1-2008 feature profile before its headers. Both providers use the same
+File native-path conversion as the other source File operations.
+
+### Native policies and unfinished paths
+
+| Policy | Current bound or behavior |
+| --- | --- |
+| Source cache retention | Up to 256 strongly retained `qj` owners until capacity flush, explicit flush or native retirement. Java SoftReference collection timing is not modeled. |
+| Region extent | Default 256 MiB, with separate signed-int/sector-list admission after the reached constructor effects. |
+| Compressed byte array | Default 64 MiB native bound; the original sector-count and declared-length checks also apply. |
+| Generated filename String | Default 8 MiB allocation budget in `max_path_bytes`; the File namespace applies its own path and String limits. |
+| Incremental compression | Default 1 MiB stream-owner and 128 MiB inflater-allocation budgets, 64 MiB compressed-input and output bounds, and 1024 gzip members. |
+| NBT | Default 64 MiB input/output and 128 MiB allocation bounds, 1,000,000 tags/elements, and depth 64. No whole-container validation is forced after a completed source parse. |
+| File keys | Exact UTF-16 comparison on Unix. The Windows source cache admits ASCII case-insensitive File keys; non-ASCII WinNTFileSystem case mapping is an explicit dependency. |
+| HashMap profile | Ordinary JDK 8+ bucket behavior is admitted. A required tree bin reports its unfinished SDK dependency. |
+
+These budgets are separate native allocation and intake policies, not a shared
+Java heap bound. The source decoder also retains its fixed-array shape policy.
+Exact allocation-failure timing for the debug StringBuilder calls is outside
+this qualification. Failed native and source-call prefixes retain their Files,
+descriptors, input owners and typed causes for checked cleanup.
+
+The `qj` read catch can return null for an IOException reached inside that
+method, including GZIP construction. Decompression or NBT failures reached
+later through `ld` retain a fatal loader cause; they cannot trigger replacement
+generation. Constructor and flush IOException diagnostics stop at their
+unfinished `printStackTrace` calls. Missing chunk data and relocation retain
+their source printing dependencies. Source saving checks the session and then
+stops at bytecode 16 of `ld.a(fd,lm)`, before completing `rj.d` output/deflater
+ownership.
+Source save allocation/reuse, restart compatibility and failed-I/O durability
+remain unqualified.
+
+### Focused native results
+
+On 2026-10-29, the Windows MSVC Debug storage-focused run passed five tests
+with no skips: the source handler constructor, source World constructor,
+ordinary and close-fault HC controls, and `storage.source_regions`. The source
+World retained read-cause test also passed its later Windows rerun.
+
+GCC 13.3 and Clang 18.1.3 each built and ran those five tests plus the ordinary
+and close-fault source metadata/session tests under Linux WSL. All 14 test
+executions passed, with no skips, using Debug C17, strict warnings as errors,
+ASan, UBSan and leak detection. Their offline builds used the retained pinned
+zlib source. The initial GCC test-only shadow warning was corrected without
+changing assertions before the successful run.
+
+`storage.source_regions` performs 75 authored checks over real files. The
+control reads a changed compressed body through the warm cache's retained
+header offset, then verifies that flush exposes the changed header. It also
+checks gzip/zlib parsing, the unread corrupt trailer, the platform's open-file
+rename result, fresh header creation and counted retirement. The source World
+fixture exercises eight constructor cases and 278 checks, including READY
+existing Worlds and a retained malformed-region parse failure. These are
+authored native results for the new client transport. They do not extend the
+earlier live-original inspector comparison or qualify complete terrain
+preparation, Display, source save/reload or gameplay.

@@ -1,0 +1,216 @@
+{
+  "schema": 1,
+  "scope": "Selected integer/boolean state from five unchanged-original unarmed Player attacks; independent constructor/Math entropy, no graphical or whole-combat claim.",
+  "original_capture": {
+    "status": "PASS",
+    "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "rows": 5,
+    "original_game_classes_modified": false,
+    "uninitialized_game_allocation": false,
+    "game_subclass_substitutions": false,
+    "network_attempts": 0,
+    "native_links": 0,
+    "shared_math_or_constructor_entropy_rebound": false,
+    "read_only_JDI": false,
+    "inputs_unchanged": true,
+    "helpers_unchanged": true,
+    "artifacts_sha256": {
+      "capture.json": "b58ed6d20b2f467bccae7d655b7eb349e81c115b1113596be333cfde77f883ff",
+      "original.stdout": "5e3a31d1d93681f6dcb6576af9053057bbec08e07761a4a83512f833ca9f804e",
+      "original.stderr": "dd3819e3916e0192da24606770bbbeb62cec3007c7be1d47b5108ecba3bd3caf",
+      "compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "helper_classes_sha256": {
+      "PlayerAttackObservation$1.class": "bf3c6e0d1d506670b1ab717cdab81bc5b31baac1b24fc8d1ccb6ab232bf7d410",
+      "PlayerAttackObservation$Observer.class": "066fca3236ed2c65ae0406723db266dcfadbc51c94355d7e43c60498b4f508bd",
+      "PlayerAttackObservation.class": "7e04bf5d5341dd16d48c8b3a2692c03b2bc9c19993169d981968a3c3ba84c140"
+    },
+    "mob_pickability_resolution": {
+      "classes": [
+        "cn",
+        "uz",
+        "fr",
+        "gb",
+        "uw",
+        "wh",
+        "dl",
+        "bx",
+        "ww",
+        "gi",
+        "xt"
+      ],
+      "pickable_owner": "ls",
+      "border_owner": "sn",
+      "live_original_reflection": true
+    },
+    "wool_inventory": {
+      "metadata_values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "actual_color": 16777215,
+      "color_and_shape_declaring_class": "uu",
+      "concrete_class": "ee",
+      "live_original_reflection_and_color_calls": true,
+      "actual_item_icons": [
+        113,
+        129,
+        145,
+        161,
+        177,
+        193,
+        209,
+        225,
+        114,
+        130,
+        146,
+        162,
+        178,
+        194,
+        210,
+        64
+      ],
+      "item_icon_metadata": "(~damage)&15"
+    }
+  },
+  "source_files": {
+    "PlayerAttackObservation.java": {
+      "bytes": 8597,
+      "sha256": "45b8bf1d614e90a4f6a1aa21ad78d393d0bf2746a239427e2455bbeddc5a15c4"
+    },
+    "capture_reference.py": {
+      "bytes": 7071,
+      "sha256": "b06d1b4bdb739c209d724bfc8ace55c54feb781caabd0f0a8f0ed1995d409c97"
+    },
+    "compare.py": {
+      "bytes": 2585,
+      "sha256": "3aabf0b4706f68d07bb05e9a4db390dd928745f444e947b20ea5698346e7abcb"
+    },
+    "test_packet.py": {
+      "bytes": 2346,
+      "sha256": "1ac98d59eb3d135cbf85ef98307e577a8fc4a02e81bcbdc662730f51ae5a8c9a"
+    }
+  },
+  "native_validation": {
+    "windows_cpu": {
+      "status": "PASS",
+      "checks": 743,
+      "original_rows": 5
+    },
+    "linux_clang18_asan_ubsan_cpu": {
+      "status": "PASS",
+      "original_rows": 5,
+      "seconds": 0.27
+    },
+    "windows_sdk": {
+      "status": "PASS",
+      "seconds": 10.37,
+      "checks": 507,
+      "selected_inputs_unchanged": 1393,
+      "resources_unchanged": 413,
+      "receipt": "ATTACK_INPUT sdk-left=1 attempts=2 mouse-progress=1 swing=1 health-nonpositive=1 dying=1 score-added=7 mob-kills=1 damage-dealt=2 wool-items=1 returned-world-hud=3",
+      "operand": "ATTACK_OPERAND y-velocity-bits=bfb41205c28f5c29 expected-damage=2 actual-damage=2 falling-bonus=1 sample-count=1 active-call=1",
+      "cleanup": "ATTACK_FINISH cleanup=1 windows-absent=1 checks=507",
+      "artifacts_sha256": {
+        "run.json": "83f243c3b23d900d4df89d76a956a6cfd05710272b023c6777550bf4bd25963d",
+        "stdout.txt": "6c046f87092a053dcaa3823d8a647965f6c8b941c30f17aef215b44966b38eca",
+        "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "attack-target.png": "6a82cfcfb0b1d334826ca9cf51a31850687e0cc68dde23b720d2830972673be6",
+        "attack-returned.png": "d0154f433d80f730270cfdd944c32c37e1525d547dc0d60122904b834a69412e"
+      },
+      "limits": "Selected runtime/C/harness/executable inputs are bracketed. The inventory does not include every imported Python helper, compiler input, native library or desktop state. No complete build/environment identity or original graphical correspondence claim."
+    },
+    "windows_sdk_complete_death_autosave": {
+      "status": "PASS",
+      "seconds": 13.9,
+      "checks": 1230,
+      "selected_inputs_unchanged": 1398,
+      "resources_unchanged": 413,
+      "receipt": "ATTACK_INPUT sdk-left=1 attempts=2 mouse-progress=1 swing=1 health-nonpositive=1 dying=1 score-added=7 mob-kills=1 damage-dealt=2 wool-items=1 returned-world-hud=3",
+      "operand": "ATTACK_OPERAND y-velocity-bits=bfb41205c28f5c29 expected-damage=2 actual-damage=2 falling-bonus=1 sample-count=1 active-call=1",
+      "death": "ATTACK_DEATH age=21 particles=20 distinct-gy=20 actual-world-remove=1 normal-timer=1",
+      "cleanup": "ATTACK_FINISH cleanup=1 windows-absent=1 checks=1230",
+      "autosaves": [
+        {
+          "event": 0,
+          "time_saved_before_store": 39,
+          "next_time": 40,
+          "period": 40,
+          "selected_chunks": 24,
+          "region_growth": 0,
+          "player_score": [
+            3,
+            14
+          ],
+          "player_health": [
+            2,
+            20
+          ],
+          "entity_list_before": {
+            "phase": 0,
+            "bytes": 380628,
+            "maps": [
+              "0",
+              "0",
+              "0",
+              "0"
+            ],
+            "counts": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "entity_list_after": {
+            "phase": 0,
+            "bytes": 380628,
+            "maps": [
+              "0",
+              "0",
+              "0",
+              "0"
+            ],
+            "counts": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "actual_entity_slice_calls": 0,
+          "observer_unchanged": true,
+          "entry_sha256": "773e1ce93aad6daf87123060548da78945597501c41d2c1058ee40591562e802"
+        }
+      ],
+      "corruption_controls": 16,
+      "artifacts_sha256": {
+        "run.json": "568ab1d03f05210953e37c38fcc4e29b3e6728bc59440efc646608d0ace94054",
+        "stdout.txt": "a7dc646568b63c4ef6c4fea255a955e4b46517a957190a913385dce875730e71",
+        "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "attack-target.png": "6725e6f588ef1bf36fed2ebd72681627f4e66f0e6b7b3373f038ec5e4b1bb2f6",
+        "attack-returned.png": "19be88fe93304fd0bfc14a0fbfdbef380d36931a85c8326b4903abeb839dade3"
+      },
+      "limits": "Selected runtime, C/harness, executable and resource hashes are bracketed. Other imported helpers, toolchain and desktop state are not a complete environment inventory. Test-only save observer is absent from the ordinary client. No original whole-session, pixels, pickup or restart-interoperability claim."
+    }
+  },
+  "limits": [
+    "Selected integer and boolean fields only; Random, geometry, sounds and Item constructor state are outside this comparison.",
+    "Five authored CPU scenes; no original whole-combat, mouse-input, graphical-session or pixel equality claim."
+  ]
+}

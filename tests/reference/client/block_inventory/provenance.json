@@ -1,0 +1,46 @@
+{
+  "format": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "repeats": 2,
+  "rows": 13194,
+  "native_rows": 13098,
+  "scope": "Actual 96 original Block singletons, runtime declaring classes, all metadata colors, constructor/authored shape bounds, type0 six-side textures and late bm fields; no original CV/BB/GL.",
+  "files_sha256": {
+    "BlockInventoryObservation.java": "d18f96c1c79ef141c34d41ea10f442fd338bc21b5f134aec87f9dd9793324f46",
+    "capture_reference.py": "ff783d0132f26c77ced455a233a872033b2218da1829d5e87901b14fc68b725a",
+    "inputs.json": "4e038ea0f1e145dd7e003f52734d98d26e762016ede0e637fa1de09052388a47",
+    "source-pins.json": "112c7cb7dcd9d71c34f57e2241569c34bb9f62450d8768b4b5e1402b00eb3e70",
+    "observations.tsv": "c7c40a2b49963052151459212cd66a1806d6b7b701c889afd48bd34b90840e9b",
+    "guards.tsv": "5600333c0f237f00031bc6a4fb048d2cbc212ad982b7cb4e8bcb99ca8700ee0c"
+  },
+  "jdk_files_sha256": {
+    "java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+  },
+  "observer_classes_sha256": {
+    "BlockInventoryObservation$1.class": "0a4fb534f454007cccd8a7bec28efa709c8324f50b3dc476bf350a48ea33da43",
+    "BlockInventoryObservation.class": "5aebfb0443937ff9d067e1f0b371944e3175b6d5d80651dfff3ec69590c54caf"
+  },
+  "original_stdout_sha256": [
+    "c955094f6824b919792d0454168afbe141637caa9920584e481de2eca5761e62",
+    "c955094f6824b919792d0454168afbe141637caa9920584e481de2eca5761e62"
+  ],
+  "source_guards": [
+    "BLOCK_INVENTORY_GUARD\t96\t57\t0\t0",
+    "BLOCK_INVENTORY_GUARD\t96\t57\t0\t0"
+  ],
+  "original_inputs_unchanged": true,
+  "source_pin_parser": {
+    "path": "tests/reference/client/controller/classfile.py",
+    "sha256": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+  },
+  "vm_arguments": [
+    "-Xint",
+    "-Xverify:all",
+    "-Djava.awt.headless=true",
+    "-Djava.security.manager=allow"
+  ],
+  "transport": "ASCII with raw LF; no original classes or assets stored"
+}

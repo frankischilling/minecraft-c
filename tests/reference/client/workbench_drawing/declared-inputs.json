@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "context": "real LWJGL Display.create; no Pbuffer fallback",
+  "physical-size": [
+    854,
+    480
+  ],
+  "scaled-size": [
+    427,
+    240
+  ],
+  "world-seed": 23,
+  "world-construction": "genuine FD(WY,name,dimension0,seed), unchanged cache/World fields",
+  "player-construction": "genuine DC(App,World,Session,0), unchanged constructor fields and actual IX/AA; not inserted into World Entity list by helper",
+  "player-name": "WorkbenchDrawing",
+  "held": {
+    "id": 17,
+    "count": 3,
+    "damage": 0,
+    "animation": 5
+  },
+  "armor": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "manager": "OO has no UE preview; TH/DS preview is outside this packet",
+  "partial": 0.375,
+  "mouse": [
+    [
+      134,
+      180
+    ],
+    [
+      -60,
+      -70
+    ]
+  ],
+  "gl-projection": {
+    "viewport": [
+      0,
+      0,
+      854,
+      480
+    ],
+    "ortho": [
+      0,
+      427,
+      240,
+      0,
+      1000,
+      3000
+    ],
+    "modelview-translate": [
+      0,
+      0,
+      -2000
+    ]
+  },
+  "pre-draw-nw-clears": 0,
+  "random-rebinding": false,
+  "invocation-field-repairs": false,
+  "screen-construction": "genuine OO(actual IX,actual World,8,64,8); actual DA.initialize(App,427,240) invokes ID.b and publishes Player.e=OO.j; constructor AA remains Player.d; App.r not published",
+  "main": {
+    "0": [
+      17,
+      3,
+      0,
+      5
+    ],
+    "1": [
+      58,
+      2,
+      0,
+      5
+    ],
+    "9": [
+      5,
+      4,
+      0,
+      5
+    ]
+  },
+  "craft": {
+    "0": [
+      17,
+      1,
+      0,
+      5
+    ]
+  },
+  "result": "actual recipe callback four Planks, not supplied by helper",
+  "input-attachment": "not reached by OO/ID draw; actual DC Input remains constructor-null",
+  "cursor": [
+    null,
+    [
+      58,
+      2,
+      0,
+      5
+    ]
+  ],
+  "cursor-setter": "actual IX.b(Stack) before profile1 only; no state changes during a draw",
+  "historical-failed-cohorts": [
+    {
+      "path": ".local\\workbench-drawing-prepared-1",
+      "status": "FAIL",
+      "classification": "read-only observer setup failure, not a source game frontier",
+      "ordinary-completed-draws": 2,
+      "frontier": "JDI incorrectly selected NW.b(I)V; actual begin is NW.a(I)V, reached via NW.b() atPC3. Controller refused first source draw without a captured prior buffer.",
+      "capture-sha256": "ec6676b0c1fae50ba9c791f4cc87b5cf263cefcffcc9ae5e96191e9dfe6507d7",
+      "controller-stderr-sha256": "de5d67773f20b1cd35ccfea662e47273161ea00ccd40eb66b2121253c7d83105",
+      "reused": false
+    },
+    {
+      "path": ".local\\workbench-drawing-prepared-2",
+      "status": "FAIL",
+      "classification": "capture archive-pin inventory bookkeeping failure, not a source game frontier",
+      "ordinary-completed-draws": 2,
+      "jdi-completed-draws": 2,
+      "completed-NW-draws": 72,
+      "frontier": "All source draw/body/backing audits passed; final live-Code comparison lacked BB archive inventory (IZ/NH inventories also added for observed tooltip bodies).",
+      "capture-sha256": "4e6ce060abebc3764fb0ba5285112ba61f954379e6e1360e1d9d80aac6525ac1",
+      "original-stderr-sha256": "1a3b51c4f012c92b62f782f57179d50358d614f7d91031f10f09a68054d9d1bf",
+      "reused": false
+    }
+  ]
+}

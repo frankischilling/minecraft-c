@@ -1,11 +1,48 @@
 #!/usr/bin/env python3
-"""Format project-owned C source and headers with the repository style."""
+"""Format project-owned C source/headers and selected handwritten fragments."""
 
 import argparse
+import os
 from pathlib import Path
+import re
 import shutil
+import struct
 import subprocess
 import sys
+
+
+def command_size(command):
+    if os.name == "nt":
+        return len(subprocess.list2cmdline(command).encode("utf-16-le")) // 2 + 1
+    return sum(len(os.fsencode(arg)) + 1 for arg in command) + (len(command) + 1) * struct.calcsize("P")
+
+
+def command_limit():
+    if os.name == "nt":
+        return 30000  # Below CreateProcessW's 32767 UTF-16 code units.
+    try:
+        available = os.sysconf("SC_ARG_MAX")
+    except (AttributeError, ValueError):
+        return 24000
+    environment = sum(len(os.fsencode(key)) + len(os.fsencode(value)) + 2
+                      for key, value in os.environ.items())
+    environment += (len(os.environ) + 1) * struct.calcsize("P")
+    return min(24000, max(0, available - environment - 2048))
+
+
+def commands(command, files):
+    limit = command_limit()
+    batch = []
+    for path in files:
+        argument = str(path)
+        if batch and (len(batch) == 128 or command_size([*command, *batch, argument]) > limit):
+            yield [*command, *batch]
+            batch = []
+        # An oversized singleton is the original invocation; let the OS report
+        # its actual limit rather than reject a previously supported path.
+        batch.append(argument)
+    if batch:
+        yield [*command, *batch]
 
 
 def main():
@@ -18,16 +55,83 @@ def main():
     if not formatter:
         print(f"UNAVAILABLE: formatter not found: {args.clang_format}", file=sys.stderr)
         return 77
+    version = subprocess.run([formatter, "--version"], capture_output=True, text=True, check=True)
+    if re.search(r"\bversion 18\.1\.3\b", version.stdout) is None:
+        print("UNAVAILABLE: formatting requires clang-format 18.1.3; found " +
+              version.stdout.strip(), file=sys.stderr)
+        return 77
     root = Path(__file__).resolve().parents[2]
+    fragments = {"tests/item/use/redstone/statistics_setup.inc",
+                 "tests/client/startup/death_respawn_controls.inc",
+                 "tests/client/startup/bed_respawn_controls.inc",
+                 "tests/entity/player/coordinate_methods_cases.inc",
+                 "src/client/gui/gui_ingame_chat_draw.inc",
+                 "tests/block/registry/redstone_torch/texture_fixture.inc",
+                 "tests/world/runtime/redstone_torch/terminal_current.inc",
+                 "tests/item/use/redstone/statistics_teardown.inc",
+                 "tests/item/use/redstone/support_setup.inc",
+                 "tests/item/use/redstone/terminal_cleanup.inc",
+                 "tests/item/use/food_controls.inc",
+                 "tests/world/runtime/placement/torch_controls.inc",
+                 "tests/world/runtime/placement/lever_controls.inc",
+                 "src/world/runtime/placement/lever.inc",
+                 "src/world/runtime/placement/bed.inc",
+                 "tests/world/runtime/placement/torch_callbacks.inc",
+                 "tests/block/registry/static_index_values.inc",
+                 "tests/item/registry/block_static_controls.inc",
+                 "tests/item/use/dye_controls.inc",
+                 "src/item/use/dye.inc",
+                 "src/item/use/bed.inc",
+                 "tests/item/use/farming_controls.inc",
+                 "src/storage/nbt/stream_support.inc",
+                 "src/client/display/source_surface.inc",
+                 "src/client/display/source_lighting_draw.inc",
+                 "src/storage/nbt/stream_owner.inc",
+                 "src/client/display/source_world_list_surface.inc",
+                 "src/client/display/world_frame_surface.inc",
+                 "src/client/display/camera_surface.inc",
+                 "src/client/display/fog_surface.inc",
+                 "src/client/world/render_global_entities/body.inc",
+                 "src/client/world/entity_renderer/world_frame_after_particles.inc",
+                 "src/client/world/entity_renderer/world_frame_selection.inc",
+                 "src/client/world/entity_renderer/held_block.inc",
+                 "src/client/world/render_global_auxiliary.inc",
+                 "src/client/particles/block_effects.inc",
+                 "src/client/gui/gui_ingame_slots.inc",
+                 "src/client/world/source_epoch.inc",
+                 "src/client/world/source_save.inc",
+                 "src/client/world/respawn.inc",
+                 "src/world/runtime/chunk_provider_owned.inc",
+                 "src/world/storage/chunk_lookup.inc",
+                 "tests/client/startup/test_world_reload.inc",
+                 "tests/client/gameplay/test_attack_autosave.inc",
+                 "tests/client/render/inventory_family_controls.inc",
+                 "tests/client/render/foliage_item_controls.inc",
+                 "tests/benchmarks/chunk_cache_error_equal.inc",
+                 "tests/client/world/chunk_cache_getter_controls.inc",
+                 "tests/world/runtime/random_block_getter_controls.inc",
+                 "tests/world/runtime/collision/selected_getter_cases.inc",
+                 "src/client/settings/source_input.inc",
+                 "src/world/saved_data/source_storage.inc",
+                 "src/world/storage/source_game_stage.inc",
+                 "src/world/storage/store_source.inc",
+                 "src/world/storage/source_metadata_output.inc",
+                 "src/world/storage/source_region_output.inc",
+                 "src/world/storage/source_chunk_save.inc",
+                 "src/world/runtime/tile_entities/source_save.inc",
+                 "tests/world/runtime/saving/mob_nbt_source_support.inc",
+                 "tests/world/runtime/saving/source_session_terminal_controls.inc",
+                 "src/client/world/source_leave.inc"}
     files = sorted(path for directory in ("src", "include", "tests")
                    for path in (root / directory).rglob("*")
-                   if path.is_file() and path.suffix in (".c", ".h"))
+                   if path.is_file() and (path.suffix in (".c", ".h") or
+                                          path.relative_to(root).as_posix() in fragments))
     options = ["--dry-run", "--Werror"] if args.check else ["-i"]
-    for path in files:
-        result = subprocess.run([formatter, "--style=file", *options, str(path)], cwd=root)
+    for command in commands([formatter, "--style=file", *options], files):
+        result = subprocess.run(command, cwd=root)
         if result.returncode:
             return result.returncode
-    print(f"{'Checked' if args.check else 'Formatted'} {len(files)} C source/header files")
+    print(f"{'Checked' if args.check else 'Formatted'} {len(files)} C source/header/fragment files")
     return 0
 
 

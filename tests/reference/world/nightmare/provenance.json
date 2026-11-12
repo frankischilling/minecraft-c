@@ -1,0 +1,90 @@
+{
+  "schema": "NIGHTMARE_PROVENANCE_V1",
+  "scope": "28 prepared complete unchanged-original CQ nightmare component calls; no natural ticks, rendered frames or sustained gameplay qualification.",
+  "archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "original_sources": {
+    "NightmareObservation.java": "a9ad1e79d4f310876ee0668bd9ccfa9b97df32fbc1bd7054c1e4a11e36a181d4",
+    "NightmareJdi.java": "6d597cb2b7686193bc733509b2b52eb3c84ef517168e2df89d728d038a63184c",
+    "capture_reference.py": "ac3dadbcd7897cd0182369333d694dc4368ece4e1f74280103d8f4a6f65bace4",
+    "profiles.tsv": "630c20e9473ff418fa1c4f9ea43c08170fd3f9858f026b7f5cc9d2f5664042ab",
+    "class-names.txt": "4d89f8e9f68e2d85ef0c7193b8ccb46c451ef59e7473dbdcd223e749ddc507c9",
+    "source-pins.json": "42fb7bee4a8df407872fd4c6a41bbcf3657ec691419de36177c75d7abdb64b21"
+  },
+  "processing_sources": {
+    "observation.py": "891e8a28fc198de0ed26a040d27d1983e9f0f7eb82dd87b897f0b7c789a4bfa2",
+    "packet.py": "9a4111e0b7d6425ae7be6f4208d2ae730522e62100712c2794966c63d76e87d1",
+    "export_reference.py": "c6a054dae0b838c36af6ced44c3434730ef0a6b1bd61b2f850f8cbfc049254df"
+  },
+  "expected_sha256": "8f151d11c59a0ffdf234c70b2e072c02cb2d92a5c4acef9a5e192de81f1ddd05",
+  "capture": {
+    "name": "capture.json",
+    "bytes": 20151,
+    "sha256": "8911d3f5e5fe46026dd0abf14e59d02c9d78ab0ffc260727382ad10b08fcc9e2"
+  },
+  "runs": [
+    {
+      "kind": "ordinary",
+      "calls": 28,
+      "returned": 23,
+      "shared_scalars": 39914,
+      "stdout": {
+        "name": "ordinary-0.stdout",
+        "bytes": 2517467,
+        "sha256": "4a4d1c75e6654362cb4f7b554ac7da49ad6d2f030a362b4411b2540bcc5aebcc"
+      }
+    },
+    {
+      "kind": "ordinary",
+      "calls": 28,
+      "returned": 23,
+      "shared_scalars": 39914,
+      "stdout": {
+        "name": "ordinary-1.stdout",
+        "bytes": 2517449,
+        "sha256": "ba841653aed790dc9f10fc4237051e593359d53fb07975d3d4deff6c083df457"
+      }
+    },
+    {
+      "kind": "debugger",
+      "calls": 28,
+      "returned": 23,
+      "shared_scalars": 39914,
+      "stdout": {
+        "name": "debugger-0/target.stdout",
+        "bytes": 2517459,
+        "sha256": "6f99da15b59b8668515cb5f49752c69b76daf623f53f93d103030357d8768a2c"
+      },
+      "journal": {
+        "name": "debugger-0/journal.jsonl",
+        "bytes": 49870323,
+        "sha256": "26a43b2a045080245baa658867d7dcd03c4313cf33b7defaf35d74d7e8b05a4d"
+      }
+    },
+    {
+      "kind": "debugger",
+      "calls": 28,
+      "returned": 23,
+      "shared_scalars": 39914,
+      "stdout": {
+        "name": "debugger-1/target.stdout",
+        "bytes": 2517455,
+        "sha256": "55ec09aabde62720115639408646f30160220f986147848f51a3b997c376d39a"
+      },
+      "journal": {
+        "name": "debugger-1/journal.jsonl",
+        "bytes": 49870323,
+        "sha256": "207a4d9f215ee4d8b7ca7af0257b9fbc0a97d9f52ad51af49a2d1531ee235287"
+      }
+    }
+  ],
+  "summary": {
+    "profiles": 28,
+    "returns": 23,
+    "true": 13,
+    "false": 10,
+    "exceptions": 5,
+    "attempts": 180,
+    "searches": 77,
+    "shared_scalars": 39914
+  }
+}

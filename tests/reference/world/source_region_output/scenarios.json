@@ -1,0 +1,103 @@
+{
+  "scope": "Genuine original rj.d(File,II), qj.b, Hz/defaultzlib/DOS, unchanged as.a(root,DataOutput), source close, late rj.b. Prepared lower boundary only; no Chunk/World caller.",
+  "nbt": {
+    "root_type": 10,
+    "root_name": "",
+    "children": [
+      {
+        "type": 7,
+        "name": "Payload",
+        "lengths": {
+          "small": 32,
+          "medium": 12000,
+          "large": 20000
+        },
+        "bytes": "xorshift32 initial0x12345678; ^=<<13; ^=unsigned>>17; ^=<<5; low byte after each transition"
+      }
+    ],
+    "uncompressed_framing_bytes": 18
+  },
+  "steps": [
+    {
+      "phase": 0,
+      "case": "fresh",
+      "x": 0,
+      "z": 0,
+      "payload": "small",
+      "late_growth_twice": true
+    },
+    {
+      "phase": 1,
+      "case": "rewrite",
+      "x": 0,
+      "z": 0,
+      "payload": "small",
+      "late_growth_twice": true
+    },
+    {
+      "phase": 2,
+      "case": "grow",
+      "x": 0,
+      "z": 0,
+      "payload": "large",
+      "late_growth_twice": true
+    },
+    {
+      "phase": 3,
+      "case": "shrink",
+      "x": 0,
+      "z": 0,
+      "payload": "small",
+      "late_growth_twice": true
+    },
+    {
+      "phase": 4,
+      "case": "reuse",
+      "x": 1,
+      "z": 0,
+      "payload": "medium",
+      "late_growth_twice": true
+    },
+    {
+      "phase": 5,
+      "case": "negative",
+      "x": -1,
+      "z": -33,
+      "payload": "small",
+      "late_growth_twice": true
+    },
+    {
+      "phase": 6,
+      "case": "abandon",
+      "x": 2,
+      "z": 0,
+      "payload": "medium",
+      "source_close": false,
+      "late_growth": false
+    },
+    {
+      "phase": 7,
+      "case": "flush-live-old",
+      "x": 0,
+      "z": 0,
+      "payload": "small",
+      "action": "write, flush actual source cache with live Hz"
+    },
+    {
+      "phase": 8,
+      "case": "replacement-begin",
+      "x": 4,
+      "z": 0,
+      "payload": "small",
+      "source_close": false
+    },
+    {
+      "phase": 9,
+      "case": "old-close-after-flush",
+      "action": "close same old DOS/Hz/QJ, actual IOException caught/printed in qj441; source returns but native matches only reached prefix"
+    }
+  ],
+  "cleanup": "Final original source cache flush outside marked cohort closes remaining actual RAF without source-closing abandoned/replacement output streams. Helper strongly retains all streams through END.",
+  "clock_policy": "Actual original milliseconds immediately before/after each ordinary returning commit; timestamp is Java divide1000 then narrow int. No field, clock or debugger assignment.",
+  "native_limits": "Actual source caught commit IOException prints then returns; native print441 dependency matches only common prefix. No fake source return or post-error growth/replacement commit credit."
+}

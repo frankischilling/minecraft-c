@@ -146,7 +146,7 @@ region loaders/writers without assigning original game fields or replacing
 providers. A genuine world-time API sets 1234 without ticking the world.
 
 Records retain all five arrays, coordinates, minimum, population and transient
-flags, `q`, `r`, frozen normalization map, entity/tile owners, full surrounding
+flags, `q`, `r`, frozen normalization map, entity/TileEntity owners, full surrounding
 cache/queue state, raw input/output NBT, inventories and bounded thread evidence.
 Observation/control JSON and every NBT artifact are byte-equal within each side;
 paired-side comparisons retain complete supported projections and typed trees,
@@ -161,11 +161,11 @@ arrays are retained by the original decoder without unsafe voxel getter calls;
 the actual loader returns null for missing `Level` or `Blocks`. Wrong exact tag
 types remain recorded exceptions.
 
-The corpus includes unknown entity/tile IDs and a genuine factory-loaded and
+The corpus includes unknown entity/TileEntity IDs and a genuine factory-loaded and
 serialized Boat and Sign. Original unknown factories discard unsupported
 objects; entity loading can still set `q`, and serialization recomputes it.
 The original fresh region writer drops unknown root/Level tags. These finite
-observations do not implement or validate every entity/tile subclass.
+observations do not implement or validate every entity/TileEntity subclass.
 
 ## Native ownership and deliberate departures
 
@@ -189,7 +189,7 @@ resolution, concurrent-owner exclusion or filesystem quota guarantee.
 
 [chunk.h](../../include/mc/world/storage/chunk.h) narrows imports to the normal
 fixed lengths: Blocks 32768, three nibble arrays 16384 each and HeightMap 256.
-It preserves unknown root/Level fields and nonempty entity/tile lists opaquely,
+It preserves unknown root/Level fields and nonempty entity/TileEntity lists opaquely,
 without factories or attachment. Opaque records permit only unchanged
 coordinates, arrays and population plus explicit LastUpdate; unsafe edits are
 refused. Normalization that changes blocks can therefore prevent a later opaque
@@ -213,7 +213,7 @@ loaded `last_played` in the live view. Chunk transport leaves dirty/time/other
 runtime flags unchanged and updates live `SizeOnDisk` with Java wrapping only
 after successful region writing. The acquisition adapter alone allows missing
 records to fall through; malformed/resource failures are fatal, and nonempty
-opaque entities/tiles are rejected before retention/activation. Generic storage
+opaque entities/TileEntities are rejected before retention/activation. Generic storage
 loads still support preservation. Retire external cache/list/view references
 before free. Free never saves, deletes session.lock or clears a shared cache.
 
@@ -308,7 +308,7 @@ Clang is `ec3bb9d94a48380e1ef66f7dc00769ac9fa406ba15b1a492b568e227d6cfc047`.
 The three original-only fixtures above remain byte-identical. Their historical
 producer labels remain null; acceptance comes from these fresh source-bound
 captures and independent checks. Opaque transport does not implement entity,
-tile or player simulation. Every subtype serializer, gameplay save/unload
+TileEntity or player simulation. Every subtype serializer, gameplay save/unload
 scheduling, running-server persistence, dimension-transition sharing and crash
 recovery remain separate requirements.
 

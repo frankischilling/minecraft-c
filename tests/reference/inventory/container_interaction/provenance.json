@@ -1,0 +1,943 @@
+{
+  "schema": 1,
+  "status": "CAPTURED_ORIGINAL_AND_SELECTED_NATIVE_COMPARISON",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "platform": "Windows x64; supplied Temurin JDK17.0.17+10; -Xint -Xverify:all; CPU/headless; no GL/native/network",
+  "scope": "73 original/native controller projections; 10 genuine drops with independent entropy/arithmetic audits; 45 actual Slots; finite UE headless lifecycle; 202 Item name rows/38 classes/six declaring methods. No complete Inventory draw or E/ESC Display lifecycle, full call-trace/native equality, pixel/playable/FPS claim.",
+  "ordinary_capture": {
+    "path": ".local\\container-original-qualified-final",
+    "capture_sha256": "2f52e826c9429dc54e4d709a6889d32c3d858e6ed25f8a370fd389f199acec6e",
+    "status": "PASS",
+    "original": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+        "-Xint",
+        "-Xverify:all",
+        "-Xmx256m",
+        "-Djava.awt.headless=true",
+        "-Djava.security.manager=allow",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "-Djava.io.tmpdir=C:\\Users\\admin\\minecraft\\.local\\container-original-qualified-final\\tmp",
+        "-classpath",
+        "C:\\Users\\admin\\minecraft\\.local\\container-original-qualified-final\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+        "ContainerInteractionObservation",
+        "C:\\Users\\admin\\minecraft\\b1.7.3.jar",
+        "C:\\Users\\admin\\minecraft\\.local\\container-original-qualified-final\\game",
+        "C:\\Users\\admin\\minecraft\\.local\\container-original-qualified-final\\declared-inputs.tsv"
+      ],
+      "exit": 0,
+      "timeout_seconds": 300,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "original.stdout",
+      "stderr_file": "original.stderr",
+      "stdout_bytes": 196048,
+      "stderr_bytes": 413,
+      "stdout_sha256": "f5e2797a0936716e0c0d20a62638ba7a899dfb5897e1872f192a643a1e1eac47",
+      "stderr_sha256": "600c435bbdce1a3b9b87252c0f479fefa4683e4ea71a145b88029628dea5f93b",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    "compile": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javac.exe",
+        "-encoding",
+        "UTF-8",
+        "-classpath",
+        "C:\\Users\\admin\\minecraft\\.local\\container-original-qualified-final\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+        "-d",
+        "C:\\Users\\admin\\minecraft\\.local\\container-original-qualified-final\\classes",
+        "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\container_interaction\\ContainerInteractionObservation.java",
+        "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\container_interaction\\ContainerInteractionJdi.java"
+      ],
+      "exit": 0,
+      "timeout_seconds": 60,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "compile.stdout",
+      "stderr_file": "compile.stderr",
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    "jdi": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+        "-classpath",
+        "C:\\Users\\admin\\minecraft\\.local\\container-original-qualified-final\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+        "ContainerInteractionJdi",
+        "C:\\Users\\admin\\minecraft\\.local\\container-original-qualified-final\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+        "C:\\Users\\admin\\minecraft\\b1.7.3.jar",
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot",
+        "C:\\Users\\admin\\minecraft\\.local\\container-original-qualified-final\\jdi",
+        "C:\\Users\\admin\\minecraft\\.local\\container-original-qualified-final\\jdi-game",
+        "C:\\Users\\admin\\minecraft\\.local\\container-original-qualified-final\\declared-inputs.tsv"
+      ],
+      "exit": 0,
+      "timeout_seconds": 300,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "jdi.stdout",
+      "stderr_file": "jdi.stderr",
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    "inputs_before": {
+      "C:\\Users\\admin\\minecraft\\b1.7.3.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+      "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+      "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+      "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+      "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+      "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+      "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+      "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\lib\\modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+      "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\server\\jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\container_interaction\\ContainerInteractionObservation.java": "c486092d8c5b02e89fb5b379d7a10f3227e8e4c44e112e722e0e0f481585b474",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\container_interaction\\ContainerInteractionJdi.java": "31a37be5877fcf129f241dd526a5fd296707fa959511ab7a1d05a29b6591ab77",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\container_interaction\\capture.py": "ede9385e3ae4155769bce589a68ce132a66d508a4d1a5b2ba96658f9ca1672ea",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\container_interaction\\cases.json": "bf58811638fe6a0e1b5b14134d179804804c3abef7fb9eb296ef2a805f9900e8",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\client\\controller\\capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\client\\controller\\classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\container_interaction\\compare.py": "91c4a1b48dac7b7cab294cb335401d63f756545a9ed18783765fe99178395e4c",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\container_interaction\\entropy.py": "cd20e885c5e397e5574a2800d88088c25f0c63f2d8829ca458e61ca06882d9a0",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\container_interaction\\audit.py": "d368ce95c27ad5061362aae078701360d17e451ef15344b34660297931b69309",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\container_interaction\\test_packet.py": "9cc45c2a5ab65f7e27430dec2e64dccecc350d5521837c55b0156beda8a141e3",
+      "C:\\Users\\admin\\minecraft\\.local\\container-original-qualified-final\\declared-inputs.tsv": "8b84cb6222114a5f70090e771892c6fa4b48fa27711b990fc503c568f5c4d5e0"
+    },
+    "inputs_after": {
+      "C:\\Users\\admin\\minecraft\\b1.7.3.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+      "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+      "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+      "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+      "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+      "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+      "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+      "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\lib\\modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+      "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\server\\jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\container_interaction\\ContainerInteractionObservation.java": "c486092d8c5b02e89fb5b379d7a10f3227e8e4c44e112e722e0e0f481585b474",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\container_interaction\\ContainerInteractionJdi.java": "31a37be5877fcf129f241dd526a5fd296707fa959511ab7a1d05a29b6591ab77",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\container_interaction\\capture.py": "ede9385e3ae4155769bce589a68ce132a66d508a4d1a5b2ba96658f9ca1672ea",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\container_interaction\\cases.json": "bf58811638fe6a0e1b5b14134d179804804c3abef7fb9eb296ef2a805f9900e8",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\client\\controller\\capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\client\\controller\\classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\container_interaction\\compare.py": "91c4a1b48dac7b7cab294cb335401d63f756545a9ed18783765fe99178395e4c",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\container_interaction\\entropy.py": "cd20e885c5e397e5574a2800d88088c25f0c63f2d8829ca458e61ca06882d9a0",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\container_interaction\\audit.py": "d368ce95c27ad5061362aae078701360d17e451ef15344b34660297931b69309",
+      "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\container_interaction\\test_packet.py": "9cc45c2a5ab65f7e27430dec2e64dccecc350d5521837c55b0156beda8a141e3",
+      "C:\\Users\\admin\\minecraft\\.local\\container-original-qualified-final\\declared-inputs.tsv": "8b84cb6222114a5f70090e771892c6fa4b48fa27711b990fc503c568f5c4d5e0"
+    },
+    "helpers_before": {
+      "ContainerInteractionJdi$Drain.class": "c1cf4e8b0d8815270b555c81c696de521e76c5c20387c07afa2e02c8b24d97e3",
+      "ContainerInteractionJdi.class": "7d2e29eb9f8d774fba87bde2082b5bd124e08d2251f38311f359da3b9449ef78",
+      "ContainerInteractionObservation$1.class": "64177aced2dd42e544e392cc1d60c4d04f586d7a4929b694ac864ad387ef2f41",
+      "ContainerInteractionObservation$Listener.class": "66d5d99b705b63298841b0ef3cc41c5555789bf43c32a43478e4be54c4dcf91d",
+      "ContainerInteractionObservation$Observer.class": "eea2b5cd0cb048ef96b58d93421b1fa68c83a65a88860b189bd7ef6a669538e5",
+      "ContainerInteractionObservation.class": "28e3179a60def8d2c1de1f50aa7d4acaa657cc37b3755d22cd726bcc27fcb87b"
+    },
+    "helpers_after": {
+      "ContainerInteractionJdi$Drain.class": "c1cf4e8b0d8815270b555c81c696de521e76c5c20387c07afa2e02c8b24d97e3",
+      "ContainerInteractionJdi.class": "7d2e29eb9f8d774fba87bde2082b5bd124e08d2251f38311f359da3b9449ef78",
+      "ContainerInteractionObservation$1.class": "64177aced2dd42e544e392cc1d60c4d04f586d7a4929b694ac864ad387ef2f41",
+      "ContainerInteractionObservation$Listener.class": "66d5d99b705b63298841b0ef3cc41c5555789bf43c32a43478e4be54c4dcf91d",
+      "ContainerInteractionObservation$Observer.class": "eea2b5cd0cb048ef96b58d93421b1fa68c83a65a88860b189bd7ef6a669538e5",
+      "ContainerInteractionObservation.class": "28e3179a60def8d2c1de1f50aa7d4acaa657cc37b3755d22cd726bcc27fcb87b"
+    },
+    "full_jdi_transport_sha256": "1560f8272edf728ad122d65136a82cb926ef10b447894a29094e09e97920f251",
+    "jdi_target_stdout_sha256": "823d7b51ccc9ea42135dc0c4017ba1d89d4d33f7e3113a883e6066a59c15dd27"
+  },
+  "independent_formula_audits": {
+    "ordinary": [
+      {
+        "profile": "empty-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "pickup-1-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "pickup-2-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "pickup-7-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "pickup-64-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "place-1-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "place-7-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "place-64-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "place-65-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "merge-1-7-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "merge-63-7-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "merge-64-7-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "merge-65-7-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "swap-id-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "swap-wool-metadata-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "merge-dirt-metadata-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "alias-slot-cursor-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "alias-main-slots-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "armor-reject-dirt-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "armor-helmet-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "armor-wrong-piece-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "armor-pumpkin-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "armor-pickup-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "output-planks-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "output-sticks-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "output-to-same-cursor-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "output-reject-other-cursor-left",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "outside-left",
+        "drops": 1,
+        "player-float-draws": 4
+      },
+      {
+        "profile": "outside-one-left",
+        "drops": 1,
+        "player-float-draws": 4
+      },
+      {
+        "profile": "empty-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "pickup-1-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "pickup-2-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "pickup-7-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "pickup-64-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "place-1-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "place-7-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "place-64-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "place-65-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "merge-1-7-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "merge-63-7-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "merge-64-7-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "merge-65-7-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "swap-id-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "swap-wool-metadata-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "merge-dirt-metadata-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "alias-slot-cursor-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "alias-main-slots-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "armor-reject-dirt-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "armor-helmet-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "armor-wrong-piece-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "armor-pumpkin-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "armor-pickup-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "output-planks-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "output-sticks-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "output-to-same-cursor-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "output-reject-other-cursor-right",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "outside-right",
+        "drops": 1,
+        "player-float-draws": 4
+      },
+      {
+        "profile": "outside-one-right",
+        "drops": 1,
+        "player-float-draws": 4
+      },
+      {
+        "profile": "ignored-button",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "negative-slot",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "past-last-slot",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "shift-main-to-hotbar",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "shift-hotbar-to-main",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "shift-craft-to-main",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "shift-armor-to-main",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "shift-merge",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "shift-full-destination",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "shift-output-planks",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "shift-output-sticks",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "close-empty",
+        "drops": 0,
+        "player-float-draws": 0
+      },
+      {
+        "profile": "close-cursor",
+        "drops": 1,
+        "player-float-draws": 4
+      },
+      {
+        "profile": "close-grid",
+        "drops": 2,
+        "player-float-draws": 8
+      },
+      {
+        "profile": "close-cursor-grid-alias",
+        "drops": 3,
+        "player-float-draws": 12
+      }
+    ],
+    "jdi_constructors": [
+      {
+        "profile": "empty-left",
+        "calls": 7,
+        "constructors": 0
+      },
+      {
+        "profile": "pickup-1-left",
+        "calls": 17,
+        "constructors": 0
+      },
+      {
+        "profile": "pickup-2-left",
+        "calls": 17,
+        "constructors": 0
+      },
+      {
+        "profile": "pickup-7-left",
+        "calls": 17,
+        "constructors": 0
+      },
+      {
+        "profile": "pickup-64-left",
+        "calls": 17,
+        "constructors": 0
+      },
+      {
+        "profile": "place-1-left",
+        "calls": 18,
+        "constructors": 0
+      },
+      {
+        "profile": "place-7-left",
+        "calls": 18,
+        "constructors": 0
+      },
+      {
+        "profile": "place-64-left",
+        "calls": 18,
+        "constructors": 0
+      },
+      {
+        "profile": "place-65-left",
+        "calls": 18,
+        "constructors": 0
+      },
+      {
+        "profile": "merge-1-7-left",
+        "calls": 19,
+        "constructors": 0
+      },
+      {
+        "profile": "merge-63-7-left",
+        "calls": 19,
+        "constructors": 0
+      },
+      {
+        "profile": "merge-64-7-left",
+        "calls": 19,
+        "constructors": 0
+      },
+      {
+        "profile": "merge-65-7-left",
+        "calls": 19,
+        "constructors": 0
+      },
+      {
+        "profile": "swap-id-left",
+        "calls": 18,
+        "constructors": 0
+      },
+      {
+        "profile": "swap-wool-metadata-left",
+        "calls": 21,
+        "constructors": 0
+      },
+      {
+        "profile": "merge-dirt-metadata-left",
+        "calls": 19,
+        "constructors": 0
+      },
+      {
+        "profile": "alias-slot-cursor-left",
+        "calls": 19,
+        "constructors": 0
+      },
+      {
+        "profile": "alias-main-slots-left",
+        "calls": 17,
+        "constructors": 0
+      },
+      {
+        "profile": "armor-reject-dirt-left",
+        "calls": 10,
+        "constructors": 0
+      },
+      {
+        "profile": "armor-helmet-left",
+        "calls": 18,
+        "constructors": 0
+      },
+      {
+        "profile": "armor-wrong-piece-left",
+        "calls": 10,
+        "constructors": 0
+      },
+      {
+        "profile": "armor-pumpkin-left",
+        "calls": 18,
+        "constructors": 0
+      },
+      {
+        "profile": "armor-pickup-left",
+        "calls": 17,
+        "constructors": 0
+      },
+      {
+        "profile": "output-planks-left",
+        "calls": 1968,
+        "constructors": 0
+      },
+      {
+        "profile": "output-sticks-left",
+        "calls": 3010,
+        "constructors": 0
+      },
+      {
+        "profile": "output-to-same-cursor-left",
+        "calls": 1976,
+        "constructors": 0
+      },
+      {
+        "profile": "output-reject-other-cursor-left",
+        "calls": 10,
+        "constructors": 0
+      },
+      {
+        "profile": "outside-left",
+        "calls": 19,
+        "constructors": 1
+      },
+      {
+        "profile": "outside-one-left",
+        "calls": 19,
+        "constructors": 1
+      },
+      {
+        "profile": "empty-right",
+        "calls": 7,
+        "constructors": 0
+      },
+      {
+        "profile": "pickup-1-right",
+        "calls": 17,
+        "constructors": 0
+      },
+      {
+        "profile": "pickup-2-right",
+        "calls": 19,
+        "constructors": 0
+      },
+      {
+        "profile": "pickup-7-right",
+        "calls": 19,
+        "constructors": 0
+      },
+      {
+        "profile": "pickup-64-right",
+        "calls": 19,
+        "constructors": 0
+      },
+      {
+        "profile": "place-1-right",
+        "calls": 18,
+        "constructors": 0
+      },
+      {
+        "profile": "place-7-right",
+        "calls": 16,
+        "constructors": 0
+      },
+      {
+        "profile": "place-64-right",
+        "calls": 16,
+        "constructors": 0
+      },
+      {
+        "profile": "place-65-right",
+        "calls": 16,
+        "constructors": 0
+      },
+      {
+        "profile": "merge-1-7-right",
+        "calls": 17,
+        "constructors": 0
+      },
+      {
+        "profile": "merge-63-7-right",
+        "calls": 17,
+        "constructors": 0
+      },
+      {
+        "profile": "merge-64-7-right",
+        "calls": 19,
+        "constructors": 0
+      },
+      {
+        "profile": "merge-65-7-right",
+        "calls": 19,
+        "constructors": 0
+      },
+      {
+        "profile": "swap-id-right",
+        "calls": 18,
+        "constructors": 0
+      },
+      {
+        "profile": "swap-wool-metadata-right",
+        "calls": 21,
+        "constructors": 0
+      },
+      {
+        "profile": "merge-dirt-metadata-right",
+        "calls": 17,
+        "constructors": 0
+      },
+      {
+        "profile": "alias-slot-cursor-right",
+        "calls": 17,
+        "constructors": 0
+      },
+      {
+        "profile": "alias-main-slots-right",
+        "calls": 19,
+        "constructors": 0
+      },
+      {
+        "profile": "armor-reject-dirt-right",
+        "calls": 10,
+        "constructors": 0
+      },
+      {
+        "profile": "armor-helmet-right",
+        "calls": 17,
+        "constructors": 0
+      },
+      {
+        "profile": "armor-wrong-piece-right",
+        "calls": 10,
+        "constructors": 0
+      },
+      {
+        "profile": "armor-pumpkin-right",
+        "calls": 17,
+        "constructors": 0
+      },
+      {
+        "profile": "armor-pickup-right",
+        "calls": 17,
+        "constructors": 0
+      },
+      {
+        "profile": "output-planks-right",
+        "calls": 1968,
+        "constructors": 0
+      },
+      {
+        "profile": "output-sticks-right",
+        "calls": 3010,
+        "constructors": 0
+      },
+      {
+        "profile": "output-to-same-cursor-right",
+        "calls": 1976,
+        "constructors": 0
+      },
+      {
+        "profile": "output-reject-other-cursor-right",
+        "calls": 10,
+        "constructors": 0
+      },
+      {
+        "profile": "outside-right",
+        "calls": 20,
+        "constructors": 1
+      },
+      {
+        "profile": "outside-one-right",
+        "calls": 22,
+        "constructors": 1
+      },
+      {
+        "profile": "ignored-button",
+        "calls": 2,
+        "constructors": 0
+      },
+      {
+        "profile": "negative-slot",
+        "calls": 2,
+        "constructors": 0
+      },
+      {
+        "profile": "past-last-slot",
+        "calls": 2,
+        "constructors": 0
+      },
+      {
+        "profile": "shift-main-to-hotbar",
+        "calls": 54,
+        "constructors": 0
+      },
+      {
+        "profile": "shift-hotbar-to-main",
+        "calls": 90,
+        "constructors": 0
+      },
+      {
+        "profile": "shift-craft-to-main",
+        "calls": 6837,
+        "constructors": 0
+      },
+      {
+        "profile": "shift-armor-to-main",
+        "calls": 35,
+        "constructors": 0
+      },
+      {
+        "profile": "shift-merge",
+        "calls": 67,
+        "constructors": 0
+      },
+      {
+        "profile": "shift-full-destination",
+        "calls": 98,
+        "constructors": 0
+      },
+      {
+        "profile": "shift-output-planks",
+        "calls": 2061,
+        "constructors": 0
+      },
+      {
+        "profile": "shift-output-sticks",
+        "calls": 3103,
+        "constructors": 0
+      },
+      {
+        "profile": "close-empty",
+        "calls": 12,
+        "constructors": 0
+      },
+      {
+        "profile": "close-cursor",
+        "calls": 28,
+        "constructors": 1
+      },
+      {
+        "profile": "close-grid",
+        "calls": 12719,
+        "constructors": 2
+      },
+      {
+        "profile": "close-cursor-grid-alias",
+        "calls": 12737,
+        "constructors": 3
+      }
+    ],
+    "full_method_entries": 52627,
+    "selected_callbacks": 753,
+    "live_Code_pins": 59,
+    "trig_contract": "Each process retains its own raw trig leaves. Authored Decimal true-value bracketing checks bounded Math accuracy; raw64 source arithmetic then matches exactly. No Python-libm bit identity or cross-process trig equality assumption.",
+    "trig_primary_source": "https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Math.html"
+  },
+  "native_selected_comparison": {
+    "status": "PASS",
+    "rows": 73,
+    "checks_reported_by_native": 21616,
+    "stdout_sha256": "51526cd3e6bcd0daea9ea5ed506649c6ffb14ee1b27f0add5cbd5b181551d499",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "declarations_sha256": "8b84cb6222114a5f70090e771892c6fa4b48fa27711b990fc503c568f5c4d5e0",
+    "scope": "Retained root-provided genuine native fixture output matches all selected deterministic original fields after per-process audits; native source/build/immutability qualification belongs to its separate runner."
+  },
+  "historical_failed_audits": [
+    {
+      "capture": "container-original-qualified-a",
+      "reason": "Failed audit: one genuine JDK versus Python-libm trig difference; actual raw64 words retained; source was not changed.",
+      "capture_sha256": "89cc5e8ff9410fb00a51e17d4e0d1edb5a4f06dcaa4c376e05710021bcae43dc",
+      "original_stdout_sha256": "f43e4fa6b3720683b009beb75f5aac9087c430da59474d0fa794a0bf1b5b26cb",
+      "jdi_stdout_sha256": "3fadffd26b2c0c4a9b0e9e36b771999977ff05bab4ea9ce0623337c672705ee0"
+    },
+    {
+      "capture": "container-original-qualified-b",
+      "reason": "Failed audit: this HotSpot intrinsic path does not deliver Math.cos/sin method-exit events; no direct-return observation is claimed.",
+      "capture_sha256": "92717fef67cd92e1ba6c89f2493830050d1229a6d41351a5dd0f0c1aff574c3a",
+      "original_stdout_sha256": "f64937fde39d7d3ceb9399ee1d2387ed86e29c3d1215e1e150e98fe2d2f3e14f",
+      "jdi_stdout_sha256": "be5ba7aebf57d1427df791a57fe4c28b9d379831fe5d7eb64b9359fe90e4e8d9"
+    }
+  ],
+  "public_helpers": {
+    "audit.py": "d368ce95c27ad5061362aae078701360d17e451ef15344b34660297931b69309",
+    "capture.py": "ede9385e3ae4155769bce589a68ce132a66d508a4d1a5b2ba96658f9ca1672ea",
+    "cases.json": "bf58811638fe6a0e1b5b14134d179804804c3abef7fb9eb296ef2a805f9900e8",
+    "compare.py": "91c4a1b48dac7b7cab294cb335401d63f756545a9ed18783765fe99178395e4c",
+    "ContainerInteractionJdi.java": "31a37be5877fcf129f241dd526a5fd296707fa959511ab7a1d05a29b6591ab77",
+    "ContainerInteractionObservation.java": "c486092d8c5b02e89fb5b379d7a10f3227e8e4c44e112e722e0e0f481585b474",
+    "entropy.py": "cd20e885c5e397e5574a2800d88088c25f0c63f2d8829ca458e61ca06882d9a0",
+    "test_packet.py": "9cc45c2a5ab65f7e27430dec2e64dccecc350d5521837c55b0156beda8a141e3"
+  },
+  "outputs": {
+    "finite.json": "789d7d317b504e30ec824ad1eba62f4d710272789e51ca9bfb88864bc576986c",
+    "observations.json": "5685b1f7f94cefbdaef09b188380ac07403b499fa6e03c366b2a2afb59885d1a",
+    "source-pins.json": "48ac2b5fac3aa1e2bbe12aaa0860d8d070b7ae69e2c666c96ab5bd7e02938893",
+    "item-name-inventory.json": "d0077f0ff2c551088a1ef2f4aa19877ebcd3421d1eadac24f7617beba3418316"
+  }
+}

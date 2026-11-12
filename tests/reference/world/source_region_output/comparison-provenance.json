@@ -1,0 +1,136 @@
+{
+  "schema": 3,
+  "status": "PASS_CURRENT_C_SOURCE_REGION_OUTPUT_COMPARISONS_BOTH_HOSTS",
+  "recipe_sha256": "22dedcc7bade65c0bf04b62eb5e37a141e87f670151db0f10bbc1172a6f29f7e",
+  "scope": "Six normal prepared lower region commits and six common abandon/cache-flush state snapshots against independent ordinary/read-only-JDI original observations. No source Chunk/World caller, native caught return beyond qj441 or full gameplay save credit.",
+  "profiles": {
+    "windows": {
+      "native_report": {
+        "bytes": 2475003,
+        "sha256": "3c88eb6c71980387ba7407b8149a3f0daefadb5046f0401cb19cd91ef5d12d19"
+      },
+      "native_products_sha256": {
+        "C:\\Users\\admin\\minecraft\\build-client-startup-20261027b\\Debug\\mc_test_source_region_output.exe": "48c63eaf4b1d5efe9f7c8e5ffd6a646296786c646d86af223c126575a12729cf"
+      },
+      "original_receipt": {
+        "bytes": 78900,
+        "sha256": "1a689c1b6f4c9bd97e71ea88e99f29bb34218ad889a574f1a8562672471fc032"
+      },
+      "normal_cases": 6,
+      "common_snapshots": 6,
+      "native_profiles": [
+        "flow",
+        "owners",
+        "cleanup-failure",
+        "constructor-budget"
+      ],
+      "native_assertion_checks": 10587,
+      "output_file": "windows-comparison.json",
+      "output_sha256": "fc31604a53c88cd51658318a35f25957c7ecd767bcfeb9fb87838ea3fc8ef0bd"
+    },
+    "linux": {
+      "native_report": {
+        "bytes": 2474859,
+        "sha256": "e718b0ebb187609b3f2eba1a1764a984777a6200fc93c642d073520c54979161"
+      },
+      "native_products_sha256": {
+        "/home/frank/minecraft-living-overlay-20261031/build/mc_test_source_region_output": "4180dbefe12a3645a4ea08b8f6d84de37969695eb0816cbc433d3ed3723faa63"
+      },
+      "original_receipt": {
+        "bytes": 57330,
+        "sha256": "180a732192c5ea29e985fb79265c0390aecabdc47815c36b479b1391c728a29b"
+      },
+      "normal_cases": 6,
+      "common_snapshots": 6,
+      "native_profiles": [
+        "flow",
+        "owners",
+        "cleanup-failure",
+        "constructor-budget"
+      ],
+      "native_assertion_checks": 10435,
+      "output_file": "linux-comparison.json",
+      "output_sha256": "d0898cf68173dde81e28cd19ec016d5b5aafb4a28e270560285d3b577934dd14"
+    }
+  },
+  "qualified_private_comparison_receipt_sha256": "d29113c8fa7f6009c19e9e1212b74235c119546aee58a9a9e8d2e146039d8563",
+  "input_freeze_sha256": "4b425dde62d96d96235288832b476f71552c66737d1b4d91b00c9aca69acdafa",
+  "frozen_recipe_capture_snapshot_tool_inputs": 313,
+  "all_inputs_unchanged": true,
+  "bounded_comparison_process_captures": {
+    "windows": {
+      "capture": {
+        "command": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "C:\\Users\\admin\\minecraft\\tests\\reference\\world\\source_region_output\\compare_native.py",
+          "--reference-receipt",
+          "C:\\Users\\admin\\minecraft\\.local\\source-region-output-reference-package-20261101\\windows-captures\\source-region-output-p7mp4yx7\\receipt.json",
+          "--native-report",
+          "C:\\Users\\admin\\minecraft\\build-client-startup-20261027b\\source-region-output-controls\\source-region-output-ge3w1fg8\\REPORT.json",
+          "--output",
+          "C:\\Users\\admin\\minecraft\\.local\\source-region-output-reference-package-20261101\\current-c-comparisons\\windows-comparison.json"
+        ],
+        "exit": 0,
+        "timed_out": false,
+        "timeout_seconds": 60,
+        "pipe_capture_complete": true,
+        "reader_errors": {},
+        "output_overflow": false,
+        "stdout_bytes": 235,
+        "stderr_bytes": 0,
+        "limit": 1048576,
+        "reaped": true
+      },
+      "output_sha256": "fc31604a53c88cd51658318a35f25957c7ecd767bcfeb9fb87838ea3fc8ef0bd"
+    },
+    "linux": {
+      "capture": {
+        "command": [
+          "wsl.exe",
+          "-d",
+          "Ubuntu",
+          "--exec",
+          "python3",
+          "-B",
+          "/mnt/c/Users/admin/minecraft/tests/reference/world/source_region_output/compare_native.py",
+          "--reference-receipt",
+          "/mnt/c/Users/admin/minecraft/.local/source-region-output-reference-package-20261101/linux-captures/source-region-output-npqbhrsp/receipt.json",
+          "--native-report",
+          "/home/frank/minecraft-living-overlay-20261031/build/source-region-output-controls/source-region-output-w3d8wsb0/REPORT.json",
+          "--output",
+          "/mnt/c/Users/admin/minecraft/.local/source-region-output-reference-package-20261101/current-c-comparisons/linux-comparison.json"
+        ],
+        "exit": 0,
+        "timed_out": false,
+        "timeout_seconds": 60,
+        "pipe_capture_complete": true,
+        "reader_errors": {},
+        "output_overflow": false,
+        "stdout_bytes": 229,
+        "stderr_bytes": 0,
+        "limit": 1048576,
+        "reaped": true
+      },
+      "output_sha256": "d0898cf68173dde81e28cd19ec016d5b5aafb4a28e270560285d3b577934dd14"
+    }
+  },
+  "clock_policy": "Each real int timestamp is checked in its own process millisecond interval with Java divide1000/narrow. Unrelated timestamps remain unchanged within that process; no timestamp value is forced equal across processes.",
+  "compression_policy": "Every actual live native/original selector2 payload is independently zlib/Adler decoded and every typed ByteArray byte regenerated. Actual offset/free mask/allocation/growth are exact. Compressed lengths/hashes are retained separately; no cross-zlib byte identity or whole-file equality is asserted.",
+  "identity_policy": "Actual same-node and distinct replacement QJ/RAF relationships are compared within each process. Raw pointer/VM identity numbers and Java/native reference counts are not equated. Native readback, owners and cleanup-fault profiles remain extra native controls.",
+  "failure_scope": "Original old-Hz close reaches the same source-closed RAF, catches/prints IOException and returns. Native stops at qj441 with prior rewrite74/lower seek33. Only the common pre-write RAM/file/closed-RAF/outer-close prefix is compared; no native caught return or later replacement commit/growth is credited.",
+  "order_scope": "Native passive RAM/RAF counters and actual disk snapshots qualify whole successful branches. Original source order has separate read-only JDI evidence; no new native per-operation or injected-failure trace is claimed.",
+  "not_qualified": [
+    "source Chunk/World/Entity/TileEntity caller or gameplay save/reload",
+    "Info.SizeOnDisk caller addition",
+    "255/256 sectors or exact4096 boundary",
+    "actual native OS failure equivalence or full Throwable identity"
+  ],
+  "constructor_scope": "Final native source stores local coordinates only after actual8096-byte buffer admission/accounting and before default deflater construction. The additional native constructor-budget regression checks its bounded failed prefix; existing original negative-coordinate JDI constructor traces independently retain QJ-before-buffer and buffer-before-coordinate order. No original OOM or heap-timing equivalence is claimed.",
+  "original_constructor_prefix_observation_sha256": "6a9bb0f4f3ee2d70be708b019464001f366afb1b0b990c7cf890cd5bb31fcaf4",
+  "source_helpers_or_comparator_changed": false,
+  "new_original_processes_for_final_comparison": false,
+  "initial_cohort_provenance_sha256": "3d5511b18d691143e18c46cdd94185c7e48e4a216b48b67665a70865c4abf34b",
+  "historical_policy": "The preceding constructor-corrected four-profile cohort remains historical. These reports bind the unchanged public comparator to new current C products and actual native reports after upper caller changes. No upper Chunk/World caller qualification is inferred from this lower region comparison.",
+  "preceding_constructor_corrected_provenance_sha256": "8ba4b587a8d0926debd8e9bfb80ad9edb8ce3e283e3916afd82745667b898a4e"
+}

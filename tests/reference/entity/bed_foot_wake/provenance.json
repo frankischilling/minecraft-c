@@ -1,0 +1,93 @@
+{
+  "status": "PASS_ORIGINAL_CPU_COMPONENTS_ONLY",
+  "archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "finite_sha256": "37fd24d0774cdd1baef96035bc0b5ec3c9f771c19f23359261af42aa7693b671",
+  "capture_sha256": "fd6fc825afecdfc2b2389224f7610f3fe2f30d5073d904b17925e66fcc3b396d",
+  "sources": {
+    "FootWakeObservation.java": "5a60255a85ae7e6f29b85e7adc4220d8a667b5e81f2fb0a5d9fab3a05dd15ea0",
+    "capture_reference.py": "ee1651677e30e74367f27383dea9a77d05b63a6c9fed84c4c8e6ca18d2906463",
+    "packet.py": "a6f234a2a175c16ae6531bf48879e6d93574e4ec1c850632e693c3d018eb8ed1",
+    "test_packet.py": "121cdc2ecbb5139f32e80155462aa1b404b2a9e5e85937b44412ce27b31c5809",
+    "README.md": "fe125ab4d1db012fc0d74111aea8429e5e1e192c087abc71764b00c90742e7dc",
+    "hl-pins.json": "b46ea36d91f4203353e1f721c2fec605335eddf691d1f2d65efd849bfbbdaeac"
+  },
+  "shared": {
+    "setup": "a2c6df84392ce30849c34eeeb674eb21544b4c91cea47d31456cc89e6f381fc8",
+    "class_pins": "e4a33d4b33c3f259752962a6fa23fa8fd917b5a1d0dc3055c2cb24aff50f8621",
+    "packet": "83ff48d7800ec2be9b893ebdce040f2998d8ac785b8ec502a9e0e23772f9a9d5",
+    "item_pins": "3c9d36de454ef1b772360553dda6aded7002c76182377e4ed8c442c662e6aab2",
+    "capture": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "classfile": "4411375a115dabb7104e82e9970aa3139bb0cc4cc0b5f169d56496e81c4bec60",
+    "json": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3"
+  },
+  "methods": {
+    "gs.a(Lsn;I)Z": {
+      "code_length": 162,
+      "code_sha256": "e7fa6ca23e1ee796814b132548f3461b372ac343a28b397075a7da36da7316f4"
+    },
+    "gs.a(ZZZ)V": {
+      "code_length": 235,
+      "code_sha256": "ba029b701d0f19f5ffeb40692908ef5771c801c18a746ef0975c15f700efb6dc"
+    },
+    "ve.b(Lfd;IIII)V": {
+      "code_length": 133,
+      "code_sha256": "8fb6769b7630f336fc3dc7822fe1fa95a649b611cb5b4d2dec3f2786359f35d1"
+    },
+    "ve.a(Lfd;IIIIF)V": {
+      "code_length": 22,
+      "code_sha256": "02e6200f32ab07ec330dd856b4e51a0c6dd0918af7687b719a00225f59961496"
+    },
+    "uu.g(Lfd;IIII)V": {
+      "code_length": 13,
+      "code_sha256": "daab5bc85d9ec8cc2352e2749c6c4af3c6f9a674bd70cb9500a4fedd274cf271"
+    },
+    "uu.a(Lfd;IIIIF)V": {
+      "code_length": 96,
+      "code_sha256": "10d0b0fcca0bfec12d2dfccd6a0be381dfb3c67306b1d5af8f998f8509dec40f"
+    },
+    "uu.a(Lfd;IIILiz;)V": {
+      "code_length": 124,
+      "code_sha256": "04350e21c1a98c8bbe3742c8397b74896a4f6e5d9a721a33dabd4f2440b09c80"
+    },
+    "hl.<init>(Lfd;DDDLiz;)V": {
+      "code_length": 118,
+      "code_sha256": "0e7fb50470d8d67d5c0d3428801de36ac6dd07b426d0626204ffc59ac6ab5e29"
+    },
+    "fd.b(Lsn;)Z": {
+      "code_length": 110,
+      "code_sha256": "0e7863034219094809847aaceaa7844edd5d93005e78e6123307e4aeaac5c07d"
+    },
+    "fd.c(Lsn;)V": {
+      "code_length": 41,
+      "code_sha256": "a2e151e7d0801da7996e5cdb637d092b2cbe22890a181326cdd313ad44b74346"
+    }
+  },
+  "helpers": {
+    "ConstructorJson.class": "1c13bbd4aa1dc7928a37d158835f81cb977a33d3699d34d45a73e9cbacdd462a",
+    "FootWakeObservation$Observer.class": "3c4848a1528ff6b957a4ea8a5f36400f64c94809bf09ab2a31c2b93b97910bd0",
+    "FootWakeObservation.class": "3007d07a3ad5b77a46870e56616e94b63fdeab52cdc2b254f1dcf5f2fc2a004b",
+    "PlayerDamageWakeObservation$Guard.class": "d8f4514d89f717720edc16f79176ed57bc486e36ecf253f3920f15a2c13ee84a",
+    "PlayerDamageWakeObservation$Observer.class": "cdc6d8e926a1d52d305c08b75eb599fef548d36ca17cbaf5cef8ee575de76efc",
+    "PlayerDamageWakeObservation.class": "afe16cd0c098beb59c453265d36082c66faea673673f481f0a375841ad000ad0"
+  },
+  "original": [
+    {
+      "exit": 0,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "output_overflow": false,
+      "reader_errors": {},
+      "stdout_sha256": "5393fc4dad2dd04d6d7efad0e93ebec394ac757d89baa88052027d3f3ceb210e",
+      "stderr_sha256": "cf8399600eff7f4da700047cab56cace2b0304150798d4c9cdc42c0e87d31d74"
+    },
+    {
+      "exit": 0,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "output_overflow": false,
+      "reader_errors": {},
+      "stdout_sha256": "5393fc4dad2dd04d6d7efad0e93ebec394ac757d89baa88052027d3f3ceb210e",
+      "stderr_sha256": "cf8399600eff7f4da700047cab56cace2b0304150798d4c9cdc42c0e87d31d74"
+    }
+  ]
+}

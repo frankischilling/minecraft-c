@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import argparse
 import base64
-import copy
 import hashlib
 import json
 import math
@@ -189,8 +188,9 @@ def audit(record, case):
             if region["handle_valid"]:
                 check(list(map(signed, locations)) == region["locations"] and list(map(signed, timestamps)) == region["timestamps"], "live raw header matches actual original descriptor arrays")
             elif region["object"] in previous_regions:
-                expected_closed = copy.deepcopy(previous_regions[region["object"]])
-                expected_closed["handle_valid"] = False
+                # Only the open/closed field changes in this comparison.
+                # All nested arrays are read-only throughout the audit.
+                expected_closed = dict(previous_regions[region["object"]], handle_valid=False)
                 check(same_json(region, expected_closed), "closed region retains its own prior arrays and allocation state")
             occupied = {0, 1}
             for location in region["locations"]:
@@ -201,7 +201,7 @@ def audit(record, case):
                     check(not occupied & allocated, "disjoint original allocations")
                     occupied.update(allocated)
             check(region["free"] == [i not in occupied for i in range(len(region["free"]))], "actual original free-sector vector")
-            previous_regions[region["object"]] = copy.deepcopy(region)
+            previous_regions[region["object"]] = region
     for name, expected in record["final_files"].items():
         check(fingerprint(case / "snapshots/final" / name) == expected, "complete final raw region image")
     latest_owner = {row["path"]: row["object"] for row in record["final_state"]["held_regions"]}
@@ -296,17 +296,21 @@ def compare(a, a_case, b, b_case):
         for original in record["events"]:
             if original["kind"] == "snapshot":
                 continue
-            row = copy.deepcopy(original)
+            row = dict(original)
             row.pop("before_ms", None); row.pop("after_ms", None)
             result.append(row)
         return result
     check(calls(a) == calls(b), "identical original method sequence, arguments, identities and results")
     states = []
     for record in (a, b):
-        state = copy.deepcopy(record["final_state"])
-        for region in state["held_regions"]:
-            if region["path"] == "allocation/region/r.0.0.mcr":
-                region["timestamps"] = ["range-checked-written-slot" if region["locations"][i] else value for i, value in enumerate(region["timestamps"])]
+        # Build only the timestamp projection that differs. The source record
+        # and every other nested field remain read-only comparison operands.
+        state = dict(record["final_state"])
+        state["held_regions"] = [
+            dict(region, timestamps=["range-checked-written-slot" if region["locations"][i] else value
+                                     for i, value in enumerate(region["timestamps"])])
+            if region["path"] == "allocation/region/r.0.0.mcr" else region
+            for region in record["final_state"]["held_regions"]]
         states.append(state)
     check(states[0] == states[1], "complete final original state except individually range-checked timestamp slots")
     check(set(a["final_files"]) == set(b["final_files"]), "same complete original file set")
@@ -315,6 +319,8 @@ def compare(a, a_case, b, b_case):
         left = (a_case / "snapshots/final" / name).read_bytes()
         right = (b_case / "snapshots/final" / name).read_bytes()
         check(len(left) == len(right), "same complete file length")
+        if left == right:
+            continue
         slots = set(range(7)) if name == "allocation/region/r.0.0.mcr" else set()
         for i, (x, y) in enumerate(zip(left, right)):
             if x != y:

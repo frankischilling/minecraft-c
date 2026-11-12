@@ -1,0 +1,39 @@
+{
+  "scope": "static field/method binding; no original Code bytes or authored owner values",
+  "lm_constructor": {
+    "descriptor": "(Lfd;II)V",
+    "code_bytes": 102,
+    "code_sha256": "60116fb183c78fe9ff90312f09df640f02475e357de4f097516ec57ad2d0c844",
+    "x": {
+      "field": "j",
+      "descriptor": "I",
+      "argument_local": 2,
+      "load_pc": 50,
+      "store_pc": 51
+    },
+    "z": {
+      "field": "k",
+      "descriptor": "I",
+      "argument_local": 3,
+      "load_pc": 55,
+      "store_pc": 56
+    }
+  },
+  "packed_key": {
+    "class": "yy",
+    "method": "a",
+    "descriptor": "(II)I",
+    "code_bytes": 37,
+    "code_sha256": "65d453cd12f16eebb67f57f3989d8c19384d4877168a5ed060eef661e5d374c7"
+  },
+  "cached_lookup": {
+    "class": "ok",
+    "method": "b",
+    "descriptor": "(II)Llm;",
+    "code_bytes": 34,
+    "code_sha256": "ef1ce4e47bf2aa234367946b6f54b1bf549dcbd54cb8b215e2182223b14f66ec"
+  },
+  "receipt": "SIGNED_OWNERS\\t12\\tobservedUniqueCount then12 TABtokens slot,requestX,requestZ,actualX,actualZ,firstEqualRequestSlot",
+  "owner_aliases": "actual returned LM references, zero-based earliest request slot by linear ==; no coordinate consistency repair",
+  "projection": "owners.tsv contains one actual receipt with declared LF ending; selected.txt unchanged geometry envelope28lines"
+}

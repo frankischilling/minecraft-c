@@ -1,0 +1,42 @@
+{
+  "base": {
+    "revision": "PRELAUNCH441",
+    "bounds": [
+      -10,
+      10,
+      -10,
+      10
+    ],
+    "chunks": 441,
+    "original_chunks_preserved": 289,
+    "flat_chunks_appended": 152,
+    "preserved": [
+      "slots",
+      "timestamps",
+      "allocation_bytes",
+      "compressed_payloads",
+      "nbt_wires"
+    ],
+    "terrain_populated": true,
+    "block_light": 0,
+    "independent_coordinate_audit": true
+  },
+  "revision": "LEVER_GUI_WALL_DUST_NO_PLATE",
+  "chunks": 441,
+  "changed_chunks": [
+    [
+      0,
+      0
+    ]
+  ],
+  "other_compressed_records_preserved": 440,
+  "selected_slot_timestamp_allocation_preserved": true,
+  "selected_wire_sha256": "0285aa627a70bd98b6913de40791aedf4b10e560c031213a93e4cf3e7a4d6995",
+  "planes_sha256": {
+    "Blocks": "d88548d2bd65fa7e73d6af2c78fcb0413677693bb1936a334f24cd7f3860d8ac",
+    "Data": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+    "SkyLight": "4afc7272023eaec4ca25e09a31c91f58e06dc73db0d65338e2ecf25b0b2a2186",
+    "BlockLight": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+    "HeightMap": "ce13595028ab545d77c23dde6e62a1d75db71df2cd7171e502d941d4e83c0c81"
+  }
+}

@@ -1,0 +1,752 @@
+{
+  "schema": 1,
+  "scope": "Cumulative declared pre-invocation inputs; no source repair after calls. Preserve singleton changes from previous profiles. All float-valued CV fields use raw f32 hex; integer/boolean values retain their types. Actual state snapshots independently captured.",
+  "profiles": [
+    {
+      "profile": 0,
+      "id": 81,
+      "metadata": 0,
+      "brightness": "3f800000",
+      "cv_constructor": "new cv()",
+      "cv_field_writes": {
+        "b": true
+      },
+      "bounds_setter_calls": [],
+      "texture_field_writes": [],
+      "stair_source_write": null,
+      "nw_translation": [
+        0,
+        0,
+        0
+      ],
+      "expected_returned": true,
+      "gl_projection": "identity",
+      "gl_modelview_translation": [
+        0.25,
+        -0.125,
+        0.5
+      ],
+      "gl_current_color": [
+        0.125,
+        0.25,
+        0.5,
+        0.75
+      ]
+    },
+    {
+      "profile": 1,
+      "id": 53,
+      "metadata": 1,
+      "brightness": "3ec00000",
+      "cv_constructor": "new cv()",
+      "cv_field_writes": {
+        "b": false
+      },
+      "bounds_setter_calls": [],
+      "texture_field_writes": [],
+      "stair_source_write": null,
+      "nw_translation": [
+        0,
+        0,
+        0
+      ],
+      "expected_returned": true,
+      "gl_projection": "identity",
+      "gl_modelview_translation": [
+        0.25,
+        -0.125,
+        0.5
+      ],
+      "gl_current_color": [
+        0.125,
+        0.25,
+        0.5,
+        0.75
+      ]
+    },
+    {
+      "profile": 2,
+      "id": 67,
+      "metadata": 3,
+      "brightness": "3f400000",
+      "cv_constructor": "new cv()",
+      "cv_field_writes": {
+        "b": true
+      },
+      "bounds_setter_calls": [],
+      "texture_field_writes": [],
+      "stair_source_write": null,
+      "nw_translation": [
+        0,
+        0,
+        0
+      ],
+      "expected_returned": true,
+      "gl_projection": "identity",
+      "gl_modelview_translation": [
+        0.25,
+        -0.125,
+        0.5
+      ],
+      "gl_current_color": [
+        0.125,
+        0.25,
+        0.5,
+        0.75
+      ]
+    },
+    {
+      "profile": 3,
+      "id": 85,
+      "metadata": 15,
+      "brightness": "3f000000",
+      "cv_constructor": "new cv()",
+      "cv_field_writes": {
+        "b": false
+      },
+      "bounds_setter_calls": [],
+      "texture_field_writes": [],
+      "stair_source_write": null,
+      "nw_translation": [
+        0,
+        0,
+        0
+      ],
+      "expected_returned": true,
+      "gl_projection": "identity",
+      "gl_modelview_translation": [
+        0.25,
+        -0.125,
+        0.5
+      ],
+      "gl_current_color": [
+        0.125,
+        0.25,
+        0.5,
+        0.75
+      ]
+    },
+    {
+      "profile": 4,
+      "id": 81,
+      "metadata": -1,
+      "brightness": "3f200000",
+      "cv_constructor": "new cv()",
+      "cv_field_writes": {
+        "b": true
+      },
+      "bounds_setter_calls": [
+        [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        [
+          0.125,
+          0.25,
+          -0.125,
+          0.75,
+          0.875,
+          1.125
+        ]
+      ],
+      "texture_field_writes": [],
+      "stair_source_write": null,
+      "nw_translation": [
+        0,
+        0,
+        0
+      ],
+      "expected_returned": true,
+      "gl_projection": "identity",
+      "gl_modelview_translation": [
+        0.25,
+        -0.125,
+        0.5
+      ],
+      "gl_current_color": [
+        0.125,
+        0.25,
+        0.5,
+        0.75
+      ]
+    },
+    {
+      "profile": 5,
+      "id": 53,
+      "metadata": -2147483648,
+      "brightness": "3fa00000",
+      "cv_constructor": "new cv()",
+      "cv_field_writes": {
+        "b": true
+      },
+      "bounds_setter_calls": [
+        [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      ],
+      "texture_field_writes": [
+        {
+          "block_id": 5,
+          "bm": 83
+        }
+      ],
+      "stair_source_write": null,
+      "nw_translation": [
+        0,
+        0,
+        0
+      ],
+      "expected_returned": true,
+      "gl_projection": "identity",
+      "gl_modelview_translation": [
+        0.25,
+        -0.125,
+        0.5
+      ],
+      "gl_current_color": [
+        0.125,
+        0.25,
+        0.5,
+        0.75
+      ]
+    },
+    {
+      "profile": 6,
+      "id": 67,
+      "metadata": 2147483647,
+      "brightness": "00000000",
+      "cv_constructor": "new cv()",
+      "cv_field_writes": {
+        "b": false
+      },
+      "bounds_setter_calls": [
+        [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      ],
+      "texture_field_writes": [],
+      "stair_source_write": {
+        "block_id": 67,
+        "source_id": 81
+      },
+      "nw_translation": [
+        0,
+        0,
+        0
+      ],
+      "expected_returned": true,
+      "gl_projection": "identity",
+      "gl_modelview_translation": [
+        0.25,
+        -0.125,
+        0.5
+      ],
+      "gl_current_color": [
+        0.125,
+        0.25,
+        0.5,
+        0.75
+      ]
+    },
+    {
+      "profile": 7,
+      "id": 85,
+      "metadata": 3,
+      "brightness": "be800000",
+      "cv_constructor": "new cv()",
+      "cv_field_writes": {
+        "b": true
+      },
+      "bounds_setter_calls": [
+        [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      ],
+      "texture_field_writes": [
+        {
+          "block_id": 85,
+          "bm": 302
+        }
+      ],
+      "stair_source_write": null,
+      "nw_translation": [
+        0,
+        0,
+        0
+      ],
+      "expected_returned": true,
+      "gl_projection": "identity",
+      "gl_modelview_translation": [
+        0.25,
+        -0.125,
+        0.5
+      ],
+      "gl_current_color": [
+        0.125,
+        0.25,
+        0.5,
+        0.75
+      ]
+    },
+    {
+      "profile": 8,
+      "id": 81,
+      "metadata": 8,
+      "brightness": "3f000000",
+      "cv_constructor": "new cv()",
+      "cv_field_writes": {
+        "b": false
+      },
+      "bounds_setter_calls": [
+        [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      ],
+      "texture_field_writes": [],
+      "stair_source_write": null,
+      "nw_translation": [
+        16,
+        -48,
+        -32
+      ],
+      "expected_returned": true,
+      "gl_projection": "identity",
+      "gl_modelview_translation": [
+        0.25,
+        -0.125,
+        0.5
+      ],
+      "gl_current_color": [
+        0.125,
+        0.25,
+        0.5,
+        0.75
+      ]
+    },
+    {
+      "profile": 9,
+      "id": 53,
+      "metadata": 2,
+      "brightness": "3f600000",
+      "cv_constructor": "new cv()",
+      "cv_field_writes": {
+        "l": 1,
+        "k": 2,
+        "g": 3,
+        "h": 1,
+        "j": 2,
+        "i": 3,
+        "e": true,
+        "b": true
+      },
+      "bounds_setter_calls": [
+        [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      ],
+      "texture_field_writes": [],
+      "stair_source_write": null,
+      "nw_translation": [
+        0,
+        0,
+        0
+      ],
+      "expected_returned": true,
+      "gl_projection": "identity",
+      "gl_modelview_translation": [
+        0.25,
+        -0.125,
+        0.5
+      ],
+      "gl_current_color": [
+        0.125,
+        0.25,
+        0.5,
+        0.75
+      ]
+    },
+    {
+      "profile": 10,
+      "id": 67,
+      "metadata": 4,
+      "brightness": "3e000000",
+      "cv_constructor": "new cv()",
+      "cv_field_writes": {
+        "d": 302,
+        "b": false
+      },
+      "bounds_setter_calls": [
+        [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      ],
+      "texture_field_writes": [],
+      "stair_source_write": {
+        "block_id": 67,
+        "source_id": 17
+      },
+      "nw_translation": [
+        0,
+        0,
+        0
+      ],
+      "expected_returned": true,
+      "gl_projection": "identity",
+      "gl_modelview_translation": [
+        0.25,
+        -0.125,
+        0.5
+      ],
+      "gl_current_color": [
+        0.125,
+        0.25,
+        0.5,
+        0.75
+      ]
+    },
+    {
+      "profile": 11,
+      "id": 85,
+      "metadata": 0,
+      "brightness": "3f400000",
+      "cv_constructor": "new cv()",
+      "cv_field_writes": {
+        "m": true,
+        "P": "3e000000",
+        "Q": "3e800000",
+        "R": "3f000000",
+        "S": "3f400000",
+        "T": "3f600000",
+        "U": "3f200000",
+        "V": "3ec00000",
+        "W": "3d800000",
+        "X": "3f800000",
+        "Y": "3f000001",
+        "Z": "be800000",
+        "aa": "3ea00000",
+        "b": true
+      },
+      "bounds_setter_calls": [
+        [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      ],
+      "texture_field_writes": [],
+      "stair_source_write": null,
+      "nw_translation": [
+        0,
+        0,
+        0
+      ],
+      "expected_returned": true,
+      "gl_projection": "identity",
+      "gl_modelview_translation": [
+        0.25,
+        -0.125,
+        0.5
+      ],
+      "gl_current_color": [
+        0.125,
+        0.25,
+        0.5,
+        0.75
+      ]
+    },
+    {
+      "profile": 12,
+      "id": 81,
+      "metadata": 5,
+      "brightness": "3f800000",
+      "cv_constructor": "new cv()",
+      "cv_field_writes": {
+        "l": 1,
+        "k": 2,
+        "g": 3,
+        "h": 1,
+        "j": 2,
+        "i": 3,
+        "e": true,
+        "d": 16,
+        "m": true,
+        "P": "3e000000",
+        "Q": "3e800000",
+        "R": "3f000000",
+        "S": "3f400000",
+        "T": "3f600000",
+        "U": "3f200000",
+        "V": "3ec00000",
+        "W": "3d800000",
+        "X": "3f800000",
+        "Y": "3f000001",
+        "Z": "be800000",
+        "aa": "3ea00000",
+        "b": false
+      },
+      "bounds_setter_calls": [
+        [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        [
+          0.125,
+          0.25,
+          -0.125,
+          0.75,
+          0.875,
+          1.125
+        ]
+      ],
+      "texture_field_writes": [],
+      "stair_source_write": null,
+      "nw_translation": [
+        0.5,
+        0.25,
+        -0.75
+      ],
+      "expected_returned": true,
+      "gl_projection": "identity",
+      "gl_modelview_translation": [
+        0.25,
+        -0.125,
+        0.5
+      ],
+      "gl_current_color": [
+        0.125,
+        0.25,
+        0.5,
+        0.75
+      ]
+    },
+    {
+      "profile": 13,
+      "id": 53,
+      "metadata": 6,
+      "brightness": "80000000",
+      "cv_constructor": "new cv()",
+      "cv_field_writes": {
+        "m": true,
+        "P": "3e000000",
+        "Q": "3e800000",
+        "R": "3f000000",
+        "S": "3f400000",
+        "T": "3f600000",
+        "U": "3f200000",
+        "V": "3ec00000",
+        "W": "3d800000",
+        "X": "3f800000",
+        "Y": "3f000001",
+        "Z": "be800000",
+        "aa": "3ea00000",
+        "b": false
+      },
+      "bounds_setter_calls": [
+        [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      ],
+      "texture_field_writes": [],
+      "stair_source_write": null,
+      "nw_translation": [
+        0,
+        0,
+        0
+      ],
+      "expected_returned": true,
+      "gl_projection": "identity",
+      "gl_modelview_translation": [
+        0.25,
+        -0.125,
+        0.5
+      ],
+      "gl_current_color": [
+        0.125,
+        0.25,
+        0.5,
+        0.75
+      ]
+    },
+    {
+      "profile": 14,
+      "id": 67,
+      "metadata": -7,
+      "brightness": "3ec00000",
+      "cv_constructor": "new cv()",
+      "cv_field_writes": {
+        "l": 1,
+        "k": 2,
+        "g": 3,
+        "h": 1,
+        "j": 2,
+        "i": 3,
+        "e": true,
+        "b": true
+      },
+      "bounds_setter_calls": [
+        [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      ],
+      "texture_field_writes": [],
+      "stair_source_write": null,
+      "nw_translation": [
+        16777216,
+        -64,
+        -256
+      ],
+      "expected_returned": true,
+      "gl_projection": "identity",
+      "gl_modelview_translation": [
+        0.25,
+        -0.125,
+        0.5
+      ],
+      "gl_current_color": [
+        0.125,
+        0.25,
+        0.5,
+        0.75
+      ]
+    },
+    {
+      "profile": 15,
+      "id": 85,
+      "metadata": 9,
+      "brightness": "3f800000",
+      "cv_constructor": "new cv()",
+      "cv_field_writes": {
+        "b": true
+      },
+      "bounds_setter_calls": [
+        [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      ],
+      "texture_field_writes": [
+        {
+          "block_id": 85,
+          "bm": -1
+        }
+      ],
+      "stair_source_write": null,
+      "nw_translation": [
+        0,
+        0,
+        0
+      ],
+      "expected_returned": true,
+      "gl_projection": "identity",
+      "gl_modelview_translation": [
+        0.25,
+        -0.125,
+        0.5
+      ],
+      "gl_current_color": [
+        0.125,
+        0.25,
+        0.5,
+        0.75
+      ]
+    },
+    {
+      "profile": 16,
+      "id": 53,
+      "metadata": 0,
+      "brightness": "3f800000",
+      "cv_constructor": "new cv()",
+      "cv_field_writes": {
+        "b": false
+      },
+      "bounds_setter_calls": [
+        [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      ],
+      "texture_field_writes": [],
+      "stair_source_write": {
+        "block_id": 53,
+        "source_id": null
+      },
+      "nw_translation": [
+        0,
+        0,
+        0
+      ],
+      "expected_returned": false,
+      "gl_projection": "identity",
+      "gl_modelview_translation": [
+        0.25,
+        -0.125,
+        0.5
+      ],
+      "gl_current_color": [
+        0.125,
+        0.25,
+        0.5,
+        0.75
+      ]
+    }
+  ]
+}

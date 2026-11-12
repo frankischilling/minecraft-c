@@ -1,0 +1,48 @@
+{
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "scope": "Static class/Code and constant-pool inspection only. No JVM or original GL execution.",
+  "classes": {
+    "em": {
+      "class_bytes": 1374,
+      "class_sha256": "8d371ce4895cd4ac78246dc35292abc00e660a4293afa5115956af72320a82bb",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "(Lnw;FFFFFF)V",
+          "access": 1,
+          "code_bytes": 290,
+          "code_sha256": "8822f2698e49acb9a991f2f54c0f3bc5783f34b4f96e7abfeb632e18d4585720"
+        }
+      ]
+    },
+    "th": {
+      "class_bytes": 4406,
+      "class_sha256": "51276ddfae08834035413ee9539c64e28f6964931a833b36f20cebeb50df5ac7",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "(Lsn;DDDFF)V",
+          "access": 1,
+          "code_bytes": 43,
+          "code_sha256": "151fc920d1dd1a7bd587ccdab7ebf560faadd956ddf7e9915904c70e4dcbad40"
+        }
+      ]
+    }
+  },
+  "invoke": {
+    "pc": 286,
+    "class": "th",
+    "name": "a",
+    "descriptor": "(Lsn;DDDFF)V"
+  },
+  "final_partial_operand": {
+    "pc": 285,
+    "instruction": "fload_2",
+    "source_argument": "EM partial argument"
+  },
+  "return_pc": 289
+}

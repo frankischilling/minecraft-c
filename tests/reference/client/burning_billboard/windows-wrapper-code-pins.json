@@ -1,0 +1,31 @@
+{
+  "WindowsBurningLauncher.class": {
+    "class_bytes": 5849,
+    "class_sha256": "d00f92137f06bfa38b54f2d3253e07bb72ee8dc9d92fea6f05a10f8b1b6d29e0",
+    "major": 61,
+    "minor": 0,
+    "methods": [
+      {
+        "name": "<init>",
+        "descriptor": "()V",
+        "access": 1,
+        "code_bytes": 5,
+        "code_sha256": "d6f7264189858f154b120ac2e9b76f4b4dae9ddb629e4ec627af7810207e1a24"
+      },
+      {
+        "name": "hash",
+        "descriptor": "([B)Ljava/lang/String;",
+        "access": 8,
+        "code_bytes": 16,
+        "code_sha256": "6d52565206535ffeed2a2379c0898dcfa1cf13e78c64c39c4d84b0d012307459"
+      },
+      {
+        "name": "main",
+        "descriptor": "([Ljava/lang/String;)V",
+        "access": 9,
+        "code_bytes": 832,
+        "code_sha256": "844593de337f661cea797b3a1cbbb96917c9ecdea92b9e497982be99cc7f59cd"
+      }
+    ]
+  }
+}

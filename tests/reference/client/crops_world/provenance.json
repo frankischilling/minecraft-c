@@ -1,0 +1,47 @@
+{
+  "format": 1,
+  "profiles": 44,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "ordinary_fresh_vms": 2,
+  "read_only_jdi_fresh_vms": 1,
+  "original_inputs_unchanged": true,
+  "original_helpers_unchanged": true,
+  "source_writes_from_jdi": 0,
+  "frozen_authored_files_sha256": {
+    "CropsObservation.java": "f2a62607441981a31b9ffcd8ae4eda04aa7619a9e60914a7671a57097fe506e7",
+    "CropsJdi.java": "d2ab861f82dd9e566b9b3617dc3b0ff8f8a19fb5b008c47a3d8e5f09cac21ed7",
+    "profiles.txt": "806df13034df4325276eeb6e7ca29846a63b9ff0293832b05938edddbb06226c",
+    "declared-inputs.json": "1726a1e751d7cbfa8b9b9ac6a9d2b2847ff24d23d6f6208d9c2ba031e89197ca",
+    "source-pins.json": "2fba899aa3338fb84d06afd01d76776af0acb9d67671db469f7ef10403f2685f",
+    "capture_reference.py": "79598d054c379be13ed587b0184eea1fb83cd40bcbc698de3aadd1d45e0b1909"
+  },
+  "files_sha256": {
+    "CropsObservation.java": "f2a62607441981a31b9ffcd8ae4eda04aa7619a9e60914a7671a57097fe506e7",
+    "CropsJdi.java": "d2ab861f82dd9e566b9b3617dc3b0ff8f8a19fb5b008c47a3d8e5f09cac21ed7",
+    "profiles.txt": "806df13034df4325276eeb6e7ca29846a63b9ff0293832b05938edddbb06226c",
+    "declared-inputs.json": "1726a1e751d7cbfa8b9b9ac6a9d2b2847ff24d23d6f6208d9c2ba031e89197ca",
+    "source-pins.json": "2fba899aa3338fb84d06afd01d76776af0acb9d67671db469f7ef10403f2685f",
+    "capture_reference.py": "79598d054c379be13ed587b0184eea1fb83cd40bcbc698de3aadd1d45e0b1909",
+    "selected.txt": "cdb0243394630f1b7434381d85c925d587e7a214f016479145a6fa646f6733b9",
+    "events.jsonl": "2134f16f249c83b672a69559093d03f84b8cc31ed89efcea5be2baa7509f2ccc",
+    "live-code.tsv": "3ffe391f965160b31a03d053902ffbf202e3165708905adc7657da054efeae1d"
+  },
+  "raw_stdout_sha256": [
+    "32c4e1296bca01a9765899be089b20d8241a2cdee5ac88d7c39f1f0d54dbfed7",
+    "32c4e1296bca01a9765899be089b20d8241a2cdee5ac88d7c39f1f0d54dbfed7",
+    "32c4e1296bca01a9765899be089b20d8241a2cdee5ac88d7c39f1f0d54dbfed7"
+  ],
+  "source_observations": {
+    "events": 8664,
+    "queries": 160,
+    "field_reads": 109,
+    "exceptions": 3,
+    "live_methods": 13,
+    "nw_vertex_calls": 1312,
+    "jdi_completion": "CW_JDI_COMPLETE events=8664 entries=4278 queries=160 reads=109 exceptions=3 target-exit=0 source-writes=0",
+    "world_wrapper_calls": 34,
+    "direct_primitive_calls": 10,
+    "root_calls": 44
+  },
+  "scope": "Executed unchanged-original World/EW/CV/NW Crops methods and primitive metadata controls; no GL, full-frame, farming gameplay or performance qualification."
+}

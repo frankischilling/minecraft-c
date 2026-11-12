@@ -4,6 +4,7 @@ import argparse
 import base64
 import contextlib
 import copy
+import hashlib
 import io
 import json
 import os
@@ -384,6 +385,22 @@ class ChunkExecutionGuards(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix='mc-chunk-storage-preflight-'); self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name).resolve(); self.common, self.old, self.executed = chunks.helpers()
+        # These tests use synthetic tools/JARs and mocked children. Attribute a
+        # small real project too, so each failure guard does not fingerprint the
+        # unrelated checkout. The production collector and native replay retain
+        # their complete inventories.
+        self.project = self.root/'attributed-project'
+        self.source_inputs = set()
+        for name in ('CMakeLists.txt', 'tests/world/storage/chunk_probe.c',
+                     *chunks.SOURCES, 'src/owned.c', 'src/owned.h', 'include/owned.h'):
+            path = self.project/name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(b'synthetic attributed project input\n')
+            self.source_inputs.add(str(path.resolve()))
+        for module in (chunks, chunks.level):
+            selected = patch.object(module, 'ROOT', self.project)
+            selected.start()
+            self.addCleanup(selected.stop)
         self.tools = {}
         for name in ('java', 'javac', 'javap'):
             path = self.root/'jdk/bin'/name; path.parent.mkdir(parents=True, exist_ok=True); path.write_bytes(b'synthetic tool'); self.tools[name] = path
@@ -449,6 +466,8 @@ class ChunkExecutionGuards(unittest.TestCase):
             self.assertEqual(self.mocked(versions, child), 1)
             path, = set((self.root/'captures').glob('capture-*/manifest.json')) - before
             report = chunks.strict_json(path.read_bytes())
+            self.assertTrue(self.source_inputs <= set(report['inputs_before']))
+            self.assertEqual(report['inputs_before'], report['inputs_after'])
             observed = report['failed_process']
             self.assertEqual((report['status'], observed['returncode'], observed['timed_out'],
                               observed['stop_reason']), ('fail', returncode, timed_out, reason))
@@ -538,6 +557,34 @@ class ChunkExecutionGuards(unittest.TestCase):
             out.write_bytes(b''); err.write_bytes(b'UNAVAILABLE synthetic child\n')
             return self.common.ProcessResult(list(map(str, command)), 77, 0.01, False, None, 0, 28, 0, 28, 0)
         self.assertEqual(self.mocked(versions, child), 1)
+
+    def test_same_length_source_change_still_fails_after_attribution(self):
+        source = self.project/'src/owned.c'
+        before = source.read_bytes()
+        after = bytes([before[0] ^ 1]) + before[1:]
+        captures = self.root/'captures'
+        previous = set(captures.glob('capture-*/manifest.json'))
+
+        def mutate(*_):
+            source.write_bytes(after)
+            raise self.common.Unavailable('source changed after attribution')
+
+        self.assertEqual(self.mocked(mutate), 1)
+        path, = set(captures.glob('capture-*/manifest.json')) - previous
+        report = chunks.strict_json(path.read_bytes())
+        self.assertEqual(report['status'], 'fail')
+        name = str(source.resolve())
+        initial, final = report['inputs_before'], report['inputs_after']
+        self.assertIn(name, initial)
+        self.assertIn(name, final)
+        self.assertEqual((initial[name]['bytes'], final[name]['bytes']),
+                         (len(before), len(after)))
+        self.assertEqual((initial[name]['sha256'], final[name]['sha256']),
+                         (hashlib.sha256(before).hexdigest(), hashlib.sha256(after).hexdigest()))
+        self.assertNotEqual(initial[name]['sha256'], final[name]['sha256'])
+        self.assertEqual({key: value for key, value in initial.items() if key != name},
+                         {key: value for key, value in final.items() if key != name})
+        self.assertTrue(any('attributed input changed' in error for error in report['errors']))
 
     def test_wrong_jar_and_changed_input_cannot_be_unavailable(self):
         with patch.object(chunks, 'helpers', return_value=(self.common, self.old, self.executed)), \

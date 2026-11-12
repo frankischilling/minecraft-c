@@ -1,0 +1,316 @@
+{
+  "schema": "BIOME_REGISTRY_ORIGINAL_OBSERVATIONS_V1",
+  "transformation": "Exact observed TAB/LF protocols; no game results computed or rows filtered",
+  "capture_report": {
+    "bytes": 24832,
+    "sha256": "1fbc7fa780643fa79aaf364f454353af6eb908168f5f5a9c1fda188e1ea6a236"
+  },
+  "capture_schema": 1,
+  "inputs": {
+    "java": {
+      "bytes": 50344,
+      "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+    },
+    "javac": {
+      "bytes": 24232,
+      "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+    },
+    "runtime/release": {
+      "bytes": 1667,
+      "sha256": "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+    },
+    "runtime/lib/modules": {
+      "bytes": 128648619,
+      "sha256": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+    },
+    "runtime/lib/ct.sym": {
+      "bytes": 8301490,
+      "sha256": "a9bd49270b02d4a8ee33898450d4477d58fb4e258a5c5414bff15654e5fdc1f5"
+    },
+    "runtime/bin/server/jvm.dll": {
+      "bytes": 12681896,
+      "sha256": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+    },
+    "runtime/bin/java.dll": {
+      "bytes": 148136,
+      "sha256": "18b105254c16e1d83614ff4e32cd62ce402fbe6339bdd1b24ccc7d999fed7f5f"
+    },
+    "runtime/bin/jli.dll": {
+      "bytes": 89768,
+      "sha256": "5d6a3581649cf281a2a4db2aeff53ccb1134b45cb04fa282efa7eb9a58cf5b79"
+    },
+    "runtime/bin/zip.dll": {
+      "bytes": 89256,
+      "sha256": "2cc26c530a65b8a839e40ce820565e531fefcc5a207822e09f7a073fb8676b70"
+    },
+    "compiler/release": {
+      "bytes": 1667,
+      "sha256": "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+    },
+    "compiler/lib/modules": {
+      "bytes": 128648619,
+      "sha256": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+    },
+    "compiler/lib/ct.sym": {
+      "bytes": 8301490,
+      "sha256": "a9bd49270b02d4a8ee33898450d4477d58fb4e258a5c5414bff15654e5fdc1f5"
+    },
+    "compiler/bin/server/jvm.dll": {
+      "bytes": 12681896,
+      "sha256": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+    },
+    "compiler/bin/java.dll": {
+      "bytes": 148136,
+      "sha256": "18b105254c16e1d83614ff4e32cd62ce402fbe6339bdd1b24ccc7d999fed7f5f"
+    },
+    "compiler/bin/jli.dll": {
+      "bytes": 89768,
+      "sha256": "5d6a3581649cf281a2a4db2aeff53ccb1134b45cb04fa282efa7eb9a58cf5b79"
+    },
+    "compiler/bin/zip.dll": {
+      "bytes": 89256,
+      "sha256": "2cc26c530a65b8a839e40ce820565e531fefcc5a207822e09f7a073fb8676b70"
+    },
+    "python": {
+      "bytes": 106328,
+      "sha256": "cce21c0e8710e304273e98ac4b2b0f5aceb639acbcd2343cbaa5c4e81619c45b"
+    },
+    "helper": {
+      "bytes": 24264,
+      "sha256": "6fabed340cda463d49f0e5c4c7f4df32df49ad6763416795041b27f30ceb8d21"
+    },
+    "recorder": {
+      "bytes": 18973,
+      "sha256": "f005ec5f209dfe390d88e82df77771f36cd75a188a6d7177cf903193daa74291"
+    },
+    "process_helper": {
+      "bytes": 19686,
+      "sha256": "cd34681283655cb9670be475c158547df7b5894e80feccc0dda8c168ffdcf05c"
+    },
+    "requests": {
+      "bytes": 144783,
+      "sha256": "8690023ba17bcc37b9499bb91172289d9b4e55bcb1d08f4f9923317a7ce66171"
+    },
+    "client": {
+      "bytes": 1465375,
+      "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+    },
+    "server": {
+      "bytes": 503100,
+      "sha256": "033a127e4a25a60b038f15369c89305a3d53752242a1cff11ae964954e79ba4d"
+    }
+  },
+  "compiled_helper_classes": {
+    "BiomeRegistryObservation$Request.class": {
+      "bytes": 399,
+      "sha256": "3b404be19ec54b8f9185ae0e244e215158b7bfddf9477b423c5246f7d4a7785a"
+    },
+    "BiomeRegistryObservation.class": {
+      "bytes": 21763,
+      "sha256": "b1d7d529d306aa1353a04836e8ed615ecfe1bcd1f9cca60b3493eb4fb2fc85ee"
+    }
+  },
+  "mode_protocols": {
+    "client-interpreted": {
+      "bytes": 1186800,
+      "sha256": "6e1b81c2943b656c9b77de1a8ecf29a2add00b51c748431c6cb6d37f66bd1d25"
+    },
+    "client-tier1": {
+      "bytes": 1186800,
+      "sha256": "6e1b81c2943b656c9b77de1a8ecf29a2add00b51c748431c6cb6d37f66bd1d25"
+    },
+    "client-default": {
+      "bytes": 1186800,
+      "sha256": "6e1b81c2943b656c9b77de1a8ecf29a2add00b51c748431c6cb6d37f66bd1d25"
+    },
+    "server-interpreted": {
+      "bytes": 1186800,
+      "sha256": "dbfe09cef6fefec1679fabad7ce91529af348b69af753357908e5f0b7711ed00"
+    },
+    "server-tier1": {
+      "bytes": 1186800,
+      "sha256": "dbfe09cef6fefec1679fabad7ce91529af348b69af753357908e5f0b7711ed00"
+    },
+    "server-default": {
+      "bytes": 1186800,
+      "sha256": "dbfe09cef6fefec1679fabad7ce91529af348b69af753357908e5f0b7711ed00"
+    }
+  },
+  "counts": {
+    "client": {
+      "rows": 30356,
+      "snapshots": 6,
+      "operations": 3836,
+      "references": 194,
+      "biomes": 13,
+      "lists": 39,
+      "live_records": 115,
+      "entity_classes": 13,
+      "table_slots_per_snapshot": 4096
+    },
+    "server": {
+      "rows": 30356,
+      "snapshots": 6,
+      "operations": 3836,
+      "references": 194,
+      "biomes": 13,
+      "lists": 39,
+      "live_records": 115,
+      "entity_classes": 13,
+      "table_slots_per_snapshot": 4096
+    }
+  },
+  "declarations": {
+    "operations": 3836,
+    "snapshots": 6,
+    "queries": 3824
+  },
+  "actual_children": [
+    {
+      "name": "java-version",
+      "exit": 0,
+      "reaped": true,
+      "timed_out": false,
+      "output_limited": false,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 190,
+        "sha256": "60aba3fe0d7bf59797df0e8cb7af289d0843e978623fafea7e3ae5ef925b6622"
+      }
+    },
+    {
+      "name": "javac-version",
+      "exit": 0,
+      "reaped": true,
+      "timed_out": false,
+      "output_limited": false,
+      "stdout": {
+        "bytes": 15,
+        "sha256": "825ce50fb46a3e8bd8d38f6da5bf8449d442a9f210d9d38c83709234bfa8ee9c"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "compile",
+      "exit": 0,
+      "reaped": true,
+      "timed_out": false,
+      "output_limited": false,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "client-interpreted",
+      "exit": 0,
+      "reaped": true,
+      "timed_out": false,
+      "output_limited": false,
+      "stdout": {
+        "bytes": 30,
+        "sha256": "09de7cda213869a26dc6a042e9fee46249034d3a5c0dec6d3907c91c0dd2487f"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "client-tier1",
+      "exit": 0,
+      "reaped": true,
+      "timed_out": false,
+      "output_limited": false,
+      "stdout": {
+        "bytes": 30,
+        "sha256": "09de7cda213869a26dc6a042e9fee46249034d3a5c0dec6d3907c91c0dd2487f"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "client-default",
+      "exit": 0,
+      "reaped": true,
+      "timed_out": false,
+      "output_limited": false,
+      "stdout": {
+        "bytes": 30,
+        "sha256": "09de7cda213869a26dc6a042e9fee46249034d3a5c0dec6d3907c91c0dd2487f"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "server-interpreted",
+      "exit": 0,
+      "reaped": true,
+      "timed_out": false,
+      "output_limited": false,
+      "stdout": {
+        "bytes": 30,
+        "sha256": "09de7cda213869a26dc6a042e9fee46249034d3a5c0dec6d3907c91c0dd2487f"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "server-tier1",
+      "exit": 0,
+      "reaped": true,
+      "timed_out": false,
+      "output_limited": false,
+      "stdout": {
+        "bytes": 30,
+        "sha256": "09de7cda213869a26dc6a042e9fee46249034d3a5c0dec6d3907c91c0dd2487f"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "server-default",
+      "exit": 0,
+      "reaped": true,
+      "timed_out": false,
+      "output_limited": false,
+      "stdout": {
+        "bytes": 30,
+        "sha256": "09de7cda213869a26dc6a042e9fee46249034d3a5c0dec6d3907c91c0dd2487f"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "limitations": [
+    "Ordinary Biome class initialization return is not full game/World startup",
+    "Mutation controls deliberately change actual p/q or table cells only",
+    "Actual Java target exception names do not imply native Throwable identities",
+    "No failed-class Field.get, fake READY, heap census or OOM timing equivalence",
+    "No original assets/classfiles/JARs are copied into public fixtures",
+    "All identities are graph-local first-seen logical references, not JVM addresses",
+    "194 live reachable references exclude cleared records and other transitive bootstrap objects",
+    "Native comparison maps NULL/index status kinds to observed exception names only",
+    "These finite observations do not establish original full World startup, generation or population"
+  ]
+}

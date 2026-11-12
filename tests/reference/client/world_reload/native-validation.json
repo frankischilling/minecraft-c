@@ -1,0 +1,216 @@
+{
+  "schema": 1,
+  "scope": "Finite native Windows Release Tiny source UI reload, save and retained-owner cleanup. No executed-original whole-session or pixel comparison.",
+  "fixed_runtime_load_limit": false,
+  "lifetime_limit": "Superseded World graphs remain allocated until application shutdown; allocation failure and size_t overflow remain explicit errors.",
+  "runs": [
+    {
+      "status": "PASS",
+      "revision_scope": "Retained ten-epoch run. The controller did not record executable/source hashes at execution time; current executable correspondence is unproven.",
+      "artifact_directory": ".local/reload-ten-final-20261102/reload-cycle-qv3m9kzm",
+      "execution_sha256": "3873a3c7edcbfef3eb0816dcddc445781ac225a683b1b52caba3d177a853fbd7",
+      "stdout_sha256": "b922f4fdefe6d6227f0803a7f8fc6f849e57b1acda1a8c5e3e87243e0e7f58a4",
+      "report_sha256": "3c946f405b3e0f5c9426e9807aa4dca83559576f78965cab056368d321c8af5b",
+      "native_checks": 7037,
+      "successful_loads": 10,
+      "normal_save_title_transitions": 10,
+      "ordered_folders": [
+        "alpha",
+        "alpha",
+        "older",
+        "alpha",
+        "older",
+        "alpha",
+        "older",
+        "alpha",
+        "older",
+        "alpha"
+      ],
+      "failed_successor": {
+        "epoch": 11,
+        "folder": "bravo",
+        "frontier": "unsupported SaveFormat conversion before acquiring storage",
+        "preserved_prefix": true
+      },
+      "independent_disk_decode": {
+        "stages": 10,
+        "raw_before_after_snapshots": 20,
+        "player_stable_fields": [
+          "Inventory",
+          "Dimension",
+          "Score"
+        ],
+        "player_score": 7,
+        "no_save_writes_after_final_transition": true
+      },
+      "ownership_controls": [
+        "all-pairs distinct World/Player/SaveHandler/input/controller owners",
+        "real N and DN World replacements",
+        "old Player external hold refuses passive audit without World mutation",
+        "retry after hold release admits all epochs",
+        "skipped/reversed/repeated reciprocal Load links rejected",
+        "effect/controller/screen external holds refuse later retirement and permit retry"
+      ],
+      "terminal_cleanup": true,
+      "native_windows_absent": true,
+      "execution_input_hashes_bracketed": false
+    },
+    {
+      "status": "PASS",
+      "revision_scope": "Hash-bracketed Windows Release snapshot before subsequent combat changes. Selected declared execution inputs and resources remain byte-identical across all nine tests; this is not a complete environment inventory.",
+      "artifact_directory": "build-windows/world-reload-cycle-captures/reload-cycle-p6pmlp5d",
+      "execution_sha256": "1d338ddeb4584fbc2e1b3046370af753251e7d2179efd9da84809265a0f12401",
+      "stdout_sha256": "bbdb685bbb6c348489c5be74da0825f5b4717baf6f25f3f054a7f0df704e1418",
+      "report_sha256": "f5e0632109bb15d928b5fd6d0b9f8ea703f01e21775bb42e5f919bb70dec2809",
+      "native_checks": 6417,
+      "successful_loads": 10,
+      "normal_save_title_transitions": 10,
+      "ordered_folders": [
+        "alpha",
+        "alpha",
+        "older",
+        "alpha",
+        "older",
+        "alpha",
+        "older",
+        "alpha",
+        "older",
+        "alpha"
+      ],
+      "failed_successor": {
+        "epoch": 11,
+        "folder": "bravo",
+        "frontier": "unsupported SaveFormat conversion before acquiring storage",
+        "preserved_prefix": true
+      },
+      "independent_disk_decode": {
+        "stages": 10,
+        "raw_before_after_snapshots": 20,
+        "player_stable_fields": [
+          "Inventory",
+          "Dimension",
+          "Score"
+        ],
+        "player_score": 7,
+        "no_save_writes_after_final_transition": true
+      },
+      "ownership_controls": [
+        "all-pairs distinct World/Player/SaveHandler/input/controller owners",
+        "real N and DN World replacements",
+        "old Player external hold refuses passive audit without World mutation",
+        "retry after hold release admits all epochs",
+        "skipped/reversed/repeated reciprocal Load links rejected",
+        "effect/controller/screen external holds refuse later retirement and permit retry"
+      ],
+      "terminal_cleanup": true,
+      "native_windows_absent": true,
+      "seconds": 36.96,
+      "qualification": {
+        "test_receipt_sha256": "82a05c76b739db93aff950bbb1aa59170dd24eb51b5e991417d787261c4a84d1",
+        "input_receipt_sha256": "b91db40f21c9893a0592ca65818028744e7b6b206580fce7c8c26987393c9d1c",
+        "selected_tests": 9,
+        "ctest_seconds": 62.66,
+        "save_title_seconds": 17.94,
+        "declared_execution_inputs": 1539,
+        "declared_execution_inputs_unchanged": true,
+        "selected_resource_files": 410,
+        "selected_resource_files_unchanged": true,
+        "bound_categories": [
+          "all src/include/cmake files",
+          "World-selection executable and build DLLs",
+          "CMakeLists.txt/.clang-format",
+          "CMakeCache.txt/build.ninja/CTestTestfile.cmake",
+          "World-selection C fixture and reload fragment",
+          "World-selection Python controller and independent source-saving decoder",
+          "local qualification wrapper",
+          "410 files under imported-resources"
+        ],
+        "not_fully_inventoried": [
+          "other test support files",
+          ".local/imported-icons",
+          "OS/driver/desktop state"
+        ],
+        "compiled_executable": {
+          "bytes": 8612864,
+          "sha256": "9bd02003d5b79aedc1a81694987c5bf16e0ec8f16bc6ea9671d4d99dd8acca9f"
+        },
+        "selected_public_inputs": {
+          "src/client/gui/source_screen_transitions.c": {
+            "bytes": 50599,
+            "sha256": "1ff3b1c34518e5b3abc2c430838c187c250505783dec2e7145bd492ae866b409"
+          },
+          "src/client/gui/source_screen_transitions_terminal_internal.h": {
+            "bytes": 1916,
+            "sha256": "b109591ad476c38d9e2b68f0bc6d35e56226a6fab3ec73425e099412f0d65035"
+          },
+          "src/client/world/load_world.c": {
+            "bytes": 101353,
+            "sha256": "6d57c4604b57265ca9d475c4f0cfe20fa39df73dd8a6942e93549791d2d7363e"
+          },
+          "src/client/world/load_world.h": {
+            "bytes": 12713,
+            "sha256": "c30d81ab9100ff8d99f02e57faabc989a8f013fec8d8db33600e3f8351879eca"
+          },
+          "src/client/world/load_world_terminal_internal.h": {
+            "bytes": 4590,
+            "sha256": "c20fed233660d6b931aa48a616d5b175974350c89540ea2eadfdfd56af66e46c"
+          },
+          "src/client/world/source_epoch.inc": {
+            "bytes": 4494,
+            "sha256": "902316746b99974e54c67de7355cd0e821515c5edb169235e17ea586dd447256"
+          },
+          "tests/client/startup/test_world_selection_loop.c": {
+            "bytes": 293946,
+            "sha256": "758efdf91ac0ca896c3bd5dda2925d0cf38f62234bc218b57a3405f781191d61"
+          },
+          "tests/client/startup/test_world_reload.inc": {
+            "bytes": 21165,
+            "sha256": "79393de86756be6050aac11da8587006bd7ea42e293579491d57040baf6bcfd3"
+          },
+          "tests/tools/client/test_world_selection_loop.py": {
+            "bytes": 61721,
+            "sha256": "55862faac7b3c0bd701dd4e82aeee67ec479aa357bb7cf95913d6c4f12ca3a80"
+          },
+          "tests/tools/world/test_source_saving.py": {
+            "bytes": 24895,
+            "sha256": "1fc2f69d04e2ab6e5c48f9d2ebef1d9dd7de0c50a5a7278a81735b0a63edcff9"
+          },
+          "cmake/tests/client_world_selection_loop.cmake": {
+            "bytes": 6473,
+            "sha256": "a5fbc2f1219c5b23b53f33e788255a2f0bf3aeecb58758409085bedc6a4d1334"
+          }
+        },
+        "build_receipt_sha256": "c9d4a445bf901712e661b0dddbe70a537a02e69b3fa4161a27c642b3e74eb455"
+      },
+      "execution_input_hashes_bracketed": true
+    }
+  ],
+  "adjacent_validation": [
+    {
+      "scope": "Retained Windows public screen/menu/World and terminal-inventory selection",
+      "status": "PASS",
+      "tests": 7,
+      "seconds": 4.18,
+      "receipt_sha256": "c8c49143bbaed0d825dc16d27601cf969232f6afb8dc455de691551afde62f86"
+    },
+    {
+      "scope": "Registered Windows save/title and reload pair",
+      "status": "PARTIAL",
+      "passed": 1,
+      "failed": 1,
+      "reload_seconds": 38.92,
+      "save_title_seconds": 4.95,
+      "failure": "save_title_focus: native active/keyboard Canvas focus unavailable before opening scenario",
+      "receipt_sha256": "02db8ee42ff1a339be859a4cf52c62693202ab5d13ba19e54fa7cc461487f226"
+    }
+  ],
+  "remaining_dependencies": [
+    "later runtime/source changes require fresh snapshot qualification",
+    "Linux graphical ten-load lifecycle",
+    "superseded World reclamation during play",
+    "successor failures after acquiring storage",
+    "unrestricted focus and reselection stability",
+    "original whole-session and pixel equality",
+    "extended play and default-Far frame-time measurements"
+  ]
+}

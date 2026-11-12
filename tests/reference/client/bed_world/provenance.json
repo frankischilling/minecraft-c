@@ -1,0 +1,68 @@
+{
+  "schema": "BED_RENDER_CAPTURE_V1",
+  "status": "PASS",
+  "archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "rows_per_vm": 192,
+  "ordinary_vms": 2,
+  "selected_sha256": "e4319267e06a822b807cbebd49a1874a67843e74bba28b1bd6e94479773ac2ec",
+  "selected_per_vm_sha256": [
+    "e4319267e06a822b807cbebd49a1874a67843e74bba28b1bd6e94479773ac2ec",
+    "e4319267e06a822b807cbebd49a1874a67843e74bba28b1bd6e94479773ac2ec"
+  ],
+  "source_sha256": {
+    "BedObservation.java": "f3362f01769b36b28f05a8e7b709781c05548ddb225476462110578a959ecae7",
+    "capture.py": "b6b380b620c2e60e8ba8f0c472b70f8659d1332262851e85af1c4655b8f8ccca",
+    "packet.py": "b684a810a98e325dd43c2ca4b1da1cc9b92a13b554f982f2a776192b126f997f",
+    "finite.json": "22455eea320836bf1c5acb64c962b37141ec4e444c9d36f4e461a58b33241c6f",
+    "source-pins.json": "7b548a57d80e770d528e859e1f08cd9e941518a49f5b7615d0ddec2e2e8eec57",
+    "../controller/capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "../picking/observe.py": "7dc92c800767da251a33c2da082e77f95d75d39544d12ec2207029c7dacb8c23",
+    "../../../tools/client/test_picking.py": "d79b65d5740cd1e2846e4398a517604f20bb5b02696f052126ecf1c64eaad854",
+    "../../entity/player/classfile.py": "4411375a115dabb7104e82e9970aa3139bb0cc4cc0b5f169d56496e81c4bec60"
+  },
+  "tool_sha256": {
+    "java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+  },
+  "helper_sha256": {
+    "BedObservation$1.class": "4f6ccc95eed3a192300d420ee5895360a52bb6bc237ff9cc7bfde53e10fbf253",
+    "BedObservation.class": "a3c30182820962144537f4235a65fb70dcd3ea2a5b83cccbda4f166a784f6d31"
+  },
+  "original": [
+    {
+      "exit": 0,
+      "timeout_seconds": 90,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "original-0.stdout",
+      "stderr_file": "original-0.stderr",
+      "stdout_bytes": 413496,
+      "stderr_bytes": 366,
+      "stdout_sha256": "f51319520e443e1b64921b0b773d16f3a5d471a39ac2298e89b73ab47c6b0173",
+      "stderr_sha256": "aaf79028e3e528b79bd9554342517a9d674d763a522c7a9183550849bbf1ced9",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    {
+      "exit": 0,
+      "timeout_seconds": 90,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "original-1.stdout",
+      "stderr_file": "original-1.stderr",
+      "stdout_bytes": 413496,
+      "stderr_bytes": 366,
+      "stdout_sha256": "f51319520e443e1b64921b0b773d16f3a5d471a39ac2298e89b73ab47c6b0173",
+      "stderr_sha256": "aaf79028e3e528b79bd9554342517a9d674d763a522c7a9183550849bbf1ced9",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    }
+  ],
+  "input_unchanged": true,
+  "helper_unchanged": true,
+  "scope": "Real CV type14 dispatcher/q, VE textures, JJ arrays, EW brightness/culling and NW CPU words; no GL or loaded-scene observation."
+}

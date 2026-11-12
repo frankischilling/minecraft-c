@@ -1,0 +1,10 @@
+gs
+ls
+fd
+cw
+dc
+sn
+xa
+br
+gr
+wy

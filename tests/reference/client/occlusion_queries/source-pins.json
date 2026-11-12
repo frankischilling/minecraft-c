@@ -1,0 +1,46 @@
+{
+  "sdk_jar_sha256": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+  "class": {
+    "class_bytes": 4049,
+    "class_sha256": "6de92049b8194da23f9b8b9ccdd5c94c64fe21c1ac3663380360de959b8b876a",
+    "major": 49,
+    "minor": 0,
+    "methods": [
+      {
+        "name": "glGenQueriesARB",
+        "descriptor": "(Ljava/nio/IntBuffer;)V",
+        "access": 9,
+        "code_bytes": 30,
+        "code_sha256": "ee97e2fdc0944b25c317ff991df2cf94722fda5237bbf8ef3c52378add5c775e"
+      },
+      {
+        "name": "glDeleteQueriesARB",
+        "descriptor": "(Ljava/nio/IntBuffer;)V",
+        "access": 9,
+        "code_bytes": 30,
+        "code_sha256": "b0e8f1fcc6d93b1aac3f3dd57aab635a607c777c469c490d105c4a0d74c5330a"
+      },
+      {
+        "name": "glBeginQueryARB",
+        "descriptor": "(II)V",
+        "access": 9,
+        "code_bytes": 20,
+        "code_sha256": "25e9d7b54c5aa921143f0eeb31bc7d6496794d903a0d8b2d9ea2b510cb854092"
+      },
+      {
+        "name": "glEndQueryARB",
+        "descriptor": "(I)V",
+        "access": 9,
+        "code_bytes": 19,
+        "code_sha256": "4907f21523489b695d5d575821f9ba0dfc670466bc95b6349d4823cf5d664902"
+      },
+      {
+        "name": "glGetQueryObjectuARB",
+        "descriptor": "(IILjava/nio/IntBuffer;)V",
+        "access": 9,
+        "code_bytes": 32,
+        "code_sha256": "ca341f524da8b948f53831c91e21ed84cc8530a3cef5a7356eec02f741423b1a"
+      }
+    ]
+  }
+}

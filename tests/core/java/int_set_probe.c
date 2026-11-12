@@ -15,8 +15,7 @@ static int32_t pending_keys[MAX_ENTRIES];
 static mc_chunk_pending pending;
 static bool pending_mode;
 
-static bool snapshot(const mc_java_int_set *set)
-{
+static bool snapshot(const mc_java_int_set *set) {
     size_t count = 0;
     int32_t first = 0;
     mc_java_int_set_status status = mc_java_int_set_first(set, &first);
@@ -43,8 +42,7 @@ static bool snapshot(const mc_java_int_set *set)
     return true;
 }
 
-static bool parse_key(const char *text, int32_t *key)
-{
+static bool parse_key(const char *text, int32_t *key) {
     char *end;
     errno = 0;
     intmax_t value = strtoimax(text, &end, 10);
@@ -55,8 +53,7 @@ static bool parse_key(const char *text, int32_t *key)
     return true;
 }
 
-static bool respond(mc_java_int_set **set, const char *line)
-{
+static bool respond(mc_java_int_set **set, const char *line) {
     if (strcmp(line, "new") == 0) {
         mc_java_int_set *replacement = NULL;
         mc_java_int_set_limits limits = mc_java_int_set_default_limits();
@@ -144,8 +141,7 @@ static bool respond(mc_java_int_set **set, const char *line)
     return true;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     if (argc == 2 && strcmp(argv[1], "--pending") == 0)
         pending_mode = true;
     else if (argc != 1)

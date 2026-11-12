@@ -1,0 +1,34 @@
+{
+  "schema": "PRIVATE_SKELETON_FIRE_SUPPLIER_SEAL_V1",
+  "original_execution": false,
+  "root_review_required_before_JVM": true,
+  "archive": {
+    "path": "b1.7.3.jar",
+    "bytes": 1465375,
+    "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+  },
+  "private_inputs": {
+    "capture_reference.py": "1e5257fba88955a8c19016a3e14f43881a1edb189f16e0ac48ebea4c709a5fda",
+    "class-names.txt": "26978f48d7b1b26e5393899283087dbf3235404c3029b0e1aa3a866495ee8f15",
+    "DESIGN.md": "2b84fbb7042a2bd0f0788ac853a5c0f9e34a03551b1dc953721322c200640165",
+    "leaf_ledger.py": "fbac9e2269bb63381acd5b342658dbcb21c7aedf50544d3c2979241c3117cf54",
+    "manifest.json": "dd6241977afb133b957152c2d93d66c09fa9202ae5fe48f878537b7f72a3aa2d",
+    "observation.py": "f04d18b8c19d3f9b5de132f214b02df33c6ffceab143be453ec744ec06d01b4d",
+    "preflight.py": "9a70d6d72e2206d6573433e34e1c1d7350c4fa1e24182101b602c785bb7f61bf",
+    "profiles.tsv": "57ae11a3ab1ef9f168ea84ada57261e4b45cf8f678b9481564ebab7666ec5a29",
+    "PROTOCOL.md": "3d3f8a4c5f37c1a9f632eb98f373d8703097aaf83e69b0e3efb8804cb87367ea",
+    "SkeletonFireJdi.java": "6cb37616f27458dc5e8d261fbcc3b1b22c6ecba1be52de8ae6e7e825b40e1c55",
+    "SkeletonFireObservation.java": "531f0fa5a6a2648ad5ff461ec2a5f5b028569604ff19fd18bc2427d45c5fbabb",
+    "source-evidence.md": "fe925581b6c90591b666ec9d01df325572531c9d627b2f52541bb1999930cc83",
+    "source-pins.json": "c216b0a1bc88c3405323b2f83c1e673ae2a515e4f47f4e1bfdbe4e3914822bf4"
+  },
+  "support_inputs": {
+    "tests/reference/entity/arrow_construction/ArrowConstructionObservation.java": "0764a7e53ea16089c875d3ab9125c272cb040bde09c1faec48eb49e88e445fa6",
+    "tests/reference/entity/arrow_construction/observation.py": "ef7ca7cd2fd843f7a14410f8183ece84e2a95677c3053a8e45f29b28c5b38b06",
+    "tests/reference/entity/player/ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "tests/reference/entity/player/classfile.py": "4411375a115dabb7104e82e9970aa3139bb0cc4cc0b5f169d56496e81c4bec60",
+    "tests/reference/client/controller/capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e"
+  },
+  "profile_sha256": "57ae11a3ab1ef9f168ea84ada57261e4b45cf8f678b9481564ebab7666ec5a29",
+  "note": "This seal binds unexecuted preparation. Root must review unresolved seams and authorize the first finite JVM opportunity separately. Native basis is a planning snapshot, not an execution claim."
+}

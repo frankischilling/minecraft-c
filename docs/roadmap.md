@@ -18,6 +18,56 @@ do not postpone original comparisons until a whole milestone is built. Independe
 research can proceed in parallel, but shared interfaces, builds, Git operations
 and integration need explicit ownership.
 
+The [Player tick wake parents](entity/player-sleep-tick.md) now have bounded
+original-prefix and native ownership coverage. The
+[default-hostile CQ/FW component](world/nightmare.md) and one
+[natural loaded-night scene](client/bed-sleep.md) now have separate finite
+evidence. Broader nightmare/combat gameplay and original whole-Player-parent
+qualification remain open.
+The [damage wake parent](entity/player-damage-wake.md) and
+[sleeping-NBT parent](entity/player-nbt.md) now have their own finite component
+comparisons and checked cleanup. Broader attackers and natural hazard play
+still need qualification.
+
+The current priority is playable single-player before server work. All eleven
+default Overworld Mob draw paths have finite comparisons and loaded-client
+continuations, including Skeleton's held Bow. Tutorial notices and Canvas
+focus/resize paths have separate returning profiles. Live Mob
+[NBT/factory round trips](entity/mob-nbt.md), source region writes, and ordinary
+save/title/reselection now have bounded authored controls. The
+[selected-block path](client/block-selection.md) draws dirt and snow outlines
+from real picking results. The [empty-hand Dirt loop](client/mining.md) now
+connects mining, dropped-Item drawing, pickup and held-block drawing.
+[Collected-Dirt placement](client/placement.md) extends that ordinary input loop
+through right-button use, consumption and a fourth World load after three saves.
+[Skeleton NULL-attacker damage](entity/skeleton-damage.md) also closes the
+periodic-fire dispatch reached during that work. The configured drop key now removes one selected Item through the real Player
+action; Skeleton/Spider mounting has its actual riding and cleanup route.
+The [unarmed Player attack body](entity/player-attack.md) now connects ordinary
+left click through animal damage/death, owned-Wolf alerts and score/statistics.
+Windows and sanitized Linux component controls match five original
+integer/Boolean rows. The bounded Windows SDK Sheep kill returns through
+visible Wool and checked cleanup. The strengthened Windows run now completes
+the [explosion-particle](entity/explosion-particle.md) death-age-21 body, twenty
+real particles, actual removal and independently audited period-40 autosave.
+Qualify the remaining Linux saved-World SDK and extended sessions, and resolve
+Windows graphical focus stability. Held Item damage/hit and source durability
+have all-38-Class component coverage, with direct original Sword/Bow geometry
+and the damaged-Item overlay comparison. Frozen Windows SDK Dirt and Iron Sword
+break scenarios now complete the click, hand frames, death/removal and exact
+live-Inventory/NBT autosave checks. The full public suites pass on Windows and
+sanitized Linux; these finite results do not qualify unrestricted play or FPS.
+Hosted checks apply to their exact tested commit. Extend the held scenarios
+and Linux saved-World SDK coverage, then address
+remaining target overrides, Player death/respawn and Inventory UI
+on the same input/World loop.
+The loader has no fixed session count limit, and a retained Windows Tiny
+scenario covers ten saves/reloads plus a successor conversion failure before
+storage acquisition. Reclaim superseded Worlds during play and qualify later
+successor failures, default-Far settings and extended play. Existing movement,
+look and time bodies remain part of that real loop. Detailed evidence and
+remaining limits are in [development status](status.md).
+
 The raw NBT and modified UTF increment is integrated, as is bounded gzip/zlib,
 with [both-side evidence](reference/compression.md). Read-only original region
 inspection passes [exact-source original comparisons](reference/region.md) on
@@ -28,13 +78,13 @@ The separate 2D simplex/octave primitives are implemented, with exact-source
 acceptance recorded in [status](status.md). Climate blending and biome classification
 are implemented, with
 [actual both-side numerical methods and state comparisons](reference/biome.md).
-Normal-dimension density/base interpolation is integrated, with
+Overworld density/base interpolation is integrated, with
 [actual both-side context and numerical comparisons](reference/density.md).
 Surface replacement and chunk seeding are integrated, with
 [recorded scope and results](reference/surface.md) and native public CI.
 The float lookup/floor prerequisite is integrated, with
 [complete table and sampled scalar comparisons](reference/math.md) and native
-public CI. The normal cave runtime is integrated, with
+public CI. The Overworld cave runtime is integrated, with
 [natural and protected comparisons](reference/caves.md). Fresh chunk data,
 heightmaps, direct skylight and packed access now have
 [exact original comparisons](reference/chunk.md) for their local-state scope.
@@ -50,7 +100,7 @@ lifecycle order. The synchronous save/unload composition below adds that
 boundary; terrain-feature bodies, light propagation and tick-driven scheduling
 remain required.
 
-The [direct normal generator composition](world/generation.md) is implemented:
+The [direct Overworld generator composition](world/generation.md) is implemented:
 fresh data, direct climate/biomes, density/base, current-material surface,
 separately seeded caves and full finishing, with fresh unpublished results.
 It borrows the same world's existing biome manager, uses a separate biome
@@ -70,7 +120,7 @@ files. These results identify the a08 checkpoint; later acquisition acceptance
 is recorded separately below.
 `MC_ENABLE_GENERATION_REFERENCE_TESTS` selects
 the original comparison; public helper and fixture checks are named
-`tools.normal_reference` and `tools.normal_interop`.
+`tools.overworld_reference` and `tools.overworld_interop`.
 
 The [cache coordinator](world/cache.md) composes retained C generation and
 finishing with pending removal, ordered publication, activation and live
@@ -94,7 +144,7 @@ pass without skips on native MSVC/GCC/Clang, with Linux sanitizers and
 independent platform/provenance/semantic audits. Both finite copied-world
 directions pass; [storage evidence](reference/storage.md#exact-source-storage-checkpoint)
 records their exact source, captures and limits.
-Opaque entity, tile and Player bodies are retained with unsupported edits
+Opaque entity, TileEntity and Player bodies are retained with unsupported edits
 refused. This does not implement their simulation or complete save scheduling.
 
 The [synchronous lifecycle](world/lifecycle.md) composes acquisition, save/drop,
@@ -104,7 +154,7 @@ Linux sanitizers, independent audits and retained capture/storage evidence.
 This extends the accepted storage foundation. Finite constructor/API
 observations do not establish a running dedicated server.
 
-Complete normal terrain-feature population is the next cohesive generation
+Complete Overworld terrain-feature population is the next cohesive generation
 boundary: lakes, dungeons and their payloads, clay/ores, all original tree and
 vegetation families, springs and snow, with the world mutation and RNG/update
 order they invoke. Callback replay does not implement these bodies. Light

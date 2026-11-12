@@ -1,0 +1,20 @@
+# target declaring_class member type value
+all sn c pose 8.5,64,8.5,30,15
+all sn bl D 8.25
+all sn bn D 8.25
+all sn bm D 64
+all sn aU F 10
+all sn aV F -5
+all ls I F 10
+all ls H F 20
+all ls ak F 0.2
+all ls al F 0.4
+all ls am F 3
+all ls W F 0.1
+all ls X F 0.4
+all sn bt I 17
+camera sn c pose 8.5,65,12.5,180,15
+chicken ww g F 0.25
+chicken ww b F 0.75
+chicken ww f F 0.5
+chicken ww c F 1.25

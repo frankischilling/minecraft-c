@@ -7,8 +7,7 @@
 
 static unsigned int checks;
 
-static bool same_bounds(const mc_light_bounds *a, const mc_light_bounds *b)
-{
+static bool same_bounds(const mc_light_bounds *a, const mc_light_bounds *b) {
     return a->min_x == b->min_x && a->min_y == b->min_y && a->min_z == b->min_z &&
            a->max_x == b->max_x && a->max_y == b->max_y && a->max_z == b->max_z;
 }
@@ -22,8 +21,7 @@ static bool same_bounds(const mc_light_bounds *a, const mc_light_bounds *b)
         }                                                                                          \
     } while (0)
 
-static int test_original_merges(void)
-{
+static int test_original_merges(void) {
     for (size_t i = 0; i < sizeof(light_merge_fixtures) / sizeof(light_merge_fixtures[0]); ++i) {
         const light_merge_fixture *fixture = &light_merge_fixtures[i];
         mc_light_bounds stored = fixture->initial;
@@ -34,8 +32,7 @@ static int test_original_merges(void)
 }
 
 static int test_original_queue(const mc_light_region *baseline, size_t baseline_count,
-                               const light_queue_fixture *steps, size_t step_count)
-{
+                               const light_queue_fixture *steps, size_t step_count) {
     mc_light_region storage[256], expected[256];
     CHECK(baseline_count < 256u);
     mc_light_queue queue;
@@ -63,8 +60,7 @@ static int test_original_queue(const mc_light_region *baseline, size_t baseline_
     return 0;
 }
 
-static int test_storage_contract(void)
-{
+static int test_storage_contract(void) {
     mc_light_region storage[2] = {{MC_LIGHT_SKY, {0, 0, 0, 1, 1, 1}},
                                   {MC_LIGHT_BLOCK, {-9, 63, -9, -9, 63, -9}}};
     mc_light_region before[2];
@@ -106,8 +102,7 @@ static int test_storage_contract(void)
     return 0;
 }
 
-static int test_original_limit(void)
-{
+static int test_original_limit(void) {
     mc_light_region *storage = malloc((size_t)MC_LIGHT_QUEUE_LIMIT * sizeof(*storage));
     CHECK(storage != NULL);
     mc_light_queue queue;
@@ -130,8 +125,7 @@ static int test_original_limit(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_original_merges() ||
         test_original_queue(
             light_client_baseline, sizeof(light_client_baseline) / sizeof(light_client_baseline[0]),

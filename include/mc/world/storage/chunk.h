@@ -26,6 +26,13 @@ typedef struct mc_stored_chunk_error {
 } mc_stored_chunk_error;
 
 const char *mc_stored_chunk_status_string(mc_stored_chunk_status status);
+/* Adopt a completed incremental source parse into the SAME canonical stored
+ * GAME payload. The sole field decoder below is reused. Success consumes the
+ * document slot; failure preserves document/out, without serializing it. */
+mc_stored_chunk_status mc_stored_chunk_adopt_game_document(mc_nbt_document **,
+                                                           const mc_nbt_limits *,
+                                                           mc_stored_chunk **,
+                                                           mc_stored_chunk_error *);
 
 /* Parse one uncompressed region NBT record and own all retained state. Requires
  * Level and Level.Blocks, exact original field types, and the supported fixed
@@ -51,7 +58,7 @@ mc_stored_chunk_status mc_stored_chunk_decode(const uint8_t *input, size_t lengt
 
 /* Copy a normal caller-owned chunk into stable owned storage for a new record.
  * Requires valid fixed-shape data, blank == false and has_entities == false.
- * This operation cannot invent entity/tile records. All transient flags are
+ * This operation cannot invent entity/TileEntity records. All transient flags are
  * copied but only coordinates, arrays and population are serialized. Limits
  * bound the owner allocation; NBT result limits are applied by build. */
 mc_stored_chunk_status mc_stored_chunk_create(const mc_chunk_state *state,
@@ -77,10 +84,10 @@ mc_stored_chunk_status mc_stored_chunk_normalize(mc_stored_chunk *chunk, const u
 /* Build an independent owned NBT document. LastUpdate is explicit world_time;
  * it does not change last_save_time or any other runtime field. The fresh
  * original schema is overlaid on retained root/Level state, preserving unknown
- * children/root name and opaque entity/tile lists. New owners emit empty lists.
+ * children/root name and opaque entity/TileEntity lists. New owners emit empty lists.
  * Normal NBT writer canonicalization applies; compound byte order is retained.
  *
- * Until entity/tile persistence is implemented, nonempty opaque lists permit
+ * Until entity/TileEntity persistence is implemented, nonempty opaque lists permit
  * only unchanged coordinates/arrays/population and a new LastUpdate. Other
  * edits return UNSUPPORTED_EDIT instead of silently invalidating unsupported
  * state. Changing has_entities inconsistently with retained records also fails.

@@ -1,0 +1,123 @@
+{
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "classes": {
+    "n": {
+      "class_bytes": 24327,
+      "class_sha256": "d3f85a1136da30d4590b16f7bd5db44d0db3e73f6d42e1f0b018426542da0c16",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 700,
+          "code_sha256": "dacb888009cdef6175ee550b2de50a777dbada4097831482d996d5ce698fa7bf"
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lls;ID)I",
+          "access": 1,
+          "code_bytes": 897,
+          "code_sha256": "6a5bc84605f751cac5834f8c81900ce2419cf4a35e95115187de065d44584566"
+        }
+      ]
+    },
+    "dk": {
+      "class_bytes": 4154,
+      "class_sha256": "ff2ceb72f3587aea07d77d8c0650f49b2070d100caa8092dbc95b9384a0a1168",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "b",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 31,
+          "code_sha256": "a2cc554683c94e7bf136f95391b3f5fbc1f648c4b367099af2e9a8646b6509fc"
+        },
+        {
+          "name": "c",
+          "descriptor": "()V",
+          "access": 1,
+          "code_bytes": 10,
+          "code_sha256": "afbf484e117083a351432d0a9a556f4344bce2766dc3dda552101b2a11e859cd"
+        },
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8,
+          "code_bytes": 11,
+          "code_sha256": "e3a03d3e4fa4fc342cca62d0175dc1c2a4e2fa7204a68d06a4f080fbd401e643"
+        }
+      ]
+    },
+    "nw": {
+      "class_bytes": 5557,
+      "class_sha256": "2facc45feb91d0fea0c5888ac6793a87ffa6e4cdf5b0cc4e418c6c162ca8bf33",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8,
+          "code_bytes": 21,
+          "code_sha256": "f5e5ce584dcd7ec9eb419b0baa06c98fef4666440ffaa05687812c153a20f09e"
+        }
+      ]
+    },
+    "uu": {
+      "class_bytes": 17378,
+      "class_sha256": "caeaf354357d66fc168c7f03bf62bb6c6a1fe459e9be6b537d4d5d1efabd0845",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8,
+          "code_bytes": 3678,
+          "code_sha256": "77074b7960127602b17c6446e26ec3b058092fce89324f6614899ede8c28418c"
+        }
+      ]
+    },
+    "bk": {
+      "class_bytes": 3326,
+      "class_sha256": "e02f35d24f4cdd895f0969d016d35038d32fbef5fe610003f8b8aec1fa38dc82",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "(Z)V",
+          "access": 1,
+          "code_bytes": 24,
+          "code_sha256": "2f3b499b5da15860d3ba61674c30a408330dee32c9bd3898b2052cd2bc45511c"
+        }
+      ]
+    },
+    "net/minecraft/client/Minecraft": {
+      "class_bytes": 26388,
+      "class_sha256": "db99df969e5f30d01ad4424a4d63d3b1f4a11832055dd291e65d476cfa4c38b3",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "access": 8,
+          "code_bytes": 36,
+          "code_sha256": "f4371a4397b363a86d6e198c6fd58e91f08d32bb35f619ee805930f203910efa"
+        }
+      ]
+    },
+    "kq": {
+      "class_bytes": 667,
+      "class_sha256": "8ad0e039fb5636595214188cd83ac15a9cafad775802e788ccb2559ee9d4c6e5",
+      "major": 49,
+      "minor": 0,
+      "methods": []
+    }
+  }
+}

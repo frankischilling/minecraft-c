@@ -1,0 +1,6550 @@
+/* Genuine native bootstrap/menu composition with authored SDL transport events. */
+#ifndef _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+#include "../../support/java_random.h"
+#include "../world/test_load_world_foreign_loading.h"
+#include "../world/test_refresh_entity.h"
+#include "../world/test_render_global_entities.h"
+#include "../world/test_renderer_focus.h"
+#include "client/application_state.h"
+#include "client/display/sdk_input.h"
+#include "client/display/source_surface.h"
+#include "client/display/staged.h"
+#include "client/gui/display_screen.h"
+#include "client/gui/source_pause_screen.h"
+#include "client/gui/source_screen_initialize_internal.h"
+#include "client/gui/source_screen_transitions.h"
+#include "client/gui/source_screen_transitions_terminal_internal.h"
+#include "client/gui/source_world_list.h"
+#include "client/gui/source_world_selection_drawing.h"
+#include "client/gui/source_world_selection_internal.h"
+#include "client/input/mouse_helper.h"
+#include "client/render/manager/internal.h"
+#include "client/render/tile_entity_renderer/internal.h"
+#include "client/render_engine/internal.h"
+#include "client/runtime/bootstrap_terminal_internal.h"
+#include "client/runtime/gameplay_input.h"
+#include "client/runtime/menu_loop.h"
+#include "client/runtime/world_tick.h"
+#include "client/startup/application_startup.h"
+#include "client/startup/application_startup_internal.h"
+#include "client/timer/timer_internal.h"
+#include "client/window/frame.h"
+#include "client/window/frame_platform.h"
+#include "client/world/load_world.h"
+#include "client/world/load_world_terminal_internal.h"
+#include "client/world/prepare_world.h"
+#include "client/world/render_global_access.h"
+#include "client/world/render_global_internal.h"
+#include "client/world/source_chunk_compile_internal.h"
+#include "entity/entity_internal.h"
+#include "mc/block/registry/rendering.h"
+#include "mc/client/controller/singleplayer.h"
+#include "mc/client/gui/gui_ingame_draw.h"
+#include "mc/client/input/movement_input.h"
+#include "mc/client/particles/effect_renderer.h"
+#include "mc/client/settings/construction.h"
+#include "mc/client/statistics/writer.h"
+#include "mc/client/world/chunk_cache.h"
+#include "mc/client/world/held_item_draw.h"
+#include "mc/client/world/picking.h"
+#include "mc/client/world/world_frame.h"
+#include "mc/core/java/java.h"
+#include "mc/core/math/math.h"
+#include "mc/entity/living/view.h"
+#include "mc/entity/mob/construction.h"
+#include "mc/entity/nbt/nbt.h"
+#include "mc/entity/particles/particle.h"
+#include "mc/entity/player/player.h"
+#include "mc/world/runtime/block_random_display.h"
+#include "mc/world/runtime/blocks.h"
+#include "mc/world/runtime/loading/player.h"
+#include "mc/world/runtime/propagation.h"
+#include "mc/world/runtime/random_tick.h"
+#include "platform/time/millis.h"
+#include "world/chunk/object_state_internal.h"
+#include "world/runtime/chunk_provider_internal.h"
+#include "world/runtime/construction_internal.h"
+#include "world/runtime/runtime_internal.h"
+#include "world/runtime/source_construction_internal.h"
+#include "world/storage/objects_internal.h"
+
+#include <SDL3/SDL.h>
+#include <inttypes.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#endif
+
+static unsigned int checks;
+
+static bool world_dependency_reached(const mc_world_tick_state *state,
+                                     const mc_world_tick_error *error) {
+    if (state->returned && state->source_pc == 198) {
+        const mc_world_random_tick_state *random = state->random;
+        return error->status == MC_WORLD_STORAGE_OK && state->weather_returned &&
+               state->spawning_returned && state->provider_returned && state->time_stored &&
+               state->scheduled_returned && state->random_returned &&
+               state->random_chunk_count == 361 && random != NULL && random->returned &&
+               random->source_pc == 994 && random->chunk_count == 361 &&
+               random->chunks_started == 361 && random->chunks_returned == 361 &&
+               random->samples_started == 28880 && random->samples_returned == 28880 &&
+               random->error->status == MC_WORLD_STORAGE_OK;
+    }
+    mc_entity_snapshot entity;
+    mc_mob_state mob;
+    if (!state->first_constructor.captured || state->spawn_constructors == 0 ||
+        state->spawn_constructors != state->spawn_predicates ||
+        !state->spawn_eligibility_returned || !state->spawn_constructed ||
+        !state->spawn_positioned || state->spawn_entity == NULL ||
+        mc_entity_get_snapshot(state->spawn_entity, &entity) != MC_ENTITY_OK ||
+        !mc_mob_inspect(state->spawn_entity, &mob) || entity.phase != MC_ENTITY_READY ||
+        entity.base.world != state->world || !error->native_policy)
+        return false;
+    mc_entity_snapshot jockey;
+    return state->source_pc == 80 && error->child == MC_WORLD_TICK_CHILD_SPAWNING &&
+           error->child_bytecode == 845 && state->spawn_postspawn_pc == 56 &&
+           state->spawn_eligible && state->spawn_publication_returned &&
+           mob.kind == MC_ENTITY_CLASS_KIND_SPIDER && state->spawn_jockey != NULL &&
+           mc_entity_get_snapshot(state->spawn_jockey, &jockey) == MC_ENTITY_OK &&
+           jockey.phase == MC_ENTITY_READY && jockey.base.world == state->world;
+}
+
+static bool loaded_draw_reached(const mc_client_menu_loop_state *source) {
+    if (source->world_draws == 0 || source->hud_draws != source->world_draws ||
+        !source->render_clock_stored)
+        return false;
+    if (!source->failed)
+        return source->render_returned;
+    return source->source_class != NULL && strcmp(source->source_class, "oz") == 0 &&
+           source->source_method != NULL && strcmp(source->source_method, "a") == 0 &&
+           source->source_pc == 22;
+}
+
+/* Passive verification of an exact retained N/TH invocation and its canonical
+ * Map entry. Returning Sheep frames use copied receipts below instead. */
+static const char *mob_renderer_class(mc_entity_class_kind kind) {
+    switch (kind) {
+        case MC_ENTITY_CLASS_KIND_SPIDER:
+            return "yx";
+        case MC_ENTITY_CLASS_KIND_PIG:
+            return "me";
+        case MC_ENTITY_CLASS_KIND_SHEEP:
+            return "xy";
+        case MC_ENTITY_CLASS_KIND_COW:
+            return "va";
+        case MC_ENTITY_CLASS_KIND_WOLF:
+            return "we";
+        case MC_ENTITY_CLASS_KIND_CHICKEN:
+            return "ip";
+        case MC_ENTITY_CLASS_KIND_CREEPER:
+            return "m";
+        case MC_ENTITY_CLASS_KIND_SKELETON:
+        case MC_ENTITY_CLASS_KIND_ZOMBIE:
+            return "v";
+        case MC_ENTITY_CLASS_KIND_SLIME:
+            return "mj";
+        case MC_ENTITY_CLASS_KIND_SQUID:
+            return "es";
+        default:
+            return NULL;
+    }
+}
+
+/* The returned empty-hand draw has run RA.a's real TH superclass lookup:
+ * dc adds one canonical key at TH.a(Class)28 and shares the existing gs/DS
+ * owner. Its 28 constructor keys and distinct renderer owners remain intact. */
+static bool client_renderer_roster(const client_application *app,
+                                   mc_client_render_manager *receiver,
+                                   const mc_client_manager_state *manager) {
+    static const struct {
+        mc_entity_class_kind kind;
+        const char *renderer;
+    } constructed[] = {{MC_ENTITY_CLASS_KIND_SPIDER, "yx"},
+                       {MC_ENTITY_CLASS_KIND_PIG, "me"},
+                       {MC_ENTITY_CLASS_KIND_SHEEP, "xy"},
+                       {MC_ENTITY_CLASS_KIND_COW, "va"},
+                       {MC_ENTITY_CLASS_KIND_WOLF, "we"},
+                       {MC_ENTITY_CLASS_KIND_CHICKEN, "ip"},
+                       {MC_ENTITY_CLASS_KIND_CREEPER, "m"},
+                       {MC_ENTITY_CLASS_KIND_SKELETON, "v"},
+                       {MC_ENTITY_CLASS_KIND_ZOMBIE, "v"},
+                       {MC_ENTITY_CLASS_KIND_SLIME, "mj"},
+                       {MC_ENTITY_CLASS_KIND_PLAYER, "ds"},
+                       {MC_ENTITY_CLASS_KIND_GIANT, "yg"},
+                       {MC_ENTITY_CLASS_KIND_GHAST, "pq"},
+                       {MC_ENTITY_CLASS_KIND_SQUID, "es"},
+                       {MC_ENTITY_CLASS_KIND_LIVING_ENTITY, "gv"},
+                       {MC_ENTITY_CLASS_KIND_ENTITY, "mb"},
+                       {MC_ENTITY_CLASS_KIND_PAINTING, "dy"},
+                       {MC_ENTITY_CLASS_KIND_ARROW, "mc"},
+                       {MC_ENTITY_CLASS_KIND_SNOWBALL, "dg"},
+                       {MC_ENTITY_CLASS_KIND_VV, "dg"},
+                       {MC_ENTITY_CLASS_KIND_CF, "kl"},
+                       {MC_ENTITY_CLASS_KIND_ITEM, "bb"},
+                       {MC_ENTITY_CLASS_KIND_PRIMED_TNT, "on"},
+                       {MC_ENTITY_CLASS_KIND_FALLING_SAND, "gn"},
+                       {MC_ENTITY_CLASS_KIND_MINECART, "tb"},
+                       {MC_ENTITY_CLASS_KIND_BOAT, "fe"},
+                       {MC_ENTITY_CLASS_KIND_LX, "pl"},
+                       {MC_ENTITY_CLASS_KIND_C, "pi"}};
+
+    enum { constructor_count = sizeof(constructed) / sizeof(constructed[0]) };
+
+    _Static_assert(constructor_count == 28, "actual TH constructor roster");
+    mc_client_managed_renderer *owners[constructor_count] = {0};
+    mc_client_managed_renderer *player = NULL, *cached = NULL;
+    size_t cached_keys = 0;
+    if (manager->entries != constructor_count + 1 || manager->completed_bw_stores != 28 ||
+        manager->last_put_pc != 28 || !mc_entity_is_kind(app->h, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER))
+        return false;
+    for (size_t row = 0; row < manager->entries; ++row) {
+        const mc_entity_class_literal *key = NULL, *canonical = NULL;
+        mc_client_managed_renderer *renderer = NULL;
+        mc_entity_class_literal_view literal;
+        mc_client_managed_renderer_state state;
+        if (mc_client_render_manager_entry(receiver, row, &key, &renderer, NULL) !=
+                MC_CLIENT_MANAGER_OK ||
+            mc_entity_class_literal_inspect(key, &literal) != MC_ENTITY_OK ||
+            literal.owner != app->entities || literal.source != MC_ENTITY_CLIENT ||
+            mc_entity_class_literal_get(app->entities, literal.kind, &canonical) != MC_ENTITY_OK ||
+            key != canonical || renderer == NULL ||
+            !mc_client_managed_renderer_inspect(renderer, &state) || state.identity == NULL ||
+            state.phase != MC_CLIENT_MODEL_READY || state.manager != receiver ||
+            state.source_class == NULL)
+            return false;
+        if (literal.kind == MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) {
+            if (++cached_keys != 1 || key != app->h->class_literal ||
+                strcmp(state.source_class, "ds"))
+                return false;
+            cached = renderer;
+            continue;
+        }
+        size_t index = 0;
+        while (index < constructor_count && constructed[index].kind != literal.kind)
+            ++index;
+        if (index == constructor_count || owners[index] != NULL ||
+            strcmp(state.source_class, constructed[index].renderer))
+            return false;
+        for (size_t prior = 0; prior < constructor_count; ++prior)
+            if (owners[prior] == renderer)
+                return false;
+        owners[index] = renderer;
+        if (literal.kind == MC_ENTITY_CLASS_KIND_PLAYER)
+            player = renderer;
+    }
+    for (size_t index = 0; index < constructor_count; ++index)
+        if (owners[index] == NULL)
+            return false;
+    return cached_keys == 1 && cached != NULL && cached == player;
+}
+
+static mc_entity *pending_mob_render_receiver(const mc_client_menu_loop_state *source,
+                                              const client_application *app) {
+    const mc_client_world_frame_state *draw = source->world_frame;
+    if (app == NULL || app->active_world == NULL || source->source_class == NULL ||
+        strcmp(source->source_class, "n") || source->source_method == NULL ||
+        strcmp(source->source_method, "a") || source->source_pc != 516 || !source->failed ||
+        draw == NULL || draw->active || draw->returned || draw->source_pc != 510 ||
+        draw->app != app || draw->world != app->active_world || draw->owner != app->t ||
+        draw->render_global != app->g || draw->camera != app->i || !draw->terrain_returned ||
+        !draw->lighting_enabled || !draw->eye_position_returned || draw->entities_returned ||
+        draw->entity_eye == NULL || draw->culler == NULL || draw->failure == NULL ||
+        draw->failure->status != MC_CLIENT_WORLD_FRAME_DEPENDENCY ||
+        !draw->failure->native_policy || draw->failure->site.class_name == NULL ||
+        strcmp(draw->failure->site.class_name, "n") || draw->failure->site.method == NULL ||
+        strcmp(draw->failure->site.method, "a") || draw->failure->site.pc != 516 ||
+        source->hud != NULL)
+        return NULL;
+    const mc_client_render_global_entities_state *entities = draw->entities;
+    if (entities == NULL || entities->active || entities->returned || entities->retiring ||
+        entities->delayed || !entities->ll_returned || !entities->th_returned ||
+        entities->source_pc != 516 || entities->last_store_pc != 507 ||
+        !entities->counters_cleared || !entities->origins_stored ||
+        entities->origins_written != 6 || entities->owner != app->g ||
+        entities->eye != draw->entity_eye || entities->partial != draw->partial ||
+        entities->frustum == NULL || entities->th == NULL || entities->entities_visited == 0 ||
+        entities->distance_checks == 0 || entities->presence_checks == 0 || entities->index < 0 ||
+        entities->failure == NULL || entities->failure != draw->failure->entities)
+        return NULL;
+    const mc_client_render_global_error *failure = entities->failure;
+    if (failure->status != MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY ||
+        !failure->native_policy || failure->source_class == NULL ||
+        strcmp(failure->source_class, "n") || failure->source_method == NULL ||
+        strcmp(failure->source_method, "a") || failure->source_descriptor == NULL ||
+        strcmp(failure->source_descriptor, "(Lbt;Lyn;F)V") || failure->source_pc != 516 ||
+        failure->child.class_name == NULL || strcmp(failure->child.class_name, "th") ||
+        failure->child.method == NULL || strcmp(failure->child.method, "a") ||
+        failure->child.descriptor == NULL || strcmp(failure->child.descriptor, "(Lsn;F)V") ||
+        failure->child.pc != 0)
+        return NULL;
+    const mc_world_runtime *world = app->active_world;
+    const mc_world_entity_list_ledger *ledger = &world->entity_membership;
+    const size_t index = (size_t)entities->index;
+    if (world->fields.b == NULL || world->fields.b != ledger->list ||
+        entities->entities_list != ledger->list || world->fields.b->count != ledger->count ||
+        index >= ledger->count || world->fields.b->items[index] != ledger->entries[index] ||
+        entities->current != ledger->entries[index])
+        return NULL;
+    mc_entity *entity = entities->current;
+    mc_mob_state mob;
+    if (entity == NULL || !mc_mob_inspect(entity, &mob) || entity->phase != MC_ENTITY_READY ||
+        entity->classes != world->classes->entities || entity->base.world != world ||
+        entity->base.be || !mc_entity_is_kind(entity, mob.kind))
+        return NULL;
+    const char *expected = mob_renderer_class(mob.kind);
+    mc_client_manager_state manager;
+    if (expected == NULL ||
+        !mc_client_render_manager_inspect(app->g->entity_manager_consumer.classes, &manager) ||
+        manager.phase != MC_CLIENT_MANAGER_READY || manager.a != entities->th ||
+        manager.fields.g != world || manager.living_occurrence != app->i ||
+        !client_renderer_roster(app, entities->th, &manager))
+        return NULL;
+    for (size_t row = 0; row < manager.entries; ++row) {
+        const mc_entity_class_literal *key = NULL;
+        mc_client_managed_renderer *renderer = NULL;
+        if (mc_client_render_manager_entry(entities->th, row, &key, &renderer, NULL) !=
+            MC_CLIENT_MANAGER_OK)
+            return NULL;
+        if (key != entity->class_literal)
+            continue;
+        mc_client_managed_renderer_state state;
+        return renderer != NULL && mc_client_managed_renderer_inspect(renderer, &state) &&
+                       state.identity == renderer && state.phase == MC_CLIENT_MODEL_READY &&
+                       state.manager == entities->th && state.source_class != NULL &&
+                       !strcmp(state.source_class, expected)
+                   ? entity
+                   : NULL;
+    }
+    return NULL;
+}
+
+static bool unpaused_world_reached(const mc_client_menu_loop_state *source,
+                                   const client_application *app) {
+    if (!source->failed || source->source_class == NULL || source->source_method == NULL ||
+        source->world_draws < 1 || source->hud_draws < 1 || source->world_tick == NULL ||
+        !source->world_tick->renderer_returned)
+        return false;
+    const mc_client_world_tick *call = source->world_tick;
+    if (!strcmp(source->source_class, "n") && !strcmp(source->source_method, "a") &&
+        source->source_pc == 516) {
+        const mc_world_random_display_state *display = &call->ambience_state;
+        const mc_world_tick_state *scheduler = &call->scheduler_state;
+        /* Native child retirement has ended the random call views. These
+         * producer-owned scalar receipts were captured before that cleanup. */
+        return call->returned && !call->failed && call->site.pc == 1328 &&
+               call->render_global_returned && call->entities_returned && scheduler->returned &&
+               scheduler->source_pc == 198 && scheduler->weather_returned &&
+               scheduler->spawning_returned && scheduler->provider_returned &&
+               scheduler->time_stored && scheduler->scheduled_returned &&
+               scheduler->random_returned && scheduler->random_chunk_count == 361 &&
+               call->scheduler_error.status == MC_WORLD_STORAGE_OK && call->scheduler == NULL &&
+               scheduler->random == NULL && call->ambience == NULL &&
+               call->ambience_error.status == MC_WORLD_STORAGE_OK && display->returned &&
+               display->source_pc == 134 && display->samples_started == 1000 &&
+               display->samples_returned == 1000 && display->world_random_calls == 6000 &&
+               source->random_chunk_calls > 0 && source->last_random_chunk_count == 361 &&
+               source->random_chunk_samples == source->random_chunk_calls * UINT64_C(28880) &&
+               source->random_display_calls == source->random_chunk_calls &&
+               source->random_display_samples == source->random_display_calls * UINT64_C(1000) &&
+               source->random_display_random_calls ==
+                   source->random_display_calls * UINT64_C(6000) &&
+               pending_mob_render_receiver(source, app) != NULL;
+    }
+    return call->failed && call->entities_returned &&
+           world_dependency_reached(&call->scheduler_state, &call->scheduler_error) &&
+           strcmp(source->source_class, "fd") == 0 && strcmp(source->source_method, "l") == 0 &&
+           source->source_pc == 80 && source->world_frame == NULL && source->hud == NULL;
+}
+
+#define CHECK(condition)                                                                           \
+    do {                                                                                           \
+        ++checks;                                                                                  \
+        if (!(condition)) {                                                                        \
+            fprintf(stderr, "World selection loop check%u at%d: %s\n", checks, __LINE__,           \
+                    #condition);                                                                   \
+            return 1;                                                                              \
+        }                                                                                          \
+    } while (0)
+
+typedef struct fixture {
+    mc_client_bootstrap *bootstrap;
+    client_application *app;
+    mc_client_menu_loop *loop;
+    mc_client_menu_loop_state state;
+    uintptr_t repeat_sheep_identity; /* Borrowed identity; World/Chunk own the live Entity. */
+    uintptr_t animal_identity; /* Independent actor profile; World/Chunk publication ownership. */
+    /* Authored session fault input, independent of every source/native owner.
+     * Its bounded path copy survives SDL environment and bootstrap teardown. */
+    char save_title_session_path[8192];
+    uint8_t save_title_session_token[8];
+    bool save_title_session_authored;
+} fixture;
+
+/* This continuation uses an existing-player statistic read by the genuine
+ * pre-bootstrap CJ constructor. The fresh absent-entry tutorial has its own
+ * retained vu.a108 draw dependency and is not a Mob-rendering success. */
+#ifndef MC_WORLD_SELECTION_OPEN_INVENTORY_EXPECTED
+#define MC_WORLD_SELECTION_OPEN_INVENTORY_EXPECTED(initial) 1
+#endif
+static int repeat_statistics_controls(fixture *f, bool initial) {
+#ifdef MC_WORLD_SELECTION_STATISTICS_CONTROLS
+    return MC_WORLD_SELECTION_STATISTICS_CONTROLS(f, initial);
+#else
+    mc_registry_achievement_view achievements;
+    CHECK(f->app->stats_writer != NULL && f->app->achievement_notice != NULL &&
+          mc_registry_classes_inspect_achievements(f->app->registry, &achievements, NULL) ==
+              MC_REGISTRY_OK &&
+          achievements.named != NULL && achievements.named[0] != NULL);
+    const mc_statistic *inventory = achievements.named[0]; /* Actual ep.f. */
+    const mc_statistic_fields *fields = mc_statistic_fields_get(inventory);
+    CHECK(fields != NULL && fields->e == 5242880 &&
+          mc_statistic_kind_get(inventory) == MC_STATISTIC_ACHIEVEMENT);
+    bool present = false;
+    int32_t value = 0;
+    CHECK(mc_client_stats_writer_contains(f->app->stats_writer, inventory, &present, NULL) ==
+              MC_CLIENT_STATS_OK &&
+          present &&
+          mc_client_stats_writer_value(f->app->stats_writer, inventory, &value, NULL) ==
+              MC_CLIENT_STATS_OK &&
+          value == MC_WORLD_SELECTION_OPEN_INVENTORY_EXPECTED(initial));
+    if (initial) {
+        /* CJ loads the real unsent Map through xi.a(Map): its c store at7 sets
+         * dirty before applying the entries to both actual Maps. */
+        mc_client_stats_state state;
+        CHECK(mc_client_stats_writer_read_state(f->app->stats_writer, &state) &&
+              state.phase == MC_CLIENT_STATS_READY && state.total_count == 1 &&
+              state.unsent_count == 1 && state.dirty);
+    }
+    const mc_client_achievement_notice_fields *notice =
+        mc_client_achievement_notice_fields_get(f->app->achievement_notice);
+    CHECK(notice != NULL && notice->a == f->app && notice->f == NULL && notice->g == 0 &&
+          !notice->i && notice->d == NULL && notice->e == NULL);
+    return 0;
+#endif
+}
+
+/* Declared native caller input after a completely returned loaded frame. The
+ * saved Chunks still contain no serialized Entities: Mob NBT loading remains
+ * a separate dependency. Construct/publish a real Sheep without selecting its
+ * private entropy, editing containers, or moving the actual camera/Player. */
+static int repeat_sheep_input(fixture *f) {
+    mc_world_runtime *world = f->app->active_world;
+    mc_entity *player = f->app->i;
+    CHECK(world != NULL && player == f->app->h && f->app->r == NULL && !f->state.failed &&
+          f->state.render_returned && f->state.world_frame != NULL &&
+          f->state.world_frame->returned && f->repeat_sheep_identity == 0 &&
+          mc_entity_is_kind(player, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
+          player->base.world == world && player->classes == world->classes->entities &&
+          world->fields.r != NULL);
+
+    struct sheep_input_work {
+        mc_entity_view_error view;
+        mc_mob_error constructor;
+        mc_world_light_error height;
+        mc_world_entity_error publication;
+    } *work = calloc(1, sizeof(*work));
+
+    CHECK(work != NULL);
+    const double player_x = player->base.x, player_y = player->base.y, player_z = player->base.z;
+    const float player_yaw = player->base.yaw, player_pitch = player->base.aT;
+    const mc_java_random world_random = *world->fields.r;
+    mc_entity_vector *eye = NULL, *look = NULL;
+    CHECK(mc_entity_living_position(player, 1.0f, &eye, &work->view) == MC_ENTITY_VIEW_OK &&
+          mc_entity_living_look_current(player, mc_client_bootstrap_math(f->bootstrap), &look,
+                                        &work->view) == MC_ENTITY_VIEW_OK &&
+          eye != NULL && look != NULL && look->y > -.25 && look->y < .25);
+    const double x = eye->x + look->x * 6.0, z = eye->z + look->z * 6.0;
+    CHECK(mc_entity_vector_release(player->classes, look) == MC_ENTITY_OK &&
+          mc_entity_vector_release(player->classes, eye) == MC_ENTITY_OK);
+    const int32_t block_x = mc_math_floor_double(x), block_z = mc_math_floor_double(z);
+    int32_t height = 0, air = -1;
+    mc_world_storage_error error;
+    CHECK(mc_world_runtime_height(world, block_x, block_z, &height, &work->height) ==
+              MC_WORLD_STORAGE_OK &&
+          height == 64 &&
+          mc_world_runtime_block_get(world, block_x, height, block_z, &air, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          air == 0 &&
+          mc_world_runtime_block_get(world, block_x, height + 1, block_z, &air, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          air == 0);
+    const mc_entity_class_literal *literal = NULL;
+    mc_entity *sheep = NULL;
+    CHECK(mc_entity_class_literal_get(player->classes, MC_ENTITY_CLASS_KIND_SHEEP, &literal) ==
+              MC_ENTITY_OK &&
+          mc_mob_allocate(player->classes, f->app->registry, literal, &sheep, &work->constructor) ==
+              MC_MOB_OK &&
+          sheep != NULL && mc_mob_construct(sheep, world, &work->constructor) == MC_MOB_OK &&
+          sheep->phase == MC_ENTITY_READY && sheep->classes == player->classes &&
+          sheep->class_literal == literal && sheep->base.world == world && sheep->bounds != NULL);
+    CHECK(mc_entity_set_position(sheep, x, (double)height, z) == MC_ENTITY_OK &&
+          sheep->base.x == x && sheep->base.y == (double)height && sheep->base.z == z &&
+          sheep->bounds->min_y == (double)height && sheep->bounds->max_y > sheep->bounds->min_y &&
+          sheep->bounds->min_x < x && sheep->bounds->max_x > x && sheep->bounds->min_z < z &&
+          sheep->bounds->max_z > z);
+    const size_t before = world->entity_membership.count;
+    bool inserted = false;
+    CHECK(mc_world_runtime_insert_entity(world, sheep, &inserted, &work->publication) ==
+              MC_WORLD_STORAGE_OK &&
+          inserted && sheep->base.bF && world->fields.b == world->entity_membership.list &&
+          world->fields.b->count == before + 1 && world->entity_membership.count == before + 1 &&
+          world->fields.b->items[before] == sheep &&
+          world->entity_membership.entries[before] == sheep);
+    mc_chunk_state *chunk_state = NULL;
+    CHECK(mc_world_runtime_get(world, sheep->base.bG, sheep->base.bI, &chunk_state) ==
+              MC_CHUNK_ACQUIRE_OK &&
+          chunk_state != NULL && !chunk_state->blank);
+    mc_world_chunk *chunk = mc_world_store_chunk_object(world->fields.w, chunk_state);
+    mc_world_chunk_fields chunk_fields;
+    const mc_world_chunk_entity_list *slice = NULL;
+    size_t count = 0, occurrences = 0;
+    CHECK(chunk != NULL && mc_world_chunk_fields_get(chunk, &chunk_fields) == MC_WORLD_STORAGE_OK &&
+          chunk_fields.d == world && chunk_fields.j == sheep->base.bG &&
+          chunk_fields.k == sheep->base.bI && chunk_fields.q && sheep->base.bH == 4 &&
+          mc_world_chunk_slice_at(chunk_fields.m, (size_t)sheep->base.bH, &slice) ==
+              MC_WORLD_STORAGE_OK &&
+          mc_world_chunk_entity_count(slice, &count) == MC_WORLD_STORAGE_OK);
+    for (size_t index = 0; index < count; ++index) {
+        mc_entity *entry = NULL;
+        CHECK(mc_world_chunk_entity_at(slice, index, &entry) == MC_WORLD_STORAGE_OK);
+        if (entry == sheep)
+            ++occurrences;
+    }
+    CHECK(occurrences == 1 && sheep->holds >= 3 && player->base.x == player_x &&
+          player->base.y == player_y && player->base.z == player_z &&
+          player->base.yaw == player_yaw && player->base.aT == player_pitch &&
+          mc_test_java_random_equal(&world_random, world->fields.r));
+    f->repeat_sheep_identity = (uintptr_t)sheep;
+    const size_t holds = sheep->holds;
+    mc_entity_release(sheep); /* End only this genuine constructor occurrence. */
+    sheep = NULL;
+    mc_entity *published = world->entity_membership.entries[before];
+    CHECK((uintptr_t)published == f->repeat_sheep_identity && published->holds == holds - 1 &&
+          published->base.world == world &&
+          mc_entity_is_kind(published, MC_ENTITY_CLASS_KIND_SHEEP));
+    free(work);
+    puts("WORLD_REPEAT_ENTITY input=native-constructed-sheep pose=actual-player-look "
+         "distance=6 world-and-chunk=1 same-world-and-classes=1 constructor-returned=1 "
+         "constructor-hold-released=1 player-unchanged=1 world-random-unchanged=1");
+    return 0;
+}
+
+typedef struct repeat_render_control {
+    uintptr_t renderer, primary, secondary, parts[12];
+    int32_t lists[12];
+    size_t frames, entity_frames, delayed_frames, undrawn_frames;
+    size_t compile_parts, compile_faces, compile_vertices, reuse_parts;
+    size_t shadow_quads;
+    bool compiled, reused;
+} repeat_render_control;
+
+static mc_entity *repeat_live_sheep(const fixture *f) {
+    mc_world_runtime *world = f->app->active_world;
+    if (world == NULL || world->fields.b != world->entity_membership.list ||
+        world->fields.b->count != world->entity_membership.count)
+        return NULL;
+    for (size_t i = 0; i < world->entity_membership.count; ++i) {
+        mc_entity *entity = world->entity_membership.entries[i];
+        if (world->fields.b->items[i] != entity)
+            return NULL;
+        if ((uintptr_t)entity == f->repeat_sheep_identity)
+            return entity;
+    }
+    return NULL;
+}
+
+static int repeat_model_graph(fixture *f, repeat_render_control *control, bool compiled) {
+    mc_entity *sheep = repeat_live_sheep(f);
+    CHECK(sheep != NULL && sheep->phase == MC_ENTITY_READY && sheep->bounds != NULL &&
+          sheep->base.world == f->app->active_world && sheep->classes == f->app->entities &&
+          mc_entity_is_kind(sheep, MC_ENTITY_CLASS_KIND_SHEEP) && !sheep->base.be &&
+          sheep->base.bF);
+    mc_mob_state mob;
+    CHECK(mc_mob_inspect(sheep, &mob) && mob.kind == MC_ENTITY_CLASS_KIND_SHEEP &&
+          mob.constructor_pc == 19);
+    mc_client_manager_state manager;
+    CHECK(mc_client_render_manager_inspect(f->app->startup->manager_classes, &manager) &&
+          manager.phase == MC_CLIENT_MANAGER_READY && manager.a != NULL &&
+          client_renderer_roster(f->app, (mc_client_render_manager *)manager.a, &manager));
+    mc_client_managed_renderer *renderer = NULL;
+    for (size_t i = 0; i < manager.entries; ++i) {
+        const mc_entity_class_literal *key = NULL;
+        mc_client_managed_renderer *owner = NULL;
+        CHECK(mc_client_render_manager_entry((mc_client_render_manager *)manager.a, i, &key, &owner,
+                                             NULL) == MC_CLIENT_MANAGER_OK);
+        if (key == sheep->class_literal)
+            renderer = owner;
+    }
+    mc_client_managed_renderer_state state;
+    CHECK(renderer != NULL && mc_client_managed_renderer_inspect(renderer, &state) &&
+          state.phase == MC_CLIENT_MODEL_READY && state.identity == renderer &&
+          state.manager == manager.a && state.source_class != NULL &&
+          strcmp(state.source_class, "xy") == 0 && state.primary == renderer->primary &&
+          state.secondary == renderer->secondary && renderer->primary != NULL &&
+          renderer->secondary != NULL && renderer->primary != renderer->secondary);
+    manager_model *models[] = {renderer->primary, renderer->secondary};
+    CHECK(models[0]->phase == MC_CLIENT_MODEL_READY && !strcmp(models[0]->source_class, "mw") &&
+          models[1]->phase == MC_CLIENT_MODEL_READY && !strcmp(models[1]->source_class, "ea"));
+    if (control->renderer == 0) {
+        control->renderer = (uintptr_t)renderer;
+        control->primary = (uintptr_t)models[0];
+        control->secondary = (uintptr_t)models[1];
+    }
+    CHECK(control->renderer == (uintptr_t)renderer && control->primary == (uintptr_t)models[0] &&
+          control->secondary == (uintptr_t)models[1]);
+    for (size_t m = 0; m < 2; ++m) {
+        mc_client_model_part *parts[] = {models[m]->fields.d, models[m]->fields.e,
+                                         models[m]->fields.f, models[m]->fields.g,
+                                         models[m]->fields.h, models[m]->fields.i};
+        for (size_t i = 0; i < 6; ++i) {
+            const size_t index = m * 6u + i;
+            mc_client_model_part *part = parts[i];
+            CHECK(part != NULL && part->h && !part->i && part->n == compiled);
+            if (control->parts[index] == 0)
+                control->parts[index] = (uintptr_t)part;
+            CHECK(control->parts[index] == (uintptr_t)part);
+            for (size_t prior = 0; prior < index; ++prior)
+                CHECK(control->parts[prior] != (uintptr_t)part);
+            if (compiled) {
+                mc_client_source_list_state list;
+                CHECK(part->o > 0 &&
+                      mc_client_display_list_inspect(f->app->display, part->o, &list) &&
+                      list.defined && !list.building && list.draws == 6 && list.vertices == 36);
+                /* TZ supplies four vertices per face. Actual NW.b=true copies
+                 * two more and records six triangle vertices in each batch. */
+                for (size_t face = 0; face < 6; ++face) {
+                    mc_client_source_batch_view batch;
+                    CHECK(mc_client_display_list_batch(f->app->display, part->o, face, &batch) &&
+                          batch.mode == 4 && batch.vertices == 6 && batch.byte_count == 192);
+                }
+                if (control->lists[index] == 0)
+                    control->lists[index] = part->o;
+                CHECK(control->lists[index] == part->o);
+                for (size_t prior = 0; prior < index; ++prior)
+                    CHECK(control->lists[prior] != part->o);
+            } else {
+                CHECK(part->o == 0);
+            }
+        }
+    }
+    if (compiled) {
+        CHECK(manager.fields.g == f->app->active_world && manager.living_occurrence == f->app->i &&
+              manager.fields.k == f->app->settings && sheep->base.bt > 0);
+    }
+    return 0;
+}
+
+static bool repeat_world_work(const mc_client_menu_loop_state *source) {
+    const mc_client_world_tick *call = source->world_tick;
+    if (call == NULL)
+        return false;
+    const mc_world_tick_state *scheduler = &call->scheduler_state;
+    const mc_world_random_display_state *display = &call->ambience_state;
+    return call->returned && !call->failed && call->site.pc == 1328 && call->renderer_returned &&
+           call->render_global_returned && call->entities_returned && scheduler->returned &&
+           scheduler->source_pc == 198 && scheduler->weather_returned &&
+           scheduler->spawning_returned && scheduler->provider_returned && scheduler->time_stored &&
+           scheduler->scheduled_returned && scheduler->random_returned &&
+           scheduler->random_chunk_count == 361 &&
+           call->scheduler_error.status == MC_WORLD_STORAGE_OK && call->scheduler == NULL &&
+           scheduler->random == NULL && call->ambience == NULL &&
+           call->ambience_error.status == MC_WORLD_STORAGE_OK && display->returned &&
+           display->source_pc == 134 && display->samples_started == 1000 &&
+           display->samples_returned == 1000 && display->world_random_calls == 6000 &&
+           source->world_tick_returns > 0 && source->random_chunk_calls > 0 &&
+           source->last_random_chunk_count == 361 &&
+           source->random_chunk_samples == source->random_chunk_calls * UINT64_C(28880) &&
+           source->random_display_calls == source->random_chunk_calls &&
+           source->random_display_samples == source->random_display_calls * UINT64_C(1000) &&
+           source->random_display_random_calls == source->random_display_calls * UINT64_C(6000);
+}
+
+/* Failure-only OS observations. Never pump events, request focus, inspect
+ * window titles or change source/SDK state while identifying the real owner. */
+static void native_focus_receipt(fixture *f, const char *stage) {
+#ifdef _WIN32
+    SDL_Window *canvas = mc_client_display_window(f->app->display);
+    mc_client_source_frame *frame = mc_client_bootstrap_frame(f->bootstrap);
+    mc_client_frame_state host = {0};
+    SDL_Window *parent =
+        frame != NULL && mc_client_source_frame_inspect(frame, &host) ? host.frame_window : NULL;
+    HWND canvas_hwnd = canvas == NULL
+                           ? NULL
+                           : SDL_GetPointerProperty(SDL_GetWindowProperties(canvas),
+                                                    SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
+    HWND frame_hwnd = parent == NULL
+                          ? NULL
+                          : SDL_GetPointerProperty(SDL_GetWindowProperties(parent),
+                                                   SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
+    const HWND foreground = GetForegroundWindow(), focus = GetFocus(), active = GetActiveWindow();
+    DWORD foreground_pid = 0;
+    const DWORD foreground_thread =
+        foreground == NULL ? 0 : GetWindowThreadProcessId(foreground, &foreground_pid);
+    GUITHREADINFO gui = {0};
+    gui.cbSize = (DWORD)sizeof(gui);
+    const bool gui_read = foreground_thread != 0 && GetGUIThreadInfo(foreground_thread, &gui);
+    char class_name[128] = "unavailable", image[1024];
+    if (foreground != NULL && GetClassNameA(foreground, class_name, (int)sizeof(class_name)) == 0)
+        memcpy(class_name, "unavailable", sizeof("unavailable"));
+    const char *process_name = "unavailable";
+    HANDLE process = foreground_pid == 0
+                         ? NULL
+                         : OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, foreground_pid);
+    if (process != NULL) {
+        DWORD size = (DWORD)sizeof(image);
+        if (QueryFullProcessImageNameA(process, 0, image, &size)) {
+            process_name = strrchr(image, '\\');
+            process_name = process_name == NULL ? image : process_name + 1;
+        }
+        CloseHandle(process);
+    }
+    SDL_Window *keyboard = SDL_GetKeyboardFocus();
+    fprintf(stderr,
+            "WORLD_NATIVE_FOCUS stage=%s pid=%lu thread=%lu foreground=%p foreground-pid=%lu "
+            "foreground-thread=%lu foreground-class=\"%s\" foreground-process=\"%s\" "
+            "foreground-stable=%d gui-read=%d gui-active=%p gui-focus=%p gui-capture=%p "
+            "thread-focus=%p thread-active=%p frame=%p canvas=%p canvas-root=%p canvas-parent=%p "
+            "frame-visible=%d frame-iconic=%d canvas-visible=%d canvas-iconic=%d "
+            "canvas-style=%" PRIx64 " frame-flags=%" PRIx64 " canvas-flags=%" PRIx64
+            " sdl-keyboard=%" PRIu32 " frame-id=%" PRIu32 " canvas-id=%" PRIu32 "\n",
+            stage, (unsigned long)GetCurrentProcessId(), (unsigned long)GetCurrentThreadId(),
+            (void *)foreground, (unsigned long)foreground_pid, (unsigned long)foreground_thread,
+            class_name, process_name, GetForegroundWindow() == foreground, gui_read,
+            (void *)gui.hwndActive, (void *)gui.hwndFocus, (void *)gui.hwndCapture, (void *)focus,
+            (void *)active, (void *)frame_hwnd, (void *)canvas_hwnd,
+            canvas_hwnd == NULL ? NULL : (void *)GetAncestor(canvas_hwnd, GA_ROOT),
+            canvas_hwnd == NULL ? NULL : (void *)GetParent(canvas_hwnd),
+            frame_hwnd != NULL && IsWindowVisible(frame_hwnd),
+            frame_hwnd != NULL && IsIconic(frame_hwnd),
+            canvas_hwnd != NULL && IsWindowVisible(canvas_hwnd),
+            canvas_hwnd != NULL && IsIconic(canvas_hwnd),
+            canvas_hwnd == NULL ? UINT64_C(0)
+                                : (uint64_t)(uintptr_t)GetWindowLongPtrW(canvas_hwnd, GWL_STYLE),
+            parent == NULL ? UINT64_C(0) : (uint64_t)SDL_GetWindowFlags(parent),
+            canvas == NULL ? UINT64_C(0) : (uint64_t)SDL_GetWindowFlags(canvas),
+            keyboard == NULL ? 0u : SDL_GetWindowID(keyboard),
+            parent == NULL ? 0u : SDL_GetWindowID(parent),
+            canvas == NULL ? 0u : SDL_GetWindowID(canvas));
+#else
+    (void)f;
+    (void)stage;
+#endif
+}
+
+/* This immutable-save profile observes focused gameplay frames only. A
+ * returned World/HUD draw can also have a later real OZ overlay, whose draw
+ * saves source data. Such a frame must fail this profile rather than receive
+ * model/reuse credit or be resumed after its source writes have occurred. */
+static int repeat_focus_state(fixture *f, const char *stage) {
+    mc_client_sdk_update_error update;
+    mc_client_sdk_input_state input;
+    bool active = false;
+    CHECK(mc_client_sdk_display_active(mc_client_display_update_owner(f->app->display), &active,
+                                       &update) == MC_CLIENT_SDK_UPDATE_OK &&
+          mc_client_sdk_input_inspect(mc_client_display_inputs(f->app->display), &input));
+    const bool keyboard = SDL_GetKeyboardFocus() == mc_client_display_window(f->app->display);
+    const bool focused = f->app->r == NULL && f->app->N && !atomic_load(&f->app->o) && active &&
+                         keyboard && input.grabbed;
+    if (!focused) {
+        native_focus_receipt(f, stage);
+        fprintf(stderr,
+                "WORLD_REPEAT_FOCUS_FAILURE stage=%s screen=%d source-focus=%d paused=%d "
+                "display-active=%d keyboard-focus=%d sdk-grab=%d frames=%" PRIu64 " ticks=%" PRIu64
+                " source=%s.%s:%" PRId64 " operation=%s\n",
+                stage, f->app->r == NULL ? -1 : (int)f->app->r->kind, f->app->N,
+                atomic_load(&f->app->o), active, keyboard, input.grabbed, f->state.frames,
+                f->state.ticks, f->state.source_class == NULL ? "none" : f->state.source_class,
+                f->state.source_method == NULL ? "none" : f->state.source_method,
+                f->state.source_pc, f->state.operation == NULL ? "none" : f->state.operation);
+    }
+    CHECK(focused);
+    return 0;
+}
+
+static int repeat_returned_frame(fixture *f, repeat_render_control *control) {
+    CHECK(repeat_focus_state(f, "returned-frame") == 0);
+    const mc_client_menu_loop_state *source = &f->state;
+    const mc_client_world_frame_state *frame = source->world_frame;
+    const mc_client_gui_ingame_draw_state *hud = source->hud;
+    CHECK(!source->failed && source->running && source->render_returned &&
+          source->render_clock_stored && source->world_draws > 0 &&
+          source->world_draws == source->hud_draws && frame != NULL && !frame->active &&
+          frame->returned && frame->source_pc == 1013 && frame->app == f->app &&
+          frame->world == f->app->active_world && frame->owner == f->app->t &&
+          frame->camera == f->app->i && frame->render_global == f->app->g &&
+          frame->failure != NULL && frame->failure->status == MC_CLIENT_WORLD_FRAME_OK &&
+          frame->failure->entities == NULL && frame->failure->hand == NULL);
+    CHECK(frame->picking_returned && frame->viewport_set && frame->fog_returned &&
+          frame->camera_returned && frame->frustum_returned && frame->sky_returned &&
+          frame->updates_returned && frame->terrain_returned && frame->lighting_enabled &&
+          frame->eye_position_returned && frame->entities_returned &&
+          frame->lit_particles_returned && frame->sprite_particles_returned &&
+          frame->translucent_returned && frame->translucent_state_restored &&
+          frame->precipitation_returned && frame->clouds_returned && frame->hand_returned &&
+          frame->hand != NULL && frame->hand->returned && frame->hand->source_pc == 163 &&
+          frame->hand->held_returned && frame->hand->overlays_returned &&
+          frame->tail_anaglyph_read && !frame->tail_anaglyph);
+    CHECK(hud != NULL && !hud->active && hud->returned && hud->source_pc == 2101 &&
+          hud->projection_returned && hud->hotbar_returned && hud->crosshair_returned &&
+          hud->stats_returned && hud->slots_returned && hud->empty_slots == 9 &&
+          hud->chat_returned && hud->owner == NULL && hud->failure == NULL && hud->cleanup == NULL);
+    const mc_client_render_global_entities_state *entities = frame->entities;
+    CHECK(entities != NULL && !entities->active && entities->returned && !entities->retiring &&
+          entities->draw == NULL && entities->owner == NULL && entities->current == NULL &&
+          entities->entities_list == NULL && entities->eye == NULL && entities->frustum == NULL &&
+          entities->ll == NULL && entities->th == NULL && entities->failure == NULL &&
+          entities->cleanup == NULL);
+    ++control->frames;
+    if (entities->delayed) {
+        CHECK(entities->source_pc == 17 && entities->draws_attempted == 0 &&
+              !entities->first_entity_draw.valid && !control->compiled);
+        ++control->delayed_frames;
+        return 0;
+    }
+    CHECK(
+        entities->source_pc == 569 && entities->ll_returned && entities->th_returned &&
+        entities->counters_cleared && entities->origins_stored && entities->origins_written == 6 &&
+        entities->entities_visited == f->app->active_world->entity_membership.count &&
+        entities->entities_visited >= 2 && entities->distance_checks == entities->entities_visited);
+    if (entities->draws_attempted == 0) {
+        /* The initial real traversal can cull the unticked Sheep at its zero
+         * interpolated pose. It consumes frame budget, never an Entity draw. */
+        mc_entity *sheep = repeat_live_sheep(f);
+        CHECK(sheep != NULL && sheep->base.bt == 0 && !control->compiled &&
+              f->app->active_world->entity_membership.count == 2 &&
+              entities->entities_visited == 2 && entities->distance_checks == 2 &&
+              entities->frustum_checks == 2 && entities->camera_skips == 1 &&
+              entities->presence_checks == 0 && entities->draws_returned == 0 &&
+              entities->draws_retired == 0 && entities->entity_draws_returned == 0 &&
+              entities->weather_draws_returned == 0 && !entities->first_entity_draw.valid &&
+              !entities->last_draw.valid && entities->model_parts_compiled == 0 &&
+              entities->model_faces == 0 && entities->model_vertices == 0 &&
+              entities->shadow_quads == 0 && f->app->r == NULL && !atomic_load(&f->app->o));
+        CHECK(repeat_model_graph(f, control, false) == 0);
+        ++control->undrawn_frames;
+        return 0;
+    }
+    CHECK(entities->presence_checks >= 1 && entities->draws_attempted == entities->draws_returned &&
+          entities->draws_returned == entities->draws_retired &&
+          entities->entity_draws_returned > 0);
+    const mc_client_render_global_draw_receipt *draw = &entities->first_entity_draw;
+    mc_entity *sheep = repeat_live_sheep(f);
+    CHECK(sheep != NULL && repeat_world_work(source) && draw->valid && draw->returned &&
+          draw->retired && !draw->post_only && draw->n_invoke_pc == 516 &&
+          draw->th_source_pc == 115 && draw->living_source_pc == 769 &&
+          draw->post_draw_source_pc == 100 && draw->actor_identity == f->repeat_sheep_identity &&
+          draw->actor_class_identity == (uintptr_t)sheep->class_literal &&
+          draw->actor_kind == MC_ENTITY_CLASS_KIND_SHEEP && draw->actor_class_name != NULL &&
+          !strcmp(draw->actor_class_name, "dl") && draw->renderer_identity == control->renderer &&
+          draw->renderer_class_name != NULL && !strcmp(draw->renderer_class_name, "xy") &&
+          draw->primary_returned && draw->post_draw_returned && draw->primary_event_returned);
+    CHECK(draw->primary_model.identity == control->primary &&
+          draw->primary_model.class_name != NULL && !strcmp(draw->primary_model.class_name, "mw") &&
+          draw->primary_model.returned && draw->primary_model.source_pc == 67 &&
+          draw->primary_model.part_calls == 6 && draw->primary_model.part_returns == 6 &&
+          draw->secondary_model.identity == control->secondary &&
+          draw->secondary_model.class_name != NULL &&
+          !strcmp(draw->secondary_model.class_name, "ea") && draw->secondary_model.returned &&
+          draw->secondary_model.source_pc == 67 && draw->secondary_model.part_calls == 6 &&
+          draw->secondary_model.part_returns == 6);
+    for (size_t i = 0; i < 4; ++i)
+        CHECK(draw->pass_attempted[i] && draw->pass_result[i] == (i == 0) &&
+              draw->pass_render_returned[i] == (i == 0));
+    CHECK(draw->shadow_quads > 0 && draw->shadow_vertices == draw->shadow_quads * 4 &&
+          draw->shadow_block_queries > 0 && draw->shadow_light_queries > 0 &&
+          draw->shadow_normal_queries >= draw->shadow_quads &&
+          draw->shadow_brightness_queries >= draw->shadow_quads);
+    if (!control->compiled) {
+        CHECK(draw->model_parts_compiled == 12 && draw->primary_model.compiled_parts == 6 &&
+              draw->secondary_model.compiled_parts == 6 && draw->model_faces == 72 &&
+              draw->model_vertices == 288);
+        control->compile_parts = draw->model_parts_compiled;
+        control->compile_faces = draw->model_faces;
+        control->compile_vertices = draw->model_vertices;
+        control->compiled = true;
+    } else {
+        CHECK(draw->model_parts_compiled == 0 && draw->primary_model.compiled_parts == 0 &&
+              draw->secondary_model.compiled_parts == 0 && draw->model_faces == 0 &&
+              draw->model_vertices == 0);
+        control->reuse_parts = draw->model_parts_compiled;
+        control->reused = true;
+    }
+    CHECK(repeat_model_graph(f, control, true) == 0);
+    ++control->entity_frames;
+    control->shadow_quads += draw->shadow_quads;
+    return 0;
+}
+
+static int frame(fixture *f) {
+    const bool result = mc_client_menu_loop_frame(f->loop);
+    CHECK(mc_client_menu_loop_inspect(f->loop, &f->state));
+    if (!result) {
+        fprintf(stderr, "Reached %s.%s:%" PRId64 ": %s\n",
+                f->state.source_class == NULL ? "native" : f->state.source_class,
+                f->state.source_method == NULL ? "frame" : f->state.source_method,
+                f->state.source_pc,
+                f->state.operation == NULL ? "unknown operation" : f->state.operation);
+        if (f->state.world_tick != NULL) {
+            const mc_world_entity_tick_error *entity = &f->state.world_tick->entities;
+            if (entity->status != MC_WORLD_STORAGE_OK) {
+                fprintf(stderr, "Entity tick child=%u at %s.%s:%u: %s\n", (unsigned)entity->child,
+                        entity->source_class == NULL ? "native" : entity->source_class,
+                        entity->source_method == NULL ? "tick" : entity->source_method,
+                        entity->bytecode,
+                        entity->operation == NULL ? "unknown operation" : entity->operation);
+                if (entity->child == MC_WORLD_ENTITY_TICK_CHILD_PLAYER) {
+                    const mc_player_tick_error *player = &entity->child_error.player;
+                    fprintf(
+                        stderr, "Player tick child=%u at %s.%s player=%u living=%u local=%u: %s\n",
+                        (unsigned)player->child,
+                        player->source_class == NULL ? "native" : player->source_class,
+                        player->source_method == NULL ? "tick" : player->source_method,
+                        player->player_bytecode, player->living_bytecode, player->local_bytecode,
+                        player->operation == NULL ? "unknown operation" : player->operation);
+                    const char *child_operation = player->child == MC_PLAYER_TICK_CHILD_ENVIRONMENT
+                                                      ? player->child_error.environment.operation
+                                                  : player->child == MC_PLAYER_TICK_CHILD_ACTION
+                                                      ? player->child_error.action.operation
+                                                      : NULL;
+                    if (child_operation != NULL)
+                        fprintf(stderr, "Player descendant: %s\n", child_operation);
+                    if (player->child == MC_PLAYER_TICK_CHILD_ENVIRONMENT) {
+                        const mc_entity_tick_error *environment = &player->child_error.environment;
+                        fprintf(stderr, "Environment %s.%s:%u base=%u living=%u\n",
+                                environment->source_class == NULL ? "native"
+                                                                  : environment->source_class,
+                                environment->source_method == NULL ? "tick"
+                                                                   : environment->source_method,
+                                environment->bytecode, environment->base_bytecode,
+                                environment->living_bytecode);
+                        mc_entity_snapshot snapshot;
+                        if (mc_entity_get_snapshot(f->app->h, &snapshot) == MC_ENTITY_OK)
+                            fprintf(stderr, "Player position x=%.17g y=%.17g z=%.17g offset=%.9g\n",
+                                    snapshot.base.x, snapshot.base.y, snapshot.base.z,
+                                    (double)snapshot.base.offset);
+                    }
+                }
+            }
+        }
+    }
+    CHECK(result && !f->state.failed && f->state.running);
+    SDL_Delay(1);
+    return 0;
+}
+
+/* Native caller-input control, separate from ordinary UI load/repeat. Each
+ * invocation starts after a completed frame with the declared pause flag. No
+ * failed frame is resumed and the actual frame tail recomputes that flag. */
+static int light_batch_controls(fixture *f) {
+    mc_world_runtime *world = f->app->active_world;
+    CHECK(world != NULL && f->app->r == NULL && !atomic_load(&f->app->o) && !f->state.failed &&
+          f->state.render_returned && f->state.world_frame != NULL &&
+          f->state.world_frame->returned && f->state.world_draws == 1 && f->state.hud_draws == 1 &&
+          f->app->g != NULL && f->app->g->fields.k == world && world->fields.r != NULL &&
+          world->fields.x != NULL && world->fields.u == world->world_accesses.list &&
+          world->world_accesses.count == 1 && world->fields.u->count == 1 &&
+          world->world_accesses.entries[0] != NULL &&
+          world->fields.u->items[0] == world->world_accesses.entries[0]);
+    mc_render_global_access_state access;
+    CHECK(mc_render_global_access_inspect(f->app->g->access, &access) &&
+          access.registrations == 1 && access.active_callbacks == 0 &&
+          access.retained_failures == 0);
+    mc_world_access *listener = world->world_accesses.entries[0];
+    const uint64_t listener_identity = world->world_accesses.identities[0];
+    mc_world_storage_error error;
+    mc_world_light_list_view list;
+    CHECK(mc_world_runtime_light_list_get(world, &list, &error) == MC_WORLD_STORAGE_OK &&
+          list.identity != NULL && list.count == 0 && world->fields.M == 0);
+    const mc_world_reference_list *queue = list.identity;
+    const mc_world_light_type *type = NULL;
+    CHECK(mc_world_runtime_light_type_get(world->classes, MC_LIGHT_BLOCK, &type, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          type != NULL);
+
+    struct light_work {
+        mc_world_light_operation_error operation;
+        mc_world_query_error query;
+        mc_world_light_error submit;
+    } *work = calloc(1, sizeof(*work));
+
+    CHECK(work != NULL);
+    int32_t block = -1, saved = -1;
+    CHECK(mc_world_runtime_block_get(world, 8, 59, 8, &block, &error) == MC_WORLD_STORAGE_OK &&
+          block == 1 &&
+          mc_world_runtime_saved_light(world, type, 8, 59, 8, &saved, &work->query) ==
+              MC_WORLD_STORAGE_OK &&
+          saved == 0);
+    CHECK(mc_world_runtime_saved_light_set(world, type, 8, 59, 8, 15, &work->operation) ==
+              MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_saved_light(world, type, 8, 59, 8, &saved, &work->query) ==
+              MC_WORLD_STORAGE_OK &&
+          saved == 15);
+    const mc_light_bounds bounds = {8, 59, 8, 8, 59, 8};
+    const mc_world_light_region *records[500] = {0};
+    for (size_t index = 0; index < 500; ++index) {
+        mc_light_submit_result submitted = MC_LIGHT_SUBMIT_INVALID;
+        CHECK(mc_world_runtime_light_submit(world, type, &bounds, false, &submitted,
+                                            &work->submit) == MC_WORLD_STORAGE_OK &&
+              submitted == MC_LIGHT_SUBMIT_APPENDED &&
+              mc_world_runtime_light_at(world, index, &records[index], &error) ==
+                  MC_WORLD_STORAGE_OK);
+        const mc_world_light_region_fields *fields =
+            mc_world_runtime_light_region_fields_get(records[index]);
+        CHECK(fields != NULL && fields->a == type && fields->bounds.min_x == 8 &&
+              fields->bounds.max_x == 8 && fields->bounds.min_y == 59 &&
+              fields->bounds.max_y == 59 && fields->bounds.min_z == 8 && fields->bounds.max_z == 8);
+        for (size_t earlier = 0; earlier < index; ++earlier)
+            CHECK(records[earlier] != records[index]);
+    }
+    CHECK(mc_world_runtime_light_list_get(world, &list, &error) == MC_WORLD_STORAGE_OK &&
+          list.identity == queue && list.count == 500);
+    int64_t time;
+    CHECK(mc_world_info_time_get(world->fields.x, &time) == MC_WORLD_INFO_OK);
+    mc_java_random *random_owner = world->fields.r;
+    const mc_java_random random = *random_owner;
+    const uint64_t chunk_calls = f->state.random_chunk_calls;
+    const uint64_t display_calls = f->state.random_display_calls;
+    const uint64_t draws = f->state.world_draws;
+    const uint64_t hud_draws = f->state.hud_draws;
+    for (size_t invocation = 0; invocation < 2; ++invocation) {
+        CHECK(f->app->r == NULL && !f->state.failed && f->state.render_returned &&
+              f->state.world_frame != NULL && f->state.world_frame->returned &&
+              !atomic_load(&f->app->o));
+        atomic_store(&f->app->o, true); /* Declared input of this independent paused invocation. */
+        CHECK(frame(f) == 0 && f->app->r == NULL && !atomic_load(&f->app->o));
+        CHECK(mc_world_runtime_light_list_get(world, &list, &error) == MC_WORLD_STORAGE_OK &&
+              list.identity == queue && list.count == (invocation == 0 ? 1u : 0u) &&
+              world->fields.M == 0);
+        if (invocation == 0) {
+            const mc_world_light_region *remaining = NULL;
+            CHECK(mc_world_runtime_light_at(world, 0, &remaining, &error) == MC_WORLD_STORAGE_OK &&
+                  remaining == records[0]);
+        }
+        int64_t after_time;
+        CHECK(mc_world_runtime_saved_light(world, type, 8, 59, 8, &saved, &work->query) ==
+                  MC_WORLD_STORAGE_OK &&
+              saved == 0 &&
+              mc_world_info_time_get(world->fields.x, &after_time) == MC_WORLD_INFO_OK &&
+              after_time == time && world->fields.r == random_owner &&
+              mc_test_java_random_equal(&random, random_owner) &&
+              f->state.random_chunk_calls == chunk_calls &&
+              f->state.random_display_calls == display_calls &&
+              f->state.world_draws == draws + invocation + 1 &&
+              f->state.hud_draws == hud_draws + invocation + 1 &&
+              world->fields.u == world->world_accesses.list && world->fields.u->count == 1 &&
+              world->world_accesses.count == 1 && world->world_accesses.entries[0] == listener &&
+              world->world_accesses.identities[0] == listener_identity &&
+              mc_render_global_access_inspect(f->app->g->access, &access) &&
+              access.registrations == 1 && access.active_callbacks == 0 &&
+              access.retained_failures == 0);
+    }
+    free(work);
+    puts("WORLD_LIGHT mode=load-light declared-paused-entries=2 completed-frames=2 "
+         "queue=500,1,0 same-queue=1 oldest-survives=1 block-light=15,0,0 "
+         "world-time-unchanged=1 world-random-unchanged=1 normal-world-access=1 source-batch=499");
+    return 0;
+}
+
+static int ticks(fixture *f, uint64_t count) {
+    const uint64_t target = f->state.ticks + count, deadline = SDL_GetTicks() + 3000;
+    while (f->state.ticks < target && SDL_GetTicks() < deadline)
+        CHECK(frame(f) == 0);
+    CHECK(f->state.ticks >= target);
+    return 0;
+}
+
+static int save_title_focus(fixture *f);
+
+static int display_focus(fixture *f, bool expected) {
+    SDL_Window *window = mc_client_display_window(f->app->display);
+    if (expected && mc_client_bootstrap_frame(f->bootstrap) != NULL) {
+        CHECK(SDL_ShowWindow(window));
+        return save_title_focus(f);
+    }
+    if (expected)
+        CHECK(SDL_ShowWindow(window) && SDL_RaiseWindow(window));
+    const uint64_t deadline = SDL_GetTicks() + 1500;
+    do {
+        SDL_PumpEvents();
+        bool active;
+        mc_client_sdk_update_error update;
+        CHECK(mc_client_sdk_display_active(mc_client_display_update_owner(f->app->display), &active,
+                                           &update) == MC_CLIENT_SDK_UPDATE_OK);
+        if (active == expected && (SDL_GetKeyboardFocus() == window) == expected)
+            return 0;
+        if (expected)
+            CHECK(SDL_RaiseWindow(window));
+        SDL_Delay(1);
+    } while (SDL_GetTicks() < deadline);
+    fprintf(stderr, "Focused repeat fixture could not establish actual display focus=%d\n",
+            expected);
+    return 1;
+}
+
+static int transfer(fixture *f) {
+    mc_client_events_error e = {0};
+    mc_client_events_state before, after;
+    mc_client_event_port *events = mc_client_display_event_port(f->app->display);
+    CHECK(mc_client_events_inspect(events, &before));
+    CHECK(mc_client_events_retain_pending(events, &e) == MC_CLIENT_EVENTS_OK);
+    CHECK(mc_client_events_inspect(events, &after));
+    CHECK(after.pump_generation == before.pump_generation && after.records > before.records);
+    return 0;
+}
+
+static int push_mouse(fixture *f, mc_client_source_da *screen, int32_t x, int32_t y, bool down) {
+    int width, height;
+    SDL_Window *window = mc_client_display_window(f->app->display);
+    CHECK(SDL_GetWindowSize(window, &width, &height));
+    CHECK(screen->fields.c > 0 && screen->fields.d > 0);
+    const float native_x = (float)((int64_t)x * width / screen->fields.c),
+                native_y = (float)((int64_t)y * height / screen->fields.d);
+    /* LG reads polled Mouse coordinates during drawing. Pushed event records
+     * alone do not change SDL's device state; establish the real local pointer
+     * position as well as the authored event/button occurrences below. */
+    SDL_WarpMouseInWindow(window, native_x, native_y);
+    SDL_Event motion = {0};
+    motion.type = SDL_EVENT_MOUSE_MOTION;
+    motion.motion.windowID = SDL_GetWindowID(window);
+    motion.motion.x = native_x;
+    motion.motion.y = native_y;
+    CHECK(SDL_PushEvent(&motion));
+    SDL_Event button = {0};
+    button.type = down ? SDL_EVENT_MOUSE_BUTTON_DOWN : SDL_EVENT_MOUSE_BUTTON_UP;
+    button.button.windowID = SDL_GetWindowID(window);
+    button.button.button = SDL_BUTTON_LEFT;
+    button.button.down = down;
+    button.button.x = native_x;
+    button.button.y = native_y;
+    CHECK(SDL_PushEvent(&button));
+    return 0;
+}
+
+/* Keep the real button state held while moving the native pointer. No
+ * additional DOWN/UP record is used to stand in for a scrollbar drag. */
+static int move_mouse(fixture *f, mc_client_source_da *screen, int32_t x, int32_t y) {
+    int width, height;
+    SDL_Window *window = mc_client_display_window(f->app->display);
+    CHECK(SDL_GetWindowSize(window, &width, &height));
+    CHECK(screen->fields.c > 0 && screen->fields.d > 0);
+    const float native_x = (float)((int64_t)x * width / screen->fields.c),
+                native_y = (float)((int64_t)y * height / screen->fields.d);
+    SDL_WarpMouseInWindow(window, native_x, native_y);
+    SDL_Event motion = {0};
+    motion.type = SDL_EVENT_MOUSE_MOTION;
+    motion.motion.windowID = SDL_GetWindowID(window);
+    motion.motion.x = native_x;
+    motion.motion.y = native_y;
+    CHECK(SDL_PushEvent(&motion));
+    return 0;
+}
+
+static int push_escape(fixture *f, bool down) {
+    SDL_Event key = {0};
+    key.type = down ? SDL_EVENT_KEY_DOWN : SDL_EVENT_KEY_UP;
+    key.key.windowID = SDL_GetWindowID(mc_client_display_window(f->app->display));
+    key.key.scancode = SDL_SCANCODE_ESCAPE;
+    key.key.key = SDLK_ESCAPE;
+    key.key.down = down;
+    CHECK(SDL_PushEvent(&key));
+    return 0;
+}
+
+static mc_client_source_ke *button(mc_client_source_da *screen, int32_t id) {
+    size_t count;
+    if (!mc_client_screen_list_size(screen->fields.e, &count))
+        return NULL;
+    for (size_t i = 0; i < count; ++i) {
+        const mc_client_source_ke *candidate = NULL;
+        mc_client_screen_ke_state state;
+        if (!mc_client_screen_list_button(screen->fields.e, i, &candidate) ||
+            mc_client_screen_button_inspect((mc_client_source_ke *)candidate, &state, NULL) !=
+                MC_CLIENT_SCREEN_OK)
+            return NULL;
+        if (state.fields.f == id)
+            return (mc_client_source_ke *)candidate;
+    }
+    return NULL;
+}
+
+static int push_button(fixture *f, mc_client_source_da *screen, int32_t id, bool down) {
+    mc_client_source_ke *b = button(screen, id);
+    CHECK(b != NULL && b->fields.g && b->fields.h);
+    return push_mouse(f, screen, mc_java_i32_add(b->fields.c, b->fields.a / 2),
+                      mc_java_i32_add(b->fields.d, b->fields.b / 2), down);
+}
+
+static int open_selection(fixture *f, mc_client_source_da *initial, mc_client_source_rq **out) {
+    const size_t keyboard_before = f->state.keyboard_events;
+    CHECK(push_button(f, initial, 1, true) == 0);
+    /* FU.a(CI) is empty; RQ's inherited Escape would enter its explicit close
+     * dependency. These trailing real keyboard events must drain on FU even
+     * after its Singleplayer call synchronously publishes RQ. */
+    CHECK(push_escape(f, true) == 0 && push_escape(f, false) == 0 && transfer(f) == 0);
+    const uint64_t deadline = SDL_GetTicks() + 3000;
+    while ((f->app->r == initial || f->state.keyboard_events < keyboard_before + 2) &&
+           SDL_GetTicks() < deadline)
+        CHECK(frame(f) == 0);
+    CHECK(f->app->r != NULL && f->app->r != initial &&
+          f->app->r->kind == MC_CLIENT_SCREEN_WORLD_SELECTION &&
+          f->state.keyboard_events >= keyboard_before + 2);
+    mc_client_source_rq *rq = (mc_client_source_rq *)f->app->r;
+    CHECK(rq->fields.a == initial && rq->fields.m == -1 && rq->fields.o != NULL &&
+          rq->fields.o->fields.k == -2.0f);
+    bool down = false;
+    mc_client_sdk_input_error input;
+    CHECK(mc_client_sdk_mouse_button_down(mc_client_display_inputs(f->app->display), 0, &down,
+                                          &input) == MC_CLIENT_SDK_INPUT_OK &&
+          down);
+    CHECK(!rq->fields.t->fields.g && !rq->fields.s->fields.g && !rq->fields.u->fields.g);
+    CHECK(ticks(f, 2) == 0 && rq->fields.m == -1 && rq->fields.o->fields.k == -2.0f);
+    CHECK(initial->fields.a != NULL && initial->fields.a->fields.f == 1);
+    *out = rq;
+    return 0;
+}
+
+static int release_mouse(fixture *f, mc_client_source_rq *rq) {
+    CHECK(push_mouse(f, &rq->base, rq->base.fields.c / 2, 40, false) == 0 && transfer(f) == 0);
+    const uint64_t deadline = SDL_GetTicks() + 3000;
+    while (rq->fields.o->fields.k != -1.0f && SDL_GetTicks() < deadline)
+        CHECK(frame(f) == 0);
+    CHECK(rq->fields.o->fields.k == -1.0f && ticks(f, 1) == 0);
+    return 0;
+}
+
+static int drawing_monitor_recovery(mc_client_source_rq *rq) {
+    mc_client_world_selection_draw_error *pending = calloc(1, sizeof(*pending));
+    CHECK(pending != NULL);
+    CHECK(mc_client_source_world_selection_draw_retire(NULL) == MC_CLIENT_SCREEN_INVALID_ARGUMENT);
+    CHECK(mc_client_source_world_selection_draw_retire(pending) == MC_CLIENT_SCREEN_OK);
+    /* Prepared native failure receipt: no live drawing call runs here. Avoid
+     * destroying a mutex to force an undefined host failure. This control
+     * checks the same retained occurrence used by final draw reacquisition. */
+    CHECK(mtx_lock(&rq->base.classes->mutex) == thrd_success);
+    CHECK(rq->base.active_calls == 0);
+    ++rq->base.active_calls;
+    pending->pending_receiver = &rq->base;
+    CHECK(mtx_unlock(&rq->base.classes->mutex) == thrd_success);
+    CHECK(mc_client_source_world_selection_draw_retire(pending) == MC_CLIENT_SCREEN_BUSY &&
+          pending->pending_receiver == &rq->base && rq->base.active_calls == 1);
+    mc_client_source_da *screen = &rq->base;
+    CHECK(mc_client_screen_retire(&screen, NULL) == MC_CLIENT_SCREEN_BUSY && screen == &rq->base);
+    const int32_t selection = rq->fields.m;
+    const uint64_t stores = rq->store_count;
+    pending->monitor_lost = true;
+    CHECK(mc_client_source_world_selection_draw_retire(pending) == MC_CLIENT_SCREEN_OK &&
+          pending->pending_receiver == NULL && !pending->monitor_lost &&
+          rq->base.active_calls == 0 && rq->fields.m == selection && rq->store_count == stores);
+    CHECK(mc_client_source_world_selection_draw_retire(pending) == MC_CLIENT_SCREEN_OK);
+    free(pending);
+    return 0;
+}
+
+static int row_press(fixture *f, mc_client_source_rq *rq, bool populated) {
+    const mc_client_world_list_fields *list = &rq->fields.o->fields;
+    const int32_t y = mc_java_i32_add(
+        mc_java_i32_sub(mc_java_i32_add(list->h, 4), mc_java_float_to_i32(list->m)), 8);
+    CHECK(y >= list->h && y <= list->i);
+    CHECK(push_mouse(f, &rq->base, rq->base.fields.c / 2, y, true) == 0 && transfer(f) == 0);
+    CHECK(frame(f) == 0);
+    if (populated) {
+        const uint64_t deadline = SDL_GetTicks() + 3000;
+        while (rq->fields.m != 0 && SDL_GetTicks() < deadline)
+            CHECK(frame(f) == 0);
+        if (rq->fields.m != 0 || rq->fields.o->fields.n != 0) {
+            int32_t sx = 0, sy = 0;
+            mc_client_sdk_input_error input_error;
+            (void)mc_client_sdk_mouse_x(mc_client_display_inputs(f->app->display), &sx,
+                                        &input_error);
+            (void)mc_client_sdk_mouse_y(mc_client_display_inputs(f->app->display), &sy,
+                                        &input_error);
+            fprintf(stderr,
+                    "Row state selected=%d previous=%d drag=%g scroll=%g target=%d,%d SDK=%d,%d "
+                    "screen=%d,%d display=%d,%d\n",
+                    rq->fields.m, rq->fields.o->fields.n, (double)rq->fields.o->fields.k,
+                    (double)rq->fields.o->fields.m, rq->base.fields.c / 2, y, sx, sy,
+                    rq->base.fields.c, rq->base.fields.d, f->app->d, f->app->e);
+        }
+        CHECK(rq->fields.m == 0 && rq->fields.o->fields.n == 0);
+        CHECK(rq->fields.t->fields.g && rq->fields.s->fields.g && rq->fields.u->fields.g);
+    } else {
+        CHECK(ticks(f, 1) == 0 && rq->fields.m == -1);
+        CHECK(!rq->fields.t->fields.g && !rq->fields.s->fields.g && !rq->fields.u->fields.g);
+    }
+    CHECK(f->app->active_world == NULL && f->app->h == NULL && f->app->i == NULL &&
+          f->app->controller == NULL && !f->app->N);
+    return 0;
+}
+
+static int capture(fixture *f, const char *path) {
+    mc_client_capture pixels = {0};
+    mc_client_display_error e;
+    CHECK(mc_client_display_capture_rgba(f->app->display, &pixels, &e));
+    CHECK(pixels.width == 854 && pixels.height == 480 && pixels.pixels != NULL);
+    /* PNG presentation alpha only; the retained native RGB pixels are unchanged. */
+    for (size_t y = 0; y < (size_t)pixels.height; ++y)
+        for (size_t x = 0; x < (size_t)pixels.width; ++x)
+            pixels.pixels[y * pixels.stride + x * 4 + 3] = 255;
+    SDL_Surface *surface = SDL_CreateSurfaceFrom(
+        pixels.width, pixels.height, SDL_PIXELFORMAT_RGBA32, pixels.pixels, (int)pixels.stride);
+    CHECK(surface != NULL);
+    const bool saved = SDL_SavePNG(surface, path);
+    SDL_DestroySurface(surface);
+    mc_client_capture_free(&pixels);
+    CHECK(saved);
+    return 0;
+}
+
+static int world_display_controls(fixture *f, mc_client_screen_classes *classes) {
+    mc_client_display_screen_call *call = NULL;
+    const bool had_focus = f->app->N;
+    CHECK(mc_client_display_screen_run(f->app, classes, NULL, &call) ==
+          MC_CLIENT_DISPLAY_SCREEN_OK);
+    CHECK(call != NULL && call->source_returned && call->site.pc == 168 && call->health_read &&
+          call->player_health > 0 && call->r_stored && call->target == NULL &&
+          call->stats_c_returned && call->focus_returned && !call->initialized &&
+          f->app->r == NULL);
+    if (had_focus && call->display_active)
+        CHECK(call->focus_pc == 14 && !call->focus_stored && !call->mouse_grabbed &&
+              call->focus_display == NULL);
+    else if (!call->display_active)
+        CHECK(call->focus_pc == 6 && !call->focus_stored && !call->mouse_grabbed &&
+              call->focus_display == NULL);
+    else
+        CHECK(call->focus_pc == 51 && call->focus_stored && call->mouse_grabbed &&
+              call->focus_display != NULL && call->focus_display->source_returned &&
+              call->focus_display->health_read && call->focus_display->focus_pc == 14 &&
+              call->focus_display->focus_display == NULL && f->app->W == 10000 &&
+              f->app->ag == mc_java_i32_add(f->app->V, 10000));
+    CHECK(mc_client_display_screen_retire(&call) == MC_CLIENT_DISPLAY_SCREEN_OK && call == NULL);
+    mc_entity *player = f->app->h;
+    const bool focus = f->app->N;
+    f->app->h = NULL;
+    const mc_client_display_screen_status status =
+        mc_client_display_screen_run(f->app, classes, NULL, &call);
+    f->app->h = player;
+    CHECK(status == MC_CLIENT_DISPLAY_SCREEN_NULL_REFERENCE && call != NULL &&
+          call->site.pc == 76 && call->stats_c_returned && !call->health_read && !call->r_stored &&
+          !call->focus_returned && !call->source_returned && f->app->N == focus &&
+          f->app->r == NULL && f->app->i == player);
+    CHECK(mc_client_display_screen_retire(&call) == MC_CLIENT_DISPLAY_SCREEN_OK && call == NULL);
+    return 0;
+}
+
+static int gameplay_key(fixture *f, SDL_Scancode code, bool down) {
+    SDL_Event event = {0};
+    event.type = down ? SDL_EVENT_KEY_DOWN : SDL_EVENT_KEY_UP;
+    event.key.windowID = SDL_GetWindowID(mc_client_display_window(f->app->display));
+    event.key.scancode = code;
+    event.key.key = SDL_GetKeyFromScancode(code, SDL_KMOD_NONE, true);
+    event.key.down = down;
+    CHECK(SDL_PushEvent(&event));
+    return 0;
+}
+
+static int gameplay_poll(fixture *f) {
+    mc_client_sdk_update_error error;
+    CHECK(mc_client_sdk_display_process_messages(mc_client_display_update_owner(f->app->display),
+                                                 &error) == MC_CLIENT_SDK_UPDATE_OK);
+    return 0;
+}
+
+static int gameplay_wheel(fixture *f, float wheel) {
+    SDL_Event event = {0};
+    event.type = SDL_EVENT_MOUSE_WHEEL;
+    event.wheel.windowID = SDL_GetWindowID(mc_client_display_window(f->app->display));
+    event.wheel.y = wheel;
+    CHECK(SDL_PushEvent(&event));
+    return 0;
+}
+
+static int gameplay_controls(fixture *f) {
+    mc_client_gameplay_input *call = calloc(1, sizeof(*call));
+    CHECK(call != NULL);
+    mc_local_player_snapshot player;
+    mc_movement_input_state movement;
+    mc_inventory_player_state slots;
+    mc_game_settings_state before, after;
+    CHECK(mc_local_player_get_snapshot(f->app->h, &player) == MC_ENTITY_OK &&
+          mc_game_settings_read_state(f->app->settings, &before));
+    mc_client_sdk_input *input = mc_client_display_inputs(f->app->display);
+    mc_client_sdk_input_error input_error;
+    bool down;
+    CHECK(mc_client_sdk_mouse_button_down(input, 0, &down, &input_error) ==
+              MC_CLIENT_SDK_INPUT_OK &&
+          !down);
+    CHECK(mc_client_sdk_mouse_button_down(input, 1, &down, &input_error) ==
+              MC_CLIENT_SDK_INPUT_OK &&
+          !down);
+    CHECK(gameplay_key(f, SDL_SCANCODE_W, true) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_9, true) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_9, false) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_F1, true) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_F1, false) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_F3, true) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_F3, false) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_F5, true) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_F5, false) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_F8, true) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_F8, false) == 0 && gameplay_poll(f) == 0);
+    f->app->W = 17;
+    CHECK(mc_client_gameplay_input_run(f->app, f->app->screen_transitions, call) &&
+          call->returned && !call->failed && call->source_pc == 1073 &&
+          call->keyboard_events == 11 && call->hotbar_stores == 1 && f->app->W == 0);
+    CHECK(mc_movement_input_read_state(player.input, &movement) && movement.keys[0] &&
+          movement.fields.forward == 0.0f); /* Key dispatch does not run lr.a(Player). */
+    CHECK(mc_inventory_player_read_state(player.player.c, &slots) && slots.selected == 8);
+    CHECK(mc_game_settings_read_state(f->app->settings, &after) &&
+          after.values.hide_gui != before.values.hide_gui &&
+          after.values.show_debug_info != before.values.show_debug_info &&
+          after.values.third_person_view != before.values.third_person_view &&
+          after.values.smooth_camera != before.values.smooth_camera);
+    CHECK(gameplay_key(f, SDL_SCANCODE_W, false) == 0 && gameplay_poll(f) == 0);
+    CHECK(mc_client_gameplay_input_run(f->app, f->app->screen_transitions, call) &&
+          call->keyboard_events == 1 && mc_movement_input_read_state(player.input, &movement) &&
+          !movement.keys[0]);
+    CHECK(gameplay_wheel(f, 1.0f) == 0 && gameplay_poll(f) == 0);
+    CHECK(mc_platform_current_time_millis(&f->app->P) == MC_PLATFORM_MILLIS_OK);
+    CHECK(mc_client_gameplay_input_run(f->app, f->app->screen_transitions, call) &&
+          call->mouse_events >= 1 && call->stale_mouse_events == 0 &&
+          mc_inventory_player_read_state(player.player.c, &slots) && slots.selected == 7);
+    CHECK(gameplay_wheel(f, -1.0f) == 0 && gameplay_poll(f) == 0);
+    f->app->P = 0; /* Actual elapsed-wall-time branch discards the entire event. */
+    CHECK(mc_client_gameplay_input_run(f->app, f->app->screen_transitions, call) &&
+          call->stale_mouse_events >= 1 &&
+          mc_inventory_player_read_state(player.player.c, &slots) && slots.selected == 7);
+    /* Use the reached fullscreen frontier to qualify an unread keyboard tail. */
+    CHECK(gameplay_key(f, SDL_SCANCODE_F11, true) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_3, true) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_3, false) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_F11, false) == 0 && gameplay_poll(f) == 0);
+    CHECK(!mc_client_gameplay_input_run(f->app, f->app->screen_transitions, call) && call->failed &&
+          call->keyboard_events == 1 && call->site.pc == 587 &&
+          mc_inventory_player_read_state(player.player.c, &slots) && slots.selected == 7);
+    const char *operation = call->operation;
+    CHECK(mc_client_gameplay_input_retire(call) && call->failed && call->site.pc == 587 &&
+          call->operation == operation); /* Preserve diagnostics through cleanup. */
+    memset(call, 0, sizeof(*call));
+    CHECK(mc_client_gameplay_input_run(f->app, f->app->screen_transitions, call) &&
+          call->keyboard_events == 3 && call->hotbar_stores == 1 &&
+          mc_inventory_player_read_state(player.player.c, &slots) && slots.selected == 2);
+    CHECK(mc_client_gameplay_input_retire(call));
+    free(call);
+    printf("GAMEPLAY_INPUT sdk=1 movement-press-release=1 hotbar=1 toggles=4 wheel=1 "
+           "stale-wheel=1 failure-preserves-tail=1 reset=1 returned=1073\n");
+    return 0;
+}
+
+static int pause_controls(fixture *f) {
+    mc_client_screen_error error;
+    mc_client_screen_transition_state before, after;
+    mc_client_source_da *shown = f->app->r;
+    if (shown != NULL) {
+        CHECK(shown->kind == MC_CLIENT_SCREEN_PAUSE);
+        CHECK(mc_client_screen_transitions_inspect(f->app->screen_transitions, &before) &&
+              mc_client_screen_transitions_pause(f->app->screen_transitions, &error) ==
+                  MC_CLIENT_SCREEN_OK &&
+              mc_client_screen_transitions_inspect(f->app->screen_transitions, &after) &&
+              before.screens == after.screens && before.calls == after.calls && f->app->r == shown);
+        CHECK(mc_client_screen_transitions_close(f->app->screen_transitions, shown, &error) ==
+                  MC_CLIENT_SCREEN_OK &&
+              f->app->r == NULL);
+    }
+    const bool focused = f->app->N;
+    f->app->N = false; /* Prepared input segment; the enclosing frame is terminal. */
+    mc_client_gameplay_input *input = calloc(1, sizeof(*input));
+    CHECK(input != NULL && gameplay_key(f, SDL_SCANCODE_ESCAPE, true) == 0 &&
+          gameplay_key(f, SDL_SCANCODE_ESCAPE, false) == 0 && gameplay_poll(f) == 0 &&
+          mc_client_gameplay_input_run(f->app, f->app->screen_transitions, input) &&
+          input->returned && input->keyboard_events == 2);
+    mc_client_source_da *pause = f->app->r;
+    CHECK(pause != NULL && pause->kind == MC_CLIENT_SCREEN_PAUSE);
+    size_t count;
+    CHECK(mc_client_screen_list_size(pause->fields.e, &count) && count == 5);
+    mc_client_pause_screen_state state;
+    CHECK(mc_client_screen_pause_inspect((mc_client_source_oz *)pause, &state, &error) ==
+              MC_CLIENT_SCREEN_OK &&
+          state.last_initialization_returned && state.save_pass == 0 && state.ticks == 0);
+    CHECK(mc_client_screen_transitions_inspect(f->app->screen_transitions, &before) &&
+          mc_client_screen_transitions_pause(f->app->screen_transitions, &error) ==
+              MC_CLIENT_SCREEN_OK &&
+          mc_client_screen_transitions_inspect(f->app->screen_transitions, &after) &&
+          before.screens == after.screens && before.calls == after.calls && f->app->r == pause);
+    mc_client_screen_event_error tick;
+    CHECK(mc_client_screen_tick(pause, &tick) == MC_CLIENT_SCREEN_OK &&
+          mc_client_screen_pause_inspect((mc_client_source_oz *)pause, &state, &error) ==
+              MC_CLIENT_SCREEN_OK &&
+          state.ticks == 1);
+    CHECK(mc_client_screen_transitions_button(f->app->screen_transitions, pause, button(pause, 4),
+                                              &error) == MC_CLIENT_SCREEN_OK &&
+          f->app->r == NULL);
+    mc_client_display_screen_call *release = NULL;
+    mc_local_player_snapshot player;
+    CHECK(mc_local_player_get_snapshot(f->app->h, &player) == MC_ENTITY_OK &&
+          mc_movement_input_retain(player.input, NULL) == MC_MOVEMENT_INPUT_OK);
+    CHECK(mc_local_player_set_movement_input(f->app->h, NULL, NULL) == MC_PLAYER_OK);
+    f->app->N = true;
+    CHECK(mc_client_display_screen_run(f->app, pause->classes, pause, &release) ==
+              MC_CLIENT_DISPLAY_SCREEN_NULL_REFERENCE &&
+          release != NULL && release->r_stored && !release->player_keys_released &&
+          release->child.pc == 4 && strcmp(release->child.class_name, "dc") == 0 && f->app->N);
+    CHECK(mc_client_display_screen_retire(&release) == MC_CLIENT_DISPLAY_SCREEN_OK &&
+          mc_local_player_set_movement_input(f->app->h, player.input, NULL) == MC_PLAYER_OK);
+    mc_movement_input *held_input = (mc_movement_input *)player.input;
+    CHECK(mc_movement_input_retire(&held_input, NULL) == MC_MOVEMENT_INPUT_OK);
+    CHECK(mc_local_player_input_key(f->app->h, 17, true, NULL) == MC_PLAYER_OK);
+    CHECK(mc_client_display_screen_run(f->app, pause->classes, pause, &release) ==
+              MC_CLIENT_DISPLAY_SCREEN_NULL_REFERENCE &&
+          release != NULL && release->r_stored && release->player_keys_released && !f->app->N &&
+          release->mouse.site.pc == 4 && !release->mouse.native_policy);
+    mc_movement_input_state movement;
+    CHECK(mc_movement_input_read_state(player.input, &movement) && !movement.keys[0]);
+    CHECK(mc_client_display_screen_retire(&release) == MC_CLIENT_DISPLAY_SCREEN_OK &&
+          mc_client_screen_transitions_close(f->app->screen_transitions, pause, &error) ==
+              MC_CLIENT_SCREEN_OK &&
+          f->app->r == NULL);
+    CHECK(mc_client_gameplay_input_retire(input));
+    free(input);
+    f->app->N = focused;
+    puts("PAUSE_SCREEN escape=1 init-buttons=5 nonempty-entry=1 tick=1 back-to-game=1 "
+         "null-input-prefix=1 key-reset-before-null-Canvas=1");
+    return 0;
+}
+
+static int world_tick_controls(fixture *f) {
+    mc_client_world_tick *call = calloc(1, sizeof(*call));
+    CHECK(call != NULL);
+    const bool paused = atomic_load(&f->app->o);
+    const int32_t counter = f->app->ah;
+    atomic_store(&f->app->o, true);
+    f->app->ah = 29;
+    CHECK(mc_client_world_tick_run(f->app, mc_client_bootstrap_math(f->bootstrap), call) &&
+          call->returned && call->counter_stored && call->counter_reset && f->app->ah == 0 &&
+          call->refresh_state.returned && call->refresh_state.chunk_returns == 25 &&
+          call->refresh_state.contains && !call->refresh_state.appended &&
+          !call->renderer_returned && !call->entities_returned);
+    CHECK(mc_client_world_tick_cleanup(call));
+    atomic_store(&f->app->o, false);
+    memset(call, 0, sizeof(*call));
+    const bool returned =
+        mc_client_world_tick_run(f->app, mc_client_bootstrap_math(f->bootstrap), call);
+    if (!returned && call->site.pc != 80) {
+        fprintf(stderr, "World segment reached %s.%s:%d: %s; renderer=%d entities=%d\n",
+                call->site.class_name, call->site.method, call->site.pc, call->operation,
+                call->renderer_returned, call->entities_returned);
+        if (call->site.pc == 1216)
+            fprintf(stderr, "Entity child %s.%s:%u kind=%d op=%s\n", call->entities.source_class,
+                    call->entities.source_method, call->entities.bytecode,
+                    (int)call->entities.child, call->entities.operation);
+    }
+    const bool ambience = call->scheduler_state.returned;
+    CHECK((ambience ? returned && call->returned && !call->failed &&
+                          strcmp(call->site.class_name, "net/minecraft/client/Minecraft") == 0 &&
+                          strcmp(call->site.method, "k") == 0 && call->site.pc == 1328 &&
+                          call->ambience_arguments == 3 && call->ambience != NULL &&
+                          call->ambience_state.returned && call->ambience_state.source_pc == 134 &&
+                          call->ambience_state.local_random_constructed &&
+                          call->ambience_state.samples_started == 1000 &&
+                          call->ambience_state.samples_returned == 1000 &&
+                          call->ambience_state.world_random_calls == 6000 &&
+                          call->ambience_error.status == MC_WORLD_STORAGE_OK &&
+                          call->effects.status == MC_EFFECT_RENDERER_OK
+                    : !returned && call->failed && strcmp(call->site.class_name, "fd") == 0 &&
+                          call->site.pc == 80) &&
+          call->counter_stored && !call->counter_reset && call->difficulty_stored &&
+          call->renderer_returned && call->render_global_returned && call->entities_returned &&
+          call->spawn_flags_stored && call->renderer_state.source_returned &&
+          call->renderer_state.source_pc == 186 && call->renderer_state.interpolation_stores == 6 &&
+          call->renderer_state.brightness_returned && call->renderer_state.held_item_returned &&
+          call->renderer_state.rain_returned && call->renderer_state.rain->returned);
+    if (!world_dependency_reached(&call->scheduler_state, &call->scheduler_error))
+        fprintf(stderr, "Spawn child=%u descendant=%u operation=%s\n",
+                call->scheduler_error.child_bytecode, call->scheduler_error.descendant_bytecode,
+                call->scheduler_error.operation);
+    CHECK(call->scheduler_state.weather_returned &&
+          call->scheduler_state.spawn_chunk_count == 289 &&
+          world_dependency_reached(&call->scheduler_state, &call->scheduler_error) &&
+          call->scheduler_state.spawn_pick.entry != NULL &&
+          call->scheduler_state.spawn_candidates_visited > 0 &&
+          call->scheduler_state.spawn_random_calls >= 10 &&
+          call->scheduler_state.spawn_pick.total_weight > 0);
+    const unsigned int spawn_pc = call->scheduler_error.child_bytecode;
+    const unsigned int world_pc = call->scheduler_state.source_pc;
+    const int32_t next_pc = call->site.pc;
+    const size_t samples =
+        call->scheduler_state.random == NULL ? 0 : call->scheduler_state.random->samples_returned;
+    const size_t display_samples = call->ambience_state.samples_returned;
+    const unsigned int display_pc = call->ambience_state.source_pc;
+    CHECK(mc_client_world_tick_cleanup(call) && call->failed == !ambience &&
+          call->scheduler_error.mob == NULL && call->scheduler_state.spawn_entity == NULL &&
+          call->ambience == NULL && call->ambience_state.source_random == NULL &&
+          call->ambience_state.world == NULL && call->ambience_error.block == NULL);
+    atomic_store(&f->app->o, paused);
+    f->app->ah = counter;
+    free(call);
+    printf("WORLD_TICK paused-refresh25=1 unpaused-renderer186=1 render-global=1 "
+           "entities=1 spawn-flags=1 weather=1 spawn-candidates=289 scheduler=%u samples=%zu "
+           "display=%u display-samples=%zu next=%d child=%u\n",
+           world_pc, samples, display_pc, display_samples, next_pc, spawn_pc);
+    return 0;
+}
+
+static int large_drag(fixture *f, mc_client_source_rq *rq, const char *capture_path) {
+    mc_client_world_list_fields *list = &rq->fields.o->fields;
+    CHECK(mc_client_save_list_size(rq->fields.n) == 16 && list->m == 0.0f && list->k == -1.0f);
+    const int32_t x = list->b / 2 + 127, upper = list->h + 8, lower = list->i - 8;
+    const int32_t maximum = 16 * 36 - (list->i - list->h - 4);
+    CHECK(maximum > 0 && lower > upper);
+    CHECK(push_mouse(f, &rq->base, x, upper, true) == 0 && transfer(f) == 0);
+    const uint64_t start_deadline = SDL_GetTicks() + 3000;
+    while (list->k < 0 && SDL_GetTicks() < start_deadline)
+        CHECK(frame(f) == 0);
+    CHECK(list->k >= 0 && list->l < 0.0f && list->m == 0.0f);
+    bool down = false;
+    mc_client_sdk_input_error input;
+    CHECK(mc_client_sdk_mouse_button_down(mc_client_display_inputs(f->app->display), 0, &down,
+                                          &input) == MC_CLIENT_SDK_INPUT_OK &&
+          down);
+    CHECK(move_mouse(f, &rq->base, x, lower) == 0 && transfer(f) == 0);
+    const uint64_t down_deadline = SDL_GetTicks() + 3000;
+    while (list->m != (float)maximum && SDL_GetTicks() < down_deadline)
+        CHECK(frame(f) == 0);
+    CHECK(list->m == (float)maximum && list->k >= 0 && rq->fields.m == -1);
+    CHECK(list->n == -1 && list->o == 0 && !rq->fields.t->fields.g && !rq->fields.s->fields.g &&
+          !rq->fields.u->fields.g);
+    CHECK(capture(f, capture_path) == 0);
+    CHECK(mc_client_sdk_mouse_button_down(mc_client_display_inputs(f->app->display), 0, &down,
+                                          &input) == MC_CLIENT_SDK_INPUT_OK &&
+          down);
+    CHECK(move_mouse(f, &rq->base, x, upper) == 0 && transfer(f) == 0);
+    const uint64_t up_deadline = SDL_GetTicks() + 3000;
+    while (list->m != 0.0f && SDL_GetTicks() < up_deadline)
+        CHECK(frame(f) == 0);
+    CHECK(list->m == 0.0f && list->k >= 0 && rq->fields.m == -1 && list->n == -1 && list->o == 0);
+    CHECK(release_mouse(f, rq) == 0 && list->k == -1.0f);
+    printf("WORLD_SELECTION drag-count=16 bottom=%d restored=0 button-held=1\n", maximum);
+    return 0;
+}
+
+static int release_for_double(fixture *f, mc_client_source_rq *rq) {
+    mc_client_world_list_fields *list = &rq->fields.o->fields;
+    const int32_t y = list->h + 4 - mc_java_float_to_i32(list->m) + 8;
+    CHECK(push_mouse(f, &rq->base, rq->base.fields.c / 2, y, false) == 0 && transfer(f) == 0);
+    const uint64_t deadline = SDL_GetTicks() + 3000;
+    while (list->k != -1.0f && SDL_GetTicks() < deadline)
+        CHECK(frame(f) == 0);
+    CHECK(list->k == -1.0f);
+    return 0;
+}
+
+static bool filename_is(const mc_client_save_selection *selection, const char *ascii) {
+    mc_client_save_selection_fields fields;
+    if (mc_client_save_selection_read(selection, &fields, NULL) != MC_CLIENT_SAVE_OK ||
+        fields.filename == NULL)
+        return false;
+    mc_nbt_string view = mc_world_info_name_text(fields.filename);
+    if (view.length != strlen(ascii))
+        return false;
+    for (size_t i = 0; i < view.length; ++i)
+        if (view.units[i] != (uint8_t)ascii[i])
+            return false;
+    return true;
+}
+
+/* Only the non-loading modes use this prefix. A prepared menu still owns its
+ * real screens/App/services; it has not admitted full loaded-World shutdown. */
+static int terminal_prepare_controls(fixture *f, mc_client_source_da *external) {
+    mc_client_menu_loop_state before;
+    mc_client_screen_transition_state transitions_before;
+    mc_client_screen_state retained_before, shown_before;
+    client_application *app = f->app;
+    mc_client_source_da *shown = app->r;
+    mc_client_display *display = app->display;
+    SDL_Window *window = mc_client_display_window(display);
+    mc_client_screen_transitions *transitions = app->screen_transitions;
+    mc_client_application_startup *startup = app->startup;
+    mc_client_render_engine *engine = app->render_engine;
+    mc_client_bitmap_font *font = app->font_renderer;
+    mc_client_loading_screen *loading = app->loading_screen;
+    mc_game_settings *settings = app->settings;
+    mc_sound_manager *sound = app->B;
+    mc_client_render_global *renderer = app->g;
+    mc_client_source_px *entity_renderer = app->t;
+    mc_client_singleplayer_controller *controller = app->controller;
+    mc_client_render_classes *models = app->render_classes;
+    mc_registry_classes *registry = app->registry;
+    mc_entity_classes *entities = app->entities;
+    mc_java_random_profile *profile = app->profile;
+    const mc_registry_resources *resources = mc_client_bootstrap_resources(f->bootstrap);
+    mc_resource_files *files = mc_client_bootstrap_class_files(f->bootstrap);
+    mc_math_classes *math = mc_client_bootstrap_math(f->bootstrap);
+    mc_client_render_engine_classes *graphics = mc_client_bootstrap_graphics(f->bootstrap);
+    const bool source_running = atomic_load(&app->J), source_paused = atomic_load(&app->o);
+    CHECK(display != NULL && window != NULL && shown != NULL && external != NULL &&
+          startup != NULL && engine != NULL && font != NULL && loading != NULL &&
+          settings != NULL && resources != NULL && files != NULL && math != NULL &&
+          graphics != NULL);
+    mc_client_tile_renderer_classes *absent_tiles = NULL;
+    CHECK(mc_client_tile_entity_renderer_classes_existing(app->render_classes, app->registry,
+                                                          app->world_classes, &absent_tiles,
+                                                          NULL) == MC_CLIENT_TILE_RENDERER_OK &&
+          absent_tiles == NULL);
+    const SDL_WindowID window_id = SDL_GetWindowID(window);
+    int width, height;
+    CHECK(window_id != 0 && SDL_GetWindowSize(window, &width, &height) && width > 0 && height > 0);
+    CHECK(mc_client_menu_loop_inspect(f->loop, &before) && !before.terminal_prepare_selected &&
+          !before.terminal_prepared);
+    CHECK(mc_client_screen_transitions_inspect(transitions, &transitions_before) &&
+          !transitions_before.active && !transitions_before.retiring &&
+          !transitions_before.terminal_prepare_selected && !transitions_before.terminal_prepared);
+    CHECK(mc_client_screen_inspect(external, &retained_before, NULL) == MC_CLIENT_SCREEN_OK &&
+          retained_before.phase == MC_CLIENT_SCREEN_READY && retained_before.holds >= 2 &&
+          mc_client_screen_inspect(shown, &shown_before, NULL) == MC_CLIENT_SCREEN_OK &&
+          shown_before.phase == MC_CLIENT_SCREEN_READY);
+    mc_client_world_load_state load_before = {0};
+    mc_client_world_load_status source_failure = MC_CLIENT_WORLD_LOAD_OK;
+    int source_failure_pc = 0;
+    if (transitions_before.world_load != NULL) {
+        CHECK(mc_client_world_load_inspect(transitions_before.world_load, &load_before) &&
+              !load_before.active && !load_before.retiring && !load_before.source_returned &&
+              !load_before.terminal_prepare_selected && !load_before.terminal_prepared &&
+              load_before.needs_conversion && load_before.conversion_checked &&
+              !load_before.handler_opened && load_before.handler == NULL &&
+              load_before.world == NULL && load_before.player == NULL &&
+              load_before.input == NULL && load_before.failure != NULL &&
+              load_before.failure->status == MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED);
+        source_failure = load_before.failure->status;
+        source_failure_pc = load_before.failure->site.pc;
+    }
+    CHECK(!mc_client_menu_loop_terminal_prepare(NULL));
+    for (unsigned int attempt = 0; attempt < 2; ++attempt) {
+        CHECK(mc_client_menu_loop_terminal_prepare(f->loop));
+        mc_client_screen_transition_state prepared;
+        mc_client_screen_state retained, current;
+        CHECK(mc_client_menu_loop_inspect(f->loop, &f->state) &&
+              f->state.terminal_prepare_selected && f->state.terminal_prepared &&
+              f->state.failed == before.failed && f->state.running == before.running &&
+              f->state.source_class == before.source_class &&
+              f->state.source_method == before.source_method &&
+              f->state.source_pc == before.source_pc);
+        CHECK(mc_client_screen_transitions_inspect(transitions, &prepared) && !prepared.active &&
+              prepared.retiring && prepared.terminal_prepare_selected &&
+              prepared.terminal_prepared && prepared.screens == transitions_before.screens &&
+              prepared.calls == transitions_before.calls &&
+              prepared.initial_screen == transitions_before.initial_screen &&
+              prepared.slot_handed_off == transitions_before.slot_handed_off &&
+              prepared.world_load == transitions_before.world_load);
+        CHECK(mc_client_bootstrap_app(f->bootstrap) == NULL && f->app == app &&
+              app->native_lifetime_phase == MC_CLIENT_APPLICATION_LIFETIME_REGISTERED &&
+              app->constructor_phase == MC_CLIENT_APP_READY && app->startup == startup &&
+              app->screen_transitions == transitions && app->r == shown &&
+              app->display == display && app->render_engine == engine &&
+              app->font_renderer == font && app->loading_screen == loading &&
+              app->settings == settings && app->B == sound && app->g == renderer &&
+              app->t == entity_renderer && app->controller == controller &&
+              app->render_classes == models && app->registry == registry &&
+              app->entities == entities && app->profile == profile &&
+              mc_client_bootstrap_resources(f->bootstrap) == NULL &&
+              mc_client_bootstrap_class_files(f->bootstrap) == NULL &&
+              mc_client_bootstrap_math(f->bootstrap) == NULL &&
+              mc_client_bootstrap_graphics(f->bootstrap) == NULL &&
+              atomic_load(&app->J) == source_running && atomic_load(&app->o) == source_paused &&
+              app->active_world == NULL && app->h == NULL && app->i == NULL);
+        CHECK(mc_client_display_window(display) == window && SDL_GetWindowID(window) == window_id &&
+              SDL_GetWindowSize(window, &width, &height) && width > 0 && height > 0);
+        CHECK(mc_client_screen_inspect(external, &retained, NULL) == MC_CLIENT_SCREEN_OK &&
+              retained.phase == retained_before.phase && retained.kind == retained_before.kind &&
+              retained.holds >= 2 &&
+              mc_client_screen_inspect(shown, &current, NULL) == MC_CLIENT_SCREEN_OK &&
+              current.phase == shown_before.phase && current.kind == shown_before.kind);
+        if (prepared.world_load != NULL) {
+            /* Inspect fresh after preparation; retired child views may expire.
+             * The failed conversion call itself and its source outcome remain. */
+            mc_client_world_load_state load;
+            CHECK(mc_client_world_load_inspect(prepared.world_load, &load) && !load.active &&
+                  load.retiring && load.terminal_prepare_selected && load.terminal_prepared &&
+                  !load.source_returned && load.needs_conversion && load.conversion_checked &&
+                  !load.handler_opened && !load.world_constructed && !load.world_published &&
+                  !load.player_published && !load.input_published && load.handler == NULL &&
+                  load.world == NULL && load.player == NULL && load.input == NULL &&
+                  load.app == app && load.folder == load_before.folder &&
+                  load.display == load_before.display && load.seed == load_before.seed &&
+                  load.gc_requests == load_before.gc_requests &&
+                  load.last_outer_pc == load_before.last_outer_pc &&
+                  load.last_change_pc == load_before.last_change_pc && load.failure != NULL &&
+                  load.failure->status == source_failure &&
+                  load.failure->site.pc == source_failure_pc && load.cleanup != NULL &&
+                  load.cleanup->status == MC_CLIENT_WORLD_LOAD_OK);
+        }
+        CHECK(!mc_client_menu_loop_frame(f->loop));
+        CHECK(mc_client_menu_loop_inspect(f->loop, &f->state) &&
+              f->state.terminal_prepare_selected && f->state.terminal_prepared &&
+              f->state.frames == before.frames && f->state.ticks == before.ticks &&
+              f->state.texture_ticks == before.texture_ticks &&
+              f->state.mouse_events == before.mouse_events &&
+              f->state.keyboard_events == before.keyboard_events &&
+              f->state.source_pc == before.source_pc);
+    }
+    return 0;
+}
+
+static int loaded_admission_attempt(fixture *f, mc_world_storage_status expected,
+                                    const char *operation, mc_world_terminal_inventory *success) {
+    client_application *app = f->app;
+    mc_world_runtime *world = app->active_world;
+    mc_entity *player = app->h;
+    mc_world_source_state handler;
+    mc_world_source_chunk_loader_state loader;
+    mc_world_saved_data_source_state saved_data;
+    CHECK(world->source_construction != NULL &&
+          mc_world_store_source_inspect(world->fields.w, &handler) &&
+          mc_world_source_chunk_loader_inspect(world->source_construction->loader, &loader) &&
+          mc_world_saved_data_source_inspect(world->fields.z, &saved_data));
+
+    struct owner_copy {
+        const void *owner;
+        size_t bytes;
+        unsigned char *before;
+    } copies[] = {{app, sizeof(*app), NULL},
+                  {world, sizeof(*world), NULL},
+                  {player, sizeof(*player), NULL},
+                  {world->source_construction, sizeof(*world->source_construction), NULL},
+                  {handler.failure, sizeof(*handler.failure), NULL},
+                  {handler.cleanup, sizeof(*handler.cleanup), NULL},
+                  {loader.failure, sizeof(*loader.failure), NULL},
+                  {loader.cleanup, sizeof(*loader.cleanup), NULL},
+                  {saved_data.failure, sizeof(*saved_data.failure), NULL},
+                  {saved_data.cleanup, sizeof(*saved_data.cleanup), NULL}};
+
+    for (size_t i = 0; i < sizeof(copies) / sizeof(copies[0]); ++i) {
+        CHECK(copies[i].owner != NULL);
+        copies[i].before = malloc(copies[i].bytes);
+        CHECK(copies[i].before != NULL);
+        memcpy(copies[i].before, copies[i].owner, copies[i].bytes);
+    }
+    mc_world_terminal_inventory inventory = {.entities = 101,
+                                             .tile_entities = 102,
+                                             .entity_occurrences = 103,
+                                             .tile_entity_occurrences = 104,
+                                             .expected_world_bindings = 105,
+                                             .piston_discard_required = true};
+    unsigned char sentinel[sizeof(inventory)];
+    memcpy(sentinel, &inventory, sizeof(inventory));
+    mc_world_storage_error error = {0};
+    const mc_world_storage_status admitted = mc_client_screen_transitions_terminal_admit(
+        app->screen_transitions, NULL, &inventory, &error);
+    if (admitted != expected)
+        fprintf(stderr, "Terminal admission got%d expected%d: %s\n", (int)admitted, (int)expected,
+                error.operation == NULL ? "none" : error.operation);
+    CHECK(admitted == expected && error.status == expected);
+    for (size_t i = 0; i < sizeof(copies) / sizeof(copies[0]); ++i)
+        CHECK(memcmp(copies[i].before, copies[i].owner, copies[i].bytes) == 0);
+    if (expected != MC_WORLD_STORAGE_OK)
+        CHECK(memcmp(sentinel, &inventory, sizeof(inventory)) == 0);
+    if (operation != NULL && (error.operation == NULL || strcmp(error.operation, operation) != 0))
+        fprintf(stderr, "Terminal admission operation %s expected %s\n",
+                error.operation == NULL ? "none" : error.operation, operation);
+    if (operation != NULL)
+        CHECK(error.operation != NULL && strcmp(error.operation, operation) == 0);
+    if (expected == MC_WORLD_STORAGE_OK && success != NULL)
+        *success = inventory;
+    for (size_t i = 0; i < sizeof(copies) / sizeof(copies[0]); ++i)
+        free(copies[i].before);
+    return 0;
+}
+
+static int terminal_source_diagnostic_same(fixture *f, const mc_client_menu_loop_state *before) {
+    CHECK(mc_client_menu_loop_inspect(f->loop, &f->state) && f->state.failed == before->failed &&
+          f->state.running == before->running && f->state.operation == before->operation &&
+          f->state.source_class == before->source_class &&
+          f->state.source_method == before->source_method &&
+          f->state.source_pc == before->source_pc && f->state.frames == before->frames &&
+          f->state.ticks == before->ticks && f->state.texture_ticks == before->texture_ticks &&
+          f->state.account_checks_omitted == before->account_checks_omitted &&
+          f->state.font_measurements == before->font_measurements &&
+          f->state.mouse_events == before->mouse_events &&
+          f->state.keyboard_events == before->keyboard_events);
+    return 0;
+}
+
+static int loaded_terminal_admission_controls(fixture *f) {
+    client_application *app = f->app;
+    mc_world_runtime *world = app->active_world;
+    mc_entity *player = app->h;
+    mc_client_screen_transition_state transitions;
+    mc_client_world_load_state load;
+    mc_client_menu_loop_state source;
+    CHECK(mc_client_menu_loop_inspect(f->loop, &source) && loaded_draw_reached(&source) &&
+          !source.terminal_tail_entered);
+    CHECK(mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
+          transitions.world_load != NULL &&
+          mc_client_world_load_inspect(transitions.world_load, &load) && load.source_returned &&
+          load.world == world && load.player == player && load.input != NULL);
+    mc_client_tile_renderer_classes *present_tiles = NULL;
+    mc_client_tile_renderer_state tiles_state;
+    CHECK(mc_client_tile_entity_renderer_classes_existing(app->render_classes, app->registry,
+                                                          app->world_classes, &present_tiles,
+                                                          NULL) == MC_CLIENT_TILE_RENDERER_OK &&
+          present_tiles != NULL && mc_client_tile_renderer_inspect(present_tiles, &tiles_state) &&
+          tiles_state.source_views_available && tiles_state.fields.f == world &&
+          tiles_state.fields.g == player && tiles_state.native_consumers == 0);
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                   "screen terminal admission prepared selected-load scope",
+                                   NULL) == 0);
+    CHECK(mc_client_menu_loop_terminal_prepare(f->loop));
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "World terminal external Entity or TileEntity hold", NULL) == 0);
+
+    /* Four derived Handler occurrences: actual Load, World sidecar, HC and ld
+     * slots. Retaining ld itself adds no fifth Handler occurrence. */
+    mc_world_source_state handler;
+    CHECK(mc_world_store_source_inspect(load.handler, &handler) && handler.holds == 4);
+    CHECK(mc_world_store_source_retain(load.handler, NULL) == MC_WORLD_SOURCE_OK &&
+          mc_world_store_source_inspect(load.handler, &handler) && handler.holds == 5);
+    mc_world_store *extra_handler = load.handler;
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "Store terminal source external Handler occurrence", NULL) == 0);
+    CHECK(mc_world_store_source_release(&extra_handler, NULL) == MC_WORLD_SOURCE_OK &&
+          extra_handler == NULL);
+    mc_world_source_chunk_loader *owned_loader = mc_world_runtime_source_loader(world);
+    CHECK(owned_loader != NULL &&
+          mc_world_source_chunk_loader_retain(owned_loader, NULL) == MC_WORLD_SOURCE_OK &&
+          mc_world_store_source_inspect(load.handler, &handler) && handler.holds == 4);
+    mc_world_source_chunk_loader *extra_loader_hold = owned_loader;
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "World terminal external loader occurrence", NULL) == 0);
+    CHECK(mc_world_source_chunk_loader_release(&extra_loader_hold, NULL) == MC_WORLD_SOURCE_OK &&
+          extra_loader_hold == NULL);
+    mc_world_saved_data *extra_saved_data = NULL;
+    CHECK(mc_world_saved_data_source_allocate(MC_WORLD_INFO_CLIENT, NULL, &extra_saved_data,
+                                              NULL) == MC_WORLD_STORAGE_OK &&
+          mc_world_saved_data_source_construct(extra_saved_data, load.handler, NULL) ==
+              MC_WORLD_STORAGE_OK &&
+          mc_world_store_source_inspect(load.handler, &handler) && handler.holds == 5);
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "Store terminal source external Handler occurrence", NULL) == 0);
+    CHECK(mc_world_saved_data_retire(&extra_saved_data, NULL) == MC_WORLD_STORAGE_OK &&
+          extra_saved_data == NULL);
+    mc_world_source_chunk_loader *extra_loader = NULL;
+    CHECK(mc_world_source_chunk_loader_allocate(load.handler,
+                                                mc_world_store_source_regions(load.handler),
+                                                &extra_loader, NULL) == MC_WORLD_SOURCE_OK &&
+          mc_world_store_source_inspect(load.handler, &handler) && handler.holds == 5);
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "Store terminal source external Handler occurrence", NULL) == 0);
+    CHECK(mc_world_source_chunk_loader_retire(&extra_loader, NULL) == MC_WORLD_SOURCE_OK &&
+          extra_loader == NULL && mc_world_store_source_inspect(load.handler, &handler) &&
+          handler.holds == 4);
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "World terminal external Entity or TileEntity hold", NULL) == 0);
+
+    CHECK(mc_movement_input_retain(load.input, NULL) == MC_MOVEMENT_INPUT_OK);
+    mc_movement_input *extra_input = load.input;
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "Load terminal external Input occurrence", NULL) == 0);
+    CHECK(mc_movement_input_retire(&extra_input, NULL) == MC_MOVEMENT_INPUT_OK &&
+          extra_input == NULL);
+    CHECK(mc_client_singleplayer_controller_retain(app->controller) ==
+          MC_SINGLEPLAYER_CONTROLLER_OK);
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "Load terminal external controller occurrence", NULL) == 0);
+    CHECK(mc_client_singleplayer_controller_release(app->controller) ==
+          MC_SINGLEPLAYER_CONTROLLER_OK);
+    CHECK(mc_client_effect_renderer_retain(app->effect_renderer) == MC_EFFECT_RENDERER_OK);
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "Load terminal external effect occurrence", NULL) == 0);
+    CHECK(mc_client_effect_renderer_release(app->effect_renderer) == MC_EFFECT_RENDERER_OK);
+
+    /* One App plus a genuine independent native consumer, not a second App. */
+    mc_client_manager_consumer foreign = {0};
+    CHECK(mc_client_render_manager_consumer_attach(app->startup->manager_classes, &foreign, NULL) ==
+          MC_CLIENT_MANAGER_OK);
+    CHECK(mc_client_bootstrap_terminal_dispatchers(f->bootstrap) == MC_CLIENT_BOOTSTRAP_BUSY &&
+          foreign.attached && app->active_world == world && app->h == player && app->i == player &&
+          world->construction.phase == MC_WORLD_RUNTIME_READY &&
+          !world->entity_containers_retired && !world->tile_entity_containers_retired);
+    mc_client_menu_loop *same_loop = f->loop;
+    CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
+          terminal_source_diagnostic_same(f, &source) == 0 && foreign.attached &&
+          f->state.terminal_prepared && !f->state.terminal_tail_entered &&
+          f->state.retirement_bootstrap == MC_CLIENT_BOOTSTRAP_BUSY &&
+          f->state.retirement_world == NULL && f->state.retirement_operation != NULL &&
+          app->active_world == world && app->h == player && app->i == player &&
+          world->construction.phase == MC_WORLD_RUNTIME_READY &&
+          !world->entity_containers_retired && !world->tile_entity_containers_retired);
+    /* Close may end borrowed getters while the transition lease keeps the
+     * exact App/startup alive. The coordinator must still resume this owner. */
+    mc_client_bootstrap *same_bootstrap = f->bootstrap;
+    CHECK(mc_client_bootstrap_close(&f->bootstrap) == MC_CLIENT_BOOTSTRAP_BUSY &&
+          f->bootstrap == same_bootstrap && mc_client_bootstrap_app(f->bootstrap) == NULL &&
+          app->screen_transitions != NULL && app->active_world == world && app->h == player &&
+          app->i == player && terminal_source_diagnostic_same(f, &source) == 0);
+    CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
+          terminal_source_diagnostic_same(f, &source) == 0 && foreign.attached &&
+          !f->state.terminal_tail_entered &&
+          f->state.retirement_bootstrap == MC_CLIENT_BOOTSTRAP_BUSY &&
+          f->state.retirement_world == NULL && app->active_world == world &&
+          world->construction.phase == MC_WORLD_RUNTIME_READY &&
+          !world->entity_containers_retired && !world->tile_entity_containers_retired);
+    CHECK(mc_client_render_manager_consumer_detach(&foreign, NULL) == MC_CLIENT_MANAGER_OK);
+    CHECK(mc_client_bootstrap_terminal_dispatchers(f->bootstrap) == MC_CLIENT_BOOTSTRAP_OK &&
+          mc_client_bootstrap_terminal_dispatchers(f->bootstrap) == MC_CLIENT_BOOTSTRAP_OK &&
+          app->active_world == world && app->h == player && app->i == player &&
+          world->construction.phase == MC_WORLD_RUNTIME_READY &&
+          !world->entity_containers_retired && !world->tile_entity_containers_retired);
+    /* Dispatcher-owned Player occurrences have ended. An independent actual
+     * retain must now be the sole reason selected-load admission refuses. */
+    CHECK(mc_entity_retain(player) == MC_ENTITY_OK);
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_BUSY,
+                                   "World terminal external Entity or TileEntity hold", NULL) == 0);
+    mc_entity_release(player); /* End only the actual extra test occurrence. */
+    mc_world_terminal_inventory inventory;
+    CHECK(mc_world_runtime_terminal_admit(world, NULL, &inventory, NULL) == MC_WORLD_STORAGE_BUSY);
+    CHECK(loaded_admission_attempt(f, MC_WORLD_STORAGE_OK, NULL, &inventory) == 0 &&
+          inventory.entities == 1 && inventory.entity_occurrences == player->holds &&
+          inventory.tile_entities == 0 && inventory.tile_entity_occurrences == 0 &&
+          inventory.expected_world_bindings == 4 && !inventory.piston_discard_required);
+    return 0;
+}
+
+static int normal_terminal_retirement_controls(fixture *f, mc_client_source_da **external,
+                                               bool selected_load, bool source_left,
+                                               const mc_client_world_load_call *left_load) {
+    mc_client_menu_loop_state source;
+    client_application *app = f->app;
+    mc_client_menu_loop *same_loop = f->loop;
+    mc_client_screen_transitions *transitions = app->screen_transitions;
+    mc_client_singleplayer_controller *controller = app->controller;
+    mc_client_display *display = app->display;
+    SDL_Window *window = mc_client_display_window(display);
+    CHECK(external != NULL && *external != NULL && transitions != NULL && window != NULL &&
+          mc_client_menu_loop_inspect(f->loop, &source) && !source.terminal_tail_entered);
+    if (!selected_load) {
+        mc_client_terminal_storage_scope scope;
+        mc_world_storage_error error;
+        CHECK(mc_client_screen_transitions_terminal_classify(transitions, &scope, &error) ==
+                  MC_WORLD_STORAGE_OK &&
+              scope == MC_CLIENT_TERMINAL_EMPTY_STORAGE && error.status == MC_WORLD_STORAGE_OK);
+    } else if (source_left) {
+        mc_client_screen_transition_state retained;
+        mc_client_world_load_state load;
+        CHECK(controller != NULL && mc_client_screen_transitions_inspect(transitions, &retained) &&
+              retained.world_load != NULL &&
+              mc_client_world_load_inspect(left_load == NULL ? retained.world_load : left_load,
+                                           &load) &&
+              load.source_returned && load.leave.started && load.leave.calls == 1 &&
+              load.leave.i_cleared && load.world != NULL && load.player != NULL &&
+              load.input != NULL && app->i == NULL && app->view_occurrence == NULL &&
+              app->active_world == (load.leave.f_cleared ? NULL : load.world) &&
+              app->h == (load.leave.h_cleared ? NULL : load.player));
+    } else {
+        CHECK((loaded_draw_reached(&source) || unpaused_world_reached(&source, app)) &&
+              controller != NULL);
+    }
+    if (source_left) {
+        /* An external occurrence must refuse native retirement while the
+         * retained Load anchors the World, including after App.f/h were cleared. */
+        mc_client_effect_renderer *effects = app->effect_renderer;
+        mc_client_screen_transition_state retained;
+        mc_client_world_load_state load;
+        mc_effect_renderer_snapshot particles;
+        mc_client_terminal_storage_scope scope;
+        mc_world_storage_error error;
+        CHECK(mc_client_effect_renderer_retain(effects) == MC_EFFECT_RENDERER_OK &&
+              !mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
+              terminal_source_diagnostic_same(f, &source) == 0 && !f->state.terminal_tail_entered &&
+              f->state.retirement_world != NULL &&
+              f->state.retirement_world->status == MC_WORLD_STORAGE_BUSY &&
+              strcmp(f->state.retirement_world->operation,
+                     "Load terminal external effect occurrence") == 0 &&
+              mc_client_screen_transitions_inspect(transitions, &retained) &&
+              retained.world_load != NULL &&
+              mc_client_world_load_inspect(left_load == NULL ? retained.world_load : left_load,
+                                           &load) &&
+              load.world != NULL && load.player != NULL && load.leave.calls == 1 &&
+              load.leave.i_cleared &&
+              app->active_world == (load.leave.f_cleared ? NULL : load.world) &&
+              app->h == (load.leave.h_cleared ? NULL : load.player) && app->i == NULL &&
+              mc_client_effect_renderer_read(effects, &particles) &&
+              particles.world == load.world &&
+              mc_client_screen_transitions_terminal_classify(transitions, &scope, &error) ==
+                  MC_WORLD_STORAGE_OK &&
+              scope == MC_CLIENT_TERMINAL_SELECTED_LOAD &&
+              mc_client_effect_renderer_release(effects) == MC_EFFECT_RENDERER_OK);
+    }
+    CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
+          terminal_source_diagnostic_same(f, &source) == 0 && f->state.terminal_prepare_selected &&
+          f->state.terminal_prepared && f->state.terminal_tail_entered &&
+          f->state.retirement_operation != NULL &&
+          f->state.retirement_bootstrap == MC_CLIENT_BOOTSTRAP_OK &&
+          f->state.retirement_world == NULL);
+    /* The first retained screen occurs AFTER actual Load/World destruction.
+     * Inspect surviving owners only; the former World/Player views expired. */
+    mc_client_screen_transition_state retained;
+    mc_client_screen_state screen;
+    CHECK(app->screen_transitions == transitions &&
+          mc_client_screen_transitions_inspect(transitions, &retained) && !retained.active &&
+          retained.retiring && retained.terminal_prepared && retained.world_load == NULL &&
+          app->active_world == NULL && app->h == NULL && app->i == NULL &&
+          app->view_occurrence == NULL && app->controller == controller &&
+          app->native_lifetime_phase == MC_CLIENT_APPLICATION_LIFETIME_REGISTERED &&
+          app->display == display && mc_client_display_window(display) == window &&
+          SDL_GetWindowID(window) != 0 &&
+          mc_client_screen_inspect(*external, &screen, NULL) == MC_CLIENT_SCREEN_OK &&
+          screen.phase == MC_CLIENT_SCREEN_READY && screen.holds >= 2);
+    if (selected_load) {
+        mc_singleplayer_controller_snapshot current;
+        CHECK(mc_client_singleplayer_controller_read(controller, &current) &&
+              current.phase == MC_SINGLEPLAYER_CONTROLLER_READY && !current.entered &&
+              current.native_holds == 1);
+        CHECK(mc_client_singleplayer_controller_retain(controller) ==
+              MC_SINGLEPLAYER_CONTROLLER_OK);
+        CHECK(mc_client_screen_release(external, NULL) == MC_CLIENT_SCREEN_OK && *external == NULL);
+        CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
+              terminal_source_diagnostic_same(f, &source) == 0 && f->state.terminal_tail_entered &&
+              f->state.retirement_world == NULL &&
+              f->state.retirement_bootstrap == MC_CLIENT_BOOTSTRAP_OK &&
+              f->state.retirement_operation != NULL &&
+              strcmp(f->state.retirement_operation, "actual controller native retirement") == 0 &&
+              app->screen_transitions == transitions && app->controller == controller &&
+              app->active_world == NULL && app->h == NULL && app->i == NULL &&
+              mc_client_screen_transitions_inspect(transitions, &retained) &&
+              retained.world_load == NULL && !retained.active &&
+              mc_client_singleplayer_controller_read(controller, &current) && !current.entered &&
+              current.native_holds == 2);
+        CHECK(mc_client_singleplayer_controller_release(controller) ==
+              MC_SINGLEPLAYER_CONTROLLER_OK);
+    } else {
+        CHECK(mc_client_screen_release(external, NULL) == MC_CLIENT_SCREEN_OK && *external == NULL);
+    }
+    CHECK(mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == NULL &&
+          mc_client_menu_loop_terminal_retire(&f->loop));
+    CHECK(app->screen_transitions == NULL && app->controller == NULL && app->active_world == NULL &&
+          app->h == NULL && app->i == NULL && app->view_occurrence == NULL &&
+          app->native_lifetime_phase == MC_CLIENT_APPLICATION_LIFETIME_REGISTERED &&
+          app->display == display && mc_client_display_window(display) == window);
+    return 0;
+}
+
+/* Authored malformed Player NBT reaches the real source exception after a
+ * nonnull World/Player/Input graph was acquired. This is a refusal control,
+ * not a normal-shutdown fallback for that unsupported partial graph. */
+static int partial_world_terminal_controls(fixture *f, mc_client_source_da **external,
+                                           const mc_client_world_load_state *failed_load) {
+    client_application *app = f->app;
+    mc_world_runtime *world = failed_load->world;
+    mc_entity *player = failed_load->player;
+    mc_client_menu_loop_state source;
+    CHECK(mc_client_menu_loop_inspect(f->loop, &source) && source.failed &&
+          source.source_class != NULL && strcmp(source.source_class, "fd") == 0 &&
+          source.source_method != NULL && strcmp(source.source_method, "a") == 0 &&
+          source.source_pc == 88 && !source.terminal_tail_entered);
+    CHECK(world != NULL && player != NULL && failed_load->handler != NULL &&
+          failed_load->input != NULL && failed_load->failure != NULL &&
+          failed_load->failure->status == MC_CLIENT_WORLD_LOAD_CHILD_FAILED &&
+          failed_load->last_change_pc == 324 && !failed_load->source_returned &&
+          !failed_load->player_load_returned && !failed_load->view_published &&
+          failed_load->handler_opened && failed_load->world_constructed &&
+          failed_load->world_published && failed_load->player_published &&
+          failed_load->input_published && failed_load->renderer_returned &&
+          failed_load->effects_returned && !failed_load->needs_conversion &&
+          failed_load->failure->child.class_name != NULL &&
+          strcmp(failed_load->failure->child.class_name, "fd") == 0 &&
+          strcmp(failed_load->failure->child.method, "a") == 0 &&
+          strcmp(failed_load->failure->child.descriptor, "(Lgs;)V") == 0 &&
+          failed_load->failure->child.pc == 88);
+    const mc_world_player_load_error *cause = failed_load->failure->player_load;
+    CHECK(cause != NULL && cause->saved_data_present && cause->print_stack_trace_pending &&
+          cause->catch_bytecode == 88 && cause->source_exception && cause->caught_exception &&
+          !cause->source_returned && !cause->nbt_returned && !cause->info_cleared &&
+          !cause->publication_returned && cause->nbt.status == MC_ENTITY_NBT_INDEX_OUT_OF_BOUNDS &&
+          cause->nbt.base_bytecode == 129 && cause->nbt.index == 0 && cause->nbt.field != NULL &&
+          strcmp(cause->nbt.field, "Pos") == 0);
+    CHECK(app->active_world == world && app->h == player && app->i == NULL &&
+          app->view_occurrence == NULL && world->construction.phase == MC_WORLD_RUNTIME_READY &&
+          !world->entity_containers_retired && !world->tile_entity_containers_retired &&
+          player->base.velocity_x == 0.25 && player->base.velocity_y == -0.5 &&
+          player->base.velocity_z == 0.75);
+    mc_entity_base_fields base;
+    memcpy(&base, &player->base, sizeof(base));
+    mc_client_menu_loop *same_loop = f->loop;
+    CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
+          terminal_source_diagnostic_same(f, &source) == 0 && f->state.terminal_prepared &&
+          !f->state.terminal_tail_entered &&
+          f->state.retirement_bootstrap == MC_CLIENT_BOOTSTRAP_OK &&
+          f->state.retirement_world != NULL &&
+          f->state.retirement_world->status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          app->active_world == world && app->h == player && app->i == NULL &&
+          app->view_occurrence == NULL && world->construction.phase == MC_WORLD_RUNTIME_READY &&
+          !world->entity_containers_retired && !world->tile_entity_containers_retired &&
+          memcmp(&base, &player->base, sizeof(base)) == 0);
+
+    /* Native prefix/dispatcher ending has completed. A repeated refusal must
+     * preserve these actual source owners, diagnostics and cache backing. */
+    mc_world_source_state handler;
+    mc_world_source_chunk_loader_state loader;
+    mc_world_saved_data_source_state saved_data;
+    mc_chunk_provider_fields provider;
+    mc_movement_input_state input_before, input_after;
+    CHECK(mc_world_store_source_inspect(failed_load->handler, &handler) &&
+          mc_world_source_chunk_loader_inspect(world->source_construction->loader, &loader) &&
+          mc_world_saved_data_source_inspect(world->fields.z, &saved_data) &&
+          mc_chunk_provider_bind_fields(world->fields.v, &provider, NULL) == MC_WORLD_STORAGE_OK &&
+          provider.cache != NULL && provider.pending != NULL &&
+          mc_movement_input_read_state(failed_load->input, &input_before));
+
+    struct partial_copy {
+        const void *owner;
+        size_t bytes;
+        unsigned char *before;
+    } copies[] = {{app, sizeof(*app), NULL},
+                  {world, sizeof(*world), NULL},
+                  {player, sizeof(*player), NULL},
+                  {world->source_construction, sizeof(*world->source_construction), NULL},
+                  {world->classes, sizeof(*world->classes), NULL},
+                  {failed_load->failure, sizeof(*failed_load->failure), NULL},
+                  {failed_load->cleanup, sizeof(*failed_load->cleanup), NULL},
+                  {cause, sizeof(*cause), NULL},
+                  {handler.failure, sizeof(*handler.failure), NULL},
+                  {handler.cleanup, sizeof(*handler.cleanup), NULL},
+                  {loader.failure, sizeof(*loader.failure), NULL},
+                  {loader.cleanup, sizeof(*loader.cleanup), NULL},
+                  {saved_data.failure, sizeof(*saved_data.failure), NULL},
+                  {saved_data.cleanup, sizeof(*saved_data.cleanup), NULL},
+                  {provider.cache, sizeof(*provider.cache), NULL},
+                  {provider.cache->entries,
+                   provider.cache->capacity * sizeof(*provider.cache->entries), NULL},
+                  {provider.cache->insertions,
+                   provider.cache->insertion_capacity * sizeof(*provider.cache->insertions), NULL},
+                  {provider.pending, sizeof(*provider.pending), NULL},
+                  {provider.pending->keys,
+                   provider.pending->capacity * sizeof(*provider.pending->keys), NULL}};
+
+    for (size_t i = 0; i < sizeof(copies) / sizeof(copies[0]); ++i) {
+        CHECK(copies[i].owner != NULL && copies[i].bytes != 0);
+        copies[i].before = malloc(copies[i].bytes);
+        CHECK(copies[i].before != NULL);
+        memcpy(copies[i].before, copies[i].owner, copies[i].bytes);
+    }
+    CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) && f->loop == same_loop &&
+          terminal_source_diagnostic_same(f, &source) == 0 && !f->state.terminal_tail_entered &&
+          f->state.retirement_world != NULL &&
+          f->state.retirement_world->status == MC_WORLD_STORAGE_UNSUPPORTED_STATE);
+    for (size_t i = 0; i < sizeof(copies) / sizeof(copies[0]); ++i) {
+        CHECK(memcmp(copies[i].before, copies[i].owner, copies[i].bytes) == 0);
+        free(copies[i].before);
+    }
+    CHECK(mc_movement_input_read_state(failed_load->input, &input_after) &&
+          input_after.kind == input_before.kind &&
+          input_after.native_holds == input_before.native_holds &&
+          input_after.settings == input_before.settings &&
+          input_after.keys_identity == input_before.keys_identity &&
+          input_after.key_count == input_before.key_count &&
+          memcmp(input_after.keys, input_before.keys, sizeof(input_after.keys)) == 0 &&
+          memcmp(&input_after.fields.strafe, &input_before.fields.strafe, sizeof(float)) == 0 &&
+          memcmp(&input_after.fields.forward, &input_before.fields.forward, sizeof(float)) == 0 &&
+          input_after.fields.source_c == input_before.fields.source_c &&
+          input_after.fields.jump == input_before.fields.jump &&
+          input_after.fields.sneak == input_before.fields.sneak);
+
+    /* Deliberate fixture-owned low-level cleanup AFTER the normal coordinator
+     * refused. The production normal runner must never choose this fallback. */
+    CHECK(external != NULL && *external != NULL && !mc_client_menu_loop_retire(&f->loop) &&
+          f->loop == same_loop && terminal_source_diagnostic_same(f, &source) == 0 &&
+          !f->state.terminal_tail_entered && app->active_world == NULL && app->h == NULL &&
+          app->i == NULL);
+    CHECK(mc_client_screen_release(external, NULL) == MC_CLIENT_SCREEN_OK && *external == NULL);
+    CHECK(mc_client_menu_loop_retire(&f->loop) && f->loop == NULL);
+    puts("WORLD_LOAD_PARTIAL world-ready=1 player-nbt=Pos129:0 load-change=324 child=fd.a:88 "
+         "coordinator-refused=1 explicit-legacy-cleanup=1");
+    return 0;
+}
+
+/* Three independent loaded invocations keep every declared actor observable
+ * in the existing first-Entity receipt. They add no production tracing. */
+typedef struct animal_profile {
+    const char *mode, *name, *source_class, *renderer_class, *model_class;
+    mc_entity_class_kind kind;
+    unsigned int constructor_pc, model_pc;
+    size_t rendered_parts, graph_parts;
+} animal_profile;
+
+static const animal_profile animal_profiles[] = {
+    {"animals-pig", "pig", "wh", "me", "eh", MC_ENTITY_CLASS_KIND_PIG, 19, 67, 6, 12},
+    {"animals-cow", "cow", "bx", "va", "hh", MC_ENTITY_CLASS_KIND_COW, 19, 40, 9, 9},
+    {"animals-chicken", "chicken", "ww", "ip", "td", MC_ENTITY_CLASS_KIND_CHICKEN, 62, 85, 8, 8}};
+
+static const animal_profile *animal_profile_get(const char *mode) {
+    for (size_t i = 0; i < sizeof(animal_profiles) / sizeof(*animal_profiles); ++i)
+        if (!strcmp(mode, animal_profiles[i].mode))
+            return &animal_profiles[i];
+    return NULL;
+}
+
+static int animal_input(fixture *f, const animal_profile *profile) {
+    mc_world_runtime *world = f->app->active_world;
+    mc_entity *player = f->app->i;
+    CHECK(world != NULL && player == f->app->h && f->app->r == NULL && !f->state.failed &&
+          f->state.render_returned && f->state.world_frame != NULL &&
+          f->state.world_frame->returned && f->animal_identity == 0 &&
+          mc_entity_is_kind(player, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
+          player->base.world == world && player->classes == world->classes->entities &&
+          world->fields.r != NULL);
+
+    struct animal_input_work {
+        mc_entity_view_error view;
+        mc_mob_error constructor;
+        mc_mob_error size;
+        mc_world_light_error height;
+        mc_world_entity_error publication;
+    } *work = calloc(1, sizeof(*work));
+
+    CHECK(work != NULL);
+    const double player_x = player->base.x, player_y = player->base.y, player_z = player->base.z;
+    const float player_yaw = player->base.yaw, player_pitch = player->base.aT;
+    const mc_java_random world_random = *world->fields.r;
+    mc_entity_vector *eye = NULL, *look = NULL;
+    CHECK(mc_entity_living_position(player, 1.0f, &eye, &work->view) == MC_ENTITY_VIEW_OK &&
+          mc_entity_living_look_current(player, mc_client_bootstrap_math(f->bootstrap), &look,
+                                        &work->view) == MC_ENTITY_VIEW_OK &&
+          eye != NULL && look != NULL && look->y > -.25 && look->y < .25);
+    const double x = eye->x + look->x * 6.0, z = eye->z + look->z * 6.0;
+    CHECK(mc_entity_vector_release(player->classes, look) == MC_ENTITY_OK &&
+          mc_entity_vector_release(player->classes, eye) == MC_ENTITY_OK);
+    const int32_t block_x = mc_math_floor_double(x), block_z = mc_math_floor_double(z);
+    int32_t height = 0, air = -1;
+    mc_world_storage_error error;
+    CHECK(mc_world_runtime_height(world, block_x, block_z, &height, &work->height) ==
+              MC_WORLD_STORAGE_OK &&
+          height == 64 &&
+          mc_world_runtime_block_get(world, block_x, height, block_z, &air, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          air == 0 &&
+          mc_world_runtime_block_get(world, block_x, height + 1, block_z, &air, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          air == 0);
+    const mc_entity_class_literal *literal = NULL;
+    mc_entity *animal = NULL;
+    CHECK(mc_entity_class_literal_get(player->classes, profile->kind, &literal) == MC_ENTITY_OK &&
+          mc_mob_allocate(player->classes, f->app->registry, literal, &animal,
+                          &work->constructor) == MC_MOB_OK &&
+          animal != NULL && mc_mob_construct(animal, world, &work->constructor) == MC_MOB_OK &&
+          animal->phase == MC_ENTITY_READY && animal->classes == player->classes &&
+          animal->class_literal == literal && animal->base.world == world &&
+          animal->bounds != NULL);
+    if (profile->kind == MC_ENTITY_CLASS_KIND_SLIME) {
+        /* Declared caller input through the actual UW.e(I) body. The raw
+         * constructor already completed and its private entropy stays intact. */
+        CHECK(animal->random != NULL);
+        const mc_java_random own_random = *animal->random;
+        CHECK(mc_mob_slime_set_size(animal, 1, &work->size) == MC_MOB_OK &&
+              mc_test_java_random_equal(&own_random, animal->random));
+    }
+    CHECK(mc_entity_set_position(animal, x, (double)height, z) == MC_ENTITY_OK &&
+          animal->base.x == x && animal->base.y == (double)height && animal->base.z == z &&
+          animal->bounds->min_y == (double)height &&
+          animal->bounds->max_y > animal->bounds->min_y && animal->bounds->min_x < x &&
+          animal->bounds->max_x > x && animal->bounds->min_z < z && animal->bounds->max_z > z);
+    const size_t before = world->entity_membership.count;
+    CHECK(before == 1); /* Entity-empty save plus the actual published Player. */
+    bool inserted = false;
+    CHECK(mc_world_runtime_insert_entity(world, animal, &inserted, &work->publication) ==
+              MC_WORLD_STORAGE_OK &&
+          inserted && animal->base.bF && world->fields.b == world->entity_membership.list &&
+          world->fields.b->count == before + 1 && world->entity_membership.count == before + 1 &&
+          world->fields.b->items[before] == animal &&
+          world->entity_membership.entries[before] == animal);
+    mc_chunk_state *chunk_state = NULL;
+    CHECK(mc_world_runtime_get(world, animal->base.bG, animal->base.bI, &chunk_state) ==
+              MC_CHUNK_ACQUIRE_OK &&
+          chunk_state != NULL && !chunk_state->blank);
+    mc_world_chunk *chunk = mc_world_store_chunk_object(world->fields.w, chunk_state);
+    mc_world_chunk_fields chunk_fields;
+    const mc_world_chunk_entity_list *slice = NULL;
+    size_t count = 0, occurrences = 0;
+    CHECK(chunk != NULL && mc_world_chunk_fields_get(chunk, &chunk_fields) == MC_WORLD_STORAGE_OK &&
+          chunk_fields.d == world && chunk_fields.j == animal->base.bG &&
+          chunk_fields.k == animal->base.bI && chunk_fields.q && animal->base.bH == 4 &&
+          mc_world_chunk_slice_at(chunk_fields.m, (size_t)animal->base.bH, &slice) ==
+              MC_WORLD_STORAGE_OK &&
+          mc_world_chunk_entity_count(slice, &count) == MC_WORLD_STORAGE_OK);
+    for (size_t index = 0; index < count; ++index) {
+        mc_entity *entry = NULL;
+        CHECK(mc_world_chunk_entity_at(slice, index, &entry) == MC_WORLD_STORAGE_OK);
+        if (entry == animal)
+            ++occurrences;
+    }
+    CHECK(occurrences == 1 && animal->holds >= 3 && player->base.x == player_x &&
+          player->base.y == player_y && player->base.z == player_z &&
+          player->base.yaw == player_yaw && player->base.aT == player_pitch &&
+          mc_test_java_random_equal(&world_random, world->fields.r));
+    f->animal_identity = (uintptr_t)animal;
+    const size_t holds = animal->holds;
+    mc_entity_release(animal); /* End only this genuine constructor occurrence. */
+    animal = NULL;
+    mc_entity *published = world->entity_membership.entries[before];
+    CHECK((uintptr_t)published == f->animal_identity && published->holds == holds - 1 &&
+          published->base.world == world && mc_entity_is_kind(published, profile->kind));
+    free(work);
+    if (strncmp(profile->mode, "creatures-", 10) == 0)
+        printf("WORLD_CREATURE_ENTITY profile=%s input=native-constructed pose=actual-player-look "
+               "distance=6 world-and-chunk=1 same-world-and-classes=1 constructor-returned=1 "
+               "constructor-hold-released=1 player-unchanged=1 world-random-unchanged=1 "
+               "slime-size=%s\n",
+               profile->name, profile->kind == MC_ENTITY_CLASS_KIND_SLIME ? "1" : "not-applicable");
+    else if (strncmp(profile->mode, "remaining-", 10) == 0)
+        printf("WORLD_REMAINING_ENTITY profile=%s input=native-constructed pose=actual-player-look "
+               "distance=6 world-and-chunk=1 same-world-and-classes=1 constructor-returned=1 "
+               "constructor-hold-released=1 player-unchanged=1 world-random-unchanged=1\n",
+               profile->name);
+    else
+        printf("WORLD_ANIMAL_ENTITY profile=%s input=native-constructed pose=actual-player-look "
+               "distance=6 world-and-chunk=1 same-world-and-classes=1 constructor-returned=1 "
+               "constructor-hold-released=1 player-unchanged=1 world-random-unchanged=1\n",
+               profile->name);
+    return 0;
+}
+
+static mc_entity *animal_live(const fixture *f) {
+    mc_world_runtime *world = f->app->active_world;
+    if (world == NULL || world->fields.b != world->entity_membership.list ||
+        world->fields.b->count != world->entity_membership.count)
+        return NULL;
+    for (size_t i = 0; i < world->entity_membership.count; ++i) {
+        mc_entity *entity = world->entity_membership.entries[i];
+        if (world->fields.b->items[i] != entity)
+            return NULL;
+        if ((uintptr_t)entity == f->animal_identity)
+            return entity;
+    }
+    return NULL;
+}
+
+static int animal_model_graph(fixture *f, const animal_profile *profile,
+                              repeat_render_control *control, bool compiled) {
+    mc_entity *animal = animal_live(f);
+    CHECK(animal != NULL && animal->phase == MC_ENTITY_READY && animal->bounds != NULL &&
+          animal->base.world == f->app->active_world && animal->classes == f->app->entities &&
+          mc_entity_is_kind(animal, profile->kind) && !animal->base.be && animal->base.bF);
+    mc_mob_state mob;
+    CHECK(mc_mob_inspect(animal, &mob) && mob.kind == profile->kind &&
+          mob.constructor_pc == profile->constructor_pc);
+    if (profile->kind == MC_ENTITY_CLASS_KIND_PIG)
+        CHECK(mob.watcher_16_present && mob.watcher_16_type == 0 && (mob.watcher_16 & 1) == 0);
+    mc_client_manager_state manager;
+    CHECK(mc_client_render_manager_inspect(f->app->startup->manager_classes, &manager) &&
+          manager.phase == MC_CLIENT_MANAGER_READY && manager.a != NULL &&
+          client_renderer_roster(f->app, (mc_client_render_manager *)manager.a, &manager));
+    mc_client_managed_renderer *renderer = NULL;
+    for (size_t i = 0; i < manager.entries; ++i) {
+        const mc_entity_class_literal *key = NULL;
+        mc_client_managed_renderer *owner = NULL;
+        CHECK(mc_client_render_manager_entry((mc_client_render_manager *)manager.a, i, &key, &owner,
+                                             NULL) == MC_CLIENT_MANAGER_OK);
+        if (key == animal->class_literal)
+            renderer = owner;
+    }
+    mc_client_managed_renderer_state state;
+    CHECK(renderer != NULL && mc_client_managed_renderer_inspect(renderer, &state) &&
+          state.phase == MC_CLIENT_MODEL_READY && state.identity == renderer &&
+          state.manager == manager.a && state.source_class != NULL &&
+          !strcmp(state.source_class, profile->renderer_class) &&
+          state.primary == renderer->primary && state.secondary == renderer->secondary &&
+          renderer->primary != NULL && renderer->primary->phase == MC_CLIENT_MODEL_READY &&
+          !strcmp(renderer->primary->source_class, profile->model_class));
+    if (profile->kind == MC_ENTITY_CLASS_KIND_PIG)
+        CHECK(renderer->secondary != NULL && renderer->secondary != renderer->primary &&
+              renderer->secondary->phase == MC_CLIENT_MODEL_READY &&
+              !strcmp(renderer->secondary->source_class, "eh"));
+    else
+        CHECK(renderer->secondary == NULL);
+    if (control->renderer == 0) {
+        control->renderer = (uintptr_t)renderer;
+        control->primary = (uintptr_t)renderer->primary;
+        control->secondary = (uintptr_t)renderer->secondary;
+    }
+    CHECK(control->renderer == (uintptr_t)renderer &&
+          control->primary == (uintptr_t)renderer->primary &&
+          control->secondary == (uintptr_t)renderer->secondary);
+    manager_model *model = renderer->primary;
+    mc_client_model_part *parts[12] = {0};
+    if (profile->kind == MC_ENTITY_CLASS_KIND_CHICKEN) {
+        mc_client_model_part *selected[] = {model->fields.a, model->fields.g, model->fields.h,
+                                            model->fields.b, model->fields.c, model->fields.d,
+                                            model->fields.e, model->fields.f};
+        memcpy(parts, selected, sizeof(selected));
+    } else {
+        mc_client_model_part *selected[] = {model->fields.d, model->fields.e, model->fields.f,
+                                            model->fields.g, model->fields.h, model->fields.i};
+        memcpy(parts, selected, sizeof(selected));
+        if (profile->kind == MC_ENTITY_CLASS_KIND_COW) {
+            parts[6] = model->fields.b;
+            parts[7] = model->fields.c;
+            parts[8] = model->fields.a;
+        } else {
+            model = renderer->secondary;
+            mc_client_model_part *secondary[] = {model->fields.d, model->fields.e, model->fields.f,
+                                                 model->fields.g, model->fields.h, model->fields.i};
+            memcpy(parts + 6, secondary, sizeof(secondary));
+        }
+    }
+    for (size_t i = 0; i < profile->graph_parts; ++i) {
+        mc_client_model_part *part = parts[i];
+        const bool rendered = compiled && i < profile->rendered_parts;
+        CHECK(part != NULL && part->h && !part->i && part->n == rendered);
+        if (control->parts[i] == 0)
+            control->parts[i] = (uintptr_t)part;
+        CHECK(control->parts[i] == (uintptr_t)part);
+        for (size_t j = 0; j < i; ++j)
+            CHECK(control->parts[j] != (uintptr_t)part);
+        if (rendered) {
+            mc_client_source_list_state list;
+            CHECK(part->o > 0 && mc_client_display_list_inspect(f->app->display, part->o, &list) &&
+                  list.defined && !list.building && list.draws == 6 && list.vertices == 36);
+            for (size_t face = 0; face < 6; ++face) {
+                mc_client_source_batch_view batch;
+                CHECK(mc_client_display_list_batch(f->app->display, part->o, face, &batch) &&
+                      batch.mode == 4 && batch.vertices == 6 && batch.byte_count == 192);
+            }
+            if (control->lists[i] == 0)
+                control->lists[i] = part->o;
+            CHECK(control->lists[i] == part->o);
+            for (size_t j = 0; j < i; ++j)
+                CHECK(control->lists[j] != part->o);
+        } else {
+            CHECK(part->o == 0);
+        }
+    }
+    if (compiled)
+        CHECK(manager.fields.g == f->app->active_world && manager.living_occurrence == f->app->i &&
+              manager.fields.k == f->app->settings && animal->base.bt > 0);
+    return 0;
+}
+
+static int animal_returned_frame(fixture *f, const animal_profile *profile,
+                                 repeat_render_control *control) {
+    const mc_client_menu_loop_state *source = &f->state;
+    const mc_client_world_frame_state *frame = source->world_frame;
+    const mc_client_gui_ingame_draw_state *hud = source->hud;
+    CHECK(!source->failed && source->running && source->render_returned &&
+          source->render_clock_stored && source->world_draws > 0 &&
+          source->world_draws == source->hud_draws && frame != NULL && !frame->active &&
+          frame->returned && frame->source_pc == 1013 && frame->app == f->app &&
+          frame->world == f->app->active_world && frame->owner == f->app->t &&
+          frame->camera == f->app->i && frame->render_global == f->app->g &&
+          frame->failure != NULL && frame->failure->status == MC_CLIENT_WORLD_FRAME_OK &&
+          frame->failure->entities == NULL && frame->failure->hand == NULL);
+    CHECK(frame->picking_returned && frame->viewport_set && frame->fog_returned &&
+          frame->camera_returned && frame->frustum_returned && frame->sky_returned &&
+          frame->updates_returned && frame->terrain_returned && frame->lighting_enabled &&
+          frame->eye_position_returned && frame->entities_returned &&
+          frame->lit_particles_returned && frame->sprite_particles_returned &&
+          frame->translucent_returned && frame->translucent_state_restored &&
+          frame->precipitation_returned && frame->clouds_returned && frame->hand_returned &&
+          frame->hand != NULL && frame->hand->returned && frame->hand->source_pc == 163 &&
+          frame->hand->held_returned && frame->hand->overlays_returned &&
+          frame->tail_anaglyph_read && !frame->tail_anaglyph);
+    CHECK(hud != NULL && !hud->active && hud->returned && hud->source_pc == 2101 &&
+          hud->projection_returned && hud->hotbar_returned && hud->crosshair_returned &&
+          hud->stats_returned && hud->slots_returned && hud->empty_slots == 9 &&
+          hud->chat_returned && hud->owner == NULL && hud->failure == NULL && hud->cleanup == NULL);
+    const mc_client_render_global_entities_state *entities = frame->entities;
+    CHECK(entities != NULL && !entities->active && entities->returned && !entities->retiring &&
+          entities->draw == NULL && entities->owner == NULL && entities->current == NULL &&
+          entities->entities_list == NULL && entities->eye == NULL && entities->frustum == NULL &&
+          entities->ll == NULL && entities->th == NULL && entities->failure == NULL &&
+          entities->cleanup == NULL);
+    ++control->frames;
+    if (entities->delayed) {
+        CHECK(entities->source_pc == 17 && entities->draws_attempted == 0 &&
+              !entities->first_entity_draw.valid && !control->compiled);
+        ++control->delayed_frames;
+        return 0;
+    }
+    CHECK(
+        entities->source_pc == 569 && entities->ll_returned && entities->th_returned &&
+        entities->counters_cleared && entities->origins_stored && entities->origins_written == 6 &&
+        entities->entities_visited == f->app->active_world->entity_membership.count &&
+        entities->entities_visited >= 2 && entities->distance_checks == entities->entities_visited);
+    mc_entity *animal = animal_live(f);
+    if (entities->draws_attempted == 0) {
+        CHECK(animal != NULL && animal->base.bt == 0 && !control->compiled &&
+              f->app->active_world->entity_membership.count == 2 &&
+              entities->entities_visited == 2 && entities->distance_checks == 2 &&
+              entities->frustum_checks == 2 && entities->camera_skips == 1 &&
+              entities->presence_checks == 0 && entities->draws_returned == 0 &&
+              entities->draws_retired == 0 && entities->entity_draws_returned == 0 &&
+              entities->weather_draws_returned == 0 && !entities->first_entity_draw.valid &&
+              !entities->last_draw.valid && entities->model_parts_compiled == 0 &&
+              entities->model_faces == 0 && entities->model_vertices == 0 &&
+              entities->shadow_quads == 0 && f->app->r == NULL && !atomic_load(&f->app->o));
+        CHECK(animal_model_graph(f, profile, control, false) == 0);
+        ++control->undrawn_frames;
+        return 0;
+    }
+    CHECK(entities->presence_checks >= 1 && entities->draws_attempted == entities->draws_returned &&
+          entities->draws_returned == entities->draws_retired &&
+          entities->entity_draws_returned > 0);
+    const mc_client_render_global_draw_receipt *draw = &entities->first_entity_draw;
+    CHECK(animal != NULL && repeat_world_work(source) && draw->valid && draw->returned &&
+          draw->retired && !draw->post_only && draw->n_invoke_pc == 516 &&
+          draw->th_source_pc == 115 && draw->living_source_pc == 769 &&
+          draw->post_draw_source_pc == 100 && draw->actor_identity == f->animal_identity &&
+          draw->actor_class_identity == (uintptr_t)animal->class_literal &&
+          draw->actor_kind == (int32_t)profile->kind && draw->actor_class_name != NULL &&
+          !strcmp(draw->actor_class_name, profile->source_class) &&
+          draw->renderer_identity == control->renderer && draw->renderer_class_name != NULL &&
+          !strcmp(draw->renderer_class_name, profile->renderer_class) && draw->primary_returned &&
+          draw->post_draw_returned && draw->primary_event_returned);
+    CHECK(draw->primary_model.identity == control->primary &&
+          draw->primary_model.class_name != NULL &&
+          !strcmp(draw->primary_model.class_name, profile->model_class) &&
+          draw->primary_model.returned && draw->primary_model.source_pc == profile->model_pc &&
+          draw->primary_model.part_calls == profile->rendered_parts &&
+          draw->primary_model.part_returns == profile->rendered_parts &&
+          draw->secondary_model.identity == 0 && !draw->secondary_model.returned);
+    for (size_t i = 0; i < 4; ++i)
+        CHECK(draw->pass_attempted[i] && !draw->pass_result[i] && !draw->pass_render_returned[i]);
+    CHECK(draw->shadow_quads > 0 && draw->shadow_vertices == draw->shadow_quads * 4 &&
+          draw->shadow_block_queries > 0 && draw->shadow_light_queries > 0 &&
+          draw->shadow_normal_queries >= draw->shadow_quads &&
+          draw->shadow_brightness_queries >= draw->shadow_quads);
+    if (!control->compiled) {
+        CHECK(draw->model_parts_compiled == profile->rendered_parts &&
+              draw->primary_model.compiled_parts == profile->rendered_parts &&
+              draw->model_faces == profile->rendered_parts * 6 &&
+              draw->model_vertices == profile->rendered_parts * 24);
+        control->compile_parts = draw->model_parts_compiled;
+        control->compile_faces = draw->model_faces;
+        control->compile_vertices = draw->model_vertices;
+        control->compiled = true;
+    } else {
+        CHECK(draw->model_parts_compiled == 0 && draw->primary_model.compiled_parts == 0 &&
+              draw->model_faces == 0 && draw->model_vertices == 0);
+        control->reuse_parts = draw->model_parts_compiled;
+        control->reused = true;
+    }
+    CHECK(animal_model_graph(f, profile, control, true) == 0);
+    ++control->entity_frames;
+    control->shadow_quads += draw->shadow_quads;
+    return 0;
+}
+
+static int animal_controls(fixture *f, const animal_profile *profile, const char *capture_path) {
+    CHECK(repeat_statistics_controls(f, false) == 0 && f->app->r == NULL &&
+          !atomic_load(&f->app->o) && display_focus(f, true) == 0 &&
+          repeat_focus_state(f, "animal-entry") == 0);
+    printf("WORLD_ANIMAL_PROFILE profile=%s scopes=independent-loaded "
+           "statistics-input=pre-bootstrap-unsent-file open-inventory=1 "
+           "canonical=ep.f notice-inactive=1 native-integration-only=1\n",
+           profile->name);
+    CHECK(animal_input(f, profile) == 0);
+    SDL_Delay(100); /* The real Timer decides the number of source ticks. */
+    repeat_render_control control = {0};
+    CHECK(animal_model_graph(f, profile, &control, false) == 0);
+    const uint64_t ticks_before = f->state.world_tick_returns;
+    const uint64_t draws_before = f->state.world_draws;
+    const uint64_t started = SDL_GetTicks(), deadline = started + 60000;
+    while (!control.reused && control.frames < 8 && SDL_GetTicks() < deadline) {
+        CHECK(display_focus(f, true) == 0 && repeat_focus_state(f, "animal-before-frame") == 0);
+        const bool returned = mc_client_menu_loop_frame(f->loop);
+        CHECK(mc_client_menu_loop_inspect(f->loop, &f->state));
+        if (!returned)
+            fprintf(stderr, "Animal %s retained %s.%s:%" PRId64 " %s\n", profile->name,
+                    f->state.source_class == NULL ? "native" : f->state.source_class,
+                    f->state.source_method == NULL ? "frame" : f->state.source_method,
+                    f->state.source_pc, f->state.operation == NULL ? "none" : f->state.operation);
+        CHECK(returned && repeat_focus_state(f, "animal-returned-frame") == 0 &&
+              animal_returned_frame(f, profile, &control) == 0);
+        if (!control.reused)
+            SDL_Delay(100);
+    }
+    if (!control.reused) {
+        mc_entity *animal = animal_live(f);
+        fprintf(stderr,
+                "Animal %s deadline elapsed-seconds=%" PRIu64
+                " limit-seconds=60 frames=%zu delayed=%zu undrawn=%zu entity-frames=%zu "
+                "paused=%d screen=%d actor-ticks=%d\n",
+                profile->name, (SDL_GetTicks() - started) / UINT64_C(1000), control.frames,
+                control.delayed_frames, control.undrawn_frames, control.entity_frames,
+                (int)atomic_load(&f->app->o), f->app->r == NULL ? -1 : (int)f->app->r->kind,
+                animal == NULL ? -1 : animal->base.bt);
+    }
+    CHECK(control.compiled && control.reused && control.entity_frames >= 2 && control.frames >= 2 &&
+          control.frames <= 8 &&
+          control.frames ==
+              control.entity_frames + control.delayed_frames + control.undrawn_frames &&
+          f->state.world_tick_returns > ticks_before &&
+          f->state.world_draws == draws_before + control.frames &&
+          repeat_statistics_controls(f, false) == 0);
+    printf(
+        "WORLD_ANIMAL_FRAME profile=%s frames=%zu entity-frames=%zu delayed-frames=%zu "
+        "undrawn-frames=%zu source=px.a:1013 entities=n.a:569 hud=uq.a:2101 "
+        "mob=%s renderer=%s primary=%s exact-declared-actor=1 "
+        "renderer-map=29 constructor-owners=28 local-player-alias=gs same-world-and-classes=1 "
+        "compiled-parts=%zu reused-parts=%zu compiled-faces=%zu compiled-vertices=%zu "
+        "part-lists=%zu unused-secondary-parts=%zu part-source-vertices=24 part-list-vertices=36 "
+        "stable-list-ids=1 shadow-quads=%zu checked-draw-retirement=1 copied-receipts=1 "
+        "tick-return=1328 scheduler=198 completed-random-calls=%" PRIu64
+        " completed-chunks=%zu completed-samples=%" PRIu64 " display-calls=%" PRIu64
+        " display-samples=%" PRIu64 " display-random=%" PRIu64 "\n",
+        profile->name, control.frames, control.entity_frames, control.delayed_frames,
+        control.undrawn_frames, profile->source_class, profile->renderer_class,
+        profile->model_class, control.compile_parts, control.reuse_parts, control.compile_faces,
+        control.compile_vertices, profile->rendered_parts,
+        profile->graph_parts - profile->rendered_parts, control.shadow_quads,
+        f->state.random_chunk_calls, f->state.last_random_chunk_count,
+        f->state.random_chunk_samples, f->state.random_display_calls,
+        f->state.random_display_samples, f->state.random_display_random_calls);
+    CHECK(capture(f, capture_path) == 0);
+    return 0;
+}
+
+/* Independent sessions keep the exact declared actor in the existing copied
+ * N receipt. No model slot, constructor entropy or simulation field is edited. */
+typedef struct creature_profile {
+    animal_profile actor;
+    size_t primary_parts, secondary_parts;
+    const char *secondary_class;
+    unsigned int secondary_pc;
+} creature_profile;
+
+static const creature_profile creature_profiles[] = {
+    {{"creatures-spider", "spider", "cn", "yx", "sc", MC_ENTITY_CLASS_KIND_SPIDER, 25, 112, 22, 22},
+     11,
+     11,
+     "sc",
+     112},
+    {{"creatures-slime", "slime", "uw", "mj", "no", MC_ENTITY_CLASS_KIND_SLIME, 53, 56, 5, 5},
+     4,
+     1,
+     "no",
+     56},
+    {{"creatures-squid", "squid", "xt", "es", "wn", MC_ENTITY_CLASS_KIND_SQUID, 107, 53, 9, 9},
+     9,
+     0,
+     NULL,
+     0},
+    {{"creatures-creeper", "creeper", "gb", "m", "il", MC_ENTITY_CLASS_KIND_CREEPER, 11, 67, 6, 14},
+     6,
+     0,
+     NULL,
+     0}};
+
+static const creature_profile *creature_profile_get(const char *mode) {
+    for (size_t i = 0; i < sizeof(creature_profiles) / sizeof(*creature_profiles); ++i)
+        if (!strcmp(mode, creature_profiles[i].actor.mode))
+            return &creature_profiles[i];
+    return NULL;
+}
+
+typedef struct creature_render_control {
+    uintptr_t renderer, primary, secondary, own_model, parts[22];
+    int32_t lists[22];
+    const model_allocation *allocation_head;
+    size_t allocations, allocation_bytes;
+    const mc_client_model_part *displaced;
+    mc_client_model_part displaced_before;
+    size_t frames, entity_frames, delayed_frames, undrawn_frames;
+    size_t compile_parts, compile_faces, compile_vertices, shadow_quads;
+    bool compiled, reused;
+} creature_render_control;
+
+static int creature_model_graph(fixture *f, const creature_profile *profile,
+                                creature_render_control *control, bool compiled) {
+    const animal_profile *p = &profile->actor;
+    mc_entity *actor = animal_live(f);
+    CHECK(actor != NULL && actor->phase == MC_ENTITY_READY && actor->bounds != NULL &&
+          actor->base.world == f->app->active_world && actor->classes == f->app->entities &&
+          mc_entity_is_kind(actor, p->kind) && !actor->base.be && actor->base.bF);
+    mc_mob_state mob;
+    CHECK(mc_mob_inspect(actor, &mob) && mob.kind == p->kind &&
+          mob.constructor_pc == p->constructor_pc);
+    if (p->kind == MC_ENTITY_CLASS_KIND_SLIME)
+        CHECK(mob.watcher_16_present && mob.watcher_16_type == 0 && mob.watcher_16 == 1);
+    mc_client_manager_state manager;
+    CHECK(mc_client_render_manager_inspect(f->app->startup->manager_classes, &manager) &&
+          manager.phase == MC_CLIENT_MANAGER_READY && manager.a != NULL &&
+          client_renderer_roster(f->app, (mc_client_render_manager *)manager.a, &manager));
+    mc_client_managed_renderer *renderer = NULL;
+    for (size_t i = 0; i < manager.entries; ++i) {
+        const mc_entity_class_literal *key = NULL;
+        mc_client_managed_renderer *owner = NULL;
+        CHECK(mc_client_render_manager_entry((mc_client_render_manager *)manager.a, i, &key, &owner,
+                                             NULL) == MC_CLIENT_MANAGER_OK);
+        if (key == actor->class_literal)
+            renderer = owner;
+    }
+    mc_client_managed_renderer_state state;
+    CHECK(renderer != NULL && mc_client_managed_renderer_inspect(renderer, &state) &&
+          state.phase == MC_CLIENT_MODEL_READY && state.identity == renderer &&
+          state.manager == manager.a && state.source_class != NULL &&
+          !strcmp(state.source_class, p->renderer_class) && state.primary == renderer->primary &&
+          state.secondary == renderer->secondary && state.own_model == renderer->own_model &&
+          renderer->primary != NULL && renderer->primary->phase == MC_CLIENT_MODEL_READY &&
+          !strcmp(renderer->primary->source_class, p->model_class));
+    manager_model *primary = renderer->primary;
+    manager_model *secondary = renderer->secondary;
+    manager_model *own = renderer->own_model;
+    if (p->kind == MC_ENTITY_CLASS_KIND_SPIDER) {
+        CHECK(secondary != NULL && secondary != primary && own == NULL &&
+              secondary->phase == MC_CLIENT_MODEL_READY && !strcmp(secondary->source_class, "sc"));
+    } else if (p->kind == MC_ENTITY_CLASS_KIND_SLIME) {
+        CHECK(own != NULL && own != primary && own->phase == MC_CLIENT_MODEL_READY &&
+              !strcmp(own->source_class, "no") && primary->fields.a != NULL &&
+              primary->fields.b != NULL && primary->fields.c != NULL && primary->fields.d != NULL &&
+              own->fields.a != NULL && own->fields.b == NULL && own->fields.c == NULL &&
+              own->fields.d == NULL && (compiled ? secondary == own : secondary == NULL));
+        secondary = own; /* Expected rendered role; never a source field store. */
+    } else if (p->kind == MC_ENTITY_CLASS_KIND_CREEPER) {
+        CHECK(secondary == NULL && own != NULL && own != primary &&
+              own->phase == MC_CLIENT_MODEL_READY && !strcmp(own->source_class, "il"));
+    } else {
+        CHECK(secondary == NULL && own == NULL);
+    }
+    if (control->renderer == 0) {
+        control->renderer = (uintptr_t)renderer;
+        control->primary = (uintptr_t)primary;
+        control->secondary = (uintptr_t)secondary;
+        control->own_model = (uintptr_t)own;
+        control->allocation_head = renderer->allocations;
+        control->allocation_bytes = renderer->bytes;
+    }
+    CHECK(control->renderer == (uintptr_t)renderer && control->primary == (uintptr_t)primary &&
+          control->secondary == (uintptr_t)secondary && control->own_model == (uintptr_t)own &&
+          control->allocation_head == renderer->allocations &&
+          control->allocation_bytes == renderer->bytes);
+    size_t allocations = 0;
+    const mc_client_model_part *displaced = NULL;
+    for (const model_allocation *at = renderer->allocations; at != NULL; at = at->next) {
+        CHECK(++allocations <= 8192);
+        /* In this exact constructor, NO's first PS allocation5 immediately
+         * follows its manager_model allocation. The existing LIFO ledger
+         * retains that displaced cube after NO replaces field a at50. */
+        if (p->kind == MC_ENTITY_CLASS_KIND_SLIME && at->next != NULL &&
+            (const void *)(at->next + 1) == (const void *)primary) {
+            CHECK(displaced == NULL);
+            displaced = (const mc_client_model_part *)(at + 1);
+        }
+    }
+    if (control->allocations == 0)
+        control->allocations = allocations;
+    CHECK(allocations == control->allocations);
+    if (p->kind == MC_ENTITY_CLASS_KIND_SLIME) {
+        CHECK(displaced != NULL && displaced != primary->fields.a && displaced != own->fields.a &&
+              displaced->l == 0 && displaced->m == 16 && displaced->h && !displaced->i &&
+              !displaced->n && displaced->o == 0 && displaced->j != NULL && displaced->k != NULL);
+        double minimum[3] = {1e9, 1e9, 1e9}, maximum[3] = {-1e9, -1e9, -1e9};
+        for (size_t i = 0; i < 8; ++i) {
+            CHECK(displaced->j[i] != NULL && displaced->j[i]->a != NULL);
+            const mc_entity_vector *v = displaced->j[i]->a;
+            const double position[3] = {v->x, v->y, v->z};
+            for (size_t axis = 0; axis < 3; ++axis) {
+                if (position[axis] < minimum[axis])
+                    minimum[axis] = position[axis];
+                if (position[axis] > maximum[axis])
+                    maximum[axis] = position[axis];
+            }
+        }
+        CHECK(minimum[0] == -4 && minimum[1] == 16 && minimum[2] == -4 && maximum[0] == 4 &&
+              maximum[1] == 24 && maximum[2] == 4);
+        if (control->displaced == NULL) {
+            control->displaced = displaced;
+            memcpy(&control->displaced_before, displaced, sizeof(*displaced));
+        }
+        CHECK(control->displaced == displaced &&
+              !memcmp(&control->displaced_before, displaced, sizeof(*displaced)));
+    }
+    mc_client_model_part *parts[22] = {0};
+    if (p->kind == MC_ENTITY_CLASS_KIND_SPIDER) {
+        manager_model *models[2] = {primary, secondary};
+        for (size_t i = 0; i < 2; ++i) {
+            manager_model *model = models[i];
+            mc_client_model_part *selected[11] = {model->fields.a, model->fields.b, model->fields.c,
+                                                  model->fields.d, model->fields.e, model->fields.f,
+                                                  model->fields.g, model->fields.h, model->fields.i,
+                                                  model->extra_j,  model->extra_k};
+            memcpy(parts + i * 11, selected, sizeof(selected));
+        }
+    } else if (p->kind == MC_ENTITY_CLASS_KIND_SLIME) {
+        mc_client_model_part *selected[5] = {primary->fields.a, primary->fields.b,
+                                             primary->fields.c, primary->fields.d, own->fields.a};
+        memcpy(parts, selected, sizeof(selected));
+    } else if (p->kind == MC_ENTITY_CLASS_KIND_SQUID) {
+        size_t capacity = 0;
+        CHECK(primary->array_b != NULL &&
+              manager_part_array_native_extent(renderer, primary->array_b, &capacity) &&
+              capacity == 8 && primary->array_b->length == 8);
+        parts[0] = primary->fields.a;
+        for (size_t i = 0; i < 8; ++i)
+            parts[i + 1] = primary->array_b->elements[i];
+    } else {
+        mc_client_model_part *selected[14] = {
+            primary->fields.a, primary->fields.c, primary->fields.d, primary->fields.e,
+            primary->fields.f, primary->fields.g, primary->fields.b, own->fields.a,
+            own->fields.b,     own->fields.c,     own->fields.d,     own->fields.e,
+            own->fields.f,     own->fields.g};
+        memcpy(parts, selected, sizeof(selected));
+    }
+    CHECK(p->graph_parts <= sizeof(parts) / sizeof(*parts));
+    for (size_t i = 0; i < p->graph_parts; ++i) {
+        mc_client_model_part *part = parts[i];
+        const bool rendered = compiled && i < p->rendered_parts;
+        CHECK(part != NULL && part->h && !part->i && part->n == rendered);
+        if (control->parts[i] == 0)
+            control->parts[i] = (uintptr_t)part;
+        CHECK(control->parts[i] == (uintptr_t)part && part != displaced);
+        for (size_t j = 0; j < i; ++j)
+            CHECK(control->parts[j] != (uintptr_t)part);
+        if (rendered) {
+            mc_client_source_list_state list;
+            CHECK(part->o > 0 && mc_client_display_list_inspect(f->app->display, part->o, &list) &&
+                  list.defined && !list.building && list.draws == 6 && list.vertices == 36);
+            for (size_t face = 0; face < 6; ++face) {
+                mc_client_source_batch_view batch;
+                CHECK(mc_client_display_list_batch(f->app->display, part->o, face, &batch) &&
+                      batch.mode == 4 && batch.vertices == 6 && batch.byte_count == 192);
+            }
+            if (control->lists[i] == 0)
+                control->lists[i] = part->o;
+            CHECK(control->lists[i] == part->o);
+            for (size_t j = 0; j < i; ++j)
+                CHECK(control->lists[j] != part->o);
+        } else {
+            CHECK(part->o == 0);
+        }
+    }
+    if (compiled)
+        CHECK(manager.fields.g == f->app->active_world && manager.living_occurrence == f->app->i &&
+              manager.fields.k == f->app->settings && actor->base.bt > 0);
+    return 0;
+}
+
+static int creature_returned_frame(fixture *f, const creature_profile *profile,
+                                   creature_render_control *control) {
+    const animal_profile *p = &profile->actor;
+    const mc_client_menu_loop_state *source = &f->state;
+    const mc_client_world_frame_state *frame = source->world_frame;
+    const mc_client_gui_ingame_draw_state *hud = source->hud;
+    CHECK(!source->failed && source->running && source->render_returned &&
+          source->render_clock_stored && source->world_draws > 0 &&
+          source->world_draws == source->hud_draws && frame != NULL && !frame->active &&
+          frame->returned && frame->source_pc == 1013 && frame->app == f->app &&
+          frame->world == f->app->active_world && frame->owner == f->app->t &&
+          frame->camera == f->app->i && frame->render_global == f->app->g &&
+          frame->failure != NULL && frame->failure->status == MC_CLIENT_WORLD_FRAME_OK &&
+          frame->failure->entities == NULL && frame->failure->hand == NULL);
+    CHECK(frame->picking_returned && frame->viewport_set && frame->fog_returned &&
+          frame->camera_returned && frame->frustum_returned && frame->sky_returned &&
+          frame->updates_returned && frame->terrain_returned && frame->lighting_enabled &&
+          frame->eye_position_returned && frame->entities_returned &&
+          frame->lit_particles_returned && frame->sprite_particles_returned &&
+          frame->translucent_returned && frame->translucent_state_restored &&
+          frame->precipitation_returned && frame->clouds_returned && frame->hand_returned &&
+          frame->hand != NULL && frame->hand->returned && frame->hand->source_pc == 163 &&
+          frame->hand->held_returned && frame->hand->overlays_returned &&
+          frame->tail_anaglyph_read && !frame->tail_anaglyph);
+    CHECK(hud != NULL && !hud->active && hud->returned && hud->source_pc == 2101 &&
+          hud->projection_returned && hud->hotbar_returned && hud->crosshair_returned &&
+          hud->stats_returned && hud->slots_returned && hud->empty_slots == 9 &&
+          hud->chat_returned && hud->owner == NULL && hud->failure == NULL && hud->cleanup == NULL);
+    const mc_client_render_global_entities_state *entities = frame->entities;
+    CHECK(entities != NULL && !entities->active && entities->returned && !entities->retiring &&
+          entities->draw == NULL && entities->owner == NULL && entities->current == NULL &&
+          entities->entities_list == NULL && entities->eye == NULL && entities->frustum == NULL &&
+          entities->ll == NULL && entities->th == NULL && entities->failure == NULL &&
+          entities->cleanup == NULL);
+    ++control->frames;
+    if (entities->delayed) {
+        CHECK(entities->source_pc == 17 && entities->draws_attempted == 0 &&
+              !entities->first_entity_draw.valid && !control->compiled);
+        ++control->delayed_frames;
+        return 0;
+    }
+    CHECK(
+        entities->source_pc == 569 && entities->ll_returned && entities->th_returned &&
+        entities->counters_cleared && entities->origins_stored && entities->origins_written == 6 &&
+        entities->entities_visited == f->app->active_world->entity_membership.count &&
+        entities->entities_visited >= 2 && entities->distance_checks == entities->entities_visited);
+    mc_entity *actor = animal_live(f);
+    if (entities->draws_attempted == 0) {
+        /* A real returned cull path consumes the bounded frame budget; it
+         * receives no compilation/reuse credit and changes no source inputs. */
+        CHECK(actor != NULL && f->app->active_world->entity_membership.count == 2 &&
+              entities->entities_visited == 2 && entities->distance_checks == 2 &&
+              entities->frustum_checks == 2 && entities->camera_skips == 1 &&
+              entities->presence_checks == 0 && entities->draws_returned == 0 &&
+              entities->draws_retired == 0 && entities->entity_draws_returned == 0 &&
+              entities->weather_draws_returned == 0 && !entities->first_entity_draw.valid &&
+              !entities->last_draw.valid && entities->model_parts_compiled == 0 &&
+              entities->model_faces == 0 && entities->model_vertices == 0 &&
+              entities->shadow_quads == 0 && f->app->r == NULL && !atomic_load(&f->app->o));
+        CHECK(creature_model_graph(f, profile, control, control->compiled) == 0);
+        ++control->undrawn_frames;
+        return 0;
+    }
+    CHECK(entities->presence_checks >= 1 && entities->draws_attempted == entities->draws_returned &&
+          entities->draws_returned == entities->draws_retired &&
+          entities->entity_draws_returned > 0);
+    const mc_client_render_global_draw_receipt *draw = &entities->first_entity_draw;
+    CHECK(actor != NULL && repeat_world_work(source) && draw->valid && draw->returned &&
+          draw->retired && !draw->post_only && draw->n_invoke_pc == 516 &&
+          draw->th_source_pc == 115 && draw->living_source_pc == 769 &&
+          draw->post_draw_source_pc == 100 && draw->actor_identity == f->animal_identity &&
+          draw->actor_class_identity == (uintptr_t)actor->class_literal &&
+          draw->actor_kind == (int32_t)p->kind && draw->actor_class_name != NULL &&
+          !strcmp(draw->actor_class_name, p->source_class) &&
+          draw->renderer_identity == control->renderer && draw->renderer_class_name != NULL &&
+          !strcmp(draw->renderer_class_name, p->renderer_class) && draw->primary_returned &&
+          draw->post_draw_returned && draw->primary_event_returned);
+    CHECK(draw->primary_model.identity == control->primary &&
+          draw->primary_model.class_name != NULL &&
+          !strcmp(draw->primary_model.class_name, p->model_class) && draw->primary_model.returned &&
+          draw->primary_model.source_pc == p->model_pc &&
+          draw->primary_model.part_calls == profile->primary_parts &&
+          draw->primary_model.part_returns == profile->primary_parts);
+    if (profile->secondary_parts != 0)
+        CHECK(draw->secondary_model.identity == control->secondary &&
+              draw->secondary_model.class_name != NULL &&
+              !strcmp(draw->secondary_model.class_name, profile->secondary_class) &&
+              draw->secondary_model.returned &&
+              draw->secondary_model.source_pc == profile->secondary_pc &&
+              draw->secondary_model.part_calls == profile->secondary_parts &&
+              draw->secondary_model.part_returns == profile->secondary_parts);
+    else
+        CHECK(draw->secondary_model.identity == 0 && !draw->secondary_model.returned);
+    for (size_t i = 0; i < 4; ++i) {
+        const bool selected = i == 0 && profile->secondary_parts != 0;
+        CHECK(draw->pass_attempted[i] && draw->pass_result[i] == selected &&
+              draw->pass_render_returned[i] == selected);
+    }
+    CHECK(draw->shadow_quads > 0 && draw->shadow_vertices == draw->shadow_quads * 4);
+    if (!control->compiled) {
+        CHECK(draw->model_parts_compiled == p->rendered_parts &&
+              draw->primary_model.compiled_parts == profile->primary_parts &&
+              draw->secondary_model.compiled_parts == profile->secondary_parts &&
+              draw->model_faces == p->rendered_parts * 6 &&
+              draw->model_vertices == p->rendered_parts * 24);
+        control->compile_parts = draw->model_parts_compiled;
+        control->compile_faces = draw->model_faces;
+        control->compile_vertices = draw->model_vertices;
+        control->compiled = true;
+    } else {
+        CHECK(draw->model_parts_compiled == 0 && draw->primary_model.compiled_parts == 0 &&
+              draw->secondary_model.compiled_parts == 0 && draw->model_faces == 0 &&
+              draw->model_vertices == 0);
+        control->reused = true;
+    }
+    CHECK(creature_model_graph(f, profile, control, true) == 0);
+    ++control->entity_frames;
+    control->shadow_quads += draw->shadow_quads;
+    return 0;
+}
+
+static const char *creature_diagnostic_text(const char *text) {
+    return text == NULL ? "none" : text;
+}
+
+/* Failure-only observation of the existing retained child. It neither retries
+ * a source operation nor releases or replaces the failed ownership prefix. */
+static void creature_tick_diagnostics(const fixture *f) {
+    const mc_client_world_tick *tick = f->state.world_tick;
+    if (tick == NULL)
+        return;
+    const mc_world_entity_tick_error *world = &tick->entities;
+    fprintf(stderr,
+            "[creature-tick-diagnostic] world returned=%d failed=%d entities-returned=%d "
+            "site=%s.%s%s:%d operation=%s entity-status=%d entity-site=%s.%s:%u "
+            "virtual=%s.%s child=%d loaded-index=%d\n",
+            (int)tick->returned, (int)tick->failed, (int)tick->entities_returned,
+            creature_diagnostic_text(tick->site.class_name),
+            creature_diagnostic_text(tick->site.method),
+            creature_diagnostic_text(tick->site.descriptor), tick->site.pc,
+            creature_diagnostic_text(tick->operation), (int)world->status,
+            creature_diagnostic_text(world->source_class),
+            creature_diagnostic_text(world->source_method), world->bytecode,
+            creature_diagnostic_text(world->virtual_class),
+            creature_diagnostic_text(world->virtual_method), (int)world->child,
+            world->loaded_index);
+    if (world->child != MC_WORLD_ENTITY_TICK_CHILD_MOB)
+        return;
+    const mc_mob_tick_error *mob = &world->child_error.mob;
+    fprintf(stderr,
+            "[creature-tick-diagnostic] mob status=%d site=%s.%s%s:%d child-site=%s.%s%s:%d "
+            "operation=%s native-policy=%d source-exception=%d exception=%s child=%d "
+            "environment-returned=%d action-returned=%d behavior-returned=%d particles=%zu "
+            "sounds=%zu cleanup-pending=%d\n",
+            (int)mob->status, creature_diagnostic_text(mob->site.class_name),
+            creature_diagnostic_text(mob->site.method),
+            creature_diagnostic_text(mob->site.descriptor), mob->site.pc,
+            creature_diagnostic_text(mob->child_site.class_name),
+            creature_diagnostic_text(mob->child_site.method),
+            creature_diagnostic_text(mob->child_site.descriptor), mob->child_site.pc,
+            creature_diagnostic_text(mob->operation), (int)mob->native_policy,
+            (int)mob->source_exception, creature_diagnostic_text(mob->exception_class),
+            (int)mob->child, (int)mob->state.environment_returned, (int)mob->state.action_returned,
+            (int)mob->state.behavior_returned, mob->state.particles, mob->state.sounds,
+            (int)mob->state.cleanup_pending);
+    const mc_world_access_failure *access = NULL;
+    if (mob->child == MC_MOB_TICK_CHILD_PRESENTATION) {
+        const mc_world_mutation_error *presentation = &mob->detail.presentation;
+        fprintf(stderr,
+                "[creature-tick-diagnostic] presentation status=%d operation=%s "
+                "world-pc=%u world-access-pc=%u provider-pc=%u\n",
+                (int)presentation->status, creature_diagnostic_text(presentation->operation),
+                presentation->bytecode, presentation->world_access_bytecode,
+                presentation->provider_bytecode);
+        access = &presentation->world_access_failure;
+    } else if (mob->child == MC_MOB_TICK_CHILD_SOUND) {
+        access = &mob->detail.sound.world_access_failure;
+    } else if (mob->child == MC_MOB_TICK_CHILD_ENVIRONMENT) {
+        const mc_entity_tick_error *environment = &mob->detail.environment;
+        fprintf(stderr,
+                "[creature-tick-diagnostic] environment status=%d site=%s.%s:%u base-pc=%u "
+                "living-pc=%u operation=%s native-policy=%d source-exception=%d exception=%s\n",
+                (int)environment->status, creature_diagnostic_text(environment->source_class),
+                creature_diagnostic_text(environment->source_method), environment->bytecode,
+                environment->base_bytecode, environment->living_bytecode,
+                creature_diagnostic_text(environment->operation), (int)environment->native_policy,
+                (int)environment->source_exception,
+                creature_diagnostic_text(environment->exception_class));
+    } else if (mob->child == MC_MOB_TICK_CHILD_ACTION) {
+        const mc_player_action_error *action = &mob->detail.action;
+        fprintf(stderr,
+                "[creature-tick-diagnostic] action status=%d site=%s.%s living-pc=%u "
+                "operation=%s child-kind=%d\n",
+                (int)action->status, creature_diagnostic_text(action->source_class),
+                creature_diagnostic_text(action->source_method), action->living_bytecode,
+                creature_diagnostic_text(action->operation), (int)action->child_kind);
+    }
+    if (access != NULL) {
+        const char *exception = NULL;
+        const bool source = mc_world_access_failure_source_exception(access, &exception);
+        fprintf(stderr,
+                "[creature-tick-diagnostic] world-access receiver=%" PRIuPTR " receipt=%" PRIuPTR
+                " source-exception=%d exception=%s\n",
+                (uintptr_t)access->receiver, (uintptr_t)access->receipt, (int)source,
+                creature_diagnostic_text(exception));
+        const mc_client_render_global_error *render = access->render_global;
+        if (render != NULL)
+            fprintf(stderr,
+                    "[creature-tick-diagnostic] render-global status=%d site=%s.%s%s:%u "
+                    "child-class=%s child-method=%s child-descriptor=%s child-pc=%d "
+                    "operation=%s native-policy=%d source-returned=%d\n",
+                    (int)render->status, creature_diagnostic_text(render->source_class),
+                    creature_diagnostic_text(render->source_method),
+                    creature_diagnostic_text(render->source_descriptor), render->source_pc,
+                    creature_diagnostic_text(render->child.class_name),
+                    creature_diagnostic_text(render->child.method),
+                    creature_diagnostic_text(render->child.descriptor), render->child.pc,
+                    creature_diagnostic_text(render->operation), (int)render->native_policy,
+                    (int)render->source_returned);
+    }
+}
+
+static int creature_controls(fixture *f, const creature_profile *profile,
+                             const char *capture_path) {
+    const animal_profile *p = &profile->actor;
+    CHECK(repeat_statistics_controls(f, false) == 0 && f->app->r == NULL &&
+          !atomic_load(&f->app->o) && display_focus(f, true) == 0 &&
+          repeat_focus_state(f, "creature-entry") == 0);
+    printf("WORLD_CREATURE_PROFILE profile=%s scopes=independent-loaded "
+           "statistics-input=pre-bootstrap-unsent-file open-inventory=1 "
+           "canonical=ep.f notice-inactive=1 native-integration-only=1\n",
+           p->name);
+    CHECK(animal_input(f, p) == 0);
+    creature_render_control control = {0};
+    CHECK(creature_model_graph(f, profile, &control, false) == 0);
+    SDL_Delay(100); /* Only real elapsed time: the existing Timer selects ticks. */
+    const uint64_t ticks_before = f->state.world_tick_returns;
+    const uint64_t draws_before = f->state.world_draws;
+    const uint64_t started = SDL_GetTicks(), deadline = started + 60000;
+    while (!control.reused && control.frames < 8 && SDL_GetTicks() < deadline) {
+        CHECK(display_focus(f, true) == 0 && repeat_focus_state(f, "creature-before-frame") == 0);
+        const bool returned = mc_client_menu_loop_frame(f->loop);
+        CHECK(mc_client_menu_loop_inspect(f->loop, &f->state));
+        if (!returned) {
+            fprintf(stderr, "Creature %s retained %s.%s:%" PRId64 " %s\n", p->name,
+                    f->state.source_class == NULL ? "native" : f->state.source_class,
+                    f->state.source_method == NULL ? "frame" : f->state.source_method,
+                    f->state.source_pc, f->state.operation == NULL ? "none" : f->state.operation);
+            creature_tick_diagnostics(f);
+        }
+        CHECK(returned && repeat_focus_state(f, "creature-returned-frame") == 0 &&
+              creature_returned_frame(f, profile, &control) == 0);
+        if (!control.reused)
+            SDL_Delay(100);
+    }
+    if (!control.reused) {
+        mc_entity *actor = animal_live(f);
+        fprintf(stderr,
+                "Creature %s deadline elapsed-seconds=%" PRIu64
+                " limit-seconds=60 frames=%zu delayed=%zu undrawn=%zu entity-frames=%zu "
+                "paused=%d screen=%d actor-ticks=%d\n",
+                p->name, (SDL_GetTicks() - started) / UINT64_C(1000), control.frames,
+                control.delayed_frames, control.undrawn_frames, control.entity_frames,
+                (int)atomic_load(&f->app->o), f->app->r == NULL ? -1 : (int)f->app->r->kind,
+                actor == NULL ? -1 : actor->base.bt);
+    }
+    CHECK(control.compiled && control.reused && control.entity_frames >= 2 && control.frames >= 2 &&
+          control.frames <= 8 &&
+          control.frames ==
+              control.entity_frames + control.delayed_frames + control.undrawn_frames &&
+          f->state.world_tick_returns > ticks_before &&
+          f->state.world_draws == draws_before + control.frames &&
+          repeat_statistics_controls(f, false) == 0);
+    printf("WORLD_CREATURE_FRAME profile=%s frames=%zu entity-frames=%zu delayed-frames=%zu "
+           "undrawn-frames=%zu source=px.a:1013 entities=n.a:569 hud=uq.a:2101 "
+           "mob=%s renderer=%s primary=%s exact-declared-actor=1 "
+           "renderer-map=29 constructor-owners=28 local-player-alias=gs same-world-and-classes=1 "
+           "primary-parts=%zu secondary-parts=%zu compiled-parts=%zu reused-parts=0 "
+           "compiled-faces=%zu compiled-vertices=%zu part-lists=%zu unused-parts=%zu "
+           "displaced-parts=%u constructor-ledger-stable=1 secondary-initial=%s secondary-after=%s "
+           "part-source-vertices=24 part-list-vertices=36 stable-list-ids=1 "
+           "shadow-quads=%zu checked-draw-retirement=1 copied-receipts=1 "
+           "tick-return=1328 scheduler=198 completed-random-calls=%" PRIu64
+           " completed-chunks=%zu completed-samples=%" PRIu64 " display-calls=%" PRIu64
+           " display-samples=%" PRIu64 " display-random=%" PRIu64 "\n",
+           p->name, control.frames, control.entity_frames, control.delayed_frames,
+           control.undrawn_frames, p->source_class, p->renderer_class, p->model_class,
+           profile->primary_parts, profile->secondary_parts, control.compile_parts,
+           control.compile_faces, control.compile_vertices, p->rendered_parts,
+           p->graph_parts - p->rendered_parts, p->kind == MC_ENTITY_CLASS_KIND_SLIME ? 1u : 0u,
+           p->kind == MC_ENTITY_CLASS_KIND_SPIDER ? "constructed" : "null",
+           p->kind == MC_ENTITY_CLASS_KIND_SPIDER  ? "constructed"
+           : p->kind == MC_ENTITY_CLASS_KIND_SLIME ? "own-alias"
+                                                   : "null",
+           control.shadow_quads, f->state.random_chunk_calls, f->state.last_random_chunk_count,
+           f->state.random_chunk_samples, f->state.random_display_calls,
+           f->state.random_display_samples, f->state.random_display_random_calls);
+    CHECK(capture(f, capture_path) == 0);
+    return 0;
+}
+
+static const creature_profile remaining_profiles[] = {
+    {{"remaining-wolf", "wolf", "gi", "we", "o", MC_ENTITY_CLASS_KIND_WOLF, 36, 125, 11, 11},
+     11,
+     0,
+     NULL,
+     0},
+    {{"remaining-zombie", "zombie", "uz", "v", "ej", MC_ENTITY_CLASS_KIND_ZOMBIE, 22, 76, 7, 9},
+     7,
+     0,
+     NULL,
+     0},
+    {{"remaining-skeleton", "skeleton", "fr", "v", "lc", MC_ENTITY_CLASS_KIND_SKELETON, 11, 76, 7,
+      9},
+     7,
+     0,
+     NULL,
+     0}};
+
+static const creature_profile *remaining_profile_get(const char *mode) {
+    for (size_t i = 0; i < sizeof(remaining_profiles) / sizeof(*remaining_profiles); ++i)
+        if (!strcmp(mode, remaining_profiles[i].actor.mode))
+            return &remaining_profiles[i];
+    return NULL;
+}
+
+typedef struct remaining_render_control {
+    uintptr_t renderer, primary, secondary, own_model, parts[22];
+    int32_t lists[22];
+    const model_allocation *allocation_head;
+    size_t allocations, allocation_bytes;
+    size_t frames, entity_frames, delayed_frames, undrawn_frames;
+    size_t compile_parts, compile_faces, compile_vertices, shadow_quads, bow_frames;
+    uintptr_t unused[15], stack, hand;
+    mc_client_model_part unused_before[15];
+    bool compiled, reused;
+} remaining_render_control;
+
+static int remaining_unused(remaining_render_control *c, size_t index,
+                            const mc_client_model_part *part) {
+    CHECK(index < 15 && part != NULL && part->h && !part->i && !part->n && part->o == 0);
+    if (c->unused[index] == 0) {
+        c->unused[index] = (uintptr_t)part;
+        memcpy(&c->unused_before[index], part, sizeof(*part));
+    }
+    CHECK(c->unused[index] == (uintptr_t)part &&
+          !memcmp(&c->unused_before[index], part, sizeof(*part)));
+    return 0;
+}
+
+static int remaining_model_graph(fixture *f, const creature_profile *profile,
+                                 remaining_render_control *c, bool compiled) {
+    const animal_profile *p = &profile->actor;
+    mc_entity *actor = animal_live(f);
+    CHECK(actor != NULL && actor->phase == MC_ENTITY_READY && actor->bounds != NULL &&
+          actor->base.world == f->app->active_world && actor->classes == f->app->entities &&
+          mc_entity_is_kind(actor, p->kind) && !actor->base.be && actor->base.bF);
+    mc_mob_state mob;
+    CHECK(mc_mob_inspect(actor, &mob) && mob.constructor_pc == p->constructor_pc);
+    mc_client_manager_state manager;
+    CHECK(mc_client_render_manager_inspect(f->app->startup->manager_classes, &manager) &&
+          manager.phase == MC_CLIENT_MANAGER_READY && manager.a != NULL &&
+          client_renderer_roster(f->app, (mc_client_render_manager *)manager.a, &manager));
+    mc_client_managed_renderer *renderer = NULL;
+    for (size_t i = 0; i < manager.entries; ++i) {
+        const mc_entity_class_literal *key = NULL;
+        mc_client_managed_renderer *owner = NULL;
+        CHECK(mc_client_render_manager_entry((mc_client_render_manager *)manager.a, i, &key, &owner,
+                                             NULL) == MC_CLIENT_MANAGER_OK);
+        if (key == actor->class_literal)
+            renderer = owner;
+    }
+    CHECK(renderer != NULL && renderer->phase == MC_CLIENT_MODEL_READY &&
+          renderer->manager == manager.a && !strcmp(renderer->source_class, p->renderer_class) &&
+          renderer->primary != NULL && renderer->primary->phase == MC_CLIENT_MODEL_READY &&
+          !strcmp(renderer->primary->source_class, p->model_class) && renderer->secondary == NULL &&
+          renderer->own_model == (p->kind == MC_ENTITY_CLASS_KIND_WOLF ? NULL : renderer->primary));
+    manager_model *m = renderer->primary;
+    if (c->renderer == 0) {
+        c->renderer = (uintptr_t)renderer;
+        c->primary = (uintptr_t)m;
+        c->own_model = (uintptr_t)renderer->own_model;
+        c->allocation_head = renderer->allocations;
+        c->allocation_bytes = renderer->bytes;
+    }
+    CHECK(c->renderer == (uintptr_t)renderer && c->primary == (uintptr_t)m &&
+          c->own_model == (uintptr_t)renderer->own_model &&
+          c->allocation_head == renderer->allocations && c->allocation_bytes == renderer->bytes);
+    size_t count = 0;
+    for (const model_allocation *at = renderer->allocations; at != NULL; at = at->next)
+        CHECK(++count <= 8192);
+    if (c->allocations == 0)
+        c->allocations = count;
+    CHECK(count == c->allocations);
+    mc_client_model_part *parts[22] = {0};
+    if (p->kind == MC_ENTITY_CLASS_KIND_WOLF) {
+        mc_client_model_part *all[11] = {m->fields.a, m->fields.b, m->fields.c, m->fields.d,
+                                         m->fields.e, m->fields.f, m->fields.g, m->fields.h,
+                                         m->fields.i, m->extra_j,  m->extra_k};
+        memcpy(parts, all, sizeof(all));
+    } else {
+        mc_client_model_part *current[9] = {m->fields.a, m->fields.c, m->fields.d,
+                                            m->fields.e, m->fields.f, m->fields.g,
+                                            m->fields.b, m->fields.h, m->fields.i};
+        memcpy(parts, current, sizeof(current));
+        if (p->kind == MC_ENTITY_CLASS_KIND_SKELETON) {
+            /* The ledger owns displaced constructor allocations, but has no
+             * typed PS trace for them. Inspect only genuine current slots;
+             * displaced constructor graphs remain explicitly unpaired. */
+            mc_mob_class_state classes;
+            mc_item_stack_fields bow;
+            CHECK(mc_mob_classes_inspect(f->app->entities, &classes) &&
+                  classes.skeleton_phase == MC_ENTITY_CLASS_READY && classes.skeleton_pc == 14 &&
+                  classes.skeleton_a != NULL && classes.skeleton_candidate == NULL &&
+                  mc_item_stack_fields_get(classes.skeleton_a, &bow) == MC_ITEM_STACK_OK &&
+                  bow.id == 261 && bow.count == 1 && bow.damage == 0 && bow.animation == 0);
+            if (c->stack == 0)
+                c->stack = (uintptr_t)classes.skeleton_a;
+            CHECK(c->stack == (uintptr_t)classes.skeleton_a && manager.fields.f != NULL);
+            if (c->hand == 0)
+                c->hand = (uintptr_t)manager.fields.f;
+            CHECK(c->hand == (uintptr_t)manager.fields.f);
+            mc_client_held_item_state hand;
+            CHECK(
+                mc_client_held_item_inspect(((mc_client_render_manager *)manager.a)->hand, &hand) &&
+                hand.ra_phase == MC_CLIENT_ENTITY_RENDERER_READY && hand.ra_app == f->app &&
+                hand.ra_b == NULL && hand.iy_phase == MC_CLIENT_ENTITY_RENDERER_READY &&
+                hand.map_texture > 0 && hand.map_lease);
+        }
+    }
+    for (size_t i = 0; i < p->graph_parts; ++i) {
+        mc_client_model_part *part = parts[i];
+        const bool rendered = compiled && i < p->rendered_parts;
+        CHECK(part != NULL && part->h && !part->i && part->n == rendered);
+        if (c->parts[i] == 0)
+            c->parts[i] = (uintptr_t)part;
+        CHECK(c->parts[i] == (uintptr_t)part);
+        for (size_t j = 0; j < i; ++j)
+            CHECK(c->parts[j] != (uintptr_t)part);
+        if (rendered) {
+            mc_client_source_list_state list;
+            CHECK(part->o > 0 && mc_client_display_list_inspect(f->app->display, part->o, &list) &&
+                  list.defined && !list.building && list.draws == 6 && list.vertices == 36);
+            if (c->lists[i] == 0)
+                c->lists[i] = part->o;
+            CHECK(c->lists[i] == part->o);
+        } else {
+            CHECK(part->o == 0);
+            if (i >= p->rendered_parts)
+                CHECK(remaining_unused(c, 9 + i - p->rendered_parts, part) == 0);
+        }
+    }
+    mc_client_biped_model *bw = renderer->bw_model;
+    CHECK(bw != NULL);
+    mc_client_model_part *unused[9] = {bw->a, bw->b, bw->c, bw->d, bw->e,
+                                       bw->f, bw->g, bw->h, bw->i};
+    for (size_t i = 0; i < 9; ++i)
+        CHECK(remaining_unused(c, i, unused[i]) == 0);
+    if (compiled)
+        CHECK(manager.fields.g == f->app->active_world && manager.living_occurrence == f->app->i &&
+              manager.fields.k == f->app->settings && actor->base.bt > 0);
+    return 0;
+}
+
+static int remaining_held_receipt(fixture *f, const creature_profile *profile,
+                                  const mc_client_render_global_draw_receipt *draw,
+                                  remaining_render_control *c) {
+    (void)f;
+    const mc_client_render_global_held_receipt *h = &draw->held;
+    if (profile->actor.kind == MC_ENTITY_CLASS_KIND_WOLF) {
+        CHECK(!h->valid && !h->parent_present && !h->child_attempted);
+    } else if (profile->actor.kind == MC_ENTITY_CLASS_KIND_ZOMBIE) {
+        CHECK(h->valid && h->stack_returned && h->stack_identity == 0 && h->v_returned &&
+              !h->attachment_returned && !h->full3d_returned && !h->child_attempted &&
+              !h->parent_present);
+    } else {
+        if (!h->parent_present)
+            fputs("[remaining-render-diagnostic] actual retained RA/Bow receipt unavailable; "
+                  "six completed batches receive no credit\n",
+                  stderr);
+        CHECK(h->valid && h->stack_returned && h->stack_identity == c->stack &&
+              h->own_model_identity == c->primary && h->arm_identity == c->parts[2] &&
+              h->attachment_returned && h->full3d_returned && !h->full3d && h->v_returned &&
+              h->hand_identity == c->hand && h->child_attempted && h->child_source_entered &&
+              h->child_returned && h->parent_present && h->parent_entered && h->parent_returned &&
+              h->parent_source_pc == 970 && h->geometry_source_pc == 967 && h->icon_returned &&
+              h->icon == 21 && h->geometry_returned && h->begin_returns == 6 &&
+              h->normal_returns == 6 && h->vertex_returns == 264 && h->draw_returns == 6);
+        for (size_t i = 0; i < 6; ++i) {
+            const size_t words = i < 2 ? 48u : 768u;
+            CHECK(h->batch_attempted[i] && h->batch_returned[i] && h->batch_captured[i] &&
+                  h->batch_words[i] == words && h->batch_raw_words[i] == (int32_t)words &&
+                  h->batch_vertices[i] == (i < 2 ? 6 : 96) && h->batch_mode[i] == 7);
+        }
+        ++c->bow_frames;
+    }
+    return 0;
+}
+
+static int remaining_returned_frame(fixture *f, const creature_profile *profile,
+                                    remaining_render_control *control) {
+    const animal_profile *p = &profile->actor;
+    const mc_client_menu_loop_state *source = &f->state;
+    const mc_client_world_frame_state *frame = source->world_frame;
+    const mc_client_gui_ingame_draw_state *hud = source->hud;
+    CHECK(!source->failed && source->running && source->render_returned &&
+          source->render_clock_stored && source->world_draws > 0 &&
+          source->world_draws == source->hud_draws && frame != NULL && !frame->active &&
+          frame->returned && frame->source_pc == 1013 && frame->app == f->app &&
+          frame->world == f->app->active_world && frame->owner == f->app->t &&
+          frame->camera == f->app->i && frame->render_global == f->app->g &&
+          frame->failure != NULL && frame->failure->status == MC_CLIENT_WORLD_FRAME_OK &&
+          frame->failure->entities == NULL && frame->failure->hand == NULL);
+    CHECK(frame->picking_returned && frame->viewport_set && frame->fog_returned &&
+          frame->camera_returned && frame->frustum_returned && frame->sky_returned &&
+          frame->updates_returned && frame->terrain_returned && frame->lighting_enabled &&
+          frame->eye_position_returned && frame->entities_returned &&
+          frame->lit_particles_returned && frame->sprite_particles_returned &&
+          frame->translucent_returned && frame->translucent_state_restored &&
+          frame->precipitation_returned && frame->clouds_returned && frame->hand_returned &&
+          frame->hand != NULL && frame->hand->returned && frame->hand->source_pc == 163 &&
+          frame->hand->held_returned && frame->hand->overlays_returned &&
+          frame->tail_anaglyph_read && !frame->tail_anaglyph);
+    CHECK(hud != NULL && !hud->active && hud->returned && hud->source_pc == 2101 &&
+          hud->projection_returned && hud->hotbar_returned && hud->crosshair_returned &&
+          hud->stats_returned && hud->slots_returned && hud->empty_slots == 9 &&
+          hud->chat_returned && hud->owner == NULL && hud->failure == NULL && hud->cleanup == NULL);
+    const mc_client_render_global_entities_state *entities = frame->entities;
+    CHECK(entities != NULL && !entities->active && entities->returned && !entities->retiring &&
+          entities->draw == NULL && entities->owner == NULL && entities->current == NULL &&
+          entities->entities_list == NULL && entities->eye == NULL && entities->frustum == NULL &&
+          entities->ll == NULL && entities->th == NULL && entities->failure == NULL &&
+          entities->cleanup == NULL);
+    ++control->frames;
+    if (entities->delayed) {
+        CHECK(entities->source_pc == 17 && entities->draws_attempted == 0 &&
+              !entities->first_entity_draw.valid && !control->compiled);
+        ++control->delayed_frames;
+        return 0;
+    }
+    CHECK(
+        entities->source_pc == 569 && entities->ll_returned && entities->th_returned &&
+        entities->counters_cleared && entities->origins_stored && entities->origins_written == 6 &&
+        entities->entities_visited == f->app->active_world->entity_membership.count &&
+        entities->entities_visited >= 2 && entities->distance_checks == entities->entities_visited);
+    mc_entity *actor = animal_live(f);
+    if (entities->draws_attempted == 0) {
+        /* A real returned cull path consumes the bounded frame budget; it
+         * receives no compilation/reuse credit and changes no source inputs. */
+        CHECK(actor != NULL && f->app->active_world->entity_membership.count == 2 &&
+              entities->entities_visited == 2 && entities->distance_checks == 2 &&
+              entities->frustum_checks == 2 && entities->camera_skips == 1 &&
+              entities->presence_checks == 0 && entities->draws_returned == 0 &&
+              entities->draws_retired == 0 && entities->entity_draws_returned == 0 &&
+              entities->weather_draws_returned == 0 && !entities->first_entity_draw.valid &&
+              !entities->last_draw.valid && entities->model_parts_compiled == 0 &&
+              entities->model_faces == 0 && entities->model_vertices == 0 &&
+              entities->shadow_quads == 0 && f->app->r == NULL && !atomic_load(&f->app->o));
+        CHECK(remaining_model_graph(f, profile, control, control->compiled) == 0);
+        ++control->undrawn_frames;
+        return 0;
+    }
+    CHECK(entities->presence_checks >= 1 && entities->draws_attempted == entities->draws_returned &&
+          entities->draws_returned == entities->draws_retired &&
+          entities->entity_draws_returned > 0);
+    const mc_client_render_global_draw_receipt *draw = &entities->first_entity_draw;
+    CHECK(actor != NULL && repeat_world_work(source) && draw->valid && draw->returned &&
+          draw->retired && !draw->post_only && draw->n_invoke_pc == 516 &&
+          draw->th_source_pc == 115 && draw->living_source_pc == 769 &&
+          draw->post_draw_source_pc == 100 && draw->actor_identity == f->animal_identity &&
+          draw->actor_class_identity == (uintptr_t)actor->class_literal &&
+          draw->actor_kind == (int32_t)p->kind && draw->actor_class_name != NULL &&
+          !strcmp(draw->actor_class_name, p->source_class) &&
+          draw->renderer_identity == control->renderer && draw->renderer_class_name != NULL &&
+          !strcmp(draw->renderer_class_name, p->renderer_class) && draw->primary_returned &&
+          draw->post_draw_returned && draw->primary_event_returned);
+    CHECK(draw->primary_model.identity == control->primary &&
+          draw->primary_model.class_name != NULL &&
+          !strcmp(draw->primary_model.class_name, p->model_class) && draw->primary_model.returned &&
+          draw->primary_model.source_pc == p->model_pc &&
+          draw->primary_model.part_calls == profile->primary_parts &&
+          draw->primary_model.part_returns == profile->primary_parts);
+    if (profile->secondary_parts != 0)
+        CHECK(draw->secondary_model.identity == control->secondary &&
+              draw->secondary_model.class_name != NULL &&
+              !strcmp(draw->secondary_model.class_name, profile->secondary_class) &&
+              draw->secondary_model.returned &&
+              draw->secondary_model.source_pc == profile->secondary_pc &&
+              draw->secondary_model.part_calls == profile->secondary_parts &&
+              draw->secondary_model.part_returns == profile->secondary_parts);
+    else
+        CHECK(draw->secondary_model.identity == 0 && !draw->secondary_model.returned);
+    for (size_t i = 0; i < 4; ++i) {
+        const bool selected = i == 0 && profile->secondary_parts != 0;
+        CHECK(draw->pass_attempted[i] && draw->pass_result[i] == selected &&
+              draw->pass_render_returned[i] == selected);
+    }
+    CHECK(remaining_held_receipt(f, profile, draw, control) == 0);
+    CHECK(draw->shadow_quads > 0 && draw->shadow_vertices == draw->shadow_quads * 4);
+    if (!control->compiled) {
+        CHECK(draw->model_parts_compiled == p->rendered_parts &&
+              draw->primary_model.compiled_parts == profile->primary_parts &&
+              draw->secondary_model.compiled_parts == profile->secondary_parts &&
+              draw->model_faces == p->rendered_parts * 6 &&
+              draw->model_vertices == p->rendered_parts * 24);
+        control->compile_parts = draw->model_parts_compiled;
+        control->compile_faces = draw->model_faces;
+        control->compile_vertices = draw->model_vertices;
+        control->compiled = true;
+    } else {
+        CHECK(draw->model_parts_compiled == 0 && draw->primary_model.compiled_parts == 0 &&
+              draw->secondary_model.compiled_parts == 0 && draw->model_faces == 0 &&
+              draw->model_vertices == 0);
+        control->reused = true;
+    }
+    CHECK(remaining_model_graph(f, profile, control, true) == 0);
+    ++control->entity_frames;
+    control->shadow_quads += draw->shadow_quads;
+    return 0;
+}
+
+static int remaining_controls(fixture *f, const creature_profile *profile,
+                              const char *capture_path) {
+    const animal_profile *p = &profile->actor;
+    CHECK(repeat_statistics_controls(f, false) == 0 && f->app->r == NULL &&
+          !atomic_load(&f->app->o) && display_focus(f, true) == 0 &&
+          repeat_focus_state(f, "remaining-entry") == 0);
+    printf("WORLD_REMAINING_PROFILE profile=%s scopes=independent-loaded "
+           "statistics-input=pre-bootstrap-unsent-file open-inventory=1 "
+           "canonical=ep.f notice-inactive=1 native-integration-only=1\n",
+           p->name);
+    CHECK(animal_input(f, p) == 0);
+    remaining_render_control control = {0};
+    CHECK(remaining_model_graph(f, profile, &control, false) == 0);
+    SDL_Delay(100); /* Real Timer, with no tick/Player/Random field change. */
+    const uint64_t ticks_before = f->state.world_tick_returns;
+    const uint64_t draws_before = f->state.world_draws;
+    const uint64_t started = SDL_GetTicks(), deadline = started + 60000;
+    while (!control.reused && control.frames < 8 && SDL_GetTicks() < deadline) {
+        CHECK(display_focus(f, true) == 0 && repeat_focus_state(f, "remaining-before-frame") == 0);
+        const bool returned = mc_client_menu_loop_frame(f->loop);
+        CHECK(mc_client_menu_loop_inspect(f->loop, &f->state));
+        if (!returned) {
+            fprintf(stderr, "Remaining %s retained %s.%s:%" PRId64 " %s\n", p->name,
+                    creature_diagnostic_text(f->state.source_class),
+                    creature_diagnostic_text(f->state.source_method), f->state.source_pc,
+                    creature_diagnostic_text(f->state.operation));
+            creature_tick_diagnostics(f);
+        }
+        CHECK(returned && repeat_focus_state(f, "remaining-returned-frame") == 0 &&
+              remaining_returned_frame(f, profile, &control) == 0);
+        if (!control.reused)
+            SDL_Delay(100);
+    }
+    if (!control.reused)
+        fprintf(stderr,
+                "Remaining %s deadline elapsed-seconds=%" PRIu64
+                " frames=%zu delayed=%zu undrawn=%zu entity-frames=%zu\n",
+                p->name, (SDL_GetTicks() - started) / UINT64_C(1000), control.frames,
+                control.delayed_frames, control.undrawn_frames, control.entity_frames);
+    CHECK(control.compiled && control.reused && control.entity_frames >= 2 && control.frames <= 8 &&
+          control.frames ==
+              control.entity_frames + control.delayed_frames + control.undrawn_frames &&
+          f->state.world_tick_returns > ticks_before &&
+          f->state.world_draws == draws_before + control.frames &&
+          repeat_statistics_controls(f, false) == 0 &&
+          control.bow_frames ==
+              (p->kind == MC_ENTITY_CLASS_KIND_SKELETON ? control.entity_frames : 0));
+    printf("WORLD_REMAINING_FRAME profile=%s frames=%zu entity-frames=%zu delayed-frames=%zu "
+           "undrawn-frames=%zu source=px.a:1013 entities=n.a:569 hud=uq.a:2101 "
+           "mob=%s renderer=%s primary=%s exact-declared-actor=1 "
+           "compiled-parts=%zu reused-parts=0 compiled-faces=%zu compiled-vertices=%zu "
+           "part-lists=%zu unused-primary-parts=%zu unused-bw-parts=9 displaced-graph=%s "
+           "constructor-ledger-stable=1 stable-list-ids=1 shadow-quads=%zu "
+           "bow-frames=%zu bow-batches-per-frame=%u bow-raw-words=%s checked-draw-retirement=1 "
+           "copied-receipts=1 tick-return=1328 scheduler=198 completed-random-calls=%" PRIu64
+           " completed-chunks=%zu completed-samples=%" PRIu64 " display-calls=%" PRIu64
+           " display-samples=%" PRIu64 " display-random=%" PRIu64 "\n",
+           p->name, control.frames, control.entity_frames, control.delayed_frames,
+           control.undrawn_frames, p->source_class, p->renderer_class, p->model_class,
+           control.compile_parts, control.compile_faces, control.compile_vertices,
+           p->rendered_parts, p->kind == MC_ENTITY_CLASS_KIND_WOLF ? (size_t)0 : (size_t)2,
+           p->kind == MC_ENTITY_CLASS_KIND_SKELETON ? "unpaired" : "not-applicable",
+           control.shadow_quads, control.bow_frames,
+           p->kind == MC_ENTITY_CLASS_KIND_SKELETON ? 6u : 0u,
+           p->kind == MC_ENTITY_CLASS_KIND_SKELETON ? "48,48,768,768,768,768" : "none",
+           f->state.random_chunk_calls, f->state.last_random_chunk_count,
+           f->state.random_chunk_samples, f->state.random_display_calls,
+           f->state.random_display_samples, f->state.random_display_random_calls);
+    CHECK(capture(f, capture_path) == 0);
+    return 0;
+}
+
+/* The ordinary executable owns the Frame before App construction. Observe
+ * that same host here; request actual native focus without authoring a focus
+ * event or changing App.N. Frame/App borrows end at the first bootstrap close. */
+static int save_title_focus(fixture *f) {
+    mc_client_source_frame *frame = mc_client_bootstrap_frame(f->bootstrap);
+    mc_client_frame_state host;
+    CHECK(frame != NULL && mc_client_source_frame_inspect(frame, &host) && !host.active &&
+          !host.failed && host.app == f->app && host.frame_window != NULL &&
+          host.canvas_window != NULL);
+    mc_client_sdk_update *update = mc_client_display_update_owner(f->app->display);
+    mc_client_sdk_update_error error;
+    bool active = false;
+    const uint64_t deadline = SDL_GetTicks() + 3000;
+    do {
+        mc_client_frame_error native = {0};
+        const bool requested =
+            SDL_RaiseWindow(host.frame_window) &&
+            mc_client_frame_native_focus(host.canvas_window, &native) &&
+            mc_client_sdk_display_process_messages(update, &error) == MC_CLIENT_SDK_UPDATE_OK &&
+            mc_client_sdk_display_active(update, &active, &error) == MC_CLIENT_SDK_UPDATE_OK;
+        if (!requested)
+            native_focus_receipt(f, "native-focus-request");
+        CHECK(requested);
+        if (active && SDL_GetKeyboardFocus() == host.canvas_window)
+            break;
+        SDL_Delay(1);
+    } while (SDL_GetTicks() < deadline);
+    if (!active || SDL_GetKeyboardFocus() != host.canvas_window)
+        native_focus_receipt(f, "native-focus-timeout");
+    CHECK(active && SDL_GetKeyboardFocus() == host.canvas_window);
+    return 0;
+}
+
+static int save_title_host(fixture *f, const char *stage, bool focus, uint32_t *frame_id,
+                           uint32_t *canvas_id) {
+    mc_client_source_frame *frame = mc_client_bootstrap_frame(f->bootstrap);
+    mc_client_frame_state host;
+    mc_client_display_parent_state parent;
+    mc_client_canvas_state canvas;
+    mc_client_mouse_helper_state helper;
+    if (frame != NULL) {
+        mc_client_frame_state unavailable = {0}, preserved;
+        unavailable.app = f->app;
+        memcpy(&preserved, &unavailable, sizeof(preserved));
+        CHECK(!mc_client_bootstrap_terminal_frame_inspect(f->bootstrap, &unavailable) &&
+              memcmp(&unavailable, &preserved, sizeof(unavailable)) == 0);
+        CHECK(mc_client_source_frame_inspect(frame, &host));
+    } else {
+        /* The selected terminal root ended getter admission. The Frame and
+         * App are still owned by this actual bootstrap until its later close;
+         * inspect that live owner directly without reviving an expired borrow
+         * or the already consumed menu's scope. No focus or Source pump runs. */
+        CHECK(!focus && f->loop == NULL && mc_client_bootstrap_app(f->bootstrap) == NULL &&
+              mc_client_bootstrap_resources(f->bootstrap) == NULL &&
+              mc_client_bootstrap_class_files(f->bootstrap) == NULL &&
+              mc_client_bootstrap_trig(f->bootstrap) == NULL &&
+              mc_client_bootstrap_math(f->bootstrap) == NULL &&
+              mc_client_bootstrap_graphics(f->bootstrap) == NULL &&
+              mc_client_bootstrap_terminal_frame_inspect(f->bootstrap, &host));
+    }
+    const client_application *app = host.app;
+    CHECK(app != NULL && app == f->app && !host.active && !host.failed && host.canvas != NULL &&
+          app->m == host.canvas && host.frame_window != NULL && host.canvas_window != NULL &&
+          host.frame_window != host.canvas_window &&
+          mc_client_source_canvas_inspect(host.canvas, &canvas) && canvas.peer_bound &&
+          !canvas.active && canvas.graphics == 0 && canvas.width == 854 && canvas.height == 480 &&
+          mc_client_display_stage_parent_inspect(app->display, &parent) &&
+          parent.parent == host.canvas && parent.listener_parent == host.canvas &&
+          parent.borrowed_window && parent.window == host.canvas_window &&
+          mc_client_display_window(app->display) == host.canvas_window &&
+          mc_client_mouse_helper_inspect(app->C, &helper) &&
+          helper.phase == MC_CLIENT_MOUSE_HELPER_READY && helper.source_c == host.canvas &&
+          !helper.active);
+    const uint32_t actual_frame = SDL_GetWindowID(host.frame_window),
+                   actual_canvas = SDL_GetWindowID(host.canvas_window);
+    CHECK(actual_frame != 0 && actual_canvas != 0 && actual_frame != actual_canvas &&
+          canvas.window_id == actual_canvas);
+    if (*frame_id == 0) {
+        *frame_id = actual_frame;
+        *canvas_id = actual_canvas;
+    }
+    CHECK(*frame_id == actual_frame && *canvas_id == actual_canvas);
+    if (focus)
+        CHECK(save_title_focus(f) == 0);
+    printf("WORLD_SAVE_TITLE_HOST stage=%s frame-id=%" PRIu32 " canvas-id=%" PRIu32
+           " canvas=1 display-parent=1 helper-parent=1 bound-app=1 borrowed-window=1\n",
+           stage, actual_frame, actual_canvas);
+    return 0;
+}
+
+static int save_title_eligibility(mc_world_runtime *world, const mc_chunk_provider_fields *provider,
+                                  size_t *eligible, int64_t *world_time) {
+    CHECK(mc_world_info_time_get(world->fields.x, world_time) == MC_WORLD_INFO_OK);
+    if (provider == NULL) {
+        CHECK(mc_chunk_provider_cache_eligible(world->fields.v, *world_time, true, eligible,
+                                               NULL) == MC_WORLD_STORAGE_OK);
+        return 0;
+    }
+    *eligible = 0;
+    for (size_t i = 0; i < provider->cache->insertion_count; ++i) {
+        const mc_chunk_state *chunk = provider->cache->insertions[i];
+        if (chunk != NULL && !chunk->blank && !chunk->never_save &&
+            (chunk->dirty || (chunk->has_entities && chunk->last_save_time != *world_time)))
+            ++*eligible;
+    }
+    return 0;
+}
+
+/* Failure-only observations of the same live SDK/source owners. */
+static void save_title_resume_diagnostics(fixture *f, const char *stage) {
+    mc_client_sdk_input_state input = {0};
+    bool active = false;
+    mc_client_sdk_update_error update;
+    const bool input_read =
+        mc_client_sdk_input_inspect(mc_client_display_inputs(f->app->display), &input);
+    const mc_client_sdk_update_status queried = mc_client_sdk_display_active(
+        mc_client_display_update_owner(f->app->display), &active, &update);
+    fprintf(stderr,
+            "WORLD_SAVE_TITLE_INPUT_FAILURE stage=%s %s.%s:%" PRId64
+            " operation=%s failed=%d render-returned=%d screen=%d source-focus=%d "
+            "display-query=%d display-active=%d input-read=%d grabbed=%d "
+            "frames=%" PRIu64 " ticks=%" PRIu64 " mouse-events=%zu keyboard-events=%zu\n",
+            stage, creature_diagnostic_text(f->state.source_class),
+            creature_diagnostic_text(f->state.source_method), f->state.source_pc,
+            creature_diagnostic_text(f->state.operation), f->state.failed, f->state.render_returned,
+            f->app->r == NULL ? -1 : (int)f->app->r->kind, f->app->N, (int)queried, active,
+            input_read, input.grabbed, f->state.frames, f->state.ticks, f->state.mouse_events,
+            f->state.keyboard_events);
+    if (f->state.failed)
+        creature_tick_diagnostics(f);
+}
+
+static int immutable_unpaused(fixture *f, const char *stage) {
+    if (f->app->r != NULL || atomic_load(&f->app->o))
+        save_title_resume_diagnostics(f, stage);
+    CHECK(f->app->r == NULL && !atomic_load(&f->app->o));
+    return 0;
+}
+
+/* A returning g6 during a long load legitimately leaves r=NULL,N=false.
+ * Acquire through the ordinary Mouse press at Minecraft.k442 -> g; that
+ * source branch skips gameplay click work. No App/Timer/input field repair. */
+static int save_title_acquire(fixture *f, mc_world_runtime *world,
+                              const mc_chunk_provider_fields *provider, size_t *eligible,
+                              int64_t *world_time, bool require_unpaused) {
+    CHECK(f->app->r == NULL && !f->app->N && save_title_focus(f) == 0);
+    if (require_unpaused)
+        CHECK(immutable_unpaused(f, "immutable-acquisition-entry") == 0);
+    const uint64_t left = f->state.gameplay_left_clicks, right = f->state.gameplay_right_clicks,
+                   swings = f->state.gameplay_swing_calls,
+                   stores = f->state.gameplay_click_timer_stores,
+                   starts = f->state.gameplay_mining_starts,
+                   progress = f->state.gameplay_mining_progress_calls,
+                   mined = f->state.gameplay_mined_blocks;
+    const uint64_t ticks_before = f->state.ticks, deadline = SDL_GetTicks() + 60000;
+    size_t frames = 0;
+    int64_t age = INT64_MAX;
+    /* k343 rejects every mouse event when real now-P>200ms. Let an actual
+     * short source frame refresh its own P before offering this fresh tap. */
+    do {
+        if (require_unpaused)
+            CHECK(immutable_unpaused(f, "immutable-acquisition-before-frame") == 0);
+        CHECK(save_title_focus(f) == 0 && frame(f) == 0 &&
+              save_title_eligibility(world, provider, eligible, world_time) == 0);
+        if (require_unpaused)
+            CHECK(immutable_unpaused(f, "immutable-acquisition-returned-frame") == 0);
+        ++frames;
+        int64_t now;
+        CHECK(mc_platform_current_time_millis(&now) == MC_PLATFORM_MILLIS_OK);
+        age = mc_java_i64_sub(now, f->app->P);
+    } while ((f->state.ticks == ticks_before || age > 100) && frames < 64 &&
+             SDL_GetTicks() < deadline);
+    CHECK(f->app->r == NULL && !f->app->N && f->state.ticks > ticks_before && age <= 100);
+    SDL_Window *window = mc_client_display_window(f->app->display);
+    int width, height;
+    CHECK(SDL_GetWindowSize(window, &width, &height));
+    const size_t mouse_before = f->state.mouse_events;
+    SDL_Event down = {0};
+    down.type = SDL_EVENT_MOUSE_BUTTON_DOWN;
+    down.button.windowID = SDL_GetWindowID(window);
+    down.button.button = SDL_BUTTON_LEFT;
+    down.button.down = true;
+    down.button.x = (float)(width / 2);
+    down.button.y = (float)(height / 2);
+    SDL_Event up = down;
+    up.type = SDL_EVENT_MOUSE_BUTTON_UP;
+    up.button.down = false;
+    CHECK(SDL_PushEvent(&down) && SDL_PushEvent(&up) && transfer(f) == 0);
+    do {
+        if (require_unpaused)
+            CHECK(immutable_unpaused(f, "immutable-acquisition-before-frame") == 0);
+        CHECK(save_title_focus(f) == 0 && frame(f) == 0 &&
+              save_title_eligibility(world, provider, eligible, world_time) == 0);
+        if (require_unpaused)
+            CHECK(immutable_unpaused(f, "immutable-acquisition-returned-frame") == 0);
+        ++frames;
+    } while (f->app->r == NULL && !f->app->N && frames < 64 && SDL_GetTicks() < deadline);
+    mc_client_sdk_input_state input;
+    mc_client_sdk_input_error error;
+    bool held = true;
+    if (f->app->r != NULL || !f->app->N)
+        save_title_resume_diagnostics(f, "mouse-acquisition");
+    /* setGrabbed/resetMouse may consume the unread release. Both native
+     * records still establish released backend state before this source tap. */
+    CHECK(f->app->r == NULL && f->app->N && f->state.mouse_events > mouse_before &&
+          mc_client_sdk_input_inspect(mc_client_display_inputs(f->app->display), &input) &&
+          input.grabbed &&
+          mc_client_sdk_mouse_button_down(mc_client_display_inputs(f->app->display), 0, &held,
+                                          &error) == MC_CLIENT_SDK_INPUT_OK &&
+          !held && f->state.gameplay_left_clicks == left &&
+          f->state.gameplay_right_clicks == right && f->state.gameplay_swing_calls == swings &&
+          f->state.gameplay_click_timer_stores == stores &&
+          f->state.gameplay_mining_starts == starts &&
+          f->state.gameplay_mining_progress_calls == progress &&
+          f->state.gameplay_mined_blocks == mined);
+    printf("WORLD_SAVE_TITLE_ACQUIRE sdk-mouse-press=1 source=k442-g "
+           "mouse-events=%zu native-release=1 source-focus=1 sdk-grab=1 "
+           "gameplay-clicks=0 mining=0 frames=%zu input-age=%" PRId64 "\n",
+           f->state.mouse_events - mouse_before, frames, age);
+    return 0;
+}
+
+/* These renderer profiles require immutable saves. Acquire the real source
+ * grab when loading released it; an unexpected Pause remains a failure rather
+ * than being resumed after its source save. No App or Timer field is repaired. */
+static int immutable_profile_focus(fixture *f) {
+    CHECK(immutable_unpaused(f, "immutable-loaded-entry") == 0 && display_focus(f, true) == 0);
+    if (!f->app->N) {
+        size_t eligible;
+        int64_t world_time;
+        CHECK(save_title_acquire(f, f->app->active_world, NULL, &eligible, &world_time, true) == 0);
+    }
+    return repeat_focus_state(f, "immutable-profile-entry");
+}
+
+/* Recover an actually published Pause through its real ID4 SDK button, or
+ * acquire an ungrabbed World through the real Mouse input above. Retained
+ * screens let the later controlled Escape prove a distinct allocation. */
+static int save_title_resume(fixture *f, mc_world_runtime *world,
+                             const mc_chunk_provider_fields *provider,
+                             mc_client_source_da *recovered[4], size_t *focus_pauses,
+                             size_t *eligible, int64_t *world_time) {
+    while (f->app->r != NULL) {
+        mc_client_source_da *pause = f->app->r;
+        CHECK(pause->kind == MC_CLIENT_SCREEN_PAUSE && *focus_pauses < 4 &&
+              save_title_focus(f) == 0);
+        recovered[(*focus_pauses)++] = pause;
+        const size_t mouse_before = f->state.mouse_events;
+        CHECK(push_button(f, pause, 4, true) == 0 && push_button(f, pause, 4, false) == 0 &&
+              transfer(f) == 0);
+        /* Debug Chunk compilation may exceed the source Timer reset threshold.
+         * Wait for actual GUI ticks without changing the Timer or queued input. */
+        const uint64_t deadline = SDL_GetTicks() + 60000;
+        size_t frames = 0;
+        do {
+            CHECK(save_title_focus(f) == 0 && frame(f) == 0 &&
+                  save_title_eligibility(world, provider, eligible, world_time) == 0);
+            ++frames;
+        } while (f->app->r == pause && frames < 64 && SDL_GetTicks() < deadline);
+        CHECK(f->app->r != pause && f->state.mouse_events >= mouse_before + 2);
+    }
+    if (f->app->r == NULL && !f->app->N)
+        CHECK(save_title_acquire(f, world, provider, eligible, world_time, false) == 0);
+    if (f->app->r != NULL || !f->app->N)
+        save_title_resume_diagnostics(f, "resume-postcondition");
+    CHECK(f->app->r == NULL && f->app->N);
+    return 0;
+}
+
+typedef struct save_title_entry_budget {
+    size_t entries, files, bytes;
+} save_title_entry_budget;
+
+typedef struct save_title_entry_walk {
+    const char *destination;
+    unsigned int depth;
+    save_title_entry_budget *budget;
+} save_title_entry_walk;
+
+static bool save_title_entry_tree(const char *, const char *, unsigned int,
+                                  save_title_entry_budget *);
+
+static SDL_EnumerationResult SDLCALL save_title_entry_file(void *context, const char *directory,
+                                                           const char *name) {
+    save_title_entry_walk *walk = context;
+    char source[8192], target[8192];
+    if (++walk->budget->entries > 1024 || strcmp(name, ".") == 0 || strcmp(name, "..") == 0 ||
+        strchr(name, '/') != NULL || strchr(name, '\\') != NULL)
+        return SDL_ENUM_FAILURE;
+    const int a = snprintf(source, sizeof(source), "%s%s", directory, name);
+    const int b = snprintf(target, sizeof(target), "%s/%s", walk->destination, name);
+    if (a <= 0 || (size_t)a >= sizeof(source) || b <= 0 || (size_t)b >= sizeof(target))
+        return SDL_ENUM_FAILURE;
+    SDL_PathInfo info;
+    if (!SDL_GetPathInfo(source, &info))
+        return SDL_ENUM_FAILURE;
+    if (info.type == SDL_PATHTYPE_DIRECTORY)
+        return walk->depth < 3 &&
+                       save_title_entry_tree(source, target, walk->depth + 1, walk->budget)
+                   ? SDL_ENUM_CONTINUE
+                   : SDL_ENUM_FAILURE;
+    if (info.type != SDL_PATHTYPE_FILE || info.size > 1048576 || walk->budget->files >= 1024 ||
+        info.size > 16u * 1048576u - walk->budget->bytes || !SDL_CopyFile(source, target))
+        return SDL_ENUM_FAILURE;
+    ++walk->budget->files;
+    walk->budget->bytes += (size_t)info.size;
+    return SDL_ENUM_CONTINUE;
+}
+
+static bool save_title_entry_tree(const char *source, const char *target, unsigned int depth,
+                                  save_title_entry_budget *budget) {
+    save_title_entry_walk walk = {target, depth, budget};
+    return SDL_CreateDirectory(target) &&
+           SDL_EnumerateDirectory(source, save_title_entry_file, &walk);
+}
+
+/* Preserve the actual pre-frame bytes, never run a save/flush to make them.
+ * Separate bounded directories retain zero-tick Pause writes before the frame
+ * that really enters button1. No previous candidate snapshot is overwritten. */
+static int save_title_entry_snapshot(size_t frame_index, size_t *aggregate, size_t *bytes) {
+    const char *source =
+        SDL_GetEnvironmentVariable(SDL_GetEnvironment(), "MC_WORLD_SAVE_TITLE_SAVES");
+    const char *root =
+        SDL_GetEnvironmentVariable(SDL_GetEnvironment(), "MC_WORLD_SAVE_TITLE_ENTRIES");
+    char target[8192];
+    CHECK(source != NULL && root != NULL && frame_index < 64 && *aggregate <= 64u * 16u * 1048576u);
+    const int n = snprintf(target, sizeof(target), "%s/frame-%zu", root, frame_index);
+    CHECK(n > 0 && (size_t)n < sizeof(target));
+    save_title_entry_budget budget = {0};
+    CHECK(save_title_entry_tree(source, target, 0, &budget) && budget.files != 0 &&
+          budget.bytes <= 64u * 16u * 1048576u - *aggregate);
+    *aggregate += budget.bytes;
+    *bytes = budget.bytes;
+    return 0;
+}
+
+/* These two ordinary UI profiles never assign an App/source World field. The
+ * only authored failure input is the actual eight-byte session.lock file. */
+static int reload_entry_snapshot(size_t, size_t, size_t *, size_t *);
+
+static int save_title_run(fixture *f, mc_client_source_da *initial, const char *capture_path,
+                          bool mismatch, size_t leave_sequence, size_t reload_epoch) {
+    client_application *app = f->app;
+    mc_client_screen_transition_state transitions;
+    mc_client_world_load_state load;
+    CHECK(mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
+          transitions.world_load != NULL &&
+          mc_client_world_load_inspect(transitions.world_load, &load) && load.source_returned &&
+          load.world == app->active_world && load.player == app->h && app->i == app->h &&
+          !f->state.failed);
+    mc_world_runtime *world = load.world;
+    mc_entity *player = load.player;
+    mc_client_render_global *renderer = app->g;
+    mc_client_effect_renderer *effects = app->effect_renderer;
+    mc_effect_renderer_snapshot particles;
+    CHECK(renderer->fields.k == world && mc_client_effect_renderer_read(effects, &particles) &&
+          particles.world == world && repeat_statistics_controls(f, false) == 0);
+
+    /* Wait only through actual Timer-selected frames for an eligible cached
+     * Chunk. No dirty/q/time field is repaired to manufacture a write. */
+    size_t eligible = 0;
+    int64_t world_time = 0;
+    CHECK(save_title_eligibility(world, NULL, &eligible, &world_time) == 0);
+    mc_client_source_da *recovered[4] = {0};
+    size_t focus_pauses = 0;
+    const uint64_t tick_deadline = SDL_GetTicks() + 3000;
+    for (;;) {
+        CHECK(save_title_resume(f, world, NULL, recovered, &focus_pauses, &eligible, &world_time) ==
+                  0 &&
+              save_title_eligibility(world, NULL, &eligible, &world_time) == 0);
+        if (eligible != 0 || SDL_GetTicks() >= tick_deadline)
+            break;
+        CHECK(save_title_focus(f) == 0 && frame(f) == 0 &&
+              save_title_eligibility(world, NULL, &eligible, &world_time) == 0);
+    }
+    CHECK(eligible != 0 && app->r == NULL && app->N &&
+          mc_client_screen_transitions_inspect(app->screen_transitions, &transitions));
+    size_t screens_before_escape = 0, keyboard_before = 0;
+    mc_client_source_da *pause = NULL;
+    for (size_t attempt = 0; attempt < 4; ++attempt) {
+        CHECK(app->r == NULL && app->N && eligible != 0 &&
+              mc_client_screen_transitions_inspect(app->screen_transitions, &transitions));
+        screens_before_escape = transitions.screens;
+        keyboard_before = f->state.keyboard_events;
+        printf("WORLD_SAVE_TITLE_RECOVERY focus-pauses=%zu keyboard-before-escape=%zu resumed=1\n",
+               focus_pauses, keyboard_before);
+        CHECK(push_escape(f, true) == 0 && push_escape(f, false) == 0 && transfer(f) == 0);
+        const uint64_t attempt_deadline = SDL_GetTicks() + 60000;
+        size_t attempt_frames = 0;
+        do {
+            CHECK(save_title_focus(f) == 0 && frame(f) == 0);
+            ++attempt_frames;
+        } while (app->r == NULL && f->state.keyboard_events == keyboard_before &&
+                 attempt_frames < 64 && SDL_GetTicks() < attempt_deadline);
+        pause = app->r;
+        if (f->state.keyboard_events >= keyboard_before + 2)
+            break;
+
+        /* Only the observed zero-tick inactive-render Pause may precede BOTH
+         * queued Escape events. A partial key drain or missing Pause is not a
+         * retry prefix. Keep the same total recovery ledger and attempt budget. */
+        mc_client_pause_screen_state automatic;
+        mc_client_screen_error automatic_error;
+        mc_client_sdk_update_error update;
+        mc_timer_view timer;
+        bool active = true;
+        CHECK(f->state.keyboard_events == keyboard_before && pause != NULL &&
+              pause->kind == MC_CLIENT_SCREEN_PAUSE && pause != initial && !app->N &&
+              atomic_load(&app->o) && mc_timer_view_get(app->timer, &timer) && timer.ticks == 0 &&
+              mc_client_sdk_display_active(mc_client_display_update_owner(app->display), &active,
+                                           &update) == MC_CLIENT_SDK_UPDATE_OK &&
+              !active &&
+              mc_client_screen_pause_inspect((mc_client_source_oz *)pause, &automatic,
+                                             &automatic_error) == MC_CLIENT_SCREEN_OK &&
+              automatic.last_initialization_returned &&
+              mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
+              transitions.screens == screens_before_escape + 1 && focus_pauses < 4 &&
+              attempt + 1 < 4 && attempt_frames < 64 && SDL_GetTicks() < attempt_deadline);
+        for (size_t i = 0; i < focus_pauses; ++i)
+            CHECK(pause != recovered[i]);
+        recovered[focus_pauses++] = pause;
+        const size_t mouse_before = f->state.mouse_events;
+        CHECK(push_button(f, pause, 4, true) == 0 && push_button(f, pause, 4, false) == 0 &&
+              transfer(f) == 0);
+        /* da.e captures this old OZ once. Its Mouse loop executes actual ID4
+         * before its Keyboard loop drains the queued pair on that SAME OZ,
+         * even though the action has already stored App.r=NULL. */
+        do {
+            CHECK(save_title_focus(f) == 0 && frame(f) == 0 &&
+                  save_title_eligibility(world, NULL, &eligible, &world_time) == 0);
+            ++attempt_frames;
+        } while (app->r == pause && attempt_frames < 64 && SDL_GetTicks() < attempt_deadline);
+        CHECK(app->r == NULL && app->N && eligible != 0 &&
+              f->state.mouse_events >= mouse_before + 2 &&
+              f->state.keyboard_events == keyboard_before + 2 &&
+              mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
+              transitions.screens == screens_before_escape + 1);
+        printf("WORLD_SAVE_TITLE_AUTOPAUSE attempt=%zu focus-pauses=%zu old-oz-keys=2 "
+               "real-id4=1 resumed=1 frames=%zu\n",
+               attempt + 1, focus_pauses, attempt_frames);
+        pause = NULL;
+    }
+    mc_client_pause_screen_state paused;
+    mc_client_screen_error screen_error;
+    CHECK(pause != NULL && pause->kind == MC_CLIENT_SCREEN_PAUSE && pause != initial && !app->N &&
+          f->state.keyboard_events >= keyboard_before + 2 &&
+          mc_client_screen_pause_inspect((mc_client_source_oz *)pause, &paused, &screen_error) ==
+              MC_CLIENT_SCREEN_OK &&
+          paused.last_initialization_returned &&
+          mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
+          transitions.screens == screens_before_escape + 1);
+    for (size_t i = 0; i < focus_pauses; ++i)
+        CHECK(pause != recovered[i]);
+    printf("WORLD_SAVE_TITLE_ESCAPE keyboard-before=%zu keyboard-after=%zu fresh-pause=1 "
+           "distinct-recovered=1\n",
+           keyboard_before, f->state.keyboard_events);
+    const size_t screens_before = transitions.screens;
+    mc_world_info_fields info_before, info_after;
+    CHECK(mc_world_info_fields_get(world->fields.x, &info_before) == MC_WORLD_INFO_OK &&
+          capture(f, capture_path) == 0);
+    const char *lock_path =
+        SDL_GetEnvironmentVariable(SDL_GetEnvironment(), "MC_WORLD_SAVE_TITLE_SESSION");
+    uint8_t obstruction[8];
+    if (mismatch) {
+        CHECK(lock_path != NULL && !f->save_title_session_authored);
+        const int path_bytes = snprintf(f->save_title_session_path,
+                                        sizeof(f->save_title_session_path), "%s", lock_path);
+        CHECK(path_bytes > 0 && (size_t)path_bytes < sizeof(f->save_title_session_path));
+        /* A long preceding render can exceed py.a's1000ms reset gate even
+         * after a real60ms wait. Admit only after an actual short returned
+         * Pause frame, BEFORE the lock fault or any button1 input exists. */
+        const int64_t paused_time = info_before.value.time;
+        const uint64_t warmup_deadline = SDL_GetTicks() + 60000;
+        size_t warmup_frames = 0;
+        uint64_t frame_millis = UINT64_MAX;
+        do {
+            CHECK(app->r == pause && !app->N && atomic_load(&app->o) &&
+                  app->active_world == world && save_title_focus(f) == 0);
+            const uint64_t frame_started = SDL_GetTicks();
+            CHECK(frame(f) == 0);
+            frame_millis = SDL_GetTicks() - frame_started;
+            ++warmup_frames;
+            CHECK(app->r == pause && !app->N && atomic_load(&app->o) &&
+                  app->active_world == world &&
+                  save_title_eligibility(world, NULL, &eligible, &world_time) == 0 &&
+                  world_time == paused_time &&
+                  mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
+                  transitions.screens == screens_before);
+        } while (frame_millis >= 250 && warmup_frames < 64 && SDL_GetTicks() < warmup_deadline);
+        printf("WORLD_SAVE_TITLE_SESSION_ADMISSION frames=%zu frame-ms=%" PRIu64 " time=%" PRId64
+               " eligible=%zu source-frames=1 same-pause=1 "
+               "world-time-unchanged=1\n",
+               warmup_frames, frame_millis, world_time, eligible);
+        CHECK(frame_millis < 250);
+        /* Declared real input wait only: the next ordinary source Timer update
+         * must choose its own tick. Do not poll input or alter a Timer field. */
+        mc_timer_view before_wait, after_wait;
+        CHECK(mc_timer_view_get(app->timer, &before_wait));
+        const uint64_t wait_start = SDL_GetTicks();
+        SDL_Delay(60);
+        const uint64_t waited = SDL_GetTicks() - wait_start;
+        CHECK(waited >= 60 && mc_timer_view_get(app->timer, &after_wait) &&
+              after_wait.ticks == before_wait.ticks &&
+              after_wait.partial_ticks == before_wait.partial_ticks &&
+              after_wait.ticks_per_second == before_wait.ticks_per_second &&
+              after_wait.speed == before_wait.speed);
+        printf("WORLD_SAVE_TITLE_SESSION_WAIT requested-ms=60 actual-ms=%" PRIu64
+               " timer-ticks=%" PRId32 " timer-unchanged=1\n",
+               waited, after_wait.ticks);
+        SDL_IOStream *input = SDL_IOFromFile(f->save_title_session_path, "rb");
+        uint8_t extra;
+        CHECK(input != NULL &&
+              SDL_ReadIO(input, f->save_title_session_token, sizeof(f->save_title_session_token)) ==
+                  sizeof(f->save_title_session_token) &&
+              SDL_ReadIO(input, &extra, 1) == 0 && SDL_CloseIO(input));
+        memcpy(obstruction, f->save_title_session_token, sizeof(obstruction));
+        obstruction[0] ^= 1u;
+        CHECK(SDL_SaveFile(f->save_title_session_path, obstruction, sizeof(obstruction)));
+        f->save_title_session_authored = true;
+    }
+    int64_t first, last;
+    CHECK(mc_platform_current_time_millis(&first) == MC_PLATFORM_MILLIS_OK &&
+          push_button(f, pause, 1, true) == 0 && push_button(f, pause, 1, false) == 0 &&
+          transfer(f) == 0);
+    bool returned = true;
+    const uint64_t save_deadline = SDL_GetTicks() + 60000;
+    size_t save_frames = 0, entry_aggregate = 0, entry_bytes = 0;
+    do {
+        CHECK(save_title_focus(f) == 0 && app->r == pause && !app->N && atomic_load(&app->o) &&
+              mc_chunk_provider_concrete_kind_of(world->fields.v) == MC_CHUNK_PROVIDER_MAP_CACHE &&
+              (reload_epoch == 0
+                   ? save_title_entry_snapshot(save_frames, &entry_aggregate, &entry_bytes)
+                   : reload_entry_snapshot(reload_epoch, save_frames, &entry_aggregate,
+                                           &entry_bytes)) == 0 &&
+              mc_world_info_fields_get(world->fields.x, &info_before) == MC_WORLD_INFO_OK &&
+              save_title_eligibility(world, NULL, &eligible, &world_time) == 0 &&
+              mc_platform_current_time_millis(&first) == MC_PLATFORM_MILLIS_OK);
+        /* This real paused MAP_CACHE frame cannot save before GUI input: fd.w
+         * returns its field, paused controller/texture ticks are skipped, and
+         * the World tick follows button1/leave. Select this exact pre-frame
+         * snapshot only when the actual call below enters the source leave. */
+        returned = mc_client_menu_loop_frame(f->loop);
+        CHECK(mc_client_menu_loop_inspect(f->loop, &f->state) &&
+              mc_client_screen_transitions_inspect(app->screen_transitions, &transitions) &&
+              mc_client_world_load_inspect(transitions.world_load, &load));
+        if (!returned || load.leave.started)
+            break;
+        SDL_Delay(1);
+        ++save_frames;
+    } while (save_frames < 64 && SDL_GetTicks() < save_deadline);
+    CHECK(mc_platform_current_time_millis(&last) == MC_PLATFORM_MILLIS_OK);
+    CHECK(mc_world_info_fields_get(world->fields.x, &info_after) == MC_WORLD_INFO_OK);
+    printf("WORLD_SAVE_TITLE_ENTRY mode=%s frame=%zu eligible=%zu time=%" PRId64
+           " size-before=%" PRId64 " size-after=%" PRId64 " entered=%d bytes=%zu "
+           "copied-before-frame=1\n",
+           mismatch ? "save-title-session" : "save-title", save_frames, eligible,
+           info_before.value.time, info_before.value.size_on_disk, info_after.value.size_on_disk,
+           load.leave.started, entry_bytes);
+    CHECK(load.source_returned && load.failure->status == MC_CLIENT_WORLD_LOAD_OK &&
+          load.world == world && load.player == player && load.input != NULL &&
+          load.leave.calls == 1 && load.leave.started && load.leave.i_cleared &&
+          load.leave.failure != NULL && load.leave.saving != NULL && (mismatch || eligible != 0) &&
+          transitions.leave_calls == leave_sequence &&
+          transitions.world_leave == load.leave.failure && app->i == NULL &&
+          app->view_occurrence == NULL && app->g == renderer && renderer->fields.k == world &&
+          app->effect_renderer == effects && mc_client_effect_renderer_read(effects, &particles) &&
+          particles.world == world &&
+          mc_world_info_fields_get(world->fields.x, &info_after) == MC_WORLD_INFO_OK);
+    if (mismatch) {
+        const mc_world_source_error *cause = &load.leave.saving->source_session;
+        CHECK(!returned && f->state.failed && load.leave.failed && !load.leave.source_returned &&
+              load.leave.pc == 64 && !load.leave.f_cleared && !load.leave.h_cleared &&
+              app->active_world == world && app->h == player && app->r == pause &&
+              transitions.screens == screens_before && load.leave.failure->native_policy &&
+              cause->status == MC_WORLD_SOURCE_UNIMPLEMENTED && !cause->source_exception &&
+              cause->native_policy && cause->session_mismatch && cause->frame_count != 0 &&
+              cause->exception_class == NULL && cause->cause_site.pc == 35 &&
+              strcmp(cause->frames[0].class_name, "fm") == 0 &&
+              strcmp(cause->frames[0].method, "b") == 0 && cause->frames[0].pc == 42 &&
+              info_after.value.size_on_disk == info_before.value.size_on_disk);
+        mc_client_world_load_error retry;
+        CHECK(mc_client_world_load_leave((mc_client_world_load_call *)transitions.world_load,
+                                         &retry) == MC_CLIENT_WORLD_LOAD_BUSY &&
+              retry.native_policy && mc_client_world_load_inspect(transitions.world_load, &load) &&
+              load.leave.calls == 1 && load.leave.failed && load.leave.pc == 64 &&
+              app->active_world == world && app->h == player && app->i == NULL);
+    } else {
+        mc_client_screen_state title;
+        mc_world_source_chunk_loader_state loader;
+        mc_world_source_region_output_state output;
+        CHECK(returned && !f->state.failed && !load.leave.failed && load.leave.source_returned &&
+              load.leave.pc == 366 && load.leave.f_cleared && load.leave.h_cleared &&
+              load.leave.failure->status == MC_CLIENT_WORLD_LOAD_OK &&
+              load.leave.saving->status == MC_CHUNK_LIFECYCLE_OK && app->active_world == NULL &&
+              app->h == NULL && app->r != NULL && app->r != initial && app->r != pause &&
+              app->r->kind == MC_CLIENT_SCREEN_MAIN_MENU &&
+              transitions.screens == screens_before + 1 &&
+              mc_client_screen_inspect(app->r, &title, NULL) == MC_CLIENT_SCREEN_OK &&
+              title.phase == MC_CLIENT_SCREEN_READY && title.is_menu &&
+              app->r->initialization_count == 1 &&
+              mc_world_source_chunk_loader_inspect(world->source_construction->loader, &loader) &&
+              loader.save.source_returned && loader.save.closed && loader.save.output != NULL &&
+              mc_world_source_region_output_inspect(loader.save.output, &output) && output.closed &&
+              output.commit_returned && output.source_close_calls == 1 &&
+              info_after.value.size_on_disk >= info_before.value.size_on_disk);
+        CHECK(frame(f) == 0 && app->active_world == NULL &&
+              app->r->kind == MC_CLIENT_SCREEN_MAIN_MENU && capture(f, capture_path) == 0);
+    }
+    printf("WORLD_SAVE_TITLE mode=%s escape-sdk=1 button-id=1 leave-pc=%d i=1 f=%d h=%d "
+           "new-title=%d old-renderer-world=1 old-effects-world=1 original-load-returned=1 "
+           "eligible=%zu time=%" PRId64 " size-before=%" PRId64 " size-after=%" PRId64
+           " first=%" PRId64 " last=%" PRId64 " entry-frame=%zu entry-bytes=%zu\n",
+           mismatch ? "save-title-session" : "save-title", load.leave.pc, load.leave.f_cleared,
+           load.leave.h_cleared, !mismatch, eligible, info_before.value.time,
+           info_before.value.size_on_disk, info_after.value.size_on_disk, first, last, save_frames,
+           entry_bytes);
+    return 0;
+}
+
+static int save_title_controls(fixture *f, mc_client_source_da *initial, const char *capture_path,
+                               bool mismatch) {
+    return save_title_run(f, initial, capture_path, mismatch, 1, 0);
+}
+
+#include "test_world_reload.inc"
+
+static uint64_t cactus_pose_double_bits(double value) {
+    uint64_t bits;
+    memcpy(&bits, &value, sizeof(bits));
+    return bits;
+}
+
+static uint32_t cactus_pose_float_bits(float value) {
+    uint32_t bits;
+    memcpy(&bits, &value, sizeof(bits));
+    return bits;
+}
+
+static int cactus_loaded_frame(fixture *f, mc_world_runtime *world) {
+    const mc_client_world_frame_state *draw = f->state.world_frame;
+    const bool complete =
+        !f->state.failed && f->state.running && f->state.render_returned &&
+        f->app->active_world == world && f->app->r == NULL && f->app->N && draw != NULL &&
+        draw->returned && draw->source_pc == 1013 && draw->world == world &&
+        draw->render_global == f->app->g && draw->camera == f->app->i && draw->updates_returned &&
+        draw->terrain_returned && draw->translucent_returned && draw->update != NULL &&
+        draw->update->returned && draw->update->failure == NULL &&
+        draw->update->compile_attempts == draw->update->completed_compiles &&
+        draw->submission != NULL && draw->submission->returned && draw->submission->pass == 0 &&
+        draw->submission->failure == NULL && f->state.hud != NULL && f->state.hud->returned &&
+        f->state.hud->source_pc == 2101 && f->state.hud->slots_returned &&
+        f->state.hud->empty_slots == 9 && f->state.hud->failure == NULL &&
+        f->state.hud->cleanup == NULL;
+    if (!complete) {
+        /* Failure-only observations: no source replay, focus request or pump.
+         * Keep every original completed-frame assertion below unchanged. */
+        if (repeat_focus_state(f, "cactus-loaded-frame") == 0)
+            native_focus_receipt(f, "cactus-loaded-frame-focused");
+        fprintf(stderr,
+                "WORLD_CACTUS_FRAME_FAILURE loop-failed=%d running=%d render-returned=%d "
+                "same-world=%d screen=%d source-focus=%d paused=%d frames=%" PRIu64
+                " ticks=%" PRIu64 " source=%s.%s:%" PRId64 " operation=%s\n",
+                f->state.failed, f->state.running, f->state.render_returned,
+                f->app->active_world == world, f->app->r == NULL ? -1 : (int)f->app->r->kind,
+                f->app->N, atomic_load(&f->app->o), f->state.frames, f->state.ticks,
+                f->state.source_class == NULL ? "none" : f->state.source_class,
+                f->state.source_method == NULL ? "none" : f->state.source_method,
+                f->state.source_pc, f->state.operation == NULL ? "none" : f->state.operation);
+        fprintf(stderr,
+                "WORLD_CACTUS_FRAME_CHILD draw=%d returned=%d pc=%u same-world=%d same-global=%d "
+                "same-camera=%d updates=%d terrain=%d translucent=%d update=%d update-returned=%d "
+                "update-failure=%d compiles=%zu,%zu submission=%d submission-returned=%d "
+                "submission-pass=%d submission-failure=%d\n",
+                draw != NULL, draw != NULL && draw->returned, draw == NULL ? 0u : draw->source_pc,
+                draw != NULL && draw->world == world,
+                draw != NULL && draw->render_global == f->app->g,
+                draw != NULL && draw->camera == f->app->i, draw != NULL && draw->updates_returned,
+                draw != NULL && draw->terrain_returned, draw != NULL && draw->translucent_returned,
+                draw != NULL && draw->update != NULL,
+                draw != NULL && draw->update != NULL && draw->update->returned,
+                draw != NULL && draw->update != NULL && draw->update->failure != NULL,
+                draw == NULL || draw->update == NULL ? 0u : draw->update->compile_attempts,
+                draw == NULL || draw->update == NULL ? 0u : draw->update->completed_compiles,
+                draw != NULL && draw->submission != NULL,
+                draw != NULL && draw->submission != NULL && draw->submission->returned,
+                draw == NULL || draw->submission == NULL ? -1 : draw->submission->pass,
+                draw != NULL && draw->submission != NULL && draw->submission->failure != NULL);
+        fprintf(stderr,
+                "WORLD_CACTUS_FRAME_HUD present=%d returned=%d pc=%u slots=%d empty=%u "
+                "failure=%d cleanup=%d\n",
+                f->state.hud != NULL, f->state.hud != NULL && f->state.hud->returned,
+                f->state.hud == NULL ? 0u : f->state.hud->source_pc,
+                f->state.hud != NULL && f->state.hud->slots_returned,
+                f->state.hud == NULL ? 0u : f->state.hud->empty_slots,
+                f->state.hud != NULL && f->state.hud->failure != NULL,
+                f->state.hud != NULL && f->state.hud->cleanup != NULL);
+    }
+    CHECK(complete);
+    mc_entity_snapshot player;
+    mc_entity_hit_result_view hit;
+    mc_entity_hit_kind_class_view kinds;
+    const double saved_y = 64.0 + (double)1.62f;
+    CHECK(f->app->i == f->app->h && draw->camera == f->app->h &&
+          mc_entity_get_snapshot(f->app->h, &player) == MC_ENTITY_OK &&
+          player.phase == MC_ENTITY_READY && player.base.world == world && player.base.x == 3.5 &&
+          player.base.y == saved_y && player.base.z == .5 && player.base.bl == 3.5 &&
+          player.base.bm == saved_y && player.base.bn == .5 && player.base.offset == 1.62f &&
+          player.bounds != NULL && player.bounds->min_y == 64 && player.base.yaw == 0 &&
+          player.base.aT == 0 && player.base.aU == 0 && player.base.aV == 0 &&
+          draw->render_x == 3.5 && draw->render_y == saved_y && draw->render_z == .5);
+    CHECK(draw->picking_source_returned && draw->picking_block_published &&
+          draw->picking_result_identity == (uintptr_t)f->app->y && f->app->y != NULL &&
+          mc_entity_hit_result_inspect(f->app->y, &hit) == MC_ENTITY_HIT_OK &&
+          mc_entity_hit_kind_class_inspect(f->app->entities, &kinds) == MC_ENTITY_HIT_OK &&
+          hit.fields.a == kinds.a && hit.fields.b == 3 && hit.fields.c == 65 && hit.fields.d == 3 &&
+          draw->selection_hit_present && draw->selection_water_read && !draw->selection_water &&
+          draw->selection_alpha_disabled && draw->selection_current_returned &&
+          draw->selection_calls == 1 && draw->selections[0] != NULL &&
+          draw->selections[0]->overlay_returned && draw->selections[0]->outline_returned &&
+          draw->selections[0]->alpha_restored && draw->selections[0]->outline_block &&
+          draw->selections[0]->x == 3 && draw->selections[0]->y == 65 &&
+          draw->selections[0]->z == 3 && draw->selections[0]->block_id == 81 &&
+          draw->selections[0]->vertices == 18 && draw->selections[0]->draws == 3);
+    return 0;
+}
+
+static int cactus_loaded_advance(fixture *f, mc_world_runtime *world) {
+    CHECK(display_focus(f, true) == 0 && mc_client_menu_loop_inspect(f->loop, &f->state));
+    const uint64_t world_before = f->state.world_draws, hud_before = f->state.hud_draws;
+    CHECK(frame(f) == 0 && cactus_loaded_frame(f, world) == 0);
+    if (f->state.world_draws != world_before + 1 || f->state.hud_draws != hud_before + 1)
+        fprintf(stderr,
+                "Cactus frame counters world=%" PRIu64 ",%" PRIu64 " hud=%" PRIu64 ",%" PRIu64 "\n",
+                world_before, f->state.world_draws, hud_before, f->state.hud_draws);
+    CHECK(f->state.world_draws == world_before + 1 && f->state.hud_draws == hud_before + 1);
+    return 0;
+}
+
+static int cactus_loaded_list(fixture *f, mc_client_source_dk *dk,
+                              mc_client_source_batch_view *batch) {
+    mc_client_source_list_state list;
+    CHECK(dk != NULL && dk->fields.c == 0 && dk->fields.d == 64 && dk->fields.e == 0 &&
+          dk->fields.f == 16 && dk->fields.g == 16 && dk->fields.h == 16 && dk->fields.E &&
+          dk->fields.o && !dk->fields.u && dk->fields.p != NULL && !dk->fields.p[0] &&
+          dk->fields.p[1] && mc_client_display_list_inspect(f->app->display, dk->fields.C, &list) &&
+          list.defined && !list.building && list.commands == 7 && list.draws == 1 &&
+          list.vertices == 60 &&
+          mc_client_display_list_batch(f->app->display, dk->fields.C, 0, batch) &&
+          batch->vertices == 60 && batch->mode == 4 && batch->arrays == 7 &&
+          batch->byte_count == 60u * 32u && f->state.world_frame->terrain_count > 0);
+    size_t inset_vertices = 0;
+    for (size_t vertex_index = 30; vertex_index < 60; ++vertex_index) {
+        float vertex[5];
+        memcpy(vertex, batch->bytes + vertex_index * 32u, sizeof(vertex));
+        CHECK(vertex[0] >= 3 && vertex[0] <= 4 && vertex[1] >= 1 && vertex[1] <= 2 &&
+              vertex[2] >= 3 && vertex[2] <= 4);
+        const bool top = vertex_index < 36;
+        CHECK(vertex[3] >= (top ? 5.0f : 6.0f) / 16.0f && vertex[3] < (top ? 6.0f : 7.0f) / 16.0f &&
+              vertex[4] >= .25f && vertex[4] < .3125f);
+        if (top)
+            CHECK(vertex[1] == 2);
+        else {
+            CHECK(vertex[0] == 3.0625f || vertex[0] == 3.9375f || vertex[2] == 3.0625f ||
+                  vertex[2] == 3.9375f);
+            ++inset_vertices;
+        }
+    }
+    CHECK(inset_vertices == 24);
+    return 0;
+}
+
+static int cactus_loaded_controls(fixture *f, const char *screenshot) {
+    mc_world_runtime *world = f->app->active_world;
+    mc_registry_classes *registry = f->app->registry;
+    CHECK(world != NULL && registry != NULL && f->app->g != NULL && f->app->g->fields.k == world &&
+          world->world_accesses.count == 1 && world->fields.u == world->world_accesses.list &&
+          world->fields.u->count == 1 && world->world_accesses.entries[0] != NULL &&
+          repeat_statistics_controls(f, false) == 0 && cactus_loaded_frame(f, world) == 0);
+    mc_client_screen_transition_state transitions;
+    mc_client_world_load_state load;
+    mc_entity_snapshot player;
+    CHECK(mc_client_screen_transitions_inspect(f->app->screen_transitions, &transitions) &&
+          transitions.world_load != NULL &&
+          mc_client_world_load_inspect(transitions.world_load, &load) && load.source_returned &&
+          load.player_load_returned && load.world == world && load.player == f->app->h &&
+          mc_entity_get_snapshot(f->app->h, &player) == MC_ENTITY_OK);
+    printf(
+        "WORLD_CACTUS_POSE input=saved-player source-loaded=%d camera=player position=%016" PRIx64
+        ",%016" PRIx64 ",%016" PRIx64 " rotation=%08" PRIx32 ",%08" PRIx32 " feet=%016" PRIx64
+        " offset=%08" PRIx32 " hit=3,65,3\n",
+        load.player_load_returned, cactus_pose_double_bits(player.base.x),
+        cactus_pose_double_bits(player.base.y), cactus_pose_double_bits(player.base.z),
+        cactus_pose_float_bits(player.base.yaw), cactus_pose_float_bits(player.base.aT),
+        cactus_pose_double_bits(player.bounds->min_y), cactus_pose_float_bits(player.base.offset));
+    int32_t sand_id = -1, cactus_id = -1;
+    mc_world_storage_error error;
+    mc_chunk_state *stored = NULL;
+    CHECK(mc_world_runtime_block_get(world, 3, 64, 3, &sand_id, &error) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_block_get(world, 3, 65, 3, &cactus_id, &error) == MC_WORLD_STORAGE_OK &&
+          sand_id == 12 && cactus_id == 81 &&
+          mc_world_runtime_get(world, 0, 0, &stored) == MC_CHUNK_ACQUIRE_OK && stored != NULL &&
+          stored->active && stored->terrain_populated && stored->data != NULL &&
+          stored->data->blocks[(3u << 11u) | (3u << 7u) | 64u] == 12 &&
+          stored->data->blocks[(3u << 11u) | (3u << 7u) | 65u] == 81);
+    const mc_block *sand = NULL, *cactus = NULL;
+    mc_block_render_description description;
+    CHECK(mc_registry_block_get(registry, 12, &sand, NULL) == MC_REGISTRY_OK &&
+          mc_registry_block_get(registry, 81, &cactus, NULL) == MC_REGISTRY_OK && sand != NULL &&
+          cactus != NULL && mc_block_render_opaque(sand) && !mc_block_render_opaque(cactus) &&
+          mc_block_render_describe(cactus, &description) == MC_REGISTRY_OK &&
+          description.type == 13 && description.pass == 0);
+    const mc_block_fields cactus_bounds = *mc_block_fields_get(cactus);
+    CHECK(cactus_bounds.bs == 0 && cactus_bounds.bt == 0 && cactus_bounds.bu == 0 &&
+          cactus_bounds.bv == 1 && cactus_bounds.bw == 1 && cactus_bounds.bx == 1 &&
+          cactus_bounds.bm == 70);
+    mc_client_source_dk *section = NULL;
+    for (mc_client_source_dk *candidate = f->app->g->chunk_owners; candidate != NULL;
+         candidate = candidate->next)
+        if (candidate->fields.a == world && candidate->fields.c == 0 && candidate->fields.d == 64 &&
+            candidate->fields.e == 0) {
+            CHECK(section == NULL);
+            section = candidate;
+        }
+    CHECK(section != NULL);
+    size_t frames = 1;
+    const uint64_t deadline = SDL_GetTicks() + 60000;
+    while ((section->fields.u || !section->fields.E) && frames < 16 && SDL_GetTicks() < deadline) {
+        CHECK(cactus_loaded_advance(f, world) == 0);
+        ++frames;
+    }
+    mc_client_source_batch_view batch;
+    CHECK(cactus_loaded_list(f, section, &batch) == 0);
+    const int32_t list_id = section->fields.C;
+    uintptr_t published = (uintptr_t)batch.bytes;
+    uint8_t original_bytes[60u * 32u];
+    size_t reuse_frames = 0;
+    bool reused = false;
+    /* Initial World light work can legitimately replace a newly published
+     * definition on the next returned frame. Validate every such section,
+     * then require one actual immutable definition reuse within this bound. */
+    do {
+        published = (uintptr_t)batch.bytes;
+        memcpy(original_bytes, batch.bytes, sizeof(original_bytes));
+        CHECK(cactus_loaded_advance(f, world) == 0);
+        ++frames;
+        ++reuse_frames;
+        CHECK(cactus_loaded_list(f, section, &batch) == 0);
+        const bool same_id = section->fields.C == list_id;
+        const bool same_definition = (uintptr_t)batch.bytes == published;
+        const bool same_bytes = memcmp(original_bytes, batch.bytes, sizeof(original_bytes)) == 0;
+        printf("WORLD_CACTUS_STEP stage=reuse attempt=%zu same-list=%d same-definition=%d "
+               "same-bytes=%d\n",
+               reuse_frames, same_id, same_definition, same_bytes);
+        CHECK(same_id && (!same_definition || same_bytes));
+        reused = same_definition;
+    } while (!reused && reuse_frames < 16 && SDL_GetTicks() < deadline);
+    CHECK(reused);
+
+    /* A declared real World light write notifies the registered N WorldAccess.
+     * Its unchanged light value still reaches the source cell-dirty callback. */
+    struct cactus_light_work {
+        mc_world_light_operation_error operation;
+        mc_world_query_error query;
+    } *light = calloc(1, sizeof(*light));
+
+    const mc_world_light_type *block_light = NULL;
+    int32_t saved = -1;
+    CHECK(light != NULL &&
+          mc_world_runtime_light_type_get(world->classes, MC_LIGHT_BLOCK, &block_light, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_saved_light(world, block_light, 3, 65, 3, &saved, &light->query) ==
+              MC_WORLD_STORAGE_OK &&
+          saved == 0);
+    const size_t queued_before = f->app->g->fields.m->count;
+    CHECK(mc_world_runtime_saved_light_set(world, block_light, 3, 65, 3, saved,
+                                           &light->operation) == MC_WORLD_STORAGE_OK &&
+          section->fields.u && section->last_store_pc == 2 &&
+          f->app->g->fields.m->count == queued_before + 1 &&
+          f->app->g->fields.m->entries[queued_before] == section &&
+          mc_client_display_list_batch(f->app->display, list_id, 0, &batch) &&
+          (uintptr_t)batch.bytes == published &&
+          memcmp(original_bytes, batch.bytes, sizeof(original_bytes)) == 0);
+    mc_render_global_access_state access;
+    CHECK(mc_render_global_access_inspect(f->app->g->access, &access) &&
+          access.registrations == 1 && access.active_callbacks == 0 &&
+          access.retained_failures == 0);
+    size_t recompile_frames = 0;
+    do {
+        CHECK(cactus_loaded_advance(f, world) == 0);
+        ++frames;
+        ++recompile_frames;
+    } while (section->fields.u && recompile_frames < 16 && SDL_GetTicks() < deadline);
+    CHECK(cactus_loaded_list(f, section, &batch) == 0 && section->fields.C == list_id &&
+          (uintptr_t)batch.bytes != published && f->app->active_world == world &&
+          f->app->registry == registry &&
+          mc_world_runtime_block_get(world, 3, 64, 3, &sand_id, &error) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_block_get(world, 3, 65, 3, &cactus_id, &error) == MC_WORLD_STORAGE_OK &&
+          sand_id == 12 && cactus_id == 81);
+    const mc_block_fields *after = mc_block_fields_get(cactus);
+    CHECK(after->bs == cactus_bounds.bs && after->bt == cactus_bounds.bt &&
+          after->bu == cactus_bounds.bu && after->bv == cactus_bounds.bv &&
+          after->bw == cactus_bounds.bw && after->bx == cactus_bounds.bx &&
+          repeat_statistics_controls(f, false) == 0 && capture(f, screenshot) == 0);
+    printf("WORLD_CACTUS input=pre-bootstrap-region sand=%d cactus=%d at=3,65,3 pass=%d "
+           "vertices=%d inset-vertices=24 frames=%zu reuse-frames=%zu recompile-frames=%zu list=%d "
+           "same-world-and-registry=1 returned-world-hud=1 reused-definition=1 "
+           "world-light-notification=1 dirty-recompiled=1 source-bounds-preserved=1\n",
+           sand_id, cactus_id, description.pass, batch.vertices, frames, reuse_frames,
+           recompile_frames, list_id);
+    free(light);
+    return 0;
+}
+
+static int torch_sprite_frame(fixture *f, mc_world_runtime *world,
+                              const mc_client_world_frame_state *frame) {
+    mc_effect_renderer_snapshot particles;
+    CHECK(frame != NULL && frame->effects_captured && frame->effects == f->app->effect_renderer &&
+          frame->lit_particles_returned && frame->sprite_particles_returned &&
+          mc_client_effect_renderer_read(f->app->effect_renderer, &particles) &&
+          particles.phase == MC_EFFECT_RENDERER_READY && particles.world == world &&
+          !particles.tick_pending && particles.sizes[1] == 0 && particles.sizes[2] == 0 &&
+          particles.sizes[3] == 0);
+    const mc_effect_draw_state *sprites = frame->sprite_particles;
+    CHECK(sprites != NULL && sprites->returned && !sprites->lit && sprites->source_pc == 311 &&
+          sprites->orientation_values == 5 && sprites->origins_stored == 3 &&
+          sprites->visited == particles.sizes[0] && sprites->empty == (particles.sizes[0] == 0) &&
+          sprites->nw_captured == (particles.sizes[0] != 0) &&
+          sprites->size_reads == particles.sizes[0] + (particles.sizes[0] == 0 ? 3u : 4u) &&
+          sprites->owner == NULL && sprites->camera == NULL && sprites->current == NULL &&
+          sprites->nw == NULL && sprites->failure == NULL && sprites->cleanup == NULL &&
+          frame->failure != NULL && frame->failure->particles == NULL);
+    if (particles.sizes[0] != 0)
+        CHECK(sprites->item_particle_returned && sprites->item_vertices_returned == 4);
+    for (size_t i = 0; i < particles.sizes[0]; ++i) {
+        mc_entity *particle = mc_client_effect_renderer_particle(f->app->effect_renderer, 0, i);
+        mc_entity_snapshot state;
+        CHECK(particle != NULL &&
+              (mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_SMOKE_PARTICLE) ||
+               mc_entity_is_kind(particle, MC_ENTITY_CLASS_KIND_FLAME_PARTICLE)) &&
+              mc_entity_get_snapshot(particle, &state) == MC_ENTITY_OK &&
+              state.phase == MC_ENTITY_READY && state.base.world == world &&
+              particle->classes == f->app->entities);
+    }
+    return 0;
+}
+
+static int torch_loaded_frame(fixture *f, mc_world_runtime *world) {
+    const mc_client_world_frame_state *draw = f->state.world_frame;
+    const bool complete =
+        !f->state.failed && f->state.running && f->state.render_returned &&
+        f->app->active_world == world && f->app->r == NULL && f->app->N && draw != NULL &&
+        draw->returned && draw->source_pc == 1013 && draw->world == world &&
+        draw->render_global == f->app->g && draw->camera == f->app->i && draw->updates_returned &&
+        draw->terrain_returned && draw->translucent_returned && draw->update != NULL &&
+        draw->update->returned && draw->update->failure == NULL &&
+        draw->update->compile_attempts == draw->update->completed_compiles &&
+        draw->submission != NULL && draw->submission->returned && draw->submission->pass == 0 &&
+        draw->submission->failure == NULL && f->state.hud != NULL && f->state.hud->returned &&
+        f->state.hud->source_pc == 2101 && f->state.hud->slots_returned &&
+        f->state.hud->empty_slots == 9 && f->state.hud->failure == NULL &&
+        f->state.hud->cleanup == NULL;
+    if (!complete) {
+        /* Failure-only observations: no source replay, focus request or pump.
+         * Keep every original completed-frame assertion below unchanged. */
+        if (repeat_focus_state(f, "torch-loaded-frame") == 0)
+            native_focus_receipt(f, "torch-loaded-frame-focused");
+        fprintf(stderr,
+                "WORLD_TORCH_FRAME_FAILURE loop-failed=%d running=%d render-returned=%d "
+                "same-world=%d screen=%d source-focus=%d paused=%d frames=%" PRIu64
+                " ticks=%" PRIu64 " source=%s.%s:%" PRId64 " operation=%s\n",
+                f->state.failed, f->state.running, f->state.render_returned,
+                f->app->active_world == world, f->app->r == NULL ? -1 : (int)f->app->r->kind,
+                f->app->N, atomic_load(&f->app->o), f->state.frames, f->state.ticks,
+                f->state.source_class == NULL ? "none" : f->state.source_class,
+                f->state.source_method == NULL ? "none" : f->state.source_method,
+                f->state.source_pc, f->state.operation == NULL ? "none" : f->state.operation);
+        fprintf(stderr,
+                "WORLD_TORCH_FRAME_CHILD draw=%d returned=%d pc=%u same-world=%d same-global=%d "
+                "same-camera=%d updates=%d terrain=%d translucent=%d update=%d update-returned=%d "
+                "update-failure=%d compiles=%zu,%zu submission=%d submission-returned=%d "
+                "submission-pass=%d submission-failure=%d\n",
+                draw != NULL, draw != NULL && draw->returned, draw == NULL ? 0u : draw->source_pc,
+                draw != NULL && draw->world == world,
+                draw != NULL && draw->render_global == f->app->g,
+                draw != NULL && draw->camera == f->app->i, draw != NULL && draw->updates_returned,
+                draw != NULL && draw->terrain_returned, draw != NULL && draw->translucent_returned,
+                draw != NULL && draw->update != NULL,
+                draw != NULL && draw->update != NULL && draw->update->returned,
+                draw != NULL && draw->update != NULL && draw->update->failure != NULL,
+                draw == NULL || draw->update == NULL ? 0u : draw->update->compile_attempts,
+                draw == NULL || draw->update == NULL ? 0u : draw->update->completed_compiles,
+                draw != NULL && draw->submission != NULL,
+                draw != NULL && draw->submission != NULL && draw->submission->returned,
+                draw == NULL || draw->submission == NULL ? -1 : draw->submission->pass,
+                draw != NULL && draw->submission != NULL && draw->submission->failure != NULL);
+        fprintf(stderr,
+                "WORLD_TORCH_FRAME_HUD present=%d returned=%d pc=%u slots=%d empty=%u "
+                "failure=%d cleanup=%d\n",
+                f->state.hud != NULL, f->state.hud != NULL && f->state.hud->returned,
+                f->state.hud == NULL ? 0u : f->state.hud->source_pc,
+                f->state.hud != NULL && f->state.hud->slots_returned,
+                f->state.hud == NULL ? 0u : f->state.hud->empty_slots,
+                f->state.hud != NULL && f->state.hud->failure != NULL,
+                f->state.hud != NULL && f->state.hud->cleanup != NULL);
+    }
+    CHECK(complete && torch_sprite_frame(f, world, draw) == 0);
+    mc_entity_snapshot player;
+    mc_entity_hit_result_view hit;
+    mc_entity_hit_kind_class_view kinds;
+    const double saved_y = 64.0 + (double)1.62f;
+    CHECK(f->app->i == f->app->h && draw->camera == f->app->h &&
+          mc_entity_get_snapshot(f->app->h, &player) == MC_ENTITY_OK &&
+          player.phase == MC_ENTITY_READY && player.base.world == world && player.base.x == 3.5 &&
+          player.base.y == saved_y && player.base.z == .5 && player.base.bl == 3.5 &&
+          player.base.bm == saved_y && player.base.bn == .5 && player.base.offset == 1.62f &&
+          player.bounds != NULL && player.bounds->min_y == 64 && player.base.yaw == 0 &&
+          player.base.aT == 2 && player.base.aU == 0 && player.base.aV == 2 &&
+          draw->render_x == 3.5 && draw->render_y == saved_y && draw->render_z == .5);
+    CHECK(draw->picking_source_returned && draw->picking_block_published &&
+          draw->picking_result_identity == (uintptr_t)f->app->y && f->app->y != NULL &&
+          mc_entity_hit_result_inspect(f->app->y, &hit) == MC_ENTITY_HIT_OK &&
+          mc_entity_hit_kind_class_inspect(f->app->entities, &kinds) == MC_ENTITY_HIT_OK &&
+          hit.fields.a == kinds.a && hit.fields.b == 3 && hit.fields.c == 65 && hit.fields.d == 3 &&
+          draw->selection_hit_present && draw->selection_water_read && !draw->selection_water &&
+          draw->selection_alpha_disabled && draw->selection_current_returned &&
+          draw->selection_calls == 1 && draw->selections[0] != NULL &&
+          draw->selections[0]->overlay_returned && draw->selections[0]->outline_returned &&
+          draw->selections[0]->alpha_restored && draw->selections[0]->outline_block &&
+          draw->selections[0]->x == 3 && draw->selections[0]->y == 65 &&
+          draw->selections[0]->z == 3 && draw->selections[0]->block_id == 50 &&
+          draw->selections[0]->vertices == 18 && draw->selections[0]->draws == 3);
+    return 0;
+}
+
+static int torch_loaded_advance(fixture *f, mc_world_runtime *world) {
+    CHECK(display_focus(f, true) == 0 && mc_client_menu_loop_inspect(f->loop, &f->state));
+    const uint64_t world_before = f->state.world_draws, hud_before = f->state.hud_draws;
+    CHECK(frame(f) == 0 && torch_loaded_frame(f, world) == 0);
+    if (f->state.world_draws != world_before + 1 || f->state.hud_draws != hud_before + 1)
+        fprintf(stderr,
+                "Torch frame counters world=%" PRIu64 ",%" PRIu64 " hud=%" PRIu64 ",%" PRIu64 "\n",
+                world_before, f->state.world_draws, hud_before, f->state.hud_draws);
+    CHECK(f->state.world_draws == world_before + 1 && f->state.hud_draws == hud_before + 1);
+    return 0;
+}
+
+static int torch_loaded_list(fixture *f, mc_client_source_dk *dk,
+                             mc_client_source_batch_view *batch) {
+    mc_client_source_list_state list;
+    CHECK(dk != NULL && dk->fields.c == 0 && dk->fields.d == 64 && dk->fields.e == 0 &&
+          dk->fields.f == 16 && dk->fields.g == 16 && dk->fields.h == 16 && dk->fields.E &&
+          dk->fields.o && !dk->fields.u && dk->fields.p != NULL && !dk->fields.p[0] &&
+          dk->fields.p[1] && mc_client_display_list_inspect(f->app->display, dk->fields.C, &list) &&
+          list.defined && !list.building && list.commands == 7 && list.draws == 1 &&
+          list.vertices == 60 &&
+          mc_client_display_list_batch(f->app->display, dk->fields.C, 0, batch) &&
+          batch->vertices == 60 && batch->mode == 4 && batch->arrays == 7 &&
+          batch->byte_count == 60u * 32u && f->state.world_frame->terrain_count > 0);
+    static const float torch_shape[20][3] = {{3.4375f, 1.625f, 3.4375f},
+                                             {3.4375f, 1.625f, 3.5625f},
+                                             {3.5625f, 1.625f, 3.5625f},
+                                             {3.5625f, 1.625f, 3.4375f},
+                                             {3.4375f, 2, 3},
+                                             {3.4375f, 1, 3},
+                                             {3.4375f, 1, 4},
+                                             {3.4375f, 2, 4},
+                                             {3.5625f, 2, 4},
+                                             {3.5625f, 1, 4},
+                                             {3.5625f, 1, 3},
+                                             {3.5625f, 2, 3},
+                                             {3, 2, 3.5625f},
+                                             {3, 1, 3.5625f},
+                                             {4, 1, 3.5625f},
+                                             {4, 2, 3.5625f},
+                                             {4, 2, 3.4375f},
+                                             {4, 1, 3.4375f},
+                                             {3, 1, 3.4375f},
+                                             {3, 2, 3.4375f}};
+    static const size_t torch_triangles[6] = {0, 1, 2, 0, 2, 3};
+    for (size_t vertex_index = 0; vertex_index < 60; ++vertex_index) {
+        float vertex[5];
+        memcpy(vertex, batch->bytes + vertex_index * 32u, sizeof(vertex));
+        if (vertex_index < 30) {
+            CHECK(vertex[0] >= 3 && vertex[0] <= 4 && vertex[1] >= 0 && vertex[1] <= 1 &&
+                  vertex[2] >= 3 && vertex[2] <= 4 && vertex[3] >= .125f && vertex[3] < .1875f &&
+                  vertex[4] >= .0625f && vertex[4] < .125f);
+            continue;
+        }
+        const size_t torch_vertex = vertex_index - 30;
+        const size_t torch_quad = torch_vertex / 6;
+        const size_t torch_corner = torch_triangles[torch_vertex % 6];
+        const float *expected_vertex = torch_shape[torch_quad * 4 + torch_corner];
+        CHECK(vertex[0] == expected_vertex[0] && vertex[1] == expected_vertex[1] &&
+              vertex[2] == expected_vertex[2]);
+        const bool high_u = torch_corner >= 2;
+        const bool high_v = torch_corner == 1 || torch_corner == 2;
+        const float u0 = torch_quad == 0 ? 7.0f / 256 : 0;
+        const float u1 = torch_quad == 0 ? 9.0f / 256 : 15.99f / 256;
+        const float v0 = torch_quad == 0 ? 86.0f / 256 : 5.0f / 16;
+        const float v1 = torch_quad == 0 ? 88.0f / 256 : (80.0f + 15.99f) / 256;
+        uint32_t packed_color;
+        memcpy(&packed_color, batch->bytes + vertex_index * 32u + 20u, sizeof(packed_color));
+        CHECK(vertex[3] == (high_u ? u1 : u0) && vertex[4] == (high_v ? v1 : v0) &&
+              packed_color == UINT32_MAX);
+    }
+    return 0;
+}
+
+/* Drive the real Torch callback once independently of ambient sampling. Its
+ * ordinary WorldAccess publishes both concrete particles into the same DN. */
+static int torch_particle_callback(fixture *f, mc_world_runtime *world, const mc_block *torch,
+                                   uintptr_t identities[2]) {
+    mc_effect_renderer_snapshot before, after;
+    CHECK(world->fields.r != NULL &&
+          mc_client_effect_renderer_read(f->app->effect_renderer, &before) &&
+          before.world == world && before.sizes[0] <= 3998);
+    const mc_java_random random = *world->fields.r;
+    mc_world_random_display_block_error *cause = calloc(1, sizeof(*cause));
+    CHECK(cause != NULL);
+    const mc_world_storage_status status =
+        mc_world_runtime_block_random_display(world, torch, 3, 65, 3, world->fields.r, cause);
+    if (status != MC_WORLD_STORAGE_OK)
+        fprintf(stderr, "WORLD_TORCH_PARTICLE_FAILURE source=%s.%s:%u operation=%s\n",
+                cause->site.class_name == NULL ? "none" : cause->site.class_name,
+                cause->site.method == NULL ? "none" : cause->site.method, cause->site.pc,
+                cause->operation == NULL ? "none" : cause->operation);
+    free(cause);
+    CHECK(status == MC_WORLD_STORAGE_OK && mc_test_java_random_equal(&random, world->fields.r) &&
+          mc_client_effect_renderer_read(f->app->effect_renderer, &after) && after.world == world &&
+          after.layers == before.layers && after.sizes[0] == before.sizes[0] + 2 &&
+          !after.tick_pending);
+    for (size_t layer = 0; layer < 4; ++layer)
+        CHECK(after.lists[layer] == before.lists[layer] &&
+              (layer == 0 || after.sizes[layer] == before.sizes[layer]));
+    for (size_t i = 0; i < 2; ++i) {
+        mc_entity *particle =
+            mc_client_effect_renderer_particle(f->app->effect_renderer, 0, before.sizes[0] + i);
+        mc_entity_snapshot state;
+        CHECK(particle != NULL &&
+              mc_entity_is_kind(particle, i == 0 ? MC_ENTITY_CLASS_KIND_SMOKE_PARTICLE
+                                                 : MC_ENTITY_CLASS_KIND_FLAME_PARTICLE) &&
+              mc_entity_get_snapshot(particle, &state) == MC_ENTITY_OK &&
+              state.phase == MC_ENTITY_READY && state.base.world == world &&
+              particle->classes == f->app->entities);
+        identities[i] = (uintptr_t)particle;
+    }
+    printf("WORLD_TORCH_PARTICLES source-callback=1 smoke=1 flame=1 same-manager=1 "
+           "world-random-unchanged=1\n");
+    return 0;
+}
+
+static bool torch_loop_observations_unchanged(const mc_client_menu_loop_state *before,
+                                              const mc_client_menu_loop_state *after) {
+    const mc_client_loop_clock_observation *a = &before->clocks, *b = &after->clocks;
+    return before->frames == after->frames && before->ticks == after->ticks &&
+           before->texture_ticks == after->texture_ticks &&
+           before->world_draws == after->world_draws && before->hud_draws == after->hud_draws &&
+           before->render_clock_stored == after->render_clock_stored &&
+           before->render_returned == after->render_returned &&
+           before->render_clock == after->render_clock && a->frame_index == b->frame_index &&
+           a->run_137 == b->run_137 && a->run_203 == b->run_203 && a->run_387 == b->run_387 &&
+           a->timer_ticks == b->timer_ticks && a->tick_returns == b->tick_returns &&
+           a->frame_entered == b->frame_entered && a->frame_returned == b->frame_returned &&
+           a->timer_fields_read == b->timer_fields_read && a->run_137_read == b->run_137_read &&
+           a->run_203_read == b->run_203_read && a->run_387_read == b->run_387_read;
+}
+
+static int torch_particle_draw(fixture *f, mc_world_runtime *world, const mc_block *torch) {
+    /* Enter the actual World-draw child between source loop frames. The
+     * ordinary next frame may legitimately expire either newborn through
+     * Timer catch-up; it remains a separate World/HUD control below. */
+    CHECK(display_focus(f, true) == 0 && mc_client_menu_loop_inspect(f->loop, &f->state) &&
+          repeat_focus_state(f, "torch-particle-before-callback") == 0);
+
+    struct torch_particle_draw_work {
+        mc_client_world_frame_call *call;
+        mc_client_world_frame_state draw;
+        mc_client_world_frame_error admission, cleanup;
+        mc_client_menu_loop_state before, after;
+        mc_client_entity_renderer_state renderer;
+        mc_game_settings_state settings;
+        unsigned char timer_before[sizeof(mc_timer)];
+    } *work = calloc(1, sizeof(*work));
+
+    mc_timer *const timer = f->app->timer;
+    mc_client_source_px *const renderer = f->app->t;
+    mc_math_classes *const math = mc_client_bootstrap_math(f->bootstrap);
+    mc_timer_view timer_view;
+    CHECK(work != NULL && timer != NULL && math != NULL && mc_timer_view_get(timer, &timer_view) &&
+          mc_game_settings_read_state(f->app->settings, &work->settings) &&
+          mc_client_entity_renderer_inspect(renderer, &work->renderer) &&
+          work->renderer.phase == MC_CLIENT_ENTITY_RENDERER_READY && !work->renderer.active &&
+          work->renderer.fields.j == f->app && f->app->active_world == world && f->app->r == NULL &&
+          f->app->N && !f->state.failed && f->state.running && f->state.render_returned &&
+          f->state.frames != 0);
+    work->before = f->state;
+    memcpy(work->timer_before, timer, sizeof(work->timer_before));
+    const float partial = timer_view.partial_ticks;
+    const int32_t performance = work->settings.values.performance_mode;
+    const int32_t target = performance == 1 ? 120 : performance == 2 ? 40 : 200;
+    const int64_t previous_clock = work->renderer.fields.I;
+    const int64_t draw_deadline =
+        performance == 0 ? 0 : mc_java_i64_add(previous_clock, 1000000000 / target);
+    CHECK(mc_client_menu_loop_retire_completed_draws(f->loop) &&
+          mc_client_menu_loop_inspect(f->loop, &f->state) && f->state.notice == NULL &&
+          f->state.hud == NULL && f->state.world_frame == NULL &&
+          torch_loop_observations_unchanged(&work->before, &f->state) &&
+          memcmp(work->timer_before, timer, sizeof(work->timer_before)) == 0);
+
+    uintptr_t identities[2] = {0};
+    CHECK(torch_particle_callback(f, world, torch, identities) == 0);
+    mc_effect_renderer_snapshot particles;
+    mc_particle_snapshot newborn[2];
+    CHECK(mc_client_effect_renderer_read(f->app->effect_renderer, &particles) &&
+          particles.sizes[0] >= 2);
+    const size_t callback_particles = particles.sizes[0];
+    for (size_t i = 0; i < 2; ++i) {
+        mc_entity *particle = mc_client_effect_renderer_particle(f->app->effect_renderer, 0,
+                                                                 callback_particles - 2 + i);
+        CHECK((uintptr_t)particle == identities[i] && mc_particle_read(particle, &newborn[i]));
+    }
+
+    const mc_client_world_frame_status status = mc_client_entity_renderer_world_frame_begin(
+        renderer, math, partial, draw_deadline, &work->call, &work->admission);
+    const bool inspected = work->call != NULL &&
+                           mc_client_entity_renderer_world_frame_inspect(work->call, &work->draw);
+    if (status != MC_CLIENT_WORLD_FRAME_OK)
+        fprintf(stderr,
+                "WORLD_TORCH_PARTICLE_DRAW_FAILURE entry=world-draw status=%d inspected=%d "
+                "source=%s.%s:%" PRId32 " operation=%s\n",
+                (int)status, inspected,
+                work->admission.site.class_name == NULL ? "none" : work->admission.site.class_name,
+                work->admission.site.method == NULL ? "none" : work->admission.site.method,
+                work->admission.site.pc,
+                work->admission.operation == NULL ? "none" : work->admission.operation);
+    const mc_client_world_frame_state *draw = &work->draw;
+    CHECK(status == MC_CLIENT_WORLD_FRAME_OK && inspected && !draw->active && draw->returned &&
+          draw->owner == renderer && draw->app == f->app && draw->source_pc == 1013 &&
+          draw->world == world && draw->render_global == f->app->g && draw->camera == f->app->i &&
+          cactus_pose_float_bits(draw->partial) == cactus_pose_float_bits(partial) &&
+          draw->deadline == draw_deadline && draw->updates_returned && draw->terrain_returned &&
+          draw->translucent_returned && draw->update != NULL && draw->update->returned &&
+          draw->update->failure == NULL &&
+          draw->update->compile_attempts == draw->update->completed_compiles &&
+          draw->submission != NULL && draw->submission->returned && draw->submission->pass == 0 &&
+          draw->submission->failure == NULL && draw->translucent_submission != NULL &&
+          draw->translucent_submission->returned && draw->translucent_submission->pass == 1 &&
+          draw->translucent_submission->failure == NULL && torch_sprite_frame(f, world, draw) == 0);
+    CHECK(mc_client_effect_renderer_read(f->app->effect_renderer, &particles) &&
+          particles.world == world && particles.sizes[0] == callback_particles);
+    size_t occurrences[2] = {0};
+    for (size_t i = 0; i < particles.sizes[0]; ++i) {
+        mc_entity *particle = mc_client_effect_renderer_particle(f->app->effect_renderer, 0, i);
+        for (size_t kind = 0; kind < 2; ++kind)
+            if ((uintptr_t)particle == identities[kind]) {
+                mc_particle_snapshot after;
+                CHECK(mc_particle_read(particle, &after) &&
+                      after.particle.e == newborn[kind].particle.e &&
+                      after.particle.f == newborn[kind].particle.f);
+                ++occurrences[kind];
+            }
+    }
+    CHECK(occurrences[0] == 1 && occurrences[1] == 1 &&
+          draw->sprite_particles->visited == particles.sizes[0]);
+    const size_t visited = draw->sprite_particles->visited;
+    CHECK(mc_client_entity_renderer_world_frame_retire(&work->call, &work->cleanup) ==
+              MC_CLIENT_WORLD_FRAME_OK &&
+          work->call == NULL && mc_client_menu_loop_inspect(f->loop, &work->after) &&
+          !work->after.failed && work->after.running && work->after.notice == NULL &&
+          work->after.hud == NULL && work->after.world_frame == NULL && f->app->timer == timer &&
+          memcmp(work->timer_before, timer, sizeof(work->timer_before)) == 0 &&
+          torch_loop_observations_unchanged(&work->before, &work->after));
+    printf("WORLD_TORCH_PARTICLE_DRAW entry=world-draw smoke=1 flame=1 same-identities=1 "
+           "returned=1 visited=%zu partial=%08" PRIx32 " performance-mode=%" PRId32 " px-I=%" PRId64
+           " deadline=%" PRId64 " timer-unchanged=1 loop-counts-unchanged=1 "
+           "loop-clocks-unchanged=1 retired=1\n",
+           visited, cactus_pose_float_bits(partial), performance, previous_clock, draw_deadline);
+    free(work);
+    return 0;
+}
+
+static int torch_loaded_controls(fixture *f, const char *screenshot) {
+    mc_world_runtime *world = f->app->active_world;
+    mc_registry_classes *registry = f->app->registry;
+    CHECK(world != NULL && registry != NULL && f->app->g != NULL && f->app->g->fields.k == world &&
+          world->world_accesses.count == 1 && world->fields.u == world->world_accesses.list &&
+          world->fields.u->count == 1 && world->world_accesses.entries[0] != NULL &&
+          repeat_statistics_controls(f, false) == 0 && torch_loaded_frame(f, world) == 0);
+    mc_client_screen_transition_state transitions;
+    mc_client_world_load_state load;
+    mc_entity_snapshot player;
+    CHECK(mc_client_screen_transitions_inspect(f->app->screen_transitions, &transitions) &&
+          transitions.world_load != NULL &&
+          mc_client_world_load_inspect(transitions.world_load, &load) && load.source_returned &&
+          load.player_load_returned && load.world == world && load.player == f->app->h &&
+          mc_entity_get_snapshot(f->app->h, &player) == MC_ENTITY_OK);
+    printf("WORLD_TORCH_POSE input=saved-player source-loaded=%d camera=player position=%016" PRIx64
+           ",%016" PRIx64 ",%016" PRIx64 " rotation=%08" PRIx32 ",%08" PRIx32 " feet=%016" PRIx64
+           " offset=%08" PRIx32 " hit=3,65,3\n",
+           load.player_load_returned, cactus_pose_double_bits(player.base.x),
+           cactus_pose_double_bits(player.base.y), cactus_pose_double_bits(player.base.z),
+           cactus_pose_float_bits(player.base.yaw), cactus_pose_float_bits(player.base.aT),
+           cactus_pose_double_bits(player.bounds->min_y),
+           cactus_pose_float_bits(player.base.offset));
+    int32_t sand_id = -1, torch_id = -1;
+    mc_world_storage_error error;
+    mc_chunk_state *stored = NULL;
+    CHECK(mc_world_runtime_block_get(world, 3, 64, 3, &sand_id, &error) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_block_get(world, 3, 65, 3, &torch_id, &error) == MC_WORLD_STORAGE_OK &&
+          sand_id == 12 && torch_id == 50 &&
+          mc_world_runtime_get(world, 0, 0, &stored) == MC_CHUNK_ACQUIRE_OK && stored != NULL &&
+          stored->active && stored->terrain_populated && stored->data != NULL &&
+          stored->data->blocks[(3u << 11u) | (3u << 7u) | 64u] == 12 &&
+          stored->data->blocks[(3u << 11u) | (3u << 7u) | 65u] == 50);
+    int32_t torch_metadata = -1;
+    CHECK(mc_world_runtime_metadata_get(world, 3, 65, 3, &torch_metadata, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          torch_metadata == 5 &&
+          (stored->data->metadata[((3u << 11u) | (3u << 7u) | 65u) / 2u] >> 4u) == 5);
+    const mc_block *sand = NULL, *torch = NULL;
+    mc_block_render_description description;
+    CHECK(mc_registry_block_get(registry, 12, &sand, NULL) == MC_REGISTRY_OK &&
+          mc_registry_block_get(registry, 50, &torch, NULL) == MC_REGISTRY_OK && sand != NULL &&
+          torch != NULL && mc_block_render_opaque(sand) && !mc_block_render_opaque(torch) &&
+          mc_block_render_describe(torch, &description) == MC_REGISTRY_OK &&
+          description.type == 2 && description.pass == 0);
+    const mc_block_fields torch_bounds = *mc_block_fields_get(torch);
+    /* The ordinary vm raytrace has already selected its upright box. CV
+     * ignores that SAME mutable box and must preserve it across compilation. */
+    CHECK(torch_bounds.bs == (double)(.5f - .1f) && torch_bounds.bt == 0 &&
+          torch_bounds.bu == (double)(.5f - .1f) && torch_bounds.bv == (double)(.5f + .1f) &&
+          torch_bounds.bw == (double).6f && torch_bounds.bx == (double)(.5f + .1f) &&
+          torch_bounds.bm == 80 && torch_bounds.bn == 50);
+    mc_client_source_dk *section = NULL;
+    for (mc_client_source_dk *candidate = f->app->g->chunk_owners; candidate != NULL;
+         candidate = candidate->next)
+        if (candidate->fields.a == world && candidate->fields.c == 0 && candidate->fields.d == 64 &&
+            candidate->fields.e == 0) {
+            CHECK(section == NULL);
+            section = candidate;
+        }
+    CHECK(section != NULL);
+    size_t frames = 1;
+    const uint64_t deadline = SDL_GetTicks() + 60000;
+    while ((section->fields.u || !section->fields.E) && frames < 16 && SDL_GetTicks() < deadline) {
+        CHECK(torch_loaded_advance(f, world) == 0);
+        ++frames;
+    }
+    mc_client_source_batch_view batch;
+    CHECK(torch_loaded_list(f, section, &batch) == 0);
+    const int32_t list_id = section->fields.C;
+    uintptr_t published = (uintptr_t)batch.bytes;
+    uint8_t original_bytes[60u * 32u];
+    size_t reuse_frames = 0;
+    bool reused = false;
+    /* Initial World light work can legitimately replace a newly published
+     * definition on the next returned frame. Validate every such section,
+     * then require one actual immutable definition reuse within this bound. */
+    do {
+        published = (uintptr_t)batch.bytes;
+        memcpy(original_bytes, batch.bytes, sizeof(original_bytes));
+        CHECK(torch_loaded_advance(f, world) == 0);
+        ++frames;
+        ++reuse_frames;
+        CHECK(torch_loaded_list(f, section, &batch) == 0);
+        const bool same_id = section->fields.C == list_id;
+        const bool same_definition = (uintptr_t)batch.bytes == published;
+        const bool same_bytes = memcmp(original_bytes, batch.bytes, sizeof(original_bytes)) == 0;
+        printf("WORLD_TORCH_STEP stage=reuse attempt=%zu same-list=%d same-definition=%d "
+               "same-bytes=%d\n",
+               reuse_frames, same_id, same_definition, same_bytes);
+        CHECK(same_id && (!same_definition || same_bytes));
+        reused = same_definition;
+    } while (!reused && reuse_frames < 16 && SDL_GetTicks() < deadline);
+    CHECK(reused);
+
+    CHECK(torch_particle_draw(f, world, torch) == 0);
+    CHECK(torch_loaded_advance(f, world) == 0);
+    ++frames;
+    /* That ordinary frame can complete additional source light work. Begin
+     * the independent notification check at its actual current definition. */
+    CHECK(torch_loaded_list(f, section, &batch) == 0 && section->fields.C == list_id);
+    published = (uintptr_t)batch.bytes;
+    memcpy(original_bytes, batch.bytes, sizeof(original_bytes));
+
+    /* Reuse the actual current light value; emitting Torch can have completed
+     * real light work. The World setter still notifies its registered N. */
+    struct torch_light_work {
+        mc_world_light_operation_error operation;
+        mc_world_query_error query;
+    } *light = calloc(1, sizeof(*light));
+
+    const mc_world_light_type *block_light = NULL;
+    int32_t saved = -1;
+    CHECK(light != NULL &&
+          mc_world_runtime_light_type_get(world->classes, MC_LIGHT_BLOCK, &block_light, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_saved_light(world, block_light, 3, 65, 3, &saved, &light->query) ==
+              MC_WORLD_STORAGE_OK &&
+          saved >= 0 && saved <= 15);
+    const size_t queued_before = f->app->g->fields.m->count;
+    CHECK(mc_world_runtime_saved_light_set(world, block_light, 3, 65, 3, saved,
+                                           &light->operation) == MC_WORLD_STORAGE_OK &&
+          section->fields.u && section->last_store_pc == 2 &&
+          f->app->g->fields.m->count == queued_before + 1 &&
+          f->app->g->fields.m->entries[queued_before] == section &&
+          mc_client_display_list_batch(f->app->display, list_id, 0, &batch) &&
+          (uintptr_t)batch.bytes == published &&
+          memcmp(original_bytes, batch.bytes, sizeof(original_bytes)) == 0);
+    mc_render_global_access_state access;
+    CHECK(mc_render_global_access_inspect(f->app->g->access, &access) &&
+          access.registrations == 1 && access.active_callbacks == 0 &&
+          access.retained_failures == 0);
+    size_t recompile_frames = 0;
+    do {
+        CHECK(torch_loaded_advance(f, world) == 0);
+        ++frames;
+        ++recompile_frames;
+    } while (section->fields.u && recompile_frames < 16 && SDL_GetTicks() < deadline);
+    CHECK(torch_loaded_list(f, section, &batch) == 0 && section->fields.C == list_id &&
+          (uintptr_t)batch.bytes != published && f->app->active_world == world &&
+          f->app->registry == registry &&
+          mc_world_runtime_block_get(world, 3, 64, 3, &sand_id, &error) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_block_get(world, 3, 65, 3, &torch_id, &error) == MC_WORLD_STORAGE_OK &&
+          sand_id == 12 && torch_id == 50 &&
+          mc_world_runtime_metadata_get(world, 3, 65, 3, &torch_metadata, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          torch_metadata == 5);
+    const mc_block_fields *after = mc_block_fields_get(torch);
+    CHECK(after->bs == torch_bounds.bs && after->bt == torch_bounds.bt &&
+          after->bu == torch_bounds.bu && after->bv == torch_bounds.bv &&
+          after->bw == torch_bounds.bw && after->bx == torch_bounds.bx &&
+          repeat_statistics_controls(f, false) == 0 && capture(f, screenshot) == 0);
+    printf("WORLD_TORCH input=pre-bootstrap-region sand=%d torch=%d at=3,65,3 pass=%d "
+           "metadata=%d vertices=%d torch-vertices=30 exact-position-uv-color=1 light-before=%d "
+           "frames=%zu reuse-frames=%zu recompile-frames=%zu list=%d "
+           "same-world-and-registry=1 returned-world-hud=1 reused-definition=1 "
+           "world-light-notification=1 dirty-recompiled=1 source-bounds-preserved=1\n",
+           sand_id, torch_id, description.pass, torch_metadata, batch.vertices, saved, frames,
+           reuse_frames, recompile_frames, list_id);
+    free(light);
+    return 0;
+}
+
+typedef struct loaded_block_reference {
+    char name[64];
+    int32_t id, metadata, pass, sky_subtraction, x, y, z, vertices;
+    uint32_t words[48u * 8u];
+} loaded_block_reference;
+
+static int block_loaded_reference(loaded_block_reference *reference, int32_t id, int32_t metadata,
+                                  const char *environment, const char *format) {
+    const char *path = SDL_GetEnvironmentVariable(SDL_GetEnvironment(), environment);
+    CHECK(path != NULL);
+    FILE *input = fopen(path, "r");
+    char marker[32];
+    size_t cases = 0, cells = 0;
+    CHECK(input != NULL && fscanf(input, "%31s %zu", marker, &cases) == 2 &&
+          strcmp(marker, format) == 0 && cases == 1 &&
+          fscanf(input,
+                 "%31s %63s %" SCNd32 " %" SCNd32 " %" SCNd32 " %" SCNd32 " %" SCNd32 " %" SCNd32
+                 " %" SCNd32 " %" SCNd32 " %zu",
+                 marker, reference->name, &reference->id, &reference->metadata, &reference->pass,
+                 &reference->sky_subtraction, &reference->x, &reference->y, &reference->z,
+                 &reference->vertices, &cells) == 11 &&
+          strcmp(marker, "CASE") == 0 && reference->id == id && reference->metadata == metadata &&
+          reference->pass >= 0 && reference->pass <= 1 && reference->x == 3 && reference->y == 65 &&
+          reference->z == 3 && reference->vertices > 0 && reference->vertices <= 48 &&
+          reference->vertices % 6 == 0 && cells == 125);
+    for (size_t i = 0; i < cells; ++i) {
+        int32_t row[7];
+        CHECK(fscanf(input,
+                     "%" SCNd32 " %" SCNd32 " %" SCNd32 " %" SCNd32 " %" SCNd32 " %" SCNd32
+                     " %" SCNd32,
+                     &row[0], &row[1], &row[2], &row[3], &row[4], &row[5], &row[6]) == 7);
+    }
+    for (size_t i = 0; i < (size_t)reference->vertices * 8u; ++i)
+        CHECK(fscanf(input, "%" SCNx32, &reference->words[i]) == 1);
+    CHECK(fscanf(input, "%31s", marker) == EOF && fclose(input) == 0);
+    return 0;
+}
+
+static int geometry_loaded_frame(fixture *f, mc_world_runtime *world, const char *stage) {
+    const mc_client_world_frame_state *draw = f->state.world_frame;
+    if (f->app->r != NULL || !f->app->N) {
+        (void)repeat_focus_state(f, stage);
+        native_focus_receipt(f, stage);
+    }
+    CHECK(!f->state.failed && f->state.running && f->state.render_returned &&
+          f->app->active_world == world && f->app->r == NULL && f->app->N && draw != NULL &&
+          draw->returned && draw->source_pc == 1013 && draw->world == world &&
+          draw->render_global == f->app->g && draw->camera == f->app->i && draw->updates_returned &&
+          draw->terrain_returned && draw->translucent_returned && draw->update != NULL &&
+          draw->update->returned && draw->update->failure == NULL &&
+          draw->update->compile_attempts == draw->update->completed_compiles &&
+          draw->submission != NULL && draw->submission->returned && draw->submission->pass == 0 &&
+          draw->submission->failure == NULL && draw->translucent_submission != NULL &&
+          draw->translucent_submission->returned && draw->translucent_submission->pass == 1 &&
+          draw->translucent_submission->failure == NULL && f->state.hud != NULL &&
+          f->state.hud->returned && f->state.hud->source_pc == 2101 &&
+          f->state.hud->slots_returned && f->state.hud->empty_slots == 9 &&
+          f->state.hud->failure == NULL && f->state.hud->cleanup == NULL);
+    mc_effect_renderer_snapshot effects;
+    const mc_effect_draw_state *sprites = draw->sprite_particles;
+    CHECK(draw->effects_captured && draw->effects == f->app->effect_renderer &&
+          draw->lit_particles_returned && draw->sprite_particles_returned && sprites != NULL &&
+          sprites->returned && !sprites->lit && sprites->source_pc == 311 &&
+          sprites->failure == NULL && sprites->cleanup == NULL &&
+          mc_client_effect_renderer_read(f->app->effect_renderer, &effects) &&
+          effects.world == world && effects.phase == MC_EFFECT_RENDERER_READY &&
+          !effects.tick_pending && effects.sizes[1] == 0 && effects.sizes[2] == 0 &&
+          effects.sizes[3] == 0 && sprites->visited == effects.sizes[0] &&
+          sprites->empty == (effects.sizes[0] == 0) &&
+          sprites->nw_captured == (effects.sizes[0] != 0));
+    for (size_t i = 0; i < effects.sizes[0]; ++i) {
+        mc_entity *particle = mc_client_effect_renderer_particle(f->app->effect_renderer, 0, i);
+        mc_entity_snapshot state;
+        CHECK(particle != NULL && mc_entity_has_particle(particle) &&
+              mc_entity_get_snapshot(particle, &state) == MC_ENTITY_OK &&
+              state.phase == MC_ENTITY_READY && state.base.world == world &&
+              particle->classes == f->app->entities);
+    }
+    return 0;
+}
+
+static int fluid_loaded_frame(fixture *f, mc_world_runtime *world) {
+    CHECK(geometry_loaded_frame(f, world, "fluid-loaded-frame") == 0);
+    const mc_client_world_frame_state *draw = f->state.world_frame;
+    mc_entity_snapshot player;
+    mc_entity_hit_result_view hit;
+    mc_entity_hit_kind_class_view kinds;
+    const double saved_y = 65.0 + (double)1.62f;
+    CHECK(f->app->i == f->app->h && draw->camera == f->app->h &&
+          mc_entity_get_snapshot(f->app->h, &player) == MC_ENTITY_OK &&
+          player.phase == MC_ENTITY_READY && player.base.world == world && player.base.x == 3.5 &&
+          player.base.y == saved_y && player.base.z == .5 && player.base.bl == 3.5 &&
+          player.base.bm == saved_y && player.base.bn == .5 && player.base.offset == 1.62f &&
+          player.bounds != NULL && player.bounds->min_y == 65 && player.base.yaw == 0 &&
+          player.base.aT == 26 && player.base.aU == 0 && player.base.aV == 26 &&
+          draw->render_x == 3.5 && draw->render_y == saved_y && draw->render_z == .5 &&
+          draw->picking_source_returned && draw->picking_block_published &&
+          draw->picking_result_identity == (uintptr_t)f->app->y && f->app->y != NULL &&
+          mc_entity_hit_result_inspect(f->app->y, &hit) == MC_ENTITY_HIT_OK &&
+          mc_entity_hit_kind_class_inspect(f->app->entities, &kinds) == MC_ENTITY_HIT_OK &&
+          hit.fields.a == kinds.a && hit.fields.b == 3 && hit.fields.c == 64 && hit.fields.d == 3 &&
+          draw->selection_hit_present && draw->selection_water_read && !draw->selection_water &&
+          draw->selection_calls == 1 && draw->selections[0] != NULL &&
+          draw->selections[0]->overlay_returned && draw->selections[0]->outline_returned &&
+          draw->selections[0]->alpha_restored && draw->selections[0]->outline_block &&
+          draw->selections[0]->block_id == 12 && draw->selections[0]->x == 3 &&
+          draw->selections[0]->y == 64 && draw->selections[0]->z == 3 &&
+          draw->selections[0]->vertices == 18 && draw->selections[0]->draws == 3);
+    return 0;
+}
+
+static int fluid_loaded_advance(fixture *f, mc_world_runtime *world) {
+    CHECK(display_focus(f, true) == 0 && mc_client_menu_loop_inspect(f->loop, &f->state));
+    const uint64_t world_before = f->state.world_draws, hud_before = f->state.hud_draws;
+    CHECK(frame(f) == 0 && fluid_loaded_frame(f, world) == 0 &&
+          f->state.world_draws == world_before + 1 && f->state.hud_draws == hud_before + 1);
+    return 0;
+}
+
+static int fluid_loaded_list(fixture *f, mc_client_source_dk *section,
+                             const loaded_block_reference *reference,
+                             mc_client_source_batch_view *batch, size_t *matched_colors) {
+    /* The two actual Sand/Stone cubes each have the ground-covered bottom.
+     * Fluid vertex inventory and every position/UV word come from its exact
+     * executed-original scene profile, at this SAME section translation. */
+    const size_t solids = 2u * 5u * 6u;
+    mc_client_source_list_state opaque, fluid;
+    CHECK(section != NULL && section->fields.c == 0 && section->fields.d == 64 &&
+          section->fields.e == 0 && section->fields.f == 16 && section->fields.g == 16 &&
+          section->fields.h == 16 && section->fields.E && section->fields.o && !section->fields.u &&
+          section->fields.p != NULL && !section->fields.p[0] &&
+          section->fields.p[1] == (reference->pass == 0) &&
+          mc_client_display_list_inspect(f->app->display, section->fields.C, &opaque) &&
+          opaque.defined && !opaque.building && opaque.draws == 1 &&
+          opaque.vertices == solids + (reference->pass == 0 ? (size_t)reference->vertices : 0) &&
+          mc_client_display_list_inspect(f->app->display, section->fields.C + reference->pass,
+                                         &fluid) &&
+          fluid.defined && !fluid.building && fluid.draws == 1 &&
+          mc_client_display_list_batch(f->app->display, section->fields.C + reference->pass, 0,
+                                       batch) &&
+          batch->mode == 4 && batch->arrays == 7 && batch->vertices == (int32_t)fluid.vertices &&
+          batch->byte_count == fluid.vertices * 32u && f->state.world_frame->terrain_count > 0 &&
+          (reference->pass == 0 || f->state.world_frame->translucent_count > 0));
+    const size_t first = reference->pass == 0 ? solids : 0;
+    CHECK(fluid.vertices == first + (size_t)reference->vertices);
+    size_t color_matches = 0;
+    for (size_t i = 0; i < (size_t)reference->vertices; ++i) {
+        uint32_t actual[8];
+        memcpy(actual, batch->bytes + (first + i) * 32u, sizeof(actual));
+        for (size_t word = 0; word < 5; ++word)
+            CHECK(actual[word] == reference->words[i * 8u + word]);
+        if (actual[5] == reference->words[i * 8u + 5u])
+            ++color_matches;
+    }
+    *matched_colors = color_matches;
+    return 0;
+}
+
+static int fluid_loaded_controls(fixture *f, const char *mode, const char *screenshot, int32_t id) {
+    loaded_block_reference reference;
+    CHECK(block_loaded_reference(&reference, id, 0, "MC_WORLD_SELECTION_FLUID_REFERENCE",
+                                 "FLUID_LOADED_V1") == 0);
+    mc_world_runtime *world = f->app->active_world;
+    CHECK(world != NULL && f->app->g != NULL && f->app->g->fields.k == world &&
+          world->world_accesses.count == 1 && world->fields.u == world->world_accesses.list &&
+          repeat_statistics_controls(f, false) == 0 && fluid_loaded_frame(f, world) == 0);
+    mc_client_screen_transition_state transitions;
+    mc_client_world_load_state load;
+    mc_entity_snapshot player;
+    CHECK(mc_client_screen_transitions_inspect(f->app->screen_transitions, &transitions) &&
+          transitions.world_load != NULL &&
+          mc_client_world_load_inspect(transitions.world_load, &load) && load.source_returned &&
+          load.player_load_returned && load.world == world && load.player == f->app->h &&
+          mc_entity_get_snapshot(f->app->h, &player) == MC_ENTITY_OK);
+    printf("WORLD_FLUID_POSE mode=%s input=saved-player source-loaded=1 camera=player "
+           "position=%016" PRIx64 ",%016" PRIx64 ",%016" PRIx64 " rotation=%08" PRIx32 ",%08" PRIx32
+           " feet=%016" PRIx64 " offset=%08" PRIx32 " hit=3,64,3 block=12\n",
+           mode, cactus_pose_double_bits(player.base.x), cactus_pose_double_bits(player.base.y),
+           cactus_pose_double_bits(player.base.z), cactus_pose_float_bits(player.base.yaw),
+           cactus_pose_float_bits(player.base.aT), cactus_pose_double_bits(player.bounds->min_y),
+           cactus_pose_float_bits(player.base.offset));
+    int32_t actual_id = -1, metadata = -1, sand = -1, platform = -1;
+    mc_world_storage_error error;
+    const mc_block *block = NULL;
+    mc_block_render_description description;
+    CHECK(mc_world_runtime_block_get(world, 3, 65, 3, &actual_id, &error) == MC_WORLD_STORAGE_OK &&
+          actual_id == id &&
+          mc_world_runtime_metadata_get(world, 3, 65, 3, &metadata, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          metadata == reference.metadata &&
+          mc_world_runtime_block_get(world, 3, 64, 3, &sand, &error) == MC_WORLD_STORAGE_OK &&
+          sand == 12 &&
+          mc_world_runtime_block_get(world, 3, 64, 0, &platform, &error) == MC_WORLD_STORAGE_OK &&
+          platform == 1 &&
+          mc_registry_block_get(f->app->registry, id, &block, NULL) == MC_REGISTRY_OK &&
+          block != NULL && mc_block_render_describe(block, &description) == MC_REGISTRY_OK &&
+          description.type == 4 && description.pass == reference.pass);
+    const mc_block_fields bounds_before = *mc_block_fields_get(block);
+    mc_client_source_dk *section = NULL;
+    for (mc_client_source_dk *candidate = f->app->g->chunk_owners; candidate != NULL;
+         candidate = candidate->next)
+        if (candidate->fields.a == world && candidate->fields.c == 0 && candidate->fields.d == 64 &&
+            candidate->fields.e == 0) {
+            CHECK(section == NULL);
+            section = candidate;
+        }
+    CHECK(section != NULL);
+    size_t frames = 1, reuse_frames = 0, recompile_frames = 0, color_matches = 0;
+    const uint64_t deadline = SDL_GetTicks() + 60000;
+    while ((section->fields.u || !section->fields.E) && frames < 16 && SDL_GetTicks() < deadline) {
+        CHECK(fluid_loaded_advance(f, world) == 0);
+        ++frames;
+    }
+    mc_client_source_batch_view batch;
+    CHECK(fluid_loaded_list(f, section, &reference, &batch, &color_matches) == 0);
+    const int32_t list_id = section->fields.C;
+    size_t byte_count = batch.byte_count;
+    uint8_t *bytes = malloc(byte_count);
+    CHECK(bytes != NULL);
+    uintptr_t published = 0;
+    bool reused = false;
+    do {
+        published = (uintptr_t)batch.bytes;
+        CHECK(batch.byte_count == byte_count);
+        memcpy(bytes, batch.bytes, byte_count);
+        CHECK(fluid_loaded_advance(f, world) == 0);
+        ++frames;
+        ++reuse_frames;
+        CHECK(fluid_loaded_list(f, section, &reference, &batch, &color_matches) == 0 &&
+              section->fields.C == list_id && batch.byte_count == byte_count);
+        const bool same_definition = (uintptr_t)batch.bytes == published;
+        const bool same_bytes = memcmp(bytes, batch.bytes, byte_count) == 0;
+        printf("WORLD_FLUID_STEP mode=%s stage=reuse attempt=%zu same-list=1 "
+               "same-definition=%d same-bytes=%d\n",
+               mode, reuse_frames, same_definition, same_bytes);
+        CHECK(!same_definition || same_bytes);
+        reused = same_definition;
+    } while (!reused && reuse_frames < 16 && SDL_GetTicks() < deadline);
+    CHECK(reused);
+
+    struct fluid_light_work {
+        mc_world_light_operation_error operation;
+        mc_world_query_error query;
+    } *light = calloc(1, sizeof(*light));
+
+    const mc_world_light_type *block_light = NULL;
+    int32_t saved = -1;
+    CHECK(light != NULL &&
+          mc_world_runtime_light_type_get(world->classes, MC_LIGHT_BLOCK, &block_light, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_saved_light(world, block_light, 3, 65, 3, &saved, &light->query) ==
+              MC_WORLD_STORAGE_OK &&
+          saved >= 0 && saved <= 15);
+    const size_t queued_before = f->app->g->fields.m->count;
+    CHECK(mc_world_runtime_saved_light_set(world, block_light, 3, 65, 3, saved,
+                                           &light->operation) == MC_WORLD_STORAGE_OK &&
+          section->fields.u && section->last_store_pc == 2 &&
+          f->app->g->fields.m->count == queued_before + 1 && (uintptr_t)batch.bytes == published &&
+          memcmp(bytes, batch.bytes, byte_count) == 0);
+    while (section->fields.u && recompile_frames < 16 && SDL_GetTicks() < deadline) {
+        CHECK(fluid_loaded_advance(f, world) == 0);
+        ++frames;
+        ++recompile_frames;
+    }
+    CHECK(recompile_frames > 0 && !section->fields.u &&
+          fluid_loaded_list(f, section, &reference, &batch, &color_matches) == 0 &&
+          section->fields.C == list_id && (uintptr_t)batch.bytes != published &&
+          mc_world_runtime_block_get(world, 3, 65, 3, &actual_id, &error) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_metadata_get(world, 3, 65, 3, &metadata, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          actual_id == reference.id && metadata == reference.metadata);
+    const mc_block_fields *bounds_after = mc_block_fields_get(block);
+    mc_world_info_fields info;
+    CHECK(bounds_after->bs == bounds_before.bs && bounds_after->bt == bounds_before.bt &&
+          bounds_after->bu == bounds_before.bu && bounds_after->bv == bounds_before.bv &&
+          bounds_after->bw == bounds_before.bw && bounds_after->bx == bounds_before.bx &&
+          mc_world_info_fields_get(world->fields.x, &info) == MC_WORLD_INFO_OK &&
+          repeat_statistics_controls(f, false) == 0 && capture(f, screenshot) == 0);
+    const size_t fluid_first = reference.pass == 0 ? 2u * 5u * 6u : 0;
+    for (size_t i = 0; i < (size_t)reference.vertices; ++i) {
+        uint32_t words[8];
+        memcpy(words, batch.bytes + (fluid_first + i) * 32u, sizeof(words));
+        printf("WORLD_FLUID_WORD mode=%s vertex=%zu words=", mode, i);
+        for (size_t word = 0; word < 8; ++word)
+            printf("%s%08" PRIx32, word == 0 ? "" : ",", words[word]);
+        putchar('\n');
+    }
+    printf("WORLD_FLUID mode=%s input=pre-bootstrap-region block=%" PRId32 " metadata=%" PRId32
+           " pass=%" PRId32 " fluid-vertices=%" PRId32
+           " exact-original-position-uv=1 color-matches=%zu source-colors=%" PRId32
+           " frames=%zu reuse-frames=%zu recompile-frames=%zu list=%" PRId32 " source-time=%" PRId64
+           " sky-subtraction=%" PRId32
+           " same-world-and-registry=1 returned-world-hud=1 sand-pick-through-fluid=1 "
+           "reused-definition=1 world-light-notification=1 dirty-recompiled=1 "
+           "source-bounds-preserved=1\n",
+           mode, actual_id, metadata, description.pass, reference.vertices, color_matches,
+           reference.vertices, frames, reuse_frames, recompile_frames, list_id, info.value.time,
+           world->fields.f);
+    free(light);
+    free(bytes);
+    return 0;
+}
+
+typedef struct standing_block_profile {
+    const char *mode, *tag, *noun, *environment, *marker;
+    int32_t id, metadata, type, vertices, support_y, support_z, support_id;
+    size_t total_vertices;
+    float pitch;
+} standing_block_profile;
+
+static const standing_block_profile standing_ladder = {"load-ladder",
+                                                       "LADDER",
+                                                       "ladder",
+                                                       "MC_WORLD_SELECTION_LADDER_REFERENCE",
+                                                       "LADDER_LOADED_V1",
+                                                       65,
+                                                       2,
+                                                       8,
+                                                       6,
+                                                       65,
+                                                       4,
+                                                       1,
+                                                       102,
+                                                       15};
+static const standing_block_profile standing_crops = {"load-crops",
+                                                      "CROPS",
+                                                      "crops",
+                                                      "MC_WORLD_SELECTION_CROPS_REFERENCE",
+                                                      "CROPS_LOADED_V1",
+                                                      59,
+                                                      7,
+                                                      6,
+                                                      48,
+                                                      64,
+                                                      3,
+                                                      60,
+                                                      108,
+                                                      26};
+
+/* Observe only the original first-false operand. All inspected values were
+ * already read by earlier reached operands; no input getter or source child
+ * is repeated, and the original short-circuit order remains intact. */
+static bool standing_loaded_operand(fixture *f, const standing_block_profile *profile,
+                                    unsigned int operand, bool returned, const char *expression,
+                                    const mc_entity_snapshot *player,
+                                    const mc_entity_hit_result_view *hit) {
+    if (returned)
+        return true;
+    fprintf(stderr, "WORLD_BLOCK_ASSERT mode=%s operand=%u expression=%s\n", profile->mode, operand,
+            expression);
+    if (operand >= 3) {
+        fprintf(stderr,
+                "WORLD_BLOCK_ACTUAL position=%016" PRIx64 ",%016" PRIx64 ",%016" PRIx64
+                " rotation=%08" PRIx32 ",%08" PRIx32 " previous=%08" PRIx32 ",%08" PRIx32
+                " bounds=%d feet=%016" PRIx64 " offset=%08" PRIx32 "\n",
+                cactus_pose_double_bits(player->base.x), cactus_pose_double_bits(player->base.y),
+                cactus_pose_double_bits(player->base.z), cactus_pose_float_bits(player->base.yaw),
+                cactus_pose_float_bits(player->base.aT), cactus_pose_float_bits(player->base.aU),
+                cactus_pose_float_bits(player->base.aV), player->bounds != NULL,
+                player->bounds == NULL ? UINT64_C(0)
+                                       : cactus_pose_double_bits(player->bounds->min_y),
+                cactus_pose_float_bits(player->base.offset));
+    }
+    const mc_client_world_frame_state *draw = f->state.world_frame;
+    fprintf(stderr,
+            "WORLD_BLOCK_DRAW position=%016" PRIx64 ",%016" PRIx64 ",%016" PRIx64
+            " picking-return=%d block-published=%d selection=%d calls=%zu\n",
+            cactus_pose_double_bits(draw->render_x), cactus_pose_double_bits(draw->render_y),
+            cactus_pose_double_bits(draw->render_z), draw->picking_source_returned,
+            draw->picking_block_published, draw->selection_hit_present,
+            (size_t)draw->selection_calls);
+    if (operand >= 26)
+        fprintf(stderr, "WORLD_BLOCK_HIT cell=%" PRId32 ",%" PRId32 ",%" PRId32 "\n", hit->fields.b,
+                hit->fields.c, hit->fields.d);
+    return false;
+}
+
+#define STANDING_TERM(index, expression)                                                           \
+    standing_loaded_operand(f, profile, index, (expression), #expression, &player, &hit)
+
+static int standing_loaded_frame(fixture *f, mc_world_runtime *world,
+                                 const standing_block_profile *profile) {
+    CHECK(geometry_loaded_frame(f, world, profile->mode) == 0);
+    const mc_client_world_frame_state *draw = f->state.world_frame;
+    mc_entity_snapshot player;
+    mc_entity_hit_result_view hit;
+    mc_entity_hit_kind_class_view kinds;
+    const double saved_y = 65.0 + (double)1.62f;
+    CHECK(
+        STANDING_TERM(0, f->app->i == f->app->h) && STANDING_TERM(1, draw->camera == f->app->h) &&
+        STANDING_TERM(2, mc_entity_get_snapshot(f->app->h, &player) == MC_ENTITY_OK) &&
+        STANDING_TERM(3, player.phase == MC_ENTITY_READY) &&
+        STANDING_TERM(4, player.base.world == world) && STANDING_TERM(5, player.base.x == 3.5) &&
+        STANDING_TERM(6, player.base.y == saved_y) && STANDING_TERM(7, player.base.z == .5) &&
+        STANDING_TERM(8, player.base.bl == 3.5) && STANDING_TERM(9, player.base.bm == saved_y) &&
+        STANDING_TERM(10, player.base.bn == .5) && STANDING_TERM(11, player.base.offset == 1.62f) &&
+        STANDING_TERM(12, player.bounds != NULL) && STANDING_TERM(13, player.bounds->min_y == 65) &&
+        STANDING_TERM(14, player.base.yaw == 0) &&
+        STANDING_TERM(15, player.base.aT == profile->pitch) &&
+        STANDING_TERM(16, player.base.aU == 0) &&
+        STANDING_TERM(17, player.base.aV == profile->pitch) &&
+        STANDING_TERM(18, draw->render_x == 3.5) && STANDING_TERM(19, draw->render_y == saved_y) &&
+        STANDING_TERM(20, draw->render_z == .5) &&
+        STANDING_TERM(21, draw->picking_source_returned) &&
+        STANDING_TERM(22, draw->picking_block_published) &&
+        STANDING_TERM(23, draw->picking_result_identity == (uintptr_t)f->app->y) &&
+        STANDING_TERM(24, f->app->y != NULL) &&
+        STANDING_TERM(25, mc_entity_hit_result_inspect(f->app->y, &hit) == MC_ENTITY_HIT_OK) &&
+        STANDING_TERM(26, mc_entity_hit_kind_class_inspect(f->app->entities, &kinds) ==
+                              MC_ENTITY_HIT_OK) &&
+        STANDING_TERM(27, hit.fields.a == kinds.a) && STANDING_TERM(28, hit.fields.b == 3) &&
+        STANDING_TERM(29, hit.fields.c == 65) && STANDING_TERM(30, hit.fields.d == 3) &&
+        STANDING_TERM(31, draw->selection_hit_present) &&
+        STANDING_TERM(32, draw->selection_water_read) &&
+        STANDING_TERM(33, !draw->selection_water) &&
+        STANDING_TERM(34, draw->selection_calls == 1) &&
+        STANDING_TERM(35, draw->selections[0] != NULL) &&
+        STANDING_TERM(36, draw->selections[0]->overlay_returned) &&
+        STANDING_TERM(37, draw->selections[0]->outline_returned) &&
+        STANDING_TERM(38, draw->selections[0]->alpha_restored) &&
+        STANDING_TERM(39, draw->selections[0]->outline_block) &&
+        STANDING_TERM(40, draw->selections[0]->block_id == profile->id) &&
+        STANDING_TERM(41, draw->selections[0]->x == 3) &&
+        STANDING_TERM(42, draw->selections[0]->y == 65) &&
+        STANDING_TERM(43, draw->selections[0]->z == 3) &&
+        STANDING_TERM(44, draw->selections[0]->vertices == 18) &&
+        STANDING_TERM(45, draw->selections[0]->draws == 3));
+    return 0;
+}
+
+#undef STANDING_TERM
+
+static int standing_loaded_advance(fixture *f, mc_world_runtime *world,
+                                   const standing_block_profile *profile) {
+    CHECK(display_focus(f, true) == 0 && mc_client_menu_loop_inspect(f->loop, &f->state));
+    const uint64_t world_before = f->state.world_draws, hud_before = f->state.hud_draws;
+    CHECK(frame(f) == 0 && standing_loaded_frame(f, world, profile) == 0 &&
+          f->state.world_draws == world_before + 1 && f->state.hud_draws == hud_before + 1);
+    return 0;
+}
+
+static int standing_loaded_list(fixture *f, mc_client_source_dk *section,
+                                const loaded_block_reference *reference,
+                                const standing_block_profile *profile,
+                                mc_client_source_batch_view *batch, size_t *matched_colors) {
+    mc_client_source_list_state definition;
+    /* The standing platform and supporting Block precede this geometry in
+     * the real y/z/x scan. The mounted Ladder also has a later backing cube. */
+    CHECK(reference->vertices == profile->vertices && section != NULL && section->fields.c == 0 &&
+          section->fields.d == 64 && section->fields.e == 0 && section->fields.E &&
+          section->fields.o && !section->fields.u && section->fields.p != NULL &&
+          !section->fields.p[0] && section->fields.p[1] &&
+          mc_client_display_list_inspect(f->app->display, section->fields.C, &definition) &&
+          definition.defined && !definition.building && definition.draws == 1 &&
+          definition.vertices == profile->total_vertices &&
+          mc_client_display_list_batch(f->app->display, section->fields.C, 0, batch) &&
+          batch->mode == 4 && batch->arrays == 7 &&
+          batch->vertices == (int32_t)profile->total_vertices &&
+          batch->byte_count == profile->total_vertices * 32u &&
+          f->state.world_frame->terrain_count > 0);
+    size_t colors = 0;
+    for (size_t i = 0; i < (size_t)profile->vertices; ++i) {
+        uint32_t words[8];
+        memcpy(words, batch->bytes + (60u + i) * 32u, sizeof(words));
+        for (size_t word = 0; word < 5; ++word)
+            CHECK(words[word] == reference->words[i * 8u + word]);
+        colors += words[5] == reference->words[i * 8u + 5u];
+    }
+    *matched_colors = colors;
+    return 0;
+}
+
+static int standing_loaded_controls(fixture *f, const char *screenshot,
+                                    const standing_block_profile *profile) {
+    loaded_block_reference reference;
+    CHECK(block_loaded_reference(&reference, profile->id, profile->metadata, profile->environment,
+                                 profile->marker) == 0 &&
+          reference.pass == 0 && reference.vertices == profile->vertices);
+    mc_world_runtime *world = f->app->active_world;
+    CHECK(world != NULL && f->app->g != NULL && f->app->g->fields.k == world &&
+          world->world_accesses.count == 1 && world->fields.u == world->world_accesses.list &&
+          repeat_statistics_controls(f, false) == 0 &&
+          standing_loaded_frame(f, world, profile) == 0);
+    mc_client_screen_transition_state transitions;
+    mc_client_world_load_state load;
+    mc_entity_snapshot player;
+    CHECK(mc_client_screen_transitions_inspect(f->app->screen_transitions, &transitions) &&
+          transitions.world_load != NULL &&
+          mc_client_world_load_inspect(transitions.world_load, &load) && load.source_returned &&
+          load.player_load_returned && load.world == world && load.player == f->app->h &&
+          mc_entity_get_snapshot(f->app->h, &player) == MC_ENTITY_OK);
+    printf("WORLD_%s_POSE input=saved-player source-loaded=1 camera=player "
+           "position=%016" PRIx64 ",%016" PRIx64 ",%016" PRIx64 " rotation=%08" PRIx32 ",%08" PRIx32
+           " feet=%016" PRIx64 " offset=%08" PRIx32 " hit=3,65,3 block=%" PRId32 "\n",
+           profile->tag, cactus_pose_double_bits(player.base.x),
+           cactus_pose_double_bits(player.base.y), cactus_pose_double_bits(player.base.z),
+           cactus_pose_float_bits(player.base.yaw), cactus_pose_float_bits(player.base.aT),
+           cactus_pose_double_bits(player.bounds->min_y),
+           cactus_pose_float_bits(player.base.offset), profile->id);
+    mc_world_storage_error error;
+    int32_t actual_id = -1, metadata = -1, backing = -1;
+    const mc_block *block = NULL;
+    mc_block_render_description description;
+    CHECK(mc_world_runtime_block_get(world, 3, 65, 3, &actual_id, &error) == MC_WORLD_STORAGE_OK &&
+          actual_id == profile->id &&
+          mc_world_runtime_metadata_get(world, 3, 65, 3, &metadata, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          metadata == profile->metadata &&
+          mc_world_runtime_block_get(world, 3, profile->support_y, profile->support_z, &backing,
+                                     &error) == MC_WORLD_STORAGE_OK &&
+          backing == profile->support_id &&
+          mc_registry_block_get(f->app->registry, profile->id, &block, NULL) == MC_REGISTRY_OK &&
+          mc_block_render_describe(block, &description) == MC_REGISTRY_OK &&
+          description.type == profile->type && description.pass == 0);
+    const mc_block_fields bounds_before = *mc_block_fields_get(block);
+    mc_client_source_dk *section = NULL;
+    for (mc_client_source_dk *candidate = f->app->g->chunk_owners; candidate != NULL;
+         candidate = candidate->next)
+        if (candidate->fields.a == world && candidate->fields.c == 0 && candidate->fields.d == 64 &&
+            candidate->fields.e == 0) {
+            CHECK(section == NULL);
+            section = candidate;
+        }
+    CHECK(section != NULL);
+    size_t frames = 1, reuse_frames = 0, recompile_frames = 0, color_matches = 0;
+    const uint64_t deadline = SDL_GetTicks() + 60000;
+    while ((section->fields.u || !section->fields.E) && frames < 16 && SDL_GetTicks() < deadline) {
+        CHECK(standing_loaded_advance(f, world, profile) == 0);
+        ++frames;
+    }
+    mc_client_source_batch_view batch;
+    CHECK(standing_loaded_list(f, section, &reference, profile, &batch, &color_matches) == 0);
+    uint8_t *bytes = malloc(batch.byte_count);
+    CHECK(bytes != NULL);
+    const size_t byte_count = batch.byte_count;
+    uintptr_t published = 0;
+    bool reused = false;
+    do {
+        published = (uintptr_t)batch.bytes;
+        CHECK(batch.byte_count == byte_count);
+        memcpy(bytes, batch.bytes, byte_count);
+        CHECK(standing_loaded_advance(f, world, profile) == 0);
+        ++frames;
+        ++reuse_frames;
+        CHECK(standing_loaded_list(f, section, &reference, profile, &batch, &color_matches) == 0 &&
+              batch.byte_count == byte_count);
+        const bool same_definition = (uintptr_t)batch.bytes == published;
+        const bool same_bytes = memcmp(bytes, batch.bytes, byte_count) == 0;
+        printf("WORLD_%s_STEP stage=reuse attempt=%zu same-list=1 same-definition=%d "
+               "same-bytes=%d\n",
+               profile->tag, reuse_frames, same_definition, same_bytes);
+        CHECK(!same_definition || same_bytes);
+        reused = same_definition;
+    } while (!reused && reuse_frames < 16 && SDL_GetTicks() < deadline);
+    CHECK(reused);
+
+    struct standing_light_work {
+        mc_world_light_operation_error operation;
+        mc_world_query_error query;
+    } *light = calloc(1, sizeof(*light));
+
+    const mc_world_light_type *block_light = NULL;
+    int32_t saved = -1;
+    CHECK(light != NULL &&
+          mc_world_runtime_light_type_get(world->classes, MC_LIGHT_BLOCK, &block_light, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_saved_light(world, block_light, 3, 65, 3, &saved, &light->query) ==
+              MC_WORLD_STORAGE_OK &&
+          saved >= 0 && saved <= 15);
+    const size_t queued = f->app->g->fields.m->count;
+    CHECK(mc_world_runtime_saved_light_set(world, block_light, 3, 65, 3, saved,
+                                           &light->operation) == MC_WORLD_STORAGE_OK &&
+          section->fields.u && section->last_store_pc == 2 &&
+          f->app->g->fields.m->count == queued + 1 && (uintptr_t)batch.bytes == published &&
+          memcmp(bytes, batch.bytes, byte_count) == 0);
+    while (section->fields.u && recompile_frames < 16 && SDL_GetTicks() < deadline) {
+        CHECK(standing_loaded_advance(f, world, profile) == 0);
+        ++frames;
+        ++recompile_frames;
+    }
+    CHECK(recompile_frames > 0 && !section->fields.u &&
+          standing_loaded_list(f, section, &reference, profile, &batch, &color_matches) == 0 &&
+          (uintptr_t)batch.bytes != published);
+    const mc_block_fields *after = mc_block_fields_get(block);
+    CHECK(after->bs == bounds_before.bs && after->bt == bounds_before.bt &&
+          after->bu == bounds_before.bu && after->bv == bounds_before.bv &&
+          after->bw == bounds_before.bw && after->bx == bounds_before.bx &&
+          repeat_statistics_controls(f, false) == 0 && capture(f, screenshot) == 0);
+    for (size_t i = 0; i < (size_t)profile->vertices; ++i) {
+        uint32_t words[8];
+        memcpy(words, batch.bytes + (60u + i) * 32u, sizeof(words));
+        printf("WORLD_%s_WORD vertex=%zu words=", profile->tag, i);
+        for (size_t word = 0; word < 8; ++word)
+            printf("%s%08" PRIx32, word == 0 ? "" : ",", words[word]);
+        putchar('\n');
+    }
+    printf("WORLD_%s input=pre-bootstrap-region block=%" PRId32 " metadata=%" PRId32
+           " pass=0 vertices=%zu %s-vertices=%" PRId32
+           " exact-original-position-uv=1 color-matches=%zu source-colors=%" PRId32 " "
+           "frames=%zu reuse-frames=%zu recompile-frames=%zu list=%" PRId32 " "
+           "same-world-and-registry=1 returned-world-hud=1 %s-pick=1 reused-definition=1 "
+           "world-light-notification=1 dirty-recompiled=1 source-bounds-preserved=1\n",
+           profile->tag, profile->id, profile->metadata, profile->total_vertices, profile->noun,
+           profile->vertices, color_matches, profile->vertices, frames, reuse_frames,
+           recompile_frames, section->fields.C, profile->noun);
+    free(light);
+    free(bytes);
+    return 0;
+}
+
+#ifdef MC_TEST_DEATH_RESPAWN
+#include "death_respawn_controls.inc"
+#endif
+
+#ifdef MC_TEST_PLAYER_SLEEP_NBT
+#include "player_sleep_nbt_controls.h"
+#endif
+
+int main(int argc, char **argv) {
+    CHECK(argc == 4 &&
+          (strcmp(argv[2], "empty") == 0 || strcmp(argv[2], "populated") == 0 ||
+           strcmp(argv[2], "large") == 0 || strcmp(argv[2], "double") == 0 ||
+           strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 ||
+           strcmp(argv[2], "load-terminal") == 0 || strcmp(argv[2], "load-partial") == 0 ||
+           strcmp(argv[2], "repeat") == 0 || strcmp(argv[2], "load-light") == 0 ||
+           strcmp(argv[2], "load-cactus") == 0 || strcmp(argv[2], "load-torch") == 0 ||
+           strcmp(argv[2], "load-water") == 0 || strcmp(argv[2], "load-lava") == 0 ||
+           strcmp(argv[2], "load-ladder") == 0 || strcmp(argv[2], "load-crops") == 0 ||
+           strcmp(argv[2], "reload-cycle") == 0 || strcmp(argv[2], "save-title") == 0 ||
+           strcmp(argv[2], "save-title-session") == 0 || animal_profile_get(argv[2]) != NULL ||
+           creature_profile_get(argv[2]) != NULL || remaining_profile_get(argv[2]) != NULL));
+#ifdef MC_TEST_PLAYER_SLEEP_NBT
+    CHECK(strcmp(argv[2], "repeat") == 0 && player_sleep_nbt_profile() != NULL);
+#endif
+    const animal_profile *animal = animal_profile_get(argv[2]);
+    const creature_profile *creature = creature_profile_get(argv[2]);
+    const creature_profile *remaining = remaining_profile_get(argv[2]);
+    const bool remaining_load = remaining != NULL;
+    const bool animals_load = animal != NULL;
+    const bool creatures_load = creature != NULL;
+    const bool double_click = strcmp(argv[2], "double") == 0;
+    const bool terminal_admission = strcmp(argv[2], "load-terminal") == 0;
+    const bool partial_load = strcmp(argv[2], "load-partial") == 0;
+    const bool repeat_load = strcmp(argv[2], "repeat") == 0;
+    const bool light_control = strcmp(argv[2], "load-light") == 0;
+    const bool cactus_control = strcmp(argv[2], "load-cactus") == 0;
+    const bool torch_control = strcmp(argv[2], "load-torch") == 0;
+    const bool crops_control = strcmp(argv[2], "load-crops") == 0;
+    const bool standing_control = crops_control || strcmp(argv[2], "load-ladder") == 0;
+    const int32_t fluid_id = strcmp(argv[2], "load-water") == 0  ? 9
+                             : strcmp(argv[2], "load-lava") == 0 ? 11
+                                                                 : 0;
+    const bool fluid_control = fluid_id != 0;
+    const bool reload_cycle = strcmp(argv[2], "reload-cycle") == 0;
+    const mc_client_world_load_call *left_load = NULL;
+    const bool save_title = reload_cycle || strcmp(argv[2], "save-title") == 0 ||
+                            strcmp(argv[2], "save-title-session") == 0;
+    /* A hidden loaded World opens Pause and its real draw saves metadata.
+     * Passive terminal admission uses a focused World, with no Pause draw. */
+    const bool focused_load = strcmp(argv[2], "load") == 0 || terminal_admission || repeat_load ||
+                              light_control || cactus_control || torch_control ||
+                              standing_control || fluid_control || animals_load || creatures_load ||
+                              remaining_load || save_title;
+    const bool complete_host = repeat_load || light_control || cactus_control || torch_control ||
+                               standing_control || fluid_control || animals_load ||
+                               creatures_load || remaining_load || save_title;
+    const bool loading_world =
+        strcmp(argv[2], "load") == 0 || strcmp(argv[2], "generate") == 0 || terminal_admission ||
+        repeat_load || light_control || cactus_control || torch_control || standing_control ||
+        fluid_control || animals_load || creatures_load || remaining_load || save_title;
+    const bool populated =
+        strcmp(argv[2], "populated") == 0 || double_click || loading_world || partial_load;
+    const bool large = strcmp(argv[2], "large") == 0;
+    fixture f = {0};
+    uint32_t save_title_frame_id = 0, save_title_canvas_id = 0;
+    mc_client_bootstrap_status closed;
+    uint64_t close_deadline;
+    const mc_client_application_options options = {.assets = argv[1],
+                                                   .username = "Selection control",
+                                                   .width = 854,
+                                                   .height = 480,
+                                                   .hidden = !focused_load};
+    CHECK((complete_host
+               ? mc_client_bootstrap_open_standalone(&options, &f.bootstrap)
+               : mc_client_bootstrap_open(&options, &f.bootstrap)) == MC_CLIENT_BOOTSTRAP_OK);
+    f.app = mc_client_bootstrap_app(f.bootstrap);
+    if (save_title) {
+        mc_game_settings_state parsed;
+        mc_game_settings_source_state source;
+        CHECK(f.app != NULL && mc_game_settings_read_state(f.app->settings, &parsed) &&
+              parsed.values.render_distance == 3 &&
+              mc_game_settings_source_inspect(f.app->settings, &source) &&
+              source.phase == MC_GAME_SETTINGS_SOURCE_READY && !source.active && source.N != NULL &&
+              source.load_report != NULL && source.load_report->source_opened &&
+              source.load_report->source_close_reached && !source.load_report->file_absent &&
+              !source.load_report->outer_exception_caught && source.load_report->bad_options == 0 &&
+              source.load_report->lines_read == 1 && source.load_report->bytes_read == 15);
+        printf("WORLD_SAVE_TITLE_OPTIONS view-distance=3 lines=1 bytes=15 source-loaded=1\n");
+    }
+    if (repeat_load || cactus_control || torch_control || standing_control || fluid_control ||
+        animals_load || creatures_load || remaining_load || save_title)
+        CHECK(repeat_statistics_controls(&f, true) == 0);
+    if (save_title)
+        CHECK(save_title_host(&f, "open", true, &save_title_frame_id, &save_title_canvas_id) == 0);
+    else if (complete_host)
+        CHECK(save_title_host(&f, "continuation-open", true, &save_title_frame_id,
+                              &save_title_canvas_id) == 0);
+    else if (focused_load)
+        CHECK(SDL_RaiseWindow(mc_client_display_window(f.app->display)));
+    CHECK(f.app != NULL && f.app->constructor_phase == MC_CLIENT_APP_READY && f.app->r != NULL &&
+          f.app->r->kind == MC_CLIENT_SCREEN_MAIN_MENU);
+    CHECK(f.app->active_world == NULL && f.app->h == NULL && f.app->i == NULL &&
+          f.app->controller == NULL && !f.app->N);
+    mc_client_source_da *initial = f.app->r;
+    const size_t initializations = initial->initialization_count;
+    mc_client_source_ke *original_press = button(initial, 1);
+    CHECK(original_press != NULL);
+    CHECK(mc_client_menu_loop_create(f.bootstrap, &f.loop));
+    mc_client_application_startup *startup_attempt = f.app->startup;
+    mc_client_startup_error *blocked = calloc(1, sizeof(*blocked));
+    CHECK(blocked != NULL && f.app->screen_transitions != NULL);
+    CHECK(mc_client_application_startup_retire(&startup_attempt, blocked) ==
+              MC_CLIENT_STARTUP_BUSY &&
+          startup_attempt == f.app->startup && f.app->display != NULL && f.app->r == initial &&
+          f.app->constructor_phase == MC_CLIENT_APP_READY);
+    free(blocked);
+    CHECK(mc_client_menu_loop_inspect(f.loop, &f.state));
+    CHECK(ticks(&f, 2) == 0);
+    if (!populated && !large)
+        CHECK(mc_test_world_load_foreign_loading(f.app) == 0);
+    mc_client_source_rq *rq = NULL;
+    CHECK(open_selection(&f, initial, &rq) == 0);
+    CHECK(drawing_monitor_recovery(rq) == 0);
+    CHECK(rq->fields.n != NULL && mc_client_save_list_size(rq->fields.n) == (large       ? 16u
+                                                                             : populated ? 3u
+                                                                                         : 0u));
+    if (large) {
+        CHECK(filename_is(mc_client_save_list_at(rq->fields.n, 0), "world00"));
+        CHECK(filename_is(mc_client_save_list_at(rq->fields.n, 15), "world15"));
+    } else {
+        const int32_t count = populated ? 3 : 0;
+        const mc_client_world_list_fields *list = &rq->fields.o->fields;
+        const int32_t negative_limit = (count * 36 - (list->i - list->h - 4)) / 2;
+        CHECK(negative_limit < 0 && list->m == (float)negative_limit);
+    }
+    if (populated) {
+        CHECK(filename_is(mc_client_save_list_at(rq->fields.n, 0), "alpha"));
+        CHECK(filename_is(mc_client_save_list_at(rq->fields.n, 1), "bravo"));
+        CHECK(filename_is(mc_client_save_list_at(rq->fields.n, 2), "older"));
+    }
+    mc_client_source_da *external = &rq->base;
+    CHECK(mc_client_screen_retain(external, NULL) == MC_CLIENT_SCREEN_OK);
+    if (large) {
+        CHECK(release_mouse(&f, rq) == 0 && large_drag(&f, rq, argv[3]) == 0 &&
+              row_press(&f, rq, true) == 0);
+    } else {
+        CHECK(release_mouse(&f, rq) == 0 && row_press(&f, rq, populated) == 0);
+        CHECK(capture(&f, argv[3]) == 0);
+    }
+    CHECK(release_mouse(&f, rq) == 0);
+    CHECK(push_button(&f, &rq->base, 0, true) == 0 && push_button(&f, &rq->base, 0, false) == 0 &&
+          transfer(&f) == 0);
+    const uint64_t cancel_deadline = SDL_GetTicks() + 3000;
+    while (f.app->r != initial && SDL_GetTicks() < cancel_deadline)
+        CHECK(frame(&f) == 0);
+    CHECK(f.app->r == initial && initial->initialization_count == initializations + 1);
+    CHECK(rq->fields.a == initial && rq->base.fields.a == NULL &&
+          initial->fields.a == original_press); /* Trailing mouse-up ran on original RQ. */
+    CHECK(initial->last_initialization != NULL &&
+          initial->last_initialization->phase == MC_CLIENT_SCREEN_INIT_RETURNED);
+    CHECK(f.app->active_world == NULL && f.app->h == NULL && f.app->i == NULL && !f.app->N);
+    if (populated) {
+        mc_client_source_rq *next = NULL;
+        CHECK(open_selection(&f, initial, &next) == 0 && next != rq);
+        int32_t previous_index = -1;
+        int64_t previous_click = 0, double_started = 0;
+        if (double_click) {
+            CHECK(release_mouse(&f, next) == 0 && row_press(&f, next, true) == 0);
+            previous_index = next->fields.o->fields.n;
+            previous_click = next->fields.o->fields.o;
+            CHECK(previous_index == 0 && previous_click != 0);
+            CHECK(release_for_double(&f, next) == 0);
+            CHECK(next->fields.o->fields.n == previous_index &&
+                  next->fields.o->fields.o == previous_click);
+            CHECK(mc_platform_current_time_millis(&double_started) == MC_PLATFORM_MILLIS_OK &&
+                  mc_java_i64_sub(double_started, previous_click) < 250);
+            const mc_client_world_list_fields *list = &next->fields.o->fields;
+            const int32_t y = list->h + 4 - mc_java_float_to_i32(list->m) + 8;
+            CHECK(push_mouse(&f, &next->base, next->base.fields.c / 2, y, true) == 0 &&
+                  transfer(&f) == 0);
+        } else {
+            CHECK(release_mouse(&f, next) == 0 && row_press(&f, next, true) == 0 &&
+                  release_mouse(&f, next) == 0);
+            CHECK(push_button(&f, &next->base, 1, true) == 0 &&
+                  push_button(&f, &next->base, 1, false) == 0 && transfer(&f) == 0);
+        }
+        bool stopped = false, loaded_frame = false;
+        const uint64_t select_deadline = SDL_GetTicks() + 3000;
+        while (!stopped && !loaded_frame && SDL_GetTicks() < select_deadline) {
+            /* These profiles require a focused native World host. Maintain
+             * that real input precondition while driving selection/loading,
+             * as the SDK gameplay fixtures do before each frame. */
+            if (focused_load)
+                CHECK(display_focus(&f, true) == 0);
+            stopped = !mc_client_menu_loop_frame(f.loop);
+            CHECK(mc_client_menu_loop_inspect(f.loop, &f.state));
+            loaded_frame = loading_world && loaded_draw_reached(&f.state);
+            SDL_Delay(1);
+        }
+        if (stopped)
+            save_title_resume_diagnostics(&f, "initial-load-frame-failed");
+        CHECK((stopped && f.state.failed && f.state.source_class != NULL) ||
+              (loaded_frame && !f.state.failed));
+        mc_client_screen_transition_state transitions;
+        mc_client_world_load_state load;
+        CHECK(mc_client_screen_transitions_inspect(f.app->screen_transitions, &transitions) &&
+              transitions.world_load != NULL &&
+              mc_client_world_load_inspect(transitions.world_load, &load));
+#ifdef MC_TEST_PLAYER_SLEEP_NBT
+        if (strcmp(player_sleep_nbt_profile(), "load-failure") == 0) {
+            CHECK(player_sleep_nbt_load_failure(&f, &external, &load) == 0);
+            goto close_bootstrap;
+        }
+#endif
+        if (partial_load) {
+            CHECK(partial_world_terminal_controls(&f, &external, &load) == 0);
+            goto close_bootstrap;
+        }
+        if (loading_world &&
+            (load.failure == NULL || load.failure->status != MC_CLIENT_WORLD_LOAD_OK ||
+             !load.source_returned || !load.player_published)) {
+            fprintf(stderr,
+                    "World load reached status=%d %s.%s:%d child=%s:%d operation=%s terrain=%zu\n",
+                    load.failure == NULL ? -1 : (int)load.failure->status,
+                    load.failure == NULL || load.failure->site.class_name == NULL
+                        ? "native"
+                        : load.failure->site.class_name,
+                    load.failure == NULL || load.failure->site.method == NULL
+                        ? "none"
+                        : load.failure->site.method,
+                    load.failure == NULL ? -1 : load.failure->site.pc,
+                    load.failure == NULL || load.failure->child.class_name == NULL
+                        ? "none"
+                        : load.failure->child.class_name,
+                    load.failure == NULL ? -1 : load.failure->child.pc,
+                    load.failure == NULL || load.failure->operation == NULL
+                        ? "none"
+                        : load.failure->operation,
+                    load.terrain_samples);
+            if (load.failure != NULL && load.failure->terrain != NULL &&
+                load.failure->terrain->loading != NULL) {
+                const mc_client_loading_error *detail = load.failure->terrain->loading;
+                fprintf(stderr, "Loading failure status=%d %s.%s:%d child=%s:%d op=%s display=%s\n",
+                        (int)detail->status,
+                        detail->site.class_name == NULL ? "native" : detail->site.class_name,
+                        detail->site.method == NULL ? "none" : detail->site.method, detail->site.pc,
+                        detail->child.class_name == NULL ? "none" : detail->child.class_name,
+                        detail->child.pc, detail->operation == NULL ? "none" : detail->operation,
+                        detail->display.operation == NULL ? "none" : detail->display.operation);
+                fprintf(stderr, "Graphics status=%d op=%s display=%d:%s detail=%s\n",
+                        (int)detail->graphics.status,
+                        detail->graphics.operation == NULL ? "none" : detail->graphics.operation,
+                        (int)detail->graphics.display.status,
+                        detail->graphics.display.operation == NULL
+                            ? "none"
+                            : detail->graphics.display.operation,
+                        detail->graphics.display.detail);
+            }
+        }
+        CHECK(load.failure != NULL);
+        if (loading_world)
+            CHECK(load.failure->status == MC_CLIENT_WORLD_LOAD_OK && load.source_returned &&
+                  load.last_outer_pc == 130 && load.last_change_pc == 366 &&
+                  load.renderer_returned && load.effects_returned && load.player_load_returned &&
+                  load.view_published);
+        else
+            CHECK(load.failure->status == MC_CLIENT_WORLD_LOAD_UNIMPLEMENTED &&
+                  strcmp(load.failure->site.class_name, "net/minecraft/client/Minecraft") == 0 &&
+                  strcmp(load.failure->site.method, "b") == 0 && load.failure->site.pc == 52);
+        CHECK(load.initial_detach_returned && load.initial_i_cleared && load.initial_h_cleared &&
+              load.initial_P_stored && load.gc_requests == (loading_world ? 3u : 2u) &&
+              load.conversion_checked);
+        if (loading_world) {
+            CHECK(!load.needs_conversion && load.handler_opened && load.world_constructed &&
+                  load.world_published && load.player_published && load.input_published &&
+                  load.world == f.app->active_world && load.player == f.app->h &&
+                  f.app->i == f.app->h && load.input != NULL && load.terrain_samples == 289);
+            mc_world_runtime_construction constructed;
+            mc_client_world_prepare_state prepared;
+            mc_local_player_snapshot player;
+            CHECK(mc_world_runtime_construction_get(load.world, &constructed) ==
+                      MC_WORLD_STORAGE_OK &&
+                  constructed.mode == MC_WORLD_RUNTIME_GAME &&
+                  constructed.phase == MC_WORLD_RUNTIME_READY &&
+                  constructed.entry == MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE);
+            CHECK(mc_client_world_prepare_inspect(load.prepare, &prepared) &&
+                  prepared.source_returned && prepared.count == 289 && prepared.total == 289 &&
+                  prepared.block_samples == 289 && prepared.progress_calls == 289 &&
+                  prepared.progress_returns == 289 && prepared.last_progress == 99 &&
+                  prepared.unused_simulation_count == 2000 && prepared.spawn_constructed &&
+                  !prepared.player_x_stored && !prepared.player_z_stored);
+            for (size_t sample = 0; sample < 289; ++sample) {
+                const mc_client_world_prepare_sample *actual = &prepared.samples[sample];
+                CHECK(actual->dx == -128 + (int32_t)(sample / 17) * 16 &&
+                      actual->dz == -128 + (int32_t)(sample % 17) * 16 &&
+                      actual->progress == (int32_t)(sample * 100 / 289) &&
+                      actual->progress_returned && actual->block_returned &&
+                      actual->block_world == load.world && actual->light_calls != 0);
+            }
+            CHECK(mc_local_player_get_snapshot(load.player, &player) == MC_ENTITY_OK &&
+                  player.minecraft == f.app && player.input == load.input);
+            int32_t marker = 0;
+            mc_world_storage_error stored;
+            CHECK(mc_world_runtime_block_get(load.world, 0, 127, 0, &marker, &stored) ==
+                      MC_WORLD_STORAGE_OK &&
+                  marker == 57);
+            mc_client_sdk_input_state input;
+            CHECK((f.app->r == NULL || f.app->r->kind == MC_CLIENT_SCREEN_PAUSE) &&
+                  mc_client_sdk_input_inspect(mc_client_display_inputs(f.app->display), &input) &&
+                  input.grabbed == f.app->N && player.living.Y > 0);
+            bool display_active;
+            mc_client_sdk_update_error update;
+            CHECK(mc_client_sdk_display_active(mc_client_display_update_owner(f.app->display),
+                                               &display_active,
+                                               &update) == MC_CLIENT_SDK_UPDATE_OK);
+            if (!loaded_frame)
+                fprintf(stderr, "Loaded World frame reached %s.%s:%" PRId64 "\n",
+                        f.state.source_class, f.state.source_method, f.state.source_pc);
+            mc_client_entity_renderer_state renderer;
+            CHECK(mc_client_entity_renderer_inspect(f.app->t, &renderer));
+            CHECK(loaded_frame && loaded_draw_reached(&f.state) && f.state.render_clock_stored &&
+                  f.state.render_clock == renderer.fields.I && f.state.world_frame != NULL &&
+                  f.state.world_frame->picking_returned && f.state.world_frame->viewport_set &&
+                  f.state.world_frame->fog_blend_computed && f.state.world_frame->fog_returned &&
+                  f.state.world_frame->camera_returned && f.state.world_frame->frustum_returned &&
+                  f.state.world_frame->terrain_fog_returned &&
+                  f.state.world_frame->frustum_constructed &&
+                  f.state.world_frame->frustum_recentered && f.state.world_frame->culling_returned);
+            if (save_title
+#ifdef MC_TEST_PLAYER_SLEEP_NBT
+                || repeat_load
+#endif
+            ) {
+                /* Actual post-camera Settings.e296 is3/Tiny. The source skips
+                 * sky fog306 and sky312 unless that SAME value is below2. */
+                CHECK(f.state.world_frame->fog_distance_branch_read &&
+                      f.state.world_frame->post_camera_render_distance == 3 &&
+                      !f.state.world_frame->sky_fog_returned &&
+                      !f.state.world_frame->sky_returned && f.state.world_frame->sky == NULL);
+            } else {
+                CHECK(f.state.world_frame->sky_fog_returned && f.state.world_frame->sky_returned &&
+                      f.state.world_frame->sky != NULL &&
+                      f.state.world_frame->sky->cleanup == NULL);
+            }
+            if (focused_load) {
+                if (!display_active || f.state.failed || !f.state.render_returned)
+                    save_title_resume_diagnostics(&f, "initial-loaded-focus");
+                CHECK(display_active && !f.state.failed && f.state.render_returned);
+            }
+            if (animals_load || creatures_load || remaining_load)
+                CHECK(immutable_unpaused(&f, "initial-immutable-loaded-frame") == 0);
+            if (terminal_admission) {
+                CHECK(display_active && f.app->r == NULL);
+                puts("WORLD_TERMINAL_INPUT focused=1 pause-draw=0 immutable-inputs=1");
+            }
+            if (reload_cycle) {
+                CHECK(reload_cycle_controls(&f, initial, argv[3], &left_load) == 0);
+                goto loaded_draw_controls_done;
+            }
+            if (save_title) {
+                CHECK(save_title_controls(&f, initial, argv[3],
+                                          strcmp(argv[2], "save-title-session") == 0) == 0);
+                goto loaded_draw_controls_done;
+            }
+            CHECK(f.state.hud != NULL && f.state.hud->returned && f.state.hud->source_pc == 2101 &&
+                  f.state.hud->projection_returned && f.state.hud->hotbar_returned &&
+                  f.state.hud->crosshair_returned && f.state.hud->stats_returned &&
+                  f.state.hud->slots_returned && f.state.hud->empty_slots == 9 &&
+                  f.state.hud->chat_returned && f.state.hud->owner == NULL &&
+                  f.state.hud->failure == NULL && f.state.hud->cleanup == NULL);
+            const mc_client_world_frame_state *frame = f.state.world_frame;
+            CHECK(frame->source_pc == 1013 && frame->returned && frame->update_calls >= 1 &&
+                  frame->updates_returned && frame->draw_fog_returned &&
+                  frame->terrain_texture_bound && frame->lighting_disabled &&
+                  frame->update != NULL && !frame->update->active && frame->update->returned &&
+                  frame->update->failure == NULL && frame->failure->update == NULL &&
+                  frame->update->compilation == NULL && frame->update->near_chunks == NULL &&
+                  frame->update->compile_order == NULL &&
+                  frame->update->compile_attempts == frame->update->completed_compiles &&
+                  frame->terrain_returned && frame->submission != NULL &&
+                  frame->submission->returned && frame->submission->source_pc == 896 &&
+                  frame->submission->result == frame->terrain_count &&
+                  frame->submission->dirty_polls == 10 && frame->submission->subsets >= 1 &&
+                  frame->submission->frames == NULL && frame->submission->rebuild == NULL &&
+                  frame->submission->failure == NULL && frame->submission->cleanup == NULL &&
+                  frame->submission->owner == NULL && frame->submission->camera == NULL &&
+                  frame->submission->batch_camera == NULL && frame->submission->math == NULL &&
+                  !frame->submission->matrix_pushed && !frame->submission->query_active &&
+                  frame->lighting_enabled && frame->eye_position_returned &&
+                  frame->entity_eye != NULL && frame->standard_lighting != NULL &&
+                  frame->failure->lighting_enable == NULL && frame->failure->view == NULL &&
+                  frame->entities_returned && frame->entities != NULL && !frame->entities->active &&
+                  frame->entities->returned && frame->entities->delayed &&
+                  frame->entities->source_pc == 17 && frame->entities->initial_delay == 2 &&
+                  frame->entities->remaining_delay == 1 && frame->entities->owner == NULL &&
+                  frame->entities->eye == NULL && frame->entities->frustum == NULL &&
+                  frame->entities->entities_list == NULL && frame->entities->current == NULL &&
+                  frame->entities->failure == NULL && frame->entities->cleanup == NULL &&
+                  frame->entities->ll == NULL && frame->entities->th == NULL &&
+                  frame->failure->entities == NULL &&
+                  frame->failure->status == MC_CLIENT_WORLD_FRAME_OK &&
+                  frame->failure->site.class_name == NULL &&
+                  frame->failure->child.class_name == NULL);
+            CHECK(frame->effects_captured && frame->effects == f.app->effect_renderer &&
+                  frame->camera == load.player && frame->render_global == f.app->g &&
+                  frame->lit_particles_returned && frame->particle_lighting_disabled &&
+                  frame->particle_fog_returned && frame->particle_fog != NULL &&
+                  frame->particle_fog != frame->draw_fog && frame->sprite_particles_returned &&
+                  frame->lit_particles != NULL && frame->lit_particles->returned &&
+                  frame->lit_particles->lit && frame->lit_particles->empty &&
+                  frame->lit_particles->source_pc == 16 && frame->lit_particles->size_reads == 1 &&
+                  frame->lit_particles->visited == 0 &&
+                  frame->lit_particles->orientation_values == 0 &&
+                  frame->lit_particles->origins_stored == 0 && !frame->lit_particles->nw_captured &&
+                  frame->lit_particles->owner == NULL && frame->lit_particles->camera == NULL &&
+                  frame->lit_particles->current == NULL && frame->lit_particles->nw == NULL &&
+                  frame->lit_particles->failure == NULL && frame->lit_particles->cleanup == NULL &&
+                  frame->sprite_particles != NULL && frame->sprite_particles->returned &&
+                  !frame->sprite_particles->lit &&
+                  (torch_control || frame->sprite_particles->empty) &&
+                  frame->sprite_particles->source_pc == 311 &&
+                  frame->sprite_particles->orientation_values == 5 &&
+                  frame->sprite_particles->origins_stored == 3 &&
+                  (torch_control || frame->sprite_particles->size_reads == 3) &&
+                  (torch_control || (frame->sprite_particles->visited == 0 &&
+                                     !frame->sprite_particles->nw_captured)) &&
+                  frame->sprite_particles->owner == NULL &&
+                  frame->sprite_particles->camera == NULL &&
+                  frame->sprite_particles->current == NULL && frame->sprite_particles->nw == NULL &&
+                  frame->sprite_particles->failure == NULL &&
+                  frame->sprite_particles->cleanup == NULL && frame->failure->particles == NULL &&
+                  frame->first_hit_read && frame->translucent_fog_returned &&
+                  frame->translucent_fog != NULL && frame->translucent_fog != frame->particle_fog &&
+                  frame->translucent_texture_bound && frame->fancy_graphics_read &&
+                  frame->translucent_returned && frame->translucent_submission != NULL &&
+                  frame->translucent_submission->returned &&
+                  frame->translucent_submission->source_pc == 896 &&
+                  frame->translucent_submission->pass == 1 &&
+                  frame->translucent_submission->result == frame->translucent_count &&
+                  frame->translucent_submission->dirty_polls == 10 &&
+                  frame->translucent_submission->frames == NULL &&
+                  frame->translucent_submission->rebuild == NULL &&
+                  frame->translucent_submission->owner == NULL &&
+                  frame->translucent_submission->camera == NULL &&
+                  frame->translucent_submission->batch_camera == NULL &&
+                  frame->translucent_submission->math == NULL &&
+                  frame->translucent_submission->failure == NULL &&
+                  frame->translucent_submission->cleanup == NULL &&
+                  frame->translucent_state_restored && frame->selection_zoom_read &&
+                  frame->selection_player_read && frame->selection_player &&
+                  frame->selection_hit_read && frame->selection_stack == NULL);
+            if (cactus_control || torch_control || standing_control || fluid_control) {
+                CHECK(frame->selection_hit_present && frame->selection_water_read &&
+                      !frame->selection_water && frame->selection_alpha_disabled &&
+                      frame->selection_current_returned && frame->selection_calls == 1);
+            } else {
+                CHECK(!frame->selection_hit_present && !frame->selection_water_read &&
+                      !frame->selection_alpha_disabled && !frame->selection_current_returned &&
+                      frame->selection_hit == NULL);
+            }
+            CHECK(frame->precipitation_returned && frame->precipitation != NULL &&
+                  frame->precipitation->returned && frame->precipitation->source_pc == 18 &&
+                  frame->precipitation->strength_read && !frame->precipitation->camera_captured &&
+                  frame->weather_fog_disabled && frame->cloud_fog_returned &&
+                  frame->cloud_fog_enabled && frame->cloud_fog != NULL &&
+                  frame->cloud_fog->returned);
+            CHECK(frame->clouds_returned && frame->clouds != NULL && frame->clouds->returned &&
+                  frame->clouds->fancy && frame->clouds->passes == 2 &&
+                  frame->clouds->draws == 72 && frame->post_cloud_fog_disabled &&
+                  frame->post_cloud_fog_returned && frame->post_cloud_fog != NULL &&
+                  frame->post_cloud_fog->returned && frame->hand_zoom_read &&
+                  frame->hand_depth_cleared && frame->hand_returned && frame->hand != NULL &&
+                  frame->hand->returned && frame->hand->source_pc == 163 &&
+                  frame->hand->matrix_pushed && frame->hand->matrix_popped &&
+                  frame->hand->held_returned && frame->hand->overlays_returned &&
+                  frame->hand->held_item != NULL && frame->hand->overlays != NULL &&
+                  frame->hand->held_item->arm_returned && frame->hand->held_item->skin_returned &&
+                  frame->hand->held_item->renderer_returned &&
+                  frame->hand->held_item->pose_returned && frame->hand->held_item->faces == 6 &&
+                  frame->hand->held_item->vertices == 24 && frame->hand->held_item->owner == NULL &&
+                  frame->hand->held_item->failure == NULL && frame->hand->overlays->returned &&
+                  frame->hand->overlays->alpha_restored && frame->tail_anaglyph_read &&
+                  !frame->tail_anaglyph && frame->failure->hand == NULL);
+            const bool replay_expected = frame->fancy_graphics && frame->translucent_count > 0;
+            CHECK(frame->translucent_replay_returned == replay_expected);
+            if (replay_expected) {
+                CHECK(frame->translucent_replay != NULL && frame->translucent_replay->returned &&
+                      frame->translucent_replay->source_pc == 29 &&
+                      frame->translucent_replay->pass == 1 &&
+                      frame->translucent_replay->dirty_polls == 0 &&
+                      frame->translucent_replay->subsets == 0 &&
+                      frame->translucent_replay->configured_batches == 0 &&
+                      frame->translucent_replay->selected_chunks == 0 &&
+                      frame->translucent_replay->owner == NULL &&
+                      frame->translucent_replay->camera == NULL &&
+                      frame->translucent_replay->batch_camera == NULL &&
+                      frame->translucent_replay->math == NULL &&
+                      frame->translucent_replay->frames == NULL &&
+                      frame->translucent_replay->rebuild == NULL &&
+                      frame->translucent_replay->failure == NULL &&
+                      frame->translucent_replay->cleanup == NULL);
+            } else {
+                CHECK(frame->translucent_replay == NULL);
+            }
+            /* Source updates finish and retire their borrowed cache/call views.
+             * The following submission may recenter those SAME DKs, which
+             * invalidates their earlier geometry until a later source update. */
+            for (const mc_client_source_dk *dk = frame->render_global->chunk_owners; dk != NULL;
+                 dk = dk->next) {
+                if (!dk->fields.E || dk->fields.u || dk->fields.p == NULL || dk->fields.p[0])
+                    continue;
+                mc_client_source_list_state compiled;
+                CHECK(mc_client_display_list_inspect(f.app->display, dk->fields.C, &compiled) &&
+                      compiled.defined && !compiled.building && compiled.draws > 0 &&
+                      compiled.vertices > 0);
+            }
+            /* Observe the returned World draw's back buffer before
+             * separate component controls change its inherited GL state. */
+            const size_t prefix_length = strlen(argv[3]);
+            static const char prefix_suffix[] = ".world-prefix.png";
+            CHECK(prefix_length <= SIZE_MAX - sizeof(prefix_suffix));
+            char *prefix_path = malloc(prefix_length + sizeof(prefix_suffix));
+            CHECK(prefix_path != NULL);
+            memcpy(prefix_path, argv[3], prefix_length);
+            memcpy(prefix_path + prefix_length, prefix_suffix, sizeof(prefix_suffix));
+            CHECK(capture(&f, prefix_path) == 0);
+            free(prefix_path);
+            /* End first-frame inspections before acquisition advances the
+             * ordinary loop and invalidates its borrowed draw receipts. */
+            if (animals_load || creatures_load || remaining_load)
+                CHECK(immutable_profile_focus(&f) == 0);
+            if (light_control) {
+                CHECK(light_batch_controls(&f) == 0);
+                goto loaded_draw_controls_done;
+            }
+            if (cactus_control) {
+                CHECK(cactus_loaded_controls(&f, argv[3]) == 0);
+                goto loaded_draw_controls_done;
+            }
+            if (torch_control) {
+                CHECK(torch_loaded_controls(&f, argv[3]) == 0);
+                goto loaded_draw_controls_done;
+            }
+            if (fluid_control) {
+                CHECK(fluid_loaded_controls(&f, argv[2], argv[3], fluid_id) == 0);
+                goto loaded_draw_controls_done;
+            }
+            if (standing_control) {
+                CHECK(standing_loaded_controls(
+                          &f, argv[3], crops_control ? &standing_crops : &standing_ladder) == 0);
+                goto loaded_draw_controls_done;
+            }
+            if (animals_load) {
+                CHECK(animal_controls(&f, animal, argv[3]) == 0);
+                goto loaded_draw_controls_done;
+            }
+            if (remaining_load) {
+                CHECK(remaining_controls(&f, remaining, argv[3]) == 0);
+                goto loaded_draw_controls_done;
+            }
+            if (creatures_load) {
+                CHECK(creature_controls(&f, creature, argv[3]) == 0);
+                goto loaded_draw_controls_done;
+            }
+#ifdef MC_TEST_DEATH_RESPAWN
+            if (repeat_load) {
+                CHECK(death_respawn_controls(&f, argv[3]) == 0);
+                goto loaded_draw_controls_done;
+            }
+#endif
+#ifdef MC_TEST_PLAYER_SLEEP_NBT
+            if (repeat_load) {
+                CHECK(player_sleep_nbt_success(&f, initial, argv[3]) == 0);
+                goto loaded_draw_controls_done;
+            }
+#endif
+            if (repeat_load) {
+                CHECK(repeat_statistics_controls(&f, false) == 0);
+                puts("WORLD_REPEAT profile=existing-inventory-player "
+                     "statistics-input=pre-bootstrap-unsent-file open-inventory=1 "
+                     "canonical=ep.f notice-inactive=1");
+                mc_client_source_vy *mouse_owner = f.app->C;
+                mc_client_mouse_helper_state mouse_before, mouse_after;
+                mc_client_sdk_input_state input_before, input_after;
+                CHECK(mc_client_mouse_helper_inspect(mouse_owner, &mouse_before) &&
+                      mc_client_sdk_input_inspect(mc_client_display_inputs(f.app->display),
+                                                  &input_before));
+                const bool source_grab = f.app->N;
+                /* This profile qualifies focused continuation. Exercise real
+                 * focus loss/recovery in the transport before entering source
+                 * work; source grab, Canvas and PX timing fields stay untouched. */
+                CHECK(SDL_HideWindow(mc_client_display_window(f.app->display)) &&
+                      display_focus(&f, false) == 0 && display_focus(&f, true) == 0);
+                CHECK(f.app->C == mouse_owner &&
+                      mc_client_mouse_helper_inspect(mouse_owner, &mouse_after) &&
+                      mc_client_sdk_input_inspect(mc_client_display_inputs(f.app->display),
+                                                  &input_after) &&
+                      mouse_after.source_c == mouse_before.source_c && f.app->N == source_grab &&
+                      input_before.grabbed == input_after.grabbed);
+                CHECK(repeat_focus_state(&f, "restored-host") == 0);
+                puts("WORLD_FOCUS hidden-inactive=1 restored-active=1 component-preserved=1 "
+                     "source-grab-preserved=1");
+                CHECK(repeat_sheep_input(&f) == 0);
+                /* Real elapsed time lets the existing Timer schedule source
+                 * simulation before the guaranteed visible Entity reaches N.
+                 * No Timer field, tick callback or render branch is replaced. */
+                SDL_Delay(100);
+                repeat_render_control render_control = {0};
+                CHECK(repeat_model_graph(&f, &render_control, false) == 0);
+                const uint64_t tick_returns_before = f.state.world_tick_returns;
+                const uint64_t world_draws_before = f.state.world_draws;
+                const uint64_t repeat_started = SDL_GetTicks();
+                const uint64_t repeat_deadline = repeat_started + 60000;
+                while (!render_control.reused && render_control.frames < 8 &&
+                       SDL_GetTicks() < repeat_deadline) {
+                    CHECK(display_focus(&f, true) == 0 &&
+                          repeat_focus_state(&f, "before-frame") == 0);
+                    const bool returned = mc_client_menu_loop_frame(f.loop);
+                    CHECK(mc_client_menu_loop_inspect(f.loop, &f.state));
+                    if (!returned)
+                        fprintf(stderr, "Repeated loaded frame retained %s.%s:%" PRId64 " %s\n",
+                                f.state.source_class == NULL ? "native" : f.state.source_class,
+                                f.state.source_method == NULL ? "frame" : f.state.source_method,
+                                f.state.source_pc,
+                                f.state.operation == NULL ? "none" : f.state.operation);
+                    CHECK(returned);
+                    CHECK(repeat_returned_frame(&f, &render_control) == 0);
+                    if (!render_control.reused)
+                        SDL_Delay(100); /* Actual Timer chooses ticks from real wall time. */
+                }
+                if (!render_control.reused) {
+                    mc_entity *sheep = repeat_live_sheep(&f);
+                    fprintf(
+                        stderr,
+                        "Repeated Sheep visibility deadline: elapsed-seconds=%" PRIu64
+                        " limit-seconds=60 "
+                        "frames=%zu delayed=%zu undrawn=%zu "
+                        "entity-frames=%zu paused=%d screen=%d player=(%.17g,%.17g,%.17g) "
+                        "player-prev=(%.17g,%.17g,%.17g) yaw=%.9g pitch=%.9g "
+                        "sheep-ticks=%d sheep=(%.17g,%.17g,%.17g) "
+                        "sheep-prev=(%.17g,%.17g,%.17g)\n",
+                        (SDL_GetTicks() - repeat_started) / UINT64_C(1000), render_control.frames,
+                        render_control.delayed_frames, render_control.undrawn_frames,
+                        render_control.entity_frames, (int)atomic_load(&f.app->o),
+                        f.app->r == NULL ? -1 : (int)f.app->r->kind, f.app->i->base.x,
+                        f.app->i->base.y, f.app->i->base.z, f.app->i->base.bl, f.app->i->base.bm,
+                        f.app->i->base.bn, (double)f.app->i->base.yaw, (double)f.app->i->base.aT,
+                        sheep == NULL ? -1 : sheep->base.bt, sheep == NULL ? 0.0 : sheep->base.x,
+                        sheep == NULL ? 0.0 : sheep->base.y, sheep == NULL ? 0.0 : sheep->base.z,
+                        sheep == NULL ? 0.0 : sheep->base.bl, sheep == NULL ? 0.0 : sheep->base.bm,
+                        sheep == NULL ? 0.0 : sheep->base.bn);
+                }
+                CHECK(render_control.compiled && render_control.reused &&
+                      render_control.entity_frames >= 2 && render_control.frames >= 2 &&
+                      render_control.frames <= 8 &&
+                      render_control.frames == render_control.entity_frames +
+                                                   render_control.delayed_frames +
+                                                   render_control.undrawn_frames &&
+                      f.state.world_tick_returns > tick_returns_before &&
+                      f.state.world_draws == world_draws_before + render_control.frames &&
+                      repeat_statistics_controls(&f, false) == 0);
+                printf("WORLD_FRAME first-returned=1 continuation=returned-sheep "
+                       "frames=%zu entity-frames=%zu delayed-frames=%zu undrawn-frames=%zu "
+                       "source=px.a:1013 entities=n.a:569 hud=uq.a:2101 "
+                       "mob=dl renderer=xy primary=mw secondary=ea exact-declared-actor=1 "
+                       "renderer-map=29 constructor-owners=28 local-player-alias=gs "
+                       "same-world-and-classes=1 compiled-parts=%zu reused-parts=%zu "
+                       "compiled-faces=%zu compiled-vertices=%zu part-lists=12 "
+                       "part-source-vertices=24 part-list-vertices=36 stable-list-ids=1 "
+                       "shadow-quads=%zu checked-draw-retirement=1 copied-receipts=1 "
+                       "tick-return=1328 scheduler=198 completed-random-calls=%" PRIu64
+                       " completed-chunks=%zu completed-samples=%" PRIu64 " display-calls=%" PRIu64
+                       " display-samples=%" PRIu64 " display-random=%" PRIu64 "\n",
+                       render_control.frames, render_control.entity_frames,
+                       render_control.delayed_frames, render_control.undrawn_frames,
+                       render_control.compile_parts, render_control.reuse_parts,
+                       render_control.compile_faces, render_control.compile_vertices,
+                       render_control.shadow_quads, f.state.random_chunk_calls,
+                       f.state.last_random_chunk_count, f.state.random_chunk_samples,
+                       f.state.random_display_calls, f.state.random_display_samples,
+                       f.state.random_display_random_calls);
+                CHECK(capture(&f, argv[3]) == 0);
+            }
+            if (repeat_load)
+                goto loaded_draw_controls_done;
+            if (!display_active)
+                CHECK(f.app->r != NULL && f.app->r->kind == MC_CLIENT_SCREEN_PAUSE);
+            CHECK(f.state.gameplay_input != NULL && f.state.gameplay_input->returned &&
+                  f.state.gameplay_input->source_pc == 1073 && f.state.world_tick != NULL &&
+                  f.state.world_tick->returned && !f.state.world_tick->failed);
+            /* These direct component calls start after the preceding draw's
+             * source return. End its borrowed native inspection first, as the
+             * ordinary next outer frame does before refreshing the tutorial. */
+            const mc_client_achievement_notice_fields *notice_fields =
+                mc_client_achievement_notice_fields_get(f.app->achievement_notice);
+            CHECK(notice_fields != NULL && f.state.notice != NULL);
+            unsigned char notice_before[sizeof(*notice_fields)];
+            memcpy(notice_before, notice_fields, sizeof(notice_before));
+            const uint64_t frames_before = f.state.frames, ticks_before = f.state.ticks;
+            CHECK(mc_client_menu_loop_retire_completed_draws(f.loop) &&
+                  mc_client_menu_loop_inspect(f.loop, &f.state) && f.state.notice == NULL &&
+                  f.state.hud == NULL && f.state.world_frame == NULL &&
+                  f.state.frames == frames_before && f.state.ticks == ticks_before &&
+                  memcmp(notice_before,
+                         mc_client_achievement_notice_fields_get(f.app->achievement_notice),
+                         sizeof(notice_before)) == 0 &&
+                  mc_client_menu_loop_retire_completed_draws(f.loop));
+            CHECK(pause_controls(&f) == 0);
+            CHECK(world_display_controls(&f, initial->classes) == 0);
+            CHECK(mc_test_renderer_focus(f.app) == 0);
+            CHECK(gameplay_controls(&f) == 0);
+            CHECK(mc_test_world_refresh_entity(f.app) == 0);
+            mc_entity_vector_snapshot before_pick, after_pick;
+            CHECK(mc_entity_vector_get_snapshot(f.app->entities, &before_pick) == MC_ENTITY_OK);
+            mc_client_entity_renderer_pick_call *pick = NULL;
+            CHECK(mc_client_entity_renderer_pick_begin(f.app->t,
+                                                       mc_client_bootstrap_math(f.bootstrap), 1.0f,
+                                                       &pick) == MC_CLIENT_PICK_OK &&
+                  pick != NULL);
+            mc_client_entity_renderer_pick_state picked;
+            CHECK(mc_client_entity_renderer_pick_inspect(pick, &picked) && picked.source_returned &&
+                  picked.source_pc == 452 && picked.block_published && picked.target_cleared &&
+                  picked.query_returned && picked.block_reach == 4.0 &&
+                  picked.entity_reach <= 3.0 && picked.owner == f.app->t && picked.app == f.app &&
+                  picked.origin != NULL && picked.look != NULL && picked.endpoint != NULL);
+            CHECK(mc_entity_vector_get_snapshot(f.app->entities, &after_pick) == MC_ENTITY_OK &&
+                  after_pick.cursor > before_pick.cursor);
+            CHECK(mc_client_entity_renderer_pick_retire(&pick) == MC_CLIENT_PICK_OK &&
+                  pick == NULL);
+            if (terminal_admission)
+                CHECK(mc_test_render_global_entities(f.app,
+                                                     mc_client_bootstrap_math(f.bootstrap)) == 0);
+            /* These component controls above use their declared Player-only
+             * graph. The separate unpaused control now publishes real Mobs;
+             * the dedicated terminal-admission profile keeps its one-Player
+             * input, while load/repeat qualify the populated continuation. */
+            if (!terminal_admission)
+                CHECK(world_tick_controls(&f) == 0);
+            printf("WORLD_LOAD ready=1 terrain=289 stored-marker=57 player=1 input=1 "
+                   "renderer=1 effects=1 publication=1 view=1 returned=130 picker=452 "
+                   "input=1073 paused-tick=1328 world-frame=1013 hud=2101 frame-returned=%d\n",
+                   f.state.render_returned ? 1 : 0);
+        loaded_draw_controls_done:;
+
+        } else {
+            CHECK(load.needs_conversion && !load.handler_opened && load.world == NULL &&
+                  load.player == NULL && !load.world_published);
+        }
+        if (!loading_world) {
+            const mc_client_world_load_site *reached =
+                load.failure->child.class_name == NULL ? &load.failure->site : &load.failure->child;
+            CHECK(strcmp(f.state.source_class, reached->class_name) == 0 &&
+                  strcmp(f.state.source_method, reached->method) == 0 &&
+                  f.state.source_pc == reached->pc);
+        }
+        if (double_click) {
+            /* MG85 failed before LG's n187/o194 and k400 stores. Both clicks
+             * came through the real SDK and the formatter/clock is unmodified. */
+            CHECK(next->fields.o->fields.n == previous_index &&
+                  next->fields.o->fields.o == previous_click && next->fields.o->fields.k == -1.0f);
+            printf("WORLD_SELECTION double-clock-gap=%" PRId64 " failed-callback-n-o-preserved=1\n",
+                   mc_java_i64_sub(double_started, previous_click));
+        }
+        CHECK(next->fields.l && next->fields.m == 0 && f.app->controller != NULL);
+        if (!loading_world)
+            CHECK(f.app->r != NULL && f.app->r != &next->base &&
+                  f.app->r->kind == MC_CLIENT_SCREEN_MAIN_MENU);
+        mc_singleplayer_controller_snapshot controller;
+        CHECK(mc_client_singleplayer_controller_read(
+            (const mc_client_singleplayer_controller *)f.app->controller, &controller));
+        CHECK(controller.phase == MC_SINGLEPLAYER_CONTROLLER_READY && controller.a == f.app &&
+              controller.constructor_pc == 40 && controller.c == -1 && controller.d == -1 &&
+              controller.e == -1 && controller.failed_player == NULL);
+        CHECK(loading_world ||
+              (f.app->active_world == NULL && f.app->h == NULL && f.app->i == NULL && !f.app->N));
+    } else {
+        CHECK(push_button(&f, initial, 4, true) == 0 && push_button(&f, initial, 4, false) == 0 &&
+              transfer(&f) == 0);
+        const uint64_t quit_deadline = SDL_GetTicks() + 3000;
+        while (f.state.running && SDL_GetTicks() < quit_deadline) {
+            CHECK(mc_client_menu_loop_frame(f.loop));
+            CHECK(mc_client_menu_loop_inspect(f.loop, &f.state));
+            SDL_Delay(1);
+        }
+        CHECK(!f.state.running && !f.state.failed && !atomic_load(&f.app->J));
+    }
+    printf("WORLD_SELECTION mode=%s frames=%" PRIu64 " ticks=%" PRIu64
+           " mouse=%zu keyboard=%zu held-entry=1 row=1 cancel-same-parent=1 select-frontier=%d\n",
+           argv[2], f.state.frames, f.state.ticks, f.state.mouse_events, f.state.keyboard_events,
+           populated ? 1 : 0);
+    if (!loading_world)
+        CHECK(terminal_prepare_controls(&f, external) == 0);
+    if (terminal_admission)
+        CHECK(loaded_terminal_admission_controls(&f) == 0);
+    if (loading_world && !terminal_admission && !repeat_load && !light_control && !cactus_control &&
+        !torch_control && !standing_control && !fluid_control && !animals_load && !creatures_load &&
+        !remaining_load && !save_title) {
+        mc_world_runtime *world = f.app->active_world;
+        mc_entity *player = f.app->h;
+        mc_client_render_global *renderer = f.app->g;
+        mc_client_render_global_error *error = calloc(1, sizeof(*error));
+        CHECK(error != NULL &&
+              mc_client_render_global_retain(renderer, error) == MC_CLIENT_RENDER_GLOBAL_OK);
+        CHECK(!mc_client_menu_loop_retire(&f.loop) && f.loop != NULL);
+        mc_client_screen_transition_state transitions;
+        mc_client_world_load_state load;
+        CHECK(mc_client_screen_transitions_inspect(f.app->screen_transitions, &transitions) &&
+              transitions.world_load != NULL &&
+              mc_client_world_load_inspect(transitions.world_load, &load) && load.source_returned &&
+              load.cleanup->status == MC_CLIENT_WORLD_LOAD_BUSY && load.cleanup->renderer == NULL &&
+              load.cleanup->render_global != NULL &&
+              load.cleanup->render_global->status == MC_CLIENT_RENDER_GLOBAL_BUSY &&
+              renderer->fields.k == world && f.app->active_world == world && f.app->h == player &&
+              f.app->i == player);
+        CHECK(mc_client_render_global_release(&renderer, error) == MC_CLIENT_RENDER_GLOBAL_OK);
+        free(error);
+        mc_client_effect_renderer *effects = f.app->effect_renderer;
+        CHECK(mc_client_effect_renderer_retain(effects) == MC_EFFECT_RENDERER_OK);
+        CHECK(!mc_client_menu_loop_retire(&f.loop) && f.loop != NULL);
+        mc_effect_renderer_snapshot state;
+        CHECK(mc_client_effect_renderer_read(effects, &state) && state.world == world &&
+              f.app->active_world == world && f.app->h == player && f.app->i == player);
+        CHECK(mc_client_effect_renderer_release(effects) == MC_EFFECT_RENDERER_OK);
+    }
+    if (!loading_world || terminal_admission || repeat_load || light_control || cactus_control ||
+        torch_control || standing_control || fluid_control || animals_load || creatures_load ||
+        remaining_load || save_title) {
+        CHECK(normal_terminal_retirement_controls(&f, &external, loading_world, save_title,
+                                                  left_load) == 0);
+    } else {
+        CHECK(!mc_client_menu_loop_retire(&f.loop) && f.loop != NULL && external != NULL);
+        CHECK(mc_client_bootstrap_app(f.bootstrap) == f.app &&
+              f.app->native_lifetime_phase == MC_CLIENT_APPLICATION_LIFETIME_REGISTERED);
+        CHECK(mc_client_screen_release(&external, NULL) == MC_CLIENT_SCREEN_OK && external == NULL);
+        CHECK(mc_client_menu_loop_retire(&f.loop) && f.loop == NULL);
+    }
+    if (save_title)
+        CHECK(save_title_host(&f, "after-loop", false, &save_title_frame_id,
+                              &save_title_canvas_id) == 0);
+close_bootstrap:
+    close_deadline = SDL_GetTicks() + 35000;
+    do {
+        closed = mc_client_bootstrap_close(&f.bootstrap);
+        if (closed == MC_CLIENT_BOOTSTRAP_BUSY)
+            SDL_Delay(1);
+    } while (closed == MC_CLIENT_BOOTSTRAP_BUSY && SDL_GetTicks() < close_deadline);
+    CHECK(closed == MC_CLIENT_BOOTSTRAP_OK && f.bootstrap == NULL);
+    if (save_title) {
+        CHECK(save_title_frame_id != 0 && save_title_canvas_id != 0 &&
+              SDL_GetWindowFromID(save_title_frame_id) == NULL &&
+              SDL_GetWindowFromID(save_title_canvas_id) == NULL);
+        printf("WORLD_SAVE_TITLE_HOST stage=closed frame-id=%" PRIu32 " canvas-id=%" PRIu32
+               " windows-absent=1\n",
+               save_title_frame_id, save_title_canvas_id);
+    }
+    if (f.save_title_session_authored) {
+        /* The retained failed source input has now passed actual terminal and
+         * bootstrap cleanup. Never clear/close it early merely to restore an
+         * authored file: restore only after all native owners have retired. */
+        CHECK(save_title && strcmp(argv[2], "save-title-session") == 0 && f.loop == NULL &&
+              f.bootstrap == NULL && f.save_title_session_path[0] != '\0' &&
+              SDL_SaveFile(f.save_title_session_path, f.save_title_session_token,
+                           sizeof(f.save_title_session_token)));
+        SDL_IOStream *restored = SDL_IOFromFile(f.save_title_session_path, "rb");
+        uint8_t actual[8], extra;
+        CHECK(restored != NULL && SDL_ReadIO(restored, actual, sizeof(actual)) == sizeof(actual) &&
+              SDL_ReadIO(restored, &extra, 1) == 0 && SDL_CloseIO(restored) &&
+              memcmp(actual, f.save_title_session_token, sizeof(actual)) == 0);
+        f.save_title_session_authored = false;
+        printf("WORLD_SAVE_TITLE_SESSION_RESTORE after-bootstrap=1 exact-bytes=8 verified=1\n");
+    }
+    printf("WORLD_SELECTION mode=%s cleanup=1 checks=%u\n", argv[2], checks);
+    return 0;
+}

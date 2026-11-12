@@ -1,0 +1,857 @@
+{
+  "schema": "WORLD_QUERY_CONTROLS_PROTOCOL_V1",
+  "status": "STATIC_PREDICTION_NOT_NATIVE_EXECUTION",
+  "timeout_seconds": 240,
+  "stream_limit_bytes": 1048576,
+  "argv": [
+    "EXE",
+    "MODE",
+    "FRESH_ABSOLUTE_ASCII_ROOT"
+  ],
+  "modes": {
+    "loader": [
+      "error",
+      "null-error"
+    ],
+    "lookup": [
+      "map",
+      "lazy",
+      "armed",
+      "held",
+      "nested"
+    ],
+    "collision": [
+      "id-first",
+      "metadata-first",
+      "domain",
+      "loader-error",
+      "loader-null-error",
+      "armed",
+      "held"
+    ],
+    "close": [
+      "error",
+      "null-error"
+    ],
+    "material": [
+      "material-success",
+      "material-admission",
+      "material-loader-error",
+      "material-nullable"
+    ],
+    "scanner": [
+      "match",
+      "liquid",
+      "accelerate",
+      "admission",
+      "scratch",
+      "loader-error"
+    ],
+    "nearby": [
+      "query",
+      "prefix",
+      "armed",
+      "held",
+      "acquire-loader"
+    ],
+    "arrow-leaves": [
+      "base-air",
+      "base-water",
+      "base-lava",
+      "base-splash",
+      "collision-unused",
+      "collision-portal",
+      "collision-metadata",
+      "collision-piston"
+    ],
+    "insert": [
+      "preflight",
+      "success",
+      "absent",
+      "math-missing",
+      "math-limit"
+    ],
+    "ray": [
+      "clear",
+      "miss",
+      "block",
+      "state-shape",
+      "null-end",
+      "math-missing",
+      "math-storage",
+      "loader-error"
+    ],
+    "presentation-capture": [
+      "sound-error",
+      "sound-null-error",
+      "particle-error",
+      "particle-null-error"
+    ]
+  },
+  "supplier_protocols": {
+    "loader": {
+      "bytes": 1972,
+      "sha256": "fc0b553cf1b23449001bf22a95f943c053a6cc58122eab4d42f408c0548f59f5"
+    },
+    "lookup": {
+      "bytes": 3083,
+      "sha256": "4ee2be5a82fee5e27e7301cee3aff67a4d3583323b55d4fa42d296ea6c98a395"
+    },
+    "collision": {
+      "bytes": 3875,
+      "sha256": "6fd0849ab48f9b3741756f160f022c003e24bdcdbe94fec36996fb7980acad0f"
+    },
+    "close": {
+      "bytes": 3359,
+      "sha256": "4727e921d329f66b33ee93f8e32cd9397257d78e87721a373446758873fcd8c0"
+    },
+    "scanner": {
+      "bytes": 3312,
+      "sha256": "0ed46df93a3beb53c7bd078b9226501e550a815c4c5341a3696dc9273fcfd35a"
+    },
+    "nearby": {
+      "bytes": 3982,
+      "sha256": "bb9e2c7b762049aedd791b24ee6c89cebc69d85100253e6c8fe55acfc249b6d5"
+    },
+    "arrow-leaves": {
+      "bytes": 1678,
+      "sha256": "e1904b4f3f49498a7e9240ac3092a6b9c37b870cd3be8357a49454785d49d32e"
+    },
+    "insert": {
+      "bytes": 1524,
+      "sha256": "0fd4209eb31c3d737cd36b3b518250256706c532637e640531cfef87359cfa3d"
+    },
+    "ray": {
+      "bytes": 1283,
+      "sha256": "1ffb5463b98acbb16b485ff24f69f168b27258d15ac1c36b73d9652429267c81"
+    },
+    "presentation-capture": {
+      "bytes": 3472,
+      "sha256": "b1f6abba0fe63fad75415d4e92b86623bc05e547ca537ae251b5559dee3e17e5"
+    }
+  },
+  "stdout_contract": "Exact global BEGIN, one genuine setup banner pair, ordered actual case markers, explicit lookup OPEN line, literal positive uint32 mode footer, terminal newline; only LF or CRLF",
+  "stderr_contract": "empty on PASS; every partial/red stream retained and verified",
+  "input_contract": "All authored literal bytes before bootstrap; only a new genuine world/session.lock of eight bytes may appear; full terminal snapshot mandatory after any complete before snapshot",
+  "source_outcomes": "UNEXECUTED; no predicted native check counts",
+  "scope": "Actual finite component controls, existing external legacy source graph ownership; no original JVM/full SL/foreign World-Store or arbitrary caller-unwind qualification",
+  "ordered_lines": {
+    "loader/error": [
+      "KERNEL_LOADER_BEGIN error",
+      "16 achievements",
+      "151 recipes",
+      "KERNEL_LOADER_CASE entered",
+      "KERNEL_LOADER_CASE selected",
+      "KERNEL_LOADER_CASE caller-cleared",
+      "KERNEL_LOADER_CASE popped",
+      "KERNEL_LOADER_CASE retired",
+      "PASS: <positive canonical uint32> actual kernel direct-loader checks;mode=error"
+    ],
+    "loader/null-error": [
+      "KERNEL_LOADER_BEGIN null-error",
+      "16 achievements",
+      "151 recipes",
+      "KERNEL_LOADER_CASE entered",
+      "KERNEL_LOADER_CASE selected",
+      "KERNEL_LOADER_CASE caller-cleared",
+      "KERNEL_LOADER_CASE popped",
+      "KERNEL_LOADER_CASE retired",
+      "PASS: <positive canonical uint32> actual kernel direct-loader checks;mode=null-error"
+    ],
+    "lookup/map": [
+      "TILE_LOOKUP_BEGIN schema=1 mode=map",
+      "16 achievements",
+      "151 recipes",
+      "TILE_LOOKUP_CASE cold BEGIN",
+      "TILE_LOOKUP_CASE cold END",
+      "TILE_LOOKUP_CASE cache BEGIN",
+      "TILE_LOOKUP_CASE cache END",
+      "TILE_LOOKUP_CASE unused-defining BEGIN",
+      "TILE_LOOKUP_CASE unused-defining END",
+      "TILE_LOOKUP_OPEN foreign-Store/null-Chunk-world/caller-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual Tile lookup checks;mode=map"
+    ],
+    "lookup/lazy": [
+      "TILE_LOOKUP_BEGIN schema=1 mode=lazy",
+      "16 achievements",
+      "151 recipes",
+      "TILE_LOOKUP_CASE cold BEGIN",
+      "TILE_LOOKUP_CASE cold END",
+      "TILE_LOOKUP_CASE cache BEGIN",
+      "TILE_LOOKUP_CASE cache END",
+      "TILE_LOOKUP_CASE unused-defining BEGIN",
+      "TILE_LOOKUP_CASE unused-defining END",
+      "TILE_LOOKUP_OPEN foreign-Store/null-Chunk-world/caller-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual Tile lookup checks;mode=lazy"
+    ],
+    "lookup/armed": [
+      "TILE_LOOKUP_BEGIN schema=1 mode=armed",
+      "16 achievements",
+      "151 recipes",
+      "TILE_LOOKUP_CASE cold BEGIN",
+      "TILE_LOOKUP_CASE cold END",
+      "TILE_LOOKUP_CASE callback BEGIN",
+      "TILE_LOOKUP_CASE callback END",
+      "TILE_LOOKUP_OPEN foreign-Store/null-Chunk-world/caller-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual Tile lookup checks;mode=armed"
+    ],
+    "lookup/held": [
+      "TILE_LOOKUP_BEGIN schema=1 mode=held",
+      "16 achievements",
+      "151 recipes",
+      "TILE_LOOKUP_CASE cold BEGIN",
+      "TILE_LOOKUP_CASE cold END",
+      "TILE_LOOKUP_CASE callback BEGIN",
+      "TILE_LOOKUP_CASE callback END",
+      "TILE_LOOKUP_OPEN foreign-Store/null-Chunk-world/caller-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual Tile lookup checks;mode=held"
+    ],
+    "lookup/nested": [
+      "TILE_LOOKUP_BEGIN schema=1 mode=nested",
+      "16 achievements",
+      "151 recipes",
+      "TILE_LOOKUP_CASE cold BEGIN",
+      "TILE_LOOKUP_CASE cold END",
+      "TILE_LOOKUP_CASE callback BEGIN",
+      "TILE_LOOKUP_CASE callback END",
+      "TILE_LOOKUP_OPEN foreign-Store/null-Chunk-world/caller-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual Tile lookup checks;mode=nested"
+    ],
+    "collision/id-first": [
+      "COLLISION_QUERY_BEGIN schema=1 mode=id-first",
+      "16 achievements",
+      "151 recipes",
+      "COLLISION_QUERY_CASE cold BEGIN",
+      "COLLISION_QUERY_CASE cold END",
+      "COLLISION_QUERY_CASE cache BEGIN",
+      "COLLISION_QUERY_CASE cache END",
+      "COLLISION_QUERY_OPEN Blank/foreign-Store/structural-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual owned collision scalar checks;mode=id-first"
+    ],
+    "collision/metadata-first": [
+      "COLLISION_QUERY_BEGIN schema=1 mode=metadata-first",
+      "16 achievements",
+      "151 recipes",
+      "COLLISION_QUERY_CASE cold BEGIN",
+      "COLLISION_QUERY_CASE cold END",
+      "COLLISION_QUERY_CASE cache BEGIN",
+      "COLLISION_QUERY_CASE cache END",
+      "COLLISION_QUERY_OPEN Blank/foreign-Store/structural-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual owned collision scalar checks;mode=metadata-first"
+    ],
+    "collision/domain": [
+      "COLLISION_QUERY_BEGIN schema=1 mode=domain",
+      "16 achievements",
+      "151 recipes",
+      "COLLISION_QUERY_CASE domain BEGIN",
+      "COLLISION_QUERY_CASE domain END",
+      "COLLISION_QUERY_OPEN Blank/foreign-Store/structural-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual owned collision scalar checks;mode=domain"
+    ],
+    "collision/loader-error": [
+      "COLLISION_QUERY_BEGIN schema=1 mode=loader-error",
+      "16 achievements",
+      "151 recipes",
+      "COLLISION_QUERY_CASE loader entered",
+      "COLLISION_QUERY_CASE loader selected",
+      "COLLISION_QUERY_CASE loader retained",
+      "COLLISION_QUERY_CASE loader retired",
+      "COLLISION_QUERY_OPEN Blank/foreign-Store/structural-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual owned collision scalar checks;mode=loader-error"
+    ],
+    "collision/loader-null-error": [
+      "COLLISION_QUERY_BEGIN schema=1 mode=loader-null-error",
+      "16 achievements",
+      "151 recipes",
+      "COLLISION_QUERY_CASE loader entered",
+      "COLLISION_QUERY_CASE loader selected",
+      "COLLISION_QUERY_CASE loader retained",
+      "COLLISION_QUERY_CASE loader retired",
+      "COLLISION_QUERY_OPEN Blank/foreign-Store/structural-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual owned collision scalar checks;mode=loader-null-error"
+    ],
+    "collision/armed": [
+      "COLLISION_QUERY_BEGIN schema=1 mode=armed",
+      "16 achievements",
+      "151 recipes",
+      "COLLISION_QUERY_CASE cold BEGIN",
+      "COLLISION_QUERY_CASE cold END",
+      "COLLISION_QUERY_CASE callback BEGIN",
+      "COLLISION_QUERY_CASE callback END",
+      "COLLISION_QUERY_OPEN Blank/foreign-Store/structural-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual owned collision scalar checks;mode=armed"
+    ],
+    "collision/held": [
+      "COLLISION_QUERY_BEGIN schema=1 mode=held",
+      "16 achievements",
+      "151 recipes",
+      "COLLISION_QUERY_CASE cold BEGIN",
+      "COLLISION_QUERY_CASE cold END",
+      "COLLISION_QUERY_CASE callback BEGIN",
+      "COLLISION_QUERY_CASE callback END",
+      "COLLISION_QUERY_OPEN Blank/foreign-Store/structural-unwind/full-SL",
+      "PASS: <positive canonical uint32> actual owned collision scalar checks;mode=held"
+    ],
+    "close/error": [
+      "ACTIVATION_CLOSE_BEGIN schema=1 mode=error",
+      "16 achievements",
+      "151 recipes",
+      "ACTIVATION_CLOSE_CASE get entered",
+      "ACTIVATION_CLOSE_CASE get returned",
+      "ACTIVATION_CLOSE_CASE capsule selected",
+      "ACTIVATION_CLOSE_CASE receipt selected",
+      "ACTIVATION_CLOSE_CASE token rejected",
+      "ACTIVATION_CLOSE_CASE close retried",
+      "ACTIVATION_CLOSE_CASE capsule consumed",
+      "ACTIVATION_CLOSE_CASE get finished",
+      "ACTIVATION_CLOSE_CASE owner retired",
+      "ACTIVATION_CLOSE_OPEN Tile-refusal/consumed-nonOK/direct-close-wrong-current/full-SL",
+      "PASS: <positive canonical uint32> actual activation close-result checks;mode=error"
+    ],
+    "close/null-error": [
+      "ACTIVATION_CLOSE_BEGIN schema=1 mode=null-error",
+      "16 achievements",
+      "151 recipes",
+      "ACTIVATION_CLOSE_CASE get entered",
+      "ACTIVATION_CLOSE_CASE get returned",
+      "ACTIVATION_CLOSE_CASE capsule selected",
+      "ACTIVATION_CLOSE_CASE receipt selected",
+      "ACTIVATION_CLOSE_CASE token rejected",
+      "ACTIVATION_CLOSE_CASE close retried",
+      "ACTIVATION_CLOSE_CASE capsule consumed",
+      "ACTIVATION_CLOSE_CASE get finished",
+      "ACTIVATION_CLOSE_CASE owner retired",
+      "ACTIVATION_CLOSE_OPEN Tile-refusal/consumed-nonOK/direct-close-wrong-current/full-SL",
+      "PASS: <positive canonical uint32> actual activation close-result checks;mode=null-error"
+    ],
+    "material/material-success": [
+      "MATERIAL_GET_BEGIN schema=1 mode=material-success",
+      "16 achievements",
+      "151 recipes",
+      "MATERIAL_GET_CASE material-success BEGIN",
+      "MATERIAL_GET_CASE material-success END calls=4",
+      "MATERIAL_GET_OPEN get-ok-native-completion/Blank/foreign-Store/parent/full-SL",
+      "PASS: <positive canonical integer <=65536> actual owned material checks;mode=material-success"
+    ],
+    "material/material-admission": [
+      "MATERIAL_GET_BEGIN schema=1 mode=material-admission",
+      "16 achievements",
+      "151 recipes",
+      "MATERIAL_GET_CASE material-admission BEGIN",
+      "MATERIAL_GET_CASE material-admission END calls=10",
+      "MATERIAL_GET_OPEN get-ok-native-completion/Blank/foreign-Store/parent/full-SL",
+      "PASS: <positive canonical integer <=65536> actual owned material checks;mode=material-admission"
+    ],
+    "material/material-loader-error": [
+      "MATERIAL_GET_BEGIN schema=1 mode=material-loader-error",
+      "16 achievements",
+      "151 recipes",
+      "MATERIAL_GET_CASE material-loader-error BEGIN",
+      "MATERIAL_GET_CASE material-loader-error END calls=1",
+      "MATERIAL_GET_OPEN get-ok-native-completion/Blank/foreign-Store/parent/full-SL",
+      "PASS: <positive canonical integer <=65536> actual owned material checks;mode=material-loader-error"
+    ],
+    "material/material-nullable": [
+      "MATERIAL_GET_BEGIN schema=1 mode=material-nullable",
+      "16 achievements",
+      "151 recipes",
+      "MATERIAL_GET_CASE material-nullable BEGIN",
+      "MATERIAL_GET_CASE material-nullable END calls=2",
+      "MATERIAL_GET_OPEN get-ok-native-completion/Blank/foreign-Store/parent/full-SL",
+      "PASS: <positive canonical integer <=65536> actual owned material checks;mode=material-nullable"
+    ],
+    "scanner/match": [
+      "MATERIAL_SCAN_BEGIN schema=1 mode=match",
+      "16 achievements",
+      "151 recipes",
+      "MATERIAL_SCAN_CASE match BEGIN",
+      "MATERIAL_SCAN_CASE match END calls=3",
+      "MATERIAL_SCAN_OPEN GET-OK-native-completion/foreign-graph/Base/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned scanner checks;mode=match"
+    ],
+    "scanner/liquid": [
+      "MATERIAL_SCAN_BEGIN schema=1 mode=liquid",
+      "16 achievements",
+      "151 recipes",
+      "MATERIAL_SCAN_CASE liquid BEGIN",
+      "MATERIAL_SCAN_CASE liquid END calls=3",
+      "MATERIAL_SCAN_OPEN GET-OK-native-completion/foreign-graph/Base/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned scanner checks;mode=liquid"
+    ],
+    "scanner/accelerate": [
+      "MATERIAL_SCAN_BEGIN schema=1 mode=accelerate",
+      "16 achievements",
+      "151 recipes",
+      "MATERIAL_SCAN_CASE accelerate BEGIN",
+      "MATERIAL_SCAN_CASE accelerate END calls=4",
+      "MATERIAL_SCAN_OPEN GET-OK-native-completion/foreign-graph/Base/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned scanner checks;mode=accelerate"
+    ],
+    "scanner/admission": [
+      "MATERIAL_SCAN_BEGIN schema=1 mode=admission",
+      "16 achievements",
+      "151 recipes",
+      "MATERIAL_SCAN_CASE admission BEGIN",
+      "MATERIAL_SCAN_CASE admission END calls=6",
+      "MATERIAL_SCAN_OPEN GET-OK-native-completion/foreign-graph/Base/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned scanner checks;mode=admission"
+    ],
+    "scanner/scratch": [
+      "MATERIAL_SCAN_BEGIN schema=1 mode=scratch",
+      "16 achievements",
+      "151 recipes",
+      "MATERIAL_SCAN_CASE scratch BEGIN",
+      "MATERIAL_SCAN_CASE scratch END calls=1",
+      "MATERIAL_SCAN_OPEN GET-OK-native-completion/foreign-graph/Base/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned scanner checks;mode=scratch"
+    ],
+    "scanner/loader-error": [
+      "MATERIAL_SCAN_BEGIN schema=1 mode=loader-error",
+      "16 achievements",
+      "151 recipes",
+      "MATERIAL_SCAN_CASE loader-error BEGIN",
+      "MATERIAL_SCAN_CASE loader-error END calls=1",
+      "MATERIAL_SCAN_OPEN GET-OK-native-completion/foreign-graph/Base/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned scanner checks;mode=loader-error"
+    ],
+    "nearby/query": [
+      "NEARBY_OWNED_BEGIN schema=1 mode=query",
+      "16 achievements",
+      "151 recipes",
+      "NEARBY_OWNED_CASE query BEGIN",
+      "NEARBY_OWNED_CASE query END queries=3 acquires=0 gathers=0 setup_gets=1",
+      "NEARBY_OWNED_OPEN top-query-cold/owned-Blank/get-ok-native-completion/foreign-Store/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned nearby checks;mode=query"
+    ],
+    "nearby/prefix": [
+      "NEARBY_OWNED_BEGIN schema=1 mode=prefix",
+      "16 achievements",
+      "151 recipes",
+      "NEARBY_OWNED_CASE prefix BEGIN",
+      "NEARBY_OWNED_CASE prefix END queries=4 acquires=0 gathers=1 setup_gets=1",
+      "NEARBY_OWNED_OPEN top-query-cold/owned-Blank/get-ok-native-completion/foreign-Store/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned nearby checks;mode=prefix"
+    ],
+    "nearby/armed": [
+      "NEARBY_OWNED_BEGIN schema=1 mode=armed",
+      "16 achievements",
+      "151 recipes",
+      "NEARBY_OWNED_CASE armed BEGIN",
+      "NEARBY_OWNED_CASE armed END queries=3 acquires=0 gathers=0 setup_gets=1",
+      "NEARBY_OWNED_OPEN top-query-cold/owned-Blank/get-ok-native-completion/foreign-Store/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned nearby checks;mode=armed"
+    ],
+    "nearby/held": [
+      "NEARBY_OWNED_BEGIN schema=1 mode=held",
+      "16 achievements",
+      "151 recipes",
+      "NEARBY_OWNED_CASE held BEGIN",
+      "NEARBY_OWNED_CASE held END queries=2 acquires=0 gathers=0 setup_gets=1",
+      "NEARBY_OWNED_OPEN top-query-cold/owned-Blank/get-ok-native-completion/foreign-Store/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned nearby checks;mode=held"
+    ],
+    "nearby/acquire-loader": [
+      "NEARBY_OWNED_BEGIN schema=1 mode=acquire-loader",
+      "16 achievements",
+      "151 recipes",
+      "NEARBY_OWNED_CASE acquire-loader BEGIN",
+      "NEARBY_OWNED_CASE acquire-loader END queries=0 acquires=1 gathers=0 setup_gets=0",
+      "NEARBY_OWNED_OPEN top-query-cold/owned-Blank/get-ok-native-completion/foreign-Store/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned nearby checks;mode=acquire-loader"
+    ],
+    "arrow-leaves/base-air": [
+      "ARROW_OWNED_LEAVES_BEGIN schema=1 mode=base-air",
+      "16 achievements",
+      "151 recipes",
+      "ARROW_OWNED_LEAVES_CASE base-air BEGIN",
+      "ARROW_OWNED_LEAVES_CASE base-air END calls=1 primes=1",
+      "ARROW_OWNED_LEAVES_OPEN callback-failure/unwind/foreign-Store/full-Arrow/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned Arrow Base/collision checks;mode=base-air"
+    ],
+    "arrow-leaves/base-water": [
+      "ARROW_OWNED_LEAVES_BEGIN schema=1 mode=base-water",
+      "16 achievements",
+      "151 recipes",
+      "ARROW_OWNED_LEAVES_CASE base-water BEGIN",
+      "ARROW_OWNED_LEAVES_CASE base-water END calls=1 primes=1",
+      "ARROW_OWNED_LEAVES_OPEN callback-failure/unwind/foreign-Store/full-Arrow/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned Arrow Base/collision checks;mode=base-water"
+    ],
+    "arrow-leaves/base-lava": [
+      "ARROW_OWNED_LEAVES_BEGIN schema=1 mode=base-lava",
+      "16 achievements",
+      "151 recipes",
+      "ARROW_OWNED_LEAVES_CASE base-lava BEGIN",
+      "ARROW_OWNED_LEAVES_CASE base-lava END calls=1 primes=1",
+      "ARROW_OWNED_LEAVES_OPEN callback-failure/unwind/foreign-Store/full-Arrow/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned Arrow Base/collision checks;mode=base-lava"
+    ],
+    "arrow-leaves/base-splash": [
+      "ARROW_OWNED_LEAVES_BEGIN schema=1 mode=base-splash",
+      "16 achievements",
+      "151 recipes",
+      "ARROW_OWNED_LEAVES_CASE base-splash BEGIN",
+      "ARROW_OWNED_LEAVES_CASE base-splash END calls=2 primes=1",
+      "ARROW_OWNED_LEAVES_OPEN callback-failure/unwind/foreign-Store/full-Arrow/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned Arrow Base/collision checks;mode=base-splash"
+    ],
+    "arrow-leaves/collision-unused": [
+      "ARROW_OWNED_LEAVES_BEGIN schema=1 mode=collision-unused",
+      "16 achievements",
+      "151 recipes",
+      "ARROW_OWNED_LEAVES_CASE collision-unused BEGIN",
+      "ARROW_OWNED_LEAVES_CASE collision-unused END calls=4 primes=0",
+      "ARROW_OWNED_LEAVES_OPEN callback-failure/unwind/foreign-Store/full-Arrow/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned Arrow Base/collision checks;mode=collision-unused"
+    ],
+    "arrow-leaves/collision-portal": [
+      "ARROW_OWNED_LEAVES_BEGIN schema=1 mode=collision-portal",
+      "16 achievements",
+      "151 recipes",
+      "ARROW_OWNED_LEAVES_CASE collision-portal BEGIN",
+      "ARROW_OWNED_LEAVES_CASE collision-portal END calls=2 primes=1",
+      "ARROW_OWNED_LEAVES_OPEN callback-failure/unwind/foreign-Store/full-Arrow/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned Arrow Base/collision checks;mode=collision-portal"
+    ],
+    "arrow-leaves/collision-metadata": [
+      "ARROW_OWNED_LEAVES_BEGIN schema=1 mode=collision-metadata",
+      "16 achievements",
+      "151 recipes",
+      "ARROW_OWNED_LEAVES_CASE collision-metadata BEGIN",
+      "ARROW_OWNED_LEAVES_CASE collision-metadata END calls=2 primes=1",
+      "ARROW_OWNED_LEAVES_OPEN callback-failure/unwind/foreign-Store/full-Arrow/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned Arrow Base/collision checks;mode=collision-metadata"
+    ],
+    "arrow-leaves/collision-piston": [
+      "ARROW_OWNED_LEAVES_BEGIN schema=1 mode=collision-piston",
+      "16 achievements",
+      "151 recipes",
+      "ARROW_OWNED_LEAVES_CASE collision-piston BEGIN",
+      "ARROW_OWNED_LEAVES_CASE collision-piston END calls=1 primes=1",
+      "ARROW_OWNED_LEAVES_OPEN callback-failure/unwind/foreign-Store/full-Arrow/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned Arrow Base/collision checks;mode=collision-piston"
+    ],
+    "insert/preflight": [
+      "ENTITY_INSERT_BEGIN schema=1 mode=preflight",
+      "16 achievements",
+      "151 recipes",
+      "ENTITY_INSERT_CASE preflight BEGIN",
+      "ENTITY_INSERT_CASE preflight END entries=1 primes=0",
+      "ENTITY_INSERT_OPEN malformed-GET/Blank/callback-native-fault/parent/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned single-Entity insertion checks;mode=preflight"
+    ],
+    "insert/success": [
+      "ENTITY_INSERT_BEGIN schema=1 mode=success",
+      "16 achievements",
+      "151 recipes",
+      "ENTITY_INSERT_CASE success BEGIN",
+      "ENTITY_INSERT_CASE success END entries=1 primes=1",
+      "ENTITY_INSERT_OPEN malformed-GET/Blank/callback-native-fault/parent/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned single-Entity insertion checks;mode=success"
+    ],
+    "insert/absent": [
+      "ENTITY_INSERT_BEGIN schema=1 mode=absent",
+      "16 achievements",
+      "151 recipes",
+      "ENTITY_INSERT_CASE absent BEGIN",
+      "ENTITY_INSERT_CASE absent END entries=1 primes=0",
+      "ENTITY_INSERT_OPEN malformed-GET/Blank/callback-native-fault/parent/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned single-Entity insertion checks;mode=absent"
+    ],
+    "insert/math-missing": [
+      "ENTITY_INSERT_BEGIN schema=1 mode=math-missing",
+      "16 achievements",
+      "151 recipes",
+      "ENTITY_INSERT_CASE math-missing BEGIN",
+      "ENTITY_INSERT_CASE math-missing END entries=1 primes=0",
+      "ENTITY_INSERT_OPEN malformed-GET/Blank/callback-native-fault/parent/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned single-Entity insertion checks;mode=math-missing"
+    ],
+    "insert/math-limit": [
+      "ENTITY_INSERT_BEGIN schema=1 mode=math-limit",
+      "16 achievements",
+      "151 recipes",
+      "ENTITY_INSERT_CASE math-limit BEGIN",
+      "ENTITY_INSERT_CASE math-limit END entries=1 primes=0",
+      "ENTITY_INSERT_OPEN malformed-GET/Blank/callback-native-fault/parent/full-SL",
+      "PASS: <positive canonical uint32 <=65536> actual owned single-Entity insertion checks;mode=math-limit"
+    ],
+    "ray/clear": [
+      "RAY_EXECUTION_BEGIN schema=1 mode=clear",
+      "16 achievements",
+      "151 recipes",
+      "RAY_EXECUTION_CASE clear BEGIN",
+      "RAY_EXECUTION_CASE clear END calls=1",
+      "RAY_EXECUTION_OPEN GET-OK-native-refusal/callbacks/unpublished-close/foreign-graph/full-Arrow",
+      "PASS: <positive canonical uint32 <=65536> actual owned Ray checks;mode=clear"
+    ],
+    "ray/miss": [
+      "RAY_EXECUTION_BEGIN schema=1 mode=miss",
+      "16 achievements",
+      "151 recipes",
+      "RAY_EXECUTION_CASE miss BEGIN",
+      "RAY_EXECUTION_CASE miss END calls=1",
+      "RAY_EXECUTION_OPEN GET-OK-native-refusal/callbacks/unpublished-close/foreign-graph/full-Arrow",
+      "PASS: <positive canonical uint32 <=65536> actual owned Ray checks;mode=miss"
+    ],
+    "ray/block": [
+      "RAY_EXECUTION_BEGIN schema=1 mode=block",
+      "16 achievements",
+      "151 recipes",
+      "RAY_EXECUTION_CASE block BEGIN",
+      "RAY_EXECUTION_CASE block END calls=1",
+      "RAY_EXECUTION_OPEN GET-OK-native-refusal/callbacks/unpublished-close/foreign-graph/full-Arrow",
+      "PASS: <positive canonical uint32 <=65536> actual owned Ray checks;mode=block"
+    ],
+    "ray/state-shape": [
+      "RAY_EXECUTION_BEGIN schema=1 mode=state-shape",
+      "16 achievements",
+      "151 recipes",
+      "RAY_EXECUTION_CASE state-shape BEGIN",
+      "RAY_EXECUTION_CASE state-shape END calls=1",
+      "RAY_EXECUTION_OPEN GET-OK-native-refusal/callbacks/unpublished-close/foreign-graph/full-Arrow",
+      "PASS: <positive canonical uint32 <=65536> actual owned Ray checks;mode=state-shape"
+    ],
+    "ray/null-end": [
+      "RAY_EXECUTION_BEGIN schema=1 mode=null-end",
+      "16 achievements",
+      "151 recipes",
+      "RAY_EXECUTION_CASE null-end BEGIN",
+      "RAY_EXECUTION_CASE null-end END calls=1",
+      "RAY_EXECUTION_OPEN GET-OK-native-refusal/callbacks/unpublished-close/foreign-graph/full-Arrow",
+      "PASS: <positive canonical uint32 <=65536> actual owned Ray checks;mode=null-end"
+    ],
+    "ray/math-missing": [
+      "RAY_EXECUTION_BEGIN schema=1 mode=math-missing",
+      "16 achievements",
+      "151 recipes",
+      "RAY_EXECUTION_CASE math-missing BEGIN",
+      "RAY_EXECUTION_CASE math-missing END calls=1",
+      "RAY_EXECUTION_OPEN GET-OK-native-refusal/callbacks/unpublished-close/foreign-graph/full-Arrow",
+      "PASS: <positive canonical uint32 <=65536> actual owned Ray checks;mode=math-missing"
+    ],
+    "ray/math-storage": [
+      "RAY_EXECUTION_BEGIN schema=1 mode=math-storage",
+      "16 achievements",
+      "151 recipes",
+      "RAY_EXECUTION_CASE math-storage BEGIN",
+      "RAY_EXECUTION_CASE math-storage END calls=1",
+      "RAY_EXECUTION_OPEN GET-OK-native-refusal/callbacks/unpublished-close/foreign-graph/full-Arrow",
+      "PASS: <positive canonical uint32 <=65536> actual owned Ray checks;mode=math-storage"
+    ],
+    "ray/loader-error": [
+      "RAY_EXECUTION_BEGIN schema=1 mode=loader-error",
+      "16 achievements",
+      "151 recipes",
+      "RAY_EXECUTION_CASE loader-error BEGIN",
+      "RAY_EXECUTION_CASE loader-error END calls=1",
+      "RAY_EXECUTION_OPEN GET-OK-native-refusal/callbacks/unpublished-close/foreign-graph/full-Arrow",
+      "PASS: <positive canonical uint32 <=65536> actual owned Ray checks;mode=loader-error"
+    ],
+    "presentation-capture/sound-error": [
+      "PRESENTATION_CAPTURE_BEGIN schema=1 mode=sound-error",
+      "16 achievements",
+      "151 recipes",
+      "PRESENTATION_CAPTURE_CASE BEGIN",
+      "PRESENTATION_CAPTURE_CASE END",
+      "PRESENTATION_CAPTURE_OPEN Base/Living/full-Arrow/real-renderer-failure",
+      "PASS: <positive canonical uint32 <=65536> actual detailed presentation native capture checks;mode=sound-error;entries=1;callbacks=1"
+    ],
+    "presentation-capture/sound-null-error": [
+      "PRESENTATION_CAPTURE_BEGIN schema=1 mode=sound-null-error",
+      "16 achievements",
+      "151 recipes",
+      "PRESENTATION_CAPTURE_CASE BEGIN",
+      "PRESENTATION_CAPTURE_CASE END",
+      "PRESENTATION_CAPTURE_OPEN Base/Living/full-Arrow/real-renderer-failure",
+      "PASS: <positive canonical uint32 <=65536> actual detailed presentation native capture checks;mode=sound-null-error;entries=1;callbacks=1"
+    ],
+    "presentation-capture/particle-error": [
+      "PRESENTATION_CAPTURE_BEGIN schema=1 mode=particle-error",
+      "16 achievements",
+      "151 recipes",
+      "PRESENTATION_CAPTURE_CASE BEGIN",
+      "PRESENTATION_CAPTURE_CASE END",
+      "PRESENTATION_CAPTURE_OPEN Base/Living/full-Arrow/real-renderer-failure",
+      "PASS: <positive canonical uint32 <=65536> actual detailed presentation native capture checks;mode=particle-error;entries=1;callbacks=1"
+    ],
+    "presentation-capture/particle-null-error": [
+      "PRESENTATION_CAPTURE_BEGIN schema=1 mode=particle-null-error",
+      "16 achievements",
+      "151 recipes",
+      "PRESENTATION_CAPTURE_CASE BEGIN",
+      "PRESENTATION_CAPTURE_CASE END",
+      "PRESENTATION_CAPTURE_OPEN Base/Living/full-Arrow/real-renderer-failure",
+      "PASS: <positive canonical uint32 <=65536> actual detailed presentation native capture checks;mode=particle-null-error;entries=1;callbacks=1"
+    ]
+  },
+  "collision_scope": "Prospective component and native fixture; no inherited native result; old loader/lookup contract unchanged",
+  "close_scope": "Prospective genuine one-get activation-close fixture and exact five-file owner candidate; no inherited native execution claim",
+  "material_status": "Four prospective native modes; READY-GLOWSTONE nullable control has private Windows52 checks/2 calls; Linux and current public combined qualification PENDING",
+  "material_calls": {
+    "material-success": 4,
+    "material-admission": 10,
+    "material-loader-error": 1,
+    "material-nullable": 2
+  },
+  "material_check_bound": 65536,
+  "scanner_scope": {
+    "entry_attempts_not_Source_calls": {
+      "match": 3,
+      "liquid": 3,
+      "accelerate": 4,
+      "admission": 6,
+      "scratch": 1,
+      "loader-error": 1
+    },
+    "check_ceiling": 65536,
+    "private_Windows_and_Linux": "398 checks each; current public projection/registration PENDING"
+  },
+  "owned_leaf_scope": {
+    "new_modes": 13,
+    "nearby_C_entries_not_Source_calls": {
+      "query": {
+        "queries": 3,
+        "acquires": 0,
+        "gathers": 0,
+        "setup_gets": 1
+      },
+      "prefix": {
+        "queries": 4,
+        "acquires": 0,
+        "gathers": 1,
+        "setup_gets": 1
+      },
+      "armed": {
+        "queries": 3,
+        "acquires": 0,
+        "gathers": 0,
+        "setup_gets": 1
+      },
+      "held": {
+        "queries": 2,
+        "acquires": 0,
+        "gathers": 0,
+        "setup_gets": 1
+      },
+      "acquire-loader": {
+        "queries": 0,
+        "acquires": 1,
+        "gathers": 0,
+        "setup_gets": 0
+      }
+    },
+    "arrow_leaves_C_entries_not_Source_calls": {
+      "base-air": {
+        "calls": 1,
+        "primes": 1
+      },
+      "base-water": {
+        "calls": 1,
+        "primes": 1
+      },
+      "base-lava": {
+        "calls": 1,
+        "primes": 1
+      },
+      "base-splash": {
+        "calls": 2,
+        "primes": 1
+      },
+      "collision-unused": {
+        "calls": 4,
+        "primes": 0
+      },
+      "collision-portal": {
+        "calls": 2,
+        "primes": 1
+      },
+      "collision-metadata": {
+        "calls": 2,
+        "primes": 1
+      },
+      "collision-piston": {
+        "calls": 1,
+        "primes": 1
+      }
+    },
+    "check_ceiling": 65536,
+    "historical_private_Windows": "Nearby265 and Base/collision488; original receipts separate",
+    "new_public_composition": "PENDING final Root runtime/source binding and fresh public runs; no inherited execution credit"
+  },
+  "direct_api_scope": {
+    "new_modes": 17,
+    "old_modes_preserved": 39,
+    "entry_counts": {
+      "insert": {
+        "preflight": {
+          "entries": 1,
+          "primes": 0
+        },
+        "success": {
+          "entries": 1,
+          "primes": 1
+        },
+        "absent": {
+          "entries": 1,
+          "primes": 0
+        },
+        "math-missing": {
+          "entries": 1,
+          "primes": 0
+        },
+        "math-limit": {
+          "entries": 1,
+          "primes": 0
+        }
+      },
+      "ray": {
+        "clear": {
+          "calls": 1
+        },
+        "miss": {
+          "calls": 1
+        },
+        "block": {
+          "calls": 1
+        },
+        "state-shape": {
+          "calls": 1
+        },
+        "null-end": {
+          "calls": 1
+        },
+        "math-missing": {
+          "calls": 1
+        },
+        "math-storage": {
+          "calls": 1
+        },
+        "loader-error": {
+          "calls": 1
+        }
+      },
+      "presentation-capture": {
+        "sound-error": {
+          "entries": 1,
+          "callbacks": 1
+        },
+        "sound-null-error": {
+          "entries": 1,
+          "callbacks": 1
+        },
+        "particle-error": {
+          "entries": 1,
+          "callbacks": 1
+        },
+        "particle-null-error": {
+          "entries": 1,
+          "callbacks": 1
+        }
+      }
+    },
+    "scope": "C entry attempts/callback counters, not Source method-call counts",
+    "native_outcomes": "PENDING; no inherited qualification",
+    "recipe_execution_by_preparer": false
+  }
+}

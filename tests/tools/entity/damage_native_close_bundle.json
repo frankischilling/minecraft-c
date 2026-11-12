@@ -1,0 +1,268 @@
+{
+  "schema": "DAMAGE_NATIVE_CLOSE_DIRECT_CONTROLS_V2",
+  "scope": "Real direct lower APIs only; no full damage facade or Parent741 execution.",
+  "modes": [
+    "sound-pop",
+    "sound-capture",
+    "ally-success",
+    "ally-unreached"
+  ],
+  "files": {
+    "cmake/tests/damage_native_close.cmake": {
+      "bytes": 2115,
+      "sha256": "54d9f163904767d003b962ccfe478992a31d255983a802df10cd653b035aadc9"
+    },
+    "CMakeLists.txt": {
+      "bytes": 346765,
+      "sha256": "53954729f4dc13994c82ac69a188ede1f5b0368ec4c39efddd35910f06470a87"
+    },
+    "tests/entity/player/test_ally_alert_ownership.c": {
+      "bytes": 11240,
+      "sha256": "b0165be7f920b2ae387e85c00dd4803101b21f86ea5992087e2d2fef7a5b2c6b"
+    },
+    "tests/world/runtime/world_access/test_damage_close_execution.c": {
+      "bytes": 30398,
+      "sha256": "1b19fa49f0845661fe7e8d71432109b101c7f1aafc0596916ad306ea914daeee"
+    },
+    "src/entity/mob/damage.c": {
+      "bytes": 50991,
+      "sha256": "c3a0faac915e3df191894b57006f09b551df5277033093622d112a2606f90d2e"
+    },
+    "src/entity/mob/damage_execution_internal.h": {
+      "bytes": 6121,
+      "sha256": "73d0b58e7d6fdde6d63580c61fbeb84b20157aeaca5dad8fcd4be879ce3b38e4"
+    },
+    "src/entity/player/ally_alert.c": {
+      "bytes": 37303,
+      "sha256": "79937fbfb6cc3d4806922b5ded359e8bbe079028b16b589edf50b1f931bc245b"
+    },
+    "src/entity/player/ally_alert_execution_internal.h": {
+      "bytes": 5426,
+      "sha256": "dd0122d5e9366a17df0cfa04b242095a978415b96f6916c61e71244c6c11f02d"
+    },
+    "tests/world/runtime/test_entity_publication.c": {
+      "bytes": 47086,
+      "sha256": "6c6e5c53dd9fad4f5cea30b19c0f8dc6e38cf653a259b50a154e3df03b03dd1a"
+    },
+    "src/entity/tick/execution.c": {
+      "bytes": 33359,
+      "sha256": "d5847a88ac1a8db50d1576f2340e17536004a39e997e28ea4f701d0fb3def3e1"
+    },
+    "src/entity/tick/execution_internal.h": {
+      "bytes": 11697,
+      "sha256": "e2c1f7124c70b1878a25efbb2265671102b564280a037739c12b45b27e0f1f6a"
+    },
+    "src/world/runtime/world_access.c": {
+      "bytes": 59580,
+      "sha256": "06734754032eadb1a92414dd244bc8a2a785ef2113bbb96d23907e629c7a2134"
+    },
+    "src/world/runtime/world_access_lease_internal.h": {
+      "bytes": 6338,
+      "sha256": "00a015fae9fb9fd4524bdc4ca3a003ae3ec649f4cab10bced2b5f3f7b53e2d8e"
+    },
+    "src/world/runtime/movement.c": {
+      "bytes": 29751,
+      "sha256": "8a9b441be8788d514cfe896c49a024ab7380b9f85aaaf418d0ba1762f43c05f3"
+    },
+    "src/world/runtime/runtime.c": {
+      "bytes": 71947,
+      "sha256": "4e43b01f389d611486563938963f4b609f16ca1fbed6015c9a1c7e8da4eb0539"
+    },
+    "src/world/runtime/runtime_execution.c": {
+      "bytes": 20205,
+      "sha256": "39ebbb88f6bd90dbc3662fdaa2fda9978759cf02fc06b0543bd8a6c7472c9e7f"
+    },
+    "src/world/runtime/collision/class_entities.c": {
+      "bytes": 26478,
+      "sha256": "255dd0b05f85742528504cd7f2775926e6500d16b1ac64592001aa8e2d195705"
+    },
+    "src/world/runtime/collision/entities.c": {
+      "bytes": 34990,
+      "sha256": "1117c8c216bbab76f4f89f1e2184ebc31fce5e66daeb9809e0d45be0329b671e"
+    },
+    "src/world/cache/acquire.c": {
+      "bytes": 17523,
+      "sha256": "d823bdbbbcc5011aa3f97e3d5e90f48d79363b5bddfe05e697e7869390311ffa"
+    },
+    "tests/reference/client/statistics/support.py": {
+      "bytes": 7123,
+      "sha256": "1ac10e26456a6a8c9ba21751f49499549ec8ed322874c0d5c07be74c5fed4fa1"
+    },
+    "include/mc/world/runtime/movement.h": {
+      "bytes": 5465,
+      "sha256": "16b31d42c9899f07f81691d90d3ddc28750ee057ed6adbb7d75f4b7851e1fcfd"
+    },
+    "include/mc/world/runtime/world_access_error.h": {
+      "bytes": 2776,
+      "sha256": "09a4829a8f9f56c1d68ab26355d844b8377fd1c3aac5ea8e9028cbbd3a167bfe"
+    },
+    "src/core/math/execution_internal.h": {
+      "bytes": 7418,
+      "sha256": "ff3cf04e9bcfb028e2e372fc328da5a1277f30e7edb4b1346925312fb1970abb"
+    },
+    "src/world/runtime/runtime_execution_internal.h": {
+      "bytes": 11563,
+      "sha256": "7ad9fb3f900dc93e9f0be3bddb07cf8a0dbe8d034370f9ce6d7edd7ff4860fc3"
+    },
+    "src/world/runtime/world_access_internal.h": {
+      "bytes": 8532,
+      "sha256": "dfdcb4e00705520d8c9521c0444834512afbbc543bafafe0845d94d3088e878f"
+    }
+  },
+  "open": [
+    "ally initial-pop/capture callback fault under same canonical provider",
+    "consumed nonOK after actual leaf close",
+    "full victim damage741/original parity/FPS"
+  ],
+  "target": "mc_test_damage_native_close_execution",
+  "compiler_fixture_projection": {
+    "reason": "MSVC C4701 under W4/WX: explicitly initialize callback observer string-view scratch.",
+    "previous_fixture": {
+      "bytes": 28923,
+      "sha256": "ee1667df87b210283294302bfbb37c287b2e0424ed114f505be1156e7f600570"
+    },
+    "current_fixture": {
+      "bytes": 28929,
+      "sha256": "2871f208485700afc6d6411cfe05a41fd00fedafa876d01c92a00a17f2ad8a4b"
+    },
+    "scope": "One native test local initializer only; production bodies, read gate and assertions unchanged.",
+    "qualification": "Original failed strict build retained; corrected compilation and native controls pending."
+  },
+  "prospective_source_successor": {
+    "schema": "CURRENT_SOURCE_ADMISSION_SUCCESSOR_V1",
+    "from_commit": "07f946d6e1630a1b9b99b3cb2319e2b9d7819fd9",
+    "previous_metadata": {
+      "bytes": 4312,
+      "sha256": "907ca95f151414b1adc4c586bbca6a2c28f1b5cdba20ab87fc7968a0ef69f45c"
+    },
+    "role": "Current source admissions for execution-owned Player drops/death, coordinate sound and particle loops, actual Entity-sound continuation and typed NULL-List faults, exact failed-Math return proofs, the genuine Ladder neighbor body, and actual Arrow victim hurt entry with bounded native cleanup controls. Historical authority, supplier, source_projection, native_validation and capture records retain their exact prior identities. Current declarations do not qualify older compiled products or observations; fresh frozen build/execution evidence is separate. Full notifying mutation, sleeping Player wake, arbitrary cold/provider hooks and unrestricted play remain open.",
+    "groups": {
+      "files": {
+        "previous": {
+          "CMakeLists.txt": {
+            "bytes": 344026,
+            "sha256": "73ef413625c0df604da48461b606d4fecba906106b4b0574f92e83e047e2dcdf"
+          },
+          "tests/world/runtime/world_access/test_damage_close_execution.c": {
+            "bytes": 28929,
+            "sha256": "2871f208485700afc6d6411cfe05a41fd00fedafa876d01c92a00a17f2ad8a4b"
+          },
+          "src/entity/mob/damage.c": {
+            "bytes": 43493,
+            "sha256": "77a3a6da09f6e42ce475486b45bc378c4c4a21ca26a538b32317cc0b11a09c33"
+          },
+          "src/world/runtime/world_access.c": {
+            "bytes": 58736,
+            "sha256": "a6b09f73fc699c76e3b837881c53fc24444860cfc7943884e24b766fa1c7a774"
+          },
+          "src/world/runtime/movement.c": {
+            "bytes": 25505,
+            "sha256": "78f3c32efeb46dfe1ef637d7356187477aa6c88261b6a34f72440dc88639500f"
+          },
+          "src/world/runtime/runtime_execution.c": {
+            "bytes": 17733,
+            "sha256": "1beb31d4f21902c8bd6a0eccbaf982629fe4d171d06ed133eff7b58dbcc535fa"
+          },
+          "src/world/runtime/collision/class_entities.c": {
+            "bytes": 25924,
+            "sha256": "ccfcae6c3116da0544c2a2f32d35e9803c3eef5d8b75848e947dc664429ec323"
+          }
+        },
+        "added": [
+          "include/mc/world/runtime/movement.h",
+          "include/mc/world/runtime/world_access_error.h",
+          "src/core/math/execution_internal.h",
+          "src/world/runtime/runtime_execution_internal.h",
+          "src/world/runtime/world_access_internal.h"
+        ],
+        "current_count": 25
+      }
+    },
+    "current_semantics": {
+      "scope": "Current selected sources share exact typed Native/Math results and Source diagnostics. Existing finite fixture modes and historical dependency/supplier protocols remain unchanged.",
+      "qualification": "Source admission only. Historical captures, dependencies and native/original validation keep their original scope; no retrospective or inherited execution qualification."
+    }
+  },
+  "current_binding_updates": [
+    {
+      "from_commit": "07f946d6e1630a1b9b99b3cb2319e2b9d7819fd9",
+      "role": "Current admission successor after the first protected compatibility batch passed 12/13 controls and the old sound-pop expectation failed against the already-frozen exact-scope Entity-sound guard. The bounded fixture correction records false continuation, the actual saved callback at bytecode 53 prefix, exact first Native operation and failed close operand. Existing RNG/token/drain/reuse assertions remain; runtime bodies are unchanged. The current Living-damage prose follows the same measured prefix. Previous metadata and changed-entry pins retain the executed failed admission snapshot; that failure is not upgraded or rebound. Fresh execution remains a separate gate.",
+      "previous_metadata": {
+        "bytes": 8198,
+        "sha256": "7cca5d2d0952d8403fa9509b1461e0b35a02eba2f178493972b976be31cedd5d"
+      },
+      "groups": {
+        "files": {
+          "previous": {
+            "tests/world/runtime/world_access/test_damage_close_execution.c": {
+              "bytes": 29015,
+              "sha256": "e6fa3f3abce43b70cf0ac8ac21f43af730f4c1b82425d952af5b3755ee124640"
+            }
+          },
+          "added": [],
+          "current_count": 25
+        }
+      }
+    },
+    {
+      "from_commit": "07f946d6e1630a1b9b99b3cb2319e2b9d7819fd9",
+      "role": "Current admission successor after the second protected compatibility batch again passed 12/13 controls: sound-pop passed its corrected callback prefix but exposed an old FREE-slot/reuse assumption. The narrowly corrected fixture now asserts the actual RETAINED token after failed close, BUSY new-push refusal with unchanged output/ledger/bindings, idempotent recorded close and final checked empty ledger. Successful ally cases retain their actual same-slot reuse checks. Only fixture expectations and current Living-damage contract prose changed; runtime bodies did not. Previous metadata and changed-entry pins preserve this second failed snapshot separately from the first failed snapshot already recorded. Neither failed execution is upgraded; new native qualification remains separate.",
+      "previous_metadata": {
+        "bytes": 9509,
+        "sha256": "06372aedc8cf8a30410018056a7221c2b72122549c3221116a1cc64d3a39d68a"
+      },
+      "groups": {
+        "files": {
+          "previous": {
+            "tests/world/runtime/world_access/test_damage_close_execution.c": {
+              "bytes": 29082,
+              "sha256": "8fd9ffcffebcb2f68433463912af2f654dd4656ab5f54b1c07e4df362f75be9f"
+            }
+          },
+          "added": [],
+          "current_count": 25
+        }
+      }
+    },
+    {
+      "from_commit": "0eefdcf476d3630cf5566b9fac56cce3a3cc201b",
+      "role": "Current Slime removal implementation, finite original/native control inputs, delayed-removal controls and authored Arrow/Slime SDK scene inputs. Current source admission only. Historical authority, supplier, source_projection, native_validation, captures and prior qualification records retain their exact recorded identities and scopes. New compilation/execution and direct comparisons are separately bound; authored GUI inputs have no execution qualification from this update. No unrestricted gameplay, original audiovisual or FPS qualification is inherited.",
+      "previous_metadata": {
+        "bytes": 10901,
+        "sha256": "89ee5f81c8f0f058afb930de5e64584b6f80286560b26b82075f198569496b81"
+      },
+      "groups": {
+        "files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 345142,
+              "sha256": "3cf33e3a6a3c8a69eb5c0eadc66633a631123780410b7e366bdd4d81538464b0"
+            }
+          },
+          "added": [],
+          "current_count": 25
+        }
+      }
+    },
+    {
+      "from_commit": "fc7b0418f24b5c302dab1a114a3bebb0a0f1670f",
+      "role": "Current source admission for the execution-owned Player wake, recursive Bed mutation and lighting paths, and their Arrow damage continuation. The declared inputs include the native controls, authored original recursive wake packet and current scope documents. Earlier authority, supplier, source projection, native validation, captures and qualification records retain their original identities and scopes.",
+      "previous_metadata": {
+        "bytes": 12017,
+        "sha256": "f3264ac9cbe05f58cab18f3c5eb49d0e3128abd23fd642df572daaf36e1c1f65"
+      },
+      "groups": {
+        "files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 345322,
+              "sha256": "4abc1faff12fab607d8b0a1ccd743bb1b5fbaccab9831b2fc6d9c3d9ab00d4a0"
+            }
+          },
+          "added": [],
+          "current_count": 25
+        }
+      }
+    }
+  ]
+}

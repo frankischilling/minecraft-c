@@ -1,6 +1,6 @@
-# Normal-dimension surface replacement
+# Overworld surface replacement
 
-This note records Beta 1.7.3's normal surface pass after
+This note records Beta 1.7.3's Overworld surface pass after
 [density and base interpolation](density.md). Both supplied binaries produced
 the same 290 numerical snapshots, including seven independently captured
 fixed cases. Exact-source local comparisons match C, client and server with

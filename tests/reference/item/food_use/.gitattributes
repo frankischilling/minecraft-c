@@ -1,0 +1,2 @@
+*.stdout -text
+failed-compile.stderr -text

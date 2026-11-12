@@ -103,6 +103,14 @@ local inputs and makes no network requests:
 python scripts/resources/import_assets.py --jar b1.7.3.jar --resources "$env:APPDATA/.minecraft/resources" --output .local/assets-b1.7.3
 ```
 
+The default source startup also needs the verified SDK window icons. For a
+fresh import, add `--lwjgl-jar /path/to/lwjgl-2.9.0.jar`. The importer verifies
+the selected SDK and emits private `sdk/lwjgl-icon-16.rgba` and
+`sdk/lwjgl-icon-32.rgba` files. Runtime startup reads those RGBA files and
+requires no SDK JAR or Java execution. An older import without `sdk/` remains
+usable by the explicit diagnostic frontend; create a fresh import for normal
+startup. See the [SDK icon contract](../client/display-sdk.md).
+
 The observed import succeeded with 409 files and 44,522,681 resource bytes, plus
 `manifest.json`. JAR resources are under `jar/`; external resources are under
 `resources/`. The manifest records each imported file's relative path, byte count,
@@ -136,8 +144,12 @@ external and destination links, reparse attributes, size limits, and cleanup aft
 invalid Ogg data. Tests patch the module's known hash only around generated
 fixtures; the production command has no hash-bypass option.
 
-There is no runnable C asset consumer yet. The intended native consumer will use
-the imported directory without a JAR or Java runtime. That behavior remains to be
-implemented and verified, as do rendering, audio, resource reloads, and parity
-against controlled original-runtime observations. These requirements extend
-beyond this local import increment.
+The native [translation consumer](../resources/translation.md) reads the two
+language resources from the imported `jar/` directory without a JAR or Java
+runtime. Both pinned originals supply identical language files, and native
+loading matches their complete 633-property observations on MSVC/GCC/Clang.
+The earlier client-only inventory above remains scoped to archive import.
+The native [achievement-key loader](../statistics/keys.md) consumes the third
+bootstrap resource, `achievement/map.txt`, from that same imported root. Its
+446 entries and 453 lookups match both original JARs on MSVC/GCC/Clang.
+Rendering, audio, resource reloads and complete startup remain unfinished.

@@ -1,0 +1,6 @@
+if(TARGET mc_client_entity_renderer)
+    target_sources(mc_client_entity_renderer PRIVATE src/client/world/entity_renderer/focus.c)
+endif()
+if(TARGET mc_test_world_selection_loop)
+    target_sources(mc_test_world_selection_loop PRIVATE tests/client/world/test_renderer_focus.c)
+endif()

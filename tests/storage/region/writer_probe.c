@@ -26,8 +26,7 @@ typedef struct probe_write {
     size_t length;
 } probe_write;
 
-static bool read_span(probe_reader *reader, size_t length, const uint8_t **out)
-{
+static bool read_span(probe_reader *reader, size_t length, const uint8_t **out) {
     if (length > reader->length - reader->position)
         return false;
     *out = reader->bytes + reader->position;
@@ -35,8 +34,7 @@ static bool read_span(probe_reader *reader, size_t length, const uint8_t **out)
     return true;
 }
 
-static bool read_u32(probe_reader *reader, uint32_t *out)
-{
+static bool read_u32(probe_reader *reader, uint32_t *out) {
     const uint8_t *bytes;
     if (!read_span(reader, 4, &bytes))
         return false;
@@ -45,20 +43,17 @@ static bool read_u32(probe_reader *reader, uint32_t *out)
     return true;
 }
 
-static int32_t signed_bits(uint32_t bits)
-{
+static int32_t signed_bits(uint32_t bits) {
     return bits <= INT32_MAX ? (int32_t)bits : -1 - (int32_t)(UINT32_MAX - bits);
 }
 
-static bool write_u32(uint32_t value)
-{
+static bool write_u32(uint32_t value) {
     uint8_t bytes[4] = {(uint8_t)(value >> 24u), (uint8_t)(value >> 16u), (uint8_t)(value >> 8u),
                         (uint8_t)value};
     return fwrite(bytes, 1, sizeof(bytes), stdout) == sizeof(bytes);
 }
 
-static bool write_state(mc_region_writer *writer, mc_region_writer_status status, size_t *total)
-{
+static bool write_state(mc_region_writer *writer, mc_region_writer_status status, size_t *total) {
     mc_region_writer_bytes bytes = mc_region_writer_get_bytes(writer);
     if (bytes.length > PROBE_OUTPUT_LIMIT - 12u || *total > PROBE_OUTPUT_LIMIT - 12u - bytes.length)
         return false;
@@ -68,8 +63,7 @@ static bool write_state(mc_region_writer *writer, mc_region_writer_status status
            (bytes.length == 0 || fwrite(bytes.data, 1, bytes.length, stdout) == bytes.length);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     (void)argv;
     if (argc != 1)
         return 2;

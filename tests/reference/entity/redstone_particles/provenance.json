@@ -1,0 +1,107 @@
+{
+  "status": "PASS",
+  "original_game_class_replacements": 0,
+  "ordinary_fresh_vms": 2,
+  "inputs_before": {
+    "original/client.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "jdk/java": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "jdk/javac": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "jdk/modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "jdk/jvm": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "jdk/java.base.jmod": "6eed1c9a90ae0f2ede839d7e50d8be939c1e8585647be55586e1b3c7390ee723",
+    "tools/classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+    "tools/ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "libraries/org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "libraries/org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "libraries/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "libraries/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "authored/RedstoneParticleObservation.java": "17764c48fab82c26aee5e5b4f148ee24ee1e4a5d3c0ef9c0eca1bf45e2a3c664",
+    "authored/profiles.tsv": "a2c91c68f8db47318004894d2dc62051750ca93559645f13bacc3d91c7dd0b00",
+    "authored/declared-inputs.json": "a4a864f331c4eed54a3a2e323a6933bb998513e430804910b9bafc3336023fd3",
+    "authored/capture_reference.py": "07a8ad84f676fc7b7d10d09094d6f22b5a28c25f829beb175363de67ef7ac18b",
+    "authored/audit.py": "c4fc7cfda7b51cde86b2f6e30bfde83e5accfc4796de22dadfddc2b8f10cb4e1",
+    "authored/compare.py": "dd05614a35d19d266d7ad8bfbd423eb1dd89ae75f166bb8dae40a52935bbfa5a"
+  },
+  "runs": [
+    {
+      "returncode": 0,
+      "stdout_sha256": "34c89d7cc2eea6629e2a4694ae87c536d371656790b048b40c492ec62383d9a9",
+      "stderr_private_sha256": "3b334593f66d117e4bdbf5c41c43dd7ca41bca94c26370f9dab9a391a817260a",
+      "elapsed_seconds": 1.3264798999298364
+    },
+    {
+      "returncode": 0,
+      "stdout_sha256": "c678d5627364577aa232e9f46725e380282f7b08d32aac7a5ae922142c4b8cd1",
+      "stderr_private_sha256": "3b334593f66d117e4bdbf5c41c43dd7ca41bca94c26370f9dab9a391a817260a",
+      "elapsed_seconds": 1.3329851999878883
+    }
+  ],
+  "ordinary_flags": [
+    "-Xint",
+    "-Xverify:all",
+    "-Xmx256m",
+    "-Djava.awt.headless=true",
+    "-Djava.security.manager=allow",
+    "--add-opens=java.base/java.util=ALL-UNNAMED",
+    "--add-opens=java.base/java.lang=ALL-UNNAMED"
+  ],
+  "removed_environment_names": [],
+  "compile": {
+    "returncode": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_private_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "elapsed_seconds": 0.7208622999023646
+  },
+  "helpers_before": {
+    "ConstructorJson.class": "1c13bbd4aa1dc7928a37d158835f81cb977a33d3699d34d45a73e9cbacdd462a",
+    "RedstoneParticleObservation$1.class": "baf527e3e3fe2b52d6a1dd3877e0bb01c9a9dd129bd8df2f7e9711b15e2f9aa5",
+    "RedstoneParticleObservation.class": "75eff7ff121ba36fc5be3b75b0ca9627b54203c5c6f569f36726839180a371dd"
+  },
+  "logical_components_identical": true,
+  "own_constructor_audits": [
+    {
+      "constructors": 37,
+      "shared_double_returns": 370,
+      "private_float_returns_inferred": 148,
+      "private_initial": "inferred by reversing four pinned Float calls; not directly observed",
+      "warm_shared_initial": "inferred by reversing ten pinned double calls; other36 directly observed pre/post",
+      "entropy_rebinding_or_supplied_samples": false
+    },
+    {
+      "constructors": 37,
+      "shared_double_returns": 370,
+      "private_float_returns_inferred": 148,
+      "private_initial": "inferred by reversing four pinned Float calls; not directly observed",
+      "warm_shared_initial": "inferred by reversing ten pinned double calls; other36 directly observed pre/post",
+      "entropy_rebinding_or_supplied_samples": false
+    }
+  ],
+  "inputs_after": {
+    "original/client.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "jdk/java": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "jdk/javac": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "jdk/modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "jdk/jvm": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "jdk/java.base.jmod": "6eed1c9a90ae0f2ede839d7e50d8be939c1e8585647be55586e1b3c7390ee723",
+    "tools/classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+    "tools/ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "libraries/org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "libraries/org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "libraries/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "libraries/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "authored/RedstoneParticleObservation.java": "17764c48fab82c26aee5e5b4f148ee24ee1e4a5d3c0ef9c0eca1bf45e2a3c664",
+    "authored/profiles.tsv": "a2c91c68f8db47318004894d2dc62051750ca93559645f13bacc3d91c7dd0b00",
+    "authored/declared-inputs.json": "a4a864f331c4eed54a3a2e323a6933bb998513e430804910b9bafc3336023fd3",
+    "authored/capture_reference.py": "07a8ad84f676fc7b7d10d09094d6f22b5a28c25f829beb175363de67ef7ac18b",
+    "authored/audit.py": "c4fc7cfda7b51cde86b2f6e30bfde83e5accfc4796de22dadfddc2b8f10cb4e1",
+    "authored/compare.py": "dd05614a35d19d266d7ad8bfbd423eb1dd89ae75f166bb8dae40a52935bbfa5a"
+  },
+  "inputs_unchanged": true,
+  "helpers_after": {
+    "ConstructorJson.class": "1c13bbd4aa1dc7928a37d158835f81cb977a33d3699d34d45a73e9cbacdd462a",
+    "RedstoneParticleObservation$1.class": "baf527e3e3fe2b52d6a1dd3877e0bb01c9a9dd129bd8df2f7e9711b15e2f9aa5",
+    "RedstoneParticleObservation.class": "75eff7ff121ba36fc5be3b75b0ca9627b54203c5c6f569f36726839180a371dd"
+  },
+  "helpers_unchanged": true,
+  "elapsed_seconds": 3.748260100139305
+}

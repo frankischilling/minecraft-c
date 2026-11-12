@@ -1,12 +1,53 @@
 * text=auto
 *.c text eol=lf
 *.h text eol=lf
+*.inc text eol=lf
 *.py text eol=lf
 *.sh text eol=lf
 *.md text eol=lf
 *.yml text eol=lf
 *.json text eol=lf
+*.jsonl text eol=lf
+# Preserve the exact compressed native benchmark report bytes.
+/tests/benchmarks/mob_tick_diagnostics_windows.json.gz binary
+*.tsv text eol=lf
+*.commands text eol=lf
+*.cmake text eol=lf
+*.plan text eol=lf
 *.java text eol=lf
 *.txt text eol=lf
+.gitattributes text eol=lf
+.gitignore text eol=lf
+# Preserve the recorded SDK fixture input bytes.
+tests/tools/client/test_torch_placement_loop.py -text whitespace=trailing-space,space-before-tab,cr-at-eol
 .clang-format text eol=lf
 LICENSE text eol=lf
+licenses/openal-soft/* text eol=lf
+
+# Preserve the exact byte-pinned capture inputs and reference packet files.
+tests/reference/item/food_use/*.stdout whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/item/dye_use/**/*.stdout whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/item/farming_use/events.jsonl -text whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/item/mining/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/item/mining/*.tsv -text whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/client/held_item_geometry/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/entity/held_item_attack/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/entity/player_hurt/*.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/world/bed_spawn/finite.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/world/bed_spawn/provenance.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/world/bed_interaction/source-pins.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/entity/player_sleep/class-names.txt -text whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/entity/player_sleep/finite.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/entity/player_sleep/profiles.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/entity/player_sleep/profiles.tsv -text whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/entity/player_sleep/source-pins.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/client/gui_ingame_chat/inputs/lang/*.lang text eol=lf
+tests/reference/entity/held_item_attack/HeldItemObservation.java -text whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/inventory/workbench_auto_close/entropy.py -text whitespace=trailing-space,space-before-tab,cr-at-eol,-blank-at-eof
+# Preserve the exact loader/Code inputs pinned by the Arrow capture.
+/tests/reference/entity/arrow_construction/class-names.txt -text whitespace=trailing-space,space-before-tab,cr-at-eol
+/tests/reference/entity/arrow_construction/source-pins.json -text whitespace=trailing-space,space-before-tab,cr-at-eol
+
+# Keep recorded native replay controller inputs unchanged.
+tests/tools/world/redstone_torch_accounting.py whitespace=trailing-space,space-before-tab,cr-at-eol,-blank-at-eof
+tests/tools/world/redstone_torch_current.py whitespace=trailing-space,space-before-tab,cr-at-eol,-blank-at-eof

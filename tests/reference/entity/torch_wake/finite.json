@@ -1,0 +1,1350 @@
+{
+  "schema": "TORCH_WAKE_V1",
+  "scope": "Two prepared unchanged-original Player wake calls; no ticks, GUI or native equality qualification.",
+  "rows": [
+    {
+      "mode": "success",
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "2fff196c86fa25c1ed78135f34d7a4ba0fdef3218acb8e73e2bc4e7e615a3037",
+          "metadata": "93d748ca9fbf7f4b64ac321487a5a123e10fe4dc5b9ecfd6c75c5bf80ce015e5",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": [],
+        "torch": [
+          50,
+          1
+        ],
+        "torch_support": [
+          0,
+          0
+        ],
+        "torch_floor": [
+          1,
+          0
+        ],
+        "foot": [
+          26,
+          0
+        ],
+        "world_random": [
+          "00000005deecefc9",
+          false,
+          "0000000000000000"
+        ],
+        "player_random": [
+          "00000005deece64b",
+          false,
+          "0000000000000000"
+        ],
+        "items": []
+      },
+      "after": {
+        "position": [
+          "401e000000000000",
+          "40506e1480000000",
+          "401e000000000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": false,
+        "timer": 0,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "original_bounds": [
+          "401ccccccc000000",
+          "405006666b800000",
+          "401ccccccc000000",
+          "401f333334000000",
+          "405079999e800000",
+          "401f333334000000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": false,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 2,
+        "head": [
+          26,
+          8
+        ],
+        "planes": {
+          "blocks": "7531906ef8106b1aa48f07d8c54a6536e606eaa8535c61043b27dda2b25fddc2",
+          "metadata": "3e5713050bc2e2d592b7cff89295ef90c4c415ea0ca72ffcddbe2759214a89bc",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00002f08d408505d",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00001df425034d55",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": [],
+        "torch": [
+          0,
+          0
+        ],
+        "torch_support": [
+          0,
+          0
+        ],
+        "torch_floor": [
+          1,
+          0
+        ],
+        "foot": [
+          26,
+          0
+        ],
+        "world_random": [
+          "00002f08d408505d",
+          false,
+          "0000000000000000"
+        ],
+        "player_random": [
+          "00000005deece64b",
+          false,
+          "0000000000000000"
+        ],
+        "items": [
+          {
+            "position": [
+              "401d3ea43f000000",
+              "40500a2518200000",
+              "40208ea5f5800000"
+            ],
+            "motion": [
+              "3f9c24a180000000",
+              "3fc99999a0000000",
+              "3f84a8b420000000"
+            ],
+            "dimensions": [
+              "3e800000",
+              "3e800000",
+              "3e000000"
+            ],
+            "bounds": [
+              "401cbea43f000000",
+              "4050022518200000",
+              "40204ea5f5800000",
+              "401dbea43f000000",
+              "4050122518200000",
+              "4020cea5f5800000"
+            ],
+            "yaw": "42ad2fac",
+            "phase": "4092f844",
+            "delay": 10,
+            "age": 0,
+            "health": 5,
+            "stack": [
+              50,
+              1,
+              0
+            ],
+            "inserted": true,
+            "removed": false,
+            "world_same": true
+          }
+        ]
+      },
+      "result": false,
+      "exception": "NONE",
+      "exception_message": null,
+      "exception_stack": [],
+      "events": [
+        {
+          "kind": "cell",
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "head": [
+            26,
+            8
+          ],
+          "torch": [
+            50,
+            1
+          ],
+          "west": [
+            0,
+            0
+          ],
+          "floor": [
+            1,
+            0
+          ],
+          "sleeping": true,
+          "stack": [
+            {
+              "class": "java.lang.Thread",
+              "method": "getStackTrace",
+              "file": "Thread.java",
+              "line": 1619
+            },
+            {
+              "class": "TorchWakeObservation$Observer",
+              "method": "a",
+              "file": "TorchWakeObservation.java",
+              "line": 74
+            },
+            {
+              "class": "fd",
+              "method": "j",
+              "file": "SourceFile",
+              "line": 398
+            },
+            {
+              "class": "fd",
+              "method": "g",
+              "file": "SourceFile",
+              "line": 403
+            },
+            {
+              "class": "fd",
+              "method": "d",
+              "file": "SourceFile",
+              "line": 358
+            },
+            {
+              "class": "ve",
+              "method": "a",
+              "file": "SourceFile",
+              "line": 205
+            },
+            {
+              "class": "gs",
+              "method": "a",
+              "file": "SourceFile",
+              "line": 686
+            },
+            {
+              "class": "gs",
+              "method": "a",
+              "file": "SourceFile",
+              "line": 412
+            },
+            {
+              "class": "TorchWakeObservation",
+              "method": "run",
+              "file": "TorchWakeObservation.java",
+              "line": 117
+            },
+            {
+              "class": "TorchWakeObservation",
+              "method": "main",
+              "file": "TorchWakeObservation.java",
+              "line": 150
+            }
+          ]
+        },
+        {
+          "kind": "added",
+          "head": [
+            26,
+            8
+          ],
+          "torch": [
+            50,
+            1
+          ],
+          "west": [
+            0,
+            0
+          ],
+          "floor": [
+            1,
+            0
+          ],
+          "sleeping": true,
+          "item": {
+            "position": [
+              "401d3ea43f000000",
+              "40500a2518200000",
+              "40208ea5f5800000"
+            ],
+            "motion": [
+              "3f9c24a180000000",
+              "3fc99999a0000000",
+              "3f84a8b420000000"
+            ],
+            "dimensions": [
+              "3e800000",
+              "3e800000",
+              "3e000000"
+            ],
+            "bounds": [
+              "401cbea43f000000",
+              "4050022518200000",
+              "40204ea5f5800000",
+              "401dbea43f000000",
+              "4050122518200000",
+              "4020cea5f5800000"
+            ],
+            "yaw": "42ad2fac",
+            "phase": "4092f844",
+            "delay": 10,
+            "age": 0,
+            "health": 5,
+            "stack": [
+              50,
+              1,
+              0
+            ],
+            "inserted": true,
+            "removed": false,
+            "world_same": true
+          },
+          "stack": [
+            {
+              "class": "java.lang.Thread",
+              "method": "getStackTrace",
+              "file": "Thread.java",
+              "line": 1619
+            },
+            {
+              "class": "TorchWakeObservation$Observer",
+              "method": "a",
+              "file": "TorchWakeObservation.java",
+              "line": 86
+            },
+            {
+              "class": "fd",
+              "method": "c",
+              "file": "SourceFile",
+              "line": 775
+            },
+            {
+              "class": "fd",
+              "method": "b",
+              "file": "SourceFile",
+              "line": 767
+            },
+            {
+              "class": "uu",
+              "method": "a",
+              "file": "SourceFile",
+              "line": 460
+            },
+            {
+              "class": "uu",
+              "method": "a",
+              "file": "SourceFile",
+              "line": 447
+            },
+            {
+              "class": "uu",
+              "method": "g",
+              "file": "SourceFile",
+              "line": 436
+            },
+            {
+              "class": "vm",
+              "method": "b",
+              "file": "SourceFile",
+              "line": 95
+            },
+            {
+              "class": "fd",
+              "method": "l",
+              "file": "SourceFile",
+              "line": 453
+            },
+            {
+              "class": "fd",
+              "method": "i",
+              "file": "SourceFile",
+              "line": 442
+            },
+            {
+              "class": "fd",
+              "method": "g",
+              "file": "SourceFile",
+              "line": 404
+            },
+            {
+              "class": "fd",
+              "method": "d",
+              "file": "SourceFile",
+              "line": 358
+            },
+            {
+              "class": "ve",
+              "method": "a",
+              "file": "SourceFile",
+              "line": 205
+            },
+            {
+              "class": "gs",
+              "method": "a",
+              "file": "SourceFile",
+              "line": 686
+            },
+            {
+              "class": "gs",
+              "method": "a",
+              "file": "SourceFile",
+              "line": 412
+            },
+            {
+              "class": "TorchWakeObservation",
+              "method": "run",
+              "file": "TorchWakeObservation.java",
+              "line": 117
+            },
+            {
+              "class": "TorchWakeObservation",
+              "method": "main",
+              "file": "TorchWakeObservation.java",
+              "line": 150
+            }
+          ]
+        },
+        {
+          "kind": "cell",
+          "xyz": [
+            7,
+            64,
+            8
+          ],
+          "head": [
+            26,
+            8
+          ],
+          "torch": [
+            0,
+            0
+          ],
+          "west": [
+            0,
+            0
+          ],
+          "floor": [
+            1,
+            0
+          ],
+          "sleeping": true,
+          "stack": [
+            {
+              "class": "java.lang.Thread",
+              "method": "getStackTrace",
+              "file": "Thread.java",
+              "line": 1619
+            },
+            {
+              "class": "TorchWakeObservation$Observer",
+              "method": "a",
+              "file": "TorchWakeObservation.java",
+              "line": 74
+            },
+            {
+              "class": "fd",
+              "method": "j",
+              "file": "SourceFile",
+              "line": 398
+            },
+            {
+              "class": "fd",
+              "method": "g",
+              "file": "SourceFile",
+              "line": 403
+            },
+            {
+              "class": "fd",
+              "method": "f",
+              "file": "SourceFile",
+              "line": 380
+            },
+            {
+              "class": "vm",
+              "method": "b",
+              "file": "SourceFile",
+              "line": 96
+            },
+            {
+              "class": "fd",
+              "method": "l",
+              "file": "SourceFile",
+              "line": 453
+            },
+            {
+              "class": "fd",
+              "method": "i",
+              "file": "SourceFile",
+              "line": 442
+            },
+            {
+              "class": "fd",
+              "method": "g",
+              "file": "SourceFile",
+              "line": 404
+            },
+            {
+              "class": "fd",
+              "method": "d",
+              "file": "SourceFile",
+              "line": 358
+            },
+            {
+              "class": "ve",
+              "method": "a",
+              "file": "SourceFile",
+              "line": 205
+            },
+            {
+              "class": "gs",
+              "method": "a",
+              "file": "SourceFile",
+              "line": 686
+            },
+            {
+              "class": "gs",
+              "method": "a",
+              "file": "SourceFile",
+              "line": 412
+            },
+            {
+              "class": "TorchWakeObservation",
+              "method": "run",
+              "file": "TorchWakeObservation.java",
+              "line": 117
+            },
+            {
+              "class": "TorchWakeObservation",
+              "method": "main",
+              "file": "TorchWakeObservation.java",
+              "line": 150
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "publication-error",
+      "before": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3e4ccccd",
+          "3e4ccccd",
+          "3e4ccccd"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 17,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 1,
+        "head": [
+          26,
+          12
+        ],
+        "planes": {
+          "blocks": "2fff196c86fa25c1ed78135f34d7a4ba0fdef3218acb8e73e2bc4e7e615a3037",
+          "metadata": "93d748ca9fbf7f4b64ac321487a5a123e10fe4dc5b9ecfd6c75c5bf80ce015e5",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deecefc9",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00000005deece66d",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": [],
+        "torch": [
+          50,
+          1
+        ],
+        "torch_support": [
+          0,
+          0
+        ],
+        "torch_floor": [
+          1,
+          0
+        ],
+        "foot": [
+          26,
+          0
+        ],
+        "world_random": [
+          "00000005deecefc9",
+          false,
+          "0000000000000000"
+        ],
+        "player_random": [
+          "00000005deece64b",
+          false,
+          "0000000000000000"
+        ],
+        "items": []
+      },
+      "after": {
+        "position": [
+          "4021000000000000",
+          "40503c0000000000",
+          "4021ccccc0000000"
+        ],
+        "motion": [
+          "0000000000000000",
+          "0000000000000000",
+          "0000000000000000"
+        ],
+        "dimensions": [
+          "3f19999a",
+          "3fe66666",
+          "3fcf5c29"
+        ],
+        "sleep_offsets": [
+          "00000000",
+          "bfe66666"
+        ],
+        "sleeping": true,
+        "timer": 37,
+        "bed": [
+          8,
+          64,
+          8
+        ],
+        "spawn": [
+          42,
+          66,
+          44
+        ],
+        "private_coordinate": [
+          -11,
+          65,
+          13
+        ],
+        "bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "original_bounds": [
+          "4020ccccccc00000",
+          "40502f3333300000",
+          "402199998cc00000",
+          "4021333333400000",
+          "40503c0000000000",
+          "4021fffff3400000"
+        ],
+        "world_same": true,
+        "bounds_same": true,
+        "bed_same": true,
+        "spawn_same": true,
+        "private_same": true,
+        "health": 20,
+        "previous_health": 17,
+        "hurt_resistance": 0,
+        "hurt_time": 3,
+        "hurt_maximum": 4,
+        "previous_damage": 0,
+        "idle": 0,
+        "attacked": false,
+        "removed": false,
+        "armor_remainder": 0,
+        "world_sleeping": true,
+        "remote": false,
+        "world_players": 1,
+        "world_entities": 2,
+        "head": [
+          26,
+          8
+        ],
+        "planes": {
+          "blocks": "2fff196c86fa25c1ed78135f34d7a4ba0fdef3218acb8e73e2bc4e7e615a3037",
+          "metadata": "213cf1198b31558c76c96a121e03156d9069394e04bde06711a4bc2669de6b7e",
+          "sky": "2d826e6429ab88d6fa2d681ee3c84bb8faf8be109b15ac3603970c9f8c557115",
+          "block_light": "4fe7b59af6de3b665b67788cc2f99892ab827efae3a467342b3bb4e3bc8e5bfe",
+          "height": "7bec4e41ed6efa8a42374f37b2b5f0dfebe5af4b81d7dfa60ab3f0838127e208"
+        },
+        "random": [
+          [
+            "00000005deece64b",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00002f08d408505d",
+            false,
+            "0000000000000000"
+          ],
+          [
+            "00001df425034d55",
+            false,
+            "0000000000000000"
+          ]
+        ],
+        "statistics": {
+          "total": [],
+          "unsent": [],
+          "dirty": false
+        },
+        "sounds": [],
+        "torch": [
+          50,
+          1
+        ],
+        "torch_support": [
+          0,
+          0
+        ],
+        "torch_floor": [
+          1,
+          0
+        ],
+        "foot": [
+          26,
+          0
+        ],
+        "world_random": [
+          "00002f08d408505d",
+          false,
+          "0000000000000000"
+        ],
+        "player_random": [
+          "00000005deece64b",
+          false,
+          "0000000000000000"
+        ],
+        "items": [
+          {
+            "position": [
+              "401d3ea43f000000",
+              "40500a2518200000",
+              "40208ea5f5800000"
+            ],
+            "motion": [
+              "3f9c24a180000000",
+              "3fc99999a0000000",
+              "3f84a8b420000000"
+            ],
+            "dimensions": [
+              "3e800000",
+              "3e800000",
+              "3e000000"
+            ],
+            "bounds": [
+              "401cbea43f000000",
+              "4050022518200000",
+              "40204ea5f5800000",
+              "401dbea43f000000",
+              "4050122518200000",
+              "4020cea5f5800000"
+            ],
+            "yaw": "42ad2fac",
+            "phase": "4092f844",
+            "delay": 10,
+            "age": 0,
+            "health": 5,
+            "stack": [
+              50,
+              1,
+              0
+            ],
+            "inserted": true,
+            "removed": false,
+            "world_same": true
+          }
+        ]
+      },
+      "result": null,
+      "exception": "java/lang/IllegalStateException",
+      "exception_message": "Torch Item observer interruption",
+      "exception_stack": [
+        {
+          "class": "TorchWakeObservation$Observer",
+          "method": "a",
+          "file": "TorchWakeObservation.java",
+          "line": 90
+        },
+        {
+          "class": "fd",
+          "method": "c",
+          "file": "SourceFile",
+          "line": 775
+        },
+        {
+          "class": "fd",
+          "method": "b",
+          "file": "SourceFile",
+          "line": 767
+        },
+        {
+          "class": "uu",
+          "method": "a",
+          "file": "SourceFile",
+          "line": 460
+        },
+        {
+          "class": "uu",
+          "method": "a",
+          "file": "SourceFile",
+          "line": 447
+        },
+        {
+          "class": "uu",
+          "method": "g",
+          "file": "SourceFile",
+          "line": 436
+        },
+        {
+          "class": "vm",
+          "method": "b",
+          "file": "SourceFile",
+          "line": 95
+        },
+        {
+          "class": "fd",
+          "method": "l",
+          "file": "SourceFile",
+          "line": 453
+        },
+        {
+          "class": "fd",
+          "method": "i",
+          "file": "SourceFile",
+          "line": 442
+        },
+        {
+          "class": "fd",
+          "method": "g",
+          "file": "SourceFile",
+          "line": 404
+        },
+        {
+          "class": "fd",
+          "method": "d",
+          "file": "SourceFile",
+          "line": 358
+        },
+        {
+          "class": "ve",
+          "method": "a",
+          "file": "SourceFile",
+          "line": 205
+        },
+        {
+          "class": "gs",
+          "method": "a",
+          "file": "SourceFile",
+          "line": 686
+        },
+        {
+          "class": "gs",
+          "method": "a",
+          "file": "SourceFile",
+          "line": 412
+        },
+        {
+          "class": "TorchWakeObservation",
+          "method": "run",
+          "file": "TorchWakeObservation.java",
+          "line": 117
+        },
+        {
+          "class": "TorchWakeObservation",
+          "method": "main",
+          "file": "TorchWakeObservation.java",
+          "line": 150
+        }
+      ],
+      "events": [
+        {
+          "kind": "cell",
+          "xyz": [
+            8,
+            64,
+            8
+          ],
+          "head": [
+            26,
+            8
+          ],
+          "torch": [
+            50,
+            1
+          ],
+          "west": [
+            0,
+            0
+          ],
+          "floor": [
+            1,
+            0
+          ],
+          "sleeping": true,
+          "stack": [
+            {
+              "class": "java.lang.Thread",
+              "method": "getStackTrace",
+              "file": "Thread.java",
+              "line": 1619
+            },
+            {
+              "class": "TorchWakeObservation$Observer",
+              "method": "a",
+              "file": "TorchWakeObservation.java",
+              "line": 74
+            },
+            {
+              "class": "fd",
+              "method": "j",
+              "file": "SourceFile",
+              "line": 398
+            },
+            {
+              "class": "fd",
+              "method": "g",
+              "file": "SourceFile",
+              "line": 403
+            },
+            {
+              "class": "fd",
+              "method": "d",
+              "file": "SourceFile",
+              "line": 358
+            },
+            {
+              "class": "ve",
+              "method": "a",
+              "file": "SourceFile",
+              "line": 205
+            },
+            {
+              "class": "gs",
+              "method": "a",
+              "file": "SourceFile",
+              "line": 686
+            },
+            {
+              "class": "gs",
+              "method": "a",
+              "file": "SourceFile",
+              "line": 412
+            },
+            {
+              "class": "TorchWakeObservation",
+              "method": "run",
+              "file": "TorchWakeObservation.java",
+              "line": 117
+            },
+            {
+              "class": "TorchWakeObservation",
+              "method": "main",
+              "file": "TorchWakeObservation.java",
+              "line": 150
+            }
+          ]
+        },
+        {
+          "kind": "added",
+          "head": [
+            26,
+            8
+          ],
+          "torch": [
+            50,
+            1
+          ],
+          "west": [
+            0,
+            0
+          ],
+          "floor": [
+            1,
+            0
+          ],
+          "sleeping": true,
+          "item": {
+            "position": [
+              "401d3ea43f000000",
+              "40500a2518200000",
+              "40208ea5f5800000"
+            ],
+            "motion": [
+              "3f9c24a180000000",
+              "3fc99999a0000000",
+              "3f84a8b420000000"
+            ],
+            "dimensions": [
+              "3e800000",
+              "3e800000",
+              "3e000000"
+            ],
+            "bounds": [
+              "401cbea43f000000",
+              "4050022518200000",
+              "40204ea5f5800000",
+              "401dbea43f000000",
+              "4050122518200000",
+              "4020cea5f5800000"
+            ],
+            "yaw": "42ad2fac",
+            "phase": "4092f844",
+            "delay": 10,
+            "age": 0,
+            "health": 5,
+            "stack": [
+              50,
+              1,
+              0
+            ],
+            "inserted": true,
+            "removed": false,
+            "world_same": true
+          },
+          "stack": [
+            {
+              "class": "java.lang.Thread",
+              "method": "getStackTrace",
+              "file": "Thread.java",
+              "line": 1619
+            },
+            {
+              "class": "TorchWakeObservation$Observer",
+              "method": "a",
+              "file": "TorchWakeObservation.java",
+              "line": 86
+            },
+            {
+              "class": "fd",
+              "method": "c",
+              "file": "SourceFile",
+              "line": 775
+            },
+            {
+              "class": "fd",
+              "method": "b",
+              "file": "SourceFile",
+              "line": 767
+            },
+            {
+              "class": "uu",
+              "method": "a",
+              "file": "SourceFile",
+              "line": 460
+            },
+            {
+              "class": "uu",
+              "method": "a",
+              "file": "SourceFile",
+              "line": 447
+            },
+            {
+              "class": "uu",
+              "method": "g",
+              "file": "SourceFile",
+              "line": 436
+            },
+            {
+              "class": "vm",
+              "method": "b",
+              "file": "SourceFile",
+              "line": 95
+            },
+            {
+              "class": "fd",
+              "method": "l",
+              "file": "SourceFile",
+              "line": 453
+            },
+            {
+              "class": "fd",
+              "method": "i",
+              "file": "SourceFile",
+              "line": 442
+            },
+            {
+              "class": "fd",
+              "method": "g",
+              "file": "SourceFile",
+              "line": 404
+            },
+            {
+              "class": "fd",
+              "method": "d",
+              "file": "SourceFile",
+              "line": 358
+            },
+            {
+              "class": "ve",
+              "method": "a",
+              "file": "SourceFile",
+              "line": 205
+            },
+            {
+              "class": "gs",
+              "method": "a",
+              "file": "SourceFile",
+              "line": 686
+            },
+            {
+              "class": "gs",
+              "method": "a",
+              "file": "SourceFile",
+              "line": 412
+            },
+            {
+              "class": "TorchWakeObservation",
+              "method": "run",
+              "file": "TorchWakeObservation.java",
+              "line": 117
+            },
+            {
+              "class": "TorchWakeObservation",
+              "method": "main",
+              "file": "TorchWakeObservation.java",
+              "line": 150
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

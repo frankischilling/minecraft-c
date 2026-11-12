@@ -1,0 +1,204 @@
+{
+  "schema": "PLAYER_SLEEP_CLASS_CODE_V1",
+  "archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "classes": {
+    "gs": {
+      "name": "gs",
+      "super": "ls",
+      "interfaces": [],
+      "major": 49,
+      "minor": 0,
+      "access": 1057,
+      "class_sha256": "52e2d97748d9a306703e018822fece7d0ef9ca8ddf3448a1d0e568f2fbe29202",
+      "class_bytes": 13351,
+      "methods": [
+        {
+          "access": 1,
+          "name": "b",
+          "descriptor": "(III)Lcw;",
+          "code_length": 338,
+          "code_sha256": "08d85c09d0b1d3910d65af248ac0f795604b0e5c2c79b76d79c95b9e9b346a77",
+          "code_attribute_sha256": "0e49495de7f12bee531901a9f2d0ca4e869b03a6905312c1b247dcd0a4d1262d",
+          "max_stack": 7,
+          "max_locals": 8,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "N",
+          "descriptor": "()Z",
+          "code_length": 5,
+          "code_sha256": "8bbe13a6b2c3b5c1824488525a4841867575cda9b703bd4f9de8d1058f644c6f",
+          "code_attribute_sha256": "b4918e359eca00b5d82726f0ef0840021e902a97ee60af609477648e4e25457a",
+          "max_stack": 1,
+          "max_locals": 1,
+          "exception_table": []
+        }
+      ]
+    },
+    "ls": {
+      "name": "ls",
+      "super": "sn",
+      "interfaces": [],
+      "major": 49,
+      "minor": 0,
+      "access": 1057,
+      "class_sha256": "b70fbb1499cd1b37ef27dd5dec7637c7338439ef03fe13012dca93fb2326d078",
+      "class_bytes": 13411,
+      "methods": [
+        {
+          "access": 1,
+          "name": "W",
+          "descriptor": "()Z",
+          "code_length": 20,
+          "code_sha256": "6ce5f520cbfb0f9a546cdc1717d0c344f5336506d3032413c1fa9af817555506",
+          "code_attribute_sha256": "4a191375302182ae9aec5f785197699ac3c71180e26d41b65888608324d4b4b9",
+          "max_stack": 1,
+          "max_locals": 1,
+          "exception_table": []
+        }
+      ]
+    },
+    "fd": {
+      "name": "fd",
+      "super": "java/lang/Object",
+      "interfaces": [
+        "xp"
+      ],
+      "major": 49,
+      "minor": 0,
+      "access": 33,
+      "class_sha256": "b91d4726c43ed2dad1a72fd8d925eaded8a7c365af5d9f37c3ad101b957a4100",
+      "class_bytes": 33396,
+      "methods": [
+        {
+          "access": 1,
+          "name": "f",
+          "descriptor": "()Z",
+          "code_length": 14,
+          "code_sha256": "d2175b91f4586f8983dcd245937c02ee41e8f15d0e7485fa80139eace644f0a6",
+          "code_attribute_sha256": "c5f42713b659afd5df832d48ffb474ca58853a5649261fb6b389ddaf2488e458",
+          "max_stack": 2,
+          "max_locals": 1,
+          "exception_table": []
+        }
+      ]
+    },
+    "cw": {
+      "name": "cw",
+      "super": "java/lang/Enum",
+      "interfaces": [],
+      "major": 49,
+      "minor": 0,
+      "access": 16433,
+      "class_sha256": "b7cbb72c37f2f2627b6f4baf980b715c3d0342671dcd566949259a732e73e074",
+      "class_bytes": 861,
+      "methods": [
+        {
+          "access": 2,
+          "name": "<init>",
+          "descriptor": "(Ljava/lang/String;I)V",
+          "code_length": 7,
+          "code_sha256": "670a263f4f9357ca3554ac42d10b1457861d4a6f56758c1735536f1080ea6673",
+          "code_attribute_sha256": "1c2b9c56259411dca1de8edeea1554607d460bdfd11f595d56b90cf9e4d84d5c",
+          "max_stack": 3,
+          "max_locals": 3,
+          "exception_table": []
+        },
+        {
+          "access": 8,
+          "name": "<clinit>",
+          "descriptor": "()V",
+          "code_length": 103,
+          "code_sha256": "71eed67cab911abbc0482b7c5bddd0c299512bad097e04149165ad49e630b0f1",
+          "code_attribute_sha256": "553e615f6ca47a4b2d7cd25bf7599319ac457b387acd05b10485b17b06ca5ef2",
+          "max_stack": 4,
+          "max_locals": 0,
+          "exception_table": []
+        }
+      ]
+    },
+    "dc": {
+      "name": "dc",
+      "super": "gs",
+      "interfaces": [],
+      "major": 49,
+      "minor": 0,
+      "access": 33,
+      "class_sha256": "87b04c4731fa66be8a3c6a969d2c5e434b91aa24ab81be0e45906cbc8ed29493",
+      "class_bytes": 5285,
+      "methods": []
+    },
+    "sn": {
+      "name": "sn",
+      "super": "java/lang/Object",
+      "interfaces": [],
+      "major": 49,
+      "minor": 0,
+      "access": 1057,
+      "class_sha256": "b53107a5bdd5ff92637582aaed4fd49366443a11cba96cef0a6ad719e197b7be",
+      "class_bytes": 17172,
+      "methods": [
+        {
+          "access": 4,
+          "name": "b",
+          "descriptor": "(FF)V",
+          "code_length": 11,
+          "code_sha256": "a00d8094ff937a3910bed1f5d3d0d24168527d3f8618eb7c1e8679be62f4f6ff",
+          "code_attribute_sha256": "7fb5f3934d11b6b81ac71f787a9cee24287636fb5361f089bc4698cd5adef7f6",
+          "max_stack": 2,
+          "max_locals": 3,
+          "exception_table": []
+        }
+      ]
+    },
+    "xa": {
+      "name": "xa",
+      "super": "java/lang/Object",
+      "interfaces": [],
+      "major": 49,
+      "minor": 0,
+      "access": 1057,
+      "class_sha256": "8b72b6ce0a7b402b5177623251a38ff305573f16f3172efa3290bb45b8fe3afa",
+      "class_bytes": 2050,
+      "methods": []
+    },
+    "br": {
+      "name": "br",
+      "super": "java/lang/Object",
+      "interfaces": [
+        "java/lang/Comparable"
+      ],
+      "major": 49,
+      "minor": 0,
+      "access": 33,
+      "class_sha256": "7630e1b689991315959aa54dfe3c91c3c5d01656d155fef35f3deb5e4d3a9296",
+      "class_bytes": 1016,
+      "methods": []
+    },
+    "gr": {
+      "name": "gr",
+      "super": "java/lang/Object",
+      "interfaces": [],
+      "major": 49,
+      "minor": 0,
+      "access": 33,
+      "class_sha256": "df682c47f827a867ced9b2235a9b42ac5f7143cfbefb0eb18072c08a5107bd74",
+      "class_bytes": 1387,
+      "methods": []
+    },
+    "wy": {
+      "name": "wy",
+      "super": "java/lang/Object",
+      "interfaces": [
+        "wt"
+      ],
+      "major": 49,
+      "minor": 0,
+      "access": 33,
+      "class_sha256": "0f69f9791bc0ee36e9485713eac19859721785c8390496dc5809d5d4383b2eb0",
+      "class_bytes": 530,
+      "methods": []
+    }
+  }
+}

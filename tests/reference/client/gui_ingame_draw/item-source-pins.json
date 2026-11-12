@@ -1,0 +1,123 @@
+{
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "scope": "Static original class and selected Code identities only; UQ slot animation and BB GUI/count/durability continuation. CK retains its complete method inventory to establish inherited GM.f()I. No original runtime execution, pixels or whole-frame comparison is claimed.",
+  "classes": {
+    "uq": {
+      "class_bytes": 8261,
+      "class_sha256": "b4b61c370315e1ed95b42a24a01112afd7c2d44e387e48adc5e801edd4578f12",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "(IIIF)V",
+          "access": 2,
+          "code_bytes": 156,
+          "code_sha256": "2ff5ce780bbec46772aec47caeaa9282455cd686932e74dab38ae982bf7eacb0"
+        }
+      ]
+    },
+    "bb": {
+      "class_bytes": 4446,
+      "class_sha256": "696e7e8a848ebdbc92979be779b42ab87c39b91fd9ec6b6f7a239a8dc4a792b6",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "a",
+          "descriptor": "(Lsj;Lji;IIIII)V",
+          "access": 1,
+          "code_bytes": 368,
+          "code_sha256": "87014e7fb1a7afd6d5c4a53f3ce1f720e3cf3c3e1753a383a6bcbbf52bcd485c"
+        },
+        {
+          "name": "a",
+          "descriptor": "(Lsj;Lji;Liz;II)V",
+          "access": 1,
+          "code_bytes": 28,
+          "code_sha256": "bcea716d9ec66df3cc2e53643c488afbc27dbbbe744b7d5a832fbbd3a8164a45"
+        },
+        {
+          "name": "b",
+          "descriptor": "(Lsj;Lji;Liz;II)V",
+          "access": 1,
+          "code_bytes": 289,
+          "code_sha256": "04f0922c4b4387822e7af520bb8e573d360db01dc973ff030c834345031d1a24"
+        }
+      ]
+    },
+    "iz": {
+      "class_bytes": 4222,
+      "class_sha256": "3e8a07bf8c43729c8367bab454af876e698505620f230e012432c04e3828d6d6",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "e",
+          "descriptor": "()Z",
+          "access": 1,
+          "code_bytes": 20,
+          "code_sha256": "0842e98ebfd104f1d8a303b9419ef78e3bb4400dc10cd64a0f8436161942759c"
+        },
+        {
+          "name": "g",
+          "descriptor": "()Z",
+          "access": 1,
+          "code_bytes": 20,
+          "code_sha256": "1df3739964fb4b87f8fcd400bcedb1b3bd20b6331bcf4c383d39e07b0d1982f1"
+        }
+      ]
+    },
+    "gm": {
+      "class_bytes": 11051,
+      "class_sha256": "f9d971a83efa0c6399f1fc4bc0bc06c6a6249908afc6b46f5889a49365c190c7",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "f",
+          "descriptor": "()I",
+          "access": 1,
+          "code_bytes": 5,
+          "code_sha256": "92049f1eebd97f90181abb642dd064da6cc141a1429439e4de10553d888cc8e4"
+        }
+      ]
+    },
+    "ck": {
+      "class_bytes": 1239,
+      "class_sha256": "fe3d757cd56ac42ef8e0c0aaecf5fc7878406fe66db88ecf8061456f50cdd2eb",
+      "major": 49,
+      "minor": 0,
+      "methods": [
+        {
+          "name": "<init>",
+          "descriptor": "(I)V",
+          "access": 1,
+          "code_bytes": 33,
+          "code_sha256": "840c12314023e44ac576ceebb4dcff73aabb120975050b047957191bcad93832"
+        },
+        {
+          "name": "a",
+          "descriptor": "(Liz;Lgs;Lfd;IIII)Z",
+          "access": 1,
+          "code_bytes": 277,
+          "code_sha256": "c4ad38b8166232c108d90e9a7ced1364688d690ad42c25052e07424e0754d2f2"
+        },
+        {
+          "name": "a",
+          "descriptor": "(Liz;)Ljava/lang/String;",
+          "access": 1,
+          "code_bytes": 12,
+          "code_sha256": "5618128217f4eacc2da398b30d2b943f71c009a0728f2f44852bc5579260f9e7"
+        },
+        {
+          "name": "a",
+          "descriptor": "()Ljava/lang/String;",
+          "access": 1,
+          "code_bytes": 12,
+          "code_sha256": "5618128217f4eacc2da398b30d2b943f71c009a0728f2f44852bc5579260f9e7"
+        }
+      ]
+    }
+  }
+}

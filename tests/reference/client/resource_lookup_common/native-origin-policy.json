@@ -1,0 +1,38 @@
+{
+  "scope": "Official versioned archive/entry provenance only. Actual future JVM load/path is separately required.",
+  "admitted_origin": {
+    "archive_pin": {
+      "bytes": 609967,
+      "sha256": "68d4e8a53168123051cc5729c41e89f4eef074f7fe1b42984cbc140f6bef6d43"
+    },
+    "entry": "lwjgl64.dll",
+    "filename": "lwjgl64.dll",
+    "file_pin": {
+      "bytes": 306176,
+      "sha256": "86a8e4555d3614e7ed5a24beda921396ceb9e41dbf2508d713a3d26b928862b7"
+    },
+    "entry_crc32": "4c88a7c1",
+    "official_response_url": "https://libraries.minecraft.net/org/lwjgl/lwjgl/lwjgl-platform/2.9.0/lwjgl-platform-2.9.0-natives-windows.jar"
+  },
+  "other_retained_origins": {
+    "linux": {
+      "archive_pin": {
+        "bytes": 569061,
+        "sha256": "f89797962cd00024588b9972b7b2fb9d1c1c81817db0e47499824df2f8a310fd"
+      },
+      "entry": "liblwjgl64.so",
+      "filename": "liblwjgl64.so",
+      "file_pin": {
+        "bytes": 445368,
+        "sha256": "60a9a67061a3dc6b9d055946c58f1f64792abb2127ba0156eaf735dbee5bc729"
+      },
+      "entry_crc32": "d13da6b9",
+      "official_response_url": "https://libraries.minecraft.net/org/lwjgl/lwjgl/lwjgl-platform/2.9.0/lwjgl-platform-2.9.0-natives-linux.jar"
+    }
+  },
+  "recovery_receipt": {
+    "bytes": 8100,
+    "sha256": "2ff1cf2994bda3cc9cde4c7b3b9e45cc1748a29ed252c4aaf9046deb47fa7d3b"
+  },
+  "Launcher_Windows_equality_to_official_bytes": true
+}

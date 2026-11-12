@@ -1,0 +1,80 @@
+{
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "scope": "19594 registered Item/Block-or-NULL pairs. Six actual Item, Stack and Inventory speed/harvest results per pair. All202 actual Items and all38 runtime Item Classes. Null Inventory Player, count=-3, damage=-7. No World, graphics, audio, server or full gameplay qualification.",
+  "observations_sha256": "8a7fdd8c54dd2e3f3988aa4d3cc4f6390134f63f30e8df3c21032cb99be07e2a",
+  "classes_sha256": "1c9a5ba5186e7cb4c2c076ae1e4d765eac7cebad88e3c4dca74beddbb446d0e6",
+  "source_pins_sha256": "d49995e67fcd0b30a48b4b25b4a8d84039a62ddcc2a24ef59b1d467c1377c65e",
+  "java": "Temurin17.0.17+10, -Xint -Xverify:all -Xmx256m -Djava.awt.headless=true",
+  "independent_captures": [
+    {
+      "output_sha256": "9d8e9b8b85ccb01bb32268c5ed394057075fa3964291862816a9558c0634f610",
+      "items": 202,
+      "classes": 38,
+      "pairs": 19594,
+      "results": 117564
+    },
+    {
+      "output_sha256": "9d8e9b8b85ccb01bb32268c5ed394057075fa3964291862816a9558c0634f610",
+      "items": 202,
+      "classes": 38,
+      "pairs": 19594,
+      "results": 117564
+    },
+    {
+      "output_sha256": "9d8e9b8b85ccb01bb32268c5ed394057075fa3964291862816a9558c0634f610",
+      "items": 202,
+      "classes": 38,
+      "pairs": 19594,
+      "results": 117564
+    }
+  ],
+  "destroy": {
+    "scope": "1947 actual Item destruction rows across202 Items and durability/count edge inputs;384 actual IZ wrapper rows with used/broken statistic deltas;6 actual OS Stone-removal rows with current-cell,Stack,statistic,Block and Item-drop observations. Both fresh VMs deny network/listen/native loading and report zero attempts. No pixels/audio/FPS/server/extended-play claim.",
+    "observations_sha256": "cd0531fe12e28ae3f103cee4c114c309162d56640bc1cbfe6dd8a9cb91d6829e",
+    "controller_sha256": "5a64ef507682f1448fd43a15d423f05634ee20dae634cc84133d3e0dd68d4770",
+    "source_pins_sha256": "f25beba6eefd475bc564bcaabd900bbea4e97a9f245fbf9d4a41a9b9fefaf425",
+    "direct_rows": 1947,
+    "wrapper_rows": 384,
+    "controller_rows": 6,
+    "independent_captures": [
+      {
+        "stdout_sha256": "318a0cc94a67cbc745738210ee29c1527037f46c2daf69ec2bcd08e5b68659eb",
+        "stderr_sha256": "a83429f4e7d83dad49970f75d017e8f0449e307f305d9cde61bf8fc152b75e75",
+        "inputs": {
+          "b1.7.3.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+          "lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+          "lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+          "jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+          "jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+          "java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+          "javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+          "modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+          "MiningDestroyObservation.java": "277bc7fc93cfa240970ddb30414401540e8458067151a50f1ffaecfc122f634f",
+          "capture_reference.py": "b927b72a0888b13862128dc6b3f177c21b15b69e19ae46c5fbd75a1efcaeee96",
+          "capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+          "classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+          "jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+        }
+      },
+      {
+        "stdout_sha256": "318a0cc94a67cbc745738210ee29c1527037f46c2daf69ec2bcd08e5b68659eb",
+        "stderr_sha256": "3022ae9fee57a9faa268890111f032bf065aa3fafd975f3d7227a37e3652ad0a",
+        "inputs": {
+          "b1.7.3.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+          "lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+          "lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+          "jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+          "jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+          "java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+          "javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+          "modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+          "MiningDestroyObservation.java": "277bc7fc93cfa240970ddb30414401540e8458067151a50f1ffaecfc122f634f",
+          "capture_reference.py": "b927b72a0888b13862128dc6b3f177c21b15b69e19ae46c5fbd75a1efcaeee96",
+          "capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+          "classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+          "jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+        }
+      }
+    ]
+  }
+}

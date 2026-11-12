@@ -1,0 +1,192 @@
+{
+  "status": "PASS_PASSIVE_ORIGINAL_MOB_NBT_TRACE_AUDIT",
+  "original_processes_started": 0,
+  "source_or_debugger_mutations": false,
+  "input_before_sha256": {
+    "C:\\Users\\admin\\minecraft\\.local\\client-mob-nbt-original-20261101\\audit_trace.py": "e3608b6063c6f86f05f10f43909b1dce78a77e021d4d8ac140d0e0be3644bc4f",
+    ".local\\client-mob-nbt-original-20261101\\linux-captures\\client-mob-nbt-vosb04wz\\receipt.json": "de33bc9b49404c55704195f1c18ff23e3bd6a3259e6567e4b476c4eeeb1f6868",
+    "C:\\Users\\admin\\minecraft\\.local\\client-mob-nbt-original-20261101\\linux-captures\\client-mob-nbt-vosb04wz\\debugger\\checkpoints.ndjson": "49eebefbb4c84ec5b41df690ddfbde7260c084cc7723c90e2305d335d2485872",
+    "C:\\Users\\admin\\minecraft\\.local\\client-mob-nbt-original-20261101\\linux-captures\\client-mob-nbt-vosb04wz\\ordinary\\target.ndjson": "8cebdb030e3f978f1ec7044af35d9fc99b07a46659da8cf79af9c2627853b939",
+    "C:\\Users\\admin\\minecraft\\.local\\client-mob-nbt-original-20261101\\linux-captures\\client-mob-nbt-vosb04wz\\debugger\\target.ndjson": "c2e80cd5c25f216a55130dc410ee2ba67cb113a945b8b33568db42c520409c33",
+    "C:\\Users\\admin\\minecraft\\.local\\client-mob-nbt-original-20261101\\linux-captures\\client-mob-nbt-vosb04wz\\original-Code.json": "022e84b685de941e19a743c5049aba550224285058063af568e697fd36469c0e"
+  },
+  "input_after_sha256": {
+    "C:\\Users\\admin\\minecraft\\.local\\client-mob-nbt-original-20261101\\audit_trace.py": "e3608b6063c6f86f05f10f43909b1dce78a77e021d4d8ac140d0e0be3644bc4f",
+    ".local\\client-mob-nbt-original-20261101\\linux-captures\\client-mob-nbt-vosb04wz\\receipt.json": "de33bc9b49404c55704195f1c18ff23e3bd6a3259e6567e4b476c4eeeb1f6868",
+    "C:\\Users\\admin\\minecraft\\.local\\client-mob-nbt-original-20261101\\linux-captures\\client-mob-nbt-vosb04wz\\debugger\\checkpoints.ndjson": "49eebefbb4c84ec5b41df690ddfbde7260c084cc7723c90e2305d335d2485872",
+    "C:\\Users\\admin\\minecraft\\.local\\client-mob-nbt-original-20261101\\linux-captures\\client-mob-nbt-vosb04wz\\ordinary\\target.ndjson": "8cebdb030e3f978f1ec7044af35d9fc99b07a46659da8cf79af9c2627853b939",
+    "C:\\Users\\admin\\minecraft\\.local\\client-mob-nbt-original-20261101\\linux-captures\\client-mob-nbt-vosb04wz\\debugger\\target.ndjson": "c2e80cd5c25f216a55130dc410ee2ba67cb113a945b8b33568db42c520409c33",
+    "C:\\Users\\admin\\minecraft\\.local\\client-mob-nbt-original-20261101\\linux-captures\\client-mob-nbt-vosb04wz\\original-Code.json": "022e84b685de941e19a743c5049aba550224285058063af568e697fd36469c0e"
+  },
+  "inputs_unchanged": true,
+  "actual_hook_chains": [
+    {
+      "phase": 0,
+      "actual_hook_chain": [
+        "cn",
+        "gz",
+        "ls"
+      ],
+      "dispatch_stages": 7,
+      "jc_read_pc": 66,
+      "missing_health_prefixes": {
+        "after_initial_store": 10,
+        "before_fallback_store": 22,
+        "after_fallback_store": 25
+      }
+    },
+    {
+      "phase": 1,
+      "actual_hook_chain": [
+        "gz",
+        "ls"
+      ],
+      "dispatch_stages": 7,
+      "jc_read_pc": 66,
+      "missing_health_prefixes": {
+        "after_initial_store": 10,
+        "before_fallback_store": 22,
+        "after_fallback_store": 25
+      }
+    },
+    {
+      "phase": 2,
+      "actual_hook_chain": [
+        "fr",
+        "gz",
+        "ls"
+      ],
+      "dispatch_stages": 7,
+      "jc_read_pc": 66,
+      "missing_health_prefixes": {
+        "after_initial_store": 10,
+        "before_fallback_store": 22,
+        "after_fallback_store": 25
+      }
+    },
+    {
+      "phase": 3,
+      "actual_hook_chain": [
+        "gb",
+        "gz",
+        "ls"
+      ],
+      "dispatch_stages": 7,
+      "jc_read_pc": 66,
+      "missing_health_prefixes": {
+        "after_initial_store": 10,
+        "before_fallback_store": 22,
+        "after_fallback_store": 25
+      }
+    },
+    {
+      "phase": 4,
+      "actual_hook_chain": [
+        "uw",
+        "ls"
+      ],
+      "dispatch_stages": 7,
+      "jc_read_pc": 66,
+      "missing_health_prefixes": {
+        "after_initial_store": 10,
+        "before_fallback_store": 22,
+        "after_fallback_store": 25
+      }
+    },
+    {
+      "phase": 5,
+      "actual_hook_chain": [
+        "wh",
+        "bg",
+        "ls"
+      ],
+      "dispatch_stages": 7,
+      "jc_read_pc": 66,
+      "missing_health_prefixes": {
+        "after_initial_store": 10,
+        "before_fallback_store": 22,
+        "after_fallback_store": 25
+      }
+    },
+    {
+      "phase": 6,
+      "actual_hook_chain": [
+        "dl",
+        "bg",
+        "ls"
+      ],
+      "dispatch_stages": 7,
+      "jc_read_pc": 66,
+      "missing_health_prefixes": {
+        "after_initial_store": 10,
+        "before_fallback_store": 22,
+        "after_fallback_store": 25
+      }
+    },
+    {
+      "phase": 7,
+      "actual_hook_chain": [
+        "bx",
+        "bg",
+        "ls"
+      ],
+      "dispatch_stages": 7,
+      "jc_read_pc": 66,
+      "missing_health_prefixes": {
+        "after_initial_store": 10,
+        "before_fallback_store": 22,
+        "after_fallback_store": 25
+      }
+    },
+    {
+      "phase": 8,
+      "actual_hook_chain": [
+        "ww",
+        "bg",
+        "ls"
+      ],
+      "dispatch_stages": 7,
+      "jc_read_pc": 66,
+      "missing_health_prefixes": {
+        "after_initial_store": 10,
+        "before_fallback_store": 22,
+        "after_fallback_store": 25
+      }
+    },
+    {
+      "phase": 9,
+      "actual_hook_chain": [
+        "gi",
+        "bg",
+        "ls"
+      ],
+      "dispatch_stages": 7,
+      "jc_read_pc": 66,
+      "missing_health_prefixes": {
+        "after_initial_store": 10,
+        "before_fallback_store": 22,
+        "after_fallback_store": 25
+      }
+    },
+    {
+      "phase": 10,
+      "actual_hook_chain": [
+        "xt",
+        "ar",
+        "ls"
+      ],
+      "dispatch_stages": 7,
+      "jc_read_pc": 66,
+      "missing_health_prefixes": {
+        "after_initial_store": 10,
+        "before_fallback_store": 22,
+        "after_fallback_store": 25
+      }
+    }
+  ],
+  "slime_completed_living_then_resize_cases": 5,
+  "removed_gate_ID_before_dead_read": true,
+  "wrong_Health_fails_before_first_Living_store": true,
+  "wolf_owner_retention_and_watch_bits": true,
+  "scope": "Prepared NULLWorld original Mob owners only. ID-null branch is static bytecode evidence, not a dynamically constructed unregistered subtype. No actual World/Chunk caller, native, server, or Nether qualification."
+}

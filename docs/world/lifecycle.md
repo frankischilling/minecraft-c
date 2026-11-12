@@ -17,6 +17,13 @@ interval regression have separate Windows/Linux passes.
 
 ## Saving and unloading
 
+GAME main-save callbacks now use the [live Entity/TileEntity coordinator](saving.md).
+Detailed runtime save/save-client/save-chunks/maintenance entries return fresh
+per-attempt diagnostics with complete save children. Synchronous nested calls
+suspend and restore their predecessor's acquisition/lifecycle frames. The
+legacy entries delegate to these wrappers. This does not add natural dedicated
+World construction, other Entity descendants or whole World metadata saves.
+
 `mc/world/cache/lifecycle.h` borrows the cache, ordered pending set, stable clock
 and explicit callback owners. Normal eligibility uses dirty, never-save,
 entity-save eligibility and signed `now >= wrap(last_save_time + 600)`. Forced
@@ -32,7 +39,7 @@ A completed forced traversal flushes once. Callbacks may append, remove, replace
 or recursively process live objects; there is no shadow graph or rollback.
 
 Maintenance uses a 100-iteration loop, selecting at most 100 pending keys.
-It retains each selected key and mapped identity through active=false, tile
+It retains each selected key and mapped identity through active=false, TileEntity
 invalidation, eight deferred entity
 slices, main save and extra save. It removes that key from pending and the
 current map, then only the first matching retained identity from the list.
@@ -41,7 +48,7 @@ other-key references survive. Unload does not test eligibility or clear dirty.
 Missing selected map entries return a bounded state error.
 
 `mc_chunk_lifecycle_detach` also exposes the direct chunk entry, including
-unpublished identities. It retains one local lease, clears active before tile
+unpublished identities. It retains one local lease, clears active before TileEntity
 invalidation and visits every entity slice. Blank chunks have a virtual no-op
 body. It applies no saving gate and does not save or change cache membership.
 Earlier effects survive callback failures; all successful local retains unwind.
@@ -79,8 +86,9 @@ borrowed view before releasing its owner. C cannot detect arbitrary raw pointers
 this is explicit ownership, not a Java garbage-collector model.
 
 `mc/world/runtime/runtime.h` binds an existing store and empty caller-owned
-cache/ordered pending descriptors. Live time/spawn/force/save-off values have
-stable addresses. Each metadata save obtains a fresh store view, overlays live
+cache/ordered pending descriptors. Its const live descriptor contains pointers
+to stable time/spawn/force/save-off cells. In legacy composition, each metadata
+save obtains a fresh store view, overlays live
 time/spawn and preserves current SizeOnDisk and loaded last_played. Serialized
 LastPlayed uses the supplied clock. Metadata saved before chunk growth
 intentionally lags that operation's later live SizeOnDisk.
@@ -88,13 +96,38 @@ intentionally lags that operation's later live SizeOnDisk.
 failed query preserves its output, and inspection preserves the last runtime
 failure diagnostic.
 
+An optional retained [WorldInfo](info.md) supplies the actual time/spawn cells
+and every field of the runtime's metadata view. Callback changes need no
+entry/exit copying; copied Infos keep independent scalars even with a shared
+store. Runtime-owned flags remain separate. Typed chunk transport accounts
+growth only to the calling Info. This mode can start without disk metadata;
+it does not manufacture a file to initialize the World. Its actual World/list
+metadata save operation remains explicitly unsupported. Standalone typed
+no-list store serialization is a distinct route, not a fallback for that call.
+
 Runtime entry functions block destruction across callbacks, including progress,
 auxiliary and provider callbacks without a selected chunk. Current chunk leases
 block retirement even if callbacks remove every map/list reference. Free refuses
-nonempty cache/list/pending or an active call/lease; it does not unload or free
+nonempty cache/list/pending, an active call/lease or a persistent binding; it does not unload or free
 store chunks.
 
-The native loader activates only empty entity/tile runtime records. Explicit
+The runtime can borrow a nullable application Random profile. Without one,
+existing storage/numerical operations remain available and default Random
+construction is rejected. With one, the bridge invokes the actual profile
+constructor once under call protection. Its exact typed status survives
+unrelated operations; success preserves prior storage diagnostics. A bound
+profile must outlive the runtime and its users. Runtime creation performs no
+late substitute for the original World constructor's Random/clock sequence.
+
+Persistent binding retains/releases protect actual Entity/TileEntity world fields
+independently of entered calls, chunk leases and collection membership.
+[ItemEntity construction](../entity/construction.md) retains at its reached
+world-field store; even later constructor failure keeps that binding until
+the Entity's final release. Removing a collection entry alone releases no
+world-field binding. Retain overflow and release underflow are reported without
+wrapping the count. These lifetime operations invoke no callbacks.
+
+The native loader activates only empty entity/TileEntity runtime records. Explicit
 registration/detachment callbacks are empty while every required coordinator
 boundary still runs. Generic callbacks can represent separately observed external
 feature effects; they do not implement those feature bodies. Runtime writes

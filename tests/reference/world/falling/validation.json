@@ -1,0 +1,118 @@
+{
+  "schema": 1,
+  "date": "2026-10-29",
+  "scope": "one authored 75-block recursive immediate-gravel client scenario; no whole-falling parity claim",
+  "java_runtime": "Temurin 17.0.17+10, OpenJDK 64-Bit Server VM",
+  "javac": "17.0.17",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "class_sha256": {
+    "fd": "b91d4726c43ed2dad1a72fd8d925eaded8a7c365af5d9f37c3ad101b957a4100",
+    "gk": "37e191ced3871708dc7b7d886419f29efd32d3fdd6a820b387538dff1b93ed57",
+    "lm": "ce93bdfff48935ca907ef111233cab0645dfb720ec9e9b5795fef65e9d093aa2",
+    "qy": "500a13a82592d4aa09a9b36de409138962f7a43e31f5bd6906976d4d01630c83"
+  },
+  "observer_sha256": "bbce288b856623ad969be34bbcf4ca5e2d241db8830e5ce7b66491fd6d41b49e",
+  "working_directory": "repository root",
+  "capture_directory": ".local/falling-public-observer-0c2c249eaec145ae986453d3df97b416",
+  "commands": {
+    "compile": [
+      "javac",
+      "-d",
+      "<capture>/classes",
+      "tests/reference/world/falling/FallingRecursiveObservation.java"
+    ],
+    "run": [
+      "java",
+      "-Xverify:all",
+      "-cp",
+      "<capture>/classes",
+      "FallingRecursiveObservation",
+      "b1.7.3.jar",
+      "<capture>/world"
+    ]
+  },
+  "inputs": {
+    "fixture": "copy of world0 from successful native world.falling capture-d008476ee5ab4047bed453eaa540a7f3",
+    "level_dat_sha256": "622c191238222686f09f5c6d4107e612d823b4d3362537b990d0d2d81d0d2fd3",
+    "region_sha256": "0c10a7d0b3eb3193834a7839d5bdd76d624f0d0abe92a18f570250eff9782c63",
+    "column": {
+      "x": 20,
+      "z": 20,
+      "stone_y": 4,
+      "initial_air_y": 5,
+      "initial_gravel_y_inclusive": [
+        6,
+        80
+      ]
+    },
+    "explicit_post_load_controls": [
+      "fd.a=true",
+      "gk.a=true"
+    ],
+    "restored_controls": true
+  },
+  "result": {
+    "exit": 0,
+    "survivors": 38,
+    "gravel_y_inclusive": [
+      5,
+      42
+    ],
+    "air_y_inclusive": [
+      43,
+      80
+    ],
+    "scheduled_qy_f_delta": 150,
+    "F_E_counts_unchanged": true,
+    "same_world_Random_serialization_unchanged": true,
+    "stdout_bytes": 359,
+    "stdout_sha256": "8db0e279fe3fa8928dec23da825445c13c42ea370d0bee3e2afac291ad37731a",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_sites": {
+    "gk.b(Lfd;IIII)V": [
+      13
+    ],
+    "gk.a(Lfd;IIILjava/util/Random;)V": [
+      6
+    ],
+    "gk.h(Lfd;III)V": [
+      79,
+      90,
+      100,
+      119,
+      122
+    ],
+    "fd.c(IIIII)V": [
+      0,
+      9,
+      142
+    ],
+    "fd.f(IIII)Z": [
+      6,
+      18,
+      23
+    ],
+    "fd.i(IIII)V": [
+      8,
+      19,
+      30,
+      41,
+      52,
+      63
+    ],
+    "lm.a(IIII)Z": [
+      47,
+      50
+    ]
+  },
+  "native_control": {
+    "test": "world.falling",
+    "configuration": "Windows MSVC Debug",
+    "before_fix_exit": 3221225725,
+    "after_fix_exit": 0,
+    "after_fix_checks": 616,
+    "original_process_in_normal_CTest": false
+  }
+}

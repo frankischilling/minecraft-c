@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "rows": 32,
+  "jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "capture_sha256": "481ab6c69ebe8ce9a4af9b10cd8b4d2c8aa2eafbc61e5e0eefceeee22ab80dc8",
+  "selected_rows_sha256": "576a5688193627c1ed971441d6491f1cf5e5bdc4c5df261792570e330aaae367",
+  "source_pins_sha256": "59123a85a61c440b87d0c54129bfc0ff4558a324c99674865a01994900ff5206",
+  "helpers": {
+    "HeldItemObservation$1.class": "6f33bb865e89edb7313db2552beb683007a81225719db22e6c69b008da511be5",
+    "HeldItemObservation$Observer.class": "ff90e16266d07c47c3152909a43ad89dd31479cce98a8fca5b2fb2cb11837b7f",
+    "HeldItemObservation.class": "dc7f7d69b528db75525e72fa503385f40cca37ee02b5565d5750a01080401bcb"
+  },
+  "input_and_helper_continuity": true,
+  "ordinary_exit": 0,
+  "network": 0,
+  "native_links": 0
+}

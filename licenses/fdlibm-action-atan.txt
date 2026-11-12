@@ -1,0 +1,31 @@
+Netlib atan component used by Player action
+=========================================
+
+The separately attributed code in src/entity/action/atan.c originates from
+Netlib s_atan.c, not OpenJDK's GPL-licensed source. Its original Sun permission
+notice is preserved in the source file; the project's MIT license does not
+replace that notice.
+
+Independent port origin:
+  https://netlib.org/fdlibm/s_atan.c
+  SCCS: s_atan.c 1.3 95/01/18
+  Length: 4207 bytes
+  SHA256: 8583c253aed6318dee2a48135e3f3b1328d838a390372a69414ac41eb5ce5ce1
+
+Target-source audit only:
+  OpenJDK jdk17u tag jdk-17.0.17+10
+  src/java.base/share/native/libfdlibm/s_atan.c
+  Length: 5437 bytes
+  SHA256: 6e81b3fabad02bb53187dffdf90b2854cc6a7860323cd27c06e1a245e8d9e8a4
+
+The Netlib and actual JDK17 kernel operator/coefficient sequences are compared
+independently of copyright headers and whitespace. Runtime qualification uses
+the actual JDK17 Math.atan. This is not an earlier game-version substitution
+or a host-libm shortcut. No OpenJDK source is included in this payload.
+
+Adaptations rename the private entrypoint, replace pointer-aliasing word access
+with memcpy/uint64_t extraction, encode the original coefficient words as exact
+hexadecimal doubles, and add C17 types/assertions and formatting. Source branch
+conditions, operation association, reductions and return formulas are retained.
+The admitted FP profile requires strict binary64 nearest-even evaluation,
+gradual underflow and no reassociation/FMA. Floating flags/errno are not claimed.

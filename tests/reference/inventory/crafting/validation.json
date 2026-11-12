@@ -1,0 +1,123 @@
+{
+  "schema": "CRAFTING_REFERENCE_VALIDATION_V1",
+  "comparison": {
+    "client": {
+      "cases": 1047,
+      "rows": 1153,
+      "classes": 18,
+      "Code_methods": 196,
+      "runtime_bindings_verified": true,
+      "class_initialization": {
+        "required_initialized": [
+          "aa",
+          "dw",
+          "gp",
+          "hk",
+          "is",
+          "it",
+          "ix",
+          "jl",
+          "mq",
+          "pv",
+          "tt",
+          "wl",
+          "yv"
+        ],
+        "excluded_uninitialized": [
+          "dc",
+          "fd",
+          "gs",
+          "ls",
+          "net/minecraft/client/Minecraft",
+          "sn"
+        ],
+        "initialized_classes": 1344
+      },
+      "stderr_bytes": 0,
+      "exact_rows": true
+    },
+    "server": {
+      "cases": 1047,
+      "rows": 1153,
+      "classes": 18,
+      "Code_methods": 186,
+      "runtime_bindings_verified": true,
+      "class_initialization": {
+        "required_initialized": [
+          "cl",
+          "el",
+          "ey",
+          "ft",
+          "fu",
+          "fx",
+          "gg",
+          "hz",
+          "js",
+          "ml",
+          "o",
+          "of",
+          "py"
+        ],
+        "excluded_uninitialized": [
+          "dj",
+          "em",
+          "net/minecraft/server/MinecraftServer"
+        ],
+        "initialized_classes": 1048
+      },
+      "stderr_bytes": 0,
+      "exact_rows": true
+    }
+  },
+  "source_pins_unchanged_after_run": true,
+  "malformed_metadata_checks": 8,
+  "strict_protocol_windows": {
+    "passed": true,
+    "checks": 48,
+    "reject_policy": "exit1, REQUIRE diagnostics only, full graph-only stdout prefix; sanitizer/crash output fails"
+  },
+  "independent_root_comparisons": {
+    "windows_jdk17_0_17": "both JAR sides exact1153rows/1047cases; exit0, empty stderr",
+    "linux_jdk17_0_20_clang_gcc_sanitized": "both JAR sides exact1153rows/1047cases; exit0, empty stderr"
+  },
+  "strict_protocol_linux": "Parent reruns final strengthened diagnostic revision before publication; earlier revision passed48 on both sanitized products.",
+  "private_evidence": ".local/player-crafting-reference-validation-20261025a/ and independent root validation directories",
+  "published_captures_assets_classes": false,
+  "scope": "Actual client/server InventoryCrafting/result/InventoryPlayer constructors and implemented operations, real Player/Workbench containers and151-recipe matching/output previews. Genuine null Player/World constructor inputs remain unread. No output pickup, Player gameplay, World/map/stat effects, rendering, audio or networking equivalence.",
+  "final_package_line_endings": "All11files normalized to LF; class/Code/helper/native metadata unchanged. Parent reruns integrated final-byte comparison and strict protocol on Windows/Clang/GCC.",
+  "root_integration": {
+    "windows_msvc_19_51": {
+      "integrated_tests": 3,
+      "outer_checks_per_side": 254,
+      "protocol_cases": 48,
+      "original_cases_per_side": 1047,
+      "original_rows_per_side": 1153,
+      "jdk": "17.0.17+10",
+      "asan": false
+    },
+    "linux_clang_18_1_3": {
+      "integrated_tests": 3,
+      "outer_checks_per_side": 253,
+      "protocol_cases": 48,
+      "original_cases_per_side": 1047,
+      "original_rows_per_side": 1153,
+      "jdk": "17.0.20",
+      "asan": true,
+      "ubsan": true,
+      "leak_checks": true
+    },
+    "linux_gcc_13_3": {
+      "integrated_tests": 3,
+      "outer_checks_per_side": 253,
+      "protocol_cases": 48,
+      "original_cases_per_side": 1047,
+      "original_rows_per_side": 1153,
+      "jdk": "17.0.20",
+      "asan": true,
+      "ubsan": true,
+      "leak_checks": true
+    },
+    "publication": "All execution sources and reference pin files normalized to LF before these integrated comparisons.",
+    "scope": "Native construction/inventory/matching and finite unchanged-original CPU projections; full Player gameplay remains unfinished."
+  }
+}

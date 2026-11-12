@@ -1,0 +1,1071 @@
+{
+  "schema": 1,
+  "status": "FROZEN_INPUT_ROSTER_BEFORE_HELPERS_NOT_EXECUTED",
+  "use_columns": [
+    "item",
+    "count",
+    "damage",
+    "face",
+    "clicked_x",
+    "clicked_y",
+    "clicked_z",
+    "target_x",
+    "target_y",
+    "target_z",
+    "clicked_id",
+    "support_id",
+    "target_id",
+    "remote",
+    "null_mask",
+    "observer_mode"
+  ],
+  "use_rows": [
+    {
+      "name": "face-0",
+      "values": [
+        331,
+        2,
+        0,
+        0,
+        8,
+        65,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "face-1",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "face-2",
+      "values": [
+        331,
+        2,
+        0,
+        2,
+        8,
+        64,
+        9,
+        8,
+        64,
+        8,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "face-3",
+      "values": [
+        331,
+        2,
+        0,
+        3,
+        8,
+        64,
+        7,
+        8,
+        64,
+        8,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "face-4",
+      "values": [
+        331,
+        2,
+        0,
+        4,
+        9,
+        64,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "face-5",
+      "values": [
+        331,
+        2,
+        0,
+        5,
+        7,
+        64,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "signed-face--1",
+      "values": [
+        331,
+        2,
+        0,
+        -1,
+        8,
+        64,
+        8,
+        8,
+        64,
+        8,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "signed-face-6",
+      "values": [
+        331,
+        2,
+        0,
+        6,
+        8,
+        64,
+        8,
+        8,
+        64,
+        8,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "signed-face--2147483648",
+      "values": [
+        331,
+        2,
+        0,
+        -2147483648,
+        8,
+        64,
+        8,
+        8,
+        64,
+        8,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "signed-face-2147483647",
+      "values": [
+        331,
+        2,
+        0,
+        2147483647,
+        8,
+        64,
+        8,
+        8,
+        64,
+        8,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "count-0",
+      "values": [
+        331,
+        0,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "count--1",
+      "values": [
+        331,
+        -1,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "count--2147483648",
+      "values": [
+        331,
+        -2147483648,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "count-2147483647",
+      "values": [
+        331,
+        2147483647,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "occupied-target-1",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "occupied-target-31",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        31,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "occupied-target-78",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        78,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "occupied-target-55",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        55,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "substrate-0",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "substrate-18",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        18,
+        18,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "substrate-20",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        20,
+        20,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "substrate-85",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        85,
+        85,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "snow-face-0",
+      "values": [
+        331,
+        2,
+        0,
+        0,
+        8,
+        64,
+        8,
+        8,
+        64,
+        8,
+        78,
+        1,
+        78,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "snow-face-5",
+      "values": [
+        331,
+        2,
+        0,
+        5,
+        8,
+        64,
+        8,
+        8,
+        64,
+        8,
+        78,
+        1,
+        78,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "snow-face--2147483648",
+      "values": [
+        331,
+        2,
+        0,
+        -2147483648,
+        8,
+        64,
+        8,
+        8,
+        64,
+        8,
+        78,
+        1,
+        78,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "remote-supported",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "remote-unsupported",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "clicked-y--1",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        -1,
+        8,
+        8,
+        0,
+        8,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "clicked-y-0",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        0,
+        8,
+        8,
+        1,
+        8,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "clicked-y-126",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        126,
+        8,
+        8,
+        127,
+        8,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "clicked-y-127",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        127,
+        8,
+        8,
+        128,
+        8,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "clicked-y--2147483648",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        -2147483648,
+        8,
+        8,
+        -2147483647,
+        8,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "clicked-y-2147483647",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        2147483647,
+        8,
+        8,
+        -2147483648,
+        8,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "null-player-supported",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        0,
+        0,
+        4,
+        0
+      ]
+    },
+    {
+      "name": "null-player-unsupported",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        0,
+        0,
+        0,
+        0,
+        4,
+        0
+      ]
+    },
+    {
+      "name": "null-player-occupied",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        1,
+        0,
+        4,
+        0
+      ]
+    },
+    {
+      "name": "null-player-setterfalse",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        127,
+        8,
+        8,
+        128,
+        8,
+        1,
+        1,
+        0,
+        0,
+        4,
+        0
+      ]
+    },
+    {
+      "name": "null-world",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        0,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "name": "null-stack",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        0,
+        0,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "callback-refuse-first-cell",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "name": "callback-count-99",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        0,
+        0,
+        0,
+        2
+      ]
+    },
+    {
+      "name": "callback-id-332",
+      "values": [
+        331,
+        2,
+        0,
+        1,
+        8,
+        63,
+        8,
+        8,
+        64,
+        8,
+        1,
+        1,
+        0,
+        0,
+        0,
+        3
+      ]
+    }
+  ],
+  "support_columns": [
+    "x",
+    "y",
+    "z",
+    "target_id",
+    "below_id",
+    "null_world"
+  ],
+  "support_rows": [
+    {
+      "name": "substrate-1",
+      "values": [
+        8,
+        64,
+        8,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "name": "substrate-18",
+      "values": [
+        8,
+        64,
+        8,
+        0,
+        18,
+        0
+      ]
+    },
+    {
+      "name": "substrate-20",
+      "values": [
+        8,
+        64,
+        8,
+        0,
+        20,
+        0
+      ]
+    },
+    {
+      "name": "substrate-85",
+      "values": [
+        8,
+        64,
+        8,
+        0,
+        85,
+        0
+      ]
+    },
+    {
+      "name": "occupied-target",
+      "values": [
+        8,
+        64,
+        8,
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "name": "target-y-0",
+      "values": [
+        8,
+        0,
+        8,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "name": "target-y-1",
+      "values": [
+        8,
+        1,
+        8,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "name": "target-y-127",
+      "values": [
+        8,
+        127,
+        8,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "name": "target-y-128",
+      "values": [
+        8,
+        128,
+        8,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "name": "target-y--2147483648",
+      "values": [
+        8,
+        -2147483648,
+        8,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "name": "target-y-2147483647",
+      "values": [
+        8,
+        2147483647,
+        8,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "name": "null-world",
+      "values": [
+        8,
+        64,
+        8,
+        0,
+        1,
+        1
+      ]
+    }
+  ],
+  "null_mask": {
+    "world": 1,
+    "stack": 2,
+    "player": 4
+  },
+  "observer_modes": {
+    "0": "passive",
+    "1": "throw ISE at first actual cell callback",
+    "2": "store actual Stack.count99 at first actual cell callback",
+    "3": "store actual Stack.id332 at first actual cell callback"
+  },
+  "setup": "one fresh World per cohort/VM, canonical4Chunks; before each row reset Blocks/Data/BlockLight/HeightMap zero,Sky byte0x0f,i0,ntrue. Set support at declared target.y-1 via Java wrap, then clicked ID, then target ID, physical0..31/y0..127 only. Do not reset/drain queues/actors/Set/Random. Real IZ/Item331/Player/stat owners; no proxy or method replacement.",
+  "input_order": "42actualIZwrapper calls and12SMdirect calls in SEPARATE fresh saved World/VM cohorts; no interleaved conditioning",
+  "world_seed": 23,
+  "default_entropy": "constructor-owned, passively observed; no random draws/stores/seeding/reset",
+  "budgets": {
+    "ordinary_seconds": 90,
+    "compile_seconds": 30,
+    "stdout_bytes": 4194304,
+    "stderr_bytes": 1048576,
+    "jdi": "not authored or requested in this preparation"
+  },
+  "outcomes": "NONE supplied: actual result/exception/effect prefix is original evidence, including callback refusals"
+}

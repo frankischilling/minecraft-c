@@ -27,8 +27,7 @@ static const char gzip_optional_hex[] =
     "1f8b081e0000000000ff0300007fff66697874757265006f7074696f6e616c206669656c647300afc8"
     "63a86ff85f5c925f94989eca00005adb852f0c000000";
 
-static size_t decode_hex(const char *hex, uint8_t *bytes)
-{
+static size_t decode_hex(const char *hex, uint8_t *bytes) {
     size_t length = strlen(hex) / 2u;
     for (size_t i = 0; i < length; ++i) {
         unsigned int value = 0;
@@ -50,8 +49,7 @@ static size_t decode_hex(const char *hex, uint8_t *bytes)
 
 static int expect_decoded(mc_compression_format format, const uint8_t *bytes, size_t length,
                           const uint8_t *expected, size_t expected_length, size_t expected_consumed,
-                          const mc_compression_limits *limits)
-{
+                          const mc_compression_limits *limits) {
     mc_compression_buffer output = {0};
     size_t consumed = SIZE_MAX;
     CHECK(mc_compression_decode(format, bytes, length, limits, &output, &consumed) ==
@@ -69,8 +67,7 @@ static int expect_decoded(mc_compression_format format, const uint8_t *bytes, si
 
 static int expect_decode_failure(mc_compression_format format, const uint8_t *bytes, size_t length,
                                  const mc_compression_limits *limits,
-                                 mc_compression_status expected)
-{
+                                 mc_compression_status expected) {
     uint8_t sentinel[] = {1, 2, 3, 4};
     mc_compression_buffer output = {sentinel, sizeof(sentinel)};
     size_t consumed = 98765;
@@ -86,8 +83,7 @@ static int expect_decode_failure(mc_compression_format format, const uint8_t *by
 
 static int expect_encode_failure(mc_compression_format format, const uint8_t *bytes, size_t length,
                                  const mc_compression_limits *limits,
-                                 mc_compression_status expected)
-{
+                                 mc_compression_status expected) {
     uint8_t sentinel[] = {1, 2, 3, 4};
     mc_compression_buffer output = {sentinel, sizeof(sentinel)};
     mc_compression_status status = mc_compression_encode(format, bytes, length, limits, &output);
@@ -99,8 +95,7 @@ static int expect_encode_failure(mc_compression_format format, const uint8_t *by
     return 0;
 }
 
-static int test_fixed_fixtures(void)
-{
+static int test_fixed_fixtures(void) {
     static const struct {
         mc_compression_format format;
         const char *hex;
@@ -110,6 +105,7 @@ static int test_fixed_fixtures(void)
         {MC_COMPRESSION_GZIP, gzip_optional_hex, 0}, {MC_COMPRESSION_GZIP, gzip_empty_hex, 1},
         {MC_COMPRESSION_ZLIB, zlib_empty_hex, 1},
     };
+
     for (size_t i = 0; i < sizeof(fixtures) / sizeof(fixtures[0]); ++i) {
         uint8_t bytes[128];
         size_t length = decode_hex(fixtures[i].hex, bytes);
@@ -123,8 +119,7 @@ static int test_fixed_fixtures(void)
     return 0;
 }
 
-static int test_large_roundtrip_and_ownership(void)
-{
+static int test_large_roundtrip_and_ownership(void) {
     const size_t length = 262161;
     uint8_t *expected = malloc(length);
     CHECK(expected != NULL);
@@ -171,8 +166,7 @@ static int test_large_roundtrip_and_ownership(void)
     return 0;
 }
 
-static int test_concatenation_and_trailing(void)
-{
+static int test_concatenation_and_trailing(void) {
     uint8_t bytes[512];
     size_t first = decode_hex("1f8b08000000000002ffcb48cdc9c9070086a6103605000000", bytes);
     size_t second =
@@ -225,8 +219,7 @@ static int test_concatenation_and_trailing(void)
     return 0;
 }
 
-static int test_malformed_and_truncated(void)
-{
+static int test_malformed_and_truncated(void) {
     static const struct {
         mc_compression_format format;
         const char *hex;
@@ -235,6 +228,7 @@ static int test_malformed_and_truncated(void)
                     {MC_COMPRESSION_ZLIB, zlib_hex},
                     {MC_COMPRESSION_GZIP, gzip_empty_hex},
                     {MC_COMPRESSION_ZLIB, zlib_empty_hex}};
+
     for (size_t i = 0; i < sizeof(fixtures) / sizeof(fixtures[0]); ++i) {
         uint8_t bytes[128];
         size_t length = decode_hex(fixtures[i].hex, bytes);
@@ -292,8 +286,7 @@ static int test_malformed_and_truncated(void)
     return 0;
 }
 
-static int test_byte_limits(void)
-{
+static int test_byte_limits(void) {
     for (int selected = 0; selected < 2; ++selected) {
         mc_compression_format format = selected == 0 ? MC_COMPRESSION_GZIP : MC_COMPRESSION_ZLIB;
         uint8_t bytes[128];
@@ -340,8 +333,7 @@ static int test_byte_limits(void)
     return 0;
 }
 
-static int test_allocation_limits(void)
-{
+static int test_allocation_limits(void) {
     for (int selected = 0; selected < 2; ++selected) {
         mc_compression_format format = selected == 0 ? MC_COMPRESSION_GZIP : MC_COMPRESSION_ZLIB;
         uint8_t bytes[128];
@@ -394,8 +386,7 @@ static int test_allocation_limits(void)
     return 0;
 }
 
-static int test_invalid_arguments(void)
-{
+static int test_invalid_arguments(void) {
     mc_compression_limits limits = mc_compression_default_limits();
     CHECK(limits.max_input_bytes == 64u * 1024u * 1024u);
     CHECK(limits.max_output_bytes == 64u * 1024u * 1024u);
@@ -424,8 +415,7 @@ static int test_invalid_arguments(void)
     return 0;
 }
 
-static int test_allocation_growth(void)
-{
+static int test_allocation_growth(void) {
     const size_t length = 131073;
     uint8_t *payload = malloc(length);
     CHECK(payload != NULL);
@@ -470,8 +460,7 @@ static int test_allocation_growth(void)
     return 0;
 }
 
-static int test_bounded_mutations(void)
-{
+static int test_bounded_mutations(void) {
     static const struct {
         mc_compression_format format;
         const char *hex;
@@ -480,6 +469,7 @@ static int test_bounded_mutations(void)
                  {MC_COMPRESSION_GZIP, gzip_empty_hex},
                  {MC_COMPRESSION_ZLIB, zlib_hex},
                  {MC_COMPRESSION_ZLIB, zlib_empty_hex}};
+
     static const uint8_t masks[] = {1, 0x80, 0xff};
     mc_compression_limits limits = mc_compression_default_limits();
     limits.max_input_bytes = 128;
@@ -523,8 +513,7 @@ static int test_bounded_mutations(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_fixed_fixtures() || test_large_roundtrip_and_ownership() ||
         test_concatenation_and_trailing() || test_malformed_and_truncated() || test_byte_limits() ||
         test_allocation_limits() || test_invalid_arguments() || test_allocation_growth() ||

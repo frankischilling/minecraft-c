@@ -1,0 +1,104 @@
+{
+  "capture_inputs": {
+    "client": {
+      "bytes": 1465375,
+      "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+    },
+    "helper": {
+      "bytes": 19358,
+      "sha256": "90efbd2e831a3b508933adfd59e7038b55761e3e52822784e753b42af418dc27"
+    },
+    "java": {
+      "bytes": 50344,
+      "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+    },
+    "java_native": {
+      "bytes": 148136,
+      "sha256": "18b105254c16e1d83614ff4e32cd62ce402fbe6339bdd1b24ccc7d999fed7f5f"
+    },
+    "javac": {
+      "bytes": 24232,
+      "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+    },
+    "jvm": {
+      "bytes": 12681896,
+      "sha256": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+    },
+    "modules": {
+      "bytes": 128648619,
+      "sha256": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+    },
+    "process_helper": {
+      "bytes": 10182,
+      "sha256": "f08873d98d14ee3ce1fa8c650a4f41f71c11934e0319582a21212d8adc4ab02c"
+    },
+    "recorder": {
+      "bytes": 12287,
+      "sha256": "9a6d285d414e2888767eb016a9185d528d6ad874e06a7544b422da42ee538586"
+    },
+    "release": {
+      "bytes": 1667,
+      "sha256": "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+    },
+    "server": {
+      "bytes": 503100,
+      "sha256": "033a127e4a25a60b038f15369c89305a3d53752242a1cff11ae964954e79ba4d"
+    },
+    "source_archive": {
+      "bytes": 50855389,
+      "sha256": "5d0afb30b29d1eff95502604e9415d361f0f503553f32416320c58c1f0619e1e"
+    }
+  },
+  "capture_receipt": {
+    "bytes": 7232,
+    "sha256": "221117ab19cf470858f9d50043dba6a419f4dd44022570201b7893859de3dae1"
+  },
+  "compiled_classes": {
+    "EntityConstructionObservation.class": {
+      "bytes": 17919,
+      "sha256": "c421bd6a7679a663cfc15e701977cd0feb33209bbdc16055ecd426e164cd060f"
+    }
+  },
+  "exporter": {
+    "bytes": 3776,
+    "sha256": "8b63466a25a42c780ba78b7bbb445276a3acb333dcedfb262951f9ecbed82b31"
+  },
+  "fixture": {
+    "bytes": 1457,
+    "sha256": "3e08eca01a4cf327a58c68ab3e4742652f86debd10847f8f80ae643b941110d9"
+  },
+  "inference": "Inputs reconstructed from actual post-Math states using source-proved call counts; no method-exit trace",
+  "limits": "Formula replay only; no production constructor seed injection, clock/U observation, full-field or world parity",
+  "observations": {
+    "client": {
+      "counts": {
+        "cases": 5,
+        "field_rows": 360,
+        "inferred_draws": 17,
+        "math_post_snapshots": 5,
+        "private_random_snapshots": 5,
+        "rows": 455
+      },
+      "output": {
+        "bytes": 14088,
+        "sha256": "22ceb7377da197318f40196d18bd25a9df28e98039712ad19cdbb1f73b5d21c1"
+      }
+    },
+    "server": {
+      "counts": {
+        "cases": 5,
+        "field_rows": 360,
+        "inferred_draws": 17,
+        "math_post_snapshots": 5,
+        "private_random_snapshots": 5,
+        "rows": 455
+      },
+      "output": {
+        "bytes": 13983,
+        "sha256": "55aacf94987431ef3e6c96043a7091e3c2ee3738371daa17fae1bff1b3b75f9d"
+      }
+    }
+  },
+  "schema": 1,
+  "scope": "Ten original constructor scalar formula cases; 34 inferred draws and 50 observed fields"
+}

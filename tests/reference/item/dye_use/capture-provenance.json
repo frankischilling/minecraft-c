@@ -1,0 +1,124 @@
+{
+  "status": "PASS",
+  "original_game_class_replacements": 0,
+  "profiles": 39,
+  "helpers_before": {
+    "DyeObservation$1.class": "db368014344f469dc6f91c711ea59ed2ede32f126c15b40d79c8aa3267010e5c",
+    "DyeObservation$Observer.class": "314695fddbb544fe6bc56b50be371cd6fafc88596b1df076d2098059bacecf05",
+    "DyeObservation.class": "4f4aae3f131e6bfbf7108ddd9b0ad20a18e0c40210b3354e46c4b11376756d8e"
+  },
+  "inputs_unchanged": true,
+  "helpers_unchanged": true,
+  "ordinary_fresh_vms": 2,
+  "source_writes_from_jdi": 0,
+  "target_invocations_from_jdi": 0,
+  "selected_sha256": "b4820e7faa7cc20a20418ff59de5f8acf8fd633d5d518b033e5dd78f0680423d",
+  "raw_stdout_sha256": "e1adc9933e11b9a9904c4b734123f65c0744d67a4326fa4d478e03ad3ea4b48f",
+  "scope": "Separately prepared wrapper-only IZ cohort on unchanged original classes and genuine saved World/Chunk/App/Player/statistic owners. Actual Item and World Random seeds are declared inputs. Full finite map/array changes and ordered callbacks. No native comparison, JDI ordering observation, graphical, server, save cycle or FPS qualification.",
+  "inputs_before": {
+    "original/client.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "libraries/org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "libraries/org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "libraries/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "libraries/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "jdk/bin/java.EXE": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "jdk/bin/javac.EXE": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "jdk/lib/modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "jdk/bin/server/jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "authored/DyeObservation.java": "db5c8068a3868946685265455c8f082829930bf5fed3f040110f857ca213f709",
+    "authored/profiles.tsv": "1cf7f608ede790e93e2ca3a827c5bd9d14ad54f8b4901cc30f7fe2c89f610f0e",
+    "authored/declared-inputs.json": "9dc7cd14dc73b9f2eb5d454892afbc24e54e3b627036e09358481b0298958c6d",
+    "authored/source-pins.json": "b75ef32e15c68a425f246b45e47491d184106f1c5e92978ff2e7a2f0bec3493a",
+    "authored/capture.py": "84a78749cc748842828177155eca1f58f91cc7432db9de8952bdb846a97a92db",
+    "tests/reference/client/picking/observe.py": "7dc92c800767da251a33c2da082e77f95d75d39544d12ec2207029c7dacb8c23",
+    "tests/reference/client/controller/classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+  },
+  "inputs_after": {
+    "original/client.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "libraries/org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "libraries/org/lwjgl/lwjgl/lwjgl_util/2.9.0/lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "libraries/net/java/jinput/jinput/2.0.5/jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "libraries/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "jdk/bin/java.EXE": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "jdk/bin/javac.EXE": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "jdk/lib/modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "jdk/bin/server/jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "authored/DyeObservation.java": "db5c8068a3868946685265455c8f082829930bf5fed3f040110f857ca213f709",
+    "authored/profiles.tsv": "1cf7f608ede790e93e2ca3a827c5bd9d14ad54f8b4901cc30f7fe2c89f610f0e",
+    "authored/declared-inputs.json": "9dc7cd14dc73b9f2eb5d454892afbc24e54e3b627036e09358481b0298958c6d",
+    "authored/source-pins.json": "b75ef32e15c68a425f246b45e47491d184106f1c5e92978ff2e7a2f0bec3493a",
+    "authored/capture.py": "84a78749cc748842828177155eca1f58f91cc7432db9de8952bdb846a97a92db",
+    "tests/reference/client/picking/observe.py": "7dc92c800767da251a33c2da082e77f95d75d39544d12ec2207029c7dacb8c23",
+    "tests/reference/client/controller/classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+  },
+  "runs": [
+    {
+      "role": "ordinary-0",
+      "returncode": 0,
+      "stdout_sha256": "e1adc9933e11b9a9904c4b734123f65c0744d67a4326fa4d478e03ad3ea4b48f",
+      "stderr_raw_private_sha256": "b8513d4f259a7b80e243546a63d5f3dd1fdf285354da7c11908ef3a8a3b4f892",
+      "world_before": {
+        "level.dat": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283",
+        "region/r.0.0.mcr": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a",
+        "session.lock": "1f68b90274f1bb075fd342378aba11ea80a68c3ae18d1c2a7472964dd616254b"
+      },
+      "world_after": {
+        "level.dat": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283",
+        "region/r.0.0.mcr": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a",
+        "session.lock": "634555cb732a9104732d87ed27580fa28584090602938b68c2bb52fd872487e7"
+      },
+      "command_roles": [
+        "pinned-jdk-java",
+        "-Xint",
+        "-Xverify:all",
+        "-Xmx384m",
+        "headless",
+        "SecurityManager-allow",
+        "open-java.util-for-read-only-RNG-snapshots",
+        "original-JAR-and-pinned-library-classpath",
+        "DyeObservation",
+        "verified-original-JAR",
+        "new-private-world-for-this-VM",
+        "frozen-profiles.tsv"
+      ]
+    },
+    {
+      "role": "ordinary-1",
+      "returncode": 0,
+      "stdout_sha256": "e1adc9933e11b9a9904c4b734123f65c0744d67a4326fa4d478e03ad3ea4b48f",
+      "stderr_raw_private_sha256": "b8513d4f259a7b80e243546a63d5f3dd1fdf285354da7c11908ef3a8a3b4f892",
+      "world_before": {
+        "level.dat": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283",
+        "region/r.0.0.mcr": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a",
+        "session.lock": "1f68b90274f1bb075fd342378aba11ea80a68c3ae18d1c2a7472964dd616254b"
+      },
+      "world_after": {
+        "level.dat": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283",
+        "region/r.0.0.mcr": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a",
+        "session.lock": "7700660a2ea677896ba754df9f487b23bfc8d088f6e38713428a240543e11b70"
+      },
+      "command_roles": [
+        "pinned-jdk-java",
+        "-Xint",
+        "-Xverify:all",
+        "-Xmx384m",
+        "headless",
+        "SecurityManager-allow",
+        "open-java.util-for-read-only-RNG-snapshots",
+        "original-JAR-and-pinned-library-classpath",
+        "DyeObservation",
+        "verified-original-JAR",
+        "new-private-world-for-this-VM",
+        "frozen-profiles.tsv"
+      ]
+    }
+  ],
+  "metadata_projection": {
+    "format": 1,
+    "policy": "Portable roles replace absolute command/input paths. Raw ordinary stdout and every observed scalar/map/diff remain unchanged. Private warning logs remain represented by their raw SHA256 identities.",
+    "raw_private_capture_receipt_sha256": "4670f4e7748ac1733f4ddc9ed9b1ef866b29eaca81d3628e558889ef45b0a3b5",
+    "raw_private_freeze_receipt_sha256": "147132b03d92c4c2203dfd6281ece2937fb0963feace0b1cabee243a767b36f8",
+    "raw_stdout_policy": "Exact original stdout bytes; -text preserves them.",
+    "selection_policy": "Declared LF selection: split source stdout lines, select DYE-prefixed lines, join with LF and final LF."
+  }
+}

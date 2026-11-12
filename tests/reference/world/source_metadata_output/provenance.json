@@ -1,0 +1,1469 @@
+{
+  "schema": 1,
+  "status": "OBSERVED_PREPARED_ORIGINAL_METADATA_OUTPUT_REFERENCE",
+  "scope": "Genuine unchanged original mx.a(ei,List) boundary. Two independent target VMs: ordinary and read-only JDI. No World/Chunk save, nonempty live Player serializer, native C or direct JDK codec control credit.",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "server_jar_sha256": "033a127e4a25a60b038f15369c89305a3d53752242a1cff11ae964954e79ba4d",
+  "server_scope": "Hash checked only; no server class executed.",
+  "host_platform": "win32",
+  "python_version": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+  "jdk_release": "IMPLEMENTOR=\"Eclipse Adoptium\"\nIMPLEMENTOR_VERSION=\"Temurin-17.0.17+10\"\nJAVA_RUNTIME_VERSION=\"17.0.17+10\"\nJAVA_VERSION=\"17.0.17\"\nJAVA_VERSION_DATE=\"2025-10-21\"\nLIBC=\"default\"\nMODULES=\"java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.crypto.mscapi jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.foreign jdk.incubator.vector jdk.internal.le jdk.internal.opt jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom jdk.zipfs\"\nOS_ARCH=\"x86_64\"\nOS_NAME=\"Windows\"\nSOURCE=\".:git:3ae1373f8abb\"\nBUILD_SOURCE=\"git:839fa0b45d809157cffd3dc8515aad262a4a1776\"\nBUILD_SOURCE_REPO=\"https://github.com/adoptium/temurin-build.git\"\nSOURCE_REPO=\"https://github.com/adoptium/jdk17u.git\"\nFULL_VERSION=\"17.0.17+10\"\nSEMANTIC_VERSION=\"17.0.17+10\"\nBUILD_INFO=\"OS: Windows Server 2022 Version: 10.0\"\nJVM_VARIANT=\"Hotspot\"\nJVM_VERSION=\"17.0.17+10\"\nIMAGE_TYPE=\"JDK\"\n",
+  "ordinary_exit": 0,
+  "debugger_exit": 0,
+  "source_calls_per_vm": 7,
+  "jdi_events": 504,
+  "verified_observed_original_and_jdk_code_pins": 22,
+  "input_and_helper_bytes_unchanged": true,
+  "class_metadata": {
+    "original": {
+      "file": "original-Code.json",
+      "sha256": "b6475af86fab03b45c19d7cb89b810bff4249b465707081dd485f51c20f3733e"
+    },
+    "helper": {
+      "file": "helper-Code.json",
+      "sha256": "c702451a1f2fe1c9ffadb8d871f85de886d9f0a1142a5eb72e192cf53d72234f"
+    }
+  },
+  "compiled_helper_class_sha256": {
+    "ConstructorJson.class": "1c13bbd4aa1dc7928a37d158835f81cb977a33d3699d34d45a73e9cbacdd462a",
+    "MetadataJdi.class": "19900d7263587bb699bd1edc75c5dbcfc8d4a67afc99c2c60718cf03caaf4df7",
+    "MetadataTarget$Original.class": "d403f04a3b1e553d6be61772672508e2908ce64b5ea34dd996b79e28a2046874",
+    "MetadataTarget.class": "9dc500acc67da411e877aee55445456e9895b3608648bad9acc27f67a6fc9ab5"
+  },
+  "helper_source_sha256": {
+    "ConstructorJson.java": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3",
+    "MetadataJdi.java": "aff7ae7e489be196dda2e19de6db48be158829f62cace957e7c7d257b6b5bfc9",
+    "MetadataTarget.java": "2c4d627cebce3cb13dd49a06dd0534103cc2346a5da724dd08c60cff92087d5a"
+  },
+  "driver_sha256": "ee7c19a161e7aa0901c81f1f84bab5fac44038d93c2a25bad53276474aa9c0f9",
+  "scenarios_sha256": "0f677ae51e106f9140ad162ef67cfc0542365fa236e7b48af614f846285a665d",
+  "original_typed_metadata_values": {
+    "ordinary": {
+      "0": [
+        10,
+        {
+          "Data": [
+            10,
+            {
+              "RandomSeed": [
+                4,
+                -9223372036854775807
+              ],
+              "SpawnY": [
+                3,
+                65
+              ],
+              "rainTime": [
+                3,
+                -345
+              ],
+              "thunderTime": [
+                3,
+                678
+              ],
+              "SpawnZ": [
+                3,
+                1003
+              ],
+              "SpawnX": [
+                3,
+                -17
+              ],
+              "raining": [
+                1,
+                1
+              ],
+              "Time": [
+                4,
+                23999
+              ],
+              "thundering": [
+                1,
+                0
+              ],
+              "version": [
+                3,
+                19132
+              ],
+              "LastPlayed": [
+                4,
+                1793499836905
+              ],
+              "LevelName": [
+                8,
+                [
+                  70,
+                  105,
+                  114,
+                  115,
+                  116,
+                  0,
+                  937,
+                  55357,
+                  56832
+                ]
+              ],
+              "SizeOnDisk": [
+                4,
+                9876543210
+              ]
+            }
+          ]
+        }
+      ],
+      "1": [
+        10,
+        {
+          "Data": [
+            10,
+            {
+              "RandomSeed": [
+                4,
+                -9223372036854775807
+              ],
+              "SpawnY": [
+                3,
+                65
+              ],
+              "rainTime": [
+                3,
+                -345
+              ],
+              "thunderTime": [
+                3,
+                678
+              ],
+              "SpawnZ": [
+                3,
+                1003
+              ],
+              "SpawnX": [
+                3,
+                -17
+              ],
+              "raining": [
+                1,
+                1
+              ],
+              "Time": [
+                4,
+                23999
+              ],
+              "thundering": [
+                1,
+                0
+              ],
+              "version": [
+                3,
+                19132
+              ],
+              "LastPlayed": [
+                4,
+                1793499836924
+              ],
+              "LevelName": [
+                8,
+                [
+                  70,
+                  105,
+                  114,
+                  115,
+                  116,
+                  0,
+                  937,
+                  55357,
+                  56832
+                ]
+              ],
+              "SizeOnDisk": [
+                4,
+                9876543210
+              ]
+            }
+          ]
+        }
+      ],
+      "2": [
+        10,
+        {
+          "Data": [
+            10,
+            {
+              "RandomSeed": [
+                4,
+                -9223372036854775807
+              ],
+              "SpawnY": [
+                3,
+                65
+              ],
+              "rainTime": [
+                3,
+                -345
+              ],
+              "thunderTime": [
+                3,
+                678
+              ],
+              "SpawnZ": [
+                3,
+                1003
+              ],
+              "SpawnX": [
+                3,
+                -17
+              ],
+              "raining": [
+                1,
+                1
+              ],
+              "Time": [
+                4,
+                -1234567890123
+              ],
+              "thundering": [
+                1,
+                0
+              ],
+              "version": [
+                3,
+                19132
+              ],
+              "LastPlayed": [
+                4,
+                1793499836933
+              ],
+              "LevelName": [
+                8,
+                [
+                  83,
+                  101,
+                  99,
+                  111,
+                  110,
+                  100,
+                  0,
+                  937,
+                  55357,
+                  56832
+                ]
+              ],
+              "SizeOnDisk": [
+                4,
+                9876543210
+              ]
+            }
+          ]
+        }
+      ],
+      "3": [
+        10,
+        {
+          "Data": [
+            10,
+            {
+              "RandomSeed": [
+                4,
+                -9223372036854775807
+              ],
+              "SpawnY": [
+                3,
+                65
+              ],
+              "rainTime": [
+                3,
+                -345
+              ],
+              "thunderTime": [
+                3,
+                678
+              ],
+              "SpawnZ": [
+                3,
+                1003
+              ],
+              "SpawnX": [
+                3,
+                -17
+              ],
+              "raining": [
+                1,
+                1
+              ],
+              "Time": [
+                4,
+                -1234567890123
+              ],
+              "thundering": [
+                1,
+                0
+              ],
+              "version": [
+                3,
+                19132
+              ],
+              "LastPlayed": [
+                4,
+                1793499836946
+              ],
+              "LevelName": [
+                8,
+                [
+                  83,
+                  101,
+                  99,
+                  111,
+                  110,
+                  100,
+                  0,
+                  937,
+                  55357,
+                  56832
+                ]
+              ],
+              "SizeOnDisk": [
+                4,
+                9876543210
+              ]
+            }
+          ]
+        }
+      ],
+      "6": [
+        10,
+        {
+          "Data": [
+            10,
+            {
+              "RandomSeed": [
+                4,
+                -9223372036854775807
+              ],
+              "SpawnY": [
+                3,
+                65
+              ],
+              "rainTime": [
+                3,
+                -345
+              ],
+              "thunderTime": [
+                3,
+                678
+              ],
+              "SpawnZ": [
+                3,
+                1003
+              ],
+              "SpawnX": [
+                3,
+                -17
+              ],
+              "raining": [
+                1,
+                1
+              ],
+              "Time": [
+                4,
+                23999
+              ],
+              "thundering": [
+                1,
+                0
+              ],
+              "version": [
+                3,
+                19132
+              ],
+              "LastPlayed": [
+                4,
+                1793499836972
+              ],
+              "LevelName": [
+                8,
+                [
+                  70,
+                  105,
+                  114,
+                  115,
+                  116,
+                  0,
+                  937,
+                  55357,
+                  56832
+                ]
+              ],
+              "SizeOnDisk": [
+                4,
+                9876543210
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "debugger": {
+      "0": [
+        10,
+        {
+          "Data": [
+            10,
+            {
+              "RandomSeed": [
+                4,
+                -9223372036854775807
+              ],
+              "SpawnY": [
+                3,
+                65
+              ],
+              "rainTime": [
+                3,
+                -345
+              ],
+              "thunderTime": [
+                3,
+                678
+              ],
+              "SpawnZ": [
+                3,
+                1003
+              ],
+              "SpawnX": [
+                3,
+                -17
+              ],
+              "raining": [
+                1,
+                1
+              ],
+              "Time": [
+                4,
+                23999
+              ],
+              "thundering": [
+                1,
+                0
+              ],
+              "version": [
+                3,
+                19132
+              ],
+              "LastPlayed": [
+                4,
+                1793499853495
+              ],
+              "LevelName": [
+                8,
+                [
+                  70,
+                  105,
+                  114,
+                  115,
+                  116,
+                  0,
+                  937,
+                  55357,
+                  56832
+                ]
+              ],
+              "SizeOnDisk": [
+                4,
+                9876543210
+              ]
+            }
+          ]
+        }
+      ],
+      "1": [
+        10,
+        {
+          "Data": [
+            10,
+            {
+              "RandomSeed": [
+                4,
+                -9223372036854775807
+              ],
+              "SpawnY": [
+                3,
+                65
+              ],
+              "rainTime": [
+                3,
+                -345
+              ],
+              "thunderTime": [
+                3,
+                678
+              ],
+              "SpawnZ": [
+                3,
+                1003
+              ],
+              "SpawnX": [
+                3,
+                -17
+              ],
+              "raining": [
+                1,
+                1
+              ],
+              "Time": [
+                4,
+                23999
+              ],
+              "thundering": [
+                1,
+                0
+              ],
+              "version": [
+                3,
+                19132
+              ],
+              "LastPlayed": [
+                4,
+                1793499854088
+              ],
+              "LevelName": [
+                8,
+                [
+                  70,
+                  105,
+                  114,
+                  115,
+                  116,
+                  0,
+                  937,
+                  55357,
+                  56832
+                ]
+              ],
+              "SizeOnDisk": [
+                4,
+                9876543210
+              ]
+            }
+          ]
+        }
+      ],
+      "2": [
+        10,
+        {
+          "Data": [
+            10,
+            {
+              "RandomSeed": [
+                4,
+                -9223372036854775807
+              ],
+              "SpawnY": [
+                3,
+                65
+              ],
+              "rainTime": [
+                3,
+                -345
+              ],
+              "thunderTime": [
+                3,
+                678
+              ],
+              "SpawnZ": [
+                3,
+                1003
+              ],
+              "SpawnX": [
+                3,
+                -17
+              ],
+              "raining": [
+                1,
+                1
+              ],
+              "Time": [
+                4,
+                -1234567890123
+              ],
+              "thundering": [
+                1,
+                0
+              ],
+              "version": [
+                3,
+                19132
+              ],
+              "LastPlayed": [
+                4,
+                1793499854479
+              ],
+              "LevelName": [
+                8,
+                [
+                  83,
+                  101,
+                  99,
+                  111,
+                  110,
+                  100,
+                  0,
+                  937,
+                  55357,
+                  56832
+                ]
+              ],
+              "SizeOnDisk": [
+                4,
+                9876543210
+              ]
+            }
+          ]
+        }
+      ],
+      "3": [
+        10,
+        {
+          "Data": [
+            10,
+            {
+              "RandomSeed": [
+                4,
+                -9223372036854775807
+              ],
+              "SpawnY": [
+                3,
+                65
+              ],
+              "rainTime": [
+                3,
+                -345
+              ],
+              "thunderTime": [
+                3,
+                678
+              ],
+              "SpawnZ": [
+                3,
+                1003
+              ],
+              "SpawnX": [
+                3,
+                -17
+              ],
+              "raining": [
+                1,
+                1
+              ],
+              "Time": [
+                4,
+                -1234567890123
+              ],
+              "thundering": [
+                1,
+                0
+              ],
+              "version": [
+                3,
+                19132
+              ],
+              "LastPlayed": [
+                4,
+                1793499854964
+              ],
+              "LevelName": [
+                8,
+                [
+                  83,
+                  101,
+                  99,
+                  111,
+                  110,
+                  100,
+                  0,
+                  937,
+                  55357,
+                  56832
+                ]
+              ],
+              "SizeOnDisk": [
+                4,
+                9876543210
+              ]
+            }
+          ]
+        }
+      ],
+      "6": [
+        10,
+        {
+          "Data": [
+            10,
+            {
+              "RandomSeed": [
+                4,
+                -9223372036854775807
+              ],
+              "SpawnY": [
+                3,
+                65
+              ],
+              "rainTime": [
+                3,
+                -345
+              ],
+              "thunderTime": [
+                3,
+                678
+              ],
+              "SpawnZ": [
+                3,
+                1003
+              ],
+              "SpawnX": [
+                3,
+                -17
+              ],
+              "raining": [
+                1,
+                1
+              ],
+              "Time": [
+                4,
+                23999
+              ],
+              "thundering": [
+                1,
+                0
+              ],
+              "version": [
+                3,
+                19132
+              ],
+              "LastPlayed": [
+                4,
+                1793499856121
+              ],
+              "LevelName": [
+                8,
+                [
+                  70,
+                  105,
+                  114,
+                  115,
+                  116,
+                  0,
+                  937,
+                  55357,
+                  56832
+                ]
+              ],
+              "SizeOnDisk": [
+                4,
+                9876543210
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "clock_policy": "Each actual LastPlayed is checked against its own process invocation interval. Clocks are never overwritten/equated across VMs.",
+  "compound_compression_policy": "Raw files and iteration order are retained. Typed values and exact intra-run previous-current backup preservation are checked; compressed byte identity or HashMap order is not asserted across VMs.",
+  "source_file_returns": {
+    "0": [
+      {
+        "method": "exists",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\fresh\\level.dat_old",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 84
+        },
+        "result": false
+      },
+      {
+        "method": "renameTo",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\fresh\\level.dat",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 100
+        },
+        "result": false
+      },
+      {
+        "method": "exists",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\fresh\\level.dat",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 106
+        },
+        "result": false
+      },
+      {
+        "method": "renameTo",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\fresh\\level.dat_new",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 122
+        },
+        "result": true
+      },
+      {
+        "method": "exists",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\fresh\\level.dat_new",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 128
+        },
+        "result": false
+      }
+    ],
+    "1": [
+      {
+        "method": "exists",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\existing\\level.dat_old",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 84
+        },
+        "result": true
+      },
+      {
+        "method": "delete",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\existing\\level.dat_old",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 92
+        },
+        "result": true
+      },
+      {
+        "method": "renameTo",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\existing\\level.dat",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 100
+        },
+        "result": true
+      },
+      {
+        "method": "exists",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\existing\\level.dat",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 106
+        },
+        "result": false
+      },
+      {
+        "method": "renameTo",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\existing\\level.dat_new",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 122
+        },
+        "result": true
+      },
+      {
+        "method": "exists",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\existing\\level.dat_new",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 128
+        },
+        "result": false
+      }
+    ],
+    "2": [
+      {
+        "method": "exists",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\existing\\level.dat_old",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 84
+        },
+        "result": true
+      },
+      {
+        "method": "delete",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\existing\\level.dat_old",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 92
+        },
+        "result": true
+      },
+      {
+        "method": "renameTo",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\existing\\level.dat",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 100
+        },
+        "result": true
+      },
+      {
+        "method": "exists",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\existing\\level.dat",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 106
+        },
+        "result": false
+      },
+      {
+        "method": "renameTo",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\existing\\level.dat_new",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 122
+        },
+        "result": true
+      },
+      {
+        "method": "exists",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\existing\\level.dat_new",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 128
+        },
+        "result": false
+      }
+    ],
+    "3": [
+      {
+        "method": "exists",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\old-directory\\level.dat_old",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 84
+        },
+        "result": true
+      },
+      {
+        "method": "delete",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\old-directory\\level.dat_old",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 92
+        },
+        "result": false
+      },
+      {
+        "method": "renameTo",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\old-directory\\level.dat",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 100
+        },
+        "result": false
+      },
+      {
+        "method": "exists",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\old-directory\\level.dat",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 106
+        },
+        "result": true
+      },
+      {
+        "method": "delete",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\old-directory\\level.dat",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 114
+        },
+        "result": true
+      },
+      {
+        "method": "renameTo",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\old-directory\\level.dat_new",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 122
+        },
+        "result": true
+      },
+      {
+        "method": "exists",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\old-directory\\level.dat_new",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 128
+        },
+        "result": false
+      }
+    ],
+    "4": [
+      {
+        "method": "exists",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\both-directories\\level.dat_old",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 84
+        },
+        "result": true
+      },
+      {
+        "method": "delete",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\both-directories\\level.dat_old",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 92
+        },
+        "result": false
+      },
+      {
+        "method": "renameTo",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\both-directories\\level.dat",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 100
+        },
+        "result": false
+      },
+      {
+        "method": "exists",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\both-directories\\level.dat",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 106
+        },
+        "result": true
+      },
+      {
+        "method": "delete",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\both-directories\\level.dat",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 114
+        },
+        "result": false
+      },
+      {
+        "method": "renameTo",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\both-directories\\level.dat_new",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 122
+        },
+        "result": false
+      },
+      {
+        "method": "exists",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\both-directories\\level.dat_new",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 128
+        },
+        "result": true
+      },
+      {
+        "method": "delete",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\both-directories\\level.dat_new",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 136
+        },
+        "result": true
+      }
+    ],
+    "5": [],
+    "6": [
+      {
+        "method": "exists",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\null-first\\level.dat_old",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 84
+        },
+        "result": false
+      },
+      {
+        "method": "renameTo",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\null-first\\level.dat",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 100
+        },
+        "result": false
+      },
+      {
+        "method": "exists",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\null-first\\level.dat",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 106
+        },
+        "result": false
+      },
+      {
+        "method": "renameTo",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\null-first\\level.dat_new",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 122
+        },
+        "result": true
+      },
+      {
+        "method": "exists",
+        "path": "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger\\owned\\null-first\\level.dat_new",
+        "caller": {
+          "class": "fm",
+          "method": "a",
+          "descriptor": "(Lei;Ljava/util/List;)V",
+          "pc": 128
+        },
+        "result": false
+      }
+    ]
+  },
+  "incidental_jdk_file_calls": {
+    "count": 1,
+    "scope": "Exact direct caller fm.a(ei,List) frame; incidental native-library/class-loader File calls retained separately without source rotation credit"
+  },
+  "source_failure_scope": "Real directory-at-level.dat_new FOS failure is caught at fm143, prints its actual FileNotFoundException and returns150 in the original. Native C remains at its explicit printStackTrace dependency; no native failure-return completion credit.",
+  "historical_failed_audits": [
+    {
+      "capture": "capture-a",
+      "status": "FAIL_AUDIT_DRIVER",
+      "original_processes_exit": 0,
+      "reason": "Audit omitted as from source Code table; helpers and all seven calls in both VMs completed."
+    },
+    {
+      "capture": "capture-b",
+      "status": "FAIL_AUDIT_DRIVER",
+      "original_processes_exit": 0,
+      "reason": "Audit counted a zip.dll native-loading File.exists as rotation; raw event retained, corrected audit requires direct fm caller."
+    }
+  ],
+  "qualified_private_receipt_sha256": "60da06aeffa85b9d9bba71fe8262db3563f36d3c3423629f8adea4bda57d6716",
+  "qualified_capture_reports": {
+    "compile.capture.json": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javac.exe",
+        "--add-modules",
+        "jdk.jdi",
+        "-d",
+        "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\classes",
+        "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-candidate\\tree\\tests\\reference\\world\\source_metadata_output\\ConstructorJson.java",
+        "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-candidate\\tree\\tests\\reference\\world\\source_metadata_output\\MetadataJdi.java",
+        "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-candidate\\tree\\tests\\reference\\world\\source_metadata_output\\MetadataTarget.java"
+      ],
+      "exit": 0,
+      "timed_out": false,
+      "timeout_seconds": 120,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "limit": 2097152,
+      "reaped": true
+    },
+    "debugger\\process.capture.json": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+        "--add-modules",
+        "jdk.jdi",
+        "-cp",
+        "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\classes",
+        "MetadataJdi",
+        "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\debugger",
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot",
+        "C:\\Users\\admin\\minecraft\\b1.7.3.jar",
+        "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\classes"
+      ],
+      "exit": 0,
+      "timed_out": false,
+      "timeout_seconds": 240,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "limit": 8388608,
+      "reaped": true
+    },
+    "ordinary\\process.capture.json": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+        "-Xint",
+        "-Xverify:all",
+        "-Xmx256m",
+        "-Djava.awt.headless=true",
+        "-Xlog:class+init=info:file=class-init.log",
+        "-Xlog:library=info:file=library-load.log",
+        "-cp",
+        "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\classes",
+        "MetadataTarget",
+        "C:\\Users\\admin\\minecraft\\.local\\source-metadata-output-original-20261101\\public-driver-captures\\metadata-reference-bwxfme3_\\ordinary",
+        "C:\\Users\\admin\\minecraft\\b1.7.3.jar"
+      ],
+      "exit": 0,
+      "timed_out": false,
+      "timeout_seconds": 240,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_bytes": 0,
+      "stderr_bytes": 1073,
+      "limit": 8388608,
+      "reaped": true
+    }
+  },
+  "qualified_raw_artifact_sha256": {
+    "compile.capture.json": "bd12e0142056116066bbe9fa1e11e22356d0b8657dbbaa3d49b4c6bc09ff0af7",
+    "compile.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "compile.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "helper-Code.json": "c702451a1f2fe1c9ffadb8d871f85de886d9f0a1142a5eb72e192cf53d72234f",
+    "input-freeze.json": "7fc430b373d4b272c0f9b8a891e80e3efdf1a112c830981e1df292c4201fb169",
+    "original-Code.json": "b6475af86fab03b45c19d7cb89b810bff4249b465707081dd485f51c20f3733e",
+    "classes\\ConstructorJson.class": "1c13bbd4aa1dc7928a37d158835f81cb977a33d3699d34d45a73e9cbacdd462a",
+    "classes\\MetadataJdi.class": "19900d7263587bb699bd1edc75c5dbcfc8d4a67afc99c2c60718cf03caaf4df7",
+    "classes\\MetadataTarget$Original.class": "d403f04a3b1e553d6be61772672508e2908ce64b5ea34dd996b79e28a2046874",
+    "classes\\MetadataTarget.class": "9dc500acc67da411e877aee55445456e9895b3608648bad9acc27f67a6fc9ab5",
+    "debugger\\checkpoints.ndjson": "ca9294780dc384c250c8540a80da271b842bd9bd92c1cf8474f8b5ef751a4518",
+    "debugger\\class-init.log": "23b5f509c9a94712f33002eea8d6e0f45db19d382cdd5712f9eeb99bb2679290",
+    "debugger\\library-load.log": "81aaad060a4367d56c5afebaddc93e4ab4de9136e5ec5e0ca0b869323a10c45c",
+    "debugger\\process.capture.json": "eb5eb79076e1b64366d29db8ce49733f7dac0e73792b088f436d0621cdddf5f3",
+    "debugger\\process.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "debugger\\process.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "debugger\\target.ndjson": "c7d23a951ec1bba15d519cecd94ceb830681f0986f08ae885e877342d15de210",
+    "debugger\\target.stderr": "f3b391909ab953af7ab49cf25baa906a8adba3ef19a614e9cb23c64ee19622e0",
+    "debugger\\target.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ordinary\\class-init.log": "5380f2a3cd480ec9394ae171c95869a171c0f286a57768d1bfbd753916499bb1",
+    "ordinary\\library-load.log": "3d9e07c245a91c218045637de9458c573f3d5e1ab3cd246c6615dbdf7f857927",
+    "ordinary\\process.capture.json": "6cbbab82d89a171c69529c8c5558ecbcad62807e2c1ec68bb0ac524c0cc267b3",
+    "ordinary\\process.stderr": "5aacbb931915e667fababf2fe93fd47c66632312c9dc7f82a351edb784ab8112",
+    "ordinary\\process.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ordinary\\target.ndjson": "1d0bcf08ffa46a938003523ebeb91e292f60b9eae2fd6d1951aeb2d14ba70fa4",
+    "ordinary\\snapshots\\0-level.dat": "32d07fb3ad3c01403c95746f38a4ad06f85ad11d2d96cf431fdbf77e41afc5e1",
+    "ordinary\\snapshots\\1-level.dat": "f9984840f44ebf001203838941176fb57461c5af4839cd9add764e0e0e2efd9d",
+    "ordinary\\snapshots\\1-level.dat_old": "58bdaca37c7f91bdb96b632b7c884a86e49d873b9421c7a7ad14372319ec0b1f",
+    "ordinary\\snapshots\\2-level.dat": "058f1379ef4402b60fd381f2154f25c73405ed36c3ad0a5519d9faa13677c71b",
+    "ordinary\\snapshots\\2-level.dat_old": "f9984840f44ebf001203838941176fb57461c5af4839cd9add764e0e0e2efd9d",
+    "ordinary\\snapshots\\3-level.dat": "74f1c4819816f1342c268781ac3c28cc8ecf30615c6faf22043ab72f4c1b862b",
+    "ordinary\\snapshots\\6-level.dat": "45426b757f9145b227b5011cb6f7c5b7a4241bf9f251bd609449578608545260",
+    "ordinary\\owned\\both-directories\\session.lock": "84efe3c4ffb4ac80d28501e3ceeec7030a75295e89ddbb461d5259a000ef5f3d",
+    "ordinary\\owned\\existing\\level.dat": "058f1379ef4402b60fd381f2154f25c73405ed36c3ad0a5519d9faa13677c71b",
+    "ordinary\\owned\\existing\\level.dat_old": "f9984840f44ebf001203838941176fb57461c5af4839cd9add764e0e0e2efd9d",
+    "ordinary\\owned\\existing\\session.lock": "3cebf198962f8608b668d788cde228f75fc63406ed893dbf62fb70c35bbc74dd",
+    "ordinary\\owned\\fresh\\level.dat": "32d07fb3ad3c01403c95746f38a4ad06f85ad11d2d96cf431fdbf77e41afc5e1",
+    "ordinary\\owned\\fresh\\session.lock": "5d7d1245aa6fedd4eca3dc36be5591e7dd008104ec7740be28d9fc9dcf48f3e8",
+    "ordinary\\owned\\null-first\\level.dat": "45426b757f9145b227b5011cb6f7c5b7a4241bf9f251bd609449578608545260",
+    "ordinary\\owned\\null-first\\session.lock": "5d8267854abb07cc5ac2784c8dc59af7d92d4f7a6c94e93b0f1cb19f5d4ab16e",
+    "ordinary\\owned\\old-directory\\level.dat": "74f1c4819816f1342c268781ac3c28cc8ecf30615c6faf22043ab72f4c1b862b",
+    "ordinary\\owned\\old-directory\\session.lock": "3e5dadc3088d7f59fcde8b7cba9b5a72b76eeb1ffb221687875a841a8b29ada0",
+    "ordinary\\owned\\open-failure\\session.lock": "8f512e0b3470e2c4595a6cc13f56d796a5f6e5ca74d7c2d04288999c7e231c32",
+    "ordinary\\owned\\open-failure\\level.dat_new\\sentinel": "fb01c5790d6e48f08e9ba671ceffce0156a9f64c151529cb3ca656a1bfde834e",
+    "ordinary\\owned\\old-directory\\level.dat_old\\sentinel": "a9138c696d751008e509e381ab38158d4aa230feb91613d12d925c64f8da81bf",
+    "ordinary\\owned\\both-directories\\level.dat\\sentinel": "95f769e8cc5d41fe69bc593e8bce6bf30378d6dc8d78a68babdeef3397269767",
+    "ordinary\\owned\\both-directories\\level.dat_old\\sentinel": "098f26558bcc39fb1880a4f9965f741a6328cc31fa51334db6c48c29f66d293f",
+    "debugger\\snapshots\\0-level.dat": "4cc6d2b9f38fed529ea51e5b204d80f4821f02de21035809584b992421bc5eb1",
+    "debugger\\snapshots\\1-level.dat": "82ea8df7a7ee8c8860e5940a331694a72ef4d071bc49bbe07af68251e97b537a",
+    "debugger\\snapshots\\1-level.dat_old": "58bdaca37c7f91bdb96b632b7c884a86e49d873b9421c7a7ad14372319ec0b1f",
+    "debugger\\snapshots\\2-level.dat": "1c94aaceff562c634118d810d9449fd8ed164c1ef4da2db18c6713cf40e1f165",
+    "debugger\\snapshots\\2-level.dat_old": "82ea8df7a7ee8c8860e5940a331694a72ef4d071bc49bbe07af68251e97b537a",
+    "debugger\\snapshots\\3-level.dat": "3d39a4c3f80d1a91e0f9154a866337d003441a3cff1296523b2e7b8b009fb3b6",
+    "debugger\\snapshots\\6-level.dat": "ae686b2305991cd7bfe3b1bc89585fc302a654c80cad656656161dd653e89ed5",
+    "debugger\\owned\\both-directories\\session.lock": "4316877de7c6d0a87a97756c2718d9e25f1fa1648cd843a399cee668fc5d11b7",
+    "debugger\\owned\\existing\\level.dat": "1c94aaceff562c634118d810d9449fd8ed164c1ef4da2db18c6713cf40e1f165",
+    "debugger\\owned\\existing\\level.dat_old": "82ea8df7a7ee8c8860e5940a331694a72ef4d071bc49bbe07af68251e97b537a",
+    "debugger\\owned\\existing\\session.lock": "b34d07b6001df2e0c13879bd86b0c48aaa5305bf02ff08bff1bc95124a13acad",
+    "debugger\\owned\\fresh\\level.dat": "4cc6d2b9f38fed529ea51e5b204d80f4821f02de21035809584b992421bc5eb1",
+    "debugger\\owned\\fresh\\session.lock": "b1a11e701eccefce9bc6aeeca9091551aec964eb8f78b03afeb67d163e2b7349",
+    "debugger\\owned\\null-first\\level.dat": "ae686b2305991cd7bfe3b1bc89585fc302a654c80cad656656161dd653e89ed5",
+    "debugger\\owned\\null-first\\session.lock": "24a26583db1870eb1914450d8545ca7d826eaed8bf78158cdc00e0c58582c2ad",
+    "debugger\\owned\\old-directory\\level.dat": "3d39a4c3f80d1a91e0f9154a866337d003441a3cff1296523b2e7b8b009fb3b6",
+    "debugger\\owned\\old-directory\\session.lock": "701818dda623242531cb44e759a06358e6408f700a6194e548e0c9aa13f4b8e0",
+    "debugger\\owned\\open-failure\\session.lock": "5650477c5e316bf8484fa7e44651394cea86bd6e9d31c1d353180376b8d82de1",
+    "debugger\\owned\\open-failure\\level.dat_new\\sentinel": "fb01c5790d6e48f08e9ba671ceffce0156a9f64c151529cb3ca656a1bfde834e",
+    "debugger\\owned\\old-directory\\level.dat_old\\sentinel": "a9138c696d751008e509e381ab38158d4aa230feb91613d12d925c64f8da81bf",
+    "debugger\\owned\\both-directories\\level.dat\\sentinel": "95f769e8cc5d41fe69bc593e8bce6bf30378d6dc8d78a68babdeef3397269767",
+    "debugger\\owned\\both-directories\\level.dat_old\\sentinel": "098f26558bcc39fb1880a4f9965f741a6328cc31fa51334db6c48c29f66d293f"
+  },
+  "jdk_and_tool_input_sha256": {
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\release": "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-console-l1-1-0.dll": "88ace577a9c51061cb7d1a36babbbefa48212fadc838ffde98fdfff60de18386",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-console-l1-2-0.dll": "c062477ad3bfdc57b0cc402179637a214dab5045c8d644592c7decca7d18aa50",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-datetime-l1-1-0.dll": "1bd81dfd19204b44662510d9054852fb77c9f25c1088d647881c9b976cc16818",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-debug-l1-1-0.dll": "591358eb4d1531e9563ee0813e4301c552ce364c912ce684d16576eabf195dc3",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-errorhandling-l1-1-0.dll": "d56ce7b1cd76108ad6c137326ec694a14c99d48c3d7b0ace8c3ff4d9bcee3ce8",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-fibers-l1-1-0.dll": "91d249d7bc0e38ef6bcb17158b1fdc6dd8888dc086615c9b8b750b87e52a5fb3",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-fibers-l1-1-1.dll": "fc9d86cec621383eab636ebc87ddd3f5c19a3cb2a33d97be112c051d0b275429",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-file-l1-1-0.dll": "1ca895aba4e7435563a6b43e85eba67a0f8c74aa6a6a94d0fc48fa35535e2585",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-file-l1-2-0.dll": "4cadbc0c39da7c6722206fdcebd670abe5b8d261e7b041dd94f9397a89d1990d",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-file-l2-1-0.dll": "93c624b366ba16c643fc8933070a26f03b073ad0cf7f80173266d67536c61989",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-handle-l1-1-0.dll": "39095f59c41d76ec81bb2723d646fde4c148e7cc3402f4980d2ade95cb9c84f9",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-heap-l1-1-0.dll": "8f105771b236dbcb859de271f0a6822ce1cb79c36988dd42c9e3f6f55c5f7eb9",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-interlocked-l1-1-0.dll": "53b25e753ca785bf8b695d89dde5818a318890211dc992a89146f16658f0b606",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-kernel32-legacy-l1-1-1.dll": "a9b13a1cd1b8c19b0c6b4afcd5bb0dd29c0e2288231ac9e6db8510094ce68ba6",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-libraryloader-l1-1-0.dll": "7f39ba298b41e4963047341288cab36b6a241835ee11ba4ad70f44dacd40906c",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-localization-l1-2-0.dll": "6ee44dd0d8510dc024c9f7c79b1b9fa88c987b26b6beb6653ddd11751c34e5dc",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-memory-l1-1-0.dll": "0512a35316ec9180437f86696a84c5c06a7e4e82e050055a656e5bf9fca206f9",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-namedpipe-l1-1-0.dll": "c05f1fffe3b5a2738ea54ce9485cca026fb9635f982626fba1e1dcc531897273",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-processenvironment-l1-1-0.dll": "c4eca98c3c67b6395d5b005b00ac1eb0318b86b23aa71035a44c2b1602befba9",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-processthreads-l1-1-0.dll": "5ccb89e93d67bc3288d4e84649c5346e66e15e3d7cd65d989daf3f4cb584be9a",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-processthreads-l1-1-1.dll": "4ad565a8ba3ef0ea8ab87221ad11f83ee0bc844ce236607958406663b407333e",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-profile-l1-1-0.dll": "7809160932f44e59b021699f5bc68799eb7293ee1fa926d6fcca3c3445302e61",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-rtlsupport-l1-1-0.dll": "9dc1e91e71c7c054854bd1487cb4e6946d82c9f463430f1c4e8d1471005172b1",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-string-l1-1-0.dll": "60fc31d2a0c634412f529dba76af3b9bf991352877c6dae528186d3935704cfd",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-synch-l1-1-0.dll": "3a72b4f29f39a265d32ad12f0ce15dbf60129c840e10d84d427829ede45e78ad",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-synch-l1-2-0.dll": "efc1e4460984a73cf47a3def033af1c8f3b1dbc1a56cd27781d3aacf3e3330cb",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-sysinfo-l1-1-0.dll": "b203d862ddef1dd62bf623fc866c7f7a9c317c1c2ae30d1f52cb41f955b5698e",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-sysinfo-l1-2-0.dll": "2703635d835396afd0f138d7c73751afe7e33a24f4225d08c1690b0a371932c0",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-timezone-l1-1-0.dll": "33f4fddc181066fce06b2227bded813f95e94ed1f3d785e982c6b6b56c510c57",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-core-util-l1-1-0.dll": "6eda016742a6171205a387a14b3c0b331841567740376f56768f8c151724207d",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-crt-conio-l1-1-0.dll": "b762061b688aae679afe788904d2c9970f74a7dac98f3b42463d08f25e483d3f",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-crt-convert-l1-1-0.dll": "ebb2ae5535a64f65daeab8235585114fc9dd2cf1a49f5852d446250b998b6ae4",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-crt-environment-l1-1-0.dll": "17d63275d00bdd8670422b95bd264c532998e0a1b041079e54fce4b6b7a55819",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-crt-filesystem-l1-1-0.dll": "9a9e2a65a281644e368d0f272b95ba5f6b445d1c35910d06056c5ebeb77402db",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-crt-heap-l1-1-0.dll": "bab9ac3ec83e380ae51e4295ef3bf2c738627812d3a49d1e713661abbc8dc57a",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-crt-locale-l1-1-0.dll": "bd14c67ea28e21d6257ad780a37122c9b5773f69e693f5db6bffaee4d839526e",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-crt-math-l1-1-0.dll": "606d66d82db562ea7979179d06486a0f94d079941d26b80a1e2c49d29959df6f",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-crt-multibyte-l1-1-0.dll": "95f49efbe8107786733fa7c474025cf3fee0ac632f240367b296c736d06572aa",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-crt-private-l1-1-0.dll": "1bc82bed6143d2bf1b6b08a7809f4a5e29317d6fddd338a7da3c0223522e4bbf",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-crt-process-l1-1-0.dll": "f6156b1020380ec4f0e48577ebedaaef5fb1ab1f337d8b4e72e6a33a7567a9cc",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-crt-runtime-l1-1-0.dll": "c5902934d026d7e15fbe9917d474f3322846a41a25e66f4b2b1f758801879f4b",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-crt-stdio-l1-1-0.dll": "a9c5a153d8c0286f9b41a2b1c65854ad9e6471b8755b7de87bae4470e60bcab6",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-crt-string-l1-1-0.dll": "25b8f83a7767211b11132775a0e27a45aa4ec8ab4e6572599f9c172ae3606b40",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-crt-time-l1-1-0.dll": "7c7f6393f06de11750adb09cc5698ae55cd9fb27b2e51e207286feb1b5b2b156",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\api-ms-win-crt-utility-l1-1-0.dll": "d8ba5f17b9ffcbf3aeaf3fa1da226832d2fa90f81acce0cd669464e76ce434ac",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\attach.dll": "a2a0498b6dc4dbc1dbf047cc38d170dfc16d37d4fb6c64f55133d8304d0022bc",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\awt.dll": "3a08da4cf9614add3adcc2414a15400464372238101899db914e3c73a8e5d8b2",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\dt_shmem.dll": "42e631a06240a00aa0d8605895fa3ddee325c7a125ed20fe26fa060e87c5af3e",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\dt_socket.dll": "1a5c8a2a198c8645f892cb68dca87885ad759c3a3f1f828167dcdb3ac41d4874",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\extnet.dll": "521686111498f05b06d918008b836e88c050fae99408fe973c5afc1846fec43b",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\fontmanager.dll": "21951c96e6f44c37a413e9fafd6a57aa49674aba6193242f8bd681f0d1d89a40",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\freetype.dll": "f9e7df49f9b888a1ab81c85b18ee81532700d9fb032a30d616577e497feab8f9",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\instrument.dll": "47a92ef549e5b9bb0078e16a72b38ffd0fa9bcbc5e158ce12e73aaaa1145cebf",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\j2gss.dll": "cdd2505bc5684c141d0de043a67bb19218597ed52f16afa369ffeb5d68172e8b",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\j2pcsc.dll": "e87f123a856525179f36b4cda37f527d9b054f18569a71042046a832e3ccdb1b",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\j2pkcs11.dll": "371b0f3ae8a83faf17b06d4e4582dbc714f121c999bfb5651d59ff4b8e68ff8d",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\jaas.dll": "00182782159e642cdd4efa5f21320cb0c9820b4fabc9917e4cce5faf73ad2fbb",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.dll": "18b105254c16e1d83614ff4e32cd62ce402fbe6339bdd1b24ccc7d999fed7f5f",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javaaccessbridge.dll": "22d1c2b0d3fce0e5dc1a5d3ebd62b125788a9cf4c0846f1dda271419b784a3ae",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javajpeg.dll": "cffd57c27ea8df642777ad37e4a795140769b6c9dc48ad9272a286d475784889",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\jawt.dll": "30475691705580b4a0073f54b26fd7c7e20bb2b7694d2554cb0d40b3fde8a17a",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\jdwp.dll": "4ff7345a0a66091f519a7546f1a865c4cbc9cc132fba31608604e88dec1cedf2",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\jimage.dll": "f01c057da0222bc70a7f904c3104dedfc6f268446ee797c6dd70f9651a52265f",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\jli.dll": "5d6a3581649cf281a2a4db2aeff53ccb1134b45cb04fa282efa7eb9a58cf5b79",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\jpackage.dll": "e1a5831a159b5a7beb4e4d188b5868b6c9c712449ff6a678b1892859746f6a1c",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\jsound.dll": "b400272a3394ab9bebfa2df42ce02496df63c9a7a40064ebdf2650c5ddce4469",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\jsvml.dll": "d0971a028ff3e94ec749e5ab62abfc4d883b1c85550521ac120b622982fb8114",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\lcms.dll": "3f0b6392a8a93903a3b2d1aede053778ebfc81ad99ae3deeaf074abc659a5dc8",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\le.dll": "4304d063f3d8902096a56269395614ebfed6df11bba325e5fcb00351c6aaacd4",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\management.dll": "4d90ddc5f9ceefc8952b708f9a6f28c18325ed57e8ab65331d6cace79b5f0726",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\management_agent.dll": "eb32c1b912bf7caddc0f90893574313cc83f53319e2429d48019abf30d695be5",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\management_ext.dll": "43e43d079b33651a1aff67b5aa767fd37b520a0608c7a127c11c08d6a374f0c3",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\mlib_image.dll": "fb083ef29d4120f2bf84240a4f250f815f131c9e2a186371ed2ce9a5478c9b8a",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\msvcp140.dll": "a4c2229bdc2a2a630acdc095b4d86008e5c3e3bc7773174354f3da4f5beb9cde",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\net.dll": "aa178fbeb19980dfbb6827b3b2532cd110d585192041883032bf2dbb20e4785d",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\nio.dll": "1d3f193e94d404a18caa24440e61af652ec705258f5fa5a3cb90bc790e9b98ba",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\prefs.dll": "44102e7e881e84a1e888319ca147f444aeed5203dffd8e52b61e9c44d15c7bc7",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\rmi.dll": "1ccf35d5de3355126459104af0e3722a2332d3bb9dd593b5286e6b71c25ce774",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\saproc.dll": "6fcb6730850275571b08e18df531e7ca6fb2cb368218c3afa8ef7ed9c8211deb",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\server\\jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\splashscreen.dll": "b29d5fb8dfb2987feccd38a23b1d7a63b97bc32f4f320fa6fd8779754d625920",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\sspi_bridge.dll": "bf5fbdd58b6f6c0bb773b2afa6dcea93a71f564c27483c635fdcd9067d88c153",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\sunmscapi.dll": "22509cf54a6d0936631671b22d86ceb895d7960ce907099a23543bc0645a22a8",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\ucrtbase.dll": "2e5fb14b7bf8540278f3614a12f0226e56a7cc9e64b81cbd976c6fcf2f71cbfb",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\vcruntime140.dll": "02c6aa0e6e624411a9f19b0360a7865ab15908e26024510e5c38a9c08362c35a",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\vcruntime140_1.dll": "7dd9aa02e271c68ca6d5f18d651d23a15d7259715af43326578f7dde27f37637",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\verify.dll": "ab1003530e431300e043a3a2b311201a7b6b844b28929863465f1f5f99de4db9",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\w2k_lsa_auth.dll": "0ee09fadcd8073e6622b3b69f0a09deaa273351c1a7f71ba439b2ab620a534df",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\windowsaccessbridge-64.dll": "3ad47ee124bea23b0cecbc92cf61022a73567986d6ff3ff1d893447418c1d8d6",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\WinFallbackLookup.dll": "bfe0df7203d03be06d1e4ac1eaf51512d8a2cb24797e245bba36325387ac66b8",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\zip.dll": "2cc26c530a65b8a839e40ce820565e531fefcc5a207822e09f7a073fb8676b70",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\lib\\modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\jmods\\java.base.jmod": "6eed1c9a90ae0f2ede839d7e50d8be939c1e8585647be55586e1b3c7390ee723",
+    "C:\\Python314\\python.exe": "cce21c0e8710e304273e98ac4b2b0f5aceb639acbcd2343cbaa5c4e81619c45b"
+  },
+  "private_driver_capture_c_receipt_sha256": "994e9dccb74aea6ebb6bbce8709e70cc62b2b75ab1a019aaf83583eff4206cac",
+  "public_recipe_dependencies": [
+    "tests/reference/client/statistics/support.py",
+    "tests/reference/client/controller/classfile.py"
+  ],
+  "limitations": [
+    "Windows x64 Temurin17.0.17+10 recorded execution only",
+    "authored reflection may resolve or initialize classes before marked source methods",
+    "empty and null-first Lists omit a previously loaded Player; no live Player write is exercised",
+    "authored source I/O fault-finally controls are not covered by this seven-case cohort"
+  ]
+}

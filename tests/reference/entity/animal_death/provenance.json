@@ -1,0 +1,101 @@
+{
+  "status": "CAPTURED_ORIGINAL",
+  "platform": "Windows x64",
+  "profiles": 42,
+  "calls": 43,
+  "java_version": "openjdk version \"17.0.17\" 2025-10-21\nOpenJDK Runtime Environment Temurin-17.0.17+10 (build 17.0.17+10)\nOpenJDK 64-Bit Server VM Temurin-17.0.17+10 (build 17.0.17+10, mixed mode, sharing)\n",
+  "javac_version": "javac 17.0.17\n",
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "execution_flags": [
+    "-Xint",
+    "-Xverify:all",
+    "-Xmx256m",
+    "-Djava.awt.headless=true",
+    "-Djava.security.manager=allow",
+    "--add-opens=java.base/java.util=ALL-UNNAMED",
+    "--add-opens=java.base/java.lang=ALL-UNNAMED"
+  ],
+  "helper_sha256": {
+    "AnimalDeathJdi.class": "1f7f7882241c1f82a475fd81345f2c1f188c7d6c7e4097e0671811bd5ac68417",
+    "AnimalDeathObservation$1.class": "0514ec4c4dc24872ddeeee72d07ac82794b4c85dd10477101215adf5301edb87",
+    "AnimalDeathObservation$Observer.class": "443c6f41c85f02a19472a90d80bf0703ecc4a2b8efafc47a4fc49a42224a889b",
+    "AnimalDeathObservation.class": "832f3729ec89c3d28d5a2bcc6eabd04acbb9394b897f7e96d61c40135d5dae0a",
+    "ConstructorJson.class": "1c13bbd4aa1dc7928a37d158835f81cb977a33d3699d34d45a73e9cbacdd462a"
+  },
+  "ordinary_receipt": {
+    "exit": 0,
+    "timeout_seconds": 60,
+    "timed_out": false,
+    "pipe_capture_complete": true,
+    "reader_errors": {},
+    "output_overflow": false,
+    "stdout_bytes": 80555,
+    "stderr_bytes": 397,
+    "stdout_sha256": "5e2e8fb49e6f3f8abe3e063ba4868fa782ea41e202479a8241084098f7b1ae89",
+    "stderr_sha256": "2b09af32c1a96f6bb3947084e0fff12f5c2e9db1654e8cd23f87e42dde2a1630",
+    "stdout_limit": 4194304,
+    "stderr_limit": 1048576
+  },
+  "JDI_controller_receipt": {
+    "exit": 0,
+    "timeout_seconds": 240,
+    "timed_out": false,
+    "pipe_capture_complete": true,
+    "reader_errors": {},
+    "output_overflow": false,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_limit": 4194304,
+    "stderr_limit": 1048576
+  },
+  "JDI_artifacts_sha256": {
+    "checkpoints.ndjson": "ece6a13a76223c9719a990e13ed75acf88d131954667c9a1e29f1d7997fa6712",
+    "controller.capture.json": "3217423ff359cc195629b2e8f045fe890838b66653e230c198cc2b83dbfb7964",
+    "controller.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "controller.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target.stderr": "2b09af32c1a96f6bb3947084e0fff12f5c2e9db1654e8cd23f87e42dde2a1630",
+    "target.stdout": "b0957a045fde6c14d80d879af188272cb3b6df5c0c87b92630bea8ee1af77150"
+  },
+  "ordinary_entropy_audit": {
+    "new_items": 38,
+    "Math_nextDouble_calls": 153,
+    "default_Random_occurrences": 38,
+    "profiles": 42,
+    "calls": 43
+  },
+  "read_only_JDI_audit": {
+    "new_items": 38,
+    "Math_nextDouble_calls": 153,
+    "default_Random_occurrences": 38,
+    "profiles": 42,
+    "calls": 43,
+    "live_Code_pins": 54,
+    "original_class_bodies_reached": 17,
+    "Random_returns": 234,
+    "original_entries": 1869,
+    "exception_records": 7
+  },
+  "finite_sha256": "fc5431bf5a81abd928747d49f18e3327dd20fdf59ebfbeed3ab3506827123ea4",
+  "guarded_target_attempts_per_VM": {
+    "network_connect_or_listen": 0,
+    "native_links": 0,
+    "writes_or_deletes": 0
+  },
+  "tool_source_archive_inputs_unchanged": true,
+  "helpers_unchanged": true,
+  "owner_preparation": "Ordinary original World/Chunk/animal/Wolf constructors; one authored empty cached Chunk(0,0); animals unpublished; actual Item World and Chunk insertion. Explicit private seeds/fields; shared Math and Item clock entropy retained, never rebound.",
+  "comparison": "Exact deterministic CPU state and memberships, plus independent per-namespace Math/constructor/uniquifier audits. Raw Item private clock seeds and shared Math contexts remain separate.",
+  "callback_scope": {
+    "original": "authored IllegalStateException after actual World/Chunk insertion",
+    "native": "authored IO callback failure",
+    "scope": "PUBLICATION_CALLBACK; exact completed state, no Throwable implementation parity"
+  },
+  "limits": [
+    "Finite original animal deaths and publications only.",
+    "Other damage/attacker overrides, delayed death, Item ticks/pickup, save/reload, whole combat/gameplay, audio, GL and pixels excluded.",
+    "Read-only JDI actual clock/seed formulas qualify original constructor context; native clock profile remains independently qualified, without matching clock inputs."
+  ],
+  "native_replay": "Separate acceptance; not established by original capture."
+}

@@ -1,0 +1,9 @@
+{
+  "cases": [
+    {"name": "cold_no_context", "device": false, "seeded": false, "transformed": false, "replace_modelview": false, "calls": 0},
+    {"name": "identity_cold", "device": true, "seeded": false, "transformed": false, "replace_modelview": false, "calls": 1},
+    {"name": "seeded_projection", "device": true, "seeded": true, "transformed": true, "replace_modelview": false, "calls": 1},
+    {"name": "seeded_replaced_modelview", "device": true, "seeded": true, "transformed": true, "replace_modelview": true, "calls": 1},
+    {"name": "seeded_warm", "device": true, "seeded": true, "transformed": false, "replace_modelview": false, "calls": 2}
+  ]
+}

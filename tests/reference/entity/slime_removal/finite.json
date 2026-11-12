@@ -1,0 +1,1241 @@
+[
+  {
+    "profile": "direct-split",
+    "step": 0,
+    "set_size": 2,
+    "size": 2,
+    "health": 0,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "0000d7f39cd9ecff",
+    "world_loaded": 5,
+    "children": [
+      {
+        "index": 0,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020800000000000",
+          "4050200000000000",
+          "4020800000000000"
+        ],
+        "yaw": "438306a5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000ba5918e96ffa"
+      },
+      {
+        "index": 1,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4021800000000000",
+          "4050200000000000",
+          "4020800000000000"
+        ],
+        "yaw": "43b022f5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000fa815c77497d"
+      },
+      {
+        "index": 2,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020800000000000",
+          "4050200000000000",
+          "4021800000000000"
+        ],
+        "yaw": "3fe883c0",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000014ab00c9844"
+      },
+      {
+        "index": 3,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4021800000000000",
+          "4050200000000000",
+          "4021800000000000"
+        ],
+        "yaw": "4397d74a",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000d7f39cd9ecff"
+      }
+    ]
+  },
+  {
+    "profile": "size-one",
+    "step": 0,
+    "set_size": 1,
+    "size": 1,
+    "health": 0,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "00000005deece64b",
+    "world_loaded": 1,
+    "children": []
+  },
+  {
+    "profile": "size-zero",
+    "step": 0,
+    "set_size": 0,
+    "size": 0,
+    "health": 0,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "00000005deece64b",
+    "world_loaded": 1,
+    "children": []
+  },
+  {
+    "profile": "remote",
+    "step": 0,
+    "set_size": 2,
+    "size": 2,
+    "health": 0,
+    "remote": true,
+    "exception": "NONE",
+    "dead": true,
+    "random": "00000005deece64b",
+    "world_loaded": 1,
+    "children": []
+  },
+  {
+    "profile": "positive-health",
+    "step": 0,
+    "set_size": 2,
+    "size": 2,
+    "health": 4,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "00000005deece64b",
+    "world_loaded": 1,
+    "children": []
+  },
+  {
+    "profile": "null-world",
+    "step": 0,
+    "set_size": 1,
+    "size": 1,
+    "health": 1,
+    "remote": null,
+    "exception": "NPE",
+    "dead": false,
+    "random": "00000005deece64b",
+    "world_loaded": 0,
+    "children": []
+  },
+  {
+    "profile": "watcher-type",
+    "step": 0,
+    "set_size": 2,
+    "size": null,
+    "health": 0,
+    "remote": null,
+    "exception": "CCE",
+    "dead": false,
+    "random": "00000005deece64b",
+    "world_loaded": 0,
+    "children": []
+  },
+  {
+    "profile": "callback-pose",
+    "step": 0,
+    "set_size": 2,
+    "size": 2,
+    "health": 0,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "0000d7f39cd9ecff",
+    "world_loaded": 5,
+    "children": [
+      {
+        "index": 0,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020800000000000",
+          "4050200000000000",
+          "4020800000000000"
+        ],
+        "yaw": "438306a5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000ba5918e96ffa"
+      },
+      {
+        "index": 1,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4025800000000000",
+          "4050600000000000",
+          "4022800000000000"
+        ],
+        "yaw": "43b022f5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000fa815c77497d"
+      },
+      {
+        "index": 2,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4024800000000000",
+          "4050600000000000",
+          "4023800000000000"
+        ],
+        "yaw": "3fe883c0",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000014ab00c9844"
+      },
+      {
+        "index": 3,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4025800000000000",
+          "4050600000000000",
+          "4023800000000000"
+        ],
+        "yaw": "4397d74a",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000d7f39cd9ecff"
+      }
+    ]
+  },
+  {
+    "profile": "callback-size",
+    "step": 0,
+    "set_size": 2,
+    "size": 4,
+    "health": 16,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "0000d7f39cd9ecff",
+    "world_loaded": 5,
+    "children": [
+      {
+        "index": 0,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020800000000000",
+          "4050200000000000",
+          "4020800000000000"
+        ],
+        "yaw": "438306a5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000ba5918e96ffa"
+      },
+      {
+        "index": 1,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4021800000000000",
+          "4050200000000000",
+          "4020800000000000"
+        ],
+        "yaw": "43b022f5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000fa815c77497d"
+      },
+      {
+        "index": 2,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020800000000000",
+          "4050200000000000",
+          "4021800000000000"
+        ],
+        "yaw": "3fe883c0",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000014ab00c9844"
+      },
+      {
+        "index": 3,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4021800000000000",
+          "4050200000000000",
+          "4021800000000000"
+        ],
+        "yaw": "4397d74a",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000d7f39cd9ecff"
+      }
+    ]
+  },
+  {
+    "profile": "callback-reseed",
+    "step": 0,
+    "set_size": 2,
+    "size": 2,
+    "health": 0,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "0000eed8a92232a1",
+    "world_loaded": 5,
+    "children": [
+      {
+        "index": 0,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020800000000000",
+          "4050200000000000",
+          "4020800000000000"
+        ],
+        "yaw": "438306a5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000ba5918e96ffa"
+      },
+      {
+        "index": 1,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4021800000000000",
+          "4050200000000000",
+          "4020800000000000"
+        ],
+        "yaw": "43023fc5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "00005c9f20d6b9cf"
+      },
+      {
+        "index": 2,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020800000000000",
+          "4050200000000000",
+          "4021800000000000"
+        ],
+        "yaw": "4338c164",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "00008361b331172e"
+      },
+      {
+        "index": 3,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4021800000000000",
+          "4050200000000000",
+          "4021800000000000"
+        ],
+        "yaw": "43a7f057",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000eed8a92232a1"
+      }
+    ]
+  },
+  {
+    "profile": "callback-null-world",
+    "step": 0,
+    "set_size": 2,
+    "size": 2,
+    "health": 0,
+    "remote": null,
+    "exception": "NPE",
+    "dead": false,
+    "random": "0000fa815c77497d",
+    "world_loaded": 2,
+    "children": [
+      {
+        "index": 0,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020800000000000",
+          "4050200000000000",
+          "4020800000000000"
+        ],
+        "yaw": "438306a5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000ba5918e96ffa"
+      }
+    ]
+  },
+  {
+    "profile": "size-three",
+    "step": 0,
+    "set_size": 3,
+    "size": 3,
+    "health": 0,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "0000d7f39cd9ecff",
+    "world_loaded": 5,
+    "children": [
+      {
+        "index": 0,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020400000000000",
+          "4050200000000000",
+          "4020400000000000"
+        ],
+        "yaw": "438306a5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000ba5918e96ffa"
+      },
+      {
+        "index": 1,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4021c00000000000",
+          "4050200000000000",
+          "4020400000000000"
+        ],
+        "yaw": "43b022f5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000fa815c77497d"
+      },
+      {
+        "index": 2,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020400000000000",
+          "4050200000000000",
+          "4021c00000000000"
+        ],
+        "yaw": "3fe883c0",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000014ab00c9844"
+      },
+      {
+        "index": 3,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4021c00000000000",
+          "4050200000000000",
+          "4021c00000000000"
+        ],
+        "yaw": "4397d74a",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000d7f39cd9ecff"
+      }
+    ]
+  },
+  {
+    "profile": "size-four",
+    "step": 0,
+    "set_size": 4,
+    "size": 4,
+    "health": 0,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "0000d7f39cd9ecff",
+    "world_loaded": 5,
+    "children": [
+      {
+        "index": 0,
+        "size": 2,
+        "health": 4,
+        "position": [
+          "4020000000000000",
+          "4050200000000000",
+          "4020000000000000"
+        ],
+        "yaw": "438306a5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000ba5918e96ffa"
+      },
+      {
+        "index": 1,
+        "size": 2,
+        "health": 4,
+        "position": [
+          "4022000000000000",
+          "4050200000000000",
+          "4020000000000000"
+        ],
+        "yaw": "43b022f5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000fa815c77497d"
+      },
+      {
+        "index": 2,
+        "size": 2,
+        "health": 4,
+        "position": [
+          "4020000000000000",
+          "4050200000000000",
+          "4022000000000000"
+        ],
+        "yaw": "3fe883c0",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000014ab00c9844"
+      },
+      {
+        "index": 3,
+        "size": 2,
+        "health": 4,
+        "position": [
+          "4022000000000000",
+          "4050200000000000",
+          "4022000000000000"
+        ],
+        "yaw": "4397d74a",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000d7f39cd9ecff"
+      }
+    ]
+  },
+  {
+    "profile": "size-five",
+    "step": 0,
+    "set_size": 5,
+    "size": 5,
+    "health": 0,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "0000d7f39cd9ecff",
+    "world_loaded": 5,
+    "children": [
+      {
+        "index": 0,
+        "size": 2,
+        "health": 4,
+        "position": [
+          "401f800000000000",
+          "4050200000000000",
+          "401f800000000000"
+        ],
+        "yaw": "438306a5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000ba5918e96ffa"
+      },
+      {
+        "index": 1,
+        "size": 2,
+        "health": 4,
+        "position": [
+          "4022400000000000",
+          "4050200000000000",
+          "401f800000000000"
+        ],
+        "yaw": "43b022f5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000fa815c77497d"
+      },
+      {
+        "index": 2,
+        "size": 2,
+        "health": 4,
+        "position": [
+          "401f800000000000",
+          "4050200000000000",
+          "4022400000000000"
+        ],
+        "yaw": "3fe883c0",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000014ab00c9844"
+      },
+      {
+        "index": 3,
+        "size": 2,
+        "health": 4,
+        "position": [
+          "4022400000000000",
+          "4050200000000000",
+          "4022400000000000"
+        ],
+        "yaw": "4397d74a",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000d7f39cd9ecff"
+      }
+    ]
+  },
+  {
+    "profile": "size-127",
+    "step": 0,
+    "set_size": 127,
+    "size": 127,
+    "health": 0,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "0000d7f39cd9ecff",
+    "world_loaded": 5,
+    "children": [
+      {
+        "index": 0,
+        "size": 63,
+        "health": 3969,
+        "position": [
+          "c01d800000000000",
+          "4050200000000000",
+          "c01d800000000000"
+        ],
+        "yaw": "438306a5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000ba5918e96ffa"
+      },
+      {
+        "index": 1,
+        "size": 63,
+        "health": 3969,
+        "position": [
+          "4038600000000000",
+          "4050200000000000",
+          "c01d800000000000"
+        ],
+        "yaw": "43b022f5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000fa815c77497d"
+      },
+      {
+        "index": 2,
+        "size": 63,
+        "health": 3969,
+        "position": [
+          "c01d800000000000",
+          "4050200000000000",
+          "4038600000000000"
+        ],
+        "yaw": "3fe883c0",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000014ab00c9844"
+      },
+      {
+        "index": 3,
+        "size": 63,
+        "health": 3969,
+        "position": [
+          "4038600000000000",
+          "4050200000000000",
+          "4038600000000000"
+        ],
+        "yaw": "4397d74a",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000d7f39cd9ecff"
+      }
+    ]
+  },
+  {
+    "profile": "size-negative",
+    "step": 0,
+    "set_size": -1,
+    "size": -1,
+    "health": 0,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "00000005deece64b",
+    "world_loaded": 1,
+    "children": []
+  },
+  {
+    "profile": "size-128",
+    "step": 0,
+    "set_size": 128,
+    "size": -128,
+    "health": 0,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "00000005deece64b",
+    "world_loaded": 1,
+    "children": []
+  },
+  {
+    "profile": "size-255",
+    "step": 0,
+    "set_size": 255,
+    "size": -1,
+    "health": 0,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "00000005deece64b",
+    "world_loaded": 1,
+    "children": []
+  },
+  {
+    "profile": "size-256",
+    "step": 0,
+    "set_size": 256,
+    "size": 0,
+    "health": 0,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "00000005deece64b",
+    "world_loaded": 1,
+    "children": []
+  },
+  {
+    "profile": "negative-health-direct",
+    "step": 0,
+    "set_size": 2,
+    "size": 2,
+    "health": -1,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "00000005deece64b",
+    "world_loaded": 1,
+    "children": []
+  },
+  {
+    "profile": "repeat",
+    "step": 0,
+    "set_size": 2,
+    "size": 2,
+    "health": 0,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "0000d7f39cd9ecff",
+    "world_loaded": 5,
+    "children": [
+      {
+        "index": 0,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020800000000000",
+          "4050200000000000",
+          "4020800000000000"
+        ],
+        "yaw": "438306a5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000ba5918e96ffa"
+      },
+      {
+        "index": 1,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4021800000000000",
+          "4050200000000000",
+          "4020800000000000"
+        ],
+        "yaw": "43b022f5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000fa815c77497d"
+      },
+      {
+        "index": 2,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020800000000000",
+          "4050200000000000",
+          "4021800000000000"
+        ],
+        "yaw": "3fe883c0",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000014ab00c9844"
+      },
+      {
+        "index": 3,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4021800000000000",
+          "4050200000000000",
+          "4021800000000000"
+        ],
+        "yaw": "4397d74a",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000d7f39cd9ecff"
+      }
+    ]
+  },
+  {
+    "profile": "repeat",
+    "step": 1,
+    "set_size": 2,
+    "size": 2,
+    "health": 0,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "00008a4f02042af3",
+    "world_loaded": 9,
+    "children": [
+      {
+        "index": 0,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020800000000000",
+          "4050200000000000",
+          "4020800000000000"
+        ],
+        "yaw": "438306a5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000ba5918e96ffa"
+      },
+      {
+        "index": 1,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4021800000000000",
+          "4050200000000000",
+          "4020800000000000"
+        ],
+        "yaw": "43b022f5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000fa815c77497d"
+      },
+      {
+        "index": 2,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020800000000000",
+          "4050200000000000",
+          "4021800000000000"
+        ],
+        "yaw": "3fe883c0",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000014ab00c9844"
+      },
+      {
+        "index": 3,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4021800000000000",
+          "4050200000000000",
+          "4021800000000000"
+        ],
+        "yaw": "4397d74a",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000d7f39cd9ecff"
+      },
+      {
+        "index": 4,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020800000000000",
+          "4050200000000000",
+          "4020800000000000"
+        ],
+        "yaw": "411e9238",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": true,
+        "random_after": "0000070c30cb029e"
+      },
+      {
+        "index": 5,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4021800000000000",
+          "4050200000000000",
+          "4020800000000000"
+        ],
+        "yaw": "4140015c",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": true,
+        "random_after": "0000088898721151"
+      },
+      {
+        "index": 6,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020800000000000",
+          "4050200000000000",
+          "4021800000000000"
+        ],
+        "yaw": "42550f57",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": true,
+        "random_after": "000025e098cc2588"
+      },
+      {
+        "index": 7,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4021800000000000",
+          "4050200000000000",
+          "4021800000000000"
+        ],
+        "yaw": "43427f1b",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": true,
+        "random_after": "00008a4f02042af3"
+      }
+    ]
+  },
+  {
+    "profile": "already-dead",
+    "step": 0,
+    "set_size": 2,
+    "size": 2,
+    "health": 0,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "0000d7f39cd9ecff",
+    "world_loaded": 5,
+    "children": [
+      {
+        "index": 0,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020800000000000",
+          "4050200000000000",
+          "4020800000000000"
+        ],
+        "yaw": "438306a5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": true,
+        "random_after": "0000ba5918e96ffa"
+      },
+      {
+        "index": 1,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4021800000000000",
+          "4050200000000000",
+          "4020800000000000"
+        ],
+        "yaw": "43b022f5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": true,
+        "random_after": "0000fa815c77497d"
+      },
+      {
+        "index": 2,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020800000000000",
+          "4050200000000000",
+          "4021800000000000"
+        ],
+        "yaw": "3fe883c0",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": true,
+        "random_after": "0000014ab00c9844"
+      },
+      {
+        "index": 3,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4021800000000000",
+          "4050200000000000",
+          "4021800000000000"
+        ],
+        "yaw": "4397d74a",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": true,
+        "random_after": "0000d7f39cd9ecff"
+      }
+    ]
+  },
+  {
+    "profile": "null-world-size-zero",
+    "step": 0,
+    "set_size": 0,
+    "size": 0,
+    "health": 0,
+    "remote": null,
+    "exception": "NPE",
+    "dead": false,
+    "random": "00000005deece64b",
+    "world_loaded": 0,
+    "children": []
+  },
+  {
+    "profile": "callback-world",
+    "step": 0,
+    "set_size": 2,
+    "size": 2,
+    "health": 0,
+    "remote": false,
+    "exception": "NONE",
+    "dead": true,
+    "random": "0000d7f39cd9ecff",
+    "world_loaded": 5,
+    "children": [
+      {
+        "index": 0,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020800000000000",
+          "4050200000000000",
+          "4020800000000000"
+        ],
+        "yaw": "438306a5",
+        "pitch": "00000000",
+        "world": "PRIMARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000ba5918e96ffa"
+      },
+      {
+        "index": 1,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4021800000000000",
+          "4050200000000000",
+          "4020800000000000"
+        ],
+        "yaw": "43b022f5",
+        "pitch": "00000000",
+        "world": "SECONDARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000fa815c77497d"
+      },
+      {
+        "index": 2,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4020800000000000",
+          "4050200000000000",
+          "4021800000000000"
+        ],
+        "yaw": "3fe883c0",
+        "pitch": "00000000",
+        "world": "SECONDARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000014ab00c9844"
+      },
+      {
+        "index": 3,
+        "size": 1,
+        "health": 1,
+        "position": [
+          "4021800000000000",
+          "4050200000000000",
+          "4021800000000000"
+        ],
+        "yaw": "4397d74a",
+        "pitch": "00000000",
+        "world": "SECONDARY",
+        "world_member": true,
+        "chunk_members": 1,
+        "parent_dead": false,
+        "random_after": "0000d7f39cd9ecff"
+      }
+    ]
+  }
+]

@@ -1,0 +1,102 @@
+{
+  "format": 1,
+  "rows": 39,
+  "direct": 0,
+  "wrapper": 39,
+  "ordinary_returns": 30,
+  "returned_true": 23,
+  "returned_false": 7,
+  "expected_exceptions": [
+    {
+      "index": 15,
+      "name": "crop_callback_fail_first_wrapper",
+      "channel": "wrapper",
+      "exception_class": "java.lang.IllegalStateException",
+      "classification": "declared-Java-observer-failure",
+      "native_exception_class_equivalence": "UNQUALIFIED",
+      "count_after": 2,
+      "used_delta": 0
+    },
+    {
+      "index": 17,
+      "name": "crop_null_player_after_effects_wrapper",
+      "channel": "wrapper",
+      "exception_class": "java.lang.NullPointerException",
+      "classification": "original-null-reference-outcome",
+      "native_exception_class_equivalence": "UNQUALIFIED",
+      "count_after": 1,
+      "used_delta": 0
+    },
+    {
+      "index": 18,
+      "name": "damage15_null_world_wrapper",
+      "channel": "wrapper",
+      "exception_class": "java.lang.NullPointerException",
+      "classification": "original-null-reference-outcome",
+      "native_exception_class_equivalence": "UNQUALIFIED",
+      "count_after": 2,
+      "used_delta": 0
+    },
+    {
+      "index": 19,
+      "name": "null_stack_wrapper",
+      "channel": "wrapper",
+      "exception_class": "java.lang.NullPointerException",
+      "classification": "original-null-reference-outcome",
+      "native_exception_class_equivalence": "UNQUALIFIED",
+      "count_after": 2,
+      "used_delta": 0
+    },
+    {
+      "index": 26,
+      "name": "sapling_null_player_after_effects_wrapper",
+      "channel": "wrapper",
+      "exception_class": "java.lang.NullPointerException",
+      "classification": "original-null-reference-outcome",
+      "native_exception_class_equivalence": "UNQUALIFIED",
+      "count_after": 1,
+      "used_delta": 0
+    },
+    {
+      "index": 33,
+      "name": "grass_callback_fail_first_wrapper",
+      "channel": "wrapper",
+      "exception_class": "java.lang.IllegalStateException",
+      "classification": "declared-Java-observer-failure",
+      "native_exception_class_equivalence": "UNQUALIFIED",
+      "count_after": 1,
+      "used_delta": 0
+    },
+    {
+      "index": 34,
+      "name": "grass_callback_fail_third_wrapper",
+      "channel": "wrapper",
+      "exception_class": "java.lang.IllegalStateException",
+      "classification": "declared-Java-observer-failure",
+      "native_exception_class_equivalence": "UNQUALIFIED",
+      "count_after": 1,
+      "used_delta": 0
+    },
+    {
+      "index": 37,
+      "name": "grass_null_player_after_effects_wrapper",
+      "channel": "wrapper",
+      "exception_class": "java.lang.NullPointerException",
+      "classification": "original-null-reference-outcome",
+      "native_exception_class_equivalence": "UNQUALIFIED",
+      "count_after": 1,
+      "used_delta": 0
+    },
+    {
+      "index": 38,
+      "name": "remote_grass_null_player_wrapper",
+      "channel": "wrapper",
+      "exception_class": "java.lang.NullPointerException",
+      "classification": "original-null-reference-outcome",
+      "native_exception_class_equivalence": "UNQUALIFIED",
+      "count_after": 2,
+      "used_delta": 0
+    }
+  ],
+  "scope": "Primary independently executed wrapper-only39 cohort. Three original callback exceptions require separate native policy/effect-prefix assertions; no native equivalence is established."
+}

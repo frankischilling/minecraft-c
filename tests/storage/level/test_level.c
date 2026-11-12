@@ -40,8 +40,7 @@ typedef struct fixture {
     size_t name_count;
 } fixture;
 
-static void named(fixture *value, mc_nbt_tag *tag, const char *name, mc_nbt_type type)
-{
+static void named(fixture *value, mc_nbt_tag *tag, const char *name, mc_nbt_type type) {
     uint16_t *units = value->names[value->name_count++];
     size_t length = strlen(name);
     for (size_t i = 0; i < length; ++i) {
@@ -52,8 +51,7 @@ static void named(fixture *value, mc_nbt_tag *tag, const char *name, mc_nbt_type
 }
 
 /* Synthetic schema-contract fixtures, not original-runtime parity evidence. */
-static void fixture_init(fixture *value)
-{
+static void fixture_init(fixture *value) {
     memset(value, 0, sizeof(*value));
     value->root.type = MC_NBT_COMPOUND;
     value->root.name = (mc_nbt_string){root_name, sizeof(root_name) / sizeof(root_name[0])};
@@ -111,8 +109,7 @@ static void fixture_init(fixture *value)
     value->root.value.compound.length = 3;
 }
 
-static const mc_nbt_tag *get(const mc_nbt_tag *parent, const char *name)
-{
+static const mc_nbt_tag *get(const mc_nbt_tag *parent, const char *name) {
     uint16_t units[16];
     size_t length = strlen(name);
     for (size_t i = 0; i < length; ++i) {
@@ -121,8 +118,7 @@ static const mc_nbt_tag *get(const mc_nbt_tag *parent, const char *name)
     return mc_nbt_compound_get(parent, units, length);
 }
 
-static int tree_bytes(const mc_nbt_tag *root, uint8_t **out, size_t *length)
-{
+static int tree_bytes(const mc_nbt_tag *root, uint8_t **out, size_t *length) {
     size_t measured = 0;
     CHECK(mc_nbt_measure(root, NULL, &measured, NULL) == MC_NBT_OK);
     uint8_t *bytes = malloc(measured);
@@ -135,8 +131,7 @@ static int tree_bytes(const mc_nbt_tag *root, uint8_t **out, size_t *length)
     return 0;
 }
 
-static int parsed(const mc_nbt_tag *root, mc_nbt_document **out)
-{
+static int parsed(const mc_nbt_tag *root, mc_nbt_document **out) {
     uint8_t *bytes = NULL;
     size_t length = 0;
     CHECK(tree_bytes(root, &bytes, &length) == 0);
@@ -147,8 +142,7 @@ static int parsed(const mc_nbt_tag *root, mc_nbt_document **out)
     return 0;
 }
 
-static int expect_string(mc_nbt_string actual, const uint16_t *units, size_t length)
-{
+static int expect_string(mc_nbt_string actual, const uint16_t *units, size_t length) {
     CHECK(actual.length == length);
     if (length != 0) {
         CHECK(actual.units != NULL && memcmp(actual.units, units, length * sizeof(*units)) == 0);
@@ -156,8 +150,7 @@ static int expect_string(mc_nbt_string actual, const uint16_t *units, size_t len
     return 0;
 }
 
-static int expect_same_tag(const mc_nbt_tag *left, const mc_nbt_tag *right)
-{
+static int expect_same_tag(const mc_nbt_tag *left, const mc_nbt_tag *right) {
     uint8_t *left_bytes = NULL;
     uint8_t *right_bytes = NULL;
     size_t left_length = 0, right_length = 0;
@@ -170,8 +163,7 @@ static int expect_same_tag(const mc_nbt_tag *left, const mc_nbt_tag *right)
 }
 
 static int expect_decode_failure(const mc_nbt_tag *root, const char *field,
-                                 mc_level_status expected)
-{
+                                 mc_level_status expected) {
     mc_level_info result, saved;
     memset(&result, 0xa5, sizeof(result));
     memcpy(&saved, &result, sizeof(saved));
@@ -186,8 +178,7 @@ static int expect_decode_failure(const mc_nbt_tag *root, const char *field,
 
 static int expect_build_failure(const mc_level_info *info, const mc_nbt_tag *baseline,
                                 const mc_nbt_limits *limits, mc_nbt_document *sentinel,
-                                mc_level_status expected, const char *field)
-{
+                                mc_level_status expected, const char *field) {
     uint8_t *before = NULL;
     size_t before_length = 0;
     if (baseline != NULL) {
@@ -217,8 +208,7 @@ static int expect_build_failure(const mc_level_info *info, const mc_nbt_tag *bas
     return 0;
 }
 
-static int test_defaults_and_exact_types(void)
-{
+static int test_defaults_and_exact_types(void) {
     mc_nbt_tag empty = {0};
     empty.type = MC_NBT_COMPOUND;
     mc_nbt_document *document = NULL;
@@ -298,8 +288,7 @@ static int test_defaults_and_exact_types(void)
     return 0;
 }
 
-static int test_boundaries_booleans_and_clock(void)
-{
+static int test_boundaries_booleans_and_clock(void) {
     static const int8_t booleans[] = {-128, -1, 0, 1, 2, 127};
     for (size_t i = 0; i < sizeof(booleans) / sizeof(booleans[0]); ++i) {
         fixture value;
@@ -344,8 +333,7 @@ static int test_boundaries_booleans_and_clock(void)
     return 0;
 }
 
-static int test_preservation_player_and_ownership(void)
-{
+static int test_preservation_player_and_ownership(void) {
     fixture value;
     fixture_init(&value);
     mc_nbt_document *source = NULL;
@@ -440,8 +428,7 @@ static int test_preservation_player_and_ownership(void)
     return 0;
 }
 
-static int test_build_limits_and_failures(void)
-{
+static int test_build_limits_and_failures(void) {
     fixture value;
     fixture_init(&value);
     mc_nbt_document *source = NULL;
@@ -569,8 +556,7 @@ static int test_build_limits_and_failures(void)
     return 0;
 }
 
-static int test_status_strings(void)
-{
+static int test_status_strings(void) {
     static const char *const names[] = {"ok",
                                         "invalid argument",
                                         "wrong level field type",
@@ -584,8 +570,7 @@ static int test_status_strings(void)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_defaults_and_exact_types() != 0 || test_boundaries_booleans_and_clock() != 0 ||
         test_preservation_player_and_ownership() != 0 || test_build_limits_and_failures() != 0 ||
         test_status_strings() != 0) {

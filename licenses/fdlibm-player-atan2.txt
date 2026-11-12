@@ -1,0 +1,19 @@
+The private atan2 implementation in src/entity/player/atan2.c is adapted from
+Netlib fdlibm e_atan2.c, version 1.3 (95/01/18).
+Source: https://netlib.org/fdlibm/e_atan2.c
+SHA256: 61dbf9edc927468280ccde872ecfb7cb1ea7cbaf6e1b28e7021c968abe5f7c6e
+
+Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
+
+Developed at SunSoft, a Sun Microsystems, Inc. business.
+Permission to use, copy, modify, and distribute this
+software is freely granted, provided that this notice
+is preserved.
+
+The port preserves the original reduction and arithmetic, uses alias-safe
+word access and exact hexadecimal constants, and specifies the qualified
+JDK17 native NaN payload selection independently of C operand commutation.
+It calls the separately attributed private action atan implementation.
+OpenJDK17 source is a separate audit input, not the redistributed source of
+this permissively licensed port. Source pins and the two normalization rules
+used by that audit are in tests/reference/entity/active_tick/math-origin.json.

@@ -114,11 +114,26 @@ class ChunkReferenceGuards(unittest.TestCase):
         world.mkdir()
         (world / "before.bin").write_bytes(b"owned before")
         stdout, stderr = self.directory / "child.stdout", self.directory / "child.stderr"
+        observed = self.directory / "live-inventory-observed"
         command = [sys.executable, "-c",
-                   "from pathlib import Path; import sys; "
+                   "from pathlib import Path; import sys, time\n"
+                   "while not Path(sys.argv[2]).is_file():\n"
+                   "    time.sleep(0.005)\n"
                    "Path(sys.argv[1]).joinpath('after.bin').write_bytes(b'owned after'); "
-                   "sys.stdout.buffer.write(b'owned shared helper\\n')", str(world)]
-        result = helper.run_live(command, stdout, stderr, self.directory, seconds=5, world_root=world)
+                   "sys.stdout.buffer.write(b'owned shared helper\\n')", str(world), str(observed)]
+        inventory = helper.world_inventory
+
+        def observe_live_inventory(path, hashes=False, *, live_poll=False):
+            result = inventory(path, hashes=hashes, live_poll=live_poll)
+            if live_poll and result["complete"] and result["error"] is None:
+                observed.touch()
+            return result
+
+        # The owned child remains live until a real successful inventory. Its
+        # lifetime must not depend on the parent's pipe-thread startup timing.
+        with mock.patch.object(helper, "world_inventory", side_effect=observe_live_inventory):
+            result = helper.run_live(command, stdout, stderr, self.directory, seconds=5,
+                                     world_root=world)
         self.assertEqual((result.returncode, result.timed_out, result.stop_reason), (0, False, None))
         self.assertGreaterEqual(result.inventory_polls, 1)
         self.assertEqual(stdout.read_bytes(), b"owned shared helper\n")

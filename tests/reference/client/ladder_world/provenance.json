@@ -1,0 +1,48 @@
+{
+  "format": 1,
+  "profiles": 35,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "ordinary_fresh_vms": 2,
+  "read_only_jdi_fresh_vms": 1,
+  "original_inputs_unchanged": true,
+  "original_helpers_unchanged": true,
+  "source_writes_from_jdi": 0,
+  "frozen_authored_files_sha256": {
+    "LadderObservation.java": "e199fd13df8cb0a81b7684d2671c65ba956bda543f94513dbb623724f18e2b85",
+    "LadderJdi.java": "d04c5064ad346d6634044a0a115999966341d088934f75a797fb52d8aa2e1901",
+    "profiles.txt": "d84338c975314418e9a0cdae40b72d1a8f6941d5963aeeb030829d934ac2f019",
+    "declared-inputs.json": "2d42b42912570a9ee0dd9a4e6e8dfc89acb25b7cd541af6d51cbdf1bd066c302",
+    "source-pins.json": "fffa890a7bce95dd676085c8efd430215ea79ea2f39aa575324807c92e605cb3",
+    "capture_reference.py": "c58943c071f009d1b2ba162ced9faf5b9e972610eb598994642aea51d0c165bf"
+  },
+  "files_sha256": {
+    "LadderObservation.java": "e199fd13df8cb0a81b7684d2671c65ba956bda543f94513dbb623724f18e2b85",
+    "LadderJdi.java": "d04c5064ad346d6634044a0a115999966341d088934f75a797fb52d8aa2e1901",
+    "profiles.txt": "d84338c975314418e9a0cdae40b72d1a8f6941d5963aeeb030829d934ac2f019",
+    "declared-inputs.json": "2d42b42912570a9ee0dd9a4e6e8dfc89acb25b7cd541af6d51cbdf1bd066c302",
+    "source-pins.json": "fffa890a7bce95dd676085c8efd430215ea79ea2f39aa575324807c92e605cb3",
+    "capture_reference.py": "c58943c071f009d1b2ba162ced9faf5b9e972610eb598994642aea51d0c165bf",
+    "selected.txt": "27a60db511b9793204ecccf425bcfcbdae9208ff49582022c9fd7d774efca415",
+    "events.jsonl": "46a1bedd74b4d85ff3197f79392b4d112b709577643e882889ea92291c150c9c",
+    "live-code.tsv": "de8b7852816f73a046e5835f3537f1335d3544260b68175e0ea6b0cf3ec573bc"
+  },
+  "source_capture": {
+    "raw_stdout_sha256": [
+      "b97af7b7d081d211041ba998ac2bba3bd7d46e6e6915b49f746cf371a992c94d",
+      "b97af7b7d081d211041ba998ac2bba3bd7d46e6e6915b49f746cf371a992c94d",
+      "b97af7b7d081d211041ba998ac2bba3bd7d46e6e6915b49f746cf371a992c94d"
+    ],
+    "helpers_sha256": {
+      "LadderJdi.class": "6172f5dd6168420c9c5efe50c933b143de114b85e645bb912f8b5c421b2f83df",
+      "LadderObservation$1.class": "eff56874708be5b3f727b079cbdc1115fb11b9bc25ba50caf559d37f0aff903f",
+      "LadderObservation.class": "121d2565afa00a2d685c9f87b776fb7a104787707c9a63e50ed5b3c148097534"
+    },
+    "jdi_completion": "LW_JDI_COMPLETE events=1133 entries=533 queries=160 reads=68 exceptions=3 target-exit=0 source-writes=0",
+    "events": 1133,
+    "queries": 160,
+    "field_reads": 68,
+    "exceptions": 3,
+    "live_methods": 12
+  },
+  "scope": "Unchanged original World Ladder rendering only; no GL pixels, enclosing native World frames, gameplay or performance claim."
+}

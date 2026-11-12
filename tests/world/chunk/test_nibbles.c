@@ -25,8 +25,7 @@ _Static_assert(sizeof(nibble_reference_writes) / sizeof(nibble_reference_writes[
 _Static_assert(sizeof(nibble_reference_deltas) / sizeof(nibble_reference_deltas[0]) == 15u,
                "complete observed byte deltas");
 
-static int check_getter(size_t capacity, const nibble_reference_write *write, uint8_t expected)
-{
+static int check_getter(size_t capacity, const nibble_reference_write *write, uint8_t expected) {
     uint8_t value = 0xc3;
     CHECK(mc_chunk_nibbles_get(packed, capacity, write->x, write->y, write->z, &value));
     CHECK(value == expected);
@@ -34,8 +33,7 @@ static int check_getter(size_t capacity, const nibble_reference_write *write, ui
     return 0;
 }
 
-static int test_original_sequence(size_t capacity)
-{
+static int test_original_sequence(size_t capacity) {
     /* This is the observer's input recipe. Expected setter output comes only
      * from the captured deltas in nibbles_reference_fixtures.h. */
     for (size_t i = 0; i < MC_CHUNK_NIBBLE_BYTES; ++i) {
@@ -81,8 +79,7 @@ static int test_original_sequence(size_t capacity)
     return 0;
 }
 
-int main(void)
-{
+int main(void) {
     if (test_original_sequence(MC_CHUNK_NIBBLE_BYTES) || test_original_sequence(sizeof(packed)))
         return 1;
     printf("packed nibble reference checks: %u (16 writes, 2 capacity variants)\n", checks);

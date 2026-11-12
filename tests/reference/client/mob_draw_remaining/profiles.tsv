@@ -1,0 +1,15 @@
+case	kind	partial	scene	unused	normalize
+0	gi	.375	first	-	reset
+1	gi	1	reuse	-	reset
+2	uz	.375	first	-	reset
+3	uz	1	reuse	-	reset
+4	fr	.375	first	-	reset
+5	fr	1	reuse	-	reset
+6	fr2	.375	shared_stack_second_actor	-	reset
+7	gi	.375	wolf_sitting	-	reset
+8	gi	.375	wolf_angry	-	reset
+9	gi	.375	wolf_tame_health18	-	reset
+10	gi	.375	wolf_wet_nonzero	-	reset
+11	fr	.375	bow_full3d	-	reset
+12	fr	.375	alternate_hand_app	-	reset
+13	gi	.375	mixed_revisit	-	reset

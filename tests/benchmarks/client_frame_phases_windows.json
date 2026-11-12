@@ -1,0 +1,9799 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "scope": "One instrumented Windows sky-view attribution interval. No speedup, GPU duration or unrestricted-play claim.",
+  "base_commit": "56aca7961f1fa5aa50641d01852e84841925541a",
+  "host": {
+    "platform": "Windows-10-10.0.19045-SP0",
+    "machine": "AMD64",
+    "processor": "Intel64 Family 6 Model 165 Stepping 5, GenuineIntel",
+    "processor_name": "Intel(R) Core(TM) i9-10900F CPU @ 2.80GHz",
+    "physical_cores": 10,
+    "logical_processors": 20,
+    "processor_name_evidence": "Native Win32_Processor census in the same session after timing."
+  },
+  "gpu": {
+    "vendor": "NVIDIA Corporation",
+    "renderer": "NVIDIA GeForce RTX 3060/PCIe/SSE2",
+    "version": "3.3.0 NVIDIA 581.42"
+  },
+  "compiler": {
+    "family": "MSVC",
+    "msc_full_ver": 195136260,
+    "language": "C17",
+    "configuration": "Release",
+    "pointer_bits": 64,
+    "ndebug": true,
+    "common_project_compile_flags": [
+      "/DWIN32",
+      "/D_WINDOWS",
+      "/O2",
+      "/Ob2",
+      "/DNDEBUG",
+      "-std:c17",
+      "-MD",
+      "-experimental:c11atomics",
+      "/W4",
+      "/WX",
+      "/fp:strict",
+      "/FS"
+    ],
+    "common_link_flags": [
+      "/machine:x64",
+      "/INCREMENTAL:NO",
+      "/subsystem:console",
+      "/DELAYLOAD:shell32.dll"
+    ]
+  },
+  "context": {
+    "major": "3",
+    "minor": "3",
+    "profile": "1",
+    "swap-zero": "1",
+    "width": "854",
+    "height": "480",
+    "view-distance": "3",
+    "performance-mode": "1"
+  },
+  "scenario": {
+    "seed": 123,
+    "saved_player_position": [
+      0.5,
+      65.62000000476837,
+      -0.5
+    ],
+    "saved_player_rotation": [
+      180.0,
+      -30.0
+    ],
+    "width": 854,
+    "height": 480,
+    "render_distance_name": "Tiny",
+    "render_distance_value": 3,
+    "initial_options_file": "viewDistance:3\n",
+    "other_settings": "Ordinary fresh GameSettings defaults; measured context reports performance-mode1 and swap interval zero.",
+    "authored_rotation_only_change": {
+      "before": [
+        0.0,
+        30.0
+      ],
+      "after": [
+        180.0,
+        -30.0
+      ],
+      "only_decoded_difference": "Data.Player.Rotation",
+      "changed_wire_bytes": 3,
+      "unchanged_wire_length": true,
+      "original_wire_sha256": "7f631b2f459daa5fe46a7f752f03b6caaaca1b48e00809c6819b29f8272e516a",
+      "sky_wire_sha256": "5a08e1eba90aa023d0b2a8ed3133d3e9b0e51b9563bdbd985421d32302fadbb6"
+    },
+    "warmup_seconds": 2,
+    "measurement_seconds_minimum": 10,
+    "audio_backend": "OpenAL null driver; ordinary Source sound work remains enabled.",
+    "normal_runtime_work": "Actual source menu entry, saved-World construction, Timer/input, World ticks, chunk/light work, rendering, SDK swap, source pacing and autosaves.",
+    "harness_timed_work": "QPC brackets actual normal frames; shallow read-only scalar/focus/FPS observations between frames. No per-frame screenshots, disk assertions, logs, Source repairs or disabled work.",
+    "qualification": "Every returned row must have source focus, no Screen, SDL input focus and a live foreground window in the observer process. Retained camera Rotation must match; the owned cache remains enabled with zero raw exports; cleanup must close both native windows."
+  },
+  "qualification": {
+    "native_process_terminal": true,
+    "phase_calls_once_per_healthy_frame": true,
+    "all_phase_flags_zero": true,
+    "source_scene_focus_camera_cache_and_cleanup": true,
+    "frozen_build_inputs_unchanged": true,
+    "frozen_capture_inputs_unchanged": true,
+    "scene_inputs_unchanged": true,
+    "imported_assets_unchanged": true,
+    "no_source_clock_timer_deadline_or_gameplay_edits": true,
+    "fixed_video_thread_storage_no_hook_allocation_or_output": true,
+    "observer_effect": "Host QPC calls add overhead and natural Source clocks continue advancing. Do not compare this interval as FPS against an uninstrumented observer."
+  },
+  "source_measurement": {
+    "row-version": "2",
+    "qpc-hz": "10000000",
+    "start": "12235749806510",
+    "end": "12235849989707",
+    "warmup-frames": "40",
+    "frames": "194",
+    "world-ticks": "193",
+    "healthy": "1",
+    "capacity": "0",
+    "focus-invalid": "0",
+    "process-kernel-100ns": "7187500",
+    "process-user-100ns": "97187500"
+  },
+  "source_tick_batch": {
+    "count": 194,
+    "mean_ms": 21.638252061855667,
+    "p50_ms": 12.7225,
+    "p95_ms": 112.3122,
+    "p99_ms": 277.6722,
+    "max_ms": 281.0134
+  },
+  "source_pre_HUD_prefix_not_GPU_time": {
+    "count": 194,
+    "mean_ms": 29.433817525773197,
+    "p50_ms": 17.1555,
+    "p95_ms": 66.3079,
+    "p99_ms": 119.5195,
+    "max_ms": 120.9812
+  },
+  "source_HUD_and_active_check_not_GPU_time": {
+    "count": 194,
+    "mean_ms": 0.5205046391752578,
+    "p50_ms": 0.4961,
+    "p95_ms": 0.6725,
+    "p99_ms": 0.8566,
+    "max_ms": 0.863
+  },
+  "phases": [
+    {
+      "name": "retire_completed_draws",
+      "scope": "Actual previous-frame native retire_completed_draws at frame entry, before clock reset and Timer work.",
+      "summary": {
+        "count": 194,
+        "mean_ms": 0.028446907216494847,
+        "p50_ms": 0.02765,
+        "p95_ms": 0.0384,
+        "max_ms": 0.0579
+      }
+    },
+    {
+      "name": "light_drain",
+      "scope": "Actual World light_drain with unchanged SIZE_MAX work admission.",
+      "summary": {
+        "count": 194,
+        "mean_ms": 6.486869587628866,
+        "p50_ms": 4.116,
+        "p95_ms": 18.339,
+        "max_ms": 25.6147
+      }
+    },
+    {
+      "name": "display_update",
+      "scope": "Actual conditional SDK display update, including swap and message work; original F7 selection retained.",
+      "summary": {
+        "count": 194,
+        "mean_ms": 0.42774123711340206,
+        "p50_ms": 0.36650000000000005,
+        "p95_ms": 0.89,
+        "max_ms": 2.4222
+      }
+    },
+    {
+      "name": "world_draw",
+      "scope": "Actual World-frame begin and complete child execution, before outer passive inspection.",
+      "summary": {
+        "count": 194,
+        "mean_ms": 22.432210824742267,
+        "p50_ms": 5.3980999999999995,
+        "p95_ms": 56.7608,
+        "max_ms": 104.0877
+      }
+    },
+    {
+      "name": "hud_draw_and_retire",
+      "scope": "Actual HUD begin, passive inspection and checked native retirement, including failed return prefixes.",
+      "summary": {
+        "count": 194,
+        "mean_ms": 0.518090206185567,
+        "p50_ms": 0.4941,
+        "p95_ms": 0.6709,
+        "max_ms": 0.8598
+      }
+    }
+  ],
+  "instrumented_host_frame": {
+    "count": 194,
+    "mean_ms": 51.63452164948453,
+    "p50_ms": 34.18625,
+    "p95_ms": 135.1305,
+    "max_ms": 349.2601
+  },
+  "host_outside_named_spans": {
+    "count": 194,
+    "mean_ms": 21.741162886597937,
+    "p50_ms": 12.8465,
+    "p95_ms": 112.4354,
+    "max_ms": 281.1471
+  },
+  "raw_schema": {
+    "host_frame": [
+      "frame",
+      "qpc_begin",
+      "qpc_end"
+    ],
+    "source_clock": [
+      "run137",
+      "run203",
+      "run387",
+      "pre_HUD450"
+    ],
+    "source_work": [
+      "timer_ticks",
+      "tick_returns",
+      "source_clock_valid_bits",
+      "SDL_window_flags",
+      "source_focus",
+      "screen_kind",
+      "frame_returned",
+      "ticks",
+      "world_ticks",
+      "World_draws",
+      "pre_HUD_clock_stored",
+      "render_returned"
+    ],
+    "phase_ticks_calls_valid": [
+      "retire_completed_draws",
+      "light_drain",
+      "display_update",
+      "world_draw",
+      "hud_draw_and_retire"
+    ]
+  },
+  "raw_rows": [
+    {
+      "host_frame": [
+        97,
+        12235749806510,
+        12235750139261
+      ],
+      "source_clock": [
+        1223574980675200,
+        1223575007005500,
+        1223575013915700,
+        1223575013431100
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        58,
+        41,
+        44,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        232,
+        18304,
+        3153,
+        41951,
+        4832
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        98,
+        12235750139288,
+        12235750811895
+      ],
+      "source_clock": [
+        1223575013951800,
+        1223575022810700,
+        1223575081178100,
+        1223575080694600
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        59,
+        42,
+        45,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        221,
+        21920,
+        7532,
+        548397,
+        4806
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        99,
+        12235750811919,
+        12235751536076
+      ],
+      "source_clock": [
+        1223575081219400,
+        1223575096088500,
+        1223575153595800,
+        1223575153035200
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        60,
+        43,
+        46,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        265,
+        29466,
+        3326,
+        536014,
+        5575
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        100,
+        12235751536116,
+        12235751834099
+      ],
+      "source_clock": [
+        1223575153643100,
+        1223575175150900,
+        1223575183399100,
+        1223575182908600
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        62,
+        45,
+        47,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        303,
+        30676,
+        3367,
+        42877,
+        4892
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        101,
+        12235751834123,
+        12235752391474
+      ],
+      "source_clock": [
+        1223575183434200,
+        1223575183434200,
+        1223575239136100,
+        1223575238652500
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        62,
+        45,
+        48,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        212,
+        18714,
+        2207,
+        530785,
+        4798
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        102,
+        12235752391521,
+        12235752562706
+      ],
+      "source_clock": [
+        1223575239180300,
+        1223575249602300,
+        1223575256260400,
+        1223575255773200
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        63,
+        46,
+        49,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        273,
+        16055,
+        3269,
+        41840,
+        4859
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        103,
+        12235752562732,
+        12235753181207
+      ],
+      "source_clock": [
+        1223575256293600,
+        1223575256293600,
+        1223575318105700,
+        1223575317554100
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        63,
+        46,
+        50,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        197,
+        37494,
+        2345,
+        572283,
+        5481
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        104,
+        12235753181394,
+        12235753955243
+      ],
+      "source_clock": [
+        1223575318198800,
+        1223575339376800,
+        1223575395513500,
+        1223575395028100
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        65,
+        48,
+        51,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        579,
+        27948,
+        4267,
+        523341,
+        4821
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        105,
+        12235753955269,
+        12235754135926
+      ],
+      "source_clock": [
+        1223575395555100,
+        1223575405948200,
+        1223575413583000,
+        1223575412900100
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        66,
+        49,
+        52,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        270,
+        22814,
+        3170,
+        42844,
+        6812
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        106,
+        12235754136212,
+        12235754708730
+      ],
+      "source_clock": [
+        1223575413648800,
+        1223575413648800,
+        1223575470861900,
+        1223575470381300
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        66,
+        49,
+        53,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        263,
+        22502,
+        2151,
+        541735,
+        4775
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        107,
+        12235754708774,
+        12235754878507
+      ],
+      "source_clock": [
+        1223575470904000,
+        1223575480414600,
+        1223575487839600,
+        1223575487360400
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        67,
+        50,
+        54,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        256,
+        23360,
+        3363,
+        42037,
+        4778
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        108,
+        12235754878531,
+        12235755671809
+      ],
+      "source_clock": [
+        1223575487876100,
+        1223575556290100,
+        1223575567170200,
+        1223575566692100
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        68,
+        51,
+        55,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        221,
+        47674,
+        4417,
+        50632,
+        4768
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        109,
+        12235755671833,
+        12235755962352
+      ],
+      "source_clock": [
+        1223575567207000,
+        1223575587565500,
+        1223575596224200,
+        1223575595746900
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        69,
+        52,
+        56,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        229,
+        23999,
+        5054,
+        51624,
+        4758
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        110,
+        12235755962380,
+        12235756518504
+      ],
+      "source_clock": [
+        1223575596262000,
+        1223575596262000,
+        1223575651839700,
+        1223575651312100
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        69,
+        52,
+        57,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        232,
+        20692,
+        1954,
+        527384,
+        5245
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        111,
+        12235756518534,
+        12235758391430
+      ],
+      "source_clock": [
+        1223575651882500,
+        1223575777897900,
+        1223575839131600,
+        1223575838642400
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        70,
+        53,
+        58,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        282,
+        47874,
+        3263,
+        555034,
+        4859
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        112,
+        12235758391453,
+        12235758961713
+      ],
+      "source_clock": [
+        1223575839171900,
+        1223575889097300,
+        1223575896161000,
+        1223575895676600
+      ],
+      "source_work": [
+        4,
+        4,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        74,
+        57,
+        59,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        257,
+        15816,
+        3965,
+        45091,
+        4831
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        113,
+        12235758961741,
+        12235759405802
+      ],
+      "source_clock": [
+        1223575896196300,
+        1223575923790700,
+        1223575940570400,
+        1223575940087300
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        75,
+        58,
+        60,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        213,
+        104404,
+        11284,
+        46353,
+        4818
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        114,
+        12235759405826,
+        12235760075496
+      ],
+      "source_clock": [
+        1223575940607000,
+        1223575990365300,
+        1223576007538900,
+        1223576007065400
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        76,
+        59,
+        61,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        235,
+        90336,
+        6391,
+        69306,
+        4719
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        115,
+        12235760075520,
+        12235760355463
+      ],
+      "source_clock": [
+        1223576007576900,
+        1223576019257000,
+        1223576035535000,
+        1223576035022400
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        77,
+        60,
+        62,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        240,
+        102805,
+        4914,
+        48969,
+        5112
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        116,
+        12235760355486,
+        12235760713661
+      ],
+      "source_clock": [
+        1223576035573100,
+        1223576045904700,
+        1223576071354400,
+        1223576070871100
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        78,
+        61,
+        63,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        237,
+        191092,
+        5614,
+        52079,
+        4811
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        117,
+        12235760713685,
+        12235761303309
+      ],
+      "source_clock": [
+        1223576071395400,
+        1223576071395400,
+        1223576130319500,
+        1223576129847000
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        78,
+        61,
+        64,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        261,
+        26398,
+        2911,
+        554696,
+        4694
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        118,
+        12235761303337,
+        12235761531150
+      ],
+      "source_clock": [
+        1223576130360500,
+        1223576143673600,
+        1223576153104000,
+        1223576152592900
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        79,
+        62,
+        65,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        257,
+        40375,
+        3682,
+        44121,
+        5098
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        119,
+        12235761531173,
+        12235761730612
+      ],
+      "source_clock": [
+        1223576153140800,
+        1223576165572100,
+        1223576173050500,
+        1223576172499200
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        80,
+        63,
+        66,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        226,
+        17907,
+        2944,
+        47794,
+        5495
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        120,
+        12235761730636,
+        12235762288299
+      ],
+      "source_clock": [
+        1223576173088900,
+        1223576173088900,
+        1223576228815700,
+        1223576228337700
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        80,
+        63,
+        67,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        243,
+        16843,
+        2321,
+        532830,
+        4744
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        121,
+        12235762288326,
+        12235762577263
+      ],
+      "source_clock": [
+        1223576228859400,
+        1223576242040800,
+        1223576257715900,
+        1223576257246200
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        81,
+        64,
+        68,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        258,
+        106439,
+        3304,
+        41577,
+        4683
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        122,
+        12235762577288,
+        12235762859089
+      ],
+      "source_clock": [
+        1223576257751100,
+        1223576268962700,
+        1223576285895500,
+        1223576285414400
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        82,
+        65,
+        69,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        215,
+        110665,
+        3862,
+        49054,
+        4797
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        123,
+        12235762859113,
+        12235763009944
+      ],
+      "source_clock": [
+        1223576285935000,
+        1223576285935100,
+        1223576300983900,
+        1223576300465700
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        82,
+        65,
+        70,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        231,
+        97462,
+        3703,
+        43530,
+        5168
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        124,
+        12235763009967,
+        12235763247778
+      ],
+      "source_clock": [
+        1223576301020700,
+        1223576301020800,
+        1223576324734100,
+        1223576324180700
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        82,
+        65,
+        71,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        232,
+        178061,
+        5922,
+        46852,
+        5511
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        125,
+        12235763248207,
+        12235766207446
+      ],
+      "source_clock": [
+        1223576324857500,
+        1223576605870900,
+        1223576620734600,
+        1223576620265900
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        83,
+        66,
+        72,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        354,
+        61983,
+        4290,
+        76471,
+        4670
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        126,
+        12235766207468,
+        12235766974368
+      ],
+      "source_clock": [
+        1223576620770300,
+        1223576682345000,
+        1223576697425500,
+        1223576696927400
+      ],
+      "source_work": [
+        5,
+        5,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        88,
+        71,
+        73,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        224,
+        72458,
+        14170,
+        58171,
+        4960
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        127,
+        12235766974392,
+        12235768300155
+      ],
+      "source_clock": [
+        1223576697465500,
+        1223576811351100,
+        1223576830005300,
+        1223576829265700
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        90,
+        73,
+        74,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        254,
+        102761,
+        4380,
+        70672,
+        7382
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        128,
+        12235768300617,
+        12235768723258
+      ],
+      "source_clock": [
+        1223576830090000,
+        1223576853104700,
+        1223576872316300,
+        1223576871847500
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        92,
+        75,
+        75,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        272,
+        126059,
+        4388,
+        56219,
+        4674
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        129,
+        12235768723281,
+        12235768962119
+      ],
+      "source_clock": [
+        1223576872351400,
+        1223576880916000,
+        1223576896183200,
+        1223576895585800
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        93,
+        76,
+        76,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        222,
+        95337,
+        3656,
+        46926,
+        5954
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        130,
+        12235768962754,
+        12235769120835
+      ],
+      "source_clock": [
+        1223576896329700,
+        1223576896329800,
+        1223576912073500,
+        1223576911597500
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        93,
+        76,
+        77,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        532,
+        97141,
+        2840,
+        52075,
+        4739
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        131,
+        12235769120861,
+        12235769484565
+      ],
+      "source_clock": [
+        1223576912114500,
+        1223576922416500,
+        1223576948446700,
+        1223576947967800
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        94,
+        77,
+        78,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        276,
+        198016,
+        4635,
+        51907,
+        4774
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        132,
+        12235769484589,
+        12235769672603
+      ],
+      "source_clock": [
+        1223576948484000,
+        1223576948484100,
+        1223576967248500,
+        1223576966584400
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        94,
+        77,
+        79,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        242,
+        128314,
+        3478,
+        48545,
+        6613
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        133,
+        12235769672627,
+        12235769843095
+      ],
+      "source_clock": [
+        1223576967293000,
+        1223576977204000,
+        1223576984300600,
+        1223576983827500
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        95,
+        78,
+        80,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        295,
+        18388,
+        4162,
+        43057,
+        4717
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        134,
+        12235769843117,
+        12235770460829
+      ],
+      "source_clock": [
+        1223576984333900,
+        1223576984333900,
+        1223577046072100,
+        1223577045584700
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        95,
+        78,
+        81,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        214,
+        41362,
+        2549,
+        567486,
+        4837
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        135,
+        12235770460863,
+        12235771189596
+      ],
+      "source_clock": [
+        1223577046116800,
+        1223577057015900,
+        1223577118949000,
+        1223577118462700
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        96,
+        79,
+        82,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        296,
+        85020,
+        3611,
+        524976,
+        4831
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        136,
+        12235771189619,
+        12235771749445
+      ],
+      "source_clock": [
+        1223577118991400,
+        1223577155659300,
+        1223577174935400,
+        1223577174447100
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        98,
+        81,
+        83,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        287,
+        134429,
+        3919,
+        48344,
+        4869
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        137,
+        12235771749470,
+        12235772627479
+      ],
+      "source_clock": [
+        1223577174970400,
+        1223577249463800,
+        1223577262738900,
+        1223577262260600
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        99,
+        82,
+        84,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        225,
+        69866,
+        4252,
+        52665,
+        4769
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        138,
+        12235772627502,
+        12235772824110
+      ],
+      "source_clock": [
+        1223577262773300,
+        1223577272555500,
+        1223577282399100,
+        1223577281897400
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        100,
+        83,
+        85,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        222,
+        45032,
+        3127,
+        44607,
+        5004
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        139,
+        12235772824135,
+        12235773024105
+      ],
+      "source_clock": [
+        1223577282438000,
+        1223577291773800,
+        1223577302398500,
+        1223577301858700
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        101,
+        84,
+        86,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        235,
+        51452,
+        4096,
+        44338,
+        5376
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        140,
+        12235773024130,
+        12235773608497
+      ],
+      "source_clock": [
+        1223577302442000,
+        1223577302442100,
+        1223577360838300,
+        1223577360356700
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        101,
+        84,
+        87,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        278,
+        30794,
+        8301,
+        539394,
+        4786
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        141,
+        12235773608524,
+        12235774955547
+      ],
+      "source_clock": [
+        1223577360879600,
+        1223577375533800,
+        1223577495542200,
+        1223577495053300
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        102,
+        85,
+        88,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        263,
+        171287,
+        3882,
+        1019208,
+        4848
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        142,
+        12235774956318,
+        12235776518026
+      ],
+      "source_clock": [
+        1223577495667700,
+        1223577529893800,
+        1223577651731600,
+        1223577650875000
+      ],
+      "source_work": [
+        3,
+        3,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        105,
+        88,
+        89,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        345,
+        183390,
+        3930,
+        1021399,
+        8530
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        143,
+        12235776519100,
+        12235777906629
+      ],
+      "source_clock": [
+        1223577651944100,
+        1223577686086000,
+        1223577790651100,
+        1223577790174800
+      ],
+      "source_work": [
+        3,
+        3,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        108,
+        91,
+        90,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        330,
+        20801,
+        8957,
+        1010117,
+        4734
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        144,
+        12235777906675,
+        12235779658896
+      ],
+      "source_clock": [
+        1223577790694500,
+        1223577944743800,
+        1223577965880500,
+        1223577965323600
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        110,
+        93,
+        91,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        262,
+        120595,
+        3657,
+        80392,
+        5556
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        145,
+        12235779658919,
+        12235780288753
+      ],
+      "source_clock": [
+        1223577965915600,
+        1223578015923200,
+        1223578028866400,
+        1223578028390600
+      ],
+      "source_work": [
+        4,
+        4,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        114,
+        97,
+        92,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        227,
+        69956,
+        3763,
+        49942,
+        4744
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        146,
+        12235780288775,
+        12235780649924
+      ],
+      "source_clock": [
+        1223578028899900,
+        1223578046200400,
+        1223578064982500,
+        1223578064485200
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        115,
+        98,
+        93,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        216,
+        124726,
+        4800,
+        52193,
+        4941
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        147,
+        12235780649948,
+        12235780960454
+      ],
+      "source_clock": [
+        1223578065025700,
+        1223578065025800,
+        1223578096036000,
+        1223578095537800
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        115,
+        98,
+        94,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        298,
+        256147,
+        3548,
+        44755,
+        4957
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        148,
+        12235780960483,
+        12235781134101
+      ],
+      "source_clock": [
+        1223578096076600,
+        1223578106085000,
+        1223578113401200,
+        1223578112903900
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        116,
+        99,
+        95,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        269,
+        20348,
+        3615,
+        43295,
+        4956
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        149,
+        12235781134131,
+        12235781744190
+      ],
+      "source_clock": [
+        1223578113437100,
+        1223578113437100,
+        1223578174408700,
+        1223578173920500
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        116,
+        99,
+        96,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        232,
+        35804,
+        1874,
+        566673,
+        4851
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        150,
+        12235781744216,
+        12235781943067
+      ],
+      "source_clock": [
+        1223578174449900,
+        1223578185978300,
+        1223578194292500,
+        1223578193817800
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        117,
+        100,
+        97,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        274,
+        21942,
+        12970,
+        42820,
+        4735
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        151,
+        12235781943088,
+        12235782142463
+      ],
+      "source_clock": [
+        1223578194332000,
+        1223578207054500,
+        1223578214236900,
+        1223578213661400
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        118,
+        101,
+        98,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        225,
+        17833,
+        3722,
+        43686,
+        5742
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        152,
+        12235782142487,
+        12235782743969
+      ],
+      "source_clock": [
+        1223578214274700,
+        1223578214274800,
+        1223578274383200,
+        1223578273909200
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        118,
+        101,
+        99,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        253,
+        17139,
+        1973,
+        576757,
+        4707
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        153,
+        12235782743996,
+        12235782974277
+      ],
+      "source_clock": [
+        1223578274428200,
+        1223578287883900,
+        1223578297416500,
+        1223578296675900
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        119,
+        102,
+        100,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        277,
+        40990,
+        3449,
+        42605,
+        7387
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        154,
+        12235782974751,
+        12235783281009
+      ],
+      "source_clock": [
+        1223578297503700,
+        1223578309135400,
+        1223578328090200,
+        1223578327595300
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        120,
+        103,
+        101,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        277,
+        125219,
+        8900,
+        49295,
+        4927
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        155,
+        12235783281033,
+        12235783859380
+      ],
+      "source_clock": [
+        1223578328130400,
+        1223578328130400,
+        1223578385927200,
+        1223578385443100
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        120,
+        103,
+        102,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        259,
+        19564,
+        3190,
+        549843,
+        4808
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        156,
+        12235783859413,
+        12235784089444
+      ],
+      "source_clock": [
+        1223578385968600,
+        1223578396778700,
+        1223578408934000,
+        1223578408348400
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        121,
+        104,
+        103,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        264,
+        62963,
+        3120,
+        48820,
+        5833
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        157,
+        12235784089471,
+        12235784377652
+      ],
+      "source_clock": [
+        1223578408976400,
+        1223578421517000,
+        1223578437753600,
+        1223578437262800
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        122,
+        105,
+        104,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        283,
+        101813,
+        4340,
+        50506,
+        4886
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        158,
+        12235784377677,
+        12235784595605
+      ],
+      "source_clock": [
+        1223578437798400,
+        1223578437798400,
+        1223578459550900,
+        1223578459069000
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        122,
+        105,
+        105,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        298,
+        163968,
+        3040,
+        45157,
+        4806
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        159,
+        12235784595630,
+        12235785395514
+      ],
+      "source_clock": [
+        1223578459585500,
+        1223578472446600,
+        1223578539540700,
+        1223578539054100
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        123,
+        106,
+        106,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        220,
+        119114,
+        3325,
+        542637,
+        4831
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        160,
+        12235785395539,
+        12235785589690
+      ],
+      "source_clock": [
+        1223578539580300,
+        1223578550905400,
+        1223578558958000,
+        1223578558423500
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        124,
+        107,
+        107,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        255,
+        24587,
+        3882,
+        46070,
+        5322
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        161,
+        12235785589725,
+        12235785796066
+      ],
+      "source_clock": [
+        1223578558999900,
+        1223578572196800,
+        1223578579596600,
+        1223578579044400
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        125,
+        108,
+        108,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        262,
+        20333,
+        3017,
+        44295,
+        5506
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        162,
+        12235785796089,
+        12235786361940
+      ],
+      "source_clock": [
+        1223578579632200,
+        1223578579632200,
+        1223578636183700,
+        1223578635710600
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        125,
+        108,
+        109,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        225,
+        18295,
+        2230,
+        539790,
+        4700
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        163,
+        12235786361970,
+        12235787038665
+      ],
+      "source_clock": [
+        1223578636223400,
+        1223578647790800,
+        1223578703856600,
+        1223578703305100
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        126,
+        109,
+        110,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        253,
+        23781,
+        3262,
+        527431,
+        5478
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        164,
+        12235787038690,
+        12235788380686
+      ],
+      "source_clock": [
+        1223578703897000,
+        1223578816209200,
+        1223578838058500,
+        1223578837570300
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        128,
+        111,
+        111,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        267,
+        120591,
+        4700,
+        87225,
+        4859
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        165,
+        12235788380711,
+        12235789054488
+      ],
+      "source_clock": [
+        1223578838096000,
+        1223578896367500,
+        1223578905438900,
+        1223578904952800
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        130,
+        113,
+        112,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        239,
+        38396,
+        3336,
+        43136,
+        4849
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        166,
+        12235789054515,
+        12235789259260
+      ],
+      "source_clock": [
+        1223578905473600,
+        1223578917636900,
+        1223578925910300,
+        1223578925382600
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        131,
+        114,
+        113,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        213,
+        26459,
+        4283,
+        45712,
+        5263
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        167,
+        12235789259282,
+        12235789543323
+      ],
+      "source_clock": [
+        1223578925952200,
+        1223578938801500,
+        1223578954321700,
+        1223578953727800
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        132,
+        115,
+        114,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        233,
+        93010,
+        3366,
+        51692,
+        5925
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        168,
+        12235789543345,
+        12235789707443
+      ],
+      "source_clock": [
+        1223578954358500,
+        1223578954358500,
+        1223578970734400,
+        1223578970247600
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        132,
+        115,
+        115,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        232,
+        103772,
+        3363,
+        51096,
+        4850
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        169,
+        12235789707465,
+        12235789973261
+      ],
+      "source_clock": [
+        1223578970770800,
+        1223578982510300,
+        1223578997315900,
+        1223578996827000
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        133,
+        116,
+        116,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        233,
+        88640,
+        3458,
+        50252,
+        4875
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        170,
+        12235789973291,
+        12235790105932
+      ],
+      "source_clock": [
+        1223578997353300,
+        1223578997353400,
+        1223579010582200,
+        1223579010003700
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        133,
+        116,
+        117,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        233,
+        41556,
+        2237,
+        82221,
+        5764
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        171,
+        12235790106040,
+        12235790379935
+      ],
+      "source_clock": [
+        1223579010633400,
+        1223579010633500,
+        1223579037983800,
+        1223579037494200
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        133,
+        116,
+        118,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        285,
+        215296,
+        4471,
+        48132,
+        4883
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        172,
+        12235790379958,
+        12235790713740
+      ],
+      "source_clock": [
+        1223579038020500,
+        1223579051570400,
+        1223579071364200,
+        1223579070824300
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        134,
+        117,
+        119,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        238,
+        142195,
+        3269,
+        46141,
+        5384
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        173,
+        12235790713761,
+        12235791006879
+      ],
+      "source_clock": [
+        1223579071413700,
+        1223579082651600,
+        1223579100677200,
+        1223579100170100
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        135,
+        118,
+        120,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        368,
+        114591,
+        5415,
+        54153,
+        5045
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        174,
+        12235791006901,
+        12235791186745
+      ],
+      "source_clock": [
+        1223579100717300,
+        1223579100717400,
+        1223579118665100,
+        1223579118188500
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        135,
+        118,
+        121,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        261,
+        126201,
+        2883,
+        45062,
+        4754
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        175,
+        12235791186770,
+        12235791309885
+      ],
+      "source_clock": [
+        1223579118700400,
+        1223579118700500,
+        1223579130980200,
+        1223579130509700
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        135,
+        118,
+        122,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        228,
+        18614,
+        1934,
+        97082,
+        4694
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        176,
+        12235791309907,
+        12235791519340
+      ],
+      "source_clock": [
+        1223579131011000,
+        1223579144380800,
+        1223579151923700,
+        1223579151329500
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        136,
+        119,
+        123,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        196,
+        16898,
+        4155,
+        47474,
+        5928
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        177,
+        12235791519363,
+        12235791654186
+      ],
+      "source_clock": [
+        1223579151962200,
+        1223579151962300,
+        1223579165405100,
+        1223579164760900
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        136,
+        119,
+        124,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        252,
+        71986,
+        2167,
+        53320,
+        6408
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        178,
+        12235791654212,
+        12235792229242
+      ],
+      "source_clock": [
+        1223579165460200,
+        1223579165460300,
+        1223579222911600,
+        1223579222425600
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        136,
+        119,
+        125,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        379,
+        22366,
+        2439,
+        544276,
+        4822
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        179,
+        12235792229295,
+        12235792413240
+      ],
+      "source_clock": [
+        1223579222958900,
+        1223579233563200,
+        1223579241314500,
+        1223579240780500
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        137,
+        120,
+        126,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        284,
+        21316,
+        3121,
+        47040,
+        5325
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        180,
+        12235792413386,
+        12235792800867
+      ],
+      "source_clock": [
+        1223579241364300,
+        1223579271698300,
+        1223579280074400,
+        1223579279578700
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        138,
+        121,
+        127,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        246,
+        25830,
+        6413,
+        45549,
+        4943
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        181,
+        12235792800890,
+        12235793116513
+      ],
+      "source_clock": [
+        1223579280114000,
+        1223579297872300,
+        1223579311640600,
+        1223579311162000
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        139,
+        122,
+        128,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        242,
+        46145,
+        12883,
+        72935,
+        4755
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        182,
+        12235793116540,
+        12235793375719
+      ],
+      "source_clock": [
+        1223579311684100,
+        1223579311684200,
+        1223579337562200,
+        1223579337043500
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        139,
+        122,
+        129,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        291,
+        195084,
+        4352,
+        53486,
+        5171
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        183,
+        12235793375741,
+        12235793596108
+      ],
+      "source_clock": [
+        1223579337599600,
+        1223579349602200,
+        1223579359601400,
+        1223579359116400
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        140,
+        123,
+        130,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        248,
+        43752,
+        4244,
+        46382,
+        4837
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        184,
+        12235793596133,
+        12235793720161
+      ],
+      "source_clock": [
+        1223579359638800,
+        1223579359638900,
+        1223579372006100,
+        1223579371487700
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        140,
+        123,
+        131,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        246,
+        24935,
+        3284,
+        89617,
+        5160
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        185,
+        12235793720185,
+        12235793845763
+      ],
+      "source_clock": [
+        1223579372044200,
+        1223579372044200,
+        1223579384567300,
+        1223579384091800
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        140,
+        123,
+        132,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        248,
+        23573,
+        2282,
+        94125,
+        4741
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        186,
+        12235793845785,
+        12235794101078
+      ],
+      "source_clock": [
+        1223579384603500,
+        1223579396854600,
+        1223579410097700,
+        1223579409596600
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        141,
+        124,
+        133,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        242,
+        70911,
+        3073,
+        52463,
+        4999
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        187,
+        12235794101100,
+        12235795211628
+      ],
+      "source_clock": [
+        1223579410134700,
+        1223579410134800,
+        1223579521153200,
+        1223579520674500
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        141,
+        124,
+        134,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        240,
+        98073,
+        2611,
+        1004199,
+        4756
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        188,
+        12235795211651,
+        12235795981762
+      ],
+      "source_clock": [
+        1223579521191600,
+        1223579543230400,
+        1223579598165900,
+        1223579597682700
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        143,
+        126,
+        135,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        256,
+        20416,
+        3891,
+        519546,
+        4799
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        189,
+        12235795981790,
+        12235796753053
+      ],
+      "source_clock": [
+        1223579598206100,
+        1223579619098100,
+        1223579675293800,
+        1223579674810100
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        145,
+        128,
+        136,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        261,
+        19979,
+        3820,
+        532600,
+        4801
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        190,
+        12235796753108,
+        12235797438696
+      ],
+      "source_clock": [
+        1223579675341600,
+        1223579687423000,
+        1223579743859600,
+        1223579743377100
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        146,
+        129,
+        137,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        300,
+        25438,
+        4041,
+        529243,
+        4793
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        191,
+        12235797438721,
+        12235797685364
+      ],
+      "source_clock": [
+        1223579743899700,
+        1223579754792200,
+        1223579768527400,
+        1223579768048100
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        147,
+        130,
+        138,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        267,
+        84932,
+        3308,
+        43510,
+        4783
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        192,
+        12235797685387,
+        12235797932512
+      ],
+      "source_clock": [
+        1223579768561000,
+        1223579780020900,
+        1223579793242100,
+        1223579792760800
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        148,
+        131,
+        139,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        215,
+        76333,
+        2856,
+        47418,
+        4797
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        193,
+        12235797932541,
+        12235798577599
+      ],
+      "source_clock": [
+        1223579793283700,
+        1223579793283700,
+        1223579857748500,
+        1223579857252500
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        148,
+        131,
+        140,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        287,
+        104345,
+        3391,
+        531304,
+        4927
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        194,
+        12235798577629,
+        12235798891273
+      ],
+      "source_clock": [
+        1223579857791400,
+        1223579877493600,
+        1223579889116300,
+        1223579888634200
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        150,
+        133,
+        141,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        275,
+        59694,
+        3274,
+        47688,
+        4802
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        195,
+        12235798891297,
+        12235799438140
+      ],
+      "source_clock": [
+        1223579889156100,
+        1223579889156200,
+        1223579943803100,
+        1223579943297800
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        150,
+        133,
+        142,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        254,
+        18836,
+        2308,
+        519767,
+        5020
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        196,
+        12235799438164,
+        12235799636808
+      ],
+      "source_clock": [
+        1223579943845200,
+        1223579955504400,
+        1223579963667900,
+        1223579962995400
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        151,
+        134,
+        143,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        280,
+        26867,
+        3273,
+        44156,
+        6709
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        197,
+        12235799637102,
+        12235799889824
+      ],
+      "source_clock": [
+        1223579963737600,
+        1223579975205500,
+        1223579988971800,
+        1223579988497400
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        152,
+        135,
+        144,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        264,
+        73261,
+        3172,
+        55590,
+        4732
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        198,
+        12235799889847,
+        12235800035159
+      ],
+      "source_clock": [
+        1223579989008900,
+        1223579989008900,
+        1223580003504900,
+        1223580003023700
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        152,
+        135,
+        145,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        235,
+        89089,
+        4859,
+        45538,
+        4790
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        199,
+        12235800035188,
+        12235800651203
+      ],
+      "source_clock": [
+        1223580003547300,
+        1223580003547400,
+        1223580065108000,
+        1223580064615000
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        152,
+        135,
+        146,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        277,
+        50864,
+        2138,
+        557157,
+        4894
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        200,
+        12235800651240,
+        12235801524833
+      ],
+      "source_clock": [
+        1223580065157000,
+        1223580132697600,
+        1223580152473800,
+        1223580151992600
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        154,
+        137,
+        147,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        321,
+        121431,
+        4746,
+        65606,
+        4789
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        201,
+        12235801524857,
+        12235802559656
+      ],
+      "source_clock": [
+        1223580152512400,
+        1223580237672000,
+        1223580255955000,
+        1223580255438800
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        155,
+        138,
+        148,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        258,
+        93090,
+        4226,
+        79159,
+        5133
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        202,
+        12235802559682,
+        12235802970994
+      ],
+      "source_clock": [
+        1223580256000300,
+        1223580287058000,
+        1223580297085900,
+        1223580296529300
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        157,
+        140,
+        149,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        312,
+        32716,
+        4104,
+        56844,
+        5545
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        203,
+        12235802971021,
+        12235803215709
+      ],
+      "source_clock": [
+        1223580297130800,
+        1223580312282900,
+        1223580321525400,
+        1223580321019700
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        158,
+        141,
+        150,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        276,
+        18257,
+        9176,
+        58624,
+        5034
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        204,
+        12235803215732,
+        12235803463192
+      ],
+      "source_clock": [
+        1223580321602600,
+        1223580336136100,
+        1223580346309600,
+        1223580345832000
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        159,
+        142,
+        151,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        286,
+        20522,
+        4263,
+        70943,
+        4758
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        205,
+        12235803463216,
+        12235803645467
+      ],
+      "source_clock": [
+        1223580346347400,
+        1223580346347400,
+        1223580364536400,
+        1223580364047600
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        159,
+        142,
+        152,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        248,
+        101839,
+        2608,
+        72060,
+        4869
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        206,
+        12235803645490,
+        12235803822292
+      ],
+      "source_clock": [
+        1223580364573600,
+        1223580364573600,
+        1223580382217800,
+        1223580381729100
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        159,
+        142,
+        153,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        237,
+        75663,
+        13796,
+        81542,
+        4851
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        207,
+        12235803822316,
+        12235804151220
+      ],
+      "source_clock": [
+        1223580382262500,
+        1223580395945100,
+        1223580415112700,
+        1223580414603200
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        160,
+        143,
+        154,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        302,
+        131481,
+        3518,
+        50861,
+        5081
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        208,
+        12235804151242,
+        12235804338274
+      ],
+      "source_clock": [
+        1223580415147100,
+        1223580415147100,
+        1223580433817100,
+        1223580433285300
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        160,
+        143,
+        155,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        220,
+        131955,
+        3624,
+        45153,
+        5300
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        209,
+        12235804338299,
+        12235806411085
+      ],
+      "source_clock": [
+        1223580433856600,
+        1223580572086200,
+        1223580641096400,
+        1223580640624200
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        161,
+        144,
+        156,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        258,
+        91872,
+        3810,
+        588433,
+        4692
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        210,
+        12235806411108,
+        12235809302470
+      ],
+      "source_clock": [
+        1223580641138000,
+        1223580814778400,
+        1223580930235000,
+        1223580929372000
+      ],
+      "source_work": [
+        4,
+        4,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        165,
+        148,
+        157,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        263,
+        99484,
+        4413,
+        1040877,
+        8598
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        211,
+        12235809302703,
+        12235810912688
+      ],
+      "source_clock": [
+        1223580930306300,
+        1223581074192500,
+        1223581091258300,
+        1223581090756700
+      ],
+      "source_work": [
+        5,
+        5,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        170,
+        153,
+        158,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        347,
+        80181,
+        5607,
+        78949,
+        5001
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        212,
+        12235810912712,
+        12235811553110
+      ],
+      "source_clock": [
+        1223581091294100,
+        1223581147391800,
+        1223581155300300,
+        1223581154809100
+      ],
+      "source_work": [
+        4,
+        4,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        174,
+        157,
+        159,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        218,
+        15649,
+        4014,
+        53809,
+        4891
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        213,
+        12235811553134,
+        12235815045735
+      ],
+      "source_clock": [
+        1223581155338400,
+        1223581433010600,
+        1223581504555700,
+        1223581504013900
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        175,
+        158,
+        160,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        241,
+        119316,
+        19723,
+        569521,
+        5374
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        214,
+        12235815045764,
+        12235816397069
+      ],
+      "source_clock": [
+        1223581504616300,
+        1223581625166600,
+        1223581639694200,
+        1223581639135300
+      ],
+      "source_work": [
+        7,
+        7,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        182,
+        165,
+        161,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        388,
+        82579,
+        4448,
+        51434,
+        5554
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        215,
+        12235816397095,
+        12235816893998
+      ],
+      "source_clock": [
+        1223581639745400,
+        1223581679774900,
+        1223581689389100,
+        1223581688865900
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        184,
+        167,
+        162,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        350,
+        26175,
+        4473,
+        58880,
+        5197
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        216,
+        12235816894026,
+        12235817197942
+      ],
+      "source_clock": [
+        1223581689436900,
+        1223581702936700,
+        1223581719782000,
+        1223581719220300
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        185,
+        168,
+        163,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        333,
+        97255,
+        3418,
+        60918,
+        5587
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        217,
+        12235817197970,
+        12235817490979
+      ],
+      "source_clock": [
+        1223581719829500,
+        1223581733259300,
+        1223581749087700,
+        1223581748596600
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        186,
+        169,
+        164,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        316,
+        98446,
+        3417,
+        50552,
+        4898
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        218,
+        12235817491005,
+        12235817799979
+      ],
+      "source_clock": [
+        1223581749127400,
+        1223581749127400,
+        1223581779985800,
+        1223581779480800
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        186,
+        169,
+        165,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        261,
+        244287,
+        4291,
+        54202,
+        5005
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        219,
+        12235817800024,
+        12235818149967
+      ],
+      "source_clock": [
+        1223581780049500,
+        1223581795472800,
+        1223581814976800,
+        1223581814480600
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        187,
+        170,
+        166,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        449,
+        131836,
+        4508,
+        52802,
+        4934
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        220,
+        12235818149993,
+        12235819012116
+      ],
+      "source_clock": [
+        1223581815030200,
+        1223581832021200,
+        1223581901200600,
+        1223581900701000
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        188,
+        171,
+        167,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        301,
+        154594,
+        4370,
+        526869,
+        4954
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        221,
+        12235819012143,
+        12235819216702
+      ],
+      "source_clock": [
+        1223581901248100,
+        1223581914253400,
+        1223581921659800,
+        1223581921114900
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        189,
+        172,
+        168,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        329,
+        19504,
+        3202,
+        45094,
+        5436
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        222,
+        12235819216736,
+        12235819422108
+      ],
+      "source_clock": [
+        1223581921703500,
+        1223581934177400,
+        1223581942200400,
+        1223581941721400
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        190,
+        173,
+        169,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        290,
+        24449,
+        3567,
+        46133,
+        4775
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        223,
+        12235819422132,
+        12235819628222
+      ],
+      "source_clock": [
+        1223581942244200,
+        1223581942244200,
+        1223581962812600,
+        1223581962286300
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        190,
+        173,
+        170,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        301,
+        149558,
+        3104,
+        47188,
+        5250
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        224,
+        12235819628248,
+        12235820224229
+      ],
+      "source_clock": [
+        1223581962852300,
+        1223581962852400,
+        1223582022412300,
+        1223582021929600
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        190,
+        173,
+        171,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        266,
+        34528,
+        2932,
+        552775,
+        4800
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        225,
+        12235820224260,
+        12235821038104
+      ],
+      "source_clock": [
+        1223582022457500,
+        1223582048679600,
+        1223582103799000,
+        1223582103312100
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        192,
+        175,
+        172,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        307,
+        16788,
+        3537,
+        524970,
+        4840
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        226,
+        12235821038129,
+        12235821262697
+      ],
+      "source_clock": [
+        1223582103842900,
+        1223582118566700,
+        1223582126258800,
+        1223582125706600
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        193,
+        176,
+        173,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        291,
+        15836,
+        4581,
+        50171,
+        5496
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        227,
+        12235821262736,
+        12235821516487
+      ],
+      "source_clock": [
+        1223582126307600,
+        1223582140927200,
+        1223582151638000,
+        1223582151051700
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        194,
+        177,
+        174,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        332,
+        50582,
+        4490,
+        45204,
+        5846
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        228,
+        12235821516511,
+        12235822073460
+      ],
+      "source_clock": [
+        1223582151680300,
+        1223582151680300,
+        1223582207334200,
+        1223582206655900
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        194,
+        177,
+        175,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        283,
+        17650,
+        2310,
+        529307,
+        6747
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        229,
+        12235822073580,
+        12235822305887
+      ],
+      "source_clock": [
+        1223582207392800,
+        1223582222000200,
+        1223582230578000,
+        1223582230045000
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        195,
+        178,
+        176,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        336,
+        29866,
+        5095,
+        44625,
+        5314
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        230,
+        12235822305917,
+        12235823013561
+      ],
+      "source_clock": [
+        1223582230619600,
+        1223582245237200,
+        1223582301341800,
+        1223582300851300
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        196,
+        179,
+        177,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        269,
+        24817,
+        3587,
+        526784,
+        4877
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        231,
+        12235823013589,
+        12235823257817
+      ],
+      "source_clock": [
+        1223582301387900,
+        1223582315513700,
+        1223582325770700,
+        1223582325237900
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        197,
+        180,
+        178,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        281,
+        24996,
+        24222,
+        47030,
+        5308
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        232,
+        12235823257936,
+        12235823971853
+      ],
+      "source_clock": [
+        1223582325825400,
+        1223582341605200,
+        1223582397174400,
+        1223582396695400
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        198,
+        181,
+        179,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        307,
+        20040,
+        3340,
+        526623,
+        4759
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        233,
+        12235823971879,
+        12235824269002
+      ],
+      "source_clock": [
+        1223582397218500,
+        1223582412647800,
+        1223582426888900,
+        1223582426362300
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        199,
+        182,
+        180,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        296,
+        83927,
+        4567,
+        47349,
+        5248
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        234,
+        12235824269227,
+        12235824507020
+      ],
+      "source_clock": [
+        1223582426963900,
+        1223582442154300,
+        1223582450691800,
+        1223582450195100
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        200,
+        183,
+        181,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        398,
+        27389,
+        4336,
+        47649,
+        4949
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        235,
+        12235824507047,
+        12235825080812
+      ],
+      "source_clock": [
+        1223582450731700,
+        1223582450731700,
+        1223582508070000,
+        1223582507570000
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        200,
+        183,
+        182,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        261,
+        19119,
+        2106,
+        546667,
+        4964
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        236,
+        12235825080837,
+        12235825294125
+      ],
+      "source_clock": [
+        1223582508116900,
+        1223582520428500,
+        1223582529402900,
+        1223582528921400
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        201,
+        184,
+        183,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        321,
+        35792,
+        3705,
+        44570,
+        4800
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        237,
+        12235825294150,
+        12235825560434
+      ],
+      "source_clock": [
+        1223582529441100,
+        1223582541453100,
+        1223582556031500,
+        1223582555525900
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        202,
+        185,
+        184,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        252,
+        80111,
+        3583,
+        55609,
+        5021
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        238,
+        12235825560457,
+        12235826176583
+      ],
+      "source_clock": [
+        1223582556078500,
+        1223582556078500,
+        1223582617608200,
+        1223582616954100
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        202,
+        185,
+        185,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        319,
+        41330,
+        2808,
+        564045,
+        6505
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        239,
+        12235826176608,
+        12235826531964
+      ],
+      "source_clock": [
+        1223582617696900,
+        1223582635427200,
+        1223582653186100,
+        1223582652699400
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        203,
+        186,
+        186,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        352,
+        107062,
+        3733,
+        61017,
+        4848
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        240,
+        12235826531988,
+        12235826769910
+      ],
+      "source_clock": [
+        1223582653227900,
+        1223582668976500,
+        1223582676980600,
+        1223582676488800
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        204,
+        187,
+        187,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        281,
+        25765,
+        3299,
+        44968,
+        4904
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        241,
+        12235826769936,
+        12235827322926
+      ],
+      "source_clock": [
+        1223582677021400,
+        1223582677021500,
+        1223582732280800,
+        1223582731779500
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        204,
+        187,
+        188,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        271,
+        21325,
+        3366,
+        522158,
+        4973
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        242,
+        12235827322982,
+        12235827719479
+      ],
+      "source_clock": [
+        1223582732331900,
+        1223582760977400,
+        1223582771938200,
+        1223582771463600
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        206,
+        189,
+        189,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        328,
+        44781,
+        4326,
+        54944,
+        4732
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        243,
+        12235827719511,
+        12235827853169
+      ],
+      "source_clock": [
+        1223582771976100,
+        1223582771976100,
+        1223582785306500,
+        1223582784772700
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        206,
+        189,
+        190,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        242,
+        73850,
+        2900,
+        50644,
+        5319
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        244,
+        12235827853193,
+        12235828103273
+      ],
+      "source_clock": [
+        1223582785348500,
+        1223582800984900,
+        1223582810314000,
+        1223582809765400
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        207,
+        190,
+        191,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        280,
+        19800,
+        4373,
+        62497,
+        5446
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        245,
+        12235828103325,
+        12235828701042
+      ],
+      "source_clock": [
+        1223582810371700,
+        1223582810371800,
+        1223582870091000,
+        1223582869557000
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        207,
+        190,
+        192,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        384,
+        20338,
+        3272,
+        567608,
+        5300
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        246,
+        12235828701075,
+        12235829467978
+      ],
+      "source_clock": [
+        1223582870145000,
+        1223582889620800,
+        1223582946785800,
+        1223582946223800
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        208,
+        191,
+        193,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        362,
+        22550,
+        4230,
+        538123,
+        5584
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        247,
+        12235829468351,
+        12235830341896
+      ],
+      "source_clock": [
+        1223582946873900,
+        1223582978022500,
+        1223583034178300,
+        1223583033575800
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        210,
+        193,
+        194,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        377,
+        16683,
+        5087,
+        532643,
+        5988
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        248,
+        12235830341922,
+        12235831067631
+      ],
+      "source_clock": [
+        1223583034225600,
+        1223583047874100,
+        1223583106751700,
+        1223583106257600
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        211,
+        194,
+        195,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        325,
+        21040,
+        3852,
+        557984,
+        4904
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        249,
+        12235831067663,
+        12235831916632
+      ],
+      "source_clock": [
+        1223583106803600,
+        1223583137711500,
+        1223583191651400,
+        1223583191146900
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        213,
+        196,
+        196,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        362,
+        20015,
+        3579,
+        509820,
+        5011
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        250,
+        12235831916680,
+        12235832767750
+      ],
+      "source_clock": [
+        1223583191703100,
+        1223583222493500,
+        1223583276758400,
+        1223583276194200
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        215,
+        198,
+        197,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        339,
+        20565,
+        4662,
+        510703,
+        5602
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        251,
+        12235832768328,
+        12235832996745
+      ],
+      "source_clock": [
+        1223583276872600,
+        1223583290880400,
+        1223583299662900,
+        1223583299158600
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        216,
+        199,
+        198,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        385,
+        29220,
+        3674,
+        49090,
+        5022
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        252,
+        12235832996769,
+        12235833264881
+      ],
+      "source_clock": [
+        1223583299708000,
+        1223583312634900,
+        1223583326477500,
+        1223583325988100
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        217,
+        200,
+        199,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        302,
+        72394,
+        3538,
+        56593,
+        4872
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        253,
+        12235833264906,
+        12235833840390
+      ],
+      "source_clock": [
+        1223583326520700,
+        1223583326520800,
+        1223583384028000,
+        1223583383455200
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        217,
+        200,
+        200,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        293,
+        15827,
+        2373,
+        550627,
+        5701
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        254,
+        12235833840414,
+        12235834253202
+      ],
+      "source_clock": [
+        1223583384071700,
+        1223583416609700,
+        1223583425309600,
+        1223583424743700
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        218,
+        201,
+        201,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        294,
+        29189,
+        3774,
+        46205,
+        5636
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        255,
+        12235834253231,
+        12235834483526
+      ],
+      "source_clock": [
+        1223583425356400,
+        1223583439032900,
+        1223583448342600,
+        1223583447849700
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        219,
+        202,
+        202,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        326,
+        31444,
+        6482,
+        48739,
+        4906
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        256,
+        12235834483563,
+        12235834716654
+      ],
+      "source_clock": [
+        1223583448386400,
+        1223583462451200,
+        1223583471655700,
+        1223583471171000
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        220,
+        203,
+        203,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        292,
+        32945,
+        3335,
+        49944,
+        4829
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        257,
+        12235834716677,
+        12235835250071
+      ],
+      "source_clock": [
+        1223583471695000,
+        1223583471695100,
+        1223583524996800,
+        1223583524496800
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        220,
+        203,
+        204,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        265,
+        20716,
+        2099,
+        504723,
+        4966
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        258,
+        12235835250115,
+        12235835476169
+      ],
+      "source_clock": [
+        1223583525041200,
+        1223583538773800,
+        1223583547607800,
+        1223583547126800
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        221,
+        204,
+        205,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        286,
+        34823,
+        3277,
+        44526,
+        4796
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        259,
+        12235835476196,
+        12235835786247
+      ],
+      "source_clock": [
+        1223583547646500,
+        1223583560196200,
+        1223583578614400,
+        1223583578067500
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        222,
+        205,
+        206,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        262,
+        127769,
+        4156,
+        45905,
+        5448
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        260,
+        12235835786271,
+        12235836346481
+      ],
+      "source_clock": [
+        1223583578659200,
+        1223583578659300,
+        1223583634636800,
+        1223583634109800
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        222,
+        205,
+        207,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        313,
+        37417,
+        3135,
+        513430,
+        5230
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        261,
+        12235836346509,
+        12235836624419
+      ],
+      "source_clock": [
+        1223583634689500,
+        1223583652650900,
+        1223583662432500,
+        1223583661936700
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        223,
+        206,
+        208,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        375,
+        42455,
+        3518,
+        45960,
+        4940
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        262,
+        12235836624442,
+        12235837323940
+      ],
+      "source_clock": [
+        1223583662473100,
+        1223583676302900,
+        1223583732383800,
+        1223583731668700
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        224,
+        207,
+        209,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        282,
+        22025,
+        3309,
+        527400,
+        7114
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        263,
+        12235837324127,
+        12235837582121
+      ],
+      "source_clock": [
+        1223583732450700,
+        1223583746341300,
+        1223583758168300,
+        1223583757684900
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        225,
+        208,
+        210,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        368,
+        63179,
+        3673,
+        45627,
+        4818
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        264,
+        12235837582144,
+        12235838360092
+      ],
+      "source_clock": [
+        1223583758243300,
+        1223583772340600,
+        1223583835997000,
+        1223583835479500
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        226,
+        209,
+        211,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        280,
+        94194,
+        4277,
+        531844,
+        5144
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        265,
+        12235838360133,
+        12235838774637
+      ],
+      "source_clock": [
+        1223583836046200,
+        1223583848423200,
+        1223583877452900,
+        1223583876936900
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        227,
+        210,
+        212,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        320,
+        223875,
+        4333,
+        55960,
+        5133
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        266,
+        12235838774662,
+        12235839532930
+      ],
+      "source_clock": [
+        1223583877498300,
+        1223583894590000,
+        1223583953234500,
+        1223583952488200
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        228,
+        211,
+        213,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        312,
+        55185,
+        4171,
+        518649,
+        7429
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        267,
+        12235839533434,
+        12235839783134
+      ],
+      "source_clock": [
+        1223583953384800,
+        1223583970596000,
+        1223583978302900,
+        1223583977775300
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        229,
+        212,
+        214,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        400,
+        18329,
+        3257,
+        49297,
+        5260
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        268,
+        12235839783157,
+        12235840481200
+      ],
+      "source_clock": [
+        1223583978345500,
+        1223583991992300,
+        1223584048108300,
+        1223584047612300
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        230,
+        213,
+        215,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        289,
+        18905,
+        4376,
+        531845,
+        4917
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        269,
+        12235840481240,
+        12235840692968
+      ],
+      "source_clock": [
+        1223584048159400,
+        1223584060856600,
+        1223584069285300,
+        1223584068760900
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        231,
+        214,
+        216,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        344,
+        27970,
+        3323,
+        46856,
+        5226
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        270,
+        12235840692993,
+        12235841052335
+      ],
+      "source_clock": [
+        1223584069332300,
+        1223584081373500,
+        1223584105222000,
+        1223584104727200
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        232,
+        215,
+        217,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        321,
+        178858,
+        3517,
+        50274,
+        4926
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        271,
+        12235841052363,
+        12235841721311
+      ],
+      "source_clock": [
+        1223584105266900,
+        1223584105266900,
+        1223584172119600,
+        1223584171574800
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        232,
+        215,
+        218,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        298,
+        151519,
+        5778,
+        504792,
+        5411
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        272,
+        12235841721344,
+        12235842232047
+      ],
+      "source_clock": [
+        1223584172164800,
+        1223584198462200,
+        1223584223193500,
+        1223584222702100
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        234,
+        217,
+        219,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        295,
+        185490,
+        3984,
+        52069,
+        4894
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        273,
+        12235842232071,
+        12235843000097
+      ],
+      "source_clock": [
+        1223584223238200,
+        1223584237282800,
+        1223584299995500,
+        1223584299464700
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        235,
+        218,
+        220,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        301,
+        111631,
+        4520,
+        504720,
+        5275
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        274,
+        12235843000128,
+        12235843225350
+      ],
+      "source_clock": [
+        1223584300044500,
+        1223584312915700,
+        1223584322522700,
+        1223584321990500
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        236,
+        219,
+        221,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        307,
+        21699,
+        8773,
+        58707,
+        5282
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        275,
+        12235843225383,
+        12235843481553
+      ],
+      "source_clock": [
+        1223584322577800,
+        1223584336210000,
+        1223584348143800,
+        1223584347648100
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        237,
+        220,
+        222,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        384,
+        61365,
+        3589,
+        48340,
+        4924
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        276,
+        12235843481578,
+        12235844052012
+      ],
+      "source_clock": [
+        1223584348189200,
+        1223584348189300,
+        1223584405190600,
+        1223584404687000
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        237,
+        220,
+        223,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        306,
+        43041,
+        2999,
+        518370,
+        5002
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        277,
+        12235844052039,
+        12235844268089
+      ],
+      "source_clock": [
+        1223584405235300,
+        1223584418807600,
+        1223584426798600,
+        1223584426302500
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        238,
+        221,
+        224,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        301,
+        22604,
+        3273,
+        48253,
+        4941
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        278,
+        12235844268112,
+        12235844973234
+      ],
+      "source_clock": [
+        1223584426839900,
+        1223584439600500,
+        1223584497313100,
+        1223584496817400
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        239,
+        222,
+        225,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        279,
+        38329,
+        3786,
+        529041,
+        4924
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        279,
+        12235844973270,
+        12235845290884
+      ],
+      "source_clock": [
+        1223584497359600,
+        1223584509874300,
+        1223584529078400,
+        1223584528587200
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        240,
+        223,
+        226,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        316,
+        137896,
+        3691,
+        44531,
+        4898
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        280,
+        12235845290908,
+        12235845686639
+      ],
+      "source_clock": [
+        1223584529118800,
+        1223584541690500,
+        1223584568653500,
+        1223584568166300
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        241,
+        224,
+        227,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        271,
+        199453,
+        4280,
+        60072,
+        4855
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        281,
+        12235845686662,
+        12235845893794
+      ],
+      "source_clock": [
+        1223584568695400,
+        1223584578487200,
+        1223584589369100,
+        1223584588882400
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        242,
+        225,
+        228,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        283,
+        50412,
+        5329,
+        47557,
+        4850
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        282,
+        12235845893818,
+        12235846446984
+      ],
+      "source_clock": [
+        1223584589410500,
+        1223584589410600,
+        1223584644654000,
+        1223584643975300
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        242,
+        225,
+        229,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        279,
+        17166,
+        2280,
+        525701,
+        6747
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        283,
+        12235846447250,
+        12235847114300
+      ],
+      "source_clock": [
+        1223584644769100,
+        1223584657676400,
+        1223584711418100,
+        1223584710914100
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        243,
+        226,
+        230,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        430,
+        18810,
+        3943,
+        508561,
+        5001
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        284,
+        12235847114325,
+        12235847788269
+      ],
+      "source_clock": [
+        1223584711468800,
+        1223584725920400,
+        1223584778816400,
+        1223584778292200
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        244,
+        227,
+        231,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        352,
+        15579,
+        3495,
+        503768,
+        5205
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        285,
+        12235847788293,
+        12235848593949
+      ],
+      "source_clock": [
+        1223584778863800,
+        1223584806713000,
+        1223584859383800,
+        1223584858875300
+      ],
+      "source_work": [
+        2,
+        2,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        246,
+        229,
+        232,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        323,
+        13650,
+        4714,
+        502225,
+        5051
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        286,
+        12235848593976,
+        12235848822033
+      ],
+      "source_clock": [
+        1223584859434000,
+        1223584872272900,
+        1223584882192400,
+        1223584881698700
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        247,
+        230,
+        233,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        350,
+        40794,
+        3640,
+        48855,
+        4919
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        287,
+        12235848822062,
+        12235849038662
+      ],
+      "source_clock": [
+        1223584882239700,
+        1223584895483600,
+        1223584903855300,
+        1223584903356000
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        248,
+        231,
+        234,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        325,
+        25008,
+        4344,
+        48454,
+        4976
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        288,
+        12235849038702,
+        12235849584306
+      ],
+      "source_clock": [
+        1223584903904000,
+        1223584903904100,
+        1223584958419400,
+        1223584957916500
+      ],
+      "source_work": [
+        0,
+        0,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        248,
+        231,
+        235,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        327,
+        18008,
+        2509,
+        519056,
+        4992
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        289,
+        12235849584333,
+        12235849796286
+      ],
+      "source_clock": [
+        1223584958467700,
+        1223584970534700,
+        1223584979614400,
+        1223584979069000
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        249,
+        232,
+        236,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        332,
+        23701,
+        7392,
+        53150,
+        5423
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    },
+    {
+      "host_frame": [
+        290,
+        12235849796310,
+        12235849989707
+      ],
+      "source_clock": [
+        1223584979666200,
+        1223584990908600,
+        1223584998959700,
+        1223584998407900
+      ],
+      "source_work": [
+        1,
+        1,
+        7,
+        42546,
+        1,
+        -1,
+        1,
+        250,
+        233,
+        237,
+        1,
+        1
+      ],
+      "phase_ticks": [
+        342,
+        25623,
+        3573,
+        44977,
+        5504
+      ],
+      "phase_calls": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_valid": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "phase_flags": 0
+    }
+  ],
+  "instrumentation": {
+    "menu_loop.c.diff": {
+      "sha256": "6fe736f8025ef29c47d14f2336621a9eea97a129febc2327cbab94ce259c3c97",
+      "text": "--- base56/menu_loop.c\r\n+++ private/menu_loop.c\r\n@@ -1,4 +1,5 @@\r\n #include \"menu_loop.h\"\r\n+#include \"phase_profile.h\"\r\n #include \"../gui/achievement_notice_draw.h\"\r\n #include \"../gui/loading_internal.h\"\r\n #include \"../gui/source_inventory_drawing.h\"\r\n@@ -171,9 +172,12 @@\r\n }\r\n \r\n static bool display_update(mc_client_menu_loop *loop, unsigned int pc) {\r\n-    return mc_client_sdk_display_update(mc_client_display_update_owner(loop->app->display),\r\n-                                        &loop->update) == MC_CLIENT_SDK_UPDATE_OK ||\r\n-           run_stop(loop, loop->update.operation, pc);\r\n+    private_frame_phase_begin(PRIVATE_PHASE_DISPLAY_UPDATE);\r\n+    const bool phase_update_ok =\r\n+        mc_client_sdk_display_update(mc_client_display_update_owner(loop->app->display),\r\n+                                     &loop->update) == MC_CLIENT_SDK_UPDATE_OK;\r\n+    private_frame_phase_end(PRIVATE_PHASE_DISPLAY_UPDATE);\r\n+    return phase_update_ok || run_stop(loop, loop->update.operation, pc);\r\n }\r\n \r\n static bool screen_failure(mc_client_menu_loop *loop) {\r\n@@ -492,8 +496,10 @@\r\n         const int64_t deadline = settings.values.performance_mode == 0\r\n                                      ? 0\r\n                                      : mc_java_i64_add(px->fields.I, 1000000000 / target);\r\n+        private_frame_phase_begin(PRIVATE_PHASE_WORLD_DRAW);\r\n         const mc_client_world_frame_status status = mc_client_entity_renderer_world_frame_begin(\r\n             px, loop->math, partial, deadline, &loop->world_frame, &loop->world_frame_error);\r\n+        private_frame_phase_end(PRIVATE_PHASE_WORLD_DRAW);\r\n         if (loop->world_frame != NULL) {\r\n             (void)mc_client_entity_renderer_world_frame_inspect(loop->world_frame,\r\n                                                                 &loop->world_frame_state);\r\n@@ -545,6 +551,7 @@\r\n             const bool screen_present = current->r != NULL;\r\n             if (receiver == NULL)\r\n                 return stop(loop, \"actual GuiIngame null receiver\", \"px\", \"b\", 506);\r\n+            private_frame_phase_begin(PRIVATE_PHASE_HUD);\r\n             const mc_client_gui_ingame_draw_status drawn = mc_client_gui_ingame_draw_begin(\r\n                 receiver, loop->graphics, loop->math, app->display, partial, screen_present,\r\n                 mouse.x, mouse.y, &loop->hud, &loop->hud_error);\r\n@@ -555,12 +562,16 @@\r\n             if (drawn != MC_CLIENT_GUI_INGAME_DRAW_OK) {\r\n                 const mc_client_gui_ingame_draw_error *e =\r\n                     loop->hud == NULL ? &loop->hud_error : loop->hud_state.failure;\r\n+                private_frame_phase_end(PRIVATE_PHASE_HUD);\r\n                 return stop(loop, e->operation, e->site.class_name, e->site.method, e->site.pc);\r\n             }\r\n             ++loop->state.hud_draws;\r\n             if (mc_client_gui_ingame_draw_retire(&loop->hud, &loop->hud_cleanup) !=\r\n-                MC_CLIENT_GUI_INGAME_DRAW_OK)\r\n+                MC_CLIENT_GUI_INGAME_DRAW_OK) {\r\n+                private_frame_phase_end(PRIVATE_PHASE_HUD);\r\n                 return stop(loop, \"completed GuiIngame native retirement\", \"px\", \"b\", 506);\r\n+            }\r\n+            private_frame_phase_end(PRIVATE_PHASE_HUD);\r\n             loop->hud_state.owner = NULL;\r\n             loop->hud_state.failure = loop->hud_state.cleanup = NULL;\r\n         }\r\n@@ -777,7 +788,10 @@\r\n static bool frame_body(mc_client_menu_loop *loop) {\r\n     if (loop == NULL || loop->state.failed || !loop->state.running)\r\n         return false;\r\n-    if (!retire_completed_draws(loop))\r\n+    private_frame_phase_begin(PRIVATE_PHASE_RETIRE);\r\n+    const bool phase_retired = retire_completed_draws(loop);\r\n+    private_frame_phase_end(PRIVATE_PHASE_RETIRE);\r\n+    if (!phase_retired)\r\n         return false;\r\n     loop->state.render_clock_stored = loop->state.render_returned = false;\r\n     loop->state.clocks = (mc_client_loop_clock_observation){.frame_index = loop->state.frames};\r\n@@ -861,8 +875,11 @@\r\n         return run_stop(loop, loop->display.operation, 248);\r\n     if (app->active_world != NULL) {\r\n         bool more;\r\n-        if (mc_world_runtime_light_drain(app->active_world, SIZE_MAX, &more, &loop->world_light) !=\r\n-            MC_WORLD_STORAGE_OK)\r\n+        private_frame_phase_begin(PRIVATE_PHASE_LIGHT);\r\n+        const mc_world_storage_status phase_light_status =\r\n+            mc_world_runtime_light_drain(app->active_world, SIZE_MAX, &more, &loop->world_light);\r\n+        private_frame_phase_end(PRIVATE_PHASE_LIGHT);\r\n+        if (phase_light_status != MC_WORLD_STORAGE_OK)\r\n             return run_stop(loop, loop->world_light.operation, 262);\r\n     }\r\n     bool f7;\r\n"
+    },
+    "observer-v3.c.diff": {
+      "sha256": "3d9b66197754ebdbf958ba51aec66d6ef2ada729de99e29b74d03ca08a390b0e",
+      "text": "--- base56/observer-v3.c\r\n+++ private/observer-v3.c\r\n@@ -7,11 +7,14 @@\r\n #undef MC_WORKBENCH_AUTO_CLOSE_FIXTURE_MAIN\r\n #include \"client/display/sdk_update.h\"\r\n #include <windows.h>\r\n+#include \"phase_profile.h\"\r\n+#include \"phase_observer.inc\"\r\n \r\n enum { PERF_ROWS = 200000, PERF_FPS_ROWS = 64, PERF_FPS_UNITS = 96 };\r\n \r\n typedef struct perf_row {\r\n     int64_t begin, end, run137, run203, run387, render_clock;\r\n+    private_frame_phase_row phases;\r\n     uint64_t frame, ticks, world_ticks, draws, flags;\r\n     uintptr_t foreground;\r\n     DWORD foreground_pid;\r\n@@ -229,7 +232,9 @@\r\n             healthy = false;\r\n             break;\r\n         }\r\n+        private_phase_row_begin(&r->phases);\r\n         r->returned = mc_client_menu_loop_frame(f->loop);\r\n+        private_phase_row_end();\r\n         if (!perf_qpc(&r->end)) {\r\n             healthy = false;\r\n             break;\r\n@@ -302,8 +307,10 @@\r\n                 f->state.source_class == NULL ? \"native\" : f->state.source_class,\r\n                 f->state.source_method == NULL ? \"frame\" : f->state.source_method,\r\n                 f->state.source_pc, f->state.operation == NULL ? \"unknown\" : f->state.operation);\r\n+    puts(\"PERF_PHASE_SCHEMA phases=retire_completed_draws,light_drain,display_update,world_draw,hud_draw_and_retire units=qpc-ticks instrumented=1\");\r\n     for (size_t i = 0; i < count; ++i) {\r\n         const perf_row *r = &rows[i];\r\n+        private_phase_print(r->frame, &r->phases);\r\n         if (i == 0 || r->foreground != rows[i - 1].foreground)\r\n             printf(\"PERF_FOREGROUND frame=%\" PRIu64 \" hwnd=%\" PRIuPTR \" pid=%lu own-pid=%lu\\n\",\r\n                    r->frame, r->foreground, (unsigned long)r->foreground_pid,\r\n"
+    },
+    "phase_profile.h": {
+      "sha256": "04641990b19c1cdbe1d3ad2062f371bb4e4982bf0351e2ec4e642a99fa1d8fe2",
+      "text": "#ifndef PRIVATE_FRAME_PHASE_PROFILE_H\n#define PRIVATE_FRAME_PHASE_PROFILE_H\n\n#include <stdint.h>\n\nenum private_frame_phase {\n    PRIVATE_PHASE_RETIRE,\n    PRIVATE_PHASE_LIGHT,\n    PRIVATE_PHASE_DISPLAY_UPDATE,\n    PRIVATE_PHASE_WORLD_DRAW,\n    PRIVATE_PHASE_HUD,\n    PRIVATE_PHASE_COUNT\n};\n\ntypedef struct private_frame_phase_row {\n    int64_t ticks[PRIVATE_PHASE_COUNT];\n    uint32_t calls[PRIVATE_PHASE_COUNT], valid[PRIVATE_PHASE_COUNT];\n    uint32_t flags;\n} private_frame_phase_row;\n\n/* Fixed video-thread hooks. A NULL current row performs no clock query. */\nvoid private_frame_phase_begin(unsigned int phase);\nvoid private_frame_phase_end(unsigned int phase);\n\n#endif\n"
+    },
+    "phase_observer.inc": {
+      "sha256": "a7ebc7de34ae80f3573ac4d67626229e1c0bef91bfe969e9628ca8809b378196",
+      "text": "/* Private host observations only; no Source clocks, fields or GL calls. */\nstatic private_frame_phase_row *private_phase_current;\nstatic int64_t private_phase_start[PRIVATE_PHASE_COUNT];\nstatic uint32_t private_phase_open;\n\nvoid private_frame_phase_begin(unsigned int phase) {\n    if (private_phase_current == NULL)\n        return;\n    if (phase >= PRIVATE_PHASE_COUNT) {\n        private_phase_current->flags |= 1u;\n        return;\n    }\n    const uint32_t bit = UINT32_C(1) << phase;\n    if ((private_phase_open & bit) != 0)\n        private_phase_current->flags |= 2u;\n    ++private_phase_current->calls[phase];\n    LARGE_INTEGER sample;\n    if (!QueryPerformanceCounter(&sample) || sample.QuadPart < 0) {\n        private_phase_current->flags |= 4u;\n        private_phase_open &= ~bit;\n        return;\n    }\n    private_phase_start[phase] = sample.QuadPart;\n    private_phase_open |= bit;\n}\n\nvoid private_frame_phase_end(unsigned int phase) {\n    if (private_phase_current == NULL)\n        return;\n    if (phase >= PRIVATE_PHASE_COUNT) {\n        private_phase_current->flags |= 1u;\n        return;\n    }\n    const uint32_t bit = UINT32_C(1) << phase;\n    if ((private_phase_open & bit) == 0) {\n        private_phase_current->flags |= 8u;\n        return;\n    }\n    private_phase_open &= ~bit;\n    LARGE_INTEGER sample;\n    if (!QueryPerformanceCounter(&sample) || sample.QuadPart < private_phase_start[phase]) {\n        private_phase_current->flags |= 4u;\n        return;\n    }\n    const int64_t elapsed = sample.QuadPart - private_phase_start[phase];\n    if (private_phase_current->ticks[phase] > INT64_MAX - elapsed) {\n        private_phase_current->flags |= 16u;\n        return;\n    }\n    private_phase_current->ticks[phase] += elapsed;\n    ++private_phase_current->valid[phase];\n}\n\nstatic void private_phase_row_begin(private_frame_phase_row *row) {\n    private_phase_current = row;\n    private_phase_open = 0;\n}\n\nstatic void private_phase_row_end(void) {\n    if (private_phase_current != NULL && private_phase_open != 0)\n        private_phase_current->flags |= 32u;\n    private_phase_current = NULL;\n    private_phase_open = 0;\n}\n\nstatic void private_phase_print(uint64_t frame, const private_frame_phase_row *row) {\n    printf(\"PERF_PHASE frame=%\" PRIu64 \" ticks=\", frame);\n    for (unsigned int phase = 0; phase < PRIVATE_PHASE_COUNT; ++phase)\n        printf(\"%s%\" PRId64, phase == 0 ? \"\" : \",\", row->ticks[phase]);\n    fputs(\" calls=\", stdout);\n    for (unsigned int phase = 0; phase < PRIVATE_PHASE_COUNT; ++phase)\n        printf(\"%s%\" PRIu32, phase == 0 ? \"\" : \",\", row->calls[phase]);\n    fputs(\" valid=\", stdout);\n    for (unsigned int phase = 0; phase < PRIVATE_PHASE_COUNT; ++phase)\n        printf(\"%s%\" PRIu32, phase == 0 ? \"\" : \",\", row->valid[phase]);\n    printf(\" flags=%\" PRIu32 \"\\n\", row->flags);\n}\n"
+    }
+  },
+  "native_build_provenance": {
+    "executable_sha256": "2bead7c36e826ec15d74c5bfebbea46f3bb8371a1cecc103bf05f059eb7d4b92",
+    "openal_dll_sha256": "885092aee2c41f643158ec8d8914dd286e2466caa794d7e7302cf95e40a5ede0",
+    "object_sha256": {
+      "observer.obj": "e1289c766f7ad41b996ed4c785d83d901db6e65c6a373473542c83453338bcf5",
+      "menu_loop_override.obj": "5ae2f8701ffb52f40394866eb2ebc45ffbd4a63d068750c16af61ab2523979ee"
+    },
+    "baseline_common_archives": 92,
+    "baseline_common_SDK_objects": 4,
+    "unchanged_baseline_response_tail": true,
+    "required_public_menu_loop_symbols_resolve_to_override": true,
+    "frozen_menu_loop_source_sha256": "04f29caf06fedf1e9dcbeb669f7dc9007595e526a7b908e6fecbae7d801931e7",
+    "frozen_observer_source_sha256": "cf2fae04785e228f18c0ccce830ed11112980cddf926e799c7c86259900eff3b",
+    "guarded_build_inputs": 7785,
+    "guarded_capture_inputs": 7787
+  },
+  "pre_capture_build_failures": [
+    "Header guard initially compared unnormalized Windows paths. No client ran. Guard now canonicalizes case and relative path segments.",
+    "Symbol-map guard initially also matched assert string literals. No client ran. Guard now accepts exact public function columns only."
+  ]
+}

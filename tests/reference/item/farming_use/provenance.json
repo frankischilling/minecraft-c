@@ -1,0 +1,35 @@
+{
+  "format": 1,
+  "profiles": 118,
+  "wrapper_profiles": 57,
+  "direct_profiles": 61,
+  "ordinary_fresh_vms": 2,
+  "read_only_jdi_fresh_vms": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "inputs_unchanged": true,
+  "helpers_unchanged": true,
+  "source_writes_from_jdi": 0,
+  "target_invocations_from_jdi": 0,
+  "frozen_authored_files_sha256": {
+    "FarmingObservation.java": "7319ed14daac3358367c28d4eb4caa11faf209f6e8f4fbc88466b0d4f24c03c6",
+    "FarmingJdi.java": "5d186a4ab65c939324394a6c7c07993d7f7015b35e867614904eefec43884b07",
+    "profiles.tsv": "69d6832e6d1dbeaa57a8026028ea3769db94e3ddfb1fc6ee20484d91cd2f903c",
+    "declared-inputs.json": "63651b8a7c615d0654376652e39b12f110131cc58a5adffad852276865ee3970",
+    "source-pins.json": "87cc31e336c57ade85ea12e76665dd2883107f5894817def2345c5dea8ca02c5",
+    "capture_reference.py": "444eea8af0c442e7da507ebd027989057e44b6095f0a97b996228af0a7b045e7"
+  },
+  "captured_files_sha256": {
+    "selected.txt": "9411c4b2fe542f897f42a709f8d7ab8b3f67bdb5063d1dd59b29b8208d615716",
+    "events.jsonl": "7b581d689f6f67173ee2427e2ab18d94f7a78bc4654c75a0422421a06de6ae60",
+    "live-code.tsv": "d8179e90f3396fb5cb6b1eb419bb32666d04fff6597760c1a141a7cf5fe97096"
+  },
+  "raw_stdout_sha256": [
+    "038b2462071c5bd7b7159357ac5a088f892900e6cb1cc673b40cc4deac9dcd5c",
+    "038b2462071c5bd7b7159357ac5a088f892900e6cb1cc673b40cc4deac9dcd5c",
+    "038b2462071c5bd7b7159357ac5a088f892900e6cb1cc673b40cc4deac9dcd5c"
+  ],
+  "events": 4246,
+  "live_methods": 21,
+  "exceptions": 16,
+  "scope": "Unchanged original direct Item and separate Stack wrapper calls with actual saved World/Chunk/Player/Stack/statistic owners. Direct null-Stack rows remain original-only. Final-static reference mutation profiles were removed before complete capture; real accesses are observed read-only. No native comparison, graphical, server, full farming or performance qualification."
+}

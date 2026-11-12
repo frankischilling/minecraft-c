@@ -1,0 +1,5 @@
+# Retained preparation attempts
+
+The first ordinary run, captures/client-mob-nbt-4d43we6q, compiled and completed all62 original writes but the driver rejected genuine source initialization stdout (`16 achievements`, `151 recipes`). Its complete capture and FAIL receipt remain retained. The next driver revision explicitly audits those two Session preparation lines; it does not suppress them or change original/helper behavior. A Python syntax typo was corrected before the first freeze/javac.
+
+The second run, captures/client-mob-nbt-dc524ljp, completed both ordinary and read-only JDI VMs with62 independently decoded outputs each. The final cross-VM audit rejected independent constructor yaw in the fresh removed-Pig direct full writer. The next driver excludes only that Rotation from cross-VM equality; both complete raw NBT artifacts remain independently decoded. The observer was also extended to read actual boxed watcher primitive fields, alongside their existing object identities. The prior driver and observer source bytes are retained under attempts/helpers-before-boxed-observation.

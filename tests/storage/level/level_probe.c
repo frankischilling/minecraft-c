@@ -7,8 +7,7 @@
 
 #define PROBE_BYTES (2u * 1024u * 1024u)
 
-static int digit(int value)
-{
+static int digit(int value) {
     if (value >= '0' && value <= '9')
         return value - '0';
     if (value >= 'a' && value <= 'f')
@@ -16,14 +15,12 @@ static int digit(int value)
     return -1;
 }
 
-static void print_hex(const uint8_t *bytes, size_t length)
-{
+static void print_hex(const uint8_t *bytes, size_t length) {
     for (size_t i = 0; i < length; ++i)
         printf("%02x", (unsigned int)bytes[i]);
 }
 
-static void print_info(const mc_level_info *info)
-{
+static void print_info(const mc_level_info *info) {
     printf("{\"ok\":true,\"seed\":\"%016" PRIx64 "\",\"spawn\":[%" PRId32 ",%" PRId32 ",%" PRId32
            "],\"time\":\"%016" PRIx64 "\",\"last_played\":\"%016" PRIx64
            "\",\"size_on_disk\":\"%016" PRIx64 "\",\"level_name\":\"",
@@ -39,8 +36,7 @@ static void print_info(const mc_level_info *info)
            info->player_dimension);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     bool build = argc == 5 && strcmp(argv[1], "build") == 0;
     if (!(argc == 2 && strcmp(argv[1], "decode") == 0) && !build) {
         fputs("usage: mc_level_probe decode | build CLOCK_HEX keep|drop preserve|fresh\n", stderr);

@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "context": "real LWJGL Display.create; no Pbuffer fallback",
+  "physical-size": [
+    854,
+    480
+  ],
+  "scaled-size": [
+    427,
+    240
+  ],
+  "world-seed": 23,
+  "world-construction": "genuine FD(WY,name,dimension0,seed), unchanged cache/World fields",
+  "player-construction": "genuine DC(App,World,Session,0), unchanged constructor fields and actual IX/AA; not inserted into World Entity list by helper",
+  "player-name": "InventoryDrawing",
+  "held": null,
+  "armor": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "manager": "actual TH.a; canonical GS->DS; genuine RA(App) startup field; source bind with the same Player as view",
+  "partial": 0.375,
+  "mouse": [
+    [
+      -30,
+      -40
+    ],
+    [
+      -60,
+      -70
+    ]
+  ],
+  "gl-projection": {
+    "viewport": [
+      0,
+      0,
+      854,
+      480
+    ],
+    "ortho": [
+      0,
+      427,
+      240,
+      0,
+      1000,
+      3000
+    ],
+    "modelview-translate": [
+      0,
+      0,
+      -2000
+    ]
+  },
+  "pre-draw-nw-clears": 0,
+  "random-rebinding": false,
+  "invocation-field-repairs": false,
+  "input-attachment": {
+    "caller": "net/minecraft/client/Minecraft.a(Lfd;Ljava/lang/String;Lgs;)V",
+    "capture-player-pc": 191,
+    "allocation-class": "lr",
+    "allocation-pc": 194,
+    "capture-settings-pc": 199,
+    "constructor": "lr.<init>(Lkv;)V",
+    "constructor-pc": 202,
+    "publish-field": "dc.a:Luo;",
+    "publication-pc": 205,
+    "pre-call-input": "actual new LR with actual App.z, published on actual App.h; untouched ten constructor key cells; no constant sneaking substitute",
+    "scope": "authored matching constructor/attachment protocol only; the whole Minecraft load caller is not claimed"
+  },
+  "historical-failed-cohort": {
+    "path": ".local/inventory-drawing-prepared-2",
+    "status": "FAIL",
+    "capture-sha256": "bdd55834e462f3970def5329b0f52b4bf9c44bdb7a65d33b136884b417b62b7b",
+    "stderr-sha256": "e051de75605df6a48feb6c07f360b7bd5e1c362224c30e29d977833fb873a830",
+    "frontier": "DC.t()Z getfield UO.e PC4 / source line188: DC constructor leaves Input null; reached DS before JDI",
+    "reused": false
+  }
+}

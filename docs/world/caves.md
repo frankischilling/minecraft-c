@@ -1,12 +1,12 @@
-# Normal caves
+# Overworld caves
 
-The normal-dimension cave stage runs after [base terrain](terrain.md) and
+The Overworld cave stage runs after [base terrain](terrain.md) and
 [surface replacement](surface.md). The public pass is
-[`mc_terrain_normal_caves`](../../include/mc/world/terrain/caves.h).
+[`mc_terrain_overworld_caves`](../../include/mc/world/terrain/caves.h).
 Its [reference evidence](../reference/caves.md) covers the supplied Beta binaries.
 
 ```c
-bool mc_terrain_normal_caves(const mc_math_trig *table, int64_t world_seed,
+bool mc_terrain_overworld_caves(const mc_math_trig *table, int64_t world_seed,
                              int32_t chunk_x, int32_t chunk_z,
                              mc_java_random *cave_random,
                              uint8_t *blocks, size_t blocks_length);
@@ -97,6 +97,6 @@ for all 50 C/header files; the published wiki matches the versioned cave pages.
 The [evidence record](../reference/caves.md#public-integration) pins those results.
 
 This implementation covers the
-normal cave stage and its focused controls. Complete chunk finishing, lighting,
+Overworld cave stage and its focused controls. Complete chunk finishing, lighting,
 population, other dimensions and save integration remain separate work in the
 [broader parity inventory](../parity.md).

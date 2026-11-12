@@ -1,0 +1,20 @@
+{
+  "command": [
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+    "-version"
+  ],
+  "exit": 0,
+  "timeout_seconds": 10,
+  "timed_out": false,
+  "pipe_capture_complete": true,
+  "reader_errors": {},
+  "output_overflow": false,
+  "stdout_file": "java.stdout",
+  "stderr_file": "java.stderr",
+  "stdout_bytes": 0,
+  "stderr_bytes": 190,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "60aba3fe0d7bf59797df0e8cb7af289d0843e978623fafea7e3ae5ef925b6622",
+  "stdout_limit": 4194304,
+  "stderr_limit": 1048576
+}

@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "scope": "Direct unchanged UW.K only; no delayed Living tick/particle continuation",
+  "profiles": 24,
+  "rows": 25,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "uw_K": {
+    "name": "K",
+    "descriptor": "()V",
+    "access": 1,
+    "code_bytes": 144,
+    "code_sha256": "d3fa87376c230baf75e13c90f711bed5b071d09ca2890e8576dc66a3dd060cd5"
+  },
+  "sn_K": {
+    "name": "K",
+    "descriptor": "()V",
+    "access": 1,
+    "code_bytes": 6,
+    "code_sha256": "15bf6e310fb9f5cbb8f2e588164d3b58c0a72933aba2392bd8c63ef7ad852357"
+  },
+  "capture_json_sha256": "14d48ea05d768d54d1fec5e0144e82411816e9bcac431f41c204676c158abfaa",
+  "original_stdout_sha256": "88b29e938f3c895e4df0923a11d836e069453dde815331f7ca9ea8f3388cef12",
+  "finite_sha256": "47baa583488cadc677bb48c514dd959245542915c217104cddefb64344ceeee7",
+  "source_before_sha256": {
+    "SlimeRemovalObservation.java": "80895b86623cd2be866e1fc6cca236dffd291909b47accdeec8536d9e71badc1",
+    "capture_reference.py": "fa0be0593fee1cc0155dcd8ff00577787ce485e2f65686b1e80a1da43eeb5dd9",
+    "compare.py": "0dc51c015c44ada80e741287a39165be9008f2caa96f257ebcd3f3a767adc373",
+    "test_packet.py": "4b1c0d808cc95d1e04d5055faa6ce7ad482e1b72279e4652a650216b8b1fadb3",
+    "profiles.tsv": "bbfd54c78853d180bfac2e2a31a696c9e2ac1bcba2b52f9b8de151bb8dc3dfcc",
+    "source-pins.json": "35252af0078ef0d1f5c0aca13228e2da6314fac57a57f3a9021003c939d05cd1",
+    "README.md": "e7d1c9ceabfc9773cf77fe8614af7d8c2a0d448e74c21dd0021838ffa8689fd0"
+  },
+  "helper_classes_sha256": {
+    "SlimeRemovalObservation$1.class": "e565ea5b4c8694355d0df1fac57955b7d1d025c47b9abbba7ab76550ca419618",
+    "SlimeRemovalObservation$Observer.class": "647016c67512e5258789d867a1deaaacd9334334328ff695d17fb9b13f50b5a5",
+    "SlimeRemovalObservation.class": "777ae39a7312acf19786b532410eeccb88518d14b6330eb5970d1e36180874c5"
+  },
+  "inputs_unchanged": true,
+  "helpers_unchanged": true,
+  "java_version": "openjdk version \"17.0.17\" 2025-10-21\nOpenJDK Runtime Environment Temurin-17.0.17+10 (build 17.0.17+10)\nOpenJDK 64-Bit Server VM Temurin-17.0.17+10 (build 17.0.17+10, mixed mode, sharing)\n",
+  "constructor_entropy": "Separate original SLIME_REMOVAL_ENTROPY records; parent/published-child private streams only; excluded from deterministic comparison",
+  "external_effect_guards": "network=0 native=0 rejected_write=0",
+  "private_capture": "C:\\Users\\admin\\minecraft\\.local\\slime-removal-worktree\\.local\\slime-removal-original\\slime-original-k4wtl359",
+  "independent_original_rows_agree": true,
+  "native_comparison": {
+    "status": "PASS",
+    "rows": 11,
+    "profiles": [
+      "direct-split",
+      "size-one",
+      "size-zero",
+      "remote",
+      "positive-health",
+      "null-world",
+      "watcher-type",
+      "callback-pose",
+      "callback-size",
+      "callback-reseed",
+      "callback-null-world"
+    ],
+    "comparison_sha256": "f284cfc0b20b7b0eac0d55d5f4ca41113f55c14227afc3634bb3e748bce3f6de",
+    "private_comparison": "C:\\Users\\admin\\minecraft\\.local\\development\\slime-windows-original-comparison-verified-1794344945727284100.json",
+    "scope": "Direct UW.K records only; constructor entropy and native-only damage controls excluded"
+  }
+}

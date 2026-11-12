@@ -1,0 +1,611 @@
+{
+  "schema": 1,
+  "archive": {
+    "bytes": 1465375,
+    "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+  },
+  "classes": {
+    "paulscode/sound/codecs/CodecWav.class": {
+      "identity": {
+        "bytes": 5338,
+        "sha256": "6745931eb25e84027b771f4228ec552155325ec3626e8edbb0781cfee3d2d676"
+      },
+      "code": {
+        "major": 49,
+        "minor": 0,
+        "methods": {
+          "reverseByteOrder(Z)V": {
+            "code_bytes": 1,
+            "code_sha256": "149488d869cbef080602a371ab0d39d97af103fb726aaeb02ccd36c06f494e5d",
+            "max_stack": 0,
+            "max_locals": 2,
+            "exception_handlers": []
+          },
+          "<init>()V": {
+            "code_bytes": 27,
+            "code_sha256": "c616c10cf5236f8fb59177f154aa517d3988ce1cb1786fe91bb1e95cc31eaa4a",
+            "max_stack": 2,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "initialize(Ljava/net/URL;)Z": {
+            "code_bytes": 92,
+            "code_sha256": "141ddaf1de19bd8ae94f9378faf2fdc87cfa6effb15922cc3de9ad882581d715",
+            "max_stack": 4,
+            "max_locals": 3,
+            "exception_handlers": [
+              {
+                "start": 27,
+                "end": 45,
+                "target": 48,
+                "catch": "javax/sound/sampled/UnsupportedAudioFileException"
+              },
+              {
+                "start": 27,
+                "end": 45,
+                "target": 62,
+                "catch": "java/io/IOException"
+              }
+            ]
+          },
+          "initialized()Z": {
+            "code_bytes": 7,
+            "code_sha256": "e9b679863ff8eef038de28abb504df4157135bafee7db65124ba028a01d3b8f9",
+            "max_stack": 3,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "read()Lpaulscode/sound/SoundBuffer;": {
+            "code_bytes": 164,
+            "code_sha256": "19cf7a035ec7e9dc306e01e389cd244faa4d876bbe1b064270368ecc1fda42a6",
+            "max_stack": 5,
+            "max_locals": 7,
+            "exception_handlers": [
+              {
+                "start": 40,
+                "end": 93,
+                "target": 96,
+                "catch": "java/io/IOException"
+              }
+            ]
+          },
+          "readAll()Lpaulscode/sound/SoundBuffer;": {
+            "code_bytes": 332,
+            "code_sha256": "5689f733b97fa317589bcb6b2862556c4483c4b3e8e1b821328115d31a49826e",
+            "max_stack": 5,
+            "max_locals": 9,
+            "exception_handlers": [
+              {
+                "start": 93,
+                "end": 132,
+                "target": 135,
+                "catch": "java/io/IOException"
+              },
+              {
+                "start": 196,
+                "end": 247,
+                "target": 250,
+                "catch": "java/io/IOException"
+              },
+              {
+                "start": 317,
+                "end": 324,
+                "target": 327,
+                "catch": "java/io/IOException"
+              }
+            ]
+          },
+          "endOfStream()Z": {
+            "code_bytes": 7,
+            "code_sha256": "d683dd2afa43588f6cffd3113a360692870fe633053c6392c6e2dd5ad5a1100c",
+            "max_stack": 3,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "cleanup()V": {
+            "code_bytes": 24,
+            "code_sha256": "a477156233fc3cda5d99b466a36a9059ab5dd9b92ec2c04532297e7dca137705",
+            "max_stack": 2,
+            "max_locals": 2,
+            "exception_handlers": [
+              {
+                "start": 7,
+                "end": 14,
+                "target": 17,
+                "catch": "java/lang/Exception"
+              }
+            ]
+          },
+          "getAudioFormat()Ljavax/sound/sampled/AudioFormat;": {
+            "code_bytes": 17,
+            "code_sha256": "abff84031314ab1ce63e34336ef77e171a6996868c06b326f7c35001fb846270",
+            "max_stack": 1,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "initialized(ZZ)Z": {
+            "code_bytes": 15,
+            "code_sha256": "8eade90869b6060120901eb198b6af4b9111befd40474da2abff5806480f87eb",
+            "max_stack": 2,
+            "max_locals": 3,
+            "exception_handlers": []
+          },
+          "endOfStream(ZZ)Z": {
+            "code_bytes": 15,
+            "code_sha256": "31a1a0ddb3ad24da3bcf7d32c39f604939156b4dcf0c3e1aab622058a54b2c1f",
+            "max_stack": 2,
+            "max_locals": 3,
+            "exception_handlers": []
+          },
+          "trimArray([BI)[B": {
+            "code_bytes": 26,
+            "code_sha256": "fc5575ccc3ab34d0380eeb76d555024ac2c6afdea3c4a546fe3ca7d3d2d1de31",
+            "max_stack": 5,
+            "max_locals": 3,
+            "exception_handlers": []
+          },
+          "convertAudioBytes([BZ)[B": {
+            "code_bytes": 127,
+            "code_sha256": "fd48ec84c23e0b67d80bd8acdbb238e29b845ed0271ed84ca518e1f37a194264",
+            "max_stack": 2,
+            "max_locals": 6,
+            "exception_handlers": []
+          },
+          "appendByteArrays([B[BI)[B": {
+            "code_bytes": 85,
+            "code_sha256": "fbe352f63bb4ed140c814622b43980c7dd3b8f4bf9ede9851d943ac3bb767237",
+            "max_stack": 5,
+            "max_locals": 4,
+            "exception_handlers": []
+          },
+          "errorMessage(Ljava/lang/String;)V": {
+            "code_bytes": 12,
+            "code_sha256": "083c5686e075edb80489fa3dab49707f728e5aeccca9472af17fc04351e0652a",
+            "max_stack": 4,
+            "max_locals": 2,
+            "exception_handlers": []
+          },
+          "printStackTrace(Ljava/lang/Exception;)V": {
+            "code_bytes": 10,
+            "code_sha256": "417c375310d56a5ebb888fa4fe91e81c732551f72de47a8d51a2f50116bd1d86",
+            "max_stack": 3,
+            "max_locals": 2,
+            "exception_handlers": []
+          }
+        }
+      }
+    },
+    "paulscode/sound/ICodec.class": {
+      "identity": {
+        "bytes": 374,
+        "sha256": "048ea0025c6549f7f72c4bf32c19ae5253598157085d0eef043a69ae993d1902"
+      },
+      "code": {
+        "major": 49,
+        "minor": 0,
+        "methods": {}
+      }
+    },
+    "paulscode/sound/SoundBuffer.class": {
+      "identity": {
+        "bytes": 644,
+        "sha256": "471e5dd2f611fba08b9d865e4c6bdf3c046f115f2a029235531f7f009d8173ab"
+      },
+      "code": {
+        "major": 49,
+        "minor": 0,
+        "methods": {
+          "<init>([BLjavax/sound/sampled/AudioFormat;)V": {
+            "code_bytes": 15,
+            "code_sha256": "81a9f19505b814dd377ebd1e6c532fe1ea125a12d90dc5b008d612a8956f5d2e",
+            "max_stack": 2,
+            "max_locals": 3,
+            "exception_handlers": []
+          },
+          "cleanup()V": {
+            "code_bytes": 11,
+            "code_sha256": "78c5dd015bb273192afaf133f9acac16b0e4e80d2a7e39474969419ac455ede2",
+            "max_stack": 2,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "trimData(I)V": {
+            "code_bytes": 49,
+            "code_sha256": "ca29b75ea1e3f679724ed1da81df9dc624d1a3bcbd964bc38cf10f983d999151",
+            "max_stack": 5,
+            "max_locals": 3,
+            "exception_handlers": []
+          }
+        }
+      }
+    },
+    "paulscode/sound/SoundSystemConfig.class": {
+      "identity": {
+        "bytes": 8556,
+        "sha256": "ef6102f80041e31761c6c99978977dc11d1cbfffeb9182a0c6225b108dfadeaa"
+      },
+      "code": {
+        "major": 49,
+        "minor": 0,
+        "methods": {
+          "<init>()V": {
+            "code_bytes": 5,
+            "code_sha256": "d4b16f611969b5e517aee5ca681fb01b9454985ea1101cf21d01db040115ee9b",
+            "max_stack": 1,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "addLibrary(Ljava/lang/Class;)V": {
+            "code_bytes": 69,
+            "code_sha256": "209c529d1776c2f3f73f0dae943e85bebadd5a79649bf7b79adfca60682a9dd8",
+            "max_stack": 4,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "removeLibrary(Ljava/lang/Class;)V": {
+            "code_bytes": 20,
+            "code_sha256": "3b2d755e1411a1f6da2acfc1491a870b0cd4ebfb780fdcc27254dce003c01b25",
+            "max_stack": 2,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "getLibraries()Ljava/util/LinkedList;": {
+            "code_bytes": 4,
+            "code_sha256": "1d4840574d201e7d08989aa18a4c1a7bfcee8f4a11de72030e9dc285adecf38b",
+            "max_stack": 1,
+            "max_locals": 0,
+            "exception_handlers": []
+          },
+          "libraryCompatible(Ljava/lang/Class;)Z": {
+            "code_bytes": 61,
+            "code_sha256": "04614b138ca1fabf1bee1c19a0e9086356d6a169c0171469f77d95f573635737",
+            "max_stack": 4,
+            "max_locals": 2,
+            "exception_handlers": []
+          },
+          "getLibraryTitle(Ljava/lang/Class;)Ljava/lang/String;": {
+            "code_bytes": 58,
+            "code_sha256": "5d95194e76b40c123f40ded49dbd68d590de9a7101bd86e6502de26c7543aafc",
+            "max_stack": 4,
+            "max_locals": 2,
+            "exception_handlers": []
+          },
+          "getLibraryDescription(Ljava/lang/Class;)Ljava/lang/String;": {
+            "code_bytes": 58,
+            "code_sha256": "500b58980a098f9c842c3a4767d48a5190f8b886caf0c9109439e5520a7e8c74",
+            "max_stack": 4,
+            "max_locals": 2,
+            "exception_handlers": []
+          },
+          "setLogger(Lpaulscode/sound/SoundSystemLogger;)V": {
+            "code_bytes": 5,
+            "code_sha256": "d8dc412f27d257d797f97c7cf94486be3ff426c5a1785d242ef841fc36db5c62",
+            "max_stack": 1,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "getLogger()Lpaulscode/sound/SoundSystemLogger;": {
+            "code_bytes": 4,
+            "code_sha256": "fffa02797a70695efa4b2d404bdb7d8714ec6d23d8aafb66d1dbe38040d85fa4",
+            "max_stack": 1,
+            "max_locals": 0,
+            "exception_handlers": []
+          },
+          "setNumberNormalChannels(I)V": {
+            "code_bytes": 5,
+            "code_sha256": "4cecac234c711a17f25e3edc8560d8ec77447b9d302a87dfeaed6559f833ec12",
+            "max_stack": 1,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "getNumberNormalChannels()I": {
+            "code_bytes": 4,
+            "code_sha256": "f2762090694aaf5bc4c9733cc3985ff0e739473d1ced83c9a78ae39b3ea10d5e",
+            "max_stack": 1,
+            "max_locals": 0,
+            "exception_handlers": []
+          },
+          "setNumberStreamingChannels(I)V": {
+            "code_bytes": 5,
+            "code_sha256": "73c015daf11b64167f55aac003c31b1688e8bd4daa023f5c886b30f9cc12e631",
+            "max_stack": 1,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "getNumberStreamingChannels()I": {
+            "code_bytes": 4,
+            "code_sha256": "aa7c71d83f8d6cf6209851777d5df9d3c55d0594ac87cea08d5438546a312def",
+            "max_stack": 1,
+            "max_locals": 0,
+            "exception_handlers": []
+          },
+          "setMasterGain(F)V": {
+            "code_bytes": 5,
+            "code_sha256": "d8939b1d1058ad2a5881e0ea09781fc67acd9cd14a801db600fd6585061258e3",
+            "max_stack": 1,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "getMasterGain()F": {
+            "code_bytes": 4,
+            "code_sha256": "e4231303d182465834c29b7b3a561c1afdbd9e0a89de2fd1647b1598b99678a6",
+            "max_stack": 1,
+            "max_locals": 0,
+            "exception_handlers": []
+          },
+          "setDefaultAttenuation(I)V": {
+            "code_bytes": 5,
+            "code_sha256": "0be1fec106fa36e93d7fec1e80dde07d701833c85e831da0065d566646bb1091",
+            "max_stack": 1,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "getDefaultAttenuation()I": {
+            "code_bytes": 4,
+            "code_sha256": "5dad9c9a13ff21676696b1aa00feeae4aae28f1a3a20efb63d8054fa64507ae2",
+            "max_stack": 1,
+            "max_locals": 0,
+            "exception_handlers": []
+          },
+          "setDefaultRolloff(F)V": {
+            "code_bytes": 5,
+            "code_sha256": "ec73a302110bef408d9fe1133d53ecb5894ba58c042105d799dd32a203c47e4a",
+            "max_stack": 1,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "getDefaultRolloff()F": {
+            "code_bytes": 4,
+            "code_sha256": "e16b2044e1ff5ba958ec70a5262d26b8396b8204e1d97b4b1709a1511fbaa784",
+            "max_stack": 1,
+            "max_locals": 0,
+            "exception_handlers": []
+          },
+          "setDefaultFadeDistance(F)V": {
+            "code_bytes": 5,
+            "code_sha256": "008fc96fa6e376b3ce71fe9b5453df5792ba70db22d44ad47c7a3c20c0ed9300",
+            "max_stack": 1,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "getDefaultFadeDistance()F": {
+            "code_bytes": 4,
+            "code_sha256": "19d61b9902b82856817d3fa222b9764266856e9df1a241f0d84c4755db81ab56",
+            "max_stack": 1,
+            "max_locals": 0,
+            "exception_handlers": []
+          },
+          "setSoundFilesPackage(Ljava/lang/String;)V": {
+            "code_bytes": 5,
+            "code_sha256": "d8349cd9a7a65f6ef0ad74673a193188141ec120dcafaef4593507e242cc4e69",
+            "max_stack": 1,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "getSoundFilesPackage()Ljava/lang/String;": {
+            "code_bytes": 4,
+            "code_sha256": "bac60b405ed5d94a80ea0022efa8872bb22475289ea92d3feba7e45758b34d9d",
+            "max_stack": 1,
+            "max_locals": 0,
+            "exception_handlers": []
+          },
+          "setStreamingBufferSize(I)V": {
+            "code_bytes": 5,
+            "code_sha256": "5e6aa4b8cf974c9cede1afac68e8e705806aa93f865d6e9ab5eb480e05eb1bbb",
+            "max_stack": 1,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "getStreamingBufferSize()I": {
+            "code_bytes": 4,
+            "code_sha256": "927d5d228118c15d184c6df0e9c8615fef82ed6a7346a9a9be07c6796f771fd0",
+            "max_stack": 1,
+            "max_locals": 0,
+            "exception_handlers": []
+          },
+          "setNumberStreamingBuffers(I)V": {
+            "code_bytes": 5,
+            "code_sha256": "b046f806179ae3e6e8fc07f3b81c8448277557e8cfddf0d75136669cdc557cc0",
+            "max_stack": 1,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "getNumberStreamingBuffers()I": {
+            "code_bytes": 4,
+            "code_sha256": "562837e15321df99f1cdf02fc857390be1cd2014f15712316a153f35b4095bb2",
+            "max_stack": 1,
+            "max_locals": 0,
+            "exception_handlers": []
+          },
+          "setMaxFileSize(I)V": {
+            "code_bytes": 5,
+            "code_sha256": "ff66eb5ee1b6609b74bea1be657710f93c3089d0514a244881b66b82a7f6958c",
+            "max_stack": 1,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "getMaxFileSize()I": {
+            "code_bytes": 4,
+            "code_sha256": "06b42053427807687ea1bd75699dc1d918a6fa64ace10eef7b9d67c2ce815dd7",
+            "max_stack": 1,
+            "max_locals": 0,
+            "exception_handlers": []
+          },
+          "setFileChunkSize(I)V": {
+            "code_bytes": 5,
+            "code_sha256": "f94d677e26176046e779f85f6effab7138e228e5f6bca99e3c1d3c7559c3114d",
+            "max_stack": 1,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "getFileChunkSize()I": {
+            "code_bytes": 4,
+            "code_sha256": "08d5b8967026a460c4dc2ebae3384deb75057d9867bd343391229a871ff42ea1",
+            "max_stack": 1,
+            "max_locals": 0,
+            "exception_handlers": []
+          },
+          "setCodec(Ljava/lang/String;Ljava/lang/Class;)V": {
+            "code_bytes": 142,
+            "code_sha256": "d77bbc3e63635ad48c47b2940dec1cb28877fe3c9d32416dca22cf8c52d1f2ec",
+            "max_stack": 5,
+            "max_locals": 4,
+            "exception_handlers": []
+          },
+          "getCodec(Ljava/lang/String;)Lpaulscode/sound/ICodec;": {
+            "code_bytes": 52,
+            "code_sha256": "a88fac9db66b17ea7997ac67b977423b226f5a27d5f74bfe7a1b8ef81b69bb87",
+            "max_stack": 2,
+            "max_locals": 3,
+            "exception_handlers": []
+          },
+          "midiCodec()Z": {
+            "code_bytes": 4,
+            "code_sha256": "0d4ca710ce4c2367fa502f7517e9d1c7e14b4a1eb48e872ae596d56afdb791dd",
+            "max_stack": 1,
+            "max_locals": 0,
+            "exception_handlers": []
+          },
+          "errorMessage(Ljava/lang/String;)V": {
+            "code_bytes": 17,
+            "code_sha256": "a6f7f4ebde2251baceca3df5b0240ac03d45c9c0ce7c0211179b39fcc0ab45f8",
+            "max_stack": 4,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "runMethod(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;": {
+            "code_bytes": 327,
+            "code_sha256": "c9221cf48743a58d573e889c687262ed07614dc0f11c66ce0093ff81a393d199",
+            "max_stack": 3,
+            "max_locals": 7,
+            "exception_handlers": [
+              {
+                "start": 3,
+                "end": 11,
+                "target": 14,
+                "catch": "java/lang/NoSuchMethodException"
+              },
+              {
+                "start": 3,
+                "end": 11,
+                "target": 50,
+                "catch": "java/lang/SecurityException"
+              },
+              {
+                "start": 3,
+                "end": 11,
+                "target": 81,
+                "catch": "java/lang/NullPointerException"
+              },
+              {
+                "start": 159,
+                "end": 168,
+                "target": 171,
+                "catch": "java/lang/IllegalAccessException"
+              },
+              {
+                "start": 159,
+                "end": 168,
+                "target": 207,
+                "catch": "java/lang/IllegalArgumentException"
+              },
+              {
+                "start": 159,
+                "end": 168,
+                "target": 243,
+                "catch": "java/lang/reflect/InvocationTargetException"
+              },
+              {
+                "start": 159,
+                "end": 168,
+                "target": 252,
+                "catch": "java/lang/NullPointerException"
+              },
+              {
+                "start": 159,
+                "end": 168,
+                "target": 288,
+                "catch": "java/lang/ExceptionInInitializerError"
+              }
+            ]
+          },
+          "access$000(Ljava/lang/String;)V": {
+            "code_bytes": 5,
+            "code_sha256": "2a34fed863cae2148efeb2aa6e9ce8851c91016e022af5b119750043aec5c755",
+            "max_stack": 1,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "<clinit>()V": {
+            "code_bytes": 74,
+            "code_sha256": "31c3f527bbbf85b291e59fb212bde7e9872b46fd81449450048fa95b332dc217",
+            "max_stack": 2,
+            "max_locals": 0,
+            "exception_handlers": []
+          }
+        }
+      }
+    },
+    "paulscode/sound/SoundSystemLogger.class": {
+      "identity": {
+        "bytes": 1749,
+        "sha256": "48d518211df5be4a6a325948aef9dd5d7296e7df67c5c0f8998d95235efd0988"
+      },
+      "code": {
+        "major": 49,
+        "minor": 0,
+        "methods": {
+          "<init>()V": {
+            "code_bytes": 5,
+            "code_sha256": "3cbf10796c8b68343919f56bd75d1061d3aefdbd02f8763313f594d895cc67df",
+            "max_stack": 1,
+            "max_locals": 1,
+            "exception_handlers": []
+          },
+          "message(Ljava/lang/String;I)V": {
+            "code_bytes": 69,
+            "code_sha256": "75969a2405dcb44be0be8d7fd8d52dbb5cb38a7ca4f6e64189f5345e13686020",
+            "max_stack": 2,
+            "max_locals": 6,
+            "exception_handlers": []
+          },
+          "importantMessage(Ljava/lang/String;I)V": {
+            "code_bytes": 69,
+            "code_sha256": "75969a2405dcb44be0be8d7fd8d52dbb5cb38a7ca4f6e64189f5345e13686020",
+            "max_stack": 2,
+            "max_locals": 6,
+            "exception_handlers": []
+          },
+          "errorCheck(ZLjava/lang/String;Ljava/lang/String;I)Z": {
+            "code_bytes": 14,
+            "code_sha256": "d44191c9a201d43554c155257e0f8850b2326525203090301a2acfab3ad75351",
+            "max_stack": 4,
+            "max_locals": 5,
+            "exception_handlers": []
+          },
+          "errorMessage(Ljava/lang/String;Ljava/lang/String;I)V": {
+            "code_bytes": 115,
+            "code_sha256": "f01360e52245eaf1ce70231eae4d066c654384828f956c32b63e04049d04abbc",
+            "max_stack": 2,
+            "max_locals": 8,
+            "exception_handlers": []
+          },
+          "printStackTrace(Ljava/lang/Exception;I)V": {
+            "code_bytes": 68,
+            "code_sha256": "dde9ae0eabb661b8fd215a1cc779cfa73f804656e513114e98aa03e94ed55e46",
+            "max_stack": 4,
+            "max_locals": 6,
+            "exception_handlers": []
+          },
+          "printExceptionMessage(Ljava/lang/Exception;I)V": {
+            "code_bytes": 38,
+            "code_sha256": "907b96560ec422a33799c3780b9e6a018cfc9b89774e611789c5d60007f14c6b",
+            "max_stack": 4,
+            "max_locals": 3,
+            "exception_handlers": []
+          }
+        }
+      }
+    }
+  }
+}
