@@ -17,6 +17,34 @@ graphs, graphical sleeping-Player damage, original pixels/audio and measured
 FPS retain separate scopes. See the [test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#sapling-and-tall-grass-during-player-wake)
 for full validation.
 
+## Ladder support and removal
+
+The client Ladder neighbor body reads its full metadata and checks only the
+matching wall for orientations two through five. Every other metadata value
+is unsupported. Support loss performs the inherited drop before the notifying
+air setter; an ordinary false setter result is discarded as in the original.
+Completed effects survive later failure.
+
+Twenty fresh unchanged-original cached-World observations match each native
+host for all metadata values and each missing matching wall. Both original
+captures use Windows JDK17; native fixtures pass 434 checks each. Their remote-World flag excludes Item drops;
+ordinary publication and failure ordering have separate native controls.
+The [Ladder contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/ladder.md)
+keeps those finite scopes separate from complete recursive mutation ownership.
+
+## Arrow frame initialization measurement
+
+A 24-process Windows comparison tested a private `malloc` plus partial-clear
+strategy against the existing `calloc` frame allocation. All 36 semantic and
+cleanup controls passed 7,092 checks before timing. The complete timing cohort
+passed 874,368 checks, but the candidate was slower in three of four pairs for
+both one and eight Arrows. Adoption was rejected; production keeps `calloc`.
+The [full process table and method](https://github.com/frankischilling/minecraft-c/blob/df9538d0bc0d32126b1ccec1699b3a4bbe0ada0e/docs/performance/arrow-world-tick-baseline.md#rejected-frame-initialization-experiment)
+retains all samples and empty-control variation. This establishes no isolated
+allocation cost or application FPS improvement. Six useful early-failure cases
+are now local Windows/Linux regressions. At that checkpoint victim damage was
+still unentered; the later join has its separate combat qualification.
+
 ## Redstone Torch lifecycle
 
 [Client Torches 75/76](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/redstone-torch.md) now run addition, removal, neighbor scheduling, directional power and burnout through the actual World services. The defining class owns one shared, reclaimable burnout List across Worlds. Windows and sanitized Linux match all 203 finite cases against two original repeats, including age100/101, wrapped time, callback failures and shared history.
@@ -801,15 +829,3 @@ for current validation. Detailed past counts and source checkpoints are retained
 in the [population and runtime history](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/population.md).
 The [architecture](Architecture), [build](Build-and-tests) and
 [storage/reference](Storage-and-reference) wiki pages provide further navigation.
-
-## Arrow frame initialization measurement
-
-A 24-process Windows comparison tested a private `malloc` plus partial-clear
-strategy against the existing `calloc` frame allocation. All 36 semantic and
-cleanup controls passed 7,092 checks before timing. The complete timing cohort
-passed 874,368 checks, but the candidate was slower in three of four pairs for
-both one and eight Arrows. Adoption was rejected; production keeps `calloc`.
-The [full process table and method](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/arrow-world-tick-baseline.md#rejected-frame-initialization-experiment)
-retains all samples and empty-control variation. This establishes no isolated
-allocation cost or application FPS improvement. Six useful early-failure cases
-are now local Windows/Linux regressions; full victim damage remains unfinished.
