@@ -482,8 +482,8 @@
       "sha256": "43dbe7ff2267ba165d4743e26959ed9e52e66bce861ac4a127ad4bddd1c8ccc5"
     },
     "include/mc/world/runtime/world_access_error.h": {
-      "bytes": 2776,
-      "sha256": "09a4829a8f9f56c1d68ab26355d844b8377fd1c3aac5ea8e9028cbbd3a167bfe"
+      "bytes": 2780,
+      "sha256": "74a0abe55aff9e8448be645cc7b0171dffb6f87146bf3f4329154a0d3f51dc18"
     },
     "include/mc/entity/hit_result.h": {
       "bytes": 8117,

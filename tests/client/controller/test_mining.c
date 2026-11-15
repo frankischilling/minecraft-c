@@ -12,6 +12,199 @@
 #include "mc/inventory/mining.h"
 #include "mc/world/runtime/mutations.h"
 #include "mc/world/runtime/placement.h"
+#include "mc/world/runtime/world_access.h"
+
+typedef struct ore_initial_observer {
+    fixture *f;
+    mc_chunk_state *chunk;
+    mc_block **array;
+    mc_block *unlit, *replacement;
+    size_t particles, cells, ranges;
+    bool replace, replaced;
+} ore_initial_observer;
+
+static mc_world_storage_status ore_observer_failure(mc_world_storage_error *error) {
+    *error = (mc_world_storage_error){MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                      "mining Ore observer actual World/array/prefix", 0};
+    return error->status;
+}
+
+static mc_world_storage_status ore_initial_particle(void *context, mc_world_runtime *world,
+                                                    const mc_registry_string *name, double x,
+                                                    double y, double z, double vx, double vy,
+                                                    double vz, mc_world_storage_error *error) {
+    ore_initial_observer *o = context;
+    (void)x;
+    (void)y;
+    (void)z;
+    (void)vx;
+    (void)vy;
+    (void)vz;
+    if (world != o->f->world || name == NULL || o->array != o->f->registry->blocks.m ||
+        o->chunk->data->blocks[((size_t)3 * 16u + 5u) * 128u + 64u] != 73)
+        return ore_observer_failure(error);
+    if (o->particles == 0 && o->replace) {
+        if (o->array[73] != o->unlit)
+            return ore_observer_failure(error);
+        /* This is the actual mutable UU.m element, replaced with the genuine
+         * Dirt singleton from this SAME Registry. No receiver/class is forged.
+         * BS.h continues on its already captured Ore receiver. */
+        o->array[73] = o->replacement;
+        o->replaced = true;
+    }
+    ++o->particles;
+    return MC_WORLD_STORAGE_OK;
+}
+
+static mc_world_storage_status ore_initial_cell(void *context, mc_world_runtime *world, int32_t x,
+                                                int32_t y, int32_t z,
+                                                mc_world_storage_error *error) {
+    ore_initial_observer *o = context;
+    if (world != o->f->world || x != 3 || y != 64 || z != 5 ||
+        o->chunk->data->blocks[((size_t)3 * 16u + 5u) * 128u + 64u] != 74)
+        return ore_observer_failure(error);
+    ++o->cells;
+    return MC_WORLD_STORAGE_OK;
+}
+
+static mc_world_storage_status ore_initial_range(void *context, mc_world_runtime *world, int32_t x0,
+                                                 int32_t y0, int32_t z0, int32_t x1, int32_t y1,
+                                                 int32_t z1, mc_world_storage_error *error) {
+    ore_initial_observer *o = context;
+    (void)x0;
+    (void)y0;
+    (void)z0;
+    (void)x1;
+    (void)y1;
+    (void)z1;
+    if (world != o->f->world)
+        return ore_observer_failure(error);
+    ++o->ranges;
+    return MC_WORLD_STORAGE_OK;
+}
+
+static uint32_t mining_float_word(float value) {
+    uint32_t word;
+    memcpy(&word, &value, sizeof word);
+    return word;
+}
+
+static bool ore_initial_hook_controls(fixture *f, mc_entity *player) {
+    const mc_chunk_acquire_context *acquisition = mc_world_runtime_acquisition(f->world);
+    CHECK(acquisition != NULL && acquisition->cache->count == 0 && f->world->active_calls == 0 &&
+          f->world->local_leases == 0);
+    mc_block **const array = f->registry->blocks.m;
+    CHECK(array != NULL && f->registry->blocks.m_length == 256);
+    mc_block *const unlit = array[73], *const lit = array[74], *const dirt = array[3];
+    CHECK(unlit != NULL && lit != NULL && dirt != NULL && unlit->classes == f->registry &&
+          lit->classes == f->registry && dirt->classes == f->registry && unlit->fields.bn == 73 &&
+          lit->fields.bn == 74 && dirt->fields.bn == 3 && unlit->fields.bo == 3.0f &&
+          lit->fields.bo == 3.0f && dirt->fields.bo == .5f);
+    const float unlit_hardness = unlit->fields.bo, lit_hardness = lit->fields.bo;
+    const float unlit_resistance = unlit->fields.bp, lit_resistance = lit->fields.bp;
+    /* Authored source inputs distinguish the old Ore from its activated cell.
+     * Both hardness values are below the ordinary3, so the real setter leaves
+     * the original resistance fields intact. */
+    mc_registry_block_hardness(unlit, .5f);
+    mc_registry_block_hardness(lit, 2.0f);
+    CHECK(unlit->fields.bo == .5f && lit->fields.bo == 2.0f &&
+          unlit->fields.bp == unlit_resistance && lit->fields.bp == lit_resistance);
+    CHECK(mc_entity_set_position(player, .5, 64.0, .5) == MC_ENTITY_OK);
+    player->base.aX = true;
+    mc_inventory_player_state inventory;
+    CHECK(mc_inventory_player_read_state(player->local_player->fields.player.c, &inventory) &&
+          inventory.selected == 0 && inventory.main_slots != NULL &&
+          inventory.main_slots[0] == NULL);
+    client_application *app = calloc(1, sizeof(*app));
+    CHECK(app != NULL);
+    app->active_world = f->world;
+    app->h = player;
+    app->registry = f->registry;
+    mc_client_singleplayer_controller *controller = NULL;
+    CHECK(mc_client_singleplayer_controller_allocate(f->entities, f->profile, 0, &controller,
+                                                     NULL) == MC_SINGLEPLAYER_CONTROLLER_OK &&
+          mc_client_singleplayer_controller_construct(controller, app, NULL) ==
+              MC_SINGLEPLAYER_CONTROLLER_OK);
+    const size_t player_holds = player->holds;
+    for (size_t variant = 0; variant < 2; ++variant) {
+        uint8_t *blocks = calloc(MC_CHUNK_BLOCKS, 1);
+        CHECK(blocks != NULL);
+        blocks[((size_t)3 * 16u + 5u) * 128u + 64u] = 73;
+        blocks[((size_t)3 * 16u + 5u) * 128u + 63u] = 1;
+        mc_world_chunk *chunk = NULL;
+        CHECK(mc_world_store_create_generated(f->store, f->world, 0, 0, 0, &blocks, MC_CHUNK_BLOCKS,
+                                              &chunk, NULL) == MC_WORLD_STORAGE_OK &&
+              blocks == NULL);
+        mc_chunk_state *state = mc_world_chunk_state(chunk);
+        CHECK(state != NULL && state->data->heightmap[(size_t)5 * 16u + 3u] == 0 &&
+              mc_chunk_cache_publish(acquisition->cache, 0, 0, state));
+        ore_initial_observer observer = {.f = f,
+                                         .chunk = state,
+                                         .array = array,
+                                         .unlit = unlit,
+                                         .replacement = dirt,
+                                         .replace = variant != 0};
+        const mc_world_access_callbacks callbacks = {
+            .particle = ore_initial_particle, .cell = ore_initial_cell, .range = ore_initial_range};
+        mc_world_access *listener = NULL;
+        CHECK(mc_world_access_create(&callbacks, &observer, &listener, NULL) ==
+                  MC_WORLD_STORAGE_OK &&
+              mc_world_runtime_add_world_access(f->world, listener, NULL) == MC_WORLD_STORAGE_OK);
+        mc_singleplayer_mining_call *call = NULL;
+        mc_singleplayer_mining_error error;
+        mc_singleplayer_mining_state result;
+        CHECK(mc_client_singleplayer_mining_begin(controller, MC_SINGLEPLAYER_MINING_START, 3, 64,
+                                                  5, 1, &call,
+                                                  &error) == MC_SINGLEPLAYER_MINING_OK &&
+              mc_client_singleplayer_mining_inspect(call, &result) && result.returned &&
+              result.initial_hook_returned && result.block_id == 73 && result.source_pc == 113 &&
+              !result.progress_stored && !result.removal_returned && error.activation != NULL &&
+              error.activation->returned && error.initial_hook.class_name != NULL &&
+              strcmp(error.initial_hook.class_name, "bs") == 0 && error.initial_hook.pc == 6);
+        /* Source strength uses the freshly reloaded m[oldID] at OS87. Ordinary
+         * Ore yields (1/.5)/100 =0x3ca3d70a; replacing that actual element with
+         * Dirt yields (1/.5)/30 =0x3d888889. Rereading World ID74 would instead
+         * yield (1/2)/100 =0x3ba3d70a; caching the old pointer fails variant1. */
+        CHECK(mining_float_word(result.strength) ==
+                  (variant == 0 ? UINT32_C(0x3ca3d70a) : UINT32_C(0x3d888889)) &&
+              observer.particles == 5 && observer.cells == 1 && observer.ranges == 1 &&
+              observer.replaced == (variant != 0) && array[73] == (variant == 0 ? unlit : dirt) &&
+              f->registry->blocks.m == array && player->holds == player_holds);
+        int32_t id = -1, metadata = -1;
+        CHECK(mc_world_runtime_block_get(f->world, 3, 64, 5, &id, NULL) == MC_WORLD_STORAGE_OK &&
+              id == 74 &&
+              mc_world_runtime_metadata_get(f->world, 3, 64, 5, &metadata, NULL) ==
+                  MC_WORLD_STORAGE_OK &&
+              metadata == 0 && state->data->heightmap[(size_t)5 * 16u + 3u] == 65 &&
+              acquisition->cache->count == 1);
+        CHECK(mc_client_singleplayer_controller_free(&controller, NULL) ==
+                  MC_SINGLEPLAYER_CONTROLLER_BUSY &&
+              mc_client_singleplayer_mining_retire(&call, NULL) == MC_SINGLEPLAYER_MINING_OK &&
+              call == NULL && f->world->active_calls == 0 && f->world->local_leases == 0 &&
+              player->holds == player_holds);
+        /* Restore authored inputs only after all diagnostics have retired. */
+        array[73] = unlit;
+        bool removed = false;
+        CHECK(mc_world_runtime_remove_world_access(f->world, listener, &removed, NULL) ==
+                  MC_WORLD_STORAGE_OK &&
+              removed && mc_world_access_free(listener, NULL) == MC_WORLD_STORAGE_OK &&
+              mc_chunk_cache_init(acquisition->cache, acquisition->cache->entries,
+                                  acquisition->cache->capacity, acquisition->cache->insertions,
+                                  acquisition->cache->insertion_capacity) &&
+              mc_world_store_retire_chunk(f->store, state, NULL) == MC_WORLD_STORAGE_OK &&
+              mc_world_store_chunk_count(f->store) == 0);
+    }
+    mc_registry_block_hardness(unlit, unlit_hardness);
+    mc_registry_block_hardness(lit, lit_hardness);
+    CHECK(array[73] == unlit && unlit->fields.bo == unlit_hardness &&
+          lit->fields.bo == lit_hardness && unlit->fields.bp == unlit_resistance &&
+          lit->fields.bp == lit_resistance && f->world->active_calls == 0 &&
+          f->world->local_leases == 0 &&
+          mc_client_singleplayer_controller_free(&controller, NULL) ==
+              MC_SINGLEPLAYER_CONTROLLER_OK);
+    free(app);
+    return true;
+}
 
 static bool lever_initial_hook_controls(fixture *f, mc_entity *player) {
     const mc_chunk_acquire_context *acquisition = mc_world_runtime_acquisition(f->world);
@@ -292,6 +485,7 @@ static bool mining_controls(fixture *f) {
     CHECK(held_pickaxe_start(f, player));
     CHECK(inherited_harvest_controls(f, player));
     CHECK(lever_initial_hook_controls(f, player));
+    CHECK(ore_initial_hook_controls(f, player));
     mc_entity_release(player);
     return true;
 }

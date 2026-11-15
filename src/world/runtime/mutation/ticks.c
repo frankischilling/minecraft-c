@@ -1,6 +1,7 @@
 #include "fire/fire_internal.h"
 #include "mutation_internal.h"
 #include "plants/plants_internal.h"
+#include "redstone_ore/redstone_ore_internal.h"
 #include "redstone_torch/redstone_torch_internal.h"
 #include "stairs/stairs_internal.h"
 
@@ -120,7 +121,9 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
         case MC_BLOCK_PRESSURE_PLATE:
             return mc_world_mutation_pressure_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_REDSTONE_ORE:
-            return tick_unavailable(world, block, "bs", "az", error);
+            return block->classes->options.side == MC_REGISTRY_CLIENT
+                       ? mc_world_mutation_redstone_ore_tick(world, block, x, y, z, random, error)
+                       : tick_unavailable(world, block, "bs", "az", error);
         case MC_BLOCK_REDSTONE_TORCH:
             if (block->classes->options.side == MC_REGISTRY_CLIENT)
                 return mc_world_mutation_redstone_torch_tick(world, block, x, y, z, random, error);

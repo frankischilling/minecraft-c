@@ -144,10 +144,14 @@ static bool sound_body(mc_world_runtime *world, double x, double y, double z,
         mc_world_access *world_access = NULL;
         bool present = false;
         mc_world_storage_error cause = {0};
+        mc_world_access_source_fault local_fault = MC_WORLD_ACCESS_SOURCE_FAULT_NONE;
+        mc_world_access_source_fault *fault =
+            execution == NULL ? &local_fault : &execution->source_fault;
         if (!mc_world_access_next_detailed(world, index, 9, 23, 28, &world_access, &present,
-                                           &error->world_access_bytecode, &cause,
-                                           execution == NULL ? NULL : &execution->source_fault))
+                                           &error->world_access_bytecode, &cause, fault)) {
+            error->world_access_source_fault = *fault;
             return presentation_failure(world, error, cause);
+        }
         if (!present) {
             error->world_access_bytecode = 0;
             return true;
@@ -187,10 +191,14 @@ static bool particle_body(mc_world_runtime *world, const mc_registry_string *nam
         mc_world_access *world_access = NULL;
         bool present = false;
         mc_world_storage_error cause = {0};
+        mc_world_access_source_fault local_fault = MC_WORLD_ACCESS_SOURCE_FAULT_NONE;
+        mc_world_access_source_fault *fault =
+            execution == NULL ? &local_fault : &execution->source_fault;
         if (!mc_world_access_next_detailed(world, index, 9, 23, 28, &world_access, &present,
-                                           &error->world_access_bytecode, &cause,
-                                           execution == NULL ? NULL : &execution->source_fault))
+                                           &error->world_access_bytecode, &cause, fault)) {
+            error->world_access_source_fault = *fault;
             return presentation_failure(world, error, cause);
+        }
         if (!present) {
             error->world_access_bytecode = 0;
             return true;

@@ -10231,3 +10231,80 @@ frames; its normal runner still rejects the intentional diagnostic stderr.
 Wake rotations differ between opportunities, and the original failed predicate
 was not recorded. These captures establish no runtime cause or general input,
 focus, graphical or FPS acceptance. Acceptance predicates were kept intact.
+
+## Redstone Ore activation and decay
+
+The [Ore packet](../tests/reference/world/redstone_ore/README.md) records 67
+declared calls to unchanged client methods. Two fresh original VMs produce
+identical complete stdout and stderr, with 63 original class pins and 13
+unchanged helper products. The adapter constructs genuine Worlds, Chunks,
+Players and controllers and installs a real observer. It does not replace
+original classes or methods. The independent model checks the original Random
+draws, float operations and first failed prefix.
+
+The compiled MSVC replay passes all 67 profiles and compares 19,187 selected
+scalars. Coverage includes direct left click, walking, right click, display,
+active and inactive decay, scheduled World dispatch, one Player's random work,
+initial OS mining and OB right use. The OB continuation reaches genuine Item4
+placement after Ore returns false. OS keeps the cached old ID for its fresh
+`Block.m` lookup at bytecode 87. These caller cases include particle, cell,
+range and Item sound interruptions.
+
+Before and after observations cover all five planes in every prepared Chunk,
+ordered callbacks with raw floating parameters, World and Math Random, light
+requests, scheduled class sequence and entries, Player and controller fields,
+stack count and the selected Item use statistic. The random-work case includes
+all 361 Chunks. Actual class counters and statistic values continue across
+original rows; fresh native processes receive those before values explicitly.
+
+Typed controls cover null World, captured World Random, provider, live Ore
+statics and the WorldAccess List, plus the unused null tick Random argument.
+Inactive tick and display returns retain their actual nullable-argument order.
+Null-list failures retain the positive `List.size:9` witness through both
+particle dispatch and height/cell notification. Stored Step source kinds and
+their nested children establish the reached cause without inferring an
+exception from operation text or a generic status.
+
+Fifteen retained-receipt controls check the actual selected callback producer.
+Early producer retirement returns BUSY with both holds intact; retiring the
+placement or enclosing caller leaves the external hold, and final retirement
+consumes that occurrence once. The native reader's ten test groups pass in
+normal Python and with `-O`, including corrupted transport, state, source
+witness, caller continuation and cleanup records.
+
+The original App uses the genuine headless `kq` constructor under the existing
+native-link guard. Native pairing prepares App method inputs explicitly and
+does not qualify its constructor, GUI, statistics persistence or audio
+initialization. The [runtime contract](world/redstone-ore.md) covers ordinary
+client shared bodies. Server decay, general mining destruction's borrowed
+errors and null cell/range interface-element classification remain separate
+work.
+
+The complete Windows MSVC Release build and all 1,261 CTests pass. The suite
+takes 528.75 seconds with four jobs and leaves all 6,206 frozen source
+inputs unchanged. All 15 selected Linux Clang Debug tests pass in 184.19 seconds
+with ASan, UBSan and leak detection. Both native hosts match all 67 profiles,
+19,187 selected scalars and 15 receipt controls. Strict GCC13 compilation
+covers 12 changed C units, and pinned formatting checks 2,404 C files and
+fragments. Linux captures and source/product receipts are archived before
+removing the isolated temporary build; this is a focused Linux qualification.
+
+A selective predecessor control restores the preceding mining and tick files
+and the right-activation function, retaining current common helpers so the new
+fixture can link. All 67 processes complete with exact original before state.
+The 32 eligible old-dispatch cases fail the original comparison: 23 at effect
+comparison and nine at public parsing. Fourteen normal original cases reach
+their actual old frontier. All seven retained walking/display controls still
+match, including five known normal returns. The 28 new direct-left cases are
+excluded from predecessor claims. Crashes and mismatched preparation do not
+count as negative controls.
+
+Three fresh private failure-only Bed diagnostics pass on physical monitor 2,
+with 2,258, 2,508 and 2,471 checks, empty stderr, genuine dawn, save and cleanup.
+The normal runner and acceptance predicates remain unchanged; the private
+observer stores bounded scalar history and emits it only after a failure.
+No failure history was emitted. All three saved wake rotations remain 0/41,
+whereas the earlier failed opportunity recorded approximately 112.5/67.35.
+The original failing predicate was not recaptured. Observer timing remains a
+caveat; these prepared-route results establish neither a runtime fix nor
+general input/focus, original graphical equality or FPS qualification.

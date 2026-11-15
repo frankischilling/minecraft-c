@@ -7,39 +7,32 @@ the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining w
 
 ## Current client work
 
-Ordinary client [Fire source bodies](world/fire.md) now run through scheduled
-and Player-centered random World ticks. Fire addition, support loss, rain,
-burning and spread use the actual World queries, quiet age write and notifying
-block writes. Reached Portal creation/collapse, delegated Stairs hooks and
-immediate TNT construction/publication/sound share those calls.
+Ordinary client [Redstone Ore activation and decay](world/redstone-ore.md)
+now joins left-click mining, walking, right-click Item continuation, display
+and scheduled/random ticks. The shared particle and activation bodies preserve
+their original reads and Random order. Right activation returns false after
+its effects, allowing the held BlockItem to place and update its use statistic.
 
-Two fresh unchanged-original VMs agree on 71 prepared profiles. Native replay
-on Windows and Linux matches 88,077 selected original scalars, including all
-five complete Chunk planes, Random streams, ordered callbacks, scheduled queues and TNT
-constructor fields. Three separate native lifetime controls retain failed
-callback receipts until the World tick retires.
+Two fresh unchanged-original VMs agree on 67 prepared profiles. Windows and
+sanitized Linux each match 19,187 selected original scalars and 15 separate
+retained receipt controls. The comparison includes complete Chunk planes,
+callbacks, light and scheduled queues, both Random streams, actual OS/OB caller state and Item/stat
+effects. Native controls distinguish the cached old ID from a fresh World read,
+and a fresh Block array lookup from a cached Block pointer.
 
-The audit also corrected scheduled membership insertion and resize order.
-Independent JDK17 observations qualify the reached linked-bin histories;
-collision-tree identity order remains unqualified. Player-chunk set traversal
-already matched the observed Java order and needed no runtime change.
+The full Windows MSVC Release suite passes all 1,261 tests in 528.75 seconds.
+All 15 selected Linux Clang tests pass in 184.19 seconds with ASan, UBSan and
+leak detection; strict GCC compilation covers 12 changed C units. The
+[test record](testing.md#redstone-ore-activation-and-decay) states the platform
+and scenario limits. Typed null-list diagnostics now survive legacy particle
+and notification calls; placement retains the actual failed producers through
+checked retirement.
 
-The full Windows MSVC Release suite passes 1,256 tests in 364.40 seconds.
-Focused Linux Clang ASan/UBSan/leak checks pass 80 tests plus the revised plant
-lifecycle case; strict GCC compilation covers 25 changed C units. All sources
-remain frozen during their respective runs. Releasing an unnecessary lock lets
-56 isolated World query controls pass with eight jobs in 52.54 seconds.
-
-The [test record](testing.md#fire-source-bodies) keeps the original comparisons,
-native controls and regression results separate. Earlier
-[Lava wake](testing.md#lava-mixing-during-player-wake),
-[Cactus/Reeds](testing.md#cactus-and-reeds-during-player-wake) and
-[flower-family](testing.md#remaining-flower-family-neighbors-during-player-wake)
-evidence retains its own scope. Retained owned Fire execution, delayed TNT
-ticks/explosions, Portal travel, unrestricted play, original audiovisual equality
-and measured FPS remain unfinished. Fresh monitor-2 graphical qualification
-also remains incomplete; the test record preserves failed Bed and Arrow/Pig
-opportunities and their separate diagnostic evidence.
+The [preceding Fire checkpoint](history/status-checkpoints.md#ordinary-fire-checkpoint)
+retains its 71-profile comparison, full Windows and focused Linux results.
+Fresh graphical input/focus qualification remains incomplete. General mining
+destruction ownership, other ordinary-play blockers, sustained play/save drift,
+original audiovisual equality and measured FPS remain unfinished.
 
 ## Next single-player work
 

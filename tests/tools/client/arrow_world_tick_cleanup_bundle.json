@@ -66,8 +66,8 @@
       "sha256": "80d866a4df85af27011535b381728a1cae45bfbd24da103b2b453d5ed5056042"
     },
     "CMakeLists.txt": {
-      "bytes": 350569,
-      "sha256": "03bcabf209f014fdc8a699a0c6df3bc09a3333de5feccee631dc922fa02eff3e"
+      "bytes": 352112,
+      "sha256": "5cf5a246d6b22be958d607705b0af8265906428699b63e28690574fa80478a3b"
     },
     "cmake/tests/arrow_world_tick_cleanup.cmake": {
       "bytes": 2831,
@@ -78,8 +78,8 @@
       "sha256": "4baebeb8607f9a46d6a4565e90969c88872d33b138483e9aa8911f32cde4734f"
     },
     "include/mc/world/runtime/world_access_error.h": {
-      "bytes": 2776,
-      "sha256": "09a4829a8f9f56c1d68ab26355d844b8377fd1c3aac5ea8e9028cbbd3a167bfe"
+      "bytes": 2780,
+      "sha256": "74a0abe55aff9e8448be645cc7b0171dffb6f87146bf3f4329154a0d3f51dc18"
     },
     "src/core/math/execution_internal.h": {
       "bytes": 7418,
@@ -150,8 +150,8 @@
       "sha256": "254e167c898907879c70fccca62c635d37bba596bfe1fe764239bde52a0e983e"
     },
     "src/world/runtime/presentation.c": {
-      "bytes": 23431,
-      "sha256": "06f9ebd7293b5aaf7b42741c6caba8ad729cfd2831608c2e75e6dff43c131653"
+      "bytes": 23797,
+      "sha256": "83dcab52704f6387fdb89785cad96bf527672aa5eb62be5b5e489136f3596413"
     },
     "src/world/runtime/presentation_execution_internal.h": {
       "bytes": 4143,
@@ -177,7 +177,7 @@
   "helpers": {
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76712,
-      "sha256": "197f1e22cc56e8171d65b2ba557fa6410fac7a0c7d0b1a46c904719d0fde8554"
+      "sha256": "94e2975b881cd4f70a6e933dffa130d1f6f2992be0fdbfc06b65545e8eabfe53"
     },
     "tests/tools/world/test_execution_ownership.py": {
       "bytes": 8350,

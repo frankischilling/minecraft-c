@@ -13,8 +13,8 @@
       "sha256": "54d9f163904767d003b962ccfe478992a31d255983a802df10cd653b035aadc9"
     },
     "CMakeLists.txt": {
-      "bytes": 350569,
-      "sha256": "03bcabf209f014fdc8a699a0c6df3bc09a3333de5feccee631dc922fa02eff3e"
+      "bytes": 352112,
+      "sha256": "5cf5a246d6b22be958d607705b0af8265906428699b63e28690574fa80478a3b"
     },
     "tests/entity/player/test_ally_alert_ownership.c": {
       "bytes": 11240,
@@ -93,8 +93,8 @@
       "sha256": "4baebeb8607f9a46d6a4565e90969c88872d33b138483e9aa8911f32cde4734f"
     },
     "include/mc/world/runtime/world_access_error.h": {
-      "bytes": 2776,
-      "sha256": "09a4829a8f9f56c1d68ab26355d844b8377fd1c3aac5ea8e9028cbbd3a167bfe"
+      "bytes": 2780,
+      "sha256": "74a0abe55aff9e8448be645cc7b0171dffb6f87146bf3f4329154a0d3f51dc18"
     },
     "src/core/math/execution_internal.h": {
       "bytes": 7418,

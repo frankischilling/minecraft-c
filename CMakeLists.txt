@@ -727,6 +727,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/mutation/ticks.c
     src/world/runtime/mutation/fluids.c
     src/world/runtime/mutation/fire/fire.c
+    src/world/runtime/mutation/redstone_ore/redstone_ore.c
     src/world/runtime/mutation/portal.c
     src/world/runtime/mutation/stairs/stairs.c
     src/world/runtime/mutation/tnt/activation.c
@@ -3036,6 +3037,29 @@ if(BUILD_TESTING)
     target_link_libraries(mc_piston_geometry_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_fluids tests/world/runtime/test_fluids.c)
+    add_executable(mc_test_world_redstone_ore tests/world/runtime/test_redstone_ore.c)
+    target_include_directories(mc_test_world_redstone_ore PRIVATE src src/platform/time)
+    target_link_libraries(mc_test_world_redstone_ore PRIVATE
+        mc_client_singleplayer_controller mc_resources mc_c_atomics mc_build_options)
+    add_test(NAME world.redstone_ore_reference COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/redstone_ore/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_world_redstone_ore>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-redstone-ore-reference")
+    set_tests_properties(world.redstone_ore_reference PROPERTIES
+        LABELS "public;integration;world;client;reference;replay" TIMEOUT 600)
+    foreach(_mc_ore_mode IN ITEMS normal optimized)
+        set(_mc_ore_options -B)
+        if(_mc_ore_mode STREQUAL "optimized")
+            list(APPEND _mc_ore_options -O)
+        endif()
+        foreach(_mc_ore_reader IN ITEMS packet native)
+            add_test(NAME "tools.redstone_ore_${_mc_ore_reader}_${_mc_ore_mode}" COMMAND Python3::Interpreter
+                ${_mc_ore_options}
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/redstone_ore/test_${_mc_ore_reader}.py")
+            set_tests_properties("tools.redstone_ore_${_mc_ore_reader}_${_mc_ore_mode}" PROPERTIES
+                LABELS "public;unit;world;reference;tools" TIMEOUT 180)
+        endforeach()
+    endforeach()
     add_executable(mc_test_world_fire tests/world/runtime/test_fire.c)
     target_include_directories(mc_test_world_fire PRIVATE src src/platform/time)
     target_link_libraries(mc_test_world_fire PRIVATE mc_simulation mc_c_atomics mc_build_options)

@@ -83,8 +83,9 @@ static bool observe_cell(mc_world_runtime *world, int32_t x, int32_t y, int32_t 
         mc_world_access *world_access = NULL;
         bool present = false;
         mc_world_storage_error cause = {0};
-        if (!mc_world_access_next(world, index, 9, 23, 28, &world_access, &present,
-                                  &error->world_access_bytecode, &cause))
+        if (!mc_world_access_next_detailed(world, index, 9, 23, 28, &world_access, &present,
+                                           &error->world_access_bytecode, &cause,
+                                           &error->world_access_source_fault))
             return world_access_failure(world, error, cause);
         if (!present) {
             error->world_access_bytecode = 0;
@@ -119,8 +120,9 @@ static bool observe_range(mc_world_runtime *world, int32_t min_x, int32_t min_y,
         mc_world_access *world_access = NULL;
         bool present = false;
         mc_world_storage_error cause = {0};
-        if (!mc_world_access_next(world, index, 9, 23, 28, &world_access, &present,
-                                  &error->world_access_bytecode, &cause))
+        if (!mc_world_access_next_detailed(world, index, 9, 23, 28, &world_access, &present,
+                                           &error->world_access_bytecode, &cause,
+                                           &error->world_access_source_fault))
             return world_access_failure(world, error, cause);
         if (!present) {
             error->world_access_bytecode = 0;

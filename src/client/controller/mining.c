@@ -149,7 +149,6 @@ static bool initial_hook(mc_singleplayer_mining_call *call, const mc_block *bloc
                 block = block->subtype.ss.a;
                 continue;
             case MC_BLOCK_TNT:
-            case MC_BLOCK_REDSTONE_ORE:
             case MC_BLOCK_DOOR:
             case MC_BLOCK_BUTTON:
             case MC_BLOCK_TRAPDOOR:
@@ -157,6 +156,15 @@ static bool initial_hook(mc_singleplayer_mining_call *call, const mc_block *bloc
             case MC_BLOCK_CAKE:
                 return failed(call, MC_SINGLEPLAYER_MINING_DEPENDENCY,
                               "actual concrete initial Block mining hook", "os", "a", 74, true);
+            case MC_BLOCK_REDSTONE_ORE:
+                call->error.activation = &call->activation;
+                call->error.initial_hook = (mc_player_site){"bs", "b", "(Lfd;IIILgs;)V", 6};
+                if (mc_world_block_clicked(block->classes, block, target, call->state.x,
+                                           call->state.y, call->state.z, player,
+                                           &call->activation) != MC_WORLD_STORAGE_OK)
+                    return failed(call, MC_SINGLEPLAYER_MINING_WORLD, call->activation.operation,
+                                  "os", "a", 74, call->activation.native_policy);
+                return true;
             case MC_BLOCK_LEVER: {
                 call->error.activation = &call->activation;
                 call->error.initial_hook = (mc_player_site){"xr", "b", "(Lfd;IIILgs;)V", 8};

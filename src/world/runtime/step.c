@@ -96,20 +96,23 @@ static double random_coordinate(int32_t coordinate, mc_java_random *random) {
 
 bool mc_world_step_redstone_particles(mc_world_runtime *world, const mc_block *block, int32_t x,
                                       int32_t y, int32_t z, mc_world_step_error *error,
-                                      mc_world_step_source_failure *source) {
-    if (source != NULL)
-        *source = (mc_world_step_source_failure){0};
+                                      mc_world_step_source_failure *source_out) {
+    mc_world_step_source_failure actual = {0};
+    mc_world_step_source_failure *source = &actual;
+    bool okay = false;
+    error->source = actual;
     error->particle_bytecode = 1;
     if (world == NULL) {
-        if (source != NULL)
-            source->kind = MC_WORLD_STEP_SOURCE_NULL_WORLD;
-        return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                    "Redstone Ore particles null World Random receiver");
+        source->kind = MC_WORLD_STEP_SOURCE_NULL_WORLD;
+        fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+             "Redstone Ore particles null World Random receiver");
+        goto finish;
     }
     mc_java_random *random = world->fields.r; /* One actual source receiver capture. */
-    if (mc_world_runtime_call_enter(world, &error->cause) != MC_WORLD_STORAGE_OK)
-        return fail(error, error->cause.status, "Redstone Ore actual GAME World");
-    bool okay = false;
+    if (mc_world_runtime_call_enter(world, &error->cause) != MC_WORLD_STORAGE_OK) {
+        fail(error, error->cause.status, "Redstone Ore actual GAME World");
+        goto finish;
+    }
     if (mc_world_runtime_registry(world) != block->classes) {
         fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
              "Redstone Ore World/code Registry namespace");
@@ -119,8 +122,7 @@ bool mc_world_step_redstone_particles(mc_world_runtime *world, const mc_block *b
         error->particle_face = face;
         error->particle_bytecode = 25;
         if (random == NULL) {
-            if (source != NULL)
-                source->kind = MC_WORLD_STEP_SOURCE_NULL_RANDOM;
+            source->kind = MC_WORLD_STEP_SOURCE_NULL_RANDOM;
             fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Redstone Ore null captured Random");
             goto done;
         }
@@ -172,15 +174,13 @@ bool mc_world_step_redstone_particles(mc_world_runtime *world, const mc_block *b
             const mc_registry_status result = mc_registry_runtime_literal_ascii(
                 block->classes, "reddust", &name, &error->registry);
             if (!registry(error, result, "Redstone Ore particle code literal")) {
-                if (source != NULL)
-                    *source = (mc_world_step_source_failure){MC_WORLD_STEP_SOURCE_REGISTRY, result};
+                *source = (mc_world_step_source_failure){MC_WORLD_STEP_SOURCE_REGISTRY, result};
                 goto done;
             }
             error->particle_bytecode = 291;
             if (!mc_world_mutation_particle(world, name, px, py, pz, 0.0, 0.0, 0.0,
                                             &error->mutation)) {
-                if (source != NULL)
-                    source->kind = MC_WORLD_STEP_SOURCE_PRESENTATION;
+                source->kind = MC_WORLD_STEP_SOURCE_PRESENTATION;
                 fail(error, error->mutation.status, "Redstone Ore actual World particle dispatch");
                 goto done;
             }
@@ -189,43 +189,72 @@ bool mc_world_step_redstone_particles(mc_world_runtime *world, const mc_block *b
     okay = true;
 done:
     mc_world_runtime_call_leave(world);
+finish:
+    error->source = actual;
+    if (source_out != NULL)
+        *source_out = actual;
     return okay;
 }
 
-static bool redstone_ore(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
-                         int32_t z, mc_world_step_error *error) {
-    error->bytecode = 6;
+static bool activation_result(mc_world_step_error *error,
+                              const mc_world_step_source_failure *source, bool completed) {
+    error->source = *source;
+    return completed;
+}
+
+bool mc_world_step_redstone_activate(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                     int32_t y, int32_t z, mc_world_step_error *error,
+                                     mc_world_step_source_failure *source) {
+    mc_world_step_source_failure local = {0};
+    if (source == NULL)
+        source = &local;
+    *source = (mc_world_step_source_failure){0};
+    error->source = (mc_world_step_source_failure){0};
     error->activation_bytecode = 6;
-    if (!mc_world_step_redstone_particles(world, block, x, y, z, error, NULL))
-        return false;
+    if (!mc_world_step_redstone_particles(world, block, x, y, z, error, source))
+        return activation_result(error, source, false);
+    error->activation_bytecode = 10;
+    const int32_t own_id = block->fields.bn;
     const mc_block *normal = NULL;
     error->activation_bytecode = 13;
-    if (!registry(error,
-                  mc_registry_block_static_get(block->classes, "aO", &normal, &error->registry),
-                  "Redstone Ore inactive Block getstatic"))
-        return false;
+    mc_registry_status status =
+        mc_registry_block_static_get(block->classes, "aO", &normal, &error->registry);
+    if (!registry(error, status, "Redstone Ore inactive Block getstatic")) {
+        *source = (mc_world_step_source_failure){MC_WORLD_STEP_SOURCE_REGISTRY, status};
+        return activation_result(error, source, false);
+    }
     error->activation_bytecode = 16;
-    if (normal == NULL)
-        return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                    "Redstone Ore inactive static null bn receiver");
-    if (block->fields.bn == normal->fields.bn) {
+    if (normal == NULL) {
+        source->kind = MC_WORLD_STEP_SOURCE_NULL_STATIC;
+        (void)fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                   "Redstone Ore inactive static null bn receiver");
+        return activation_result(error, source, false);
+    }
+    if (own_id == normal->fields.bn) {
         const mc_block *active = NULL;
         error->activation_bytecode = 27;
-        if (!registry(error,
-                      mc_registry_block_static_get(block->classes, "aP", &active, &error->registry),
-                      "Redstone Ore active Block getstatic"))
-            return false;
+        status = mc_registry_block_static_get(block->classes, "aP", &active, &error->registry);
+        if (!registry(error, status, "Redstone Ore active Block getstatic")) {
+            *source = (mc_world_step_source_failure){MC_WORLD_STEP_SOURCE_REGISTRY, status};
+            return activation_result(error, source, false);
+        }
         error->activation_bytecode = 30;
-        if (active == NULL)
-            return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                        "Redstone Ore active static null bn receiver");
+        if (active == NULL) {
+            source->kind = MC_WORLD_STEP_SOURCE_NULL_STATIC;
+            (void)fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                       "Redstone Ore active static null bn receiver");
+            return activation_result(error, source, false);
+        }
         bool ordinary;
         error->activation_bytecode = 33;
         if (mc_world_runtime_block_set(world, x, y, z, active->fields.bn, &ordinary,
-                                       &error->mutation) != MC_WORLD_STORAGE_OK)
-            return fail(error, error->mutation.status, "Redstone Ore notifying activation setter");
+                                       &error->mutation) != MC_WORLD_STORAGE_OK) {
+            source->kind = MC_WORLD_STEP_SOURCE_MUTATION;
+            (void)fail(error, error->mutation.status, "Redstone Ore notifying activation setter");
+            return activation_result(error, source, false);
+        }
     }
-    return true;
+    return activation_result(error, source, true);
 }
 
 mc_world_storage_status mc_world_runtime_entity_step(mc_world_runtime *world, const mc_block *block,
@@ -259,7 +288,8 @@ mc_world_storage_status mc_world_runtime_entity_step(mc_world_runtime *world, co
         }
         if (block->kind == MC_BLOCK_REDSTONE_ORE) {
             frame.block_class = client ? "bs" : "az";
-            (void)redstone_ore(world, block, x, y, z, &frame);
+            frame.bytecode = 6;
+            (void)mc_world_step_redstone_activate(world, block, x, y, z, &frame, &frame.source);
         } else if (block->kind == MC_BLOCK_FARMLAND) {
             frame.block_class = client ? "vl" : "no";
             frame.bytecode = 1;

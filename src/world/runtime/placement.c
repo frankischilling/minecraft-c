@@ -21,6 +21,7 @@
 #include "mutation/mutation_internal.h"
 #include "plant_substrate_internal.h"
 #include "runtime_internal.h"
+#include "step_internal.h"
 #include "torch_support_internal.h"
 
 #include <stdlib.h>
@@ -37,6 +38,7 @@ struct mc_world_placement_work {
     mc_world_runtime_acquisition_error *queries[PLACEMENT_QUERIES];
     mc_world_solid_support_detail *supports[5];
     mc_world_mutation_error *mutation;
+    mc_world_step_error *step;
     mc_world_collision_error *collision;
     mc_world_spawn_collision_error *entities;
     mc_entity *bed_player;
@@ -225,6 +227,30 @@ static bool publication_receipts(mc_world_placement_error *e, mc_world_entity_ba
            receipt(e, &tile->batch.publication.world_access_failure);
 }
 
+static bool mutation_receipts(mc_world_placement_error *e, mc_world_mutation_error *m) {
+    if (m == NULL)
+        return true;
+    if (e->status != MC_WORLD_STORAGE_OK &&
+        m->world_access_source_fault != MC_WORLD_ACCESS_SOURCE_FAULT_NONE) {
+        e->exception_class = "java/lang/NullPointerException";
+        e->source_exception = true;
+        e->source_error = false;
+        e->native_policy = false;
+    }
+    return receipt(e, &m->world_access_failure) &&
+           receipt(e, &m->publication.world_access_failure) &&
+           publication_receipts(e, &m->batch, &m->tile_entity) &&
+           publication_receipts(e, &m->nearby.batch, &m->nearby.tile_entity) &&
+           publication_receipts(e, &m->power.access.batch, &m->power.access.tile_entity) &&
+           publication_receipts(e, &m->rail_access.nearby.batch,
+                                &m->rail_access.nearby.tile_entity) &&
+           copy_source(e, &m->query.source_chunk) &&
+           copy_source(e, &m->nearby.query.source_chunk) &&
+           copy_source(e, &m->plant.query.source_chunk) &&
+           copy_source(e, &m->power.access.query.source_chunk) &&
+           copy_source(e, &m->rail_access.nearby.query.source_chunk);
+}
+
 static bool capture(mc_world_placement_error *e) {
     mc_world_placement_work *w = e->work;
     for (size_t i = 0; i < PLACEMENT_QUERIES; ++i)
@@ -233,7 +259,8 @@ static bool capture(mc_world_placement_error *e) {
              !publication_receipts(e, &w->queries[i]->batch, &w->queries[i]->tile_entity)))
             return false;
     mc_world_nearby_error *nearby[] = {w->collision == NULL ? NULL : &w->collision->nearby,
-                                       w->entities == NULL ? NULL : &w->entities->nearby};
+                                       w->entities == NULL ? NULL : &w->entities->nearby,
+                                       w->step == NULL ? NULL : &w->step->block_read.nearby};
     for (size_t i = 0; i < sizeof nearby / sizeof *nearby; ++i)
         if (nearby[i] != NULL &&
             (!copy_source(e, &nearby[i]->query.source_chunk) ||
@@ -245,23 +272,8 @@ static bool capture(mc_world_placement_error *e) {
             !publication_receipts(e, &child->batch, &child->tile_entity))
             return false;
     }
-    if (w->mutation != NULL) {
-        mc_world_mutation_error *m = w->mutation;
-        if (!receipt(e, &m->world_access_failure) ||
-            !receipt(e, &m->publication.world_access_failure) ||
-            !publication_receipts(e, &m->batch, &m->tile_entity) ||
-            !publication_receipts(e, &m->nearby.batch, &m->nearby.tile_entity) ||
-            !publication_receipts(e, &m->power.access.batch, &m->power.access.tile_entity) ||
-            !publication_receipts(e, &m->rail_access.nearby.batch,
-                                  &m->rail_access.nearby.tile_entity) ||
-            !copy_source(e, &m->query.source_chunk) ||
-            !copy_source(e, &m->nearby.query.source_chunk) ||
-            !copy_source(e, &m->plant.query.source_chunk) ||
-            !copy_source(e, &m->power.access.query.source_chunk) ||
-            !copy_source(e, &m->rail_access.nearby.query.source_chunk))
-            return false;
-    }
-    return true;
+    return mutation_receipts(e, w->mutation) &&
+           mutation_receipts(e, w->step == NULL ? NULL : &w->step->mutation);
 }
 
 /* Concrete producer receipts supplement the value-only invocation classified
@@ -1002,6 +1014,124 @@ mc_world_storage_status mc_world_block_can_place_base(mc_registry_classes *regis
     return finish(e, returned, returned && value, out);
 }
 
+static bool ore_activate(mc_world_placement_error *e, const mc_block *block,
+                         mc_world_runtime *world, int32_t x, int32_t y, int32_t z) {
+    e->site.class_name = "bs";
+    e->site.pc = 6;
+    e->wrapper = e->site;
+    /* The actual first World dereference belongs to BS.i:1. A nonnull World
+     * is retained here, while NULL reaches that exact child operation. */
+    if (world != NULL && !hold_world(e, world))
+        return false;
+    mc_world_step_error *child = calloc(1, sizeof(*child));
+    if (child == NULL) {
+        fail(e, MC_WORLD_STORAGE_ALLOCATION_FAILED, "Ore activation child diagnostic", true);
+        return false;
+    }
+    e->work->step = child;
+    e->step = child;
+    mc_world_step_error_init(child);
+    child->block = block;
+    child->block_class = "bs";
+    child->bytecode = 6;
+    const bool returned =
+        mc_world_step_redstone_activate(world, block, x, y, z, child, &child->source);
+    if (!returned) {
+        fail(e, child->status, child->operation, true);
+        e->registry = child->registry;
+        e->caller = site("bs", "h", "(Lfd;III)V", child->activation_bytecode);
+        switch (child->source.kind) {
+            case MC_WORLD_STEP_SOURCE_NULL_WORLD:
+            case MC_WORLD_STEP_SOURCE_NULL_RANDOM:
+            case MC_WORLD_STEP_SOURCE_NULL_STATIC:
+                null_reference(e, child->operation);
+                break;
+            case MC_WORLD_STEP_SOURCE_REGISTRY:
+                (void)registry_failed_in(e, block->classes);
+                break;
+            case MC_WORLD_STEP_SOURCE_QUERY:
+                e->registry = child->block_read.nearby.query.registry;
+                if (child->block_read.nearby.query.source_null)
+                    null_reference(e, child->operation);
+                else if (e->registry.status != MC_REGISTRY_OK)
+                    (void)registry_failed_in(e, block->classes);
+                e->cause = child->block_read.nearby.query.cause;
+                break;
+            case MC_WORLD_STEP_SOURCE_PRESENTATION:
+            case MC_WORLD_STEP_SOURCE_MUTATION:
+                e->mutation = &child->mutation;
+                e->cause = child->mutation.cause;
+                break;
+            case MC_WORLD_STEP_SOURCE_NONE:
+                if (child->cause.status != MC_WORLD_STORAGE_OK)
+                    e->cause = child->cause;
+                break;
+        }
+    }
+    if (!capture(e)) {
+        if (returned)
+            fail(e, e->cleanup.status, e->cleanup.operation, true);
+        return false;
+    }
+    if (!returned)
+        classify_receipts(e);
+    return returned;
+}
+
+mc_world_storage_status mc_world_block_clicked(mc_registry_classes *registry, const mc_block *block,
+                                               mc_world_runtime *world, int32_t x, int32_t y,
+                                               int32_t z, mc_entity *player,
+                                               mc_world_placement_error *e) {
+    (void)player;
+    if (e == NULL)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    if (e->work != NULL)
+        return MC_WORLD_STORAGE_BUSY;
+    if (!block_entry(e, registry, block, "b", "(Lfd;IIILgs;)V"))
+        return e->status;
+    if (block->kind == MC_BLOCK_REDSTONE_ORE && registry->options.side == MC_REGISTRY_CLIENT) {
+        const bool returned = ore_activate(e, block, world, x, y, z);
+        if (returned) {
+            e->caller = site("bs", "b", "(Lfd;IIILgs;)V", 17);
+            e->site.pc = 20;
+        }
+        return finish(e, returned, false, NULL);
+    }
+    const char *declaring = "uu";
+    switch (block->kind) {
+        case MC_BLOCK_TNT:
+            declaring = "ah";
+            break;
+        case MC_BLOCK_REDSTONE_ORE:
+            declaring = "bs";
+            break;
+        case MC_BLOCK_DOOR:
+            declaring = "le";
+            break;
+        case MC_BLOCK_BUTTON:
+            declaring = "oi";
+            break;
+        case MC_BLOCK_TRAPDOOR:
+            declaring = "oq";
+            break;
+        case MC_BLOCK_NOTE_BLOCK:
+            declaring = "pt";
+            break;
+        case MC_BLOCK_CAKE:
+            declaring = "um";
+            break;
+        case MC_BLOCK_LEVER:
+            declaring = "xr";
+            break;
+        case MC_BLOCK_STAIRS:
+            declaring = "ss";
+            break;
+        default:
+            break;
+    }
+    return finish(e, inherited(e, declaring), false, NULL);
+}
+
 mc_world_storage_status mc_world_block_activate_with_context(
     mc_registry_classes *registry, const mc_block *block, mc_world_runtime *world, int32_t x,
     int32_t y, int32_t z, mc_entity *player, const mc_world_block_activation_context *context,
@@ -1012,6 +1142,14 @@ mc_world_storage_status mc_world_block_activate_with_context(
         return MC_WORLD_STORAGE_BUSY;
     if (!block_entry(e, registry, block, "a", "(Lfd;IIILgs;)Z"))
         return e->status;
+    if (block->kind == MC_BLOCK_REDSTONE_ORE && registry->options.side == MC_REGISTRY_CLIENT) {
+        const bool returned = ore_activate(e, block, world, x, y, z);
+        if (returned) {
+            e->caller = site("bs", "a", "(Lfd;IIILgs;)Z", 17);
+            e->site.pc = 20;
+        }
+        return finish(e, returned, false, out);
+    }
     if (block->kind == MC_BLOCK_LEVER) {
         const bool returned = lever_activate(e, block, world, x, y, z);
         return finish(e, returned, returned, out);
@@ -1232,6 +1370,7 @@ bool mc_world_placement_error_retire(mc_world_placement_error *e) {
     for (size_t i = 0; i < e->support_query_count; ++i)
         free(w->supports[i]);
     free(w->mutation);
+    free(w->step);
     free(w->collision);
     free(w->entities);
     free(w->sleep);

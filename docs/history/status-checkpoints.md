@@ -1,5 +1,44 @@
 # Development checkpoints
 
+## Ordinary Fire checkpoint
+
+Ordinary client [Fire source bodies](world/fire.md) now run through scheduled
+and Player-centered random World ticks. Fire addition, support loss, rain,
+burning and spread use the actual World queries, quiet age write and notifying
+block writes. Reached Portal creation/collapse, delegated Stairs hooks and
+immediate TNT construction/publication/sound share those calls.
+
+Two fresh unchanged-original VMs agree on 71 prepared profiles. Native replay
+on Windows and Linux matches 88,077 selected original scalars, including all
+five complete Chunk planes, Random streams, ordered callbacks, scheduled queues and TNT
+constructor fields. Three separate native lifetime controls retain failed
+callback receipts until the World tick retires.
+
+The audit also corrected scheduled membership insertion and resize order.
+Independent JDK17 observations qualify the reached linked-bin histories;
+collision-tree identity order remains unqualified. Player-chunk set traversal
+already matched the observed Java order and needed no runtime change.
+
+The full Windows MSVC Release suite passes 1,256 tests in 364.40 seconds.
+Focused Linux Clang ASan/UBSan/leak checks pass 80 tests plus the revised plant
+lifecycle case; strict GCC compilation covers 25 changed C units. All sources
+remain frozen during their respective runs. Releasing an unnecessary lock lets
+56 isolated World query controls pass with eight jobs in 52.54 seconds.
+
+The [test record](testing.md#fire-source-bodies) keeps the original comparisons,
+native controls and regression results separate. Earlier
+[Lava wake](testing.md#lava-mixing-during-player-wake),
+[Cactus/Reeds](testing.md#cactus-and-reeds-during-player-wake) and
+[flower-family](testing.md#remaining-flower-family-neighbors-during-player-wake)
+evidence retains its own scope. Retained owned Fire execution, delayed TNT
+ticks/explosions, Portal travel, unrestricted play, original audiovisual equality
+and measured FPS remain unfinished. Fresh monitor-2 graphical qualification
+also remains incomplete; the test record preserves failed Bed and Arrow/Pig
+opportunities and their separate diagnostic evidence.
+
+The exact `52ba2f60` hosted checkpoint passes formatting, Windows, GCC and Clang.
+
+
 ## Retained Lava mixing checkpoint
 
 [Lava mixing and fizz](world/fluids.md#owned-lava-mixing-during-player-wake)

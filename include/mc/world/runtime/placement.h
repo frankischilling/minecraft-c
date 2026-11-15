@@ -19,6 +19,7 @@ typedef struct mc_player_error mc_player_error;
 typedef struct mc_player_sleep_result_error mc_player_sleep_result_error;
 typedef struct mc_player_sleep_cleanup mc_player_sleep_cleanup;
 typedef struct mc_world_provider_error mc_world_provider_error;
+struct mc_world_step_error;
 
 /* Reached Player virtual children supplied by the enclosing client call.
  * No callback runs for an inherited literal Block body or remote FI return.
@@ -74,14 +75,16 @@ struct mc_world_placement_error {
     mc_registry_error registry;
     mc_entity_status bounds_status;
     const mc_world_runtime_acquisition_error *acquisition;
-    /* Every reached ID/metadata query has its own retained frame in source order.
+    /* Each placement-predicate ID/metadata query retains its frame in source order.
      * acquisition remains the last reached query; no later read overwrites an
-     * earlier query's source or publication cause. Borrow until retirement. */
+     * earlier query's source or publication cause. The shared Ore step child
+     * has its separate current/deepest query projection. Borrow until retirement. */
     const mc_world_runtime_acquisition_error *queries[8];
     size_t query_count;
     const mc_world_solid_support_detail *support_queries[5];
     size_t support_query_count;
     const mc_world_mutation_error *mutation;
+    const struct mc_world_step_error *step;
     const mc_world_collision_error *collision;
     const mc_world_spawn_collision_error *entity_collision;
     const mc_player_sleep_error *sleep;
@@ -130,6 +133,13 @@ mc_world_storage_status mc_world_block_activate(mc_registry_classes *code_regist
                                                 const mc_block *, mc_world_runtime *, int32_t x,
                                                 int32_t y, int32_t z, mc_entity *nullable_player,
                                                 bool *out, mc_world_placement_error *);
+/* Actual client b(World,III,Player)V. Redstone Ore invokes its shared private
+ * activation before the inherited empty base body. Player is an unused source
+ * argument in that path. Distinct unfinished overrides remain explicit. */
+mc_world_storage_status mc_world_block_clicked(mc_registry_classes *code_registry, const mc_block *,
+                                               mc_world_runtime *, int32_t x, int32_t y, int32_t z,
+                                               mc_entity *nullable_player,
+                                               mc_world_placement_error *);
 mc_world_storage_status mc_world_block_activate_with_context(
     mc_registry_classes *code_registry, const mc_block *, mc_world_runtime *, int32_t x, int32_t y,
     int32_t z, mc_entity *nullable_player, const mc_world_block_activation_context *, bool *out,

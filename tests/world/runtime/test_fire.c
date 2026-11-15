@@ -991,7 +991,10 @@ static bool fr_records(const char *text, int32_t out[FR_MAX_CELLS][5], size_t wi
     return true;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_FIRE_ENTRY
+#define MC_FIRE_ENTRY main
+#endif
+int MC_FIRE_ENTRY(int argc, char **argv) {
     fr_profile p = {0};
     char root[8192];
     if (argc != 30 || !decode_path(argv[2], root, sizeof root))

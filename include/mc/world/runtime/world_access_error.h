@@ -23,7 +23,7 @@ typedef enum mc_world_access_source_fault {
 /* An explicit receipt from this particular interface invocation. The concrete
  * receiver owns the immutable full failure through its checked retirement;
  * callers keep that receiver/graph live while inspecting this borrowed view.
- * A null sound interface receiver instead has a value-only source failure,
+ * A null sound or particle interface receiver has a value-only source failure,
  * with no concrete producer or receipt to retain. Otherwise NULL fields
  * describe an ordinary native-adapter failure. No ambient owner diagnostic
  * is queried to reconstruct this record. */
