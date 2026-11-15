@@ -217,7 +217,10 @@ static int ps_run(source_save_fixture *s, unsigned int count, unsigned int depth
     return 0;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_PROVIDER_CACHE_SCOPE_ENTRY
+#define MC_PROVIDER_CACHE_SCOPE_ENTRY main
+#endif
+int MC_PROVIDER_CACHE_SCOPE_ENTRY(int argc, char **argv) {
     VERIFY(argc == 4);
     const unsigned int count = strcmp(argv[2], "8") == 0     ? 8u
                                : strcmp(argv[2], "64") == 0  ? 64u

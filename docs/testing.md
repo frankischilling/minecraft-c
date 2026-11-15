@@ -10434,3 +10434,36 @@ normal random/display work, valid foreground and retained camera pose. Its
 source/library hashes, host scope and timing limits are independent of the
 Item-use comparison. It establishes no before/after improvement or original
 whole-scene equality.
+## Quiet-setter acquisition diagnostics
+
+The [finite performance record](performance/quiet-setter-acquisition.md) retains
+all 64 measured processes and 448 raw samples. Both products share one workload
+object and an identical thirty-library tail; actual COFF ownership identifies
+the separately compiled World mutation objects. Ten fresh cold/no-op/provider/
+callback-failure controls and eight normal mutation/query/ring observations
+pass. The original failed qualification remains failed; a four-case matched-path
+discriminator isolates its path-length confound. No favorable subset replaces it.
+
+The promoted runtime passes the three focused Windows mutation/query/ring tests.
+Both optional public benchmark targets compile and link under strict MSVC
+Release settings. The quiet-setter runner passes two fresh semantic smokes,
+covering both setter forms, 8/256 resident Chunks and depths 0/1. Its fifteen
+synthetic reader and retained-failure methods pass normally and with Python
+optimization, including native CRLF hash continuity and simultaneous process/
+authored-file failures. Those synthetic cases launch no benchmark process.
+The portable source uses reviewed include/entry bindings and reversible
+clang-format 18.1.3 formatting; its 776-byte timed span remains unchanged.
+
+The complete strict MSVC Release build passes, followed by all 1,270 default
+Windows tests in 525.01 seconds with four jobs. There are no failures, errors,
+skips or duplicate/missing test names, and all 6,238 frozen inputs remain
+unchanged. Three focused Clang18 Debug mutation/query/ring tests pass in 19.16
+seconds with ASan, UBSan and leak detection; the World mutation unit also
+passes strict GCC13 compilation. The Linux snapshot preserves the same 6,238
+files. Its complete evidence archive is retained; a later read-only check
+finds the temporary build root absent.
+
+Result annotations and documentation/provenance fingerprints were updated
+after these completed opportunities; runtime and harness files retain their
+tested bytes. No gameplay FPS or new original-program parity result follows
+from the fixed-work no-op benchmark.

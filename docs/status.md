@@ -7,6 +7,20 @@ the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining w
 
 ## Current client work
 
+Ordinary World setters now avoid initializing an unused successful acquisition
+diagnostic. The [quiet-setter record](performance/quiet-setter-acquisition.md)
+retains 64 measured processes and all 448 samples: the eight resident AIR no-op
+scenes show 4.635% to 10.086% lower scene-median elapsed time, with three paired
+regressions retained. Ten fresh setter controls and eight normal mutation,
+query and population observations pass. The newly compiled public harness also
+passes its two semantic smokes and 15 reader controls in both Python modes.
+The complete strict MSVC Release build and all 1,270 Windows tests pass in
+525.01 seconds, with no skips and all 6,238 inputs unchanged during validation.
+Three focused Linux tests pass with ASan, UBSan and leak detection in 19.16
+seconds; the changed C unit also passes strict GCC13 compilation. Formatting
+passes all 2,410 C files and fragments. Changed-cell throughput,
+natural-population speedup and gameplay FPS remain unqualified by this result.
+
 Source-owned [Chunk cache scopes](performance/provider-cache-scopes.md) now use
 bounded positive hints for resident reads during callbacks. Every hint checks
 the live key and current Chunk; misses retain linear lookup and outermost full
@@ -20,13 +34,14 @@ candidate modes pass. Twelve focused Linux tests pass with ASan, UBSan and leak
 detection. The [test record](testing.md#provider-cache-scopes-and-owner-rebinding)
 keeps the source and ownership limits explicit.
 
-The complete Windows MSVC Release build and all 1,268 tests pass in 460.51
+At the preceding cache checkpoint, the complete Windows MSVC Release build
+and all 1,268 tests passed in 460.51
 seconds, with no skips or changes to the 6,232 frozen inputs. Strict GCC checks
 cover four C units; the normal and optimized public runner controls also pass
 on both native Windows and Linux.
 
 Balanced fixed-work measurements reduce the 256-resident lookup loop from
-about 67?68 to 26?27 ns per call; the eight-resident results are mixed. Four
+about 67 to 68 down to 26 to 27 ns per call; the eight-resident results are mixed. Four
 qualified monitor-2 native intervals record FPS medians of 36.85 and 38.00.
 Their work totals differ, and the small cohort establishes a performance
 opportunity rather than unrestricted smooth play. Acquisition-associated

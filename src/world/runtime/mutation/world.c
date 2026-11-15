@@ -557,7 +557,7 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk_stat
         return true;
     }
     mc_world_runtime_acquisition_error detail;
-    const mc_chunk_acquire_status acquired = mc_world_runtime_get_detailed(
+    const mc_chunk_acquire_status acquired = mc_world_runtime_get_failure(
         world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), out, &detail);
     if (acquired == MC_CHUNK_ACQUIRE_OK)
         return true;

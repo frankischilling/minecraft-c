@@ -3454,8 +3454,8 @@
       "sha256": "42d2c4461e92aaba39949b8a9377255c77b01e7895fe8d1cc2172b4aedbb808e"
     },
     "src/world/runtime/mutation/world.c": {
-      "bytes": 69418,
-      "sha256": "88d718ef112b7f091b9c6cf23aff0504d9fed795ee4b2ea3923a5109820fa0ac"
+      "bytes": 69417,
+      "sha256": "b3e401beb3f63b5690a8ac3c661a8a444c8ae193b10c9b6489fa0e0ce301eaaf"
     },
     "src/world/runtime/plants.c": {
       "bytes": 31190,
@@ -7934,8 +7934,8 @@
       "sha256": "7e343b192ec286e343fd9496c793b38cb3cdeb0d470ee920772be8fdc222a288"
     },
     "cmake/tests/source_world_saving.cmake": {
-      "bytes": 16398,
-      "sha256": "81b0e7d1c1799ddf05036103c6bee276e2a0e2ed6824fc9a659ce78b37503269"
+      "bytes": 17449,
+      "sha256": "ea1669ff616149cca13ac4bf474bc881284c55f988dfa62818eafe489940c9c4"
     },
     "src/world/runtime/tile_entities/source_save.inc": {
       "bytes": 11082,

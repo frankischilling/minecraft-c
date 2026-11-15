@@ -103,10 +103,12 @@ lock. Source, object, executable and dependency guards remain unchanged during
 each cohort.
 
 The [finite record](../../tests/benchmarks/provider_cache_scope_windows.json)
-contains every balanced sample and source/product fingerprints. The measured
-source's initial comment was subsequently clarified to acknowledge timed
-checksum folds; every byte after that comment remains identical. The record
-preserves both source hashes and that identity proof. The host is an Intel
+contains every balanced sample and source/product fingerprints. At the
+`986ca4f2` cache checkpoint, clarifying the measured source's initial comment
+left every subsequent byte unchanged; the record preserves both hashes and
+that identity proof. The later [quiet-setter harness](quiet-setter-acquisition.md)
+adds a default entry binding to reuse the same provider fixture. That later
+source change does not alter the earlier measurement bindings. The host is an Intel
 Core i9-10900F running native Windows, using MSVC 14.51.36231 with `/O2 /W4 /WX`
 and strict floating-point settings.
 

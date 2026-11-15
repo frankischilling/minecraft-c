@@ -18,6 +18,12 @@ three old-owner regressions reject at semantic guards. Fixed-work and four
 monitor-2 frame measurements remain finite native performance evidence.
 Subsystem-specific suite counts below belong to their recorded checkpoints.
 
+The ordinary setter [success-diagnostic optimization](performance/quiet-setter-acquisition.md)
+retains the same acquisition coordinator and complete failure path. Ten fresh
+setter controls and eight normal mutation/query/ring observations pass.
+Its resident AIR no-op timing result supplies no new original-program parity,
+changed-cell, natural-population or gameplay FPS qualification.
+
 Current [Slime removal and splitting](entity/slime-removal.md) shares one body
 between direct K and the Mob caller. Eleven records on each native host
 match declared fields from 25 unchanged-original calls across 24 profiles.
