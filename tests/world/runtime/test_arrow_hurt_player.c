@@ -21,6 +21,8 @@ int arrow_player_unused_drop_main(int, char **);
 typedef struct ap_fixture {
     pd_fixture player;
     mc_entity *arrow, *item;
+    mc_entity *plant_items[4];
+    double plant_positions[4][3];
     mc_arrow_tick_call *call;
     mc_world_access *observer;
     mc_world_access_receipt *receipt;
@@ -65,17 +67,38 @@ static bool ap_family(const ap_fixture *s) {
     return ap_sapling(s) || ap_tall_grass(s);
 }
 
+static bool ap_dead_bush(const ap_fixture *s) {
+    return ap_is(s, "wake-bed-dead-bush") || ap_is(s, "wake-bed-dead-bush-removal-source");
+}
+
+static bool ap_crops(const ap_fixture *s) {
+    return ap_is(s, "wake-bed-crops") || ap_is(s, "wake-bed-crops-source") ||
+           ap_is(s, "wake-bed-crops-removal-source") || ap_is(s, "wake-bed-crops-max-items");
+}
+
+static bool ap_mushroom(const ap_fixture *s) {
+    return ap_is(s, "wake-bed-mushroom") || ap_is(s, "wake-bed-mushroom-source") ||
+           ap_is(s, "wake-bed-mushroom-removal-source") || ap_is(s, "wake-bed-mushroom-high-light");
+}
+
+static bool ap_remaining(const ap_fixture *s) {
+    return ap_dead_bush(s) || ap_crops(s) || ap_mushroom(s);
+}
+
 static bool ap_plant(const ap_fixture *s) {
-    return ap_flower(s) || ap_family(s);
+    return ap_flower(s) || ap_family(s) || ap_remaining(s);
 }
 
 static bool ap_no_item(const ap_fixture *s) {
-    return ap_is(s, "wake-bed-tall-grass-no-item");
+    return ap_is(s, "wake-bed-tall-grass-no-item") || ap_dead_bush(s);
 }
 
 static bool ap_plant_normal(const ap_fixture *s) {
     return ap_is(s, "wake-bed-flower") || ap_is(s, "wake-bed-sapling") ||
-           ap_is(s, "wake-bed-tall-grass") || ap_no_item(s);
+           ap_is(s, "wake-bed-tall-grass") || ap_is(s, "wake-bed-tall-grass-no-item") ||
+           ap_is(s, "wake-bed-dead-bush") || ap_is(s, "wake-bed-crops") ||
+           ap_is(s, "wake-bed-crops-max-items") || ap_is(s, "wake-bed-mushroom") ||
+           ap_is(s, "wake-bed-mushroom-high-light");
 }
 
 static bool ap_removal(const ap_fixture *s) {
@@ -83,7 +106,10 @@ static bool ap_removal(const ap_fixture *s) {
            ap_is(s, "wake-bed-torch-removal-source") ||
            ap_is(s, "wake-bed-flower-removal-source") ||
            ap_is(s, "wake-bed-sapling-removal-source") ||
-           ap_is(s, "wake-bed-tall-grass-removal-source");
+           ap_is(s, "wake-bed-tall-grass-removal-source") ||
+           ap_is(s, "wake-bed-dead-bush-removal-source") ||
+           ap_is(s, "wake-bed-crops-removal-source") ||
+           ap_is(s, "wake-bed-mushroom-removal-source");
 }
 
 static bool ap_attached_neighbor(const ap_fixture *s) {
@@ -91,7 +117,10 @@ static bool ap_attached_neighbor(const ap_fixture *s) {
 }
 
 static uint8_t ap_neighbor_id(const ap_fixture *s) {
-    return (uint8_t)(ap_sapling(s)      ? 6
+    return (uint8_t)(ap_dead_bush(s)    ? 32
+                     : ap_crops(s)      ? 59
+                     : ap_mushroom(s)   ? 39
+                     : ap_sapling(s)    ? 6
                      : ap_tall_grass(s) ? 31
                      : ap_flower(s)     ? 37
                      : ap_torch(s)      ? 50
@@ -99,19 +128,42 @@ static uint8_t ap_neighbor_id(const ap_fixture *s) {
 }
 
 static uint8_t ap_neighbor_metadata(const ap_fixture *s) {
-    return (uint8_t)(ap_sapling(s)      ? 2
-                     : ap_tall_grass(s) ? 1
-                     : ap_flower(s)     ? 0
-                     : ap_torch(s)      ? 1
-                                        : 2);
+    return (uint8_t)(ap_crops(s)                         ? 7
+                     : ap_dead_bush(s) || ap_mushroom(s) ? 0
+                     : ap_sapling(s)                     ? 2
+                     : ap_tall_grass(s)                  ? 1
+                     : ap_flower(s)                      ? 0
+                     : ap_torch(s)                       ? 1
+                                                         : 2);
 }
 
 static int32_t ap_item_id(const ap_fixture *s) {
-    return ap_tall_grass(s) ? 295 : ap_attached_neighbor(s) ? (int32_t)ap_neighbor_id(s) : 355;
+    return ap_crops(s)               ? (s->additions == 1 ? 296 : 295)
+           : ap_tall_grass(s)        ? 295
+           : ap_attached_neighbor(s) ? (int32_t)ap_neighbor_id(s)
+                                     : 355;
 }
 
 static int32_t ap_item_damage(const ap_fixture *s) {
     return ap_sapling(s) ? 2 : 0;
+}
+
+static size_t ap_item_count(const ap_fixture *s) {
+    return ap_no_item(s) ? 0u : ap_crops(s) ? (ap_is(s, "wake-bed-crops-max-items") ? 4u : 2u) : 1u;
+}
+
+static uint8_t ap_plant_floor(const ap_fixture *s) {
+    return ap_dead_bush(s) || ap_is(s, "wake-bed-mushroom-high-light") ? 2 : 0;
+}
+
+static uint8_t ap_plant_light(const ap_fixture *s) {
+    return ap_mushroom(s) ? (ap_is(s, "wake-bed-mushroom-high-light") ? 13 : 12) : 15;
+}
+
+static int64_t ap_plant_seed(const ap_fixture *s) {
+    return ap_is(s, "wake-bed-tall-grass-no-item") || ap_is(s, "wake-bed-crops-max-items")
+               ? INT64_C(0x7fffffff)
+               : INT64_C(1);
 }
 
 static bool ap_bed(const ap_fixture *s) {
@@ -184,7 +236,9 @@ static bool ap_enter_bed(ap_fixture *s) {
     if (ap_torch(s))
         CHECK(ap_cell(data, 7, 63, 8, 1, 0) && data->blocks[ap_index(6, 64, 8)] == 0);
     if (ap_plant(s))
-        CHECK(ap_cell(data, 7, 63, 8, 0, 0) &&
+        CHECK(ap_cell(data, 7, 63, 8, ap_plant_floor(s), 0) &&
+              mc_chunk_nibbles_set(data->skylight, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8,
+                                   ap_plant_light(s)) &&
               mc_chunk_nibbles_set(data->block_light, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, 0));
     f->player->local_player->fields.player.private_a = 37;
     return true;
@@ -198,16 +252,23 @@ static mc_world_storage_status ap_bed_cell(void *context, mc_world_runtime *worl
     fixture *f = &s->player.game;
     mc_chunk_data *data = mc_world_chunk_state(s->player.chunk)->data;
     uint8_t metadata = UINT8_MAX;
-    s->valid &=
-        ap_bed(s) && world == f->world && s->cells < 2 && x == (s->cells == 0 ? 8 : 7) && y == 64 &&
-        z == 8 && f->player->local_player->fields.player.u &&
-        f->player->local_player->fields.player.private_a == 37 &&
-        f->player->local_player->fields.living.Y == 20 &&
-        mc_chunk_nibbles_get(data->metadata, MC_CHUNK_NIBBLE_BYTES, 8, 64, 8, &metadata) &&
-        metadata == 8 &&
-        data->blocks[ap_index(7, 64, 8)] ==
-            (s->cells == 0 ? (ap_attached_neighbor(s) ? ap_neighbor_id(s) : 26) : 0) &&
-        s->additions == (ap_attached_neighbor(s) && !ap_no_item(s) && s->cells == 1 ? 1u : 0u);
+    s->valid &= ap_bed(s) && world == f->world && s->cells < 2 && x == (s->cells == 0 ? 8 : 7) &&
+                y == 64 && z == 8 && f->player->local_player->fields.player.u &&
+                f->player->local_player->fields.player.private_a == 37 &&
+                f->player->local_player->fields.living.Y == 20 &&
+                mc_chunk_nibbles_get(data->metadata, MC_CHUNK_NIBBLE_BYTES, 8, 64, 8, &metadata) &&
+                metadata == 8 &&
+                data->blocks[ap_index(7, 64, 8)] ==
+                    (s->cells == 0 ? (ap_attached_neighbor(s) ? ap_neighbor_id(s) : 26) : 0) &&
+                s->additions == (ap_attached_neighbor(s) && s->cells == 1 ? ap_item_count(s) : 0u);
+    if (ap_remaining(s))
+        printf("ARROW_REMAINING_PLANTS_CELL index=%zu xyz=%d,%d,%d head=26:8 plant=%u:%u "
+               "additions=%zu sleeping=%d timer=%" PRId32 " health=%" PRId32 "\n",
+               s->cells, x, y, z, (unsigned int)data->blocks[ap_index(7, 64, 8)],
+               (unsigned int)(s->cells == 0 ? ap_neighbor_metadata(s) : 0), s->additions,
+               (int)f->player->local_player->fields.player.u,
+               f->player->local_player->fields.player.private_a,
+               f->player->local_player->fields.living.Y);
     ++s->cells;
     *cause = (mc_world_storage_error){0};
     if (s->valid && s->cells == 2 && ap_removal(s)) {
@@ -291,7 +352,7 @@ static mc_world_storage_status ap_added(void *context, mc_world_runtime *world, 
         const mc_chunk_data *data = mc_world_chunk_state(s->player.chunk)->data;
         uint8_t metadata = UINT8_MAX;
         s->valid &=
-            world == f->world && s->additions == 1 &&
+            world == f->world && s->additions <= ap_item_count(s) &&
             s->cells == (ap_attached_neighbor(s) ? 1u : 2u) && item != NULL && item->base.bF &&
             item->item.c == 10 &&
             mc_item_stack_fields_get(item->stack, &stack) == MC_ITEM_STACK_OK && !ap_no_item(s) &&
@@ -304,11 +365,32 @@ static mc_world_storage_status ap_added(void *context, mc_world_runtime *world, 
             f->player->local_player->fields.living.Y == 20 && c != NULL && c->hurt != NULL &&
             !c->hurt->returned && current_world &&
             c->execution.leases[current.slot].phase == MC_WORLD_ACCESS_FAILURE_LEASE_ARMED;
+        if (ap_remaining(s) && s->additions <= 4) {
+            const size_t index = s->additions - 1;
+            s->plant_items[index] = item;
+            s->plant_positions[index][0] = item->base.x;
+            s->plant_positions[index][1] = item->base.y;
+            s->plant_positions[index][2] = item->base.z;
+            uint64_t position[3];
+            memcpy(&position[0], &item->base.x, sizeof(position[0]));
+            memcpy(&position[1], &item->base.y, sizeof(position[1]));
+            memcpy(&position[2], &item->base.z, sizeof(position[2]));
+            printf("ARROW_REMAINING_PLANTS_PUBLICATION index=%zu cells=%zu head=26:8 "
+                   "plant=%u:%u sleeping=%d timer=%" PRId32 " health=%" PRId32
+                   " id=%d count=%d damage=%d x=%016" PRIx64 " y=%016" PRIx64 " z=%016" PRIx64 "\n",
+                   index, s->cells, (unsigned int)data->blocks[ap_index(7, 64, 8)],
+                   (unsigned int)metadata, (int)f->player->local_player->fields.player.u,
+                   f->player->local_player->fields.player.private_a,
+                   f->player->local_player->fields.living.Y, stack.id, stack.count, stack.damage,
+                   position[0], position[1], position[2]);
+        }
         *cause = (mc_world_storage_error){0};
         if (s->valid &&
             (ap_is(s, "wake-bed-foot-source") || ap_is(s, "wake-bed-ladder-source") ||
              ap_is(s, "wake-bed-torch-source") || ap_is(s, "wake-bed-flower-source") ||
-             ap_is(s, "wake-bed-sapling-source") || ap_is(s, "wake-bed-tall-grass-source"))) {
+             ap_is(s, "wake-bed-sapling-source") || ap_is(s, "wake-bed-tall-grass-source") ||
+             ap_is(s, "wake-bed-mushroom-source") ||
+             (ap_is(s, "wake-bed-crops-source") && s->additions == 2))) {
             const mc_world_storage_status status =
                 mc_world_access_receipt_create(s->observer, NULL, &s->receipt, failure, cause);
             if (status != MC_WORLD_STORAGE_OK)
@@ -366,35 +448,76 @@ static bool ap_random_same(mc_java_random a, mc_java_random b) {
            ap_bits(a.next_next_gaussian) == ap_bits(b.next_next_gaussian);
 }
 
+static uint32_t ap_lcg_bits(uint64_t *state, unsigned int bits) {
+    *state = (*state * UINT64_C(0x5deece66d) + UINT64_C(11)) & UINT64_C(0xffffffffffff);
+    return (uint32_t)(*state >> (48u - bits));
+}
+
+/* The retained reference chooses these finite outcomes. This independent LCG
+ * models the actual selector and its possible rejection before counting the
+ * reached offsets; it never supplies a World answer or a drop result. */
+static bool ap_remaining_random(ap_fixture *s, uint64_t *after, size_t *items) {
+    *after = s->plant_world_input;
+    *items = 0;
+    (void)ap_lcg_bits(after, 24); /* Inherited chance, including DeadBush's -1 Item. */
+    if (ap_dead_bush(s))
+        return true;
+    for (size_t i = 0; i < 3; ++i)
+        (void)ap_lcg_bits(after, 24);
+    ++*items;
+    if (!ap_crops(s))
+        return true;
+    for (size_t i = 0; i < 3; ++i) {
+        uint32_t bits, value;
+        do {
+            bits = ap_lcg_bits(after, 31);
+            value = bits % 15u;
+        } while (bits - value + 14u >= UINT32_C(0x80000000));
+        if (value > 7u)
+            continue;
+        for (size_t j = 0; j < 3; ++j)
+            (void)ap_lcg_bits(after, 24);
+        ++*items;
+        if (ap_is(s, "wake-bed-crops-source") && *items == 2)
+            break; /* The second real Item observer throws before the next selector. */
+    }
+    return true;
+}
+
 static bool ap_plant_input(ap_fixture *s) {
     fixture *f = &s->player.game;
     const mc_chunk_data *data = mc_world_chunk_state(s->player.chunk)->data;
     uint8_t metadata = UINT8_MAX, sky = UINT8_MAX, block = UINT8_MAX;
     CHECK(data->blocks[ap_index(7, 64, 8)] == ap_neighbor_id(s) &&
-          data->blocks[ap_index(7, 63, 8)] == 0 &&
+          data->blocks[ap_index(7, 63, 8)] == ap_plant_floor(s) &&
           mc_chunk_nibbles_get(data->metadata, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &metadata) &&
           metadata == ap_neighbor_metadata(s) &&
           mc_chunk_nibbles_get(data->skylight, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &sky) &&
-          sky == 15 &&
+          sky == ap_plant_light(s) &&
           mc_chunk_nibbles_get(data->block_light, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &block) &&
           block == 0 && data->heightmap[8u * 16u + 7u] == 64 && f->world->fields.f == 5 &&
           f->player->local_player->fields.player.u &&
           f->player->local_player->fields.player.private_a == 37 && s->arrow->base.x == 9.4 &&
           s->arrow->base.y == 64.85 && s->arrow->base.z == f->player->base.z &&
           s->arrow->base.velocity_x == -(double).6f);
-    printf("%s %s=%u:%u floor=0:0 sky=15 block=0 height=64 world-f=5 "
+    printf("%s %s=%u:%u floor=%u:0 sky=%u block=0 height=64 world-f=5 "
            "sleeping=1 timer=37 arrow-x=%016" PRIx64 " arrow-y=%016" PRIx64 " arrow-vx=%016" PRIx64
            "\n",
-           ap_family(s) ? "ARROW_PLANT_FAMILY_INPUT" : "ARROW_FLOWER_INPUT",
-           ap_family(s) ? "plant" : "flower", (unsigned int)ap_neighbor_id(s),
-           (unsigned int)metadata, ap_bits(s->arrow->base.x), ap_bits(s->arrow->base.y),
+           ap_remaining(s) ? "ARROW_REMAINING_PLANTS_INPUT"
+           : ap_family(s)  ? "ARROW_PLANT_FAMILY_INPUT"
+                           : "ARROW_FLOWER_INPUT",
+           ap_family(s) || ap_remaining(s) ? "plant" : "flower", (unsigned int)ap_neighbor_id(s),
+           (unsigned int)metadata, (unsigned int)ap_plant_floor(s), (unsigned int)sky,
+           ap_bits(s->arrow->base.x), ap_bits(s->arrow->base.y),
            ap_bits(s->arrow->base.velocity_x));
-    if (ap_family(s)) {
+    if (ap_family(s) || ap_remaining(s)) {
         s->plant_world_input = f->world->fields.r->state;
         s->plant_world_gaussian = ap_bits(f->world->fields.r->next_next_gaussian);
-        printf("ARROW_PLANT_FAMILY_RANDOM_INPUT seed-input=%" PRId64 " world-seed=%016" PRIx64
+        printf("%s seed-input=%" PRId64 " world-seed=%016" PRIx64
                " world-cache=%d world-gaussian=%016" PRIx64 "\n",
-               ap_no_item(s) ? INT64_C(0x7fffffff) : INT64_C(1), s->plant_world_input,
+               ap_remaining(s) ? "ARROW_REMAINING_PLANTS_RANDOM_INPUT"
+                               : "ARROW_PLANT_FAMILY_RANDOM_INPUT",
+               ap_plant_seed(s), s->plant_world_input,
                (int)f->world->fields.r->have_next_next_gaussian,
                ap_bits(f->world->fields.r->next_next_gaussian));
     }
@@ -412,13 +535,13 @@ static bool ap_plant_prefix(ap_fixture *s, const char *phase, bool expected_pend
     const bool pending = f->player->local_player->pending_damage_wake != NULL;
     uint8_t metadata = UINT8_MAX, sky = UINT8_MAX, block = UINT8_MAX;
     mc_item_stack_fields stack = {0};
-    CHECK(s->cells == (removed ? 2u : 1u) && s->additions == (ap_no_item(s) ? 0u : 1u) &&
+    CHECK(s->cells == (removed ? 2u : 1u) && s->additions == ap_item_count(s) &&
           data->blocks[ap_index(7, 64, 8)] == (removed ? 0 : ap_neighbor_id(s)) &&
-          data->blocks[ap_index(7, 63, 8)] == 0 &&
+          data->blocks[ap_index(7, 63, 8)] == ap_plant_floor(s) &&
           mc_chunk_nibbles_get(data->metadata, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &metadata) &&
           metadata == (removed ? 0 : ap_neighbor_metadata(s)) &&
           mc_chunk_nibbles_get(data->skylight, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &sky) &&
-          sky == 15 &&
+          sky == ap_plant_light(s) &&
           mc_chunk_nibbles_get(data->block_light, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &block) &&
           block == 0 && data->heightmap[8u * 16u + 7u] == 64 && f->world->fields.f == 5 &&
           f->app.world_classes->chunk_a && player->player.u == !normal &&
@@ -426,11 +549,35 @@ static bool ap_plant_prefix(ap_fixture *s, const char *phase, bool expected_pend
           player->living.av == 0 && f->world->fields.J == !normal && pending == expected_pending &&
           s->sounds == (normal ? 2u : 0u) && s->impacts == (normal ? 1u : 0u));
     if (ap_no_item(s))
-        CHECK(s->item == NULL && s->receipt == NULL);
+        CHECK(s->item == NULL && (s->receipt != NULL) == ap_removal(s));
     else
         CHECK(s->item != NULL && s->item->base.bF && !s->item->base.be &&
               mc_item_stack_fields_get(s->item->stack, &stack) == MC_ITEM_STACK_OK &&
               stack.id == ap_item_id(s) && stack.count == 1 && stack.damage == ap_item_damage(s));
+    if (ap_remaining(s)) {
+        uint64_t expected;
+        size_t expected_items;
+        CHECK(ap_remaining_random(s, &expected, &expected_items) &&
+              expected_items == ap_item_count(s) && f->world->fields.r->state == expected &&
+              !f->world->fields.r->have_next_next_gaussian &&
+              ap_bits(f->world->fields.r->next_next_gaussian) == s->plant_world_gaussian);
+        for (size_t i = 0; i < expected_items; ++i) {
+            const mc_entity *item = s->plant_items[i];
+            CHECK(item != NULL && item->base.bF && !item->base.be && item->item.c == 10 &&
+                  mc_item_stack_fields_get(item->stack, &stack) == MC_ITEM_STACK_OK &&
+                  stack.id == (ap_crops(s) ? (i == 0 ? 296 : 295) : 39) && stack.count == 1 &&
+                  stack.damage == 0 && item->base.x == s->plant_positions[i][0] &&
+                  item->base.y == s->plant_positions[i][1] &&
+                  item->base.z == s->plant_positions[i][2]);
+            printf("ARROW_REMAINING_PLANTS_ITEM phase=%s index=%zu id=%d count=%d damage=%d "
+                   "x=%016" PRIx64 " y=%016" PRIx64 " z=%016" PRIx64
+                   " inserted=%d removed=%d delay=%d\n",
+                   phase, i, stack.id, stack.count, stack.damage, ap_bits(item->base.x),
+                   ap_bits(item->base.y), ap_bits(item->base.z), (int)item->base.bF,
+                   (int)item->base.be, item->item.c);
+        }
+        CHECK(expected_items == 4 || s->plant_items[expected_items] == NULL);
+    }
     if (ap_family(s)) {
         /* Independent unsigned Java LCG steps for the declared chance, selector
          * and (only when selected) three spatial offsets. */
@@ -450,8 +597,10 @@ static bool ap_plant_prefix(ap_fixture *s, const char *phase, bool expected_pend
            "world-seed=%016" PRIx64 " player-seed=%016" PRIx64 " arrow-seed=%016" PRIx64
            " world-cache=%d player-cache=%d arrow-cache=%d world-gaussian=%016" PRIx64
            " player-gaussian=%016" PRIx64 " arrow-gaussian=%016" PRIx64 "\n",
-           ap_family(s) ? "ARROW_PLANT_FAMILY_PREFIX" : "ARROW_FLOWER_PREFIX", phase, s->cells,
-           s->additions, ap_family(s) ? "plant" : "flower",
+           ap_remaining(s) ? "ARROW_REMAINING_PLANTS_PREFIX"
+           : ap_family(s)  ? "ARROW_PLANT_FAMILY_PREFIX"
+                           : "ARROW_FLOWER_PREFIX",
+           phase, s->cells, s->additions, ap_family(s) || ap_remaining(s) ? "plant" : "flower",
            (unsigned int)data->blocks[ap_index(7, 64, 8)], (unsigned int)metadata,
            (int)player->player.u, player->player.private_a, player->living.Y,
            (int)f->world->fields.J, (int)pending, f->world->fields.r->state,
@@ -523,8 +672,8 @@ static bool ap_construct(ap_fixture *s) {
          * Player occurrence remains owned by the independent World ledger. */
         f->world->fields.d = NULL;
     }
-    if (ap_family(s))
-        mc_java_random_reseed(f->world->fields.r, ap_no_item(s) ? INT64_C(0x7fffffff) : INT64_C(1));
+    if (ap_family(s) || ap_remaining(s))
+        mc_java_random_reseed(f->world->fields.r, ap_plant_seed(s));
     if (ap_plant(s))
         CHECK(ap_plant_input(s));
     return true;
@@ -661,8 +810,10 @@ static bool ap_bed_failure(ap_fixture *s, mc_arrow_tick_state *state) {
     CHECK(!hurt->error.living_damage.entered && f->player->local_player->fields.player.u &&
           f->player->local_player->fields.player.private_a == 37 && f->world->fields.J &&
           f->player->local_player->fields.living.Y == 20 && s->cells == cells &&
-          s->additions == 1 && s->sounds == 0 && s->impacts == 0 && s->item->base.bF &&
-          s->item->item.c == 10 && pd_statistic(f, 18, 0));
+          s->additions == ap_item_count(s) && s->sounds == 0 && s->impacts == 0 &&
+          (ap_no_item(s) ? s->item == NULL
+                         : s->item != NULL && s->item->base.bF && s->item->item.c == 10) &&
+          pd_statistic(f, 18, 0));
     const mc_java_random player_random = *f->player->random, arrow_random = *s->arrow->random,
                          world_random = *f->world->fields.r;
     const mc_arrow_tick_native_unwind_phase phases[] = {
@@ -673,7 +824,8 @@ static bool ap_bed_failure(ap_fixture *s, mc_arrow_tick_state *state) {
                                               "quiescent"};
     for (size_t i = 0; i < sizeof(phases) / sizeof(phases[0]); ++i) {
         CHECK(ap_unwind_to(call, phases[i], i == 4, state) && s->cells == cells &&
-              s->additions == 1 && s->sounds == 0 && s->impacts == 0 && s->item->base.bF &&
+              s->additions == ap_item_count(s) && s->sounds == 0 && s->impacts == 0 &&
+              (ap_no_item(s) ? s->item == NULL : s->item != NULL && s->item->base.bF) &&
               f->player->local_player->fields.player.u &&
               f->player->local_player->fields.player.private_a == 37 && f->world->fields.J &&
               f->player->local_player->fields.living.Y == 20 &&
@@ -724,7 +876,7 @@ static bool ap_run(ap_fixture *s) {
                   f->player->local_player->fields.player.c->main_slots[0] == NULL &&
                   pd_statistic(f, 16, 1) && pd_statistic(f, 19, 1));
         else if (ap_bed(s))
-            CHECK(s->additions == (ap_no_item(s) ? 0u : 1u) && s->cells == 2 &&
+            CHECK(s->additions == ap_item_count(s) && s->cells == 2 &&
                   (ap_no_item(s) ? s->item == NULL
                                  : s->item != NULL && s->item->base.bF && s->item->item.c == 10) &&
                   pd_statistic(f, 16, 0) && pd_statistic(f, 19, 0));
@@ -807,6 +959,15 @@ int main(int argc, char **argv) {
          strcmp(argv[1], "wake-bed-tall-grass-source") != 0 &&
          strcmp(argv[1], "wake-bed-tall-grass-removal-source") != 0 &&
          strcmp(argv[1], "wake-bed-tall-grass-no-item") != 0 &&
+         strcmp(argv[1], "wake-bed-dead-bush") != 0 &&
+         strcmp(argv[1], "wake-bed-dead-bush-removal-source") != 0 &&
+         strcmp(argv[1], "wake-bed-crops") != 0 && strcmp(argv[1], "wake-bed-crops-source") != 0 &&
+         strcmp(argv[1], "wake-bed-crops-removal-source") != 0 &&
+         strcmp(argv[1], "wake-bed-crops-max-items") != 0 &&
+         strcmp(argv[1], "wake-bed-mushroom") != 0 &&
+         strcmp(argv[1], "wake-bed-mushroom-source") != 0 &&
+         strcmp(argv[1], "wake-bed-mushroom-removal-source") != 0 &&
+         strcmp(argv[1], "wake-bed-mushroom-high-light") != 0 &&
          strcmp(argv[1], "wake-source-null-list") != 0) ||
         CD(argv[3]) != 0 || !mc_math_trig_init(&trig))
         return 2;

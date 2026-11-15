@@ -125,6 +125,34 @@ exception stacks remain unpaired. This qualification does not establish
 growth, unrestricted plant graphs, graphical sleeping-Player damage,
 original audiovisual equality or an FPS improvement.
 
+## Owned Dead Bush, Crops and Mushroom neighbors during Player wake
+
+Dead Bush, Crops and both Mushrooms now enter the retained Flower-family
+neighbor helper. Dead Bush and Crops inherit the light/sky survival test with
+their actual sand/farmland substrate. Mushroom keeps its own Y range, real
+plant light below 13 and live `Block.o` substrate lookup. Cold light acquisition
+retains its child and exact caller positions through failure and cleanup.
+
+An unsupported Dead Bush consumes the inherited chance draw and removes itself
+without an Item. Mature Crops publish Wheat before three independent Seed
+trials. Each successful Seed trial retains the original binary32 coordinate
+addition. Both Mushrooms publish their own Item before removal. Observer
+exceptions keep every completed publication or cell store while the Player
+remains asleep. Native cleanup does not repeat those effects or Random draws.
+
+The [original packet](../../tests/reference/entity/remaining_plants_wake/README.md)
+records 25 prepared calls from two fresh unchanged-original VMs. Native replay
+pairs 1,940 selected values, including complete Chunk-plane hashes, seeded
+World/Player/Math streams, Item position/motion/phase/yaw and callback order.
+Five additional ownership controls cover missing Math; the two branches that
+construct no Item also match 106 original values. Ten real Arrow-hit controls
+separately cover normal, publication/removal failure, four Crop Items and bright
+Mushroom removal. These Arrow controls are native integration evidence.
+
+Original Item constructor entropy and Java exception stacks remain unpaired.
+Growth, addition/tick callers, unrestricted recursive graphs, graphical damage
+wake, original audiovisual equality and FPS retain separate frontiers.
+
 ## Synchronous callbacks and ticks
 
 The [plant callback subsystem](../../src/world/runtime/mutation/plants) implements

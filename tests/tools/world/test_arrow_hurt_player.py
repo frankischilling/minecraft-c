@@ -13,6 +13,146 @@ import tempfile
 FAMILY_MODES = ('wake-bed-sapling', 'wake-bed-sapling-source', 'wake-bed-sapling-removal-source',
                 'wake-bed-tall-grass', 'wake-bed-tall-grass-source',
                 'wake-bed-tall-grass-removal-source', 'wake-bed-tall-grass-no-item')
+REMAINING_MODES = ('wake-bed-dead-bush', 'wake-bed-dead-bush-removal-source',
+                   'wake-bed-crops', 'wake-bed-crops-source', 'wake-bed-crops-removal-source',
+                   'wake-bed-crops-max-items', 'wake-bed-mushroom', 'wake-bed-mushroom-source',
+                   'wake-bed-mushroom-removal-source', 'wake-bed-mushroom-high-light')
+
+
+def remaining_spec(mode):
+    if mode not in REMAINING_MODES:
+        raise ValueError('Declared remaining plant mode required')
+    dead = mode.startswith('wake-bed-dead-bush')
+    crops = mode.startswith('wake-bed-crops')
+    high = mode == 'wake-bed-mushroom-high-light'
+    source = mode in ('wake-bed-crops-source', 'wake-bed-mushroom-source')
+    removal = mode.endswith('-removal-source')
+    normal = not source and not removal
+    seed = 0x7fffffff if mode == 'wake-bed-crops-max-items' else 1
+    state, draws = seed ^ 0x5deece66d, 0
+    items = []
+
+    def bits(width):
+        nonlocal state, draws
+        state = (state * 0x5deece66d + 11) & ((1 << 48) - 1)
+        draws += 1
+        return state >> (48 - width)
+
+    def f32(value):
+        return struct.unpack('>f', struct.pack('>f', value))[0]
+
+    def item(item_id, crop_offset=False):
+        position = []
+        spread = f32(.7)
+        edge = f32(1.0 - spread)
+        for coordinate in (7, 64, 8):
+            scaled = f32(bits(24) / (1 << 24) * spread)
+            if crop_offset:
+                offset = f32(scaled + f32(edge * .5))
+                value = f32(coordinate + offset)
+            else:
+                value = coordinate + (scaled + edge * .5)
+            position.append(struct.pack('>d', value).hex())
+        items.append({'id': str(item_id), 'count': '1', 'damage': '0',
+                      **dict(zip(('x', 'y', 'z'), position))})
+
+    bits(24)  # Inherited chance float precedes actual Item selection, even for -1.
+    if not dead:
+        item(296 if crops else 39)
+    if crops:
+        for _ in range(3):
+            while True:
+                draw = bits(31)
+                selected = draw % 15
+                if draw - selected + 14 < 1 << 31:
+                    break
+            if selected <= 7:
+                item(295, crop_offset=True)
+                if source and len(items) == 2:
+                    break
+    count = 0 if dead else 4 if mode == 'wake-bed-crops-max-items' else 2 if crops else 1
+    if len(items) != count or draws != (1 if dead else 16 if count == 4 else 9 if crops and source else 10 if crops else 4):
+        raise ValueError('Declared finite remaining plant LCG outcome')
+    return {'plant': '32:0' if dead else '59:7' if crops else '39:0',
+            'floor': '2:0' if dead or high else '0:0', 'sky': '13' if high else '15' if dead or crops else '12',
+            'normal': normal, 'removed': normal or removal, 'seed': seed,
+            'initial': seed ^ 0x5deece66d, 'state': state, 'draws': draws, 'items': items,
+            'phases': ['returned'] if normal else ['diagnostic', 'capture', 'hurt-close', 'hurt-cleanup', 'quiescent']}
+
+
+def remaining_receipts(lines, mode):
+    s = remaining_spec(mode)
+    prefix = 'ARROW_REMAINING_PLANTS_'
+
+    def fields(line):
+        words = line.split()
+        result = {}
+        for word in words[1:]:
+            if '=' not in word:
+                raise ValueError('Malformed remaining plant receipt')
+            key, value = word.split('=', 1)
+            if key in result:
+                raise ValueError('Duplicate remaining plant receipt field')
+            result[key] = value
+        return words[0].removeprefix(prefix), result
+
+    actual = [fields(line) for line in lines if line.startswith(prefix)]
+    expected = []
+    speed = struct.unpack('>f', struct.pack('>f', .6))[0]
+    expected.append(('INPUT', {'plant': s['plant'], 'floor': s['floor'], 'sky': s['sky'],
+        'block': '0', 'height': '64', 'world-f': '5', 'sleeping': '1', 'timer': '37',
+        'arrow-x': struct.pack('>d', 9.4).hex(), 'arrow-y': struct.pack('>d', 64.85).hex(),
+        'arrow-vx': struct.pack('>d', -speed).hex()}))
+    if len(actual) < 2 or actual[1][0] != 'RANDOM_INPUT':
+        raise ValueError('Actual complete remaining plant Random input required')
+    random_input = actual[1][1]
+    if (set(random_input) != {'seed-input', 'world-seed', 'world-cache', 'world-gaussian'} or
+            random_input['seed-input'] != str(s['seed']) or
+            random_input['world-seed'] != f"{s['initial']:016x}" or random_input['world-cache'] != '0' or
+            re.fullmatch('[0-9a-f]{16}', random_input['world-gaussian']) is None):
+        raise ValueError('Declared remaining plant Random seed and complete cache')
+    expected.append(('RANDOM_INPUT', random_input))
+    cell = {'index': '0', 'xyz': '8,64,8', 'head': '26:8', 'plant': s['plant'],
+            'additions': '0', 'sleeping': '1', 'timer': '37', 'health': '20'}
+    expected.append(('CELL', cell))
+    for index, item in enumerate(s['items']):
+        expected.append(('PUBLICATION', {'index': str(index), 'cells': '1', 'head': '26:8',
+            'plant': s['plant'], 'sleeping': '1', 'timer': '37', 'health': '20', **item}))
+    if s['removed']:
+        expected.append(('CELL', {**cell, 'index': '1', 'xyz': '7,64,8', 'plant': '0:0',
+                                 'additions': str(len(s['items']))}))
+    prefixes = [value for kind, value in actual if kind == 'PREFIX']
+    if len(prefixes) != len(s['phases']):
+        raise ValueError('Exact remaining plant unwind phase count required')
+    for index, phase in enumerate(s['phases']):
+        for number, item in enumerate(s['items']):
+            expected.append(('ITEM', {'phase': phase, 'index': str(number), **item,
+                                     'inserted': '1', 'removed': '0', 'delay': '10'}))
+        row = {'phase': phase, 'cells': '2' if s['removed'] else '1',
+            'additions': str(len(s['items'])), 'plant': '0' if s['removed'] else s['plant'].split(':')[0],
+            'metadata': '0' if s['removed'] else s['plant'].split(':')[1],
+            'sleeping': '0' if s['normal'] else '1', 'timer': '0' if s['normal'] else '37',
+            'health': '16' if s['normal'] else '20', 'J': '0' if s['normal'] else '1',
+            'pending': '1' if not s['normal'] and index < 3 else '0'}
+        for stream in ('world', 'player', 'arrow'):
+            for field in ('seed', 'cache', 'gaussian'):
+                key = stream + '-' + field
+                if key not in prefixes[index]:
+                    raise ValueError('Complete remaining plant Random fields required')
+                value = prefixes[index][key]
+                if ((field == 'cache' and value not in ('0', '1')) or
+                        (field != 'cache' and re.fullmatch('[0-9a-f]{16}', value) is None) or
+                        (field == 'seed' and int(value, 16) >= 1 << 48)):
+                    raise ValueError('Typed remaining plant Random field')
+                row[key] = value
+        if (row['world-seed'] != f"{s['state']:016x}" or row['world-cache'] != '0' or
+                row['world-gaussian'] != random_input['world-gaussian'] or
+                index and any(row[k] != prefixes[0][k] for k in row if k not in ('phase', 'pending'))):
+            raise ValueError('Remaining plant state or full Random replay during unwind')
+        expected.append(('PREFIX', row))
+    if actual != expected:
+        raise ValueError('Exact ordered remaining plant publication and retained Item prefix required')
+    return {'receipts': actual, 'model_draws': s['draws'], 'original_comparison': False}
 
 
 def plant_receipts(lines, mode):
@@ -187,6 +327,111 @@ def plant_parser_controls():
     print('PASS: seven synthetic Arrow plant modes; 37 malformed receipts refused; no native process')
 
 
+def remaining_parser_controls():
+    prefix = 'ARROW_REMAINING_PLANTS_'
+
+    def specimen(mode):
+        s = remaining_spec(mode)
+        speed = struct.unpack('>f', struct.pack('>f', .6))[0]
+        rows = [('INPUT', {'plant': s['plant'], 'floor': s['floor'], 'sky': s['sky'],
+            'block': '0', 'height': '64', 'world-f': '5', 'sleeping': '1', 'timer': '37',
+            'arrow-x': struct.pack('>d', 9.4).hex(), 'arrow-y': struct.pack('>d', 64.85).hex(),
+            'arrow-vx': struct.pack('>d', -speed).hex()}),
+            ('RANDOM_INPUT', {'seed-input': str(s['seed']), 'world-seed': f"{s['initial']:016x}",
+                             'world-cache': '0', 'world-gaussian': '3ff0000000000000'}),
+            ('CELL', {'index': '0', 'xyz': '8,64,8', 'head': '26:8', 'plant': s['plant'],
+                      'additions': '0', 'sleeping': '1', 'timer': '37', 'health': '20'})]
+        for index, item in enumerate(s['items']):
+            rows.append(('PUBLICATION', {'index': str(index), 'cells': '1', 'head': '26:8',
+                'plant': s['plant'], 'sleeping': '1', 'timer': '37', 'health': '20', **item}))
+        if s['removed']:
+            rows.append(('CELL', {'index': '1', 'xyz': '7,64,8', 'head': '26:8', 'plant': '0:0',
+                'additions': str(len(s['items'])), 'sleeping': '1', 'timer': '37', 'health': '20'}))
+        for index, phase in enumerate(s['phases']):
+            for number, item in enumerate(s['items']):
+                rows.append(('ITEM', {'phase': phase, 'index': str(number), **item,
+                                     'inserted': '1', 'removed': '0', 'delay': '10'}))
+            row = {'phase': phase, 'cells': '2' if s['removed'] else '1',
+                'additions': str(len(s['items'])), 'plant': '0' if s['removed'] else s['plant'].split(':')[0],
+                'metadata': '0' if s['removed'] else s['plant'].split(':')[1],
+                'sleeping': '0' if s['normal'] else '1', 'timer': '0' if s['normal'] else '37',
+                'health': '16' if s['normal'] else '20', 'J': '0' if s['normal'] else '1',
+                'pending': '1' if not s['normal'] and index < 3 else '0'}
+            for stream in ('world', 'player', 'arrow'):
+                row.update({stream + '-seed': f"{s['state']:016x}" if stream == 'world' else '0000000000000001',
+                            stream + '-cache': '0', stream + '-gaussian': '3ff0000000000000'})
+            rows.append(('PREFIX', row))
+        return rows
+
+    def render(rows):
+        return [prefix + kind + ' ' + ' '.join(k + '=' + v for k, v in values.items())
+                for kind, values in rows]
+
+    for mode in REMAINING_MODES:
+        remaining_receipts(render(specimen(mode)), mode)
+    changes = (
+        ('wake-bed-dead-bush', 'INPUT', 0, 'floor', '0:0'),
+        ('wake-bed-dead-bush', 'RANDOM_INPUT', 0, 'world-cache', '1'),
+        ('wake-bed-dead-bush', 'PREFIX', 0, 'additions', '1'),
+        ('wake-bed-dead-bush-removal-source', 'CELL', 1, 'additions', '1'),
+        ('wake-bed-dead-bush-removal-source', 'PREFIX', 3, 'pending', '1'),
+        ('wake-bed-crops', 'INPUT', 0, 'plant', '59:6'),
+        ('wake-bed-crops', 'PUBLICATION', 0, 'id', '295'),
+        ('wake-bed-crops', 'PUBLICATION', 1, 'index', '0'),
+        ('wake-bed-crops', 'PUBLICATION', 1, 'x', '0000000000000000'),
+        ('wake-bed-crops', 'PREFIX', 0, 'world-seed', '0000000000000001'),
+        ('wake-bed-crops-source', 'PUBLICATION', 1, 'cells', '2'),
+        ('wake-bed-crops-source', 'PREFIX', 0, 'health', '16'),
+        ('wake-bed-crops-source', 'PREFIX', 1, 'player-cache', '1'),
+        ('wake-bed-crops-source', 'PREFIX', 2, 'arrow-gaussian', '0000000000000000'),
+        ('wake-bed-crops-source', 'ITEM', 3, 'id', '296'),
+        ('wake-bed-crops-source', 'ITEM', 7, 'inserted', '0'),
+        ('wake-bed-crops-removal-source', 'CELL', 1, 'plant', '59:7'),
+        ('wake-bed-crops-max-items', 'PUBLICATION', 3, 'count', '0'),
+        ('wake-bed-crops-max-items', 'ITEM', 2, 'x', '0000000000000000'),
+        ('wake-bed-crops-max-items', 'PREFIX', 0, 'additions', '2'),
+        ('wake-bed-mushroom', 'INPUT', 0, 'sky', '13'),
+        ('wake-bed-mushroom-source', 'PUBLICATION', 0, 'plant', '0:0'),
+        ('wake-bed-mushroom-removal-source', 'PREFIX', 4, 'world-gaussian', '0000000000000000'),
+        ('wake-bed-mushroom-high-light', 'INPUT', 0, 'floor', '0:0'),
+    )
+    refused = 0
+    for mode, kind, occurrence, key, value in changes:
+        rows = specimen(mode)
+        selected = [row for row in rows if row[0] == kind][occurrence][1]
+        if key not in selected or selected[key] == value:
+            raise ValueError('Invalid authored remaining plant corruption')
+        selected[key] = value
+        try:
+            remaining_receipts(render(rows), mode)
+        except ValueError:
+            refused += 1
+        else:
+            raise ValueError('Corrupt remaining Arrow plant receipt accepted')
+    for mode in REMAINING_MODES:
+        for mutation in ('duplicate-input', 'duplicate-field', 'missing-phase', 'unknown-kind', 'extra-field'):
+            lines = render(specimen(mode))
+            if mutation == 'duplicate-input':
+                lines.append(lines[0])
+            elif mutation == 'duplicate-field':
+                lines[0] += ' sky=15'
+            elif mutation == 'missing-phase':
+                lines.pop()
+            elif mutation == 'unknown-kind':
+                lines.append(prefix + 'UNKNOWN value=0')
+            else:
+                lines[0] += ' extra=0'
+            try:
+                remaining_receipts(lines, mode)
+            except ValueError:
+                refused += 1
+            else:
+                raise ValueError('Malformed remaining Arrow plant receipt accepted')
+    if refused != 74:
+        raise ValueError('Every malformed remaining Arrow plant receipt must be refused')
+    print('PASS: ten synthetic remaining Arrow plant modes; 74 malformed receipts refused; no native process')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--self-test', action='store_true')
@@ -194,12 +439,13 @@ def main():
                                           'wake-source-null-list', 'wake-bed-foot',
                                           'wake-bed-foot-source', 'wake-bed-ladder',
                                           'wake-bed-ladder-source', 'wake-bed-ladder-removal-source', 'wake-bed-torch', 'wake-bed-torch-source', 'wake-bed-torch-removal-source', 'wake-bed-flower',
-                                          'wake-bed-flower-source', 'wake-bed-flower-removal-source') + FAMILY_MODES)
+                                          'wake-bed-flower-source', 'wake-bed-flower-removal-source') + FAMILY_MODES + REMAINING_MODES)
     parser.add_argument('--executable', type=Path)
     parser.add_argument('--work-dir', type=Path)
     args = parser.parse_args()
     if args.self_test:
         plant_parser_controls()
+        remaining_parser_controls()
         return
     if args.mode is None or args.executable is None or args.work_dir is None:
         parser.error('--mode, --executable and --work-dir are required for native runs')
@@ -244,6 +490,12 @@ def main():
         except ValueError as failure:
             report['passed'] = False
             report['plant_family_failure'] = str(failure)
+    if args.mode in REMAINING_MODES:
+        try:
+            report['remaining_plants'] = remaining_receipts(lines, args.mode)
+        except ValueError as failure:
+            report['passed'] = False
+            report['remaining_plants_failure'] = str(failure)
     (out / 'report.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
     print(child.stdout.decode('utf-8', errors='strict'), end='')
     if child.stderr:

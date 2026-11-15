@@ -1,4 +1,4 @@
-"""Retain actual Flower/query ownership controls and bounded native receipts."""
+"""Retain actual Flower/Mushroom query ownership controls and bounded native receipts."""
 import argparse
 import copy
 import hashlib
@@ -13,8 +13,13 @@ sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[3]
 TIMEOUT = 180
 MODES = ('descendant', 'source-descendant', 'source', 'sky-visible', 'sky-hidden',
-         'negative-y', 'defining-class', 'sky-descendant', 'sky-source-descendant', 'sky-source')
-FAILURE_MODES = MODES[:3] + MODES[-3:]
+         'negative-y', 'defining-class', 'sky-descendant', 'sky-source-descendant', 'sky-source',
+         'mushroom-descendant', 'mushroom-source-descendant', 'mushroom-source',
+         'mushroom-negative-y', 'mushroom-high-y', 'mushroom-bright',
+         'mushroom-opaque-true', 'mushroom-opaque-false', 'mushroom-null-o')
+FAILURE_MODES = ('descendant', 'source-descendant', 'source', 'sky-descendant',
+                 'sky-source-descendant', 'sky-source', 'mushroom-descendant',
+                 'mushroom-source-descendant', 'mushroom-source')
 RECEIPT_KEYS = {'command', 'exit', 'timeout_seconds', 'timed_out', 'pipe_capture_complete',
                 'reader_errors', 'output_overflow', 'stdout_file', 'stderr_file', 'stdout_bytes',
                 'stderr_bytes', 'stdout_sha256', 'stderr_sha256', 'stdout_limit', 'stderr_limit'}
@@ -48,13 +53,29 @@ def prepared():
 def result_line(mode):
     require(type(mode) is str and mode in MODES, 'Declared finite plant mode')
     if mode in FAILURE_MODES:
-        sky = mode in MODES[-3:]
-        branch = mode[4:] if sky else mode
+        sky = mode.startswith('sky-')
+        mushroom = mode.startswith('mushroom-')
+        branch = mode[4:] if sky else mode[9:] if mushroom else mode
         raw = 'BUSY' if branch == 'descendant' else 'IO_ERROR'
         native = 'OK' if branch == 'source' else 'BUSY'
-        site, query = ('wb.g18', 'fd.l7') if sky else ('wb.g5', 'fd.m23')
+        site, query = (('wb.g18', 'fd.l7') if sky else ('tl.g18', 'fd.m23') if mushroom
+                       else ('wb.g5', 'fd.m23'))
         return (f'PLANT_SURVIVAL_RESULT mode={mode} raw={raw} native={native} callbacks=1 '
                 f'site={site} query={query} output-preserved=1 Chunk.a=0 retained=1 drained=1 replay=0')
+    if mode.startswith('mushroom-'):
+        if mode == 'mushroom-null-o':
+            return (f'PLANT_SURVIVAL_RESULT mode={mode} raw=UNSUPPORTED_STATE native=OK callbacks=0 '
+                    'site=tl.d4 caller=tl.g37 query=fd.m18 registry=NULL_REFERENCE '
+                    'output-preserved=1 substrate=1 Chunk.a=0 replay=0')
+        outside = mode in ('mushroom-negative-y', 'mushroom-high-y')
+        if outside or mode == 'mushroom-bright':
+            return (f'PLANT_SURVIVAL_RESULT mode={mode} raw=OK native=OK callbacks=0 '
+                    f'site={"tl.g0" if outside else "tl.g18"} '
+                    f'query={"none" if outside else "fd.m"} value=0 '
+                    f'reached-get={0 if outside else 1} substrate=0 null-o=1 Chunk.a=0 replay=0')
+        opaque = int(mode == 'mushroom-opaque-true')
+        return (f'PLANT_SURVIVAL_RESULT mode={mode} raw=OK native=OK callbacks=0 site=tl.g37 '
+                f'query=fd.m value={opaque} reached-get=1 substrate=1 opaque={opaque} Chunk.a=0 replay=0')
     if mode in ('sky-visible', 'sky-hidden'):
         value = int(mode == 'sky-visible')
         return (f'PLANT_SURVIVAL_RESULT mode={mode} raw=OK native=OK callbacks=0 site=wb.g18 '
@@ -158,7 +179,16 @@ def self_test():
                  'defining-Chunk.a=0 World-Chunk.a=1'),
                 ('sky-descendant', 'site=wb.g18', 'site=wb.g5'),
                 ('sky-source-descendant', 'query=fd.l7', 'query=fd.m23'),
-                ('sky-source', 'raw=IO_ERROR native=OK', 'raw=IO_ERROR native=BUSY')):
+                ('sky-source', 'raw=IO_ERROR native=OK', 'raw=IO_ERROR native=BUSY'),
+                ('mushroom-descendant', 'site=tl.g18', 'site=wb.g5'),
+                ('mushroom-source-descendant', 'query=fd.m23', 'query=fd.l7'),
+                ('mushroom-source', 'raw=IO_ERROR native=OK', 'raw=IO_ERROR native=BUSY'),
+                ('mushroom-negative-y', 'reached-get=0', 'reached-get=1'),
+                ('mushroom-high-y', 'value=0', 'value=1'),
+                ('mushroom-bright', 'substrate=0', 'substrate=1'),
+                ('mushroom-opaque-true', 'value=1', 'value=0'),
+                ('mushroom-opaque-false', 'opaque=0', 'opaque=1'),
+                ('mushroom-null-o', 'registry=NULL_REFERENCE', 'registry=OK')):
             command, receipt = cases[mode]
             path = output / (mode + '.stdout')
             original = path.read_bytes()
@@ -176,8 +206,8 @@ def self_test():
                     raise ValueError('Corrupt mode-specific receipt accepted')
             finally:
                 path.write_bytes(original)
-        require(refused == 24, 'All malformed receipts and finite semantic controls refused')
-    print('PASS: authored slot1 Item input; 10 synthetic modes; 24 malformed receipts refused; no native run')
+        require(refused == 33, 'All malformed receipts and finite semantic controls refused')
+    print('PASS: authored slot1 Item input; 19 synthetic modes; 33 malformed receipts refused; no native run')
 
 
 def main():
@@ -197,7 +227,7 @@ def main():
     capture_path = ROOT / 'tests/reference/client/controller/capture.py'
     capture = module('plant_survival_bounded_capture', capture_path)
     report = {'schema': 'PLANT_SURVIVAL_EXECUTION_RUN_V1', 'status': 'FAIL', 'modes': {},
-        'scope': 'Ten finite owned Flower/query controls with actual SourceSaving Item activation, '
+        'scope': 'Nineteen finite owned Flower/Mushroom query controls with actual SourceSaving Item activation, '
                  'declared light/height inputs and checked native drainage. '
                  'No original comparison, full wake, Arrow or terrain-generation qualification.'}
     before = None
@@ -243,7 +273,7 @@ def main():
         (output / 'run.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
         if before is not None:
             require(report['inputs_unchanged'], 'Executed input preservation')
-    print('PASS: 10 actual owned plant survival modes; capture=' + str(output))
+    print('PASS: 19 actual owned plant survival modes; capture=' + str(output))
 
 
 if __name__ == '__main__':

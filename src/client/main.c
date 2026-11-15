@@ -27,7 +27,7 @@ static void usage(void) {
          "  --frames N --capture OUTPUT.png --hidden --time-millis N\n"
          "  --inspect-world FRESH_OR_COPIED_DIRECTORY --world-seed N\n"
          "  --inspect-menu selects the separate fixed-time menu diagnostic.\n"
-         "Normal startup currently supports the source main menu and Quit.\n"
+         "Normal startup opens source menus and single-player World selection.\n"
          "World inspection is a fixed diagnostic scene with no gameplay or implicit save.");
 }
 

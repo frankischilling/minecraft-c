@@ -7,22 +7,32 @@ the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining w
 
 ## Current client work
 
-[Sapling and Tall Grass neighbors](world/plants.md#owned-sapling-and-tall-grass-neighbors-during-player-wake)
-now share retained Player wake execution. Supported plants stay in place;
-unsupported plants publish their actual virtual drop before removal. Tall Grass
-can remove itself without an Item or Math owner. Observer exceptions preserve
-completed cells, Items, Player state and Random progress through checked cleanup.
+[Dead Bush, Crops and Mushroom neighbors](world/plants.md#owned-dead-bush-crops-and-mushroom-neighbors-during-player-wake)
+now share retained Player wake execution with their actual virtual survival and
+drops. Dead Bush removes itself without an Item. Crops retain Wheat followed by
+three Seed trials; Mushroom survival uses real light below 13 and live substrate.
+Observer exceptions preserve completed cells, Items and Random progress through
+checked cleanup.
 
-Two fresh unchanged-original VMs agree on eight prepared profiles. Windows and
-sanitized Linux each match 379 selected original values. Fifteen direct modes
-and seven real Arrow-hit cases cover success and distinct failure prefixes.
-These component results do not establish graphical sleeping-Player damage.
+Two fresh unchanged-original VMs agree on 25 prepared profiles. Windows and
+sanitized Linux each match
+1,940 selected original values, including all five Chunk planes, seeded Math
+and Item motion. Five native ownership controls include two no-Item paths that
+match another 106 original values. Ten additional real Arrow-hit cases cover
+distinct committed prefixes. These component results do not establish graphical
+sleeping-Player damage. The earlier
+[Sapling/Tall Grass checkpoint](testing.md#sapling-and-tall-grass-during-player-wake)
+retains its own Windows/Linux and graphical qualification.
 
-The [current test record](testing.md#sapling-and-tall-grass-during-player-wake)
-lists the complete suite results, source snapshot and remaining comparison limits.
-Fresh monitor-2 Bed and Arrow/Pig scenes pass independent save readback, inspected
-images and complete window cleanup. Original audiovisual equality, unrestricted
-plant graphs, general focus reliability and an FPS gain remain unqualified.
+The [current test record](testing.md#remaining-flower-family-neighbors-during-player-wake)
+lists the new coverage and comparison limits. Original audiovisual equality,
+unrestricted plant graphs, general focus reliability and an FPS gain remain
+unqualified.
+
+The full Windows MSVC Release suite passes 1,229 tests without skips. All 43
+affected tests also pass on Linux with Clang ASan/UBSan and leak detection.
+Fresh monitor-2 Bed and Arrow/Pig scenes pass independent save readback, six
+inspected captures and complete window cleanup.
 
 ## Next single-player work
 

@@ -161,7 +161,8 @@ static bool query_result(plant_frame *frame, bool completed, mc_entity_tick_exec
     return false;
 }
 
-static bool flower_light(plant_frame *frame, int32_t x, int32_t y, int32_t z, int32_t *out) {
+static bool plant_light(plant_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z,
+                        int32_t *out) {
     if (frame->owned == NULL) {
         if (mc_world_runtime_plant_light(frame->world, x, y, z, out, &frame->error->query) ==
             MC_WORLD_STORAGE_OK)
@@ -170,7 +171,7 @@ static bool flower_light(plant_frame *frame, int32_t x, int32_t y, int32_t z, in
         return storage_fail(frame->error, &frame->error->query.cause);
     }
     mc_world_plant_execution *owned = frame->owned;
-    const mc_entity_tick_execution_site site = plant_site(frame, 5);
+    const mc_entity_tick_execution_site site = plant_site(frame, pc);
     if (!plant_current(owned, frame->world, site)) {
         owned->native_stopped = true;
         return false;
@@ -300,8 +301,8 @@ static bool base_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z, 
 
 /* wb.d / nw.c dispatches on the ACTUAL retained receiver. Mushroom and dead
  * bush select their own substrate body; tall grass inherits wb/nw. */
-static bool substrate(plant_frame *frame, int32_t id, bool *out) {
-    if (frame->owned != NULL && !plant_current(frame->owned, frame->world, plant_site(frame, 35))) {
+static bool substrate(plant_frame *frame, unsigned int pc, int32_t id, bool *out) {
+    if (frame->owned != NULL && !plant_current(frame->owned, frame->world, plant_site(frame, pc))) {
         frame->owned->native_stopped = true;
         return false;
     }
@@ -327,7 +328,7 @@ static bool flower_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z
     int32_t below;
     if (!block_get(frame, 20, x, mc_java_i32_sub(y, 1), z, &below))
         return false;
-    if (!substrate(frame, below, out)) {
+    if (!substrate(frame, 23, below, out)) {
         caller(frame, "wb", "nw", "a", "a", 23);
         return false;
     }
@@ -337,7 +338,7 @@ static bool flower_can_place(plant_frame *frame, int32_t x, int32_t y, int32_t z
 static bool flower_survives(plant_frame *frame, int32_t x, int32_t y, int32_t z, bool *out) {
     stage(frame, "wb", "nw", "g", "f", 5);
     int32_t light;
-    if (!flower_light(frame, x, y, z, &light))
+    if (!plant_light(frame, 5, x, y, z, &light))
         return false;
     if (light < 8) {
         frame->error->bytecode = 18;
@@ -352,7 +353,7 @@ static bool flower_survives(plant_frame *frame, int32_t x, int32_t y, int32_t z,
     int32_t below;
     if (!block_get(frame, 32, x, mc_java_i32_sub(y, 1), z, &below))
         return false;
-    if (!substrate(frame, below, out)) {
+    if (!substrate(frame, 35, below, out)) {
         caller(frame, "wb", "nw", "g", "f", 35);
         return false;
     }
@@ -367,11 +368,8 @@ static bool mushroom_survives(plant_frame *frame, int32_t x, int32_t y, int32_t 
     }
     frame->error->bytecode = 18;
     int32_t light;
-    if (mc_world_runtime_plant_light(frame->world, x, y, z, &light, &frame->error->query) !=
-        MC_WORLD_STORAGE_OK) {
-        frame->error->registry = frame->error->query.registry;
-        return storage_fail(frame->error, &frame->error->query.cause);
-    }
+    if (!plant_light(frame, 18, x, y, z, &light))
+        return false;
     if (light >= 13) {
         *out = false;
         return true;
@@ -379,7 +377,7 @@ static bool mushroom_survives(plant_frame *frame, int32_t x, int32_t y, int32_t 
     int32_t below;
     if (!block_get(frame, 34, x, mc_java_i32_sub(y, 1), z, &below))
         return false;
-    if (!substrate(frame, below, out)) {
+    if (!substrate(frame, 37, below, out)) {
         caller(frame, "tl", "md", "g", "f", 37);
         return false;
     }
@@ -665,23 +663,23 @@ void mc_world_plant_execution_init(mc_world_plant_execution *frame,
                                             .owned = owned};
 }
 
-bool mc_world_runtime_flower_survives_in_execution(mc_world_plant_execution *frame,
-                                                   mc_world_runtime *world,
-                                                   const mc_block *receiver, int32_t x, int32_t y,
-                                                   int32_t z, bool *out,
-                                                   mc_world_storage_status *raw) {
+bool mc_world_runtime_plant_survives_in_execution(mc_world_plant_execution *frame,
+                                                  mc_world_runtime *world, const mc_block *receiver,
+                                                  int32_t x, int32_t y, int32_t z, bool *out,
+                                                  mc_world_storage_status *raw) {
     if (frame == NULL)
         return false;
     if (frame->execution == NULL || frame->execution->identity != frame->execution ||
         frame->code_classes == NULL || frame->owned == NULL || frame->entered || world == NULL ||
         receiver == NULL || receiver->classes == NULL ||
         (receiver->kind != MC_BLOCK_FLOWER && receiver->kind != MC_BLOCK_SAPLING &&
-         receiver->kind != MC_BLOCK_TALL_GRASS) ||
+         receiver->kind != MC_BLOCK_TALL_GRASS && receiver->kind != MC_BLOCK_DEAD_BUSH &&
+         receiver->kind != MC_BLOCK_CROPS && receiver->kind != MC_BLOCK_MUSHROOM) ||
         receiver->classes->options.side != MC_REGISTRY_CLIENT || out == NULL || raw == NULL ||
         world->construction.mode != MC_WORLD_RUNTIME_GAME ||
         world->construction.phase == MC_WORLD_RUNTIME_RETIRED) {
         mc_world_runtime_execution_result_note(frame->owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
-                                               "Flower survival execution/fresh outputs",
+                                               "Plant survival execution/fresh outputs",
                                                frame->receiver_site);
         return false;
     }
@@ -691,7 +689,7 @@ bool mc_world_runtime_flower_survives_in_execution(mc_world_plant_execution *fra
     frame->detail = empty_error();
     plant_frame source = {world, receiver, &frame->detail, frame};
     bool value = false;
-    const bool returned = flower_survives(&source, x, y, z, &value);
+    const bool returned = survives(&source, x, y, z, &value);
     *raw = frame->detail.status;
     frame->completed = returned && plant_current(frame, world, frame->receiver_site);
     if (!frame->completed) {

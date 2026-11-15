@@ -1,15 +1,16 @@
 # Native client startup
 
-`minecraft-client` is a C17 executable using SDL3 and OpenGL 3.3 core. Its new
+`minecraft-client` is a C17 executable using SDL3 and OpenGL 3.3 core. Its
 default path constructs the source App, completes the no-connection startup and
 continues through the [no-World menu runtime](menu-runtime.md). Singleplayer now
 opens the genuine [World-selection screen](world-selection.md). Focused Windows
-empty/populated, scrolling and double-click save-list loops pass and their captures were inspected.
-The [selected World loader](world-loading.md) also reaches actual World/Player/input
-publication for an authored existing save; renderer attachment and gameplay
-remain unfinished. All 475 selected Windows CTests and
-formatting for 1,379 files pass; hosted and original correspondence retain their source
-scopes in the [testing record](../testing.md).
+fixtures cover empty/populated lists, scrolling and double-click selection.
+The [selected World loader](world-loading.md) publishes the World, Player and
+input owners, attaches the renderer and continues into the source World/frame
+loop. Loaded scenarios cover selected gameplay and save/reload paths. These
+remain narrower than unrestricted play and original audiovisual equality.
+The [current status](../status.md) and [testing record](../testing.md) retain
+the exact native, hosted and original-reference qualification scopes.
 
 After [resource import](../reference/resources.md), it requires neither the
 original JAR, Java nor the launcher. Build with `MC_BUILD_CLIENT=ON`, then run:

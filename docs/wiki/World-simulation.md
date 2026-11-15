@@ -829,3 +829,8 @@ for current validation. Detailed past counts and source checkpoints are retained
 in the [population and runtime history](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/population.md).
 The [architecture](Architecture), [build](Build-and-tests) and
 [storage/reference](Storage-and-reference) wiki pages provide further navigation.
+
+Dead Bush, Crops and both Mushrooms also enter retained Player wake execution.
+Finite original comparisons cover real Chunk planes, seeded Random streams,
+Item motion and callback order. The [combat page](Combat-and-projectiles#dead-bush-crops-and-mushrooms-during-wake)
+records this scope and its remaining gameplay limits.

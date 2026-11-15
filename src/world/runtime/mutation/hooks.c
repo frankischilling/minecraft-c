@@ -450,9 +450,6 @@ static bool block_neighbor(mc_world_runtime *world, const mc_block *block, int32
         case MC_BLOCK_DEAD_BUSH:
         case MC_BLOCK_MUSHROOM:
         case MC_BLOCK_CROPS:
-            return owned == NULL
-                       ? mc_world_mutation_plant_neighbor(world, block, x, y, z, source_id, error)
-                       : unjoined(owned, "Plant neighbor hook requires owned execution");
         case MC_BLOCK_SAPLING:
         case MC_BLOCK_TALL_GRASS:
         case MC_BLOCK_FLOWER:

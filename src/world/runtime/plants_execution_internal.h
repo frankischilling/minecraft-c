@@ -5,7 +5,7 @@
 #include "mc/world/runtime/plants.h"
 #include "queries_execution_internal.h"
 
-/* SAME Flower survival body. The caller retains the defining code and actual
+/* SAME virtual Flower-family survival bodies. The caller retains the defining code and actual
  * receiver graphs, the evaluated World and its exact token. This frame borrows
  * their canonical result without initializing it or beginning another scope.
  *
@@ -14,7 +14,7 @@
  * can retire. Clear this frame's borrowed views before retiring their owners.
  * No Source retry, scope close, pending completion or owner retirement occurs
  * here. Raw status and native continuation are independent; only true permits
- * the ordinary Boolean output to be used. Other plant kinds remain unjoined. */
+ * the ordinary Boolean output to be used. Cactus, reeds and pumpkins remain unjoined. */
 typedef struct mc_world_plant_execution {
     mc_entity_tick_execution *execution;
     mc_world_runtime_classes *code_classes;
@@ -36,8 +36,8 @@ void mc_world_plant_execution_init(mc_world_plant_execution *, mc_entity_tick_ex
                                    mc_entity_tick_execution_world_token,
                                    mc_entity_tick_execution_site,
                                    mc_world_runtime_execution_result *);
-bool mc_world_runtime_flower_survives_in_execution(mc_world_plant_execution *, mc_world_runtime *,
-                                                   const mc_block *, int32_t, int32_t, int32_t,
-                                                   bool *, mc_world_storage_status *);
+bool mc_world_runtime_plant_survives_in_execution(mc_world_plant_execution *, mc_world_runtime *,
+                                                  const mc_block *, int32_t, int32_t, int32_t,
+                                                  bool *, mc_world_storage_status *);
 
 #endif

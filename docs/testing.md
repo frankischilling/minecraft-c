@@ -9917,3 +9917,64 @@ CTest entries pass in 39.56 seconds: eight actual native controls with 807 check
 and four normal/optimized Python controls. Retained captures, current-source
 guards and applicable literal-input guards pass. This local result does not
 replace the failed hosted run or qualify a new hosted head.
+
+## Remaining flower-family neighbors during Player wake
+
+Dead Bush, Crops and both Mushrooms now use retained wake execution. The
+[original packet](../tests/reference/entity/remaining_plants_wake/README.md)
+contains 25 predeclared prepared calls from each of two fresh unchanged-original
+JDK17 VMs. The complete streams agree; source/helper/archive/class identities
+remain unchanged during capture. No original game class or getter is replaced.
+
+The native controller runs all 25 profiles and five missing-Math controls.
+Standard profiles match 1,940 selected values: Player/cell state, complete
+Chunk-plane hashes, World/Player/Math Random streams, Item Stack and raw
+position/motion/phase/yaw, plus ordered publication and cell callbacks. Two
+no-Item controls also match 106 original values. Three missing-Math failures
+retain completed Item construction and its four profile-Math doubles before
+World insertion. Every mode checks unchanged observed state and raw planes
+through native close, cleanup and owner retirement. Original Item Random
+entropy and Java exception stacks remain unpaired.
+
+Nineteen owned survival modes additionally cover Mushroom cold light failures,
+retained descendants, Y boundaries, the brightness threshold and live opacity
+array reads. Ten additional real Arrow-hit modes cover Dead Bush removal,
+Crops publication/removal and four-Item output, and Mushroom support/light loss.
+Their interrupted paths keep health 20 and the committed prefix through five
+unwind observations; normal hits wake before damage. These native Arrow
+controls do not inherit the original prepared-call comparison.
+
+On Windows MSVC Release, all 43 affected CTests pass in 14.23 seconds. This
+selection includes both normal/optimized packet and native-reader corruption
+controls. The initial run retained one fixture failure: no-Item Dead Bush
+removal incorrectly required no observer receipt. The corrected assertion
+requires a receipt exactly when the removal observer throws. A separate packet
+self-test incorrectly counted eight World Random draws before the second Crop
+publication; the unchanged original and independent LCG establish nine,
+including the rejected Seed trial. Both failures remain in local evidence.
+
+These results qualify finite client components. Natural encounters, full
+plant growth/tick execution, graphical sleeping-Player damage, original
+pixels/audio, sustained play and an FPS gain remain unqualified.
+
+The full Windows MSVC Release suite passes all 1,229 tests in 486.07 seconds,
+with 1,229 unique JUnit cases and no failures, skips or unrun cases. All 6,126
+frozen source files remain unchanged through that run. The affected Linux
+Clang Debug selection passes 43/43 in 18.87 seconds with ASan, UBSan and leak
+detection. Both hosts match all 2,046 selected original values described above.
+A separate strict GCC13 `-O2` compile passes all three changed native fixture
+units without diagnostics. A subsequent fixture formatting change adds one
+indentation space and changes no C tokens.
+
+An isolated Linux build using only the preceding neighbor dispatcher fails
+all 25 new prepared profiles, each at the expected completed-wake assertion,
+without sanitizer errors. Restoring the candidate passes the affected suite.
+The read-only WSL distribution cannot hold a new persistent build; a temporary
+filesystem supplies the isolated source/build. Source/product hashes, native
+captures, baseline failures and test logs are retained before its removal.
+
+Fresh monitor-2 Bed and Arrow/Pig scenes pass 1,497 and 381 checks respectively.
+Both preserve 2,401 source/product inputs and 413 imported resources through
+the run. Independent NBT readback, all six inspected captures and complete
+window cleanup pass. These are bounded native scenes, not original graphical
+damage-wake comparisons or performance measurements.

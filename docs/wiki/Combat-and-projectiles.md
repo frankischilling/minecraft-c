@@ -223,3 +223,20 @@ for source ordering and the comparison's excluded independent entropy.
 Complete Player wake, pickup/riders,
 unrestricted combat, original audiovisual equality and FPS remain unfinished
 or unqualified. These component checks do not establish complete playability.
+
+## Dead Bush, Crops and Mushrooms during wake
+
+These neighbors now use the same retained Player wake execution with actual
+virtual survival and drops. Dead Bush removes itself without an Item. Crops
+retain Wheat and three independent Seed trials; Mushrooms test real light
+below 13 and the live opacity array before support. Interrupted observers
+preserve committed Items, cells and Random progress through checked cleanup.
+
+Two fresh unchanged-original VMs agree on 25 prepared calls. Windows and
+sanitized Linux each pair 1,940 selected values, including all five Chunk
+planes, seeded Math and Item motion. Two no-Item ownership controls match another 106 values; three other
+missing-Math controls retain the stopped constructor prefix. Ten actual
+Arrow-hit cases have separate native integration coverage. Natural encounters,
+plant growth, graphical damage wake, original pixels/audio and FPS remain
+unqualified. See the [runtime contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plants.md#owned-dead-bush-crops-and-mushroom-neighbors-during-player-wake)
+and [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#remaining-flower-family-neighbors-during-player-wake).

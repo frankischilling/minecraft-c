@@ -17,12 +17,12 @@ typedef struct ps_fixture {
     mc_entity_tick_execution_world_token activation, descendant;
     mc_world_access_receipt *receipt;
     mc_world_chunk *generated;
-    const mc_block *flower;
+    const mc_block *receiver;
     mc_entity *item;
     mc_world_storage_status raw;
     size_t callbacks;
     const char *mode;
-    bool source, leave_descendant, callback_valid, sky;
+    bool source, leave_descendant, callback_valid, sky, mushroom;
 } ps_fixture;
 
 static const mc_entity_tick_execution_site ps_site = {"native.plant.survival", "run", "()V", 0};
@@ -63,12 +63,14 @@ static int ps_open(ps_fixture *s) {
            !mc_chunk_cache_contains(f->providers[0].cache, 1, 0));
     mc_registry_block_m_view array;
     VERIFY(mc_registry_block_m_get(f->registry[0], &array, NULL) == MC_REGISTRY_OK &&
-           mc_registry_block_m_at(&array, 37, &s->flower, NULL) == MC_REGISTRY_OK &&
-           s->flower != NULL && s->flower->kind == MC_BLOCK_FLOWER);
+           mc_registry_block_m_at(&array, s->mushroom ? 39 : 37, &s->receiver, NULL) ==
+               MC_REGISTRY_OK &&
+           s->receiver != NULL &&
+           s->receiver->kind == (s->mushroom ? MC_BLOCK_MUSHROOM : MC_BLOCK_FLOWER));
     /* Declared pre-entry Chunk payload inputs. The unequal transposed height
      * entries make fd.l's actual (localZ<<4)|localX indexing observable. */
     mc_chunk_data *data = f->states[0]->data;
-    data->blocks[cell(7, 64, 8)] = 37;
+    data->blocks[cell(7, 64, 8)] = (uint8_t)(s->mushroom ? 39 : 37);
     data->blocks[cell(7, 63, 8)] = 2;
     memset(data->skylight, 0, sizeof(data->skylight));
     memset(data->block_light, 0, sizeof(data->block_light));
@@ -80,6 +82,11 @@ static int ps_open(ps_fixture *s) {
         data->block_light[index >> 1] = (uint8_t)(12u << ((index & 1u) * 4u));
         VERIFY(mc_world_runtime_classes_create(MC_WORLD_INFO_CLIENT, f->profile, &trig,
                                                &f->classes[1], NULL) == MC_WORLD_STORAGE_OK);
+    }
+    if (s->mushroom) {
+        const size_t index = cell(7, 64, 8);
+        const uint8_t light = (uint8_t)(strcmp(s->mode, "mushroom-bright") == 0 ? 13 : 12);
+        data->block_light[index >> 1] = (uint8_t)(light << ((index & 1u) * 4u));
     }
     VERIFY(!mc_world_runtime_chunk_light_seen(f->classes[0]) && f->providers[0].cache->count == 1 &&
            f->providers[0].cache->insertion_count == 1 &&
@@ -104,8 +111,8 @@ static mc_world_storage_status ps_added(void *context, mc_world_runtime *world, 
                         world->fields.b->count == 1 && world->fields.b->items[0] == item &&
                         s->plant.entered && s->plant.query.entered && s->plant.query.get_entered &&
                         !s->plant.query.get_returned &&
-                        s->plant.query.receiver_site.pc == (s->sky ? 18 : 5) && lease != NULL &&
-                        lease->phase == MC_WORLD_ACCESS_FAILURE_LEASE_ARMED &&
+                        s->plant.query.receiver_site.pc == (s->sky || s->mushroom ? 18 : 5) &&
+                        lease != NULL && lease->phase == MC_WORLD_ACCESS_FAILURE_LEASE_ARMED &&
                         mc_entity_tick_execution_current_world(execution, &s->activation) &&
                         !cq_token_same(s->activation, s->scalar.outer) &&
                         execution->world_slots[s->scalar.outer.slot].loader_open;
@@ -153,15 +160,18 @@ static int ps_failure(ps_fixture *s) {
     bool answer = true;
     /* Negative Y returns zero from fd.m without acquisition, so the same
      * Flower body conditionally reaches the real fd.l cold getter. */
-    const bool continued = mc_world_runtime_flower_survives_in_execution(
-        &s->plant, world, s->flower, 16, s->sky ? -1 : 64, 8, &answer, &s->raw);
+    const bool continued = mc_world_runtime_plant_survives_in_execution(
+        &s->plant, world, s->receiver, 16, s->sky ? -1 : 64, 8, &answer, &s->raw);
     const mc_world_storage_status expected =
         s->source ? MC_WORLD_STORAGE_IO_ERROR : MC_WORLD_STORAGE_BUSY;
     mc_world_query_execution *query = &s->plant.query;
     VERIFY(!continued && answer && s->raw == expected && s->plant.entered && !s->plant.completed &&
            s->plant.native_stopped == s->leave_descendant &&
-           s->plant.detail.bytecode == (s->sky ? 18u : 5u) && s->plant.detail.status == expected &&
-           query->entered && query->get_entered && query->get_returned &&
+           s->plant.detail.bytecode == (s->sky || s->mushroom ? 18u : 5u) &&
+           s->plant.detail.status == expected &&
+           strcmp(s->plant.detail.declaring_class, s->mushroom ? "tl" : "wb") == 0 &&
+           strcmp(s->plant.detail.declaring_method, "g") == 0 && query->entered &&
+           query->get_entered && query->get_returned &&
            query->get_status == MC_CHUNK_ACQUIRE_CALLBACK_FAILED && query->status == expected &&
            !query->completed && query->native_stopped == s->leave_descendant &&
            query->detail.status == expected && query->detail.bytecode == (s->sky ? 7u : 23u) &&
@@ -228,10 +238,11 @@ static int ps_failure(ps_fixture *s) {
                strcmp(exception, "java/lang/IllegalStateException") == 0 &&
                mc_world_access_receipt_retire(&s->receipt, NULL) == MC_WORLD_STORAGE_BUSY);
     }
-    printf("PLANT_SURVIVAL_RESULT mode=%s raw=%s native=%s callbacks=1 site=wb.g%d "
+    printf("PLANT_SURVIVAL_RESULT mode=%s raw=%s native=%s callbacks=1 site=%s.g%d "
            "query=%s%u output-preserved=1 Chunk.a=0 retained=1 drained=1 replay=0\n",
            s->mode, s->source ? "IO_ERROR" : "BUSY", s->leave_descendant ? "BUSY" : "OK",
-           query->receiver_site.pc, s->sky ? "fd.l" : "fd.m", query->detail.bytecode);
+           s->mushroom ? "tl" : "wb", query->receiver_site.pc, s->sky ? "fd.l" : "fd.m",
+           query->detail.bytecode);
     /* Clear typed borrows before retiring their actual execution owners. */
     s->plant = (mc_world_plant_execution){0};
     s->owned = (mc_world_runtime_execution_result){0};
@@ -246,7 +257,95 @@ static int ps_failure(ps_fixture *s) {
     return 0;
 }
 
+static int ps_mushroom_values(ps_fixture *s) {
+    fixture *f = &s->scalar.cq.source.game;
+    mc_world_runtime *world = f->worlds[0];
+    mc_entity_tick_execution *execution = &s->scalar.cq.execution;
+    const bool negative = strcmp(s->mode, "mushroom-negative-y") == 0;
+    const bool high = strcmp(s->mode, "mushroom-high-y") == 0;
+    const bool outside = negative || high;
+    const bool bright = strcmp(s->mode, "mushroom-bright") == 0;
+    const bool null_array = strcmp(s->mode, "mushroom-null-o") == 0;
+    const bool opaque = strcmp(s->mode, "mushroom-opaque-true") == 0;
+    const bool substrate = !outside && !bright;
+    bool *const original = f->registry[0]->blocks.o;
+    bool alternate[MC_REGISTRY_BLOCK_SLOTS];
+    VERIFY(original != NULL && original[2]);
+    memcpy(alternate, original, sizeof(alternate));
+    alternate[2] = opaque;
+    /* These are declared actual static-field inputs, selected before entry.
+     * A null future o operand makes both short circuits observable. No Source
+     * call is retried or repaired; restore ownership only after its result. */
+    f->registry[0]->blocks.o = outside || bright || null_array ? NULL : alternate;
+    VERIFY(bs_begin(&s->scalar) == 0);
+    mc_world_runtime_execution_result_init(&s->owned);
+    mc_world_plant_execution_init(&s->plant, execution, f->classes[0], cq_code, s->scalar.outer,
+                                  ps_site, &s->owned);
+    s->raw = MC_WORLD_STORAGE_LIMIT;
+    bool answer = !opaque;
+    const bool continued = mc_world_runtime_plant_survives_in_execution(
+        &s->plant, world, s->receiver, outside ? 16 : 7,
+        negative ? -1
+        : high   ? 128
+                 : 64,
+        8, &answer, &s->raw);
+    VERIFY(s->plant.entered && s->plant.completed == !null_array && !s->plant.native_stopped &&
+           s->plant.query.entered == !outside && s->plant.query.get_entered == !outside &&
+           s->plant.query.get_returned == !outside && s->plant.block.entered == substrate &&
+           s->plant.block.completed == substrate &&
+           !mc_world_runtime_chunk_light_seen(f->classes[0]) && s->callbacks == 0 &&
+           world->fields.b->count == 0 && f->providers[0].cache->count == 1 &&
+           f->providers[0].cache->insertion_count == 1 &&
+           mc_world_store_chunk_count(f->stores[0]) == 1 &&
+           !mc_chunk_cache_contains(f->providers[0].cache, 1, 0) && world->active_calls == 0 &&
+           s->owned.ownership_status == MC_WORLD_STORAGE_OK && !s->owned.selection_ready &&
+           !cq_pending(&s->owned));
+    if (!outside)
+        VERIFY(s->plant.query.completed && s->plant.query.receiver_site.pc == 18 &&
+               strcmp(s->plant.query.receiver_site.class_name, "tl") == 0);
+    if (substrate)
+        VERIFY(s->plant.block.receiver_site.pc == 34 &&
+               strcmp(s->plant.block.receiver_site.class_name, "tl") == 0);
+    if (null_array) {
+        VERIFY(!continued && answer && s->raw == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+               s->plant.detail.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+               s->plant.detail.registry.status == MC_REGISTRY_NULL_REFERENCE &&
+               s->plant.detail.cause.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+               s->plant.detail.bytecode == 4 &&
+               strcmp(s->plant.detail.declaring_class, "tl") == 0 &&
+               strcmp(s->plant.detail.declaring_method, "d") == 0 &&
+               s->plant.detail.caller_bytecode == 37 &&
+               strcmp(s->plant.detail.caller_class, "tl") == 0 &&
+               strcmp(s->plant.detail.caller_method, "g") == 0 &&
+               world->last_registry_error.status == MC_REGISTRY_NULL_REFERENCE &&
+               world->last_error.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE);
+        printf("PLANT_SURVIVAL_RESULT mode=%s raw=UNSUPPORTED_STATE native=OK callbacks=0 "
+               "site=tl.d4 caller=tl.g37 query=fd.m18 registry=NULL_REFERENCE "
+               "output-preserved=1 substrate=1 Chunk.a=0 replay=0\n",
+               s->mode);
+    } else {
+        VERIFY(continued && answer == opaque && s->raw == MC_WORLD_STORAGE_OK &&
+               s->plant.detail.status == MC_WORLD_STORAGE_OK);
+        if (outside || bright)
+            printf("PLANT_SURVIVAL_RESULT mode=%s raw=OK native=OK callbacks=0 site=%s "
+                   "query=%s value=0 reached-get=%d substrate=0 null-o=1 Chunk.a=0 replay=0\n",
+                   s->mode, outside ? "tl.g0" : "tl.g18", outside ? "none" : "fd.m",
+                   outside ? 0 : 1);
+        else
+            printf("PLANT_SURVIVAL_RESULT mode=%s raw=OK native=OK callbacks=0 site=tl.g37 "
+                   "query=fd.m value=%d reached-get=1 substrate=1 opaque=%d Chunk.a=0 replay=0\n",
+                   s->mode, opaque ? 1 : 0, opaque ? 1 : 0);
+    }
+    f->registry[0]->blocks.o = original;
+    s->plant = (mc_world_plant_execution){0};
+    s->owned = (mc_world_runtime_execution_result){0};
+    VERIFY(bs_end(&s->scalar, null_array) == 0);
+    return 0;
+}
+
 static int ps_values(ps_fixture *s) {
+    if (s->mushroom)
+        return ps_mushroom_values(s);
     fixture *f = &s->scalar.cq.source.game;
     mc_world_runtime *world = f->worlds[0];
     mc_entity_tick_execution *execution = &s->scalar.cq.execution;
@@ -276,8 +375,8 @@ static int ps_values(ps_fixture *s) {
         mc_world_plant_execution_init(&s->plant, execution, f->classes[0], cq_code, s->scalar.outer,
                                       ps_site, &s->owned);
         bool answer = !visible;
-        VERIFY(mc_world_runtime_flower_survives_in_execution(&s->plant, world, s->flower, 7, 64, 8,
-                                                             &answer, &s->raw) &&
+        VERIFY(mc_world_runtime_plant_survives_in_execution(&s->plant, world, s->receiver, 7, 64, 8,
+                                                            &answer, &s->raw) &&
                answer == visible && s->raw == MC_WORLD_STORAGE_OK && s->plant.completed &&
                !s->plant.native_stopped && s->plant.query.entered && s->plant.query.completed &&
                s->plant.query.get_entered && s->plant.query.get_returned &&
@@ -338,8 +437,13 @@ static int ps_finish(ps_fixture *s) {
 
 int main(int argc, char **argv) {
     static const char *const modes[] = {
-        "descendant", "source-descendant", "source",         "sky-visible",           "sky-hidden",
-        "negative-y", "defining-class",    "sky-descendant", "sky-source-descendant", "sky-source"};
+        "descendant",      "source-descendant",    "source",
+        "sky-visible",     "sky-hidden",           "negative-y",
+        "defining-class",  "sky-descendant",       "sky-source-descendant",
+        "sky-source",      "mushroom-descendant",  "mushroom-source-descendant",
+        "mushroom-source", "mushroom-negative-y",  "mushroom-high-y",
+        "mushroom-bright", "mushroom-opaque-true", "mushroom-opaque-false",
+        "mushroom-null-o"};
     VERIFY(argc == 3);
     size_t index = 0;
     while (index < COUNT(modes) && strcmp(argv[1], modes[index]) != 0)
@@ -350,15 +454,17 @@ int main(int argc, char **argv) {
     ps_fixture *s = calloc(1, sizeof(*s));
     VERIFY(s != NULL);
     s->mode = argv[1];
+    s->mushroom = strncmp(s->mode, "mushroom-", 9) == 0;
     s->sky = strcmp(s->mode, "sky-descendant") == 0 ||
              strcmp(s->mode, "sky-source-descendant") == 0 || strcmp(s->mode, "sky-source") == 0;
-    const char *failure_mode = s->sky ? s->mode + 4 : s->mode;
+    const char *failure_mode = s->sky ? s->mode + 4 : s->mushroom ? s->mode + 9 : s->mode;
     s->source =
         strcmp(failure_mode, "source-descendant") == 0 || strcmp(failure_mode, "source") == 0;
     s->leave_descendant =
         strcmp(failure_mode, "descendant") == 0 || strcmp(failure_mode, "source-descendant") == 0;
     VERIFY(ss_setup(&s->scalar.cq.source, argv[2]) == 0 && cq_files(&s->scalar.cq, true) == 0 &&
-           ps_open(s) == 0 && ((index < 3 || s->sky) ? ps_failure(s) : ps_values(s)) == 0 &&
+           ps_open(s) == 0 &&
+           ((s->source || s->leave_descendant) ? ps_failure(s) : ps_values(s)) == 0 &&
            ps_finish(s) == 0);
     free(s);
     puts("PLANT_SURVIVAL_OPEN finite-owned-leaf/full-wake/Arrow/original");

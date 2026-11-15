@@ -1,10 +1,11 @@
 # Build and development setup
 
 The working target is native x86-64 Linux and Windows, using C17 and CMake 3.24
-or newer. There is no playable client or dedicated C server yet. The default
-build includes a native graphical title screen and fixed generated-world
-inspection; see [client startup](client/startup.md) and
-[World rendering](client/world-renderer.md) for their scope and resources.
+or newer. Unrestricted play and the dedicated C server remain unfinished. The default
+build includes source menus, single-player World selection and a separate
+fixed generated-world inspection mode. Loaded gameplay has bounded scenario
+coverage; see [client startup](client/startup.md), [current status](status.md)
+and [World rendering](client/world-renderer.md) for scope and resources.
 Client compilation needs SDL's platform development dependencies, but ordinary
 tests need no display or original assets. Use `-DMC_BUILD_CLIENT=OFF` for shared
 libraries and tests without client dependencies. See

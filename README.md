@@ -6,8 +6,8 @@ headless server, reproducing the original behavior with locally selected
 usernames and no account authentication.
 
 Development currently focuses on the single-player client. Menus, world creation,
-existing-save loading, player input and parts of world rendering run, but the
-client is not playable yet. See [current status](docs/status.md) for progress and limitations,
+existing-save loading, player input and selected gameplay/save paths run.
+Unrestricted play remains unfinished. See [current status](docs/status.md) for progress and limitations,
 and the [parity matrix](docs/parity.md) for verified behavior.
 
 ## Build

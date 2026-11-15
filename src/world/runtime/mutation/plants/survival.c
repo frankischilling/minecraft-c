@@ -287,7 +287,8 @@ bool mc_world_mutation_plant_neighbor_in_execution(mc_world_mutation_execution_c
         return false;
     if (block == NULL || block->classes == NULL ||
         (block->kind != MC_BLOCK_FLOWER && block->kind != MC_BLOCK_SAPLING &&
-         block->kind != MC_BLOCK_TALL_GRASS) ||
+         block->kind != MC_BLOCK_TALL_GRASS && block->kind != MC_BLOCK_DEAD_BUSH &&
+         block->kind != MC_BLOCK_CROPS && block->kind != MC_BLOCK_MUSHROOM) ||
         block->classes->options.side != MC_REGISTRY_CLIENT) {
         mc_world_runtime_execution_result_note(mc_world_mutation_execution_result_of(owned),
                                                MC_WORLD_STORAGE_UNSUPPORTED_STATE,

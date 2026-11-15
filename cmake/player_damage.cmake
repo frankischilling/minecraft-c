@@ -96,6 +96,16 @@ if(BUILD_TESTING)
         set_tests_properties("entity.player_damage_wake_owned_${wake_name}" PROPERTIES
             LABELS "public;integration;entity;world;ownership" TIMEOUT 180)
     endforeach()
+    add_executable(mc_test_player_plant_damage_wake tests/entity/player/test_plant_damage_wake.c)
+    target_include_directories(mc_test_player_plant_damage_wake PRIVATE src src/platform/time)
+    target_link_libraries(mc_test_player_plant_damage_wake PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_build_options)
+    add_test(NAME entity.player_plant_damage_wake_reference COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/remaining_plants_wake/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_player_plant_damage_wake>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/player-plant-damage-wake-original")
+    set_tests_properties(entity.player_plant_damage_wake_reference PROPERTIES
+        LABELS "public;integration;entity;world;ownership;reference;replay" TIMEOUT 300)
     add_executable(mc_test_player_damage_wake_original tests/entity/player/test_damage_wake_original.c)
     target_include_directories(mc_test_player_damage_wake_original PRIVATE src src/platform/time)
     target_link_libraries(mc_test_player_damage_wake_original PRIVATE
@@ -150,6 +160,16 @@ if(BUILD_TESTING)
             ${_mc_damage_wake_python_options}
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/sapling_tall_grass_wake/test_packet.py")
         set_tests_properties("tools.sapling_tall_grass_wake_packet_${mode}" PROPERTIES
+            LABELS "public;unit;entity;world;reference;tools" TIMEOUT 90)
+        add_test(NAME "tools.remaining_plants_wake_packet_${mode}" COMMAND Python3::Interpreter
+            ${_mc_damage_wake_python_options}
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/remaining_plants_wake/test_packet.py")
+        set_tests_properties("tools.remaining_plants_wake_packet_${mode}" PROPERTIES
+            LABELS "public;unit;entity;world;reference;tools" TIMEOUT 90)
+        add_test(NAME "tools.remaining_plants_wake_native_${mode}" COMMAND Python3::Interpreter
+            ${_mc_damage_wake_python_options}
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/entity/remaining_plants_wake/test_native.py")
+        set_tests_properties("tools.remaining_plants_wake_native_${mode}" PROPERTIES
             LABELS "public;unit;entity;world;reference;tools" TIMEOUT 90)
     endforeach()
     add_executable(mc_test_player_death tests/entity/player/test_death.c)

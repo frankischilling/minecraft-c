@@ -832,7 +832,7 @@ bool mc_world_mutation_execution_plant_survives(mc_world_mutation_execution_call
     mc_world_plant_execution_init(call->plant, call->context.execution, call->context.code_classes,
                                   call->context.code, call->context.world, site,
                                   call->context.result);
-    const bool completed = mc_world_runtime_flower_survives_in_execution(
+    const bool completed = mc_world_runtime_plant_survives_in_execution(
         call->plant, world, block, x, y, z, out, &call->plant_status);
     call->plant_returned = true;
     *raw = call->plant_status;

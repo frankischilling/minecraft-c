@@ -48,3 +48,7 @@ remain open.
 Import original resources locally. After import, ordinary runtime operation needs
 no JVM, original archive or account services. Original resources and reference
 binaries remain outside the distributed project.
+
+[Dead Bush, Crops and Mushroom neighbors](Combat-and-projectiles#dead-bush-crops-and-mushrooms-during-wake)
+now share retained wake execution. Prepared original comparisons and native
+Arrow-hit controls keep their separate qualification scopes.
