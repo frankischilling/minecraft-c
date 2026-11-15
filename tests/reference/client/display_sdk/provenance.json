@@ -10027,7 +10027,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "2cc32838e0da97363615c3d73ea6a0a1b6b91491a3860cdbc5ffd100e1cb36ca"
+      "sha256": "7bebeba4df332b8c3423aa1fde6832eb17ebe115f5e4694c536f72afac353df3"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,
@@ -10035,7 +10035,7 @@
     },
     "tests/tools/entity/test_damage_native_close.py": {
       "bytes": 17605,
-      "sha256": "11926b78c4d917e21b7d292dd056eefc4447909ff3c09abdcaf09fe6916699a8"
+      "sha256": "cea1023ae54801d14a76af568db848aa7306f65497563d3d99ec1ad73f8c0eb1"
     },
     "tests/world/runtime/world_access/test_damage_close_execution.c": {
       "bytes": 30398,
@@ -10318,8 +10318,8 @@
       "sha256": "3b68ed26967b42555daa94bfc88d4c0eb445a2bea348d05f2d8b56fa38ec33f9"
     },
     "CMakeLists.txt": {
-      "bytes": 352154,
-      "sha256": "9102a04175374cd3602a6ad1158f7fdcab0fa3dc357dbdf7662086a1be18fa38"
+      "bytes": 352201,
+      "sha256": "9cfe51e64fc0a5527ec9e0a5a190b29548fe7392bcfabcbb187263842ad8735e"
     },
     "cmake/client_arrow_pig.cmake": {
       "bytes": 2700,

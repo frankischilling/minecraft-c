@@ -441,11 +441,22 @@ static bool in_domain(int32_t x, int32_t y, int32_t z) {
     return x >= -32000000 && x < 32000000 && z >= -32000000 && z <= 32000000 && y >= 0 && y < 128;
 }
 
-static mc_world_storage_status result(mc_world_mutation_error *out,
-                                      mc_world_mutation_error *frame) {
-    const mc_world_storage_status status = frame->status;
-    if (out != NULL)
-        *out = *frame;
+/* Ordinary wrappers project canonical success only at their returned output.
+ * Retained calls still reset their own frame before raw/projection/retirement. */
+typedef enum mutation_success_diagnostic {
+    MUTATION_SUCCESS_PROJECT_CALLER,
+    MUTATION_SUCCESS_RESET_RETAINED
+} mutation_success_diagnostic;
+
+static mc_world_storage_status result(mc_world_mutation_error *out, mc_world_mutation_error *frame,
+                                      bool completed) {
+    const mc_world_storage_status status = completed ? MC_WORLD_STORAGE_OK : frame->status;
+    if (out != NULL) {
+        if (completed)
+            mc_world_mutation_error_init(out);
+        else
+            *out = *frame;
+    }
     free(frame);
     return status;
 }
@@ -694,7 +705,8 @@ static bool notify_and_neighbors(mc_world_runtime *world, int32_t x, int32_t y, 
 
 static bool set_body(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int32_t id,
                      bool with_metadata, int32_t metadata, bool notify, bool *out,
-                     mc_world_mutation_error *frame, mc_world_mutation_execution_call *owned) {
+                     mc_world_mutation_error *frame, mc_world_mutation_execution_call *owned,
+                     mutation_success_diagnostic success_diagnostic) {
     const mc_entity_tick_execution_site site = {
         "fd", with_metadata ? (notify ? "b" : "a") : (notify ? "f" : "c"),
         with_metadata ? "(IIIII)Z" : "(IIII)Z", 0};
@@ -710,7 +722,8 @@ static bool set_body(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, i
     }
     if (completed) {
         *out = changed;
-        mc_world_mutation_error_init(frame);
+        if (success_diagnostic == MUTATION_SUCCESS_RESET_RETAINED)
+            mc_world_mutation_error_init(frame);
     }
     mc_world_runtime_call_leave(world);
     return completed;
@@ -730,8 +743,9 @@ static mc_world_storage_status set(mc_world_runtime *world, int32_t x, int32_t y
     mc_world_mutation_error *frame = workspace(world, error);
     if (frame == NULL)
         return MC_WORLD_STORAGE_ALLOCATION_FAILED;
-    (void)set_body(world, x, y, z, id, with_metadata, metadata, notify, out, frame, NULL);
-    return result(error, frame);
+    const bool completed = set_body(world, x, y, z, id, with_metadata, metadata, notify, out, frame,
+                                    NULL, MUTATION_SUCCESS_PROJECT_CALLER);
+    return result(error, frame, completed);
 }
 
 mc_world_storage_status mc_world_runtime_block_set_quiet(mc_world_runtime *world, int32_t x,
@@ -820,7 +834,8 @@ static bool metadata_quiet(mc_world_runtime *world, int32_t x, int32_t y, int32_
 
 static bool metadata_body(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
                           int32_t metadata, mc_world_mutation_error *frame,
-                          mc_world_mutation_execution_call *owned) {
+                          mc_world_mutation_execution_call *owned,
+                          mutation_success_diagnostic success_diagnostic) {
     if (!enter(world, frame, owned, metadata_site))
         return false;
     bool completed = false;
@@ -872,7 +887,8 @@ static bool metadata_body(mc_world_runtime *world, int32_t x, int32_t y, int32_t
             goto leave;
     }
     completed = true;
-    mc_world_mutation_error_init(frame);
+    if (success_diagnostic == MUTATION_SUCCESS_RESET_RETAINED)
+        mc_world_mutation_error_init(frame);
 leave:
     mc_world_runtime_call_leave(world);
     return completed;
@@ -891,8 +907,9 @@ mc_world_storage_status mc_world_runtime_metadata_set(mc_world_runtime *world, i
     mc_world_mutation_error *frame = workspace(world, error);
     if (frame == NULL)
         return MC_WORLD_STORAGE_ALLOCATION_FAILED;
-    (void)metadata_body(world, x, y, z, metadata, frame, NULL);
-    return result(error, frame);
+    const bool completed =
+        metadata_body(world, x, y, z, metadata, frame, NULL, MUTATION_SUCCESS_PROJECT_CALLER);
+    return result(error, frame, completed);
 }
 
 static bool admit_owned(const mc_world_mutation_execution_context *context, mc_world_runtime *world,
@@ -968,7 +985,8 @@ bool mc_world_runtime_metadata_set_in_execution(const mc_world_mutation_executio
     mc_world_mutation_execution_call *call = start_owned(context, slot, lease, metadata_site);
     if (call == NULL)
         return false;
-    const bool completed = metadata_body(world, x, y, z, metadata, &call->error, call);
+    const bool completed = metadata_body(world, x, y, z, metadata, &call->error, call,
+                                         MUTATION_SUCCESS_RESET_RETAINED);
     return finish_owned(slot, completed, raw, out, metadata_site, true);
 }
 
@@ -991,8 +1009,8 @@ static bool block_set_owned(const mc_world_mutation_execution_context *context,
     if (call == NULL)
         return false;
     bool changed = false;
-    const bool completed =
-        set_body(world, x, y, z, id, false, 0, true, &changed, &call->error, call);
+    const bool completed = set_body(world, x, y, z, id, false, 0, true, &changed, &call->error,
+                                    call, MUTATION_SUCCESS_RESET_RETAINED);
     if (!finish_owned(slot, completed, raw, error, block_site, project_success))
         return false;
     *out = changed;
@@ -1052,8 +1070,8 @@ bool mc_world_mutation_execution_set_quiet(mc_world_mutation_execution_call *cal
     if (child == NULL)
         return false;
     bool changed = false;
-    const bool completed =
-        set_body(world, x, y, z, id, true, metadata, false, &changed, &child->error, child);
+    const bool completed = set_body(world, x, y, z, id, true, metadata, false, &changed,
+                                    &child->error, child, MUTATION_SUCCESS_RESET_RETAINED);
     if (!finish_owned(&call->child, completed, &raw, error, site, true))
         return false;
     *out = changed;
