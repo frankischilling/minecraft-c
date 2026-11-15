@@ -82,7 +82,17 @@ static bool ap_mushroom(const ap_fixture *s) {
 }
 
 static bool ap_remaining(const ap_fixture *s) {
-    return ap_dead_bush(s) || ap_crops(s) || ap_mushroom(s);
+    return ap_dead_bush(s) || ap_crops(s) || ap_mushroom(s) ||
+           strncmp(s->mode, "wake-bed-cactus", 15) == 0 ||
+           strncmp(s->mode, "wake-bed-reeds", 14) == 0;
+}
+
+static bool ap_cactus(const ap_fixture *s) {
+    return strncmp(s->mode, "wake-bed-cactus", 15) == 0;
+}
+
+static bool ap_reeds(const ap_fixture *s) {
+    return strncmp(s->mode, "wake-bed-reeds", 14) == 0;
 }
 
 static bool ap_plant(const ap_fixture *s) {
@@ -98,7 +108,8 @@ static bool ap_plant_normal(const ap_fixture *s) {
            ap_is(s, "wake-bed-tall-grass") || ap_is(s, "wake-bed-tall-grass-no-item") ||
            ap_is(s, "wake-bed-dead-bush") || ap_is(s, "wake-bed-crops") ||
            ap_is(s, "wake-bed-crops-max-items") || ap_is(s, "wake-bed-mushroom") ||
-           ap_is(s, "wake-bed-mushroom-high-light");
+           ap_is(s, "wake-bed-mushroom-high-light") || ap_is(s, "wake-bed-cactus") ||
+           ap_is(s, "wake-bed-reeds");
 }
 
 static bool ap_removal(const ap_fixture *s) {
@@ -109,7 +120,8 @@ static bool ap_removal(const ap_fixture *s) {
            ap_is(s, "wake-bed-tall-grass-removal-source") ||
            ap_is(s, "wake-bed-dead-bush-removal-source") ||
            ap_is(s, "wake-bed-crops-removal-source") ||
-           ap_is(s, "wake-bed-mushroom-removal-source");
+           ap_is(s, "wake-bed-mushroom-removal-source") ||
+           ap_is(s, "wake-bed-cactus-removal-source") || ap_is(s, "wake-bed-reeds-removal-source");
 }
 
 static bool ap_attached_neighbor(const ap_fixture *s) {
@@ -117,7 +129,9 @@ static bool ap_attached_neighbor(const ap_fixture *s) {
 }
 
 static uint8_t ap_neighbor_id(const ap_fixture *s) {
-    return (uint8_t)(ap_dead_bush(s)    ? 32
+    return (uint8_t)(ap_cactus(s)       ? 81
+                     : ap_reeds(s)      ? 83
+                     : ap_dead_bush(s)  ? 32
                      : ap_crops(s)      ? 59
                      : ap_mushroom(s)   ? 39
                      : ap_sapling(s)    ? 6
@@ -128,17 +142,18 @@ static uint8_t ap_neighbor_id(const ap_fixture *s) {
 }
 
 static uint8_t ap_neighbor_metadata(const ap_fixture *s) {
-    return (uint8_t)(ap_crops(s)                         ? 7
-                     : ap_dead_bush(s) || ap_mushroom(s) ? 0
-                     : ap_sapling(s)                     ? 2
-                     : ap_tall_grass(s)                  ? 1
-                     : ap_flower(s)                      ? 0
-                     : ap_torch(s)                       ? 1
-                                                         : 2);
+    return (uint8_t)(ap_crops(s)                                                        ? 7
+                     : ap_dead_bush(s) || ap_mushroom(s) || ap_cactus(s) || ap_reeds(s) ? 0
+                     : ap_sapling(s)                                                    ? 2
+                     : ap_tall_grass(s)                                                 ? 1
+                     : ap_flower(s)                                                     ? 0
+                     : ap_torch(s)                                                      ? 1
+                                                                                        : 2);
 }
 
 static int32_t ap_item_id(const ap_fixture *s) {
-    return ap_crops(s)               ? (s->additions == 1 ? 296 : 295)
+    return ap_reeds(s)               ? 338
+           : ap_crops(s)             ? (s->additions == 1 ? 296 : 295)
            : ap_tall_grass(s)        ? 295
            : ap_attached_neighbor(s) ? (int32_t)ap_neighbor_id(s)
                                      : 355;
@@ -153,7 +168,7 @@ static size_t ap_item_count(const ap_fixture *s) {
 }
 
 static uint8_t ap_plant_floor(const ap_fixture *s) {
-    return ap_dead_bush(s) || ap_is(s, "wake-bed-mushroom-high-light") ? 2 : 0;
+    return ap_cactus(s) ? 12 : ap_dead_bush(s) || ap_is(s, "wake-bed-mushroom-high-light") ? 2 : 0;
 }
 
 static uint8_t ap_plant_light(const ap_fixture *s) {
@@ -389,7 +404,8 @@ static mc_world_storage_status ap_added(void *context, mc_world_runtime *world, 
             (ap_is(s, "wake-bed-foot-source") || ap_is(s, "wake-bed-ladder-source") ||
              ap_is(s, "wake-bed-torch-source") || ap_is(s, "wake-bed-flower-source") ||
              ap_is(s, "wake-bed-sapling-source") || ap_is(s, "wake-bed-tall-grass-source") ||
-             ap_is(s, "wake-bed-mushroom-source") ||
+             ap_is(s, "wake-bed-mushroom-source") || ap_is(s, "wake-bed-cactus-source") ||
+             ap_is(s, "wake-bed-reeds-source") ||
              (ap_is(s, "wake-bed-crops-source") && s->additions == 2))) {
             const mc_world_storage_status status =
                 mc_world_access_receipt_create(s->observer, NULL, &s->receipt, failure, cause);
@@ -544,9 +560,10 @@ static bool ap_plant_prefix(ap_fixture *s, const char *phase, bool expected_pend
           sky == ap_plant_light(s) &&
           mc_chunk_nibbles_get(data->block_light, MC_CHUNK_NIBBLE_BYTES, 7, 64, 8, &block) &&
           block == 0 && data->heightmap[8u * 16u + 7u] == 64 && f->world->fields.f == 5 &&
-          f->app.world_classes->chunk_a && player->player.u == !normal &&
-          player->player.private_a == (normal ? 0 : 37) && player->living.Y == (normal ? 16 : 20) &&
-          player->living.av == 0 && f->world->fields.J == !normal && pending == expected_pending &&
+          f->app.world_classes->chunk_a == !(ap_cactus(s) || ap_reeds(s)) &&
+          player->player.u == !normal && player->player.private_a == (normal ? 0 : 37) &&
+          player->living.Y == (normal ? 16 : 20) && player->living.av == 0 &&
+          f->world->fields.J == !normal && pending == expected_pending &&
           s->sounds == (normal ? 2u : 0u) && s->impacts == (normal ? 1u : 0u));
     if (ap_no_item(s))
         CHECK(s->item == NULL && (s->receipt != NULL) == ap_removal(s));
@@ -565,8 +582,11 @@ static bool ap_plant_prefix(ap_fixture *s, const char *phase, bool expected_pend
             const mc_entity *item = s->plant_items[i];
             CHECK(item != NULL && item->base.bF && !item->base.be && item->item.c == 10 &&
                   mc_item_stack_fields_get(item->stack, &stack) == MC_ITEM_STACK_OK &&
-                  stack.id == (ap_crops(s) ? (i == 0 ? 296 : 295) : 39) && stack.count == 1 &&
-                  stack.damage == 0 && item->base.x == s->plant_positions[i][0] &&
+                  stack.id == (ap_crops(s)   ? (i == 0 ? 296 : 295)
+                               : ap_reeds(s) ? 338
+                                             : ap_neighbor_id(s)) &&
+                  stack.count == 1 && stack.damage == 0 &&
+                  item->base.x == s->plant_positions[i][0] &&
                   item->base.y == s->plant_positions[i][1] &&
                   item->base.z == s->plant_positions[i][2]);
             printf("ARROW_REMAINING_PLANTS_ITEM phase=%s index=%zu id=%d count=%d damage=%d "
@@ -784,10 +804,14 @@ static bool ap_bed_failure(ap_fixture *s, mc_arrow_tick_state *state) {
             hurt->error.player_wake.error == NULL ? NULL : hurt->error.player_wake.error->occupancy;
         CHECK(drop == NULL && occupancy != NULL && occupancy->mutation != NULL &&
               occupancy->mutation->hook_class != NULL &&
-              strcmp(occupancy->mutation->hook_class, ap_plant(s)   ? "wb"
+              strcmp(occupancy->mutation->hook_class, ap_cactus(s)  ? "or"
+                                                      : ap_reeds(s) ? "ri"
+                                                      : ap_plant(s) ? "wb"
                                                       : ap_torch(s) ? "vm"
                                                                     : "dp") == 0 &&
-              occupancy->mutation->hook_bytecode == (ap_plant(s)   ? 17u
+              occupancy->mutation->hook_bytecode == (ap_cactus(s)  ? 35u
+                                                     : ap_reeds(s) ? 6u
+                                                     : ap_plant(s) ? 17u
                                                      : ap_torch(s) ? 164u
                                                                    : 123u));
     } else {
@@ -801,11 +825,18 @@ static bool ap_bed_failure(ap_fixture *s, mc_arrow_tick_state *state) {
             hurt->error.player_wake.error == NULL ? NULL : hurt->error.player_wake.error->occupancy;
         const mc_world_mutation_error *mutation = occupancy == NULL ? NULL : occupancy->mutation;
         CHECK(mutation != NULL && mutation->hook_class != NULL &&
-              strcmp(mutation->hook_class, "wb") == 0 && mutation->hook_bytecode == 17 &&
-              mutation->cause_hook_class != NULL && strcmp(mutation->cause_hook_class, "wb") == 0 &&
-              mutation->cause_hook_method != NULL &&
-              strcmp(mutation->cause_hook_method, "h(Lfd;III)V") == 0 &&
-              mutation->cause_hook_bytecode == (removal ? 35u : 26u));
+              strcmp(mutation->hook_class, ap_cactus(s)  ? "or"
+                                           : ap_reeds(s) ? "ri"
+                                                         : "wb") == 0 &&
+              mutation->hook_bytecode == (ap_cactus(s)  ? (removal ? 35u : 26u)
+                                          : ap_reeds(s) ? 6u
+                                                        : 17u));
+        if (!ap_cactus(s))
+            CHECK(mutation->cause_hook_class != NULL &&
+                  strcmp(mutation->cause_hook_class, ap_reeds(s) ? "ri" : "wb") == 0 &&
+                  mutation->cause_hook_method != NULL &&
+                  strcmp(mutation->cause_hook_method, "h(Lfd;III)V") == 0 &&
+                  mutation->cause_hook_bytecode == (removal ? 35u : 26u));
     }
     CHECK(!hurt->error.living_damage.entered && f->player->local_player->fields.player.u &&
           f->player->local_player->fields.player.private_a == 37 && f->world->fields.J &&
@@ -968,6 +999,11 @@ int main(int argc, char **argv) {
          strcmp(argv[1], "wake-bed-mushroom-source") != 0 &&
          strcmp(argv[1], "wake-bed-mushroom-removal-source") != 0 &&
          strcmp(argv[1], "wake-bed-mushroom-high-light") != 0 &&
+         strcmp(argv[1], "wake-bed-cactus") != 0 &&
+         strcmp(argv[1], "wake-bed-cactus-source") != 0 &&
+         strcmp(argv[1], "wake-bed-cactus-removal-source") != 0 &&
+         strcmp(argv[1], "wake-bed-reeds") != 0 && strcmp(argv[1], "wake-bed-reeds-source") != 0 &&
+         strcmp(argv[1], "wake-bed-reeds-removal-source") != 0 &&
          strcmp(argv[1], "wake-source-null-list") != 0) ||
         CD(argv[3]) != 0 || !mc_math_trig_init(&trig))
         return 2;

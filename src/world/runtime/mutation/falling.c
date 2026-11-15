@@ -1,4 +1,5 @@
 #include "mutation_internal.h"
+#include "world_execution_internal.h"
 
 #include "../../../block/registry/registry_internal.h"
 #include "../../../block/registry/runtime_internal.h"
@@ -39,6 +40,7 @@ typedef struct falling_frame {
     mc_world_mutation_error *error;
     falling_method method;
     unsigned int tick_bytecode;
+    mc_world_mutation_execution_call *owned;
 } falling_frame;
 
 static const char *falling_method_name(const falling_frame *frame) {
@@ -186,7 +188,7 @@ bool mc_world_mutation_falling_can_pass(mc_world_runtime *world, mc_registry_cla
     if (classes == NULL || out == NULL)
         return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                                       "Falling predicate native arguments");
-    const falling_frame frame = {world, classes, NULL, error, FALLING_PREDICATE, 0};
+    const falling_frame frame = {world, classes, NULL, error, FALLING_PREDICATE, 0, NULL};
     if (!falling_predicate_active_use(&frame))
         return false;
 
@@ -426,6 +428,16 @@ static bool falling_schedule(const falling_frame *frame, int32_t x, int32_t y, i
     if (!falling_delay(frame, &delay))
         return false;
     falling_at(frame, 13);
+    if (frame->owned != NULL) {
+        const mc_entity_tick_execution_site site = {"gk", "b", "(Lfd;IIII)V", 13};
+        if (mc_world_mutation_execution_schedule(frame->owned, frame->world, x, y, z, id, delay,
+                                                 frame->error, site))
+            return falling_return(frame);
+        if (mc_world_mutation_execution_result_of(frame->owned)->ownership_status !=
+            MC_WORLD_STORAGE_OK)
+            return false;
+        return falling_nested(frame, 13, frame->error);
+    }
     mc_world_schedule_error *scheduled = malloc(sizeof(*scheduled));
     if (scheduled == NULL)
         return falling_fail(frame, 13, MC_WORLD_STORAGE_ALLOCATION_FAILED,
@@ -466,7 +478,7 @@ static bool falling_schedule(const falling_frame *frame, int32_t x, int32_t y, i
 
 bool mc_world_mutation_falling_added(mc_world_runtime *world, const mc_block *block, int32_t x,
                                      int32_t y, int32_t z, mc_world_mutation_error *error) {
-    const falling_frame frame = {world, block->classes, block, error, FALLING_ADDED, 0};
+    const falling_frame frame = {world, block->classes, block, error, FALLING_ADDED, 0, NULL};
     return falling_schedule(&frame, x, y, z);
 }
 
@@ -474,7 +486,7 @@ bool mc_world_mutation_falling_neighbor(mc_world_runtime *world, const mc_block 
                                         int32_t y, int32_t z, int32_t source_id,
                                         mc_world_mutation_error *error) {
     (void)source_id; /* The actual inherited neighbor body never reads it. */
-    const falling_frame frame = {world, block->classes, block, error, FALLING_NEIGHBOR, 0};
+    const falling_frame frame = {world, block->classes, block, error, FALLING_NEIGHBOR, 0, NULL};
     return falling_schedule(&frame, x, y, z);
 }
 
@@ -482,7 +494,28 @@ bool mc_world_mutation_falling_tick(mc_world_runtime *world, const mc_block *blo
                                     int32_t y, int32_t z, mc_java_random *random,
                                     mc_world_mutation_error *error) {
     (void)random; /* NULL is valid: a(World,III,Random) does not read this argument. */
-    const falling_frame frame = {world, block->classes, block, error, FALLING_PRIVATE, 6};
+    const falling_frame frame = {world, block->classes, block, error, FALLING_PRIVATE, 6, NULL};
     error->falling_tick_bytecode = 6; /* Actual invokespecial private h/g6. */
     return falling_private(&frame, x, y, z);
+}
+
+bool mc_world_mutation_falling_neighbor_in_execution(mc_world_mutation_execution_call *owned,
+                                                     mc_world_runtime *world, const mc_block *block,
+                                                     int32_t x, int32_t y, int32_t z,
+                                                     int32_t source_id,
+                                                     mc_world_mutation_error *error) {
+    (void)source_id;
+    const mc_entity_tick_execution_site site = {"gk", "b", "(Lfd;IIII)V", 0};
+    if (!mc_world_mutation_execution_current(owned, world, site))
+        return false;
+    if (block == NULL || block->classes == NULL || error == NULL ||
+        (block->kind != MC_BLOCK_SAND && block->kind != MC_BLOCK_GRAVEL) ||
+        block->classes->options.side != MC_REGISTRY_CLIENT) {
+        mc_world_runtime_execution_result_note(mc_world_mutation_execution_result_of(owned),
+                                               MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                               "Retained falling neighbor receiver", site);
+        return false;
+    }
+    const falling_frame frame = {world, block->classes, block, error, FALLING_NEIGHBOR, 0, owned};
+    return falling_schedule(&frame, x, y, z);
 }

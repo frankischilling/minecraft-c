@@ -94,6 +94,9 @@ typedef struct pw_state {
     pw_item items[4];
 } pw_state;
 
+#ifndef PW_EVENT_CAPACITY
+#define PW_EVENT_CAPACITY 6
+#endif
 typedef struct pw_observation {
     sw_fixture *fixture;
     const pw_profile *profile;
@@ -102,7 +105,7 @@ typedef struct pw_observation {
     mc_world_access *listener;
     mc_world_access_receipt *receipt;
     mc_entity *items[4]; /* Actual published World occurrences, borrowed while live. */
-    pw_event events[6];
+    pw_event events[PW_EVENT_CAPACITY];
     size_t count, event_count, cells, base_entities;
     bool valid;
 } pw_observation;
@@ -605,7 +608,10 @@ cleanup:
     return ok;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_PLANT_DAMAGE_WAKE_ENTRY
+#define MC_PLANT_DAMAGE_WAKE_ENTRY main
+#endif
+int MC_PLANT_DAMAGE_WAKE_ENTRY(int argc, char **argv) {
     char root[8192];
     if (argc != 3 || !decode_path(argv[2], root, sizeof(root)) || !mc_math_trig_init(&trig))
         return 2;

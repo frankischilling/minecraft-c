@@ -916,7 +916,7 @@ The Linux run uses an exact 5,914-file source copy on ext4; all original ELF
 paths, working directories, selected names, limits and resource locks remain
 unchanged. Source and native artifact hashes match before and after. The first
 Windows-mounted-source cohort was deliberately interrupted after 29 completed
-tests because its source guards took 111ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“141 seconds per case; its partial
+tests because its source guards took 111 to 141 seconds per case; its partial
 results remain separate. This is test transport work, with no gameplay speedup
 claim. The full 729-test Linux configuration is not a local full-suite result.
 
@@ -1947,7 +1947,7 @@ source-loader execution or original-runtime comparison.
 The [earlier retirement CPU cohort](performance/player-ally-retire.md) retains all
 2,520 measured calls from 12 serial processes on one compiled observer and
 identical ordered core archive graph. Distinct/repeated 1,024-entry Lists fall
-from median 4,695.9/4,868.65 ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âµs to 21.05/9.4 ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Âµs. Tiny Lists, insufficient-hold
+from median 4,695.9/4,868.65 microseconds to 21.05/9.4 microseconds. Tiny Lists, insufficient-hold
 refusal/retry, source fields and Random preservation pass. Forced optional
 allocation failure keeps the previous scan and cleanup result. All 1,901
 source/product/resource/region guards remain unchanged. This measures checked
@@ -2499,7 +2499,7 @@ under `-Wconversion -Werror`. Integer promotion makes the byte operand an
 `int` before the unsigned mask. No GCC runtime test executes. The local
 GCC 13.3 strict, sanitizer-enabled syntax check reproduces both diagnostics.
 Each fixture now explicitly promotes its byte to `unsigned int` before the
-shift. Byte values remain 0ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“255 and decoded nibbles remain 0ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“15; production
+shift. Byte values remain 0 to 255 and decoded nibbles remain 0 to 15; production
 code, original data and assertions are unchanged. The same strict GCC check
 then passes, as do the native Windows and Clang fixture builds. The hosted
 failure retains its exact-checkpoint scope; follow-up results are separate.
@@ -3183,7 +3183,7 @@ The private Linux phase observation reaches a 36.165-second random-Chunk body,
 including 33.716 seconds in 32 actual population callbacks. All 1,235,464 GETs
 are generic. Its inherited Food observer unconditionally exports the provider
 before admission; snapshots show raw_exports=1, owned=false and cache counts
-310ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“362, with a whole-capture maximum of 382. This establishes that observer
+310 to 362, with a whole-capture maximum of 382. This establishes that observer
 escape, not that the generic validator accounts for all population time. The
 larger-map optimization is not exercised. The [performance notes](performance/world-queries.md#retained-linux-phase-diagnosis)
 keep overlapping intervals and the separate Source-progress exposure explicit.
@@ -9978,3 +9978,91 @@ Both preserve 2,401 source/product inputs and 413 imported resources through
 the run. Independent NBT readback, all six inspected captures and complete
 window cleanup pass. These are bounded native scenes, not original graphical
 damage-wake comparisons or performance measurements.
+
+
+## Cactus and Reeds during Player wake
+
+The [original packet](../tests/reference/entity/upright_plants_wake/README.md)
+records 21 predeclared prepared calls from each of two fresh unchanged-original
+JDK17 VMs. Complete streams agree. Actual Cactus/Reeds, Player, World, Chunk,
+Material, fluid and scheduler classes run unchanged. The observer passively
+reads scheduler class initialization without initializing or resetting it.
+
+Windows native replay pairs 2,628 selected original values. Four missing-Math
+controls include a supported no-Item branch matching another 70 values. Replay
+checks all five Chunk planes, complete three-cell columns, Player state,
+seeded World/Player/Math streams, ordered Items with raw position/motion/phase/
+yaw, callbacks, Water cells, World.o and exact scheduled class/queue state.
+Each separate native process receives the original before-state initialization
+flag and sequence as explicit prepared class-state inputs. The native fixture
+uses the same single loaded central Chunk; no relative sequence or queue
+normalization is applied. Original Item entropy, Java stacks and natural
+constructor ordering remain outside native pairing.
+
+Both kinds preserve recursive three-cell removal. Publication exceptions at
+the first or second Item and lower/middle removal exceptions retain distinct
+prefixes. Still Water directly below the Bed converts to flowing Water, emits
+its actual range callback while World.o is true and requests two scheduled
+records. Its range-observer exception retains the first request and converted
+cell, leaves World.o true and never reaches the second request or Player wake.
+Absent radius Chunks leave the queues empty while the actual class sequence
+advances. North-adjacent Water also changes the real Bed exit position; replay
+preserves that pose difference.
+
+Thirty-nine owned survival modes include Cactus/Reeds cold material failures,
+retained descendants, mixed source/native failures, successful getter refusal,
+nullable Material, short circuits and unchanged borrowed canonical state.
+Six additional actual Arrow hits cover both kinds' normal, publication-error
+and removal-error paths. They preserve complete Random and committed prefixes
+through five unwind observations; these Arrow cases have separate native
+integration scope. Normal and optimized receipt controls each reject 110
+malformed remaining-plant receipts, alongside the earlier 37 family controls.
+
+Standalone retained scheduler/setter controls cover absent and present radius,
+due time, sequence consumption for duplicates, separate F/E failure prefixes,
+Info short circuits, immediate mismatch and the reached virtual-tick frontier.
+The same five-argument Chunk setter preserves both metadata stores and exact
+hook/light/height/column order. Native cases cover nonzero metadata, identical
+same-ID metadata, an unmasked value that still produces a source change, and
+Still Water conversion retaining level 3. These controls have no independent
+original runtime comparison. Owned Lava mixing at its first material query and
+immediate scheduled virtual ticks remain explicit unfinished joins.
+
+The first native runs retained real Sand-neighbor and Water-conversion refusals.
+Their actual scheduler, quiet setter, added-hook and range paths now share
+retained execution. A further review caught the owned quiet path selecting the
+four-argument Chunk body for metadata writes. The complete five-argument body
+and its distinct descriptor/capture sites now run instead; metadata checks
+cover the demonstrated difference. No profile was replaced or skipped to
+avoid these reached effects. Natural growth/ticks, unrestricted encounters,
+graphical sleeping damage, original pixels/audio, sustained play and FPS
+remain unqualified.
+
+
+The full Windows MSVC Release suite passes 1,241/1,241 tests in 472.26 seconds.
+JUnit contains 1,241 unique cases with no failure, error, skip or unrun case.
+All 6,142 frozen source files stay unchanged during that run. The focused Linux
+Clang Debug selection passes 107/107 cases in 44.52 seconds with ASan, UBSan and
+leak detection. Both hosts match all 2,698 selected original values above.
+The Linux selection includes earlier wake families, actual Arrow hits, shared
+mutation/height, scheduling, fluid and falling regressions; it is not a complete
+Linux suite. In an isolated build, the preceding upright-neighbor branches
+fail all 21 new original-paired profiles without sanitizer errors. Restoring
+the candidate passes the focused suite.
+
+Strict GCC13 -O2 compilation passes the three new/expanded fixture units with
+all warnings enabled. The first strict attempt caught an imported scheduling
+fixture typedef named child shadowing a lower helper local. Renaming that
+fixture type preserves runtime statements and all diagnostics. Failed captures
+and compiler output remain retained. Current source bindings and pinned
+formatting pass for 2,386 C files/fragments. Later publication edits affect
+prose and its current bindings only; historical range/unit encoding repairs
+preserve the recorded values.
+
+Fresh monitor-2 Bed and Arrow/Pig scenes pass 1,500 and 413 native checks.
+Independent NBT readback, six inspected frames and complete window cleanup pass.
+Each scene preserves 2,404 source/product inputs and 413 imported resources.
+The temporary Linux source/build is removed after retaining exact source and
+product hashes, native captures, baseline failures and test logs. These scenes
+and component comparisons do not establish natural graphical damage wake,
+original audiovisual equality, sustained play or an FPS improvement.

@@ -114,6 +114,9 @@ static bool sw_retire(sw_fixture *s) {
     return ok;
 }
 
+#ifndef MC_SLEEP_WAKE_PRELOAD_NEIGHBORS
+#define MC_SLEEP_WAKE_PRELOAD_NEIGHBORS 1
+#endif
 static bool sw_prepare(sw_fixture *s, const char *root, const int32_t input[5]) {
     bool ok = false;
     s->world = calloc(1, sizeof(*s->world));
@@ -122,6 +125,7 @@ static bool sw_prepare(sw_fixture *s, const char *root, const int32_t input[5]) 
     mc_world_runtime *world = f->worlds[0];
     /* The actual Bed helper captures this loaded normal-Chunk footprint.
      * Source exit probes for these profiles stay in the central Chunk. */
+#if MC_SLEEP_WAKE_PRELOAD_NEIGHBORS
     for (int32_t x = -2; x <= 1; ++x)
         for (int32_t z = -2; z <= 1; ++z) {
             if (x == 0 && z == 0)
@@ -131,6 +135,7 @@ static bool sw_prepare(sw_fixture *s, const char *root, const int32_t input[5]) 
                   mc_world_runtime_get(world, x, z, &chunk) == MC_CHUNK_ACQUIRE_OK &&
                   chunk != NULL && !chunk->blank && chunk->data != NULL);
         }
+#endif
     CHECK(mc_world_info_spawn_set(world->fields.x, 8, 64, 8) == MC_WORLD_INFO_OK);
     mc_chunk_data *data = f->states[0]->data;
     memset(data->blocks, 0, MC_CHUNK_BLOCKS);

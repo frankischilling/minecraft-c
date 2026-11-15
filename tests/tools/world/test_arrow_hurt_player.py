@@ -16,7 +16,9 @@ FAMILY_MODES = ('wake-bed-sapling', 'wake-bed-sapling-source', 'wake-bed-sapling
 REMAINING_MODES = ('wake-bed-dead-bush', 'wake-bed-dead-bush-removal-source',
                    'wake-bed-crops', 'wake-bed-crops-source', 'wake-bed-crops-removal-source',
                    'wake-bed-crops-max-items', 'wake-bed-mushroom', 'wake-bed-mushroom-source',
-                   'wake-bed-mushroom-removal-source', 'wake-bed-mushroom-high-light')
+                   'wake-bed-mushroom-removal-source', 'wake-bed-mushroom-high-light',
+                   'wake-bed-cactus', 'wake-bed-cactus-source', 'wake-bed-cactus-removal-source',
+                   'wake-bed-reeds', 'wake-bed-reeds-source', 'wake-bed-reeds-removal-source')
 
 
 def remaining_spec(mode):
@@ -24,8 +26,10 @@ def remaining_spec(mode):
         raise ValueError('Declared remaining plant mode required')
     dead = mode.startswith('wake-bed-dead-bush')
     crops = mode.startswith('wake-bed-crops')
+    cactus = mode.startswith('wake-bed-cactus')
+    reeds = mode.startswith('wake-bed-reeds')
     high = mode == 'wake-bed-mushroom-high-light'
-    source = mode in ('wake-bed-crops-source', 'wake-bed-mushroom-source')
+    source = mode.endswith('-source') and not mode.endswith('-removal-source')
     removal = mode.endswith('-removal-source')
     normal = not source and not removal
     seed = 0x7fffffff if mode == 'wake-bed-crops-max-items' else 1
@@ -58,7 +62,7 @@ def remaining_spec(mode):
 
     bits(24)  # Inherited chance float precedes actual Item selection, even for -1.
     if not dead:
-        item(296 if crops else 39)
+        item(296 if crops else 81 if cactus else 338 if reeds else 39)
     if crops:
         for _ in range(3):
             while True:
@@ -73,8 +77,9 @@ def remaining_spec(mode):
     count = 0 if dead else 4 if mode == 'wake-bed-crops-max-items' else 2 if crops else 1
     if len(items) != count or draws != (1 if dead else 16 if count == 4 else 9 if crops and source else 10 if crops else 4):
         raise ValueError('Declared finite remaining plant LCG outcome')
-    return {'plant': '32:0' if dead else '59:7' if crops else '39:0',
-            'floor': '2:0' if dead or high else '0:0', 'sky': '13' if high else '15' if dead or crops else '12',
+    return {'plant': '32:0' if dead else '59:7' if crops else '81:0' if cactus else '83:0' if reeds else '39:0',
+            'floor': '12:0' if cactus else '2:0' if dead or high else '0:0',
+            'sky': '13' if high else '15' if dead or crops or cactus or reeds else '12',
             'normal': normal, 'removed': normal or removal, 'seed': seed,
             'initial': seed ^ 0x5deece66d, 'state': state, 'draws': draws, 'items': items,
             'phases': ['returned'] if normal else ['diagnostic', 'capture', 'hurt-close', 'hurt-cleanup', 'quiescent']}
@@ -394,6 +399,12 @@ def remaining_parser_controls():
         ('wake-bed-mushroom-source', 'PUBLICATION', 0, 'plant', '0:0'),
         ('wake-bed-mushroom-removal-source', 'PREFIX', 4, 'world-gaussian', '0000000000000000'),
         ('wake-bed-mushroom-high-light', 'INPUT', 0, 'floor', '0:0'),
+        ('wake-bed-cactus', 'INPUT', 0, 'floor', '0:0'),
+        ('wake-bed-cactus-source', 'PUBLICATION', 0, 'id', '338'),
+        ('wake-bed-cactus-removal-source', 'PREFIX', 4, 'sleeping', '0'),
+        ('wake-bed-reeds', 'PUBLICATION', 0, 'id', '83'),
+        ('wake-bed-reeds-source', 'PREFIX', 2, 'plant', '0'),
+        ('wake-bed-reeds-removal-source', 'PREFIX', 4, 'world-seed', '0000000000000001'),
     )
     refused = 0
     for mode, kind, occurrence, key, value in changes:
@@ -427,9 +438,10 @@ def remaining_parser_controls():
                 refused += 1
             else:
                 raise ValueError('Malformed remaining Arrow plant receipt accepted')
-    if refused != 74:
+    if refused != len(changes) + 5 * len(REMAINING_MODES):
         raise ValueError('Every malformed remaining Arrow plant receipt must be refused')
-    print('PASS: ten synthetic remaining Arrow plant modes; 74 malformed receipts refused; no native process')
+    print(f'PASS: {len(REMAINING_MODES)} synthetic remaining Arrow plant modes; '
+          f'{refused} malformed receipts refused; no native process')
 
 
 def main():

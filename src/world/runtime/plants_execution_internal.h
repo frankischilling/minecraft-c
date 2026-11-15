@@ -4,8 +4,9 @@
 #include "blocks_execution_internal.h"
 #include "mc/world/runtime/plants.h"
 #include "queries_execution_internal.h"
+#include "registry_execution_internal.h"
 
-/* SAME virtual Flower-family survival bodies. The caller retains the defining code and actual
+/* SAME virtual plant survival bodies. The caller retains the defining code and actual
  * receiver graphs, the evaluated World and its exact token. This frame borrows
  * their canonical result without initializing it or beginning another scope.
  *
@@ -14,7 +15,7 @@
  * can retire. Clear this frame's borrowed views before retiring their owners.
  * No Source retry, scope close, pending completion or owner retirement occurs
  * here. Raw status and native continuation are independent; only true permits
- * the ordinary Boolean output to be used. Cactus, reeds and pumpkins remain unjoined. */
+ * the ordinary Boolean output to be used. Pumpkin remains unjoined. */
 typedef struct mc_world_plant_execution {
     mc_entity_tick_execution *execution;
     mc_world_runtime_classes *code_classes;
@@ -25,9 +26,10 @@ typedef struct mc_world_plant_execution {
     mc_world_access_failure_lease *lease;
     mc_world_query_execution query;
     mc_world_block_execution block;
+    mc_world_material_execution material;
     mc_world_plant_error detail;
     mc_world_storage_error block_cause;
-    mc_world_storage_status query_status, block_status;
+    mc_world_storage_status query_status, block_status, material_status;
     bool entered, native_stopped, completed;
 } mc_world_plant_execution;
 

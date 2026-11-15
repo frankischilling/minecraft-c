@@ -240,6 +240,35 @@ static bool block_get(plant_frame *frame, unsigned int pc, int32_t x, int32_t y,
 static bool material_get(plant_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z,
                          mc_material **out) {
     frame->error->bytecode = pc;
+    if (frame->owned != NULL) {
+        mc_world_plant_execution *owned = frame->owned;
+        const mc_entity_tick_execution_site site = plant_site(frame, pc);
+        if (!plant_current(owned, frame->world, site)) {
+            owned->native_stopped = true;
+            return false;
+        }
+        if (owned->material.entered && !owned->material.completed) {
+            mc_world_runtime_execution_result_note(owned->owned, MC_WORLD_STORAGE_BUSY,
+                                                   "Plant material child still retained", site);
+            owned->native_stopped = true;
+            return false;
+        }
+        mc_world_material_execution_init(&owned->material, owned->execution, owned->code_classes,
+                                         owned->code, site, owned->owned);
+        const bool completed = mc_world_runtime_material_get_retained(
+            &owned->material, frame->world, x, y, z, out, &owned->material_status);
+        if (completed && plant_current(owned, frame->world, site))
+            return true;
+        owned->native_stopped =
+            owned->material.native_stopped || owned->owned->ownership_status != MC_WORLD_STORAGE_OK;
+        frame->error->status = owned->material_status;
+        if (!owned->native_stopped && owned->material_status != MC_WORLD_STORAGE_OK) {
+            frame->error->material = owned->material.detail;
+            frame->error->registry = owned->material.detail.registry;
+            return storage_fail(frame->error, &owned->material.detail.cause);
+        }
+        return false;
+    }
     if (mc_world_runtime_material_get_detailed(frame->world, x, y, z, out,
                                                &frame->error->material) == MC_WORLD_STORAGE_OK)
         return true;
@@ -674,7 +703,8 @@ bool mc_world_runtime_plant_survives_in_execution(mc_world_plant_execution *fram
         receiver == NULL || receiver->classes == NULL ||
         (receiver->kind != MC_BLOCK_FLOWER && receiver->kind != MC_BLOCK_SAPLING &&
          receiver->kind != MC_BLOCK_TALL_GRASS && receiver->kind != MC_BLOCK_DEAD_BUSH &&
-         receiver->kind != MC_BLOCK_CROPS && receiver->kind != MC_BLOCK_MUSHROOM) ||
+         receiver->kind != MC_BLOCK_CROPS && receiver->kind != MC_BLOCK_MUSHROOM &&
+         receiver->kind != MC_BLOCK_CACTUS && receiver->kind != MC_BLOCK_SUGAR_CANE) ||
         receiver->classes->options.side != MC_REGISTRY_CLIENT || out == NULL || raw == NULL ||
         world->construction.mode != MC_WORLD_RUNTIME_GAME ||
         world->construction.phase == MC_WORLD_RUNTIME_RETIRED) {

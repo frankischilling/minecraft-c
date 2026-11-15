@@ -7,32 +7,35 @@ the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining w
 
 ## Current client work
 
-[Dead Bush, Crops and Mushroom neighbors](world/plants.md#owned-dead-bush-crops-and-mushroom-neighbors-during-player-wake)
-now share retained Player wake execution with their actual virtual survival and
-drops. Dead Bush removes itself without an Item. Crops retain Wheat followed by
-three Seed trials; Mushroom survival uses real light below 13 and live substrate.
-Observer exceptions preserve completed cells, Items and Random progress through
-checked cleanup.
+[Cactus and Reeds neighbors](world/plants.md#owned-cactus-and-reeds-neighbors-during-player-wake)
+now share retained Player wake execution. Removing the bottom plant can remove
+a complete column through recursive notifications. Real Sand scheduling and
+Water conversion below the Bed preserve metadata, class sequence and callbacks.
+Source exceptions keep completed effects and the actual sleeping Player state
+through checked cleanup.
 
-Two fresh unchanged-original VMs agree on 25 prepared profiles. Windows and
-sanitized Linux each match
-1,940 selected original values, including all five Chunk planes, seeded Math
-and Item motion. Five native ownership controls include two no-Item paths that
-match another 106 original values. Ten additional real Arrow-hit cases cover
-distinct committed prefixes. These component results do not establish graphical
-sleeping-Player damage. The earlier
-[Sapling/Tall Grass checkpoint](testing.md#sapling-and-tall-grass-during-player-wake)
-retains its own Windows/Linux and graphical qualification.
+Two fresh unchanged-original VMs agree on 21 prepared profiles. Windows and sanitized Linux each pair
+2,628 selected values, including complete Chunk planes, column state, Random,
+Item motion and exact scheduler/callback effects. Four ownership controls
+include one supported no-Item branch matching another 70 values. The range
+observer exception keeps the converted Water and suppression flag without
+performing the second schedule request or waking the Player.
 
-The [current test record](testing.md#remaining-flower-family-neighbors-during-player-wake)
-lists the new coverage and comparison limits. Original audiovisual equality,
-unrestricted plant graphs, general focus reliability and an FPS gain remain
+The [current test record](testing.md#cactus-and-reeds-during-player-wake) separates
+the original pairs, native ownership controls and broader regression scopes.
+Earlier [flower-family evidence](testing.md#remaining-flower-family-neighbors-during-player-wake)
+retains its own Windows/Linux and graphical qualification. Unrestricted plant
+graphs, natural encounters, original audiovisual equality and FPS remain
 unqualified.
 
-The full Windows MSVC Release suite passes 1,229 tests without skips. All 43
-affected tests also pass on Linux with Clang ASan/UBSan and leak detection.
-Fresh monitor-2 Bed and Arrow/Pig scenes pass independent save readback, six
-inspected captures and complete window cleanup.
+The full Windows MSVC Release suite passes 1,241 tests without skips. The
+focused Clang ASan/UBSan/leak-detection selection passes 107 tests. Fresh
+monitor-2 Bed and Arrow/Pig scenes pass independent readback, six inspected
+captures and complete window cleanup.
+
+The [preceding hosted checkpoint](https://github.com/frankischilling/minecraft-c/actions/runs/43666280343)
+passes formatting, Windows, GCC and Clang. New local results belong to their
+recorded source snapshots and do not qualify unrestricted play.
 
 ## Next single-player work
 

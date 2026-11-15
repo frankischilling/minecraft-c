@@ -1,4 +1,4 @@
-"""Retain actual Flower/Mushroom query ownership controls and bounded native receipts."""
+"""Retain actual plant light/material ownership controls and bounded native receipts."""
 import argparse
 import copy
 import hashlib
@@ -16,7 +16,12 @@ MODES = ('descendant', 'source-descendant', 'source', 'sky-visible', 'sky-hidden
          'negative-y', 'defining-class', 'sky-descendant', 'sky-source-descendant', 'sky-source',
          'mushroom-descendant', 'mushroom-source-descendant', 'mushroom-source',
          'mushroom-negative-y', 'mushroom-high-y', 'mushroom-bright',
-         'mushroom-opaque-true', 'mushroom-opaque-false', 'mushroom-null-o')
+         'mushroom-opaque-true', 'mushroom-opaque-false', 'mushroom-null-o',
+         'cactus-descendant', 'cactus-source-descendant', 'cactus-source', 'cactus-completion',
+         'reed-descendant', 'reed-source-descendant', 'reed-source', 'reed-completion',
+         'cactus-solid-first', 'cactus-null-material', 'cactus-supported',
+         'reed-stacked', 'reed-no-substrate', 'reed-null-material', 'reed-canonical-refusal',
+         'reed-west-water', 'reed-east-water', 'reed-north-water', 'reed-south-water', 'reed-dry')
 FAILURE_MODES = ('descendant', 'source-descendant', 'source', 'sky-descendant',
                  'sky-source-descendant', 'sky-source', 'mushroom-descendant',
                  'mushroom-source-descendant', 'mushroom-source')
@@ -52,6 +57,33 @@ def prepared():
 
 def result_line(mode):
     require(type(mode) is str and mode in MODES, 'Declared finite plant mode')
+    if mode.startswith(('cactus-', 'reed-')):
+        cactus = mode.startswith('cactus-')
+        branch = mode.removeprefix('cactus-' if cactus else 'reed-')
+        if branch in ('descendant', 'source-descendant', 'source', 'completion'):
+            raw = 'OK' if branch == 'completion' else 'BUSY' if branch == 'descendant' else 'IO_ERROR'
+            native = 'UNSUPPORTED_STATE' if branch == 'completion' else 'OK' if branch == 'source' else 'BUSY'
+            return (f'PLANT_SURVIVAL_RESULT mode={mode} raw={raw} native={native} callbacks=1 '
+                    f'site={"or.g25" if cactus else "ri.a76"} query=fd.f4 output-preserved=1 '
+                    'Chunk.a=0 retained=1 drained=1 replay=0')
+        if branch == 'canonical-refusal':
+            return (f'PLANT_SURVIVAL_RESULT mode={mode} raw=UNCHANGED native=BUSY callbacks=0 '
+                    'query=none output-preserved=1 canonical-math=1 entered=0 replay=0')
+        if mode == 'reed-null-material':
+            return (f'PLANT_SURVIVAL_RESULT mode={mode} raw=OK native=OK callbacks=0 '
+                    'query=fd.f4 nullable=1 reached-get=1 replay=0')
+        if mode == 'cactus-null-material':
+            return (f'PLANT_SURVIVAL_RESULT mode={mode} raw=UNSUPPORTED_STATE native=OK callbacks=0 '
+                    'site=or.g10 query=fd.f4 registry=NULL_REFERENCE output-preserved=1 '
+                    'material-completed=1 later-query=0 replay=0')
+        entered = mode not in ('reed-stacked', 'reed-no-substrate')
+        pc = (0 if not entered else 7 if mode == 'cactus-solid-first' else 61 if cactus else
+              {'reed-west-water': 56, 'reed-east-water': 76, 'reed-north-water': 96,
+               'reed-south-water': 116, 'reed-dry': 116}[mode])
+        answer = mode in ('cactus-supported', 'reed-stacked') or mode.endswith('-water')
+        return (f'PLANT_SURVIVAL_RESULT mode={mode} raw=OK native=OK callbacks=0 value={int(answer)} '
+                f'material-pc={pc} material-entered={int(entered)} '
+                f'below-entered={int(mode != "cactus-solid-first")} cold-acquisitions=0 replay=0')
     if mode in FAILURE_MODES:
         sky = mode.startswith('sky-')
         mushroom = mode.startswith('mushroom-')
@@ -188,7 +220,27 @@ def self_test():
                 ('mushroom-bright', 'substrate=0', 'substrate=1'),
                 ('mushroom-opaque-true', 'value=1', 'value=0'),
                 ('mushroom-opaque-false', 'opaque=0', 'opaque=1'),
-                ('mushroom-null-o', 'registry=NULL_REFERENCE', 'registry=OK')):
+                ('mushroom-null-o', 'registry=NULL_REFERENCE', 'registry=OK'),
+                ('cactus-descendant', 'site=or.g25', 'site=or.g7'),
+                ('cactus-source-descendant', 'query=fd.f4', 'query=fd.f18'),
+                ('cactus-source', 'raw=IO_ERROR native=OK', 'raw=IO_ERROR native=BUSY'),
+                ('cactus-completion', 'raw=OK native=UNSUPPORTED_STATE', 'raw=BUSY native=UNSUPPORTED_STATE'),
+                ('reed-descendant', 'site=ri.a76', 'site=ri.a56'),
+                ('reed-source-descendant', 'query=fd.f4', 'query=fd.f18'),
+                ('reed-source', 'raw=IO_ERROR native=OK', 'raw=IO_ERROR native=BUSY'),
+                ('reed-completion', 'raw=OK native=UNSUPPORTED_STATE', 'raw=BUSY native=UNSUPPORTED_STATE'),
+                ('cactus-solid-first', 'below-entered=0', 'below-entered=1'),
+                ('cactus-null-material', 'material-completed=1', 'material-completed=0'),
+                ('cactus-supported', 'material-pc=61', 'material-pc=7'),
+                ('reed-stacked', 'material-entered=0', 'material-entered=1'),
+                ('reed-no-substrate', 'value=0', 'value=1'),
+                ('reed-null-material', 'nullable=1', 'nullable=0'),
+                ('reed-canonical-refusal', 'canonical-math=1', 'canonical-math=0'),
+                ('reed-west-water', 'material-pc=56', 'material-pc=116'),
+                ('reed-east-water', 'material-pc=76', 'material-pc=116'),
+                ('reed-north-water', 'material-pc=96', 'material-pc=116'),
+                ('reed-south-water', 'material-entered=1', 'material-entered=0'),
+                ('reed-dry', 'value=0', 'value=1')):
             command, receipt = cases[mode]
             path = output / (mode + '.stdout')
             original = path.read_bytes()
@@ -206,8 +258,8 @@ def self_test():
                     raise ValueError('Corrupt mode-specific receipt accepted')
             finally:
                 path.write_bytes(original)
-        require(refused == 33, 'All malformed receipts and finite semantic controls refused')
-    print('PASS: authored slot1 Item input; 19 synthetic modes; 33 malformed receipts refused; no native run')
+        require(refused == 53, 'All malformed receipts and finite semantic controls refused')
+    print('PASS: authored slot1 Item input; 39 synthetic modes; 53 malformed receipts refused; no native run')
 
 
 def main():
@@ -227,8 +279,8 @@ def main():
     capture_path = ROOT / 'tests/reference/client/controller/capture.py'
     capture = module('plant_survival_bounded_capture', capture_path)
     report = {'schema': 'PLANT_SURVIVAL_EXECUTION_RUN_V1', 'status': 'FAIL', 'modes': {},
-        'scope': 'Nineteen finite owned Flower/Mushroom query controls with actual SourceSaving Item activation, '
-                 'declared light/height inputs and checked native drainage. '
+        'scope': 'Thirty-nine finite owned plant light/material controls with actual SourceSaving Item activation, '
+                 'declared light/height/material inputs and checked native drainage. '
                  'No original comparison, full wake, Arrow or terrain-generation qualification.'}
     before = None
     paths = []
@@ -273,7 +325,7 @@ def main():
         (output / 'run.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
         if before is not None:
             require(report['inputs_unchanged'], 'Executed input preservation')
-    print('PASS: 19 actual owned plant survival modes; capture=' + str(output))
+    print('PASS: 39 actual owned plant survival modes; capture=' + str(output))
 
 
 if __name__ == '__main__':

@@ -54,6 +54,24 @@ bool mc_world_mutation_execution_current(const mc_world_mutation_execution_call 
 bool mc_world_mutation_execution_get(mc_world_mutation_execution_call *, mc_world_runtime *,
                                      int32_t, int32_t, int32_t, bool, int32_t *,
                                      mc_world_mutation_error *, mc_entity_tick_execution_site);
+bool mc_world_mutation_execution_set_quiet(mc_world_mutation_execution_call *, mc_world_runtime *,
+                                           int32_t, int32_t, int32_t, int32_t, int32_t, bool *,
+                                           mc_world_mutation_error *,
+                                           mc_entity_tick_execution_site);
+bool mc_world_mutation_execution_observe_range(mc_world_mutation_execution_call *,
+                                               mc_world_runtime *, int32_t, int32_t, int32_t,
+                                               int32_t, int32_t, int32_t, mc_world_mutation_error *,
+                                               mc_entity_tick_execution_site);
+bool mc_world_mutation_execution_schedule(mc_world_mutation_execution_call *, mc_world_runtime *,
+                                          int32_t, int32_t, int32_t, int32_t, int32_t,
+                                          mc_world_mutation_error *, mc_entity_tick_execution_site);
+bool mc_world_mutation_execution_added(const mc_world_mutation_execution_context *,
+                                       mc_world_runtime *, const mc_block *, int32_t, int32_t,
+                                       int32_t, mc_world_mutation_execution_call **,
+                                       mc_world_mutation_error *, mc_entity_tick_execution_site);
+bool mc_world_mutation_block_added_with_call(mc_world_mutation_execution_call *, mc_world_runtime *,
+                                             const mc_block *, int32_t, int32_t, int32_t,
+                                             mc_world_mutation_error *);
 typedef struct mc_world_solid_support_execution mc_world_solid_support_execution;
 /* Retain the actual lower frame and raw C return before projection. A native
  * stop can accompany a non-OK raw return while support detail stays empty;
@@ -106,6 +124,17 @@ bool mc_world_mutation_torch_neighbor_in_execution(mc_world_mutation_execution_c
                                                    int32_t, int32_t, int32_t,
                                                    mc_world_mutation_error *);
 bool mc_world_mutation_plant_neighbor_in_execution(mc_world_mutation_execution_call *,
+                                                   mc_world_runtime *, const mc_block *, int32_t,
+                                                   int32_t, int32_t, int32_t,
+                                                   mc_world_mutation_error *);
+bool mc_world_mutation_falling_neighbor_in_execution(mc_world_mutation_execution_call *,
+                                                     mc_world_runtime *, const mc_block *, int32_t,
+                                                     int32_t, int32_t, int32_t,
+                                                     mc_world_mutation_error *);
+bool mc_world_mutation_fluid_added_in_execution(mc_world_mutation_execution_call *,
+                                                mc_world_runtime *, const mc_block *, int32_t,
+                                                int32_t, int32_t, mc_world_mutation_error *);
+bool mc_world_mutation_fluid_neighbor_in_execution(mc_world_mutation_execution_call *,
                                                    mc_world_runtime *, const mc_block *, int32_t,
                                                    int32_t, int32_t, int32_t,
                                                    mc_world_mutation_error *);

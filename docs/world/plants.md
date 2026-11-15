@@ -153,6 +153,57 @@ Original Item constructor entropy and Java exception stacks remain unpaired.
 Growth, addition/tick callers, unrestricted recursive graphs, graphical damage
 wake, original audiovisual equality and FPS retain separate frontiers.
 
+## Owned Cactus and Reeds neighbors during Player wake
+
+Cactus and Reeds now enter retained Player wake execution through their actual
+neighbor methods. Cactus `or.b` directly invokes survival, drop and removal.
+Reeds `ri.b` enters its final `ri.h` helper at 6. Both retain virtual survival
+at 6, metadata at 23, the inherited drop wrapper at 26 and notifying air at 35.
+The concrete receiver selects Cactus Item81 or the live Reeds Item338.
+
+The retained Material child shares the existing `fd.f(III)Lln;` body. Its scalar
+read, typed acquisition and raw return remain in caller-owned storage. It
+borrows the canonical result without resetting it. A failed query keeps its
+actual descendant and diagnostics until checked drainage and retirement;
+successful reads require the same evaluated World token and producer lease
+before another source operation. Reeds preserve their same-Reed and water
+identity short circuits. Cactus preserves ordered neighbor solidity checks.
+
+Unsupported columns publish each Item before removing that cell and notifying
+the next plant. Three-cell controls retain the recursive order through a second
+publication exception or a middle-cell exception. Cleanup preserves every
+completed cell, Item and Random draw while the Player remains asleep.
+
+These notifications also reach ordinary Sand and Water behavior. Sand beneath
+the removed bottom plant requests a scheduled record. Still Water beneath the
+Bed converts quietly from 9 to 8 through the actual five-argument World/Chunk
+metadata setter. Its Flowing Water addition runs before the range callback,
+then the Still Water helper requests another record. The callback sees the
+converted cell and `World.o=true`; normal completion restores false. A genuine
+range-observer exception retains true and the first schedule, stopping before
+the second schedule and Player wake completion. The
+[scheduling contract](scheduling.md#retained-scheduling-during-player-wake)
+describes the sequence and queue effects.
+
+Two fresh unchanged-original VMs agree on all 21 prepared profiles in the
+[original packet](../../tests/reference/entity/upright_plants_wake/README.md).
+The [native controller](../../tests/reference/entity/upright_plants_wake/run_native.py)
+matches 2,628 selected values on Windows. Four additional ownership controls
+include a supported Reeds branch without Math that matches another 70 values.
+Comparisons include complete Chunk planes, recursive columns, Item motion,
+World/Player/Math Random, callbacks, the actual water cell, `World.o`, and
+scheduled-class initialization/sequence with both World sets empty. North-side
+Water changes the actual Bed exit position and bounds; that difference remains
+part of the comparison. Original Item entropy and Java stacks remain unpaired
+with native execution.
+
+The [test record](../testing.md#cactus-and-reeds-during-player-wake) separates
+these Windows results, original observations and direct survival/Arrow controls.
+Linux qualification and full regression runs for this increment remain pending.
+Growth, tick/addition callers beyond the reached Water path, unrestricted plant
+graphs, graphical sleeping-Player damage, original audiovisual equality and FPS
+remain unfinished or unqualified.
+
 ## Synchronous callbacks and ticks
 
 The [plant callback subsystem](../../src/world/runtime/mutation/plants) implements

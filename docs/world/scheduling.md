@@ -105,6 +105,43 @@ World tick processing, queue persistence and complete original/native scheduling
 comparison remain unfinished. The source bodies above establish ordering; they
 are separate from the collection replay and finite native contracts below.
 
+## Retained scheduling during Player wake
+
+The retained client entry shares the ordinary `fd.c(IIIII)V` body with an
+explicit caller-owned execution frame. It borrows the canonical result without
+resetting it, retains an interrupted record and lower query, and checks the
+actual evaluated World scope. Successful retirement releases the local record;
+failure preserves completed sequence and queue effects for checked cleanup.
+
+The [Cactus/Reeds wake path](plants.md#owned-cactus-and-reeds-neighbors-during-player-wake)
+reaches deferred scheduling through Sand neighbors and the Water conversion
+beneath a Bed. Each request constructs a real record before checking radius
+presence. The prepared footprint lacks that radius, so F and E remain empty
+while the shared class sequence advances. Sand requests one record after the
+bottom plant's cell callback returns. The Water path requests one during
+Flowing Water addition and another after the range callback. A throwing range
+observer preserves the first request and `World.o=true`; it prevents the second
+request and flag restoration.
+
+The [original packet](../../tests/reference/entity/upright_plants_wake/README.md)
+contains 21 prepared calls from each of two fresh unchanged-original VMs.
+Passive observations retain the actual `qy` initialization state and sequence,
+both E/F memberships and the reached World flag. Sequence starts at zero before
+first initialization and ends at eight. Each native replay receives its
+profile's exact original pre-call class state as an explicit prepared input;
+it does not normalize a native result or establish natural constructor order.
+Windows pairs this state within the 2,628 selected original values and retains
+the distinct range-exception prefix through cleanup. The
+[test record](../testing.md#cactus-and-reeds-during-player-wake) records the four
+additional ownership controls and broader validation status.
+
+The retained immediate branch still stops at its selected virtual Block tick,
+`fd.c:142`. Broader tick execution requires its own retained caller. Owned Lava
+mixing likewise stops at its first material query, `rp.j:41`. These explicit
+boundaries do not qualify nonempty deferred sets, general fluid ticks, Lava,
+queue drainage, persistence or complete natural scheduling behavior. The
+ordinary entry and earlier collection results below retain their own scopes.
+
 ## Native validation
 
 `world.scheduling` passes 424 checks on native Windows MSVC and Linux GCC/Clang,

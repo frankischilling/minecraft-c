@@ -53,10 +53,10 @@ typedef struct resources {
     bool fail_first, bad;
 } resources;
 
-typedef struct child {
+typedef struct scheduled_chunk_fixture {
     mc_world_store *store;
     mc_chunk_state *state;
-} child;
+} scheduled_chunk_fixture;
 
 typedef struct fixture {
     mc_world_regions *regions;
@@ -71,7 +71,7 @@ typedef struct fixture {
     mc_world_provider *dimensions[7];
     mc_chunk_provider_fields provider[7];
     bool bound[7];
-    child children[32];
+    scheduled_chunk_fixture children[32];
     mc_chunk_state *center[3];
     mc_scheduled_tick *survivor, *extra;
     mc_scheduled_tick_fields survivor_fields;
@@ -112,7 +112,7 @@ static bool remember(fixture *f, size_t world, mc_chunk_state *state) {
         if (f->children[i].state == state)
             return f->children[i].store == f->stores[world];
         if (f->children[i].state == NULL) {
-            f->children[i] = (child){f->stores[world], state};
+            f->children[i] = (scheduled_chunk_fixture){f->stores[world], state};
             return true;
         }
     }
@@ -796,7 +796,7 @@ static bool maintained_and_retired(fixture *f) {
                     f->center[j] = NULL;
             CHECK(mc_world_store_retire_chunk(f->children[i].store, f->children[i].state, NULL) ==
                   MC_WORLD_STORAGE_OK);
-            f->children[i] = (child){0};
+            f->children[i] = (scheduled_chunk_fixture){0};
         }
     }
     CHECK(counts(f->worlds[0], 3, 3));
@@ -830,7 +830,7 @@ static bool cleanup_fixture(fixture *f) {
         if (mc_world_store_retire_chunk(f->children[i].store, f->children[i].state, NULL) !=
             MC_WORLD_STORAGE_OK)
             return false;
-        f->children[i] = (child){0};
+        f->children[i] = (scheduled_chunk_fixture){0};
     }
     for (size_t i = 0; i < COUNT(f->worlds); ++i)
         if (f->worlds[i] != NULL &&

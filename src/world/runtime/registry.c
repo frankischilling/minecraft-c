@@ -79,6 +79,7 @@ typedef struct material_execution {
     mc_world_collision_error *query_error;
     mc_world_storage_status *query_status;
     mc_world_runtime_execution_result *owned;
+    mc_world_material_execution *retained;
 } material_execution;
 
 static mc_world_storage_status material_get(mc_world_runtime *runtime, int32_t x, int32_t y,
@@ -90,6 +91,26 @@ static mc_world_storage_status material_get(mc_world_runtime *runtime, int32_t x
     mc_world_storage_status status;
     if (query == NULL) {
         status = mc_world_runtime_block_get(runtime, x, y, z, &id, &error->cause);
+    } else if (query->retained != NULL) {
+        mc_world_material_execution *retained = query->retained;
+        retained->lower = (mc_world_block_execution){.execution = query->execution,
+                                                     .code = query->code,
+                                                     .receiver_site = {"fd", "f", "(III)Lln;", 4},
+                                                     .owned = query->owned};
+        const bool continued = mc_world_runtime_block_get_in_execution(
+            &retained->lower, runtime, x, y, z, &id, &retained->lower_cause,
+            &retained->lower_status);
+        retained->lower_returned = true;
+        status = retained->lower_status;
+        retained->native_stopped = retained->lower.native_stopped ||
+                                   query->owned->ownership_status != MC_WORLD_STORAGE_OK ||
+                                   !retained->lower.entered;
+        /* Preserve the lower frame even when an actual Source failure and a
+         * refused descendant close coexist. An OK raw return cannot authorize
+         * Registry work or material publication after native refusal. */
+        if (!continued && retained->native_stopped)
+            return status;
+        error->cause = retained->lower_cause;
     } else {
         status = mc_world_collision_block_value_in_execution(query->execution, runtime, query->code,
                                                              x, y, z, false, &id,
@@ -236,12 +257,86 @@ bool mc_world_runtime_material_get_in_execution(
         return material_execution_refused(owned, entered, "World material World call admission",
                                           site);
     mc_world_material_error frame = material_empty_error();
-    const material_execution query = {execution,   code_classes, code,
-                                      query_error, query_status, owned};
+    const material_execution query = {execution,    code_classes, code, query_error,
+                                      query_status, owned,        NULL};
     const mc_world_storage_status status = material_get(runtime, x, y, z, out, &frame, &query);
     /* Pair only this exact entered World. A refused descendant unwind may have
      * left another neutral scope current; never pop or infer from that scope. */
     mc_world_runtime_call_leave(runtime);
     *error = frame;
     return status == MC_WORLD_STORAGE_OK && owned->ownership_status == MC_WORLD_STORAGE_OK;
+}
+
+void mc_world_material_execution_init(mc_world_material_execution *frame,
+                                      mc_entity_tick_execution *execution,
+                                      mc_world_runtime_classes *code_classes,
+                                      mc_world_runtime_execution_code code,
+                                      mc_entity_tick_execution_site site,
+                                      mc_world_runtime_execution_result *owned) {
+    if (frame != NULL)
+        *frame = (mc_world_material_execution){.execution = execution,
+                                               .code_classes = code_classes,
+                                               .code = code,
+                                               .receiver_site = site,
+                                               .owned = owned};
+}
+
+static bool material_records_quiet(const mc_world_runtime_execution_result *owned) {
+    if (owned->ownership_status != MC_WORLD_STORAGE_OK || owned->selection_ready ||
+        owned->math_failed || owned->root_pending)
+        return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (owned->pending[i].used)
+            return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (owned->closes[i].used)
+            return false;
+    return true;
+}
+
+bool mc_world_runtime_material_get_retained(mc_world_material_execution *frame,
+                                            mc_world_runtime *world, int32_t x, int32_t y,
+                                            int32_t z, mc_material **out,
+                                            mc_world_storage_status *raw) {
+    if (frame == NULL)
+        return false;
+    if (frame->execution == NULL || frame->execution->identity != frame->execution ||
+        frame->code_classes == NULL || frame->owned == NULL || world == NULL || out == NULL ||
+        raw == NULL || frame->entered)
+        return material_execution_refused(frame->owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                          "Retained material execution/fresh outputs required",
+                                          frame->receiver_site);
+    if (!material_records_quiet(frame->owned))
+        return material_execution_refused(frame->owned, MC_WORLD_STORAGE_BUSY,
+                                          "Retained material quiet canonical result required",
+                                          frame->receiver_site);
+    mc_world_access_failure_lease *unused = NULL;
+    const mc_world_storage_status admitted =
+        mc_world_execution_child_lease(frame->execution, world, &unused);
+    if (admitted != MC_WORLD_STORAGE_OK)
+        return material_execution_refused(frame->owned, admitted,
+                                          "Retained material evaluated World ownership",
+                                          frame->receiver_site);
+    if (world->classes != frame->code_classes)
+        return material_execution_refused(frame->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                          "Retained material same defining code namespace",
+                                          frame->receiver_site);
+    mc_world_storage_error native = {0};
+    const mc_world_storage_status entered = mc_world_runtime_call_enter(world, &native);
+    if (entered != MC_WORLD_STORAGE_OK)
+        return material_execution_refused(
+            frame->owned, entered, "Retained material World call admission", frame->receiver_site);
+    frame->entered = true;
+    frame->detail = material_empty_error();
+    const material_execution query = {.execution = frame->execution,
+                                      .code_classes = frame->code_classes,
+                                      .code = frame->code,
+                                      .owned = frame->owned,
+                                      .retained = frame};
+    frame->status = material_get(world, x, y, z, out, &frame->detail, &query);
+    mc_world_runtime_call_leave(world);
+    *raw = frame->status;
+    frame->completed = frame->status == MC_WORLD_STORAGE_OK && !frame->native_stopped &&
+                       material_records_quiet(frame->owned);
+    return frame->completed;
 }

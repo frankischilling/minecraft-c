@@ -7,6 +7,7 @@
 #include "../construction_internal.h"
 #include "../execution_children_internal.h"
 #include "../plants_execution_internal.h"
+#include "../scheduling_execution_internal.h"
 #include "../solid_support_execution_internal.h"
 #include "chunk_execution_internal.h"
 #include "drops/execution_internal.h"
@@ -27,8 +28,10 @@ struct mc_world_mutation_execution_call {
     mc_world_mutation_drop_execution *drop;
     mc_world_solid_support_execution *support;
     mc_world_plant_execution *plant;
+    mc_world_schedule_execution *schedule;
     mc_world_storage_status support_status;
     mc_world_storage_status plant_status;
+    mc_world_storage_status schedule_status;
     bool active, close_done, support_returned, plant_returned;
 };
 
@@ -257,7 +260,9 @@ static bool quiet(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int3
     const int32_t local_x = (int32_t)((uint32_t)x & 15u);
     const int32_t local_z = (int32_t)((uint32_t)z & 15u);
     if (owned != NULL) {
-        const mc_entity_tick_execution_site site = {"fd", "c", "(IIII)Z", 66};
+        const mc_entity_tick_execution_site site = {"fd", with_metadata ? "a" : "c",
+                                                    with_metadata ? "(IIIII)Z" : "(IIII)Z",
+                                                    with_metadata ? 68 : 66};
         if (chunk == NULL) {
             mc_world_runtime_execution_result_note(owned->context.result,
                                                    MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -276,8 +281,13 @@ static bool quiet(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int3
                                                mc_world_mutation_execution_registry(owned), site,
                                                owned->context.world, owned->context.result);
         mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
-        const bool completed = mc_world_mutation_chunk_block_in_execution(
-            owned->chunk, world, store, state, chunk, local_x, y, local_z, id, out, frame, &raw);
+        const bool completed = with_metadata
+                                   ? mc_world_mutation_chunk_block_metadata_in_execution(
+                                         owned->chunk, world, store, state, chunk, local_x, y,
+                                         local_z, id, metadata, out, frame, &raw)
+                                   : mc_world_mutation_chunk_block_in_execution(
+                                         owned->chunk, world, store, state, chunk, local_x, y,
+                                         local_z, id, out, frame, &raw);
         if (completed)
             frame->bytecode = 0;
         else if (raw != MC_WORLD_STORAGE_OK)
@@ -360,7 +370,10 @@ static bool notify_and_neighbors(mc_world_runtime *world, int32_t x, int32_t y, 
 static bool set_body(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int32_t id,
                      bool with_metadata, int32_t metadata, bool notify, bool *out,
                      mc_world_mutation_error *frame, mc_world_mutation_execution_call *owned) {
-    if (!enter(world, frame, owned, block_site))
+    const mc_entity_tick_execution_site site = {
+        "fd", with_metadata ? (notify ? "b" : "a") : (notify ? "f" : "c"),
+        with_metadata ? "(IIIII)Z" : "(IIII)Z", 0};
+    if (!enter(world, frame, owned, site))
         return false;
     bool changed = false;
     if (notify)
@@ -682,6 +695,123 @@ bool mc_world_mutation_execution_remove(mc_world_mutation_execution_call *call,
                            false);
 }
 
+bool mc_world_mutation_execution_set_quiet(mc_world_mutation_execution_call *call,
+                                           mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
+                                           int32_t id, int32_t metadata, bool *out,
+                                           mc_world_mutation_error *error,
+                                           mc_entity_tick_execution_site site) {
+    if (!mc_world_mutation_execution_current(call, world, site))
+        return false;
+    mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
+    mc_world_access_failure_lease *lease = NULL;
+    if (!admit_owned(&call->context, world, out != NULL, &call->child, &raw, error, &lease, site))
+        return false;
+    if (!in_domain(x, y, z)) {
+        *out = false;
+        mc_world_mutation_error_init(error);
+        return true;
+    }
+    mc_world_mutation_execution_call *child =
+        start_owned(&call->context, &call->child, lease, site);
+    if (child == NULL)
+        return false;
+    bool changed = false;
+    const bool completed =
+        set_body(world, x, y, z, id, true, metadata, false, &changed, &child->error, child);
+    if (!finish_owned(&call->child, completed, &raw, error, site, true))
+        return false;
+    *out = changed;
+    return true;
+}
+
+bool mc_world_mutation_execution_added(const mc_world_mutation_execution_context *context,
+                                       mc_world_runtime *world, const mc_block *block, int32_t x,
+                                       int32_t y, int32_t z,
+                                       mc_world_mutation_execution_call **slot,
+                                       mc_world_mutation_error *error,
+                                       mc_entity_tick_execution_site site) {
+    mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
+    mc_world_access_failure_lease *lease = NULL;
+    if (!admit_owned(context, world, true, slot, &raw, error, &lease, site))
+        return false;
+    mc_world_mutation_execution_call *call = start_owned(context, slot, lease, site);
+    if (call == NULL)
+        return false;
+    const bool completed =
+        mc_world_mutation_block_added_with_call(call, world, block, x, y, z, &call->error);
+    return finish_owned(slot, completed, &raw, error, site, true);
+}
+
+bool mc_world_mutation_execution_observe_range(mc_world_mutation_execution_call *call,
+                                               mc_world_runtime *world, int32_t min_x,
+                                               int32_t min_y, int32_t min_z, int32_t max_x,
+                                               int32_t max_y, int32_t max_z,
+                                               mc_world_mutation_error *error,
+                                               mc_entity_tick_execution_site site) {
+    if (!mc_world_mutation_execution_current(call, world, site))
+        return false;
+    mc_world_notification_execution_init_borrowed(&call->observer, call->context.execution, site,
+                                                  call->context.result);
+    mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
+    return mc_world_mutation_observe_range_in_execution(&call->observer, world, min_x, min_y, min_z,
+                                                        max_x, max_y, max_z, error, &raw);
+}
+
+bool mc_world_mutation_execution_schedule(mc_world_mutation_execution_call *call,
+                                          mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
+                                          int32_t block, int32_t delay,
+                                          mc_world_mutation_error *error,
+                                          mc_entity_tick_execution_site site) {
+    if (!mc_world_mutation_execution_current(call, world, site))
+        return false;
+    if (call->schedule != NULL || error == NULL) {
+        mc_world_runtime_execution_result_note(call->context.result, MC_WORLD_STORAGE_BUSY,
+                                               "Scheduled call requires fresh retained frame",
+                                               site);
+        return false;
+    }
+    call->schedule = calloc(1, sizeof(*call->schedule));
+    if (call->schedule == NULL) {
+        mc_world_runtime_execution_result_note(call->context.result,
+                                               MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                                               "Scheduled retained frame allocation", site);
+        return false;
+    }
+    mc_world_schedule_execution_init(call->schedule, call->context.execution,
+                                     call->context.code_classes, call->context.code,
+                                     call->context.world, site, call->context.result);
+    const bool completed = mc_world_runtime_schedule_in_execution(
+        call->schedule, world, x, y, z, block, delay, &call->schedule_status);
+    if (completed)
+        return mc_world_schedule_execution_retire(&call->schedule) == MC_WORLD_STORAGE_OK;
+    const mc_world_schedule_error *detail = &call->schedule->detail;
+    if (call->schedule->native_stopped ||
+        call->context.result->ownership_status != MC_WORLD_STORAGE_OK)
+        return false;
+    *error = detail->tick;
+    error->schedule = (mc_world_schedule_prefix){.status = detail->status,
+                                                 .operation = detail->operation,
+                                                 .bytecode = detail->bytecode,
+                                                 .presence_bytecode = detail->presence_bytecode,
+                                                 .provider_bytecode = detail->provider_bytecode,
+                                                 .cause = detail->cause,
+                                                 .record = detail->record,
+                                                 .membership = detail->membership,
+                                                 .ordered = detail->ordered,
+                                                 .registry = detail->registry};
+    error->status = detail->status;
+    error->operation = detail->operation;
+    error->cause = detail->cause;
+    error->registry = detail->registry;
+    error->schedule_bytecode = detail->bytecode;
+    error->record = detail->record;
+    error->membership = detail->membership;
+    error->ordered = detail->ordered;
+    error->presence_bytecode = detail->presence_bytecode;
+    error->provider_bytecode = detail->provider_bytecode;
+    return false;
+}
+
 bool mc_world_mutation_execution_owns_world(const mc_world_mutation_execution_call *call,
                                             const mc_entity_tick_execution_world_token *world) {
     if (call == NULL || world == NULL || call->close_done)
@@ -749,6 +879,13 @@ mc_world_mutation_execution_retire(mc_world_mutation_execution_call **slot) {
     const mc_world_storage_status drop = mc_world_mutation_drop_retire(&call->drop);
     if (drop != MC_WORLD_STORAGE_OK)
         return drop;
+    const mc_world_storage_status schedule = mc_world_schedule_execution_retire(&call->schedule);
+    if (schedule != MC_WORLD_STORAGE_OK)
+        return schedule;
+    const mc_world_storage_status chunk_children =
+        mc_world_mutation_chunk_children_retire(call->chunk);
+    if (chunk_children != MC_WORLD_STORAGE_OK)
+        return chunk_children;
     free(call->chunk);
     free(call->support);
     free(call->plant);

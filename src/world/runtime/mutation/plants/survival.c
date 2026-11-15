@@ -255,12 +255,15 @@ static bool plant_neighbor(mc_world_runtime *world, const mc_block *block, int32
                                                       : "nw",
                                                "b(Lfd;IIII)V", "b(Ldj;IIII)V");
     frame.owned = owned;
-    frame.owned_site = (mc_entity_tick_execution_site){"wb", "b", "(Lfd;IIII)V", 0};
+    frame.owned_site =
+        (mc_entity_tick_execution_site){frame.declaring_class, "b", "(Lfd;IIII)V", 0};
     if (cactus)
         return survival(&frame, x, y, z);
     if (reed) {
-        const mc_plant_frame helper =
+        mc_plant_frame helper =
             mc_plant_frame_make(world, block, error, "ri", "ko", "h(Lfd;III)V", "g(Ldj;III)V");
+        helper.owned = owned;
+        helper.owned_site = (mc_entity_tick_execution_site){"ri", "h", "(Lfd;III)V", 0};
         if (!survival(&helper, x, y, z))
             return mc_plant_nested(&frame, 6, error);
     } else {
@@ -282,13 +285,18 @@ bool mc_world_mutation_plant_neighbor_in_execution(mc_world_mutation_execution_c
                                                    int32_t x, int32_t y, int32_t z,
                                                    int32_t source_id,
                                                    mc_world_mutation_error *error) {
-    const mc_entity_tick_execution_site site = {"wb", "b", "(Lfd;IIII)V", 0};
+    const mc_entity_tick_execution_site site = {
+        block != NULL && block->kind == MC_BLOCK_CACTUS       ? "or"
+        : block != NULL && block->kind == MC_BLOCK_SUGAR_CANE ? "ri"
+                                                              : "wb",
+        "b", "(Lfd;IIII)V", 0};
     if (!mc_world_mutation_execution_current(owned, world, site))
         return false;
     if (block == NULL || block->classes == NULL ||
         (block->kind != MC_BLOCK_FLOWER && block->kind != MC_BLOCK_SAPLING &&
          block->kind != MC_BLOCK_TALL_GRASS && block->kind != MC_BLOCK_DEAD_BUSH &&
-         block->kind != MC_BLOCK_CROPS && block->kind != MC_BLOCK_MUSHROOM) ||
+         block->kind != MC_BLOCK_CROPS && block->kind != MC_BLOCK_MUSHROOM &&
+         block->kind != MC_BLOCK_CACTUS && block->kind != MC_BLOCK_SUGAR_CANE) ||
         block->classes->options.side != MC_REGISTRY_CLIENT) {
         mc_world_runtime_execution_result_note(mc_world_mutation_execution_result_of(owned),
                                                MC_WORLD_STORAGE_UNSUPPORTED_STATE,

@@ -2,6 +2,7 @@
 #include "mutation_internal.h"
 #include "world_execution_internal.h"
 
+#include "../../../block/registry/registry_internal.h"
 #include "../../../block/registry/runtime_internal.h"
 #include "../../chunk/object_internal.h"
 #include "../../storage/objects_internal.h"
@@ -58,12 +59,15 @@ static mc_world_storage_status note(mc_world_mutation_chunk_execution *frame,
 mc_entity_tick_execution_site
 mc_world_mutation_chunk_site(const mc_world_mutation_chunk_execution *frame,
                              mc_world_mutation_chunk_body body, unsigned int pc) {
-    const char *method = body == MC_WORLD_MUTATION_CHUNK_ID       ? "a"
-                         : body == MC_WORLD_MUTATION_CHUNK_HEIGHT ? "g"
-                                                                  : "f";
+    const bool setter =
+        body == MC_WORLD_MUTATION_CHUNK_ID || body == MC_WORLD_MUTATION_CHUNK_ID_METADATA;
+    const char *method = setter ? "a" : body == MC_WORLD_MUTATION_CHUNK_HEIGHT ? "g" : "f";
     return (mc_entity_tick_execution_site){
         frame->code_classes->side == MC_WORLD_INFO_CLIENT ? "lm" : "hi", method,
-        body == MC_WORLD_MUTATION_CHUNK_ID ? "(IIII)Z" : "(III)V", (int)pc};
+        body == MC_WORLD_MUTATION_CHUNK_ID_METADATA ? "(IIIII)Z"
+        : body == MC_WORLD_MUTATION_CHUNK_ID        ? "(IIII)Z"
+                                                    : "(III)V",
+        (int)pc};
 }
 
 void mc_world_mutation_chunk_null(mc_world_mutation_chunk_execution *frame,
@@ -124,6 +128,8 @@ bool mc_world_mutation_chunk_close(mc_world_mutation_chunk_execution *frame, boo
 bool mc_world_mutation_chunk_execution_owns_world(
     const mc_world_mutation_chunk_execution *frame,
     const mc_entity_tick_execution_world_token *token) {
+    if (frame != NULL && mc_world_mutation_execution_owns_world(frame->hook, token))
+        return true;
     mc_entity_tick_execution_world_slot_phase phase;
     return frame != NULL && frame->execution != NULL && token != NULL && !frame->scope.consumed &&
            same_token(&frame->scope.token, token) && scope_phase(frame, &phase) &&
@@ -132,6 +138,12 @@ bool mc_world_mutation_chunk_execution_owns_world(
 
 const mc_world_notification_execution *
 mc_world_mutation_chunk_failure_observer(const mc_world_mutation_chunk_execution *frame) {
+    if (frame != NULL) {
+        const mc_world_notification_execution *child =
+            mc_world_mutation_execution_failure_observer(frame->hook);
+        if (child != NULL)
+            return child;
+    }
     return frame != NULL && !frame->active && frame->height_observer.entered &&
                    !frame->height_observer.completed
                ? &frame->height_observer
@@ -162,6 +174,9 @@ mc_world_mutation_chunk_native_close(mc_world_mutation_chunk_execution *frame) {
     if (frame->active || pending(frame->owned))
         return note(frame, MC_WORLD_STORAGE_BUSY, "Chunk setter Native close awaits child work",
                     frame->caller_site);
+    const mc_world_storage_status child = mc_world_mutation_execution_native_close(frame->hook);
+    if (child != MC_WORLD_STORAGE_OK)
+        return child;
     mc_world_mutation_chunk_scope *scope = &frame->scope;
     if (scope->created && !scope->consumed) {
         mc_entity_tick_execution_world_slot_phase phase;
@@ -188,6 +203,11 @@ mc_world_mutation_chunk_native_close(mc_world_mutation_chunk_execution *frame) {
         return note(frame, MC_WORLD_STORAGE_BUSY,
                     "Chunk setter Native release awaits its initiating World", frame->caller_site);
     return release_lease(frame);
+}
+
+mc_world_storage_status
+mc_world_mutation_chunk_children_retire(mc_world_mutation_chunk_execution *frame) {
+    return frame == NULL ? MC_WORLD_STORAGE_OK : mc_world_mutation_execution_retire(&frame->hook);
 }
 
 static bool initial(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int32_t *height,
@@ -266,21 +286,35 @@ static bool hook(mc_world_chunk *chunk, int32_t id, int32_t x, int32_t y, int32_
                                                "Chunk setter Block.m element");
     (void)mc_world_chunk_fields_get(chunk, &fields);
     if (execution != NULL) {
-        const unsigned int world_pc = added ? 245u : 109u;
+        const unsigned int world_pc = execution->setter_body == MC_WORLD_MUTATION_CHUNK_ID_METADATA
+                                          ? (added ? 286u : 134u)
+                                          : (added ? 245u : 109u);
         error->chunk_bytecode = world_pc;
         if (!mc_world_mutation_chunk_capture(
                 execution, fields.d,
-                mc_world_mutation_chunk_site(execution, MC_WORLD_MUTATION_CHUNK_ID, world_pc)))
+                mc_world_mutation_chunk_site(execution, execution->setter_body, world_pc)))
             return false;
         error->chunk_bytecode = invoke_pc;
         const mc_entity_tick_execution_site site =
-            mc_world_mutation_chunk_site(execution, MC_WORLD_MUTATION_CHUNK_ID, invoke_pc);
+            mc_world_mutation_chunk_site(execution, execution->setter_body, invoke_pc);
         if (block == NULL)
-            mc_world_mutation_chunk_null(execution, MC_WORLD_MUTATION_CHUNK_ID, invoke_pc);
-        const bool completed = added ? mc_world_mutation_block_added_in_execution(
-                                           fields.d, block, x, y, z, error, execution->owned, site)
-                                     : mc_world_mutation_block_removed_in_execution(
-                                           fields.d, block, x, y, z, error, execution->owned, site);
+            mc_world_mutation_chunk_null(execution, execution->setter_body, invoke_pc);
+        bool completed;
+        if (added && block != NULL &&
+            (block->kind == MC_BLOCK_FLOWING_FLUID || block->kind == MC_BLOCK_STILL_FLUID)) {
+            const mc_world_mutation_execution_context context = {.execution = execution->execution,
+                                                                 .code_classes =
+                                                                     execution->code_classes,
+                                                                 .code = execution->code,
+                                                                 .result = execution->owned,
+                                                                 .world = execution->scope.token};
+            completed = mc_world_mutation_execution_added(&context, fields.d, block, x, y, z,
+                                                          &execution->hook, error, site);
+        } else
+            completed = added ? mc_world_mutation_block_added_in_execution(
+                                    fields.d, block, x, y, z, error, execution->owned, site)
+                              : mc_world_mutation_block_removed_in_execution(
+                                    fields.d, block, x, y, z, error, execution->owned, site);
         return mc_world_mutation_chunk_close(execution, completed);
     }
     error->chunk_bytecode = invoke_pc;
@@ -324,13 +358,14 @@ static bool submit(mc_world_chunk *chunk, mc_light_kind kind, int32_t x, int32_t
         error->chunk_bytecode = world_pc;
         if (!mc_world_mutation_chunk_capture(
                 execution, fields.d,
-                mc_world_mutation_chunk_site(execution, MC_WORLD_MUTATION_CHUNK_ID, world_pc)))
+                mc_world_mutation_chunk_site(execution, execution->setter_body, world_pc)))
             return false;
     }
     const mc_light_bounds bounds = {x, y, z, x, y, z};
     return mc_world_mutation_submit_scoped(execution, fields.d, kind, &bounds,
-                                           MC_WORLD_MUTATION_CHUNK_ID, &error->chunk_bytecode,
-                                           type_pc, call_pc, error);
+                                           execution == NULL ? MC_WORLD_MUTATION_CHUNK_ID
+                                                             : execution->setter_body,
+                                           &error->chunk_bytecode, type_pc, call_pc, error);
 }
 
 static bool chunk_block(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int32_t id,
@@ -454,12 +489,16 @@ static bool enter_chunk(mc_world_mutation_chunk_execution *frame, mc_world_runti
     return true;
 }
 
-bool mc_world_mutation_chunk_block_in_execution(mc_world_mutation_chunk_execution *frame,
-                                                mc_world_runtime *world, mc_world_store *store,
-                                                mc_chunk_state *state, mc_world_chunk *chunk,
-                                                int32_t x, int32_t y, int32_t z, int32_t id,
-                                                bool *out, mc_world_mutation_error *error,
-                                                mc_world_storage_status *raw) {
+static bool chunk_block_metadata(mc_world_chunk *, int32_t, int32_t, int32_t, int32_t, int32_t,
+                                 bool *, mc_world_mutation_error *,
+                                 mc_world_mutation_chunk_execution *);
+
+static bool chunk_set_in_execution(mc_world_mutation_chunk_execution *frame,
+                                   mc_world_runtime *world, mc_world_store *store,
+                                   mc_chunk_state *state, mc_world_chunk *chunk, int32_t x,
+                                   int32_t y, int32_t z, int32_t id, bool with_metadata,
+                                   int32_t value, bool *out, mc_world_mutation_error *error,
+                                   mc_world_storage_status *raw) {
     if (frame == NULL)
         return false;
     if (frame->execution == NULL || frame->execution->identity != frame->execution ||
@@ -473,9 +512,13 @@ bool mc_world_mutation_chunk_block_in_execution(mc_world_mutation_chunk_executio
     if (!enter_chunk(frame, world, store, state, chunk))
         return false;
 
+    frame->setter_body =
+        with_metadata ? MC_WORLD_MUTATION_CHUNK_ID_METADATA : MC_WORLD_MUTATION_CHUNK_ID;
     frame->entered = frame->active = true;
     bool changed = false;
-    const bool returned = chunk_block(chunk, x, y, z, id, &changed, error, frame);
+    const bool returned =
+        with_metadata ? chunk_block_metadata(chunk, x, y, z, id, value, &changed, error, frame)
+                      : chunk_block(chunk, x, y, z, id, &changed, error, frame);
     frame->source_returned = returned;
     frame->changed = returned && changed;
     *raw = returned ? MC_WORLD_STORAGE_OK : error->status;
@@ -494,9 +537,27 @@ bool mc_world_mutation_chunk_block_in_execution(mc_world_mutation_chunk_executio
     return frame->completed;
 }
 
-bool mc_world_mutation_chunk_block_metadata(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z,
-                                            int32_t id, int32_t value, bool *out,
-                                            mc_world_mutation_error *error) {
+bool mc_world_mutation_chunk_block_in_execution(mc_world_mutation_chunk_execution *frame,
+                                                mc_world_runtime *world, mc_world_store *store,
+                                                mc_chunk_state *state, mc_world_chunk *chunk,
+                                                int32_t x, int32_t y, int32_t z, int32_t id,
+                                                bool *out, mc_world_mutation_error *error,
+                                                mc_world_storage_status *raw) {
+    return chunk_set_in_execution(frame, world, store, state, chunk, x, y, z, id, false, 0, out,
+                                  error, raw);
+}
+
+bool mc_world_mutation_chunk_block_metadata_in_execution(
+    mc_world_mutation_chunk_execution *frame, mc_world_runtime *world, mc_world_store *store,
+    mc_chunk_state *state, mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int32_t id,
+    int32_t value, bool *out, mc_world_mutation_error *error, mc_world_storage_status *raw) {
+    return chunk_set_in_execution(frame, world, store, state, chunk, x, y, z, id, true, value, out,
+                                  error, raw);
+}
+
+static bool chunk_block_metadata(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int32_t id,
+                                 int32_t value, bool *out, mc_world_mutation_error *error,
+                                 mc_world_mutation_chunk_execution *execution) {
     int32_t old_height, old;
     if (!initial(chunk, x, y, z, &old_height, &old, error))
         return false;
@@ -506,7 +567,8 @@ bool mc_world_mutation_chunk_block_metadata(mc_world_chunk *chunk, int32_t x, in
         (void)mc_world_chunk_fields_get(chunk, &fields);
         error->chunk_bytecode = 57;
         if (!mc_world_mutation_nibble_get(fields.e, x, y, z, &previous, error)) {
-            fields.d->last_error = error->cause;
+            if (fields.d != NULL)
+                fields.d->last_error = error->cause;
             return false;
         }
         if (previous == value) {
@@ -523,8 +585,14 @@ bool mc_world_mutation_chunk_block_metadata(mc_world_chunk *chunk, int32_t x, in
     if (old != 0) {
         (void)mc_world_chunk_fields_get(chunk, &fields);
         error->chunk_bytecode = 121;
+        if (execution != NULL && fields.d == NULL) {
+            mc_world_mutation_chunk_null(execution, MC_WORLD_MUTATION_CHUNK_ID_METADATA, 121);
+            return mc_world_mutation_fail(execution->initiating_world, error,
+                                          MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                          "Chunk metadata setter current World remote receiver");
+        }
         if (!fields.d->fields.B &&
-            !hook(chunk, old, world_x, y, world_z, false, 127, 132, 142, error, NULL))
+            !hook(chunk, old, world_x, y, world_z, false, 127, 132, 142, error, execution))
             return false;
     }
     if (!metadata(chunk, x, y, z, value, 154, error))
@@ -532,23 +600,39 @@ bool mc_world_mutation_chunk_block_metadata(mc_world_chunk *chunk, int32_t x, in
     (void)mc_world_chunk_fields_get(chunk, &fields);
     mc_world_provider_fields dimension;
     error->chunk_bytecode = 164;
+    if (execution != NULL && (fields.d == NULL || fields.d->fields.t == NULL)) {
+        const unsigned int pc = fields.d == NULL ? 161u : 164u;
+        error->chunk_bytecode = pc;
+        mc_world_mutation_chunk_null(execution, MC_WORLD_MUTATION_CHUNK_ID_METADATA, pc);
+        return mc_world_mutation_fail(execution->initiating_world, error,
+                                      MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                      "Chunk metadata setter current Dimension receiver");
+    }
     if (mc_world_provider_fields_get(fields.d->fields.t, &dimension) != MC_WORLD_PROVIDER_OK)
         return mc_world_mutation_fail(fields.d, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "Chunk setter current Dimension");
     if (!dimension.e &&
-        (!height(chunk, x, y, z, id, old_height, 170, 179, 195, 213, error, NULL) ||
-         !submit(chunk, MC_LIGHT_SKY, world_x, y, world_z, 217, 220, 233, error, NULL)))
+        (!height(chunk, x, y, z, id, old_height, 170, 179, 195, 213, error, execution) ||
+         !submit(chunk, MC_LIGHT_SKY, world_x, y, world_z, 217, 220, 233, error, execution)))
         return false;
-    if (!submit(chunk, MC_LIGHT_BLOCK, world_x, y, world_z, 237, 240, 253, error, NULL))
+    if (!submit(chunk, MC_LIGHT_BLOCK, world_x, y, world_z, 237, 240, 253, error, execution))
         return false;
     error->chunk_bytecode = 259;
-    if (!mc_world_mutation_column(chunk, x, z, error) ||
-        !metadata(chunk, x, y, z, value, 271, error))
+    const bool column_completed =
+        execution == NULL ? mc_world_mutation_column(chunk, x, z, error)
+                          : mc_world_mutation_column_in_execution(execution, chunk, x, z, error);
+    if (!column_completed || !metadata(chunk, x, y, z, value, 271, error))
         return false;
-    if (id != 0 && !hook(chunk, id, world_x, y, world_z, true, 279, 284, 294, error, NULL))
+    if (id != 0 && !hook(chunk, id, world_x, y, world_z, true, 279, 284, 294, error, execution))
         return false;
     mc_world_chunk_state(chunk)->dirty = true; /* o299 */
     error->chunk_bytecode = 0;
     *out = true;
     return true;
+}
+
+bool mc_world_mutation_chunk_block_metadata(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z,
+                                            int32_t id, int32_t value, bool *out,
+                                            mc_world_mutation_error *error) {
+    return chunk_block_metadata(chunk, x, y, z, id, value, out, error, NULL);
 }

@@ -280,7 +280,8 @@ static bool block_removed(mc_world_runtime *world, const mc_block *block, int32_
 }
 
 static bool block_added(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
-                        int32_t z, mc_world_mutation_error *error, const hook_execution *owned) {
+                        int32_t z, mc_world_mutation_error *error, const hook_execution *owned,
+                        mc_world_mutation_execution_call *call) {
     (void)x;
     (void)y;
     (void)z;
@@ -340,7 +341,10 @@ static bool block_added(mc_world_runtime *world, const mc_block *block, int32_t 
         case MC_BLOCK_FLOWING_FLUID:
         case MC_BLOCK_STILL_FLUID:
             return owned == NULL ? mc_world_mutation_fluid_added(world, block, x, y, z, error)
-                                 : unjoined(owned, "Fluid addition requires owned execution");
+                   : call != NULL && block->classes->options.side == MC_REGISTRY_CLIENT
+                       ? mc_world_mutation_fluid_added_in_execution(call, world, block, x, y, z,
+                                                                    error)
+                       : unjoined(owned, "Fluid addition requires retained client caller");
         case MC_BLOCK_SAND:
         case MC_BLOCK_GRAVEL:
             return owned == NULL
@@ -453,6 +457,8 @@ static bool block_neighbor(mc_world_runtime *world, const mc_block *block, int32
         case MC_BLOCK_SAPLING:
         case MC_BLOCK_TALL_GRASS:
         case MC_BLOCK_FLOWER:
+        case MC_BLOCK_CACTUS:
+        case MC_BLOCK_SUGAR_CANE:
             if (owned == NULL)
                 return mc_world_mutation_plant_neighbor(world, block, x, y, z, source_id, error);
             if (call != NULL && block->classes->options.side == MC_REGISTRY_CLIENT)
@@ -463,12 +469,18 @@ static bool block_neighbor(mc_world_runtime *world, const mc_block *block, int32
         case MC_BLOCK_STILL_FLUID:
             return owned == NULL
                        ? mc_world_mutation_fluid_neighbor(world, block, x, y, z, source_id, error)
-                       : unjoined(owned, "Fluid neighbor hook requires owned execution");
+                   : call != NULL && block->classes->options.side == MC_REGISTRY_CLIENT
+                       ? mc_world_mutation_fluid_neighbor_in_execution(call, world, block, x, y, z,
+                                                                       source_id, error)
+                       : unjoined(owned, "Fluid neighbor requires retained client caller");
         case MC_BLOCK_SAND:
         case MC_BLOCK_GRAVEL:
             return owned == NULL
                        ? mc_world_mutation_falling_neighbor(world, block, x, y, z, source_id, error)
-                       : unjoined(owned, "Falling Block neighbor hook requires owned execution");
+                   : call != NULL && block->classes->options.side == MC_REGISTRY_CLIENT
+                       ? mc_world_mutation_falling_neighbor_in_execution(call, world, block, x, y,
+                                                                         z, source_id, error)
+                       : unjoined(owned, "Falling Block neighbor requires retained client caller");
         case MC_BLOCK_RAIL:
         case MC_BLOCK_DETECTOR_RAIL:
             return owned == NULL ? mc_world_mutation_rail_neighbor_hook(world, block, x, y, z,
@@ -553,11 +565,6 @@ static bool block_neighbor(mc_world_runtime *world, const mc_block *block, int32
             return owned == NULL
                        ? mc_world_mutation_snow_neighbor(world, block, x, y, z, source_id, error)
                        : unjoined(owned, "Snow neighbor hook requires owned execution");
-        case MC_BLOCK_CACTUS:
-        case MC_BLOCK_SUGAR_CANE:
-            return owned == NULL
-                       ? mc_world_mutation_plant_neighbor(world, block, x, y, z, source_id, error)
-                       : unjoined(owned, "Plant neighbor hook requires owned execution");
         case MC_BLOCK_PORTAL:
             return unavailable(world, block, "ak", "z", "Block neighbor hook", error, owned);
         case MC_BLOCK_CAKE:
@@ -588,7 +595,7 @@ bool mc_world_mutation_block_removed_in_execution(mc_world_runtime *world, const
 
 bool mc_world_mutation_block_added(mc_world_runtime *world, const mc_block *block, int32_t x,
                                    int32_t y, int32_t z, mc_world_mutation_error *error) {
-    return block_added(world, block, x, y, z, error, NULL);
+    return block_added(world, block, x, y, z, error, NULL, NULL);
 }
 
 bool mc_world_mutation_block_added_in_execution(mc_world_runtime *world, const mc_block *block,
@@ -597,7 +604,16 @@ bool mc_world_mutation_block_added_in_execution(mc_world_runtime *world, const m
                                                 mc_world_runtime_execution_result *result,
                                                 mc_entity_tick_execution_site site) {
     const hook_execution owned = {result, site};
-    return result != NULL && block_added(world, block, x, y, z, error, &owned);
+    return result != NULL && block_added(world, block, x, y, z, error, &owned, NULL);
+}
+
+bool mc_world_mutation_block_added_with_call(mc_world_mutation_execution_call *call,
+                                             mc_world_runtime *world, const mc_block *block,
+                                             int32_t x, int32_t y, int32_t z,
+                                             mc_world_mutation_error *error) {
+    const hook_execution owned = {mc_world_mutation_execution_result_of(call),
+                                  {"uu", "c", "(Lfd;III)V", 0}};
+    return call != NULL && block_added(world, block, x, y, z, error, &owned, call);
 }
 
 bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,

@@ -13,8 +13,8 @@
       "sha256": "54d9f163904767d003b962ccfe478992a31d255983a802df10cd653b035aadc9"
     },
     "CMakeLists.txt": {
-      "bytes": 346765,
-      "sha256": "53954729f4dc13994c82ac69a188ede1f5b0368ec4c39efddd35910f06470a87"
+      "bytes": 346819,
+      "sha256": "949f0c3a0c6809be81147e7a740a781a9885862d3ff880ed639a3d7484ab395f"
     },
     "tests/entity/player/test_ally_alert_ownership.c": {
       "bytes": 11240,

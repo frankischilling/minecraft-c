@@ -9,7 +9,8 @@
 typedef enum mc_world_mutation_chunk_body {
     MC_WORLD_MUTATION_CHUNK_ID,
     MC_WORLD_MUTATION_CHUNK_INTERVAL,
-    MC_WORLD_MUTATION_CHUNK_HEIGHT
+    MC_WORLD_MUTATION_CHUNK_HEIGHT,
+    MC_WORLD_MUTATION_CHUNK_ID_METADATA
 } mc_world_mutation_chunk_body;
 
 typedef struct mc_world_mutation_chunk_scope {
@@ -44,9 +45,11 @@ typedef struct mc_world_mutation_chunk_execution {
     mc_world_chunk *chunk;
     mc_world_light_execution light;
     mc_world_notification_execution height_observer;
+    struct mc_world_mutation_execution_call *hook;
     mc_world_chunk_error column;
     mc_world_mutation_chunk_scope scope;
     mc_entity_tick_execution_site source_null_site;
+    mc_world_mutation_chunk_body setter_body;
     size_t world_captures;
     bool entered, active, lease_held, binding_held, completed;
     bool source_returned, changed, source_null;
@@ -65,6 +68,12 @@ bool mc_world_mutation_chunk_block_in_execution(mc_world_mutation_chunk_executio
                                                 int32_t, int32_t, int32_t, bool *,
                                                 mc_world_mutation_error *,
                                                 mc_world_storage_status *);
+bool mc_world_mutation_chunk_block_metadata_in_execution(mc_world_mutation_chunk_execution *,
+                                                         mc_world_runtime *, mc_world_store *,
+                                                         mc_chunk_state *, mc_world_chunk *,
+                                                         int32_t, int32_t, int32_t, int32_t,
+                                                         int32_t, bool *, mc_world_mutation_error *,
+                                                         mc_world_storage_status *);
 bool mc_world_mutation_chunk_execution_owns_world(const mc_world_mutation_chunk_execution *,
                                                   const mc_entity_tick_execution_world_token *);
 /* Drain actual canonical acquisition attempts/activation close records first.
@@ -73,6 +82,8 @@ bool mc_world_mutation_chunk_execution_owns_world(const mc_world_mutation_chunk_
  * No Source retry, changed publication, or borrowed-view expiration occurs.
  */
 mc_world_storage_status mc_world_mutation_chunk_native_close(mc_world_mutation_chunk_execution *);
+mc_world_storage_status
+mc_world_mutation_chunk_children_retire(mc_world_mutation_chunk_execution *);
 const mc_world_notification_execution *
 mc_world_mutation_chunk_failure_observer(const mc_world_mutation_chunk_execution *);
 

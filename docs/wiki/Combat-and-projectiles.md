@@ -240,3 +240,31 @@ Arrow-hit cases have separate native integration coverage. Natural encounters,
 plant growth, graphical damage wake, original pixels/audio and FPS remain
 unqualified. See the [runtime contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plants.md#owned-dead-bush-crops-and-mushroom-neighbors-during-player-wake)
 and [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#remaining-flower-family-neighbors-during-player-wake).
+
+## Cactus and Reeds during wake
+
+Cactus and Reeds neighbors now share retained Player wake execution with their
+actual survival and virtual drops. Unsupported three-cell columns publish each
+Item before removal and the next recursive neighbor. Interrupted publication
+or cell observers preserve the committed prefix through checked cleanup. Their
+Material queries keep the actual failed acquisition without resetting the
+enclosing execution result.
+
+The reached Sand and Water neighbors keep their own effects. Sand beneath a
+removed plant consumes a scheduled-record sequence even when the radius is
+absent. Still Water beneath the Bed converts to Flowing Water through the
+five-argument metadata setter. Flowing Water addition schedules before the
+range callback; the Still Water helper schedules afterward. The callback sees
+the converted cell and `World.o=true`. A throwing observer preserves true and
+the first request, leaving the Player asleep.
+
+Two fresh unchanged-original VMs agree on 21 prepared profiles. Windows and sanitized Linux
+each match 2,628 selected values, including all five Chunk planes, recursive columns,
+Item motion, Random streams, callback order, water/flag state and exact
+scheduled-class state. Four additional ownership controls include one supported
+Reeds branch without Math that matches another 70 values. The north Water
+profile's different Bed exit position and bounds are preserved. The full Windows suite and focused Linux regressions pass. Natural encounters,
+graphical sleeping damage, original audiovisual equality and FPS remain open.
+See the [runtime contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plants.md#owned-cactus-and-reeds-neighbors-during-player-wake),
+[original packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/entity/upright_plants_wake/README.md)
+and [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#cactus-and-reeds-during-player-wake).

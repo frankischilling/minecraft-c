@@ -359,12 +359,12 @@
       "sha256": "72cd515c4007b9251e6b3cd6daebdb9d8b936f139f2ae45ccbda26e8ef4750ad"
     },
     "src/world/runtime/registry.c": {
-      "bytes": 12242,
-      "sha256": "80d19882ffdbdc2428d45961eb5a718e74f1ccd7393d6c88aec32d990149b3ef"
+      "bytes": 17813,
+      "sha256": "c616c3e61c146eef37efed909e2184d3cce64ef9c74c9c379ed03629fc0008f3"
     },
     "src/world/runtime/registry_execution_internal.h": {
-      "bytes": 4185,
-      "sha256": "bfa8fc9ea785858961e180d731cf09c356a84b90ab4b549b3af76f9b341aee65"
+      "bytes": 5939,
+      "sha256": "022bd6df802ce7950202c4aea00979028eaa86bed1fc7a98d4ff596b88257283"
     },
     "src/block/registry/class_initializers.c": {
       "bytes": 18598,

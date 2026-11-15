@@ -7,6 +7,7 @@
 #include "mc/world/dimension/world_provider.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/scheduling.h"
+#include "world_execution_internal.h"
 
 #include <stdlib.h>
 
@@ -20,6 +21,8 @@ typedef struct fluid_frame {
     mc_block *block;
     const char *class_name, *method;
     mc_world_mutation_error *error;
+    mc_world_mutation_execution_call *owned;
+    mc_entity_tick_execution_site owned_site;
 } fluid_frame;
 
 static fluid_frame fluid_frame_make(mc_world_runtime *world, const mc_block *block,
@@ -29,8 +32,23 @@ static fluid_frame fluid_frame_make(mc_world_runtime *world, const mc_block *blo
     const bool client = block->classes->options.side == MC_REGISTRY_CLIENT;
     /* Registry arena allocations are mutable actual source objects. const
      * on the dispatch argument is a borrowed view, not immutable storage. */
-    return (fluid_frame){world, (mc_block *)block, client ? client_class : server_class,
-                         client ? client_method : server_method, error};
+    return (fluid_frame){.world = world,
+                         .block = (mc_block *)block,
+                         .class_name = client ? client_class : server_class,
+                         .method = client ? client_method : server_method,
+                         .error = error};
+}
+
+static void fluid_owned(fluid_frame *frame, mc_world_mutation_execution_call *owned,
+                        const char *method, const char *descriptor) {
+    frame->owned = owned;
+    frame->owned_site = (mc_entity_tick_execution_site){frame->class_name, method, descriptor, 0};
+}
+
+static mc_entity_tick_execution_site fluid_site(const fluid_frame *frame, unsigned int pc) {
+    mc_entity_tick_execution_site site = frame->owned_site;
+    site.pc = (int)pc;
+    return site;
 }
 
 static void fluid_at(const fluid_frame *frame, unsigned int pc) {
@@ -58,7 +76,8 @@ static bool fluid_storage_fail(const fluid_frame *frame, unsigned int pc,
     frame->error->status = cause.status;
     frame->error->operation = cause.operation;
     frame->error->cause = cause;
-    frame->world->last_error = cause;
+    if (frame->owned == NULL || cause.status != MC_WORLD_STORAGE_OK)
+        frame->world->last_error = cause;
     return false;
 }
 
@@ -75,7 +94,8 @@ static bool fluid_nested(const fluid_frame *frame, unsigned int pc,
     }
     const mc_world_storage_error cause = frame->error->cause;
     fluid_at(frame, pc);
-    frame->world->last_error = cause;
+    if (frame->owned == NULL || cause.status != MC_WORLD_STORAGE_OK)
+        frame->world->last_error = cause;
     return false;
 }
 
@@ -116,6 +136,9 @@ static bool fluid_id(const fluid_frame *frame, unsigned int pc, int32_t x, int32
                      int32_t *out) {
     mc_world_storage_error cause = {0};
     fluid_at(frame, pc);
+    if (frame->owned != NULL)
+        return mc_world_mutation_execution_get(frame->owned, frame->world, x, y, z, false, out,
+                                               frame->error, fluid_site(frame, pc));
     if (mc_world_runtime_block_get(frame->world, x, y, z, out, &cause) != MC_WORLD_STORAGE_OK)
         return fluid_storage_fail(frame, pc, cause);
     return true;
@@ -125,6 +148,9 @@ static bool fluid_metadata(const fluid_frame *frame, unsigned int pc, int32_t x,
                            int32_t z, int32_t *out) {
     mc_world_storage_error cause = {0};
     fluid_at(frame, pc);
+    if (frame->owned != NULL)
+        return mc_world_mutation_execution_get(frame->owned, frame->world, x, y, z, true, out,
+                                               frame->error, fluid_site(frame, pc));
     if (mc_world_runtime_metadata_get(frame->world, x, y, z, out, &cause) != MC_WORLD_STORAGE_OK)
         return fluid_storage_fail(frame, pc, cause);
     return true;
@@ -234,6 +260,19 @@ static bool fluid_write_id(const fluid_frame *frame, unsigned int pc, int32_t x,
 static bool fluid_write(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y, int32_t z,
                         int32_t id, int32_t metadata, bool quiet) {
     bool ignored;
+    if (frame->owned != NULL) {
+        fluid_at(frame, pc);
+        if (!quiet) {
+            mc_world_runtime_execution_result_note(
+                mc_world_mutation_execution_result_of(frame->owned),
+                MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Owned fluid notifying metadata setter",
+                fluid_site(frame, pc));
+            return false;
+        }
+        return mc_world_mutation_execution_set_quiet(frame->owned, frame->world, x, y, z, id,
+                                                     metadata, &ignored, frame->error,
+                                                     fluid_site(frame, pc));
+    }
     mc_world_mutation_error *lower = fluid_workspace(frame, pc);
     if (lower == NULL)
         return false;
@@ -259,6 +298,16 @@ static bool fluid_write_metadata(const fluid_frame *frame, unsigned int pc, int3
 
 static bool fluid_observe(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y,
                           int32_t z, bool range) {
+    if (frame->owned != NULL) {
+        fluid_at(frame, pc);
+        if (range)
+            return mc_world_mutation_execution_observe_range(
+                frame->owned, frame->world, x, y, z, x, y, z, frame->error, fluid_site(frame, pc));
+        mc_world_runtime_execution_result_note(mc_world_mutation_execution_result_of(frame->owned),
+                                               MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                               "Owned fluid cell observer", fluid_site(frame, pc));
+        return false;
+    }
     mc_world_mutation_error *lower = fluid_workspace(frame, pc);
     if (lower == NULL)
         return false;
@@ -291,6 +340,11 @@ static bool fluid_neighbors(const fluid_frame *frame, unsigned int pc, int32_t x
 
 static bool fluid_schedule(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y,
                            int32_t z, int32_t id, int32_t delay) {
+    if (frame->owned != NULL) {
+        fluid_at(frame, pc);
+        return mc_world_mutation_execution_schedule(frame->owned, frame->world, x, y, z, id, delay,
+                                                    frame->error, fluid_site(frame, pc));
+    }
     mc_world_schedule_error *scheduled = malloc(sizeof(*scheduled));
     fluid_at(frame, pc);
     if (scheduled == NULL)
@@ -578,9 +632,11 @@ static bool fluid_flow_to_still(mc_world_runtime *world, mc_block *block, int32_
 }
 
 static bool fluid_still_to_flow(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
-                                int32_t z, mc_world_mutation_error *error) {
-    const fluid_frame frame =
+                                int32_t z, mc_world_mutation_error *error,
+                                mc_world_mutation_execution_call *owned) {
+    fluid_frame frame =
         fluid_frame_make(world, block, "nx", "is", "j(Lfd;III)V", "i(Ldj;III)V", error);
+    fluid_owned(&frame, owned, "j", "(Lfd;III)V");
     int32_t metadata;
     if (!fluid_metadata(&frame, 5, x, y, z, &metadata))
         return false;
@@ -868,9 +924,10 @@ static bool fluid_fizz(mc_world_runtime *world, mc_block *block, int32_t x, int3
 }
 
 static bool fluid_mix(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y, int32_t z,
-                      mc_world_mutation_error *error) {
-    const fluid_frame frame =
+                      mc_world_mutation_error *error, mc_world_mutation_execution_call *owned) {
+    fluid_frame frame =
         fluid_frame_make(world, block, "rp", "kv", "j(Lfd;III)V", "i(Ldj;III)V", error);
+    fluid_owned(&frame, owned, "j", "(Lfd;III)V");
     int32_t current;
     if (!fluid_id(&frame, 5, x, y, z, &current))
         return false;
@@ -878,6 +935,15 @@ static bool fluid_mix(mc_world_runtime *world, mc_block *block, int32_t x, int32
         return fluid_return(&frame);
     if (block->fields.bA != fluid_material_static(&frame, MC_MATERIAL_h))
         return fluid_return(&frame);
+    if (owned != NULL) {
+        /* The ordinary Water body returns above. Lava's first material query
+         * needs its own retained mixing, fizz and notifying-write children. */
+        fluid_at(&frame, 41);
+        mc_world_runtime_execution_result_note(
+            mc_world_mutation_execution_result_of(owned), MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+            "Owned Lava mixing material query", fluid_site(&frame, 41));
+        return false;
+    }
     bool contact = false;
     static const unsigned int query_pc[5] = {41, 65, 89, 113, 137};
     for (int32_t direction = 0; direction < 5; ++direction) {
@@ -924,28 +990,34 @@ static bool fluid_mix(mc_world_runtime *world, mc_block *block, int32_t x, int32
 }
 
 static bool fluid_common_added(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
-                               int32_t z, mc_world_mutation_error *error) {
-    const fluid_frame frame =
+                               int32_t z, mc_world_mutation_error *error,
+                               mc_world_mutation_execution_call *owned) {
+    fluid_frame frame =
         fluid_frame_make(world, block, "rp", "kv", "c(Lfd;III)V", "c(Ldj;III)V", error);
-    if (!fluid_mix(world, block, x, y, z, error))
+    fluid_owned(&frame, owned, "c", "(Lfd;III)V");
+    if (!fluid_mix(world, block, x, y, z, error, owned))
         return fluid_nested(&frame, 6, error);
     return fluid_return(&frame);
 }
 
 static bool fluid_common_neighbor(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
-                                  int32_t z, mc_world_mutation_error *error) {
-    const fluid_frame frame =
+                                  int32_t z, mc_world_mutation_error *error,
+                                  mc_world_mutation_execution_call *owned) {
+    fluid_frame frame =
         fluid_frame_make(world, block, "rp", "kv", "b(Lfd;IIII)V", "b(Ldj;IIII)V", error);
-    if (!fluid_mix(world, block, x, y, z, error))
+    fluid_owned(&frame, owned, "b", "(Lfd;IIII)V");
+    if (!fluid_mix(world, block, x, y, z, error, owned))
         return fluid_nested(&frame, 6, error);
     return fluid_return(&frame);
 }
 
 static bool fluid_flowing_added(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
-                                int32_t z, mc_world_mutation_error *error) {
-    const fluid_frame frame =
+                                int32_t z, mc_world_mutation_error *error,
+                                mc_world_mutation_execution_call *owned) {
+    fluid_frame frame =
         fluid_frame_make(world, block, "om", "jc", "c(Lfd;III)V", "c(Ldj;III)V", error);
-    if (!fluid_common_added(world, block, x, y, z, error))
+    fluid_owned(&frame, owned, "c", "(Lfd;III)V");
+    if (!fluid_common_added(world, block, x, y, z, error, owned))
         return fluid_nested(&frame, 6, error);
     int32_t current;
     if (!fluid_id(&frame, 14, x, y, z, &current))
@@ -960,16 +1032,18 @@ static bool fluid_flowing_added(mc_world_runtime *world, mc_block *block, int32_
 }
 
 static bool fluid_still_neighbor(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y,
-                                 int32_t z, mc_world_mutation_error *error) {
-    const fluid_frame frame =
+                                 int32_t z, mc_world_mutation_error *error,
+                                 mc_world_mutation_execution_call *owned) {
+    fluid_frame frame =
         fluid_frame_make(world, block, "nx", "is", "b(Lfd;IIII)V", "b(Ldj;IIII)V", error);
-    if (!fluid_common_neighbor(world, block, x, y, z, error))
+    fluid_owned(&frame, owned, "b", "(Lfd;IIII)V");
+    if (!fluid_common_neighbor(world, block, x, y, z, error, owned))
         return fluid_nested(&frame, 8, error);
     int32_t current;
     if (!fluid_id(&frame, 16, x, y, z, &current))
         return false;
     if (current == block->fields.bn) {
-        if (!fluid_still_to_flow(world, block, x, y, z, error))
+        if (!fluid_still_to_flow(world, block, x, y, z, error, owned))
             return fluid_nested(&frame, 32, error);
     }
     return fluid_return(&frame);
@@ -1078,8 +1152,8 @@ bool mc_world_mutation_fluid_added(mc_world_runtime *world, const mc_block *bloc
     if (!fluid_receiver(world, block, error))
         return false;
     return block->kind == MC_BLOCK_FLOWING_FLUID
-               ? fluid_flowing_added(world, (mc_block *)block, x, y, z, error)
-               : fluid_common_added(world, (mc_block *)block, x, y, z, error);
+               ? fluid_flowing_added(world, (mc_block *)block, x, y, z, error, NULL)
+               : fluid_common_added(world, (mc_block *)block, x, y, z, error, NULL);
 }
 
 bool mc_world_mutation_fluid_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
@@ -1089,6 +1163,34 @@ bool mc_world_mutation_fluid_neighbor(mc_world_runtime *world, const mc_block *b
     if (!fluid_receiver(world, block, error))
         return false;
     return block->kind == MC_BLOCK_STILL_FLUID
-               ? fluid_still_neighbor(world, (mc_block *)block, x, y, z, error)
-               : fluid_common_neighbor(world, (mc_block *)block, x, y, z, error);
+               ? fluid_still_neighbor(world, (mc_block *)block, x, y, z, error, NULL)
+               : fluid_common_neighbor(world, (mc_block *)block, x, y, z, error, NULL);
+}
+
+bool mc_world_mutation_fluid_added_in_execution(mc_world_mutation_execution_call *owned,
+                                                mc_world_runtime *world, const mc_block *block,
+                                                int32_t x, int32_t y, int32_t z,
+                                                mc_world_mutation_error *error) {
+    const mc_entity_tick_execution_site site = {"rp", "c", "(Lfd;III)V", 0};
+    if (!mc_world_mutation_execution_current(owned, world, site) ||
+        !fluid_receiver(world, block, error))
+        return false;
+    return block->kind == MC_BLOCK_FLOWING_FLUID
+               ? fluid_flowing_added(world, (mc_block *)block, x, y, z, error, owned)
+               : fluid_common_added(world, (mc_block *)block, x, y, z, error, owned);
+}
+
+bool mc_world_mutation_fluid_neighbor_in_execution(mc_world_mutation_execution_call *owned,
+                                                   mc_world_runtime *world, const mc_block *block,
+                                                   int32_t x, int32_t y, int32_t z,
+                                                   int32_t source_id,
+                                                   mc_world_mutation_error *error) {
+    (void)source_id;
+    const mc_entity_tick_execution_site site = {"rp", "b", "(Lfd;IIII)V", 0};
+    if (!mc_world_mutation_execution_current(owned, world, site) ||
+        !fluid_receiver(world, block, error))
+        return false;
+    return block->kind == MC_BLOCK_STILL_FLUID
+               ? fluid_still_neighbor(world, (mc_block *)block, x, y, z, error, owned)
+               : fluid_common_neighbor(world, (mc_block *)block, x, y, z, error, owned);
 }

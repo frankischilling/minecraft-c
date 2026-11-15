@@ -15,7 +15,9 @@ if(BUILD_TESTING AND TARGET mc_simulation AND Python3_Interpreter_FOUND)
             wake-bed-dead-bush wake-bed-dead-bush-removal-source
             wake-bed-crops wake-bed-crops-source wake-bed-crops-removal-source wake-bed-crops-max-items
             wake-bed-mushroom wake-bed-mushroom-source wake-bed-mushroom-removal-source
-            wake-bed-mushroom-high-light)
+            wake-bed-mushroom-high-light
+            wake-bed-cactus wake-bed-cactus-source wake-bed-cactus-removal-source
+            wake-bed-reeds wake-bed-reeds-source wake-bed-reeds-removal-source)
         add_test(NAME "world.arrow_hurt_player_${_mc_arrow_player_mode}" COMMAND Python3::Interpreter -B
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_arrow_hurt_player.py"
             --mode "${_mc_arrow_player_mode}" --executable "$<TARGET_FILE:mc_test_arrow_hurt_player>"

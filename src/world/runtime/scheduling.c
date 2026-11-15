@@ -2,11 +2,13 @@
 
 #include "../../block/registry/runtime_internal.h"
 #include "construction_internal.h"
+#include "execution_children_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/world/runtime/blocks.h"
 #include "mutation/mutation_internal.h"
 #include "presence_internal.h"
 #include "runtime_internal.h"
+#include "scheduling_execution_internal.h"
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -119,7 +121,7 @@ static bool radius_present(mc_world_runtime *world, int32_t x, int32_t y, int32_
  * synchronous World call. Each snapshot below is a total read of that live
  * owner at the next source use, not an extra failure/preflight boundary. */
 static bool immediate(mc_world_runtime *world, mc_scheduled_tick *record,
-                      mc_world_schedule_error *frame) {
+                      mc_world_schedule_error *frame, mc_world_schedule_execution *owned) {
     mc_scheduled_tick_fields fields;
     (void)mc_scheduled_tick_fields_get(record, &fields);
     bool present;
@@ -132,9 +134,26 @@ static bool immediate(mc_world_runtime *world, mc_scheduled_tick *record,
     int32_t current;
     mc_world_storage_error cause = {0};
     frame->bytecode = 96;
-    if (mc_world_runtime_block_get(world, fields.x, fields.y, fields.z, &current, &cause) !=
-        MC_WORLD_STORAGE_OK)
-        return storage_fail(world, frame, cause);
+    if (owned == NULL) {
+        if (mc_world_runtime_block_get(world, fields.x, fields.y, fields.z, &current, &cause) !=
+            MC_WORLD_STORAGE_OK)
+            return storage_fail(world, frame, cause);
+    } else {
+        owned->lower = (mc_world_block_execution){.execution = owned->execution,
+                                                  .code = owned->code,
+                                                  .receiver_site = {"fd", "c", "(IIIII)V", 96},
+                                                  .owned = owned->owned};
+        const bool completed = mc_world_runtime_block_get_in_execution(
+            &owned->lower, world, fields.x, fields.y, fields.z, &current, &owned->lower_cause,
+            &owned->lower_status);
+        owned->native_stopped =
+            owned->lower.native_stopped || owned->owned->ownership_status != MC_WORLD_STORAGE_OK;
+        if (!completed) {
+            if (!owned->native_stopped)
+                return storage_fail(world, frame, owned->lower_cause);
+            return false;
+        }
+    }
     (void)mc_scheduled_tick_fields_get(record, &fields);
     if (current != fields.block || current <= 0)
         return true;
@@ -158,6 +177,14 @@ static bool immediate(mc_world_runtime *world, mc_scheduled_tick *record,
     (void)mc_scheduled_tick_fields_get(record, &fields);
     mc_java_random *random = world->fields.r; /* Source getfield139, after m access. */
     frame->bytecode = 142;
+    if (owned != NULL) {
+        owned->native_stopped = true;
+        mc_world_runtime_execution_result_note(
+            owned->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+            "Immediate scheduled virtual Block tick requires retained execution",
+            (mc_entity_tick_execution_site){"fd", "c", "(IIIII)V", 142});
+        return false;
+    }
     if (!mc_world_mutation_block_tick(world, block, fields.x, fields.y, fields.z, random,
                                       &frame->tick)) {
         frame->registry = frame->tick.registry;
@@ -213,7 +240,8 @@ static bool deferred(mc_world_runtime *world, mc_scheduled_tick *record, int32_t
 }
 
 static bool schedule_held(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int32_t block,
-                          int32_t delay, mc_world_schedule_error *frame) {
+                          int32_t delay, mc_world_schedule_error *frame,
+                          mc_world_schedule_execution *owned) {
     frame->bytecode = 0;
     mc_world_runtime_classes *classes = world->classes;
     if (classes == NULL)
@@ -232,9 +260,12 @@ static bool schedule_held(mc_world_runtime *world, int32_t x, int32_t y, int32_t
 
     /* Original flag19 is read only after allocation/constructor0/9, including
      * requests that later prove absent, duplicate, mismatched or nonpositive. */
-    const bool completed = world->fields.a ? immediate(world, record, frame)
+    const bool completed = world->fields.a ? immediate(world, record, frame, owned)
                                            : deferred(world, record, x, y, z, block, delay, frame);
-    mc_scheduled_tick_release(record);
+    if (owned != NULL && !completed)
+        owned->record = record;
+    else
+        mc_scheduled_tick_release(record);
     return completed;
 }
 
@@ -272,8 +303,111 @@ mc_world_storage_status mc_world_runtime_schedule(mc_world_runtime *world, int32
         frame->cause = cause;
         return result(error, frame);
     }
-    if (schedule_held(world, x, y, z, block, delay, frame))
+    if (schedule_held(world, x, y, z, block, delay, frame, NULL))
         error_init(frame);
     mc_world_runtime_call_leave(world);
     return result(error, frame);
+}
+
+void mc_world_schedule_execution_init(mc_world_schedule_execution *frame,
+                                      mc_entity_tick_execution *execution,
+                                      mc_world_runtime_classes *code_classes,
+                                      mc_world_runtime_execution_code code,
+                                      mc_entity_tick_execution_world_token world,
+                                      mc_entity_tick_execution_site receiver_site,
+                                      mc_world_runtime_execution_result *owned) {
+    if (frame != NULL)
+        *frame = (mc_world_schedule_execution){.execution = execution,
+                                               .code_classes = code_classes,
+                                               .code = code,
+                                               .world = world,
+                                               .receiver_site = receiver_site,
+                                               .owned = owned};
+}
+
+static bool schedule_records_quiet(const mc_world_runtime_execution_result *owned) {
+    if (owned->root_pending)
+        return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (owned->pending[i].used)
+            return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (owned->closes[i].used)
+            return false;
+    return true;
+}
+
+bool mc_world_runtime_schedule_in_execution(mc_world_schedule_execution *frame,
+                                            mc_world_runtime *world, int32_t x, int32_t y,
+                                            int32_t z, int32_t block, int32_t delay,
+                                            mc_world_storage_status *raw) {
+    if (frame == NULL)
+        return false;
+    const char *operation = NULL;
+    mc_world_storage_status status = MC_WORLD_STORAGE_OK;
+    if (frame->execution == NULL || frame->execution->identity != frame->execution ||
+        frame->code_classes == NULL || frame->owned == NULL || world == NULL || raw == NULL ||
+        frame->entered) {
+        status = MC_WORLD_STORAGE_INVALID_ARGUMENT;
+        operation = "Scheduled execution/fresh outputs required";
+    } else if (frame->owned->ownership_status != MC_WORLD_STORAGE_OK ||
+               frame->owned->selection_ready || frame->owned->math_failed ||
+               !schedule_records_quiet(frame->owned)) {
+        status = MC_WORLD_STORAGE_BUSY;
+        operation = "Scheduled quiet canonical result required";
+    } else {
+        mc_entity_tick_execution_world_token token;
+        mc_world_access_failure_lease *lease = NULL;
+        if (!mc_entity_tick_execution_current_world(frame->execution, &token) ||
+            token.owner != frame->world.owner || token.slot != frame->world.slot ||
+            token.generation != frame->world.generation) {
+            status = MC_WORLD_STORAGE_BUSY;
+            operation = "Scheduled exact evaluated World token";
+        } else if ((status = mc_world_execution_child_lease(frame->execution, world, &lease)) !=
+                   MC_WORLD_STORAGE_OK)
+            operation = "Scheduled evaluated World ownership";
+        else if (world->classes != frame->code_classes ||
+                 world->construction.mode != MC_WORLD_RUNTIME_GAME ||
+                 world->construction.phase == MC_WORLD_RUNTIME_RETIRED) {
+            status = MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+            operation = "Scheduled same defining GAME owner";
+        }
+    }
+    if (status != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(frame->owned, status, operation,
+                                               frame->receiver_site);
+        return false;
+    }
+    mc_world_storage_error cause = {0};
+    status = mc_world_runtime_call_enter(world, &cause);
+    if (status != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(frame->owned, status, cause.operation,
+                                               frame->receiver_site);
+        return false;
+    }
+    frame->entered = frame->active = true;
+    error_init(&frame->detail);
+    const bool completed = schedule_held(world, x, y, z, block, delay, &frame->detail, frame);
+    if (completed)
+        error_init(&frame->detail);
+    mc_world_runtime_call_leave(world);
+    frame->active = false;
+    frame->status = frame->detail.status;
+    *raw = frame->status;
+    frame->completed = completed && !frame->native_stopped &&
+                       frame->owned->ownership_status == MC_WORLD_STORAGE_OK &&
+                       !frame->owned->selection_ready && schedule_records_quiet(frame->owned);
+    return frame->completed;
+}
+
+mc_world_storage_status mc_world_schedule_execution_retire(mc_world_schedule_execution **slot) {
+    if (slot == NULL || *slot == NULL)
+        return MC_WORLD_STORAGE_OK;
+    mc_world_schedule_execution *frame = *slot;
+    if (frame->active || !schedule_records_quiet(frame->owned))
+        return MC_WORLD_STORAGE_BUSY;
+    mc_scheduled_tick_release(frame->record);
+    free(frame);
+    *slot = NULL;
+    return MC_WORLD_STORAGE_OK;
 }

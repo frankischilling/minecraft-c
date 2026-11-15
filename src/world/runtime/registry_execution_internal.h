@@ -1,6 +1,7 @@
 #ifndef MC_WORLD_RUNTIME_REGISTRY_EXECUTION_INTERNAL_H
 #define MC_WORLD_RUNTIME_REGISTRY_EXECUTION_INTERNAL_H
 
+#include "blocks_execution_internal.h"
 #include "collision/blocks_execution_internal.h"
 #include "mc/world/runtime/blocks.h"
 
@@ -59,5 +60,34 @@ bool mc_world_runtime_material_get_in_execution(mc_entity_tick_execution *,
                                                 mc_world_collision_error *,
                                                 mc_world_storage_status *query_status,
                                                 mc_world_runtime_execution_result *);
+
+/* Same material body with a borrowed, already initialized canonical result.
+ * The enclosing caller owns the exact World token and defining/provider/Store
+ * graphs. The scalar child and all failure-only acquisition views remain in
+ * this stable frame until checked native drainage and owner retirement.
+ * Initialization changes only this descriptor, never its borrowed result.
+ * Reuse requires quiet completed success; failure never resumes Source work.
+ * Raw status is assigned only after body entry and is independent of native
+ * continuation. A successful material field may be NULL. */
+typedef struct mc_world_material_execution {
+    mc_entity_tick_execution *execution;
+    mc_world_runtime_classes *code_classes;
+    mc_world_runtime_execution_code code;
+    mc_entity_tick_execution_site receiver_site;
+    mc_world_runtime_execution_result *owned;
+    mc_world_block_execution lower;
+    mc_world_material_error detail;
+    mc_world_storage_error lower_cause;
+    mc_world_storage_status lower_status, status;
+    bool entered, lower_returned, native_stopped, completed;
+} mc_world_material_execution;
+
+void mc_world_material_execution_init(mc_world_material_execution *, mc_entity_tick_execution *,
+                                      mc_world_runtime_classes *, mc_world_runtime_execution_code,
+                                      mc_entity_tick_execution_site,
+                                      mc_world_runtime_execution_result *);
+bool mc_world_runtime_material_get_retained(mc_world_material_execution *, mc_world_runtime *,
+                                            int32_t, int32_t, int32_t, mc_material **,
+                                            mc_world_storage_status *);
 
 #endif

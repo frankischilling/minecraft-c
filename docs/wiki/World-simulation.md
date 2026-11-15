@@ -834,3 +834,13 @@ Dead Bush, Crops and both Mushrooms also enter retained Player wake execution.
 Finite original comparisons cover real Chunk planes, seeded Random streams,
 Item motion and callback order. The [combat page](Combat-and-projectiles#dead-bush-crops-and-mushrooms-during-wake)
 records this scope and its remaining gameplay limits.
+
+Cactus and Reeds neighbors now retain their Material queries, recursive column
+removal and reached Sand/Water effects during Player wake. The defining
+scheduled-class sequence advances even when the radius is absent and both
+World sets remain empty. A Water range exception preserves the converted cell,
+first scheduled request and `World.o=true`. The
+[combat page](Combat-and-projectiles#cactus-and-reeds-during-wake) records the
+21-profile original/Windows comparison; the
+[scheduling contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/scheduling.md#retained-scheduling-during-player-wake)
+separates this retained path from general scheduling, Lava and tick execution.
