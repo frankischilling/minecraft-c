@@ -559,10 +559,32 @@ static mc_chunk_callback_result auxiliary(void *owner, const mc_world_save_conte
     return runtime->options.save_auxiliary(runtime->options.auxiliary, context);
 }
 
+/* GAME descriptors remain bound to their constructed cache even when a Source
+ * callback changes World.v. Composition's provider is an arbitrary borrowed
+ * callback owner and must never be interpreted as a concrete provider. */
+static mc_chunk_provider *context_cache_owner(const mc_world_runtime *runtime,
+                                              const mc_chunk_cache *cache) {
+    if (runtime == NULL || runtime->construction.mode != MC_WORLD_RUNTIME_GAME ||
+        !runtime->construction.contexts_bound)
+        return NULL;
+    mc_chunk_provider *provider = runtime->options.provider;
+    return mc_chunk_provider_owns_cache(provider, runtime, cache) ? provider : NULL;
+}
+
+static void export_cache_bindings(const mc_world_runtime *runtime, const mc_chunk_cache *cache) {
+    mc_chunk_provider *owner = context_cache_owner(runtime, cache);
+    mc_chunk_provider_cache_export(owner);
+    /* Preserve the current receiver's existing conservative raw-export rule,
+     * but invalidate the actual escaping descriptor's owner too. */
+    if (runtime->fields.v != owner)
+        mc_chunk_provider_cache_export(runtime->fields.v);
+}
+
 static mc_chunk_callback_result progress(void *owner, const mc_world_save_context *context,
                                          mc_world_save_stage stage) {
     mc_world_runtime *runtime = owner;
-    mc_chunk_provider_cache_export(runtime->fields.v);
+    export_cache_bindings(
+        runtime, context == NULL || context->chunks == NULL ? NULL : context->chunks->cache);
     return runtime->options.report_progress(runtime->options.progress, context, stage);
 }
 
@@ -790,7 +812,7 @@ const mc_chunk_acquire_context *mc_world_runtime_acquisition(const mc_world_runt
     if (runtime == NULL || !runtime->construction.contexts_bound ||
         runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED)
         return NULL;
-    mc_chunk_provider_cache_export(runtime->fields.v);
+    export_cache_bindings(runtime, runtime->acquisition.cache);
     return &runtime->acquisition;
 }
 
@@ -798,7 +820,7 @@ const mc_chunk_lifecycle_context *mc_world_runtime_lifecycle(const mc_world_runt
     if (runtime == NULL || !runtime->construction.contexts_bound ||
         runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED)
         return NULL;
-    mc_chunk_provider_cache_export(runtime->fields.v);
+    export_cache_bindings(runtime, runtime->lifecycle.cache);
     return &runtime->lifecycle;
 }
 
@@ -806,7 +828,8 @@ const mc_world_save_context *mc_world_runtime_saving(const mc_world_runtime *run
     if (runtime == NULL || !runtime->construction.contexts_bound ||
         runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED)
         return NULL;
-    mc_chunk_provider_cache_export(runtime->fields.v);
+    export_cache_bindings(runtime,
+                          runtime->saving.chunks == NULL ? NULL : runtime->saving.chunks->cache);
     return &runtime->saving;
 }
 
@@ -943,13 +966,12 @@ static void execution_returned(mc_entity_tick_execution *execution,
     (void)mc_world_runtime_execution_finish_pending(execution, result);
 }
 
-static MC_RUNTIME_ACQUISITION_NOINLINE mc_chunk_acquire_status
-acquire_entered(mc_world_runtime *runtime, int32_t x, int32_t z, mc_chunk_state **out,
-                acquisition_operation operation, mc_world_runtime_acquisition_error *error,
-                bool clear_success, mc_chunk_provider *provider,
-                const mc_chunk_acquire_context *context, mc_entity_tick_execution *execution,
-                mc_world_runtime_execution_code code, mc_world_runtime_execution_result *result,
-                const mc_entity_tick_execution_loader_attempt *attempt) {
+static MC_RUNTIME_ACQUISITION_NOINLINE mc_chunk_acquire_status acquire_entered(
+    mc_world_runtime *runtime, int32_t x, int32_t z, mc_chunk_state **out,
+    acquisition_operation operation, mc_world_runtime_acquisition_error *error, bool clear_success,
+    const mc_chunk_acquire_context *context, mc_entity_tick_execution *execution,
+    mc_world_runtime_execution_code code, mc_world_runtime_execution_result *result,
+    const mc_entity_tick_execution_loader_attempt *attempt) {
     mc_runtime_execution_context owned;
     if (execution != NULL) {
         owned = (mc_runtime_execution_context){*context, execution, code, result};
@@ -963,7 +985,8 @@ acquire_entered(mc_world_runtime *runtime, int32_t x, int32_t z, mc_chunk_state 
     mc_world_runtime_lifecycle_error *previous_lifecycle = runtime->lifecycle_error;
     runtime->acquisition_error = &frame;
     runtime->lifecycle_error = NULL;
-    mc_chunk_provider_cache_mutation_begin(provider);
+    mc_chunk_provider *scope_owner = context_cache_owner(runtime, context->cache);
+    mc_chunk_provider_cache_mutation_begin(scope_owner);
     switch (operation) {
         case ACQUISITION_ACQUIRE:
             frame.status = mc_chunk_acquire(context, x, z, out);
@@ -978,7 +1001,7 @@ acquire_entered(mc_world_runtime *runtime, int32_t x, int32_t z, mc_chunk_state 
             frame.status = mc_chunk_acquire_mark_drop(context, x, z);
             break;
     }
-    mc_chunk_provider_cache_mutation_end(provider);
+    mc_chunk_provider_cache_mutation_end(scope_owner);
     if (execution != NULL)
         execution_returned(execution, result, attempt, frame.status, &frame);
     runtime->acquisition_error = previous;
@@ -1031,8 +1054,8 @@ acquire_attempt(mc_world_runtime *runtime, int32_t x, int32_t z, mc_chunk_state 
             !mc_chunk_provider_cache_get(runtime->fields.v, &runtime->acquisition, x, z, out,
                                          &status))
             return acquire_entered(runtime, x, z, out, operation, error, clear_success,
-                                   runtime->fields.v, &runtime->acquisition, execution, code,
-                                   result, execution == NULL ? NULL : &attempt);
+                                   &runtime->acquisition, execution, code, result,
+                                   execution == NULL ? NULL : &attempt);
         --runtime->active_calls;
     }
     if (execution != NULL) {
@@ -1084,8 +1107,8 @@ mc_world_runtime_acquire_captured_provider(mc_chunk_provider *provider, int32_t 
             context.generate = captured_generate;
         if (context.populate != NULL)
             context.populate = captured_populate;
-        return acquire_entered(runtime, x, z, out, ACQUISITION_ACQUIRE, error, true, provider,
-                               &context, NULL, (mc_world_runtime_execution_code){0}, NULL, NULL);
+        return acquire_entered(runtime, x, z, out, ACQUISITION_ACQUIRE, error, true, &context, NULL,
+                               (mc_world_runtime_execution_code){0}, NULL, NULL);
     }
 refused:
     if (error != NULL) {
@@ -1102,7 +1125,7 @@ mc_chunk_acquire_status mc_world_runtime_acquire(mc_world_runtime *runtime, int3
         acquire_attempt(runtime, x, z, out, ACQUISITION_ACQUIRE, NULL, true, NULL,
                         (mc_world_runtime_execution_code){0}, NULL);
     if (status == MC_CHUNK_ACQUIRE_OK)
-        mc_chunk_provider_cache_export(runtime->fields.v);
+        export_cache_bindings(runtime, runtime->acquisition.cache);
     return status;
 }
 
@@ -1110,7 +1133,7 @@ mc_chunk_acquire_status mc_world_runtime_get(mc_world_runtime *runtime, int32_t 
                                              mc_chunk_state **out) {
     const mc_chunk_acquire_status status = mc_world_runtime_get_detailed(runtime, x, z, out, NULL);
     if (status == MC_CHUNK_ACQUIRE_OK)
-        mc_chunk_provider_cache_export(runtime->fields.v);
+        export_cache_bindings(runtime, runtime->acquisition.cache);
     return status;
 }
 
@@ -1229,7 +1252,8 @@ static mc_chunk_lifecycle_status lifecycle_attempt_progress(mc_world_runtime *ru
         mc_world_runtime_acquisition_error *previous_acquisition = runtime->acquisition_error;
         runtime->lifecycle_error = &frame;
         runtime->acquisition_error = NULL;
-        mc_chunk_provider_cache_mutation_begin(runtime->fields.v);
+        mc_chunk_provider *scope_owner = context_cache_owner(runtime, runtime->lifecycle.cache);
+        mc_chunk_provider_cache_mutation_begin(scope_owner);
         switch (operation) {
             case LIFECYCLE_SAVE_CHUNKS:
                 frame.status = mc_chunk_lifecycle_save(&runtime->lifecycle, force, out);
@@ -1264,7 +1288,7 @@ static mc_chunk_lifecycle_status lifecycle_attempt_progress(mc_world_runtime *ru
                 }
                 break;
         }
-        mc_chunk_provider_cache_mutation_end(runtime->fields.v);
+        mc_chunk_provider_cache_mutation_end(scope_owner);
         runtime->lifecycle_error = previous;
         runtime->acquisition_error = previous_acquisition;
         --runtime->active_calls;
@@ -1301,7 +1325,8 @@ mc_world_runtime_save_with_progress_detailed(mc_world_runtime *runtime, bool for
     /* A public progress callback receives the actual mutable Chunk descriptor
      * and may retain it after return, including after a failed save. */
     if (callback != NULL)
-        mc_chunk_provider_cache_export(runtime->fields.v);
+        export_cache_bindings(
+            runtime, runtime->saving.chunks == NULL ? NULL : runtime->saving.chunks->cache);
     mc_world_save_context selected = runtime->saving;
     selected.progress = owner;
     selected.report_progress = callback;

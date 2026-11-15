@@ -1,4 +1,31 @@
-# Bed reference-reader CPU comparison
+# Reference-reader performance
+
+## Redstone Ore fixture construction
+
+The `ff81d0ea` GCC CI run passed 1,341 of 1,343 tests. Both Redstone Ore native
+reader controls reached their 180-second limit while running alongside the
+normal and optimized Fire controls. Windows, Clang and formatting passed.
+
+The Ore controls repeatedly built the same synthetic native transport before
+passing each corruption to the real parser and validator. The large random
+World-tick profile alone contains 361 complete Chunks. A diagnostic cProfile
+run completed all ten original test methods: repeated plane run encoding
+accounted for 250.247 of 261.441 profiled seconds. Profiling adds overhead;
+these figures are not a plain before/after speed comparison.
+
+The test helper now derives each complete profile fixture once. Every check
+receives a fresh deep copy. The after, retired and cleanup states also receive
+independent copies of the same prepared after-state encoding. Public reader,
+model, comparison assertions, profile and corruption loops, and watchdogs are
+unchanged.
+
+All 67 old/new profile transports match byte for byte. Separate controls verify
+phase-copy and pristine-fixture isolation. The complete ten-method candidate
+suite passes in fresh normal and optimized Python processes, taking 10.879 and
+11.267 seconds on Windows. This establishes the retained test result and lower
+duplicate construction work; it does not establish a whole-CI speed ratio.
+
+## Bed reference-reader CPU comparison
 
 The public World [Bed packet controls](../../tests/reference/world/bed_interaction/test_packet.py)
 spent most of their time revalidating the same original packet while testing
@@ -15,7 +42,7 @@ mutations, five JSON cases and five sparse-plane domain/order cases. Original
 mutations still execute the complete source validator. No parser condition,
 comparison field, assertion or watchdog is removed.
 
-## Fixed work and measurement
+### Fixed work and measurement
 
 Both cohorts ran on the same Intel Core i9-10900F, ten cores and twenty logical
 processors. Windows 10 build 19045 used CPython 3.14.3; Ubuntu under WSL used
@@ -61,7 +88,7 @@ Median wall time changes from 57.370220 to 21.545398 seconds. Wall ranges are
 57.104686–58.144066 baseline and 20.973624–21.589597 applied. Windows wall
 ranges are 41.867438–42.040039 and 13.888430–13.924269 respectively.
 
-## Source identity and limits
+### Source identity and limits
 
 The comparison used authored snapshots of the two reader files. The applied
 public bytes equal the measured applied snapshots. AST checks preserve the

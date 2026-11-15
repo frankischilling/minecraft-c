@@ -142,6 +142,12 @@ mc_world_storage_status mc_chunk_provider_internal_fields(mc_chunk_provider *,
                                                           mc_chunk_provider_fields *,
                                                           mc_world_storage_error *);
 
+/* Pure verification of the concrete GAME provider's World/cache ownership.
+ * Reads only its native kind and construction bindings, without reading the
+ * replaceable Source World.v field, exposing storage or performing Source work. */
+bool mc_chunk_provider_owns_cache(const mc_chunk_provider *, const mc_world_runtime *,
+                                  const mc_chunk_cache *);
+
 typedef struct mc_chunk_provider_cache_observation {
     bool owned;
     size_t map_count, insertion_count, index_capacity, index_bytes, mutation_depth, direct_bytes;
@@ -156,11 +162,14 @@ mc_world_storage_status mc_chunk_provider_cache_eligible(const mc_chunk_provider
                                                          mc_world_storage_error *);
 
 /* Private owned-adapter operations. A false get means use the unchanged generic
- * coordinator. Within an owned mutation/callback scope, a nested hit reads the
- * bounded live map linearly, never its stale index, and retains generic-call
- * accounting. A miss enters the coordinator. Depth-zero completion rebuilds
- * only after full validation. Raw export discards the owner permanently,
- * including from inside a scope; caller-mutable caches always remain generic. */
+ * coordinator. Within an owned mutation/callback scope, bounded positive hints
+ * must match the CURRENT live map ordinal/key/payload; they never prove absence.
+ * A hint miss takes the same live linear lookup, which may remember one valid
+ * ordinal without allocation. Scoped generic-get accounting counts dispatches,
+ * not necessarily linear scans; depth-zero hit accounting stays separate.
+ * Depth-zero completion still fully validates and rebuilds the canonical index.
+ * Raw export discards the owner permanently, including from inside a scope;
+ * caller-mutable caches always remain generic. */
 void mc_chunk_provider_cache_export(mc_chunk_provider *);
 void mc_chunk_provider_cache_mutation_begin(mc_chunk_provider *);
 void mc_chunk_provider_cache_mutation_end(mc_chunk_provider *);

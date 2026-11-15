@@ -10,6 +10,14 @@ Statuses: Not started; Under research; Partially implemented; Implemented but
 unverified; Verified for specified scenarios; Blocked (with a named dependency).
 The inventory expands the broad gameplay rows into concrete child behaviors.
 
+Source-owned [cache scope and owner controls](performance/provider-cache-scopes.md)
+now cover live positive hints, map transitions, irreversible descriptor export
+and scope closure after Source provider replacement. Sixteen candidate modes
+pass; thirteen retained modes match the authentic old library exactly and
+three old-owner regressions reject at semantic guards. Fixed-work and four
+monitor-2 frame measurements remain finite native performance evidence.
+Subsystem-specific suite counts below belong to their recorded checkpoints.
+
 Current [Slime removal and splitting](entity/slime-removal.md) shares one body
 between direct K and the Mob caller. Eleven records on each native host
 match declared fields from 25 unchanged-original calls across 24 profiles.

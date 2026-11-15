@@ -594,7 +594,7 @@ static bool oc_callback_live_reads(oc_callback_state *state, mc_world_runtime *w
          ok;
     if (ok)
         printf("OWNED_CACHE_MUTATION live-count=1 replacement=1 restored=1 invalid-request=1 "
-               "missing-output=1 no-index-read=1 no-rebuild=1 generic-accounting=1 export=%d\n",
+               "missing-output=1 live-key-payload=1 no-rebuild=1 generic-accounting=1 export=%d\n",
                state->export_inside);
     return ok;
 }
@@ -695,6 +695,369 @@ static int oc_budget(source_save_fixture *s) {
     return 0;
 }
 
+static int oc_owner_null(source_save_fixture *s) {
+    mc_world_runtime *world = s->game.worlds[0];
+    mc_chunk_provider *const owner = world->fields.v;
+    mc_chunk_state *resident = NULL, *got = NULL;
+    mc_chunk_provider_fields fields;
+    mc_chunk_provider_cache_observation before, after;
+    VERIFY(oc_get(s, 0, &resident) == 0 &&
+           mc_chunk_provider_internal_fields(owner, &fields, NULL) == MC_WORLD_STORAGE_OK &&
+           mc_chunk_provider_cache_observe(owner, &before) && before.owned);
+    /* The actual Source field may be NULL while the native constructor-bound
+     * acquisition descriptor still refers to this live provider's cache. */
+    world->fields.v = NULL;
+    const mc_chunk_acquire_context *escaped = mc_world_runtime_acquisition(world);
+    VERIFY(escaped != NULL && escaped->cache == fields.cache && escaped->world == world &&
+           mc_chunk_provider_cache_observe(owner, &after) && !after.owned &&
+           after.index_bytes == 0 && after.index_capacity == 0 &&
+           after.raw_exports == before.raw_exports + 1 && after.map_count == before.map_count &&
+           after.insertion_count == before.insertion_count);
+    VERIFY(mc_chunk_cache_publish(escaped->cache, 7, 7, resident));
+    mc_world_runtime_acquisition_error *detail = malloc(sizeof(*detail));
+    unsigned char *poison = malloc(sizeof(*detail));
+    VERIFY(detail != NULL && poison != NULL);
+    memset(detail, 0xa5, sizeof(*detail));
+    memcpy(poison, detail, sizeof(*detail));
+    VERIFY(mc_world_runtime_get_failure(world, 7, 7, &got, detail) == MC_CHUNK_ACQUIRE_OK &&
+           got == resident && memcmp(poison, detail, sizeof(*detail)) == 0 &&
+           mc_chunk_provider_cache_observe(owner, &after) && !after.owned && after.map_count == 2 &&
+           after.insertion_count == 2 && world->active_calls == 0 && world->local_leases == 0);
+    world->fields.v = owner;
+    VERIFY(oc_presence_read(world, 7, 7, true) == 0);
+    free(poison);
+    free(detail);
+    puts("OWNED_CACHE_CASE mode=owner-null actual-owner=1 null-source-field=1 "
+         "descriptor-identity=1 irreversible-export=1 raw-alias=1 sentinels=1 scopes-restored=1");
+    return 0;
+}
+
+static int oc_copy_open(source_save_fixture *s, mc_world_runtime **out,
+                        mc_world_provider **dimension) {
+    fixture *f = &s->game;
+    mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
+    limits.max_provider_chunks = 8;
+    limits.max_scheduled_entries = 0;
+    VERIFY(mc_world_provider_create(0, NULL, dimension, NULL) == MC_WORLD_PROVIDER_OK &&
+           mc_world_runtime_allocate_world(MC_WORLD_RUNTIME_CLIENT_COPY, f->classes[0], &limits,
+                                           out, &s->error) == MC_WORLD_STORAGE_OK);
+    const mc_world_runtime_world_arguments arguments = {
+        .name = f->name, .parent = f->worlds[0], .dimension = *dimension};
+    VERIFY(mc_world_runtime_construct_world(*out, &arguments, &s->error) == MC_WORLD_STORAGE_OK &&
+           (*out)->fields.w == f->worlds[0]->fields.w &&
+           (*out)->fields.v != f->worlds[0]->fields.v);
+    return 0;
+}
+
+static int oc_copy_stop(source_save_fixture *s, mc_world_runtime *world,
+                        mc_world_provider *dimension, mc_chunk_state *chunk) {
+    mc_chunk_provider_fields fields;
+    VERIFY(mc_chunk_provider_internal_fields(world->fields.v, &fields, NULL) ==
+               MC_WORLD_STORAGE_OK &&
+           mc_world_runtime_retire_entity_containers(world, &s->error) == MC_WORLD_STORAGE_OK);
+    mc_chunk_provider_cache_mutation_begin(world->fields.v);
+    const bool cleared =
+        mc_chunk_cache_init(fields.cache, fields.cache->entries, fields.cache->capacity,
+                            fields.cache->insertions, fields.cache->insertion_capacity);
+    mc_chunk_provider_cache_mutation_end(world->fields.v);
+    VERIFY(cleared && mc_chunk_pending_clear(fields.pending) == MC_CHUNK_ACQUIRE_OK &&
+           mc_world_runtime_retire_world(world, &s->error) == MC_WORLD_STORAGE_OK &&
+           mc_world_store_retire_chunk(s->game.stores[0], chunk, &s->error) ==
+               MC_WORLD_STORAGE_OK &&
+           mc_world_runtime_free(world, &s->error) == MC_WORLD_STORAGE_OK);
+    mc_world_provider_release(dimension);
+    return 0;
+}
+
+static int oc_owner_rebind(source_save_fixture *s) {
+    mc_world_runtime *world = s->game.worlds[0], *copy = NULL;
+    mc_world_provider *dimension = NULL;
+    mc_chunk_provider *const owner = world->fields.v;
+    mc_chunk_state *resident = NULL, *other = NULL, *loaded = NULL, *got = NULL;
+    mc_chunk_provider_fields fields;
+    mc_chunk_provider_cache_observation a, b, after_a, after_b;
+    mc_world_runtime_acquisition_error *detail = malloc(sizeof(*detail));
+    unsigned char *poison = malloc(sizeof(*detail));
+    VERIFY(detail != NULL && poison != NULL && oc_get(s, 0, &resident) == 0 &&
+           oc_copy_open(s, &copy, &dimension) == 0 &&
+           mc_world_runtime_get_detailed(copy, 2, 2, &other, detail) == MC_CHUNK_ACQUIRE_OK &&
+           other != NULL && other != resident &&
+           mc_chunk_provider_internal_fields(owner, &fields, NULL) == MC_WORLD_STORAGE_OK &&
+           mc_chunk_provider_cache_observe(owner, &a) && a.owned &&
+           mc_chunk_provider_cache_observe(copy->fields.v, &b) && b.owned);
+    world->fields.v = copy->fields.v;
+    VERIFY(oc_presence_read(world, 2, 2, true) == 0 && oc_presence_read(world, 0, 0, false) == 0);
+    memset(detail, 0xa5, sizeof(*detail));
+    memcpy(poison, detail, sizeof(*detail));
+    VERIFY(mc_world_runtime_get_failure(world, 0, 0, &got, detail) == MC_CHUNK_ACQUIRE_OK &&
+           got == resident && memcmp(poison, detail, sizeof(*detail)) == 0 &&
+           mc_chunk_provider_cache_observe(owner, &after_a) && after_a.owned &&
+           after_a.hits == a.hits && after_a.generic_gets == a.generic_gets &&
+           after_a.rebuilds == a.rebuilds + 1 && after_a.mutation_depth == 0 &&
+           mc_chunk_provider_cache_observe(copy->fields.v, &after_b) && !after_b.owned &&
+           after_b.generic_gets == b.generic_gets + 1 && after_b.raw_exports == b.raw_exports);
+    VERIFY(mc_world_runtime_get_detailed(world, 4, -3, &loaded, detail) == MC_CHUNK_ACQUIRE_OK &&
+           loaded != NULL && loaded != resident && loaded != other &&
+           mc_chunk_provider_cache_observe(owner, &after_a) && after_a.owned &&
+           after_a.map_count == 2 && after_a.mutation_depth == 0 &&
+           after_a.rebuilds == a.rebuilds + 2 &&
+           mc_chunk_provider_cache_observe(copy->fields.v, &after_b) && !after_b.owned &&
+           after_b.generic_gets == b.generic_gets + 2 && after_b.raw_exports == b.raw_exports);
+    const mc_chunk_provider_cache_observation dispatched_b = after_b;
+    const uint64_t rebuilds = after_a.rebuilds;
+    bool result = true;
+    VERIFY(mc_world_runtime_maintain_detailed(world, &result, &s->lifecycle) ==
+               MC_CHUNK_LIFECYCLE_OK &&
+           !result && mc_chunk_provider_cache_observe(owner, &after_a) && after_a.owned &&
+           after_a.mutation_depth == 0 && after_a.rebuilds == rebuilds + 1 &&
+           mc_chunk_provider_cache_observe(copy->fields.v, &after_b) &&
+           oc_same_observation(&dispatched_b, &after_b));
+    const mc_chunk_acquire_context *escaped = mc_world_runtime_acquisition(world);
+    VERIFY(escaped != NULL && escaped->cache == fields.cache &&
+           mc_chunk_provider_cache_observe(owner, &after_a) && !after_a.owned &&
+           after_a.raw_exports == a.raw_exports + 1 &&
+           mc_chunk_provider_cache_observe(copy->fields.v, &after_b) && !after_b.owned &&
+           after_b.raw_exports == b.raw_exports + 1);
+    VERIFY(mc_chunk_cache_publish(escaped->cache, 0, 0, loaded));
+    memset(detail, 0xa5, sizeof(*detail));
+    memcpy(poison, detail, sizeof(*detail));
+    VERIFY(mc_world_runtime_get_failure(world, 0, 0, &got, detail) == MC_CHUNK_ACQUIRE_OK &&
+           got == loaded && memcmp(poison, detail, sizeof(*detail)) == 0 &&
+           world->active_calls == 0 && world->local_leases == 0);
+    world->fields.v = owner;
+    VERIFY(oc_copy_stop(s, copy, dimension, other) == 0);
+    free(poison);
+    free(detail);
+    puts("OWNED_CACHE_CASE mode=owner-rebind actual-owner=1 current-receiver=1 resident=1 miss=1 "
+         "mismatch-discard=1 "
+         "lifecycle=1 descriptor-identity=1 conservative-export=1 sentinels=1 scopes-restored=1");
+    return 0;
+}
+
+typedef struct oc_rebind_progress {
+    mc_world_runtime *world;
+    mc_chunk_provider *rebound;
+    mc_chunk_cache *cache;
+    size_t calls;
+    bool valid;
+} oc_rebind_progress;
+
+static mc_chunk_callback_result oc_rebind_during_progress(void *owner,
+                                                          const mc_world_save_context *context,
+                                                          mc_world_save_stage stage) {
+    oc_rebind_progress *p = owner;
+    ++p->calls;
+    p->valid = p->calls == 1 && stage == MC_WORLD_SAVE_LEVEL && context->world == p->world &&
+               context->chunks->cache == p->cache;
+    p->world->fields.v = p->rebound;
+    return MC_CHUNK_CALLBACK_FATAL;
+}
+
+static int oc_owner_callback(source_save_fixture *s) {
+    mc_world_runtime *world = s->game.worlds[0], *copy = NULL;
+    mc_world_provider *dimension = NULL;
+    mc_chunk_provider *const owner = world->fields.v;
+    mc_chunk_state *resident = NULL, *other = NULL, *got = NULL;
+    mc_chunk_provider_fields fields;
+    mc_chunk_provider_cache_observation before, after, exported;
+    mc_world_runtime_acquisition_error *detail = malloc(sizeof(*detail));
+    unsigned char *poison = malloc(sizeof(*detail));
+    VERIFY(detail != NULL && poison != NULL && oc_get(s, 0, &resident) == 0 &&
+           oc_copy_open(s, &copy, &dimension) == 0 &&
+           mc_world_runtime_get_detailed(copy, 2, 2, &other, detail) == MC_CHUNK_ACQUIRE_OK &&
+           other != NULL &&
+           mc_chunk_provider_internal_fields(owner, &fields, NULL) == MC_WORLD_STORAGE_OK &&
+           mc_chunk_provider_cache_observe(copy->fields.v, &before) && before.owned);
+    oc_rebind_progress progress = {
+        .world = world, .rebound = copy->fields.v, .cache = fields.cache};
+    VERIFY(mc_world_runtime_save_with_progress_detailed(world, false, &progress,
+                                                        oc_rebind_during_progress, &s->lifecycle) ==
+               MC_CHUNK_LIFECYCLE_CALLBACK_FAILED &&
+           progress.valid && progress.calls == 1 && world->fields.v == copy->fields.v &&
+           mc_chunk_provider_cache_observe(owner, &exported) && !exported.owned &&
+           mc_chunk_provider_cache_observe(copy->fields.v, &after) &&
+           oc_same_observation(&before, &after) && after.owned && after.mutation_depth == 0);
+    VERIFY(mc_chunk_cache_publish(progress.cache, 7, 7, resident));
+    memset(detail, 0xa5, sizeof(*detail));
+    memcpy(poison, detail, sizeof(*detail));
+    VERIFY(mc_world_runtime_get_failure(world, 7, 7, &got, detail) == MC_CHUNK_ACQUIRE_OK &&
+           got == resident && memcmp(poison, detail, sizeof(*detail)) == 0 &&
+           mc_chunk_provider_cache_observe(copy->fields.v, &after) && !after.owned &&
+           after.generic_gets == before.generic_gets + 1 &&
+           after.raw_exports == before.raw_exports && world->active_calls == 0 &&
+           world->local_leases == 0);
+    world->fields.v = owner;
+    VERIFY(oc_copy_stop(s, copy, dimension, other) == 0);
+    free(poison);
+    free(detail);
+    puts("OWNED_CACHE_CASE mode=owner-callback actual-progress=1 captured-scope=1 "
+         "changed-receiver=1 "
+         "actual-descriptor=1 no-source-write=1 raw-alias=1 sentinels=1 scopes-restored=1");
+    return 0;
+}
+
+static int oc_scoped_read(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk_state *expected) {
+    mc_world_runtime_acquisition_error *detail = malloc(sizeof(*detail));
+    unsigned char *poison = malloc(sizeof(*detail));
+    mc_chunk_state *got = NULL;
+    VERIFY(detail != NULL && poison != NULL);
+    memset(detail, 0xa5, sizeof(*detail));
+    memcpy(poison, detail, sizeof(*detail));
+    VERIFY(mc_world_runtime_get_failure(world, x, z, &got, detail) == MC_CHUNK_ACQUIRE_OK &&
+           got == expected && memcmp(poison, detail, sizeof(*detail)) == 0);
+    free(poison);
+    free(detail);
+    return 0;
+}
+
+static int oc_scope_live(source_save_fixture *s) {
+    mc_world_runtime *world = s->game.worlds[0];
+    mc_chunk_provider *provider = world->fields.v;
+    mc_chunk_state *states[4] = {0};
+    mc_chunk_provider_fields fields;
+    mc_chunk_provider_cache_observation before, scoped, after;
+    for (size_t i = 0; i < 3; ++i)
+        VERIFY(oc_get(s, i, &states[i]) == 0);
+    VERIFY(mc_chunk_provider_internal_fields(provider, &fields, NULL) == MC_WORLD_STORAGE_OK &&
+           oc_observe(world, &before) == 0 && before.owned && before.map_count == 3 &&
+           before.insertion_count == 3);
+    mc_chunk_provider_cache_mutation_begin(provider);
+    mc_chunk_provider_cache_mutation_begin(provider);
+    VERIFY(oc_scoped_read(world, 32768, 0, states[0]) == 0 && oc_get(s, 3, &states[3]) == 0 &&
+           oc_scoped_read(world, 7, 7, states[3]) == 0 &&
+           oc_scoped_read(world, 7, 7, states[3]) == 0 && oc_observe(world, &scoped) == 0 &&
+           scoped.owned && scoped.mutation_depth == 2 && scoped.map_count == 4 &&
+           scoped.insertion_count == 4 && scoped.rebuilds == before.rebuilds &&
+           scoped.hits == before.hits && scoped.generic_gets == before.generic_gets + 4);
+
+    /* Authored live-map inputs retain all insertion history. Removing the first
+     * entry compacts every remaining ordinal; reinsertion restores the same map
+     * count with a different order. No index words or hash policy are exposed. */
+    mc_chunk_cache *cache = fields.cache;
+    memmove(cache->entries, cache->entries + 1, 3 * sizeof(*cache->entries));
+    --cache->count;
+    VERIFY(mc_chunk_cache_validate(cache) && oc_presence_read(world, 0, 0, false) == 0 &&
+           oc_scoped_read(world, 2, 2, states[1]) == 0 &&
+           mc_chunk_cache_publish(cache, 0, 0, states[0]) && cache->count == 4 &&
+           cache->insertion_count == 5 && oc_scoped_read(world, 0, 0, states[0]) == 0 &&
+           oc_scoped_read(world, 7, 7, states[3]) == 0 &&
+           mc_chunk_cache_publish(cache, 4, -3, states[0]) &&
+           oc_scoped_read(world, 4, -3, states[0]) == 0 &&
+           mc_chunk_cache_publish(cache, 4, -3, states[2]) &&
+           oc_scoped_read(world, 4, -3, states[2]) == 0 &&
+           mc_chunk_cache_publish(cache, 2, 2, states[1]) && cache->insertion_count == 8 &&
+           cache->insertion_count == cache->insertion_capacity);
+    unsigned char descriptor[sizeof(*cache)];
+    mc_chunk_cache_entry entries[8];
+    mc_chunk_state *insertions[8];
+    memcpy(descriptor, cache, sizeof(descriptor));
+    memcpy(entries, cache->entries, sizeof(entries));
+    memcpy(insertions, cache->insertions, sizeof(insertions));
+    VERIFY(!mc_chunk_cache_publish(cache, 0, 0, states[1]) &&
+           memcmp(descriptor, cache, sizeof(descriptor)) == 0 &&
+           memcmp(entries, cache->entries, sizeof(entries)) == 0 &&
+           memcmp(insertions, cache->insertions, sizeof(insertions)) == 0 &&
+           mc_chunk_cache_validate(cache) && cache->entries[0].chunk == states[1] &&
+           cache->entries[1].chunk == states[2] && cache->entries[2].chunk == states[3] &&
+           cache->entries[3].chunk == states[0] && cache->insertions[0] == states[0] &&
+           cache->insertions[4] == states[0] && cache->insertions[5] == states[0] &&
+           cache->insertions[6] == states[2] && cache->insertions[7] == states[1]);
+    mc_chunk_provider_cache_mutation_end(provider);
+    VERIFY(oc_observe(world, &after) == 0 && after.owned && after.mutation_depth == 1 &&
+           after.rebuilds == before.rebuilds && after.hits == before.hits &&
+           after.generic_gets == before.generic_gets + 9 &&
+           after.raw_exports == before.raw_exports);
+    mc_chunk_provider_cache_mutation_end(provider);
+    VERIFY(oc_observe(world, &after) == 0 && after.owned && after.mutation_depth == 0 &&
+           after.rebuilds == before.rebuilds + 1 && after.map_count == 4 &&
+           after.insertion_count == 8 && after.misses == before.misses);
+    for (size_t i = 0; i < 4; ++i)
+        VERIFY(oc_scoped_read(world, oc_x[i], oc_z[i], states[i]) == 0);
+    VERIFY(oc_observe(world, &after) == 0 && after.hits == before.hits + 4 &&
+           after.generic_gets == before.generic_gets + 9 && after.rebuilds == before.rebuilds + 1 &&
+           world->active_calls == 0 && world->local_leases == 0);
+    puts("OWNED_CACHE_CASE mode=scope-live append=1 repeated-new-key=1 packed-alias=1 "
+         "compaction=1 same-count-reinsert=1 live-replacement=1 capacity-atomic=1 "
+         "insertion-history=1 nested-scope=1 one-final-rebuild=1 sentinels=1");
+    return 0;
+}
+
+typedef struct oc_invalid_callback_state {
+    source_save_fixture *source;
+    mc_chunk_state *outer, *nested;
+    mc_chunk_data *saved_data;
+    size_t calls;
+    bool valid;
+} oc_invalid_callback_state;
+
+static mc_world_storage_status oc_invalidate_nonselected(void *owner, mc_world_runtime *world,
+                                                         mc_entity *entity,
+                                                         mc_world_storage_error *error) {
+    oc_invalid_callback_state *p = owner;
+    ++p->calls;
+    mc_world_runtime_acquisition_error *detail = malloc(sizeof(*detail));
+    if (detail == NULL) {
+        *error = (mc_world_storage_error){MC_WORLD_STORAGE_LIMIT, "callback test allocation", 0};
+        return error->status;
+    }
+    p->valid = OC_CALLBACK(
+        p->calls == 1 && entity != NULL && world == p->source->game.worlds[0] &&
+        mc_world_runtime_get_detailed(world, 0, 0, &p->outer, detail) == MC_CHUNK_ACQUIRE_OK &&
+        mc_world_runtime_get_detailed(world, 2, 2, &p->nested, detail) == MC_CHUNK_ACQUIRE_OK &&
+        p->nested != NULL && p->nested != p->outer && p->nested->data != NULL);
+    if (p->valid) {
+        p->saved_data = p->nested->data;
+        p->nested->data = NULL;
+        /* Scoped resident access validates its selected value, not every other
+         * entry. The outer generic postcallback validator must still reject. */
+        p->valid = OC_CALLBACK(oc_scoped_read(world, 0, 0, p->outer) == 0);
+    }
+    free(detail);
+    *error = (mc_world_storage_error){0};
+    return MC_WORLD_STORAGE_OK;
+}
+
+static int oc_callback_invalid(source_save_fixture *s) {
+    mc_world_runtime *world = s->game.worlds[0];
+    oc_invalid_callback_state state = {.source = s};
+    mc_world_access *access = NULL;
+    const mc_world_access_callbacks callbacks = {.entity_added = oc_invalidate_nonselected};
+    mc_world_runtime_acquisition_error *detail = malloc(sizeof(*detail));
+    mc_chunk_provider_fields fields;
+    mc_chunk_provider_cache_observation before, failed, after;
+    mc_chunk_state *got = NULL;
+    VERIFY(detail != NULL &&
+           mc_world_access_create(&callbacks, &state, &access, &s->error) == MC_WORLD_STORAGE_OK &&
+           mc_world_runtime_add_world_access(world, access, &s->error) == MC_WORLD_STORAGE_OK &&
+           oc_observe(world, &before) == 0 && before.owned);
+    const mc_chunk_acquire_status status = mc_world_runtime_get_detailed(world, 0, 0, &got, detail);
+    VERIFY(status == MC_CHUNK_ACQUIRE_STATE_ERROR && detail->status == status && got == NULL &&
+           state.calls == 1 && state.valid && state.saved_data != NULL &&
+           state.nested->data == NULL && state.outer->active && state.nested->active &&
+           oc_observe(world, &failed) == 0 && !failed.owned && failed.index_bytes == 0 &&
+           failed.index_capacity == 0 && failed.map_count == 2 && failed.insertion_count == 2 &&
+           failed.rebuilds == before.rebuilds && failed.raw_exports == before.raw_exports &&
+           world->active_calls == 0 && world->local_leases == 0);
+    state.nested->data = state.saved_data;
+    VERIFY(mc_chunk_provider_internal_fields(world->fields.v, &fields, NULL) ==
+               MC_WORLD_STORAGE_OK &&
+           mc_chunk_cache_validate(fields.cache) && fields.cache->entries[0].chunk == state.outer &&
+           fields.cache->entries[1].chunk == state.nested &&
+           oc_scoped_read(world, 0, 0, state.outer) == 0 && state.calls == 1 &&
+           oc_observe(world, &after) == 0 && !after.owned &&
+           after.generic_gets == failed.generic_gets + 1 && after.rebuilds == failed.rebuilds &&
+           after.map_count == 2 && after.insertion_count == 2);
+    bool removed = false;
+    VERIFY(mc_world_runtime_remove_world_access(world, access, &removed, &s->error) ==
+               MC_WORLD_STORAGE_OK &&
+           removed && mc_world_access_free(access, &s->error) == MC_WORLD_STORAGE_OK);
+    free(detail);
+    puts("OWNED_CACHE_CASE mode=callback-invalid real-entity-callback=1 nested-read=1 "
+         "nonselected-invalid=1 outer-full-validation=1 output-preserved=1 partial-publication=1 "
+         "discard=1 no-callback-replay=1 sentinels=1 scopes-restored=1");
+    return 0;
+}
+
 #ifndef MC_OWNED_CACHE_FIXTURE_MAIN
 #define MC_OWNED_CACHE_FIXTURE_MAIN main
 #endif
@@ -705,14 +1068,25 @@ int MC_OWNED_CACHE_FIXTURE_MAIN(int argc, char **argv) {
     const bool owned = strcmp(mode, "owned") == 0, budget = strcmp(mode, "budget") == 0;
     const bool callback = strcmp(mode, "callback") == 0,
                callback_export = strcmp(mode, "callback-export") == 0;
+    const bool owner_null = strcmp(mode, "owner-null") == 0;
+    const bool owner_rebind = strcmp(mode, "owner-rebind") == 0,
+               owner_callback = strcmp(mode, "owner-callback") == 0;
+    const bool scope_live = strcmp(mode, "scope-live") == 0,
+               callback_invalid = strcmp(mode, "callback-invalid") == 0;
     const bool escape = strcmp(mode, "provider") == 0 || strcmp(mode, "acquisition") == 0 ||
                         strcmp(mode, "lifecycle") == 0 || strcmp(mode, "saving") == 0 ||
                         strcmp(mode, "get") == 0 || strcmp(mode, "acquire") == 0 ||
                         strcmp(mode, "progress") == 0;
-    VERIFY(owned || budget || callback || callback_export || escape);
+    VERIFY(owned || budget || callback || callback_export || owner_null || owner_rebind ||
+           owner_callback || scope_live || callback_invalid || escape);
     source_save_fixture *source = calloc(1, sizeof(*source));
     VERIFY(source != NULL && ss_setup(source, argv[1]) == 0 && oc_open(source, SIZE_MAX) == 0);
-    const int result = owned                         ? oc_owned(source)
+    const int result = owner_rebind                  ? oc_owner_rebind(source)
+                       : owner_callback              ? oc_owner_callback(source)
+                       : scope_live                  ? oc_scope_live(source)
+                       : callback_invalid            ? oc_callback_invalid(source)
+                       : owner_null                  ? oc_owner_null(source)
+                       : owned                       ? oc_owned(source)
                        : budget                      ? oc_budget(source)
                        : callback || callback_export ? oc_callback(source, callback_export)
                                                      : oc_export(source, mode);

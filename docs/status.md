@@ -7,35 +7,36 @@ the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining w
 
 ## Current client work
 
-Ordinary client [Flint and Steel use](item/flint-and-steel.md) now reaches
-actual Fire addition and Portal creation through the real right-click caller.
-The shared body preserves face wrapping, double sound centers, the Item Random
-draw, sound-before-live-Fire loading, the discarded setter result and Stack
-wear even for occupied targets. Direct YE, the IZ wrapper and OB continuation
-retain their separate nullable reads and statistic effects.
+Source-owned [Chunk cache scopes](performance/provider-cache-scopes.md) now use
+bounded positive hints for resident reads during callbacks. Every hint checks
+the live key and current Chunk; misses retain linear lookup and outermost full
+validation. Descriptor exports and callback scope closure follow the actual
+constructed cache owner when the replaceable Source provider field changes.
 
-Two fresh unchanged-original VMs agree on 104 declared profiles. Windows and
-sanitized Linux each match 34,159 selected original scalars and seven retained-receipt
-controls. Compared state includes complete Chunk planes, callbacks, queues,
-World/Math/Item Random and the saved Item Random owner, Stack fields,
-Player/caller state and sorted statistic maps. Native diagnostics retain actual
-failed children through checked retirement. Provider-null classification comes
-from the same getter that reached the failed invocation.
+Sixteen native modes cover map transitions, callback corruption, mutable
+exports and provider rebinding. One compiled test object gives thirteen exact
+old/new positive controls and three genuine old-owner failures; all sixteen
+candidate modes pass. Twelve focused Linux tests pass with ASan, UBSan and leak
+detection. The [test record](testing.md#provider-cache-scopes-and-owner-rebinding)
+keeps the source and ownership limits explicit.
 
-The complete Windows MSVC Release suite passes all 1,266 tests in 529.65 seconds.
-All 13 selected Linux Clang tests pass in 116.65 seconds with ASan, UBSan and
-leak detection; strict GCC compilation covers six changed C units. Both native
-hosts match the same selected original scalars and receipt controls. The
-[test record](testing.md#flint-and-steel-use) retains the predecessor control,
-obsolete frontier replacement and explicit comparison limits.
+The complete Windows MSVC Release build and all 1,268 tests pass in 460.51
+seconds, with no skips or changes to the 6,232 frozen inputs. Strict GCC checks
+cover four C units; the normal and optimized public runner controls also pass
+on both native Windows and Linux.
 
-A fresh [native frame baseline](performance/client-frame-baseline.md) records
-37.37 FPS and a 63.34 ms frame-time p95 in one authored Tiny sky-view interval.
-It includes active simulation and is not an optimization or original-game FPS
-comparison. Input/focus, extended play/save drift, original audiovisual equality
-and sustained frame-time qualification remain unfinished. The
-[Ore checkpoint](history/status-checkpoints.md#redstone-ore-checkpoint) retains
-its preceding comparisons and broader regression results.
+Balanced fixed-work measurements reduce the 256-resident lookup loop from
+about 67?68 to 26?27 ns per call; the eight-resident results are mixed. Four
+qualified monitor-2 native intervals record FPS medians of 36.85 and 38.00.
+Their work totals differ, and the small cohort establishes a performance
+opportunity rather than unrestricted smooth play. Acquisition-associated
+stalls remain. The [performance record](performance/provider-cache-scopes.md)
+retains every interval, the small-case overhead and the measured clock scope.
+
+The [Flint and Steel checkpoint](history/status-checkpoints.md#flint-and-steel-checkpoint)
+preserves the preceding original/native comparison and broader local suite.
+Its original Item/Fire/Portal construction scope remains separate from delayed
+TNT, Portal travel, sustained play and original audiovisual qualification.
 
 ## Next single-player work
 

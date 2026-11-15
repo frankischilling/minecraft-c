@@ -1,5 +1,10 @@
 # World query performance
 
+The later [provider-scope result](provider-cache-scopes.md) measures resident
+reads during callbacks with live positive hints and correct descriptor-owner
+invalidation. Earlier linear-scope measurements below retain their historical
+source/product scope.
+
 ## EW render getters
 
 [Chunk rendering and EW diagnostics](chunk-rendering.md) records the measured

@@ -20,10 +20,10 @@ def runs(data):
     return result
 
 
-def raw_state(profile, source, phase, after):
+def raw_state(profile, source, phase, after, expected):
     value = N.selected_state(source)
     value['phase'] = phase
-    arrays = W.plane_arrays(profile, after)
+    arrays = W.plane_arrays(profile, after, expected)
     P.require(type(arrays) is list and len(arrays) == len(value['chunk_planes']), 'independent complete Redstone Ore plane model')
     for target, chunk in zip(value['chunk_planes'], arrays):
         P.require(P.exact(target['xyz'], chunk['xyz']) and set(chunk['planes']) == set(N.N.PLANES), 'independent Chunk coordinates')
@@ -37,6 +37,7 @@ def raw_state(profile, source, phase, after):
 def fixture(mode, originals):
     profile = N.profile_for(mode)
     original = originals[mode]
+    expected = W.model(profile, original['prepared_class'])
     exception = N.exception_class(original)
     normal = exception is None
     source_sites = dict(step=None, mutation=None)
@@ -47,7 +48,7 @@ def fixture(mode, originals):
         frame = next(entry for entry in original['exception_stack'] if entry['class'] == wanted)
         site.update({'class': frame['class'], 'method': frame['method']})
     if exception == 'java/lang/NullPointerException':
-        origin = W.model(profile, original['prepared_class'])['exception_origin']
+        origin = expected['exception_origin']
         step = dict(source=0, registry_status=0, caller_pc=6, activation_pc=6, particle_pc=0,
                     opaque_pc=0, face=-1, query_null=False, query_pc=0, provider_pc=0)
         mutation = dict(ore_tick_pc=0, source_null=False, query_null=False, query_pc=0,
@@ -77,7 +78,7 @@ def fixture(mode, originals):
         chunks = 361 if profile['random_player'] else 0
         work = dict(pc=198 if normal else 190, scheduled_returned=normal, random_returned=normal,
                     chunks=chunks if normal else 0, samples=chunks * 80 if normal else 0,
-                    block_ticks=W.model(profile, original['prepared_class'])['block_ticks'] if chunks and normal else 0)
+                    block_ticks=expected['block_ticks'] if chunks and normal else 0)
     continuation = None
     if profile['operation'] == 'mining':
         continuation = dict(kind='mining', pc=113 if normal else 74, block_id=original['before']['target'][0],
@@ -92,13 +93,16 @@ def fixture(mode, originals):
     outcome = dict(mode=mode, input=copy.deepcopy(profile), prepared_class=copy.deepcopy(original['prepared_class']),
                    raw=0 if normal else 1, returned=normal, result=original['result'], exception=exception,
                    native_policy=False, site=site, source_sites=source_sites, world_tick=work, continuation=continuation)
-    records = [('ORE_STATE ', raw_state(profile, original['before'], 'before', False))]
+    records = [('ORE_STATE ', raw_state(profile, original['before'], 'before', False, expected))]
     for event in original['events']:
         records.append(('ORE_EVENT ', {key: copy.deepcopy(value) for key, value in event.items()
                                         if key not in ('stack', 'source_stack')}))
     records.append(('ORE_OUTCOME ', outcome))
+    after = raw_state(profile, original['after'], 'after', True, expected)
     for phase in ('after', 'retired', 'cleanup'):
-        records.append(('ORE_STATE ', raw_state(profile, original['after'], phase, True)))
+        snapshot = copy.deepcopy(after)
+        snapshot['phase'] = phase
+        records.append(('ORE_STATE ', snapshot))
         if phase == 'retired' and N.receipt_expected(profile):
             records.append(('ORE_RECEIPT ', dict(busy_before=9, before_holds=2, after_busy_holds=2, after_call_holds=1,
                 retire=0, same_identity=True, selected_source=True, exception=exception, attempts=2)))
@@ -127,12 +131,20 @@ class NativeReader(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.originals = {row['mode']: row for row in W.read_reference()['rows']}
+        cls.fixtures = {}
+
+    def fresh_fixture(self, mode):
+        # Model and encode each complete profile once. Every reader invocation
+        # still parses and validates its own independent, mutable transport.
+        if mode not in self.fixtures:
+            self.fixtures[mode] = fixture(mode, self.originals)
+        return copy.deepcopy(self.fixtures[mode])
 
     def check(self, records, mode):
         return N.validate(N.parse(text(records, mode), mode), mode, self.originals)
 
     def rejected(self, mode, mutation):
-        records = fixture(mode, self.originals)
+        records = self.fresh_fixture(mode)
         mutation(records)
         with self.assertRaises(ValueError): self.check(records, mode)
 
@@ -140,7 +152,7 @@ class NativeReader(unittest.TestCase):
         self.assertEqual(set(N.MODES), set(self.originals))
         for mode in N.MODES:
             with self.subTest(mode=mode):
-                self.assertTrue(self.check(fixture(mode, self.originals), mode)['matched'])
+                self.assertTrue(self.check(self.fresh_fixture(mode), mode)['matched'])
                 arguments = N.native_arguments('native.exe', N.profile_for(mode), N.HERE / 'prepared-world',
                                                self.originals[mode]['prepared_class'])
                 self.assertEqual(len(arguments), 33)
@@ -148,7 +160,7 @@ class NativeReader(unittest.TestCase):
 
     def test_transport_completion_duplicate_json_and_exit(self):
         mode = N.MODES[0]
-        value = text(fixture(mode, self.originals), mode)
+        value = text(self.fresh_fixture(mode), mode)
         corruptions = (value.rstrip('\n'), value + 'noise\n', value.replace('PASS: 101', 'PASS: 0'),
                        value.replace('ORE_OUTCOME {', 'ORE_OUTCOME {"mode":"duplicate",', 1),
                        value.replace('ORE_STATE ', 'ORE_UNKNOWN ', 1), value + value)

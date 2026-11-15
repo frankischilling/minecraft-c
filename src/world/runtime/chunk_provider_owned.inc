@@ -121,6 +121,28 @@ void mc_chunk_provider_cache_mutation_end(mc_chunk_provider *provider) {
         owned_cache_discard(provider);
 }
 
+/* Within a scope the table is only a bounded collection of positive hints.
+ * Compaction or replacement may have changed every stored ordinal: accept one
+ * only after checking the CURRENT live entry's key. Empty/stale/exhausted hints
+ * prove nothing about absence and always leave the live linear path available. */
+static bool owned_cache_scoped_hint(const mc_source_owned_cache *owner, const mc_chunk_cache *cache,
+                                    int32_t key, size_t *out) {
+    const size_t mask = owner->slots_count - 1;
+    size_t slot = owned_cache_hash(key, mask);
+    for (size_t inspected = 0; inspected < owner->slots_count && inspected < 16u; ++inspected) {
+        const uint32_t word = owner->slots[slot];
+        if (word == 0)
+            break;
+        const size_t index = (size_t)word - 1;
+        if (index < cache->count && cache->entries[index].key == key) {
+            *out = index;
+            return true;
+        }
+        slot = (slot + 1) & mask;
+    }
+    return false;
+}
+
 bool mc_chunk_provider_cache_get(mc_chunk_provider *provider,
                                  const mc_chunk_acquire_context *context, int32_t x, int32_t z,
                                  mc_chunk_state **out, mc_chunk_acquire_status *status) {
@@ -152,11 +174,20 @@ bool mc_chunk_provider_cache_get(mc_chunk_provider *provider,
     }
     const int32_t key = mc_chunk_cache_key(x, z);
     if (mutating) {
-        /* Only this implementation owns the backing, but its index snapshot
-         * may precede a completed publish/unpublish or synchronous reentry.
-         * Read the live bounded map in ordinary lookup order instead. Raw
-         * exports already discard this owner permanently. A miss still enters
-         * the unchanged coordinator; no callback or pending edit occurs here. */
+        size_t hinted;
+        if (owned_cache_scoped_hint(owner, cache, key, &hinted)) {
+            const mc_chunk_cache_entry *entry = &cache->entries[hinted];
+            if (entry->chunk == NULL || (!entry->chunk->blank && entry->chunk->data == NULL)) {
+                *status = MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
+                return true;
+            }
+            *out = entry->chunk;
+            *status = MC_CHUNK_ACQUIRE_OK;
+            return true;
+        }
+        /* The actual live map remains authoritative. A failed positive probe
+         * performs exactly the previous linear lookup before any coordinator.
+         * Raw exports discard the owner permanently, including during reentry. */
         for (size_t index = 0; index < cache->count; ++index) {
             const mc_chunk_cache_entry *entry = &cache->entries[index];
             if (entry->key != key)
@@ -165,6 +196,11 @@ bool mc_chunk_provider_cache_get(mc_chunk_provider *provider,
                 *status = MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
                 return true;
             }
+            /* One-word replacement learns newly published or shifted entries
+             * without allocation or a saturation scan. It may evict another
+             * hint, which merely restores that key's linear fallback. Only the
+             * mandatory depth-zero full rebuild restores negative lookup use. */
+            owner->slots[owned_cache_hash(key, owner->slots_count - 1)] = (uint32_t)(index + 1);
             *out = entry->chunk;
             *status = MC_CHUNK_ACQUIRE_OK;
             return true;

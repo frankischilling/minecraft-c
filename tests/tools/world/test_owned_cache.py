@@ -12,7 +12,8 @@ import zlib
 
 sys.dont_write_bytecode = True
 MODES = ('owned', 'provider', 'acquisition', 'lifecycle', 'saving', 'get', 'acquire',
-         'progress', 'callback', 'callback-export', 'budget')
+         'progress', 'callback', 'callback-export', 'budget', 'owner-null', 'owner-rebind',
+         'owner-callback', 'scope-live', 'callback-invalid')
 BOUND = 1024 * 1024
 
 
@@ -132,7 +133,7 @@ def main():
         for mode in modes:
             root = output / mode
             root.mkdir()
-            authored = source_inputs(module, root, mode in ('callback', 'callback-export'))
+            authored = source_inputs(module, root, mode in ('callback', 'callback-export', 'callback-invalid'))
             record = {'mode': mode, 'authored_inputs': authored, 'status': 'FAIL'}
             report['profiles'].append(record)
             command = [str(executable), str(root), mode]
@@ -161,7 +162,29 @@ def main():
                     and finish['checks'].isdigit() and int(finish['checks']) > 20,
                     'actual source-World native cleanup receipt')
             require(case.get('mode') == mode, 'actual exact selected native case')
-            if mode == 'owned':
+            if mode == 'owner-rebind':
+                require(case == dict(mode=mode, **dict.fromkeys(('actual-owner', 'current-receiver',
+                        'resident', 'miss', 'mismatch-discard', 'lifecycle', 'descriptor-identity', 'conservative-export',
+                        'sentinels', 'scopes-restored'), '1')), 'actual constructor owner and current Source receiver remain distinct')
+            elif mode == 'scope-live':
+                require(case == dict(mode=mode, **dict.fromkeys(('append', 'repeated-new-key',
+                        'packed-alias', 'compaction', 'same-count-reinsert', 'live-replacement',
+                        'capacity-atomic', 'insertion-history', 'nested-scope', 'one-final-rebuild',
+                        'sentinels'), '1')), 'live scoped map inputs preserve exact lookup and publication semantics')
+            elif mode == 'callback-invalid':
+                require(case == dict(mode=mode, **dict.fromkeys(('real-entity-callback', 'nested-read',
+                        'nonselected-invalid', 'outer-full-validation', 'output-preserved',
+                        'partial-publication', 'discard', 'no-callback-replay', 'sentinels',
+                        'scopes-restored'), '1')), 'outer callback validation rejects unrelated malformed live payload')
+            elif mode == 'owner-callback':
+                require(case == dict(mode=mode, **dict.fromkeys(('actual-progress', 'captured-scope',
+                        'changed-receiver', 'actual-descriptor', 'no-source-write', 'raw-alias',
+                        'sentinels', 'scopes-restored'), '1')), 'real lifecycle callback closes the originally entered owner')
+            elif mode == 'owner-null':
+                require(case == dict(mode=mode, **{'actual-owner':'1', 'null-source-field':'1',
+                        'descriptor-identity':'1', 'irreversible-export':'1', 'raw-alias':'1',
+                        'sentinels':'1', 'scopes-restored':'1'}), 'actual descriptor owner survives nullable Source field')
+            elif mode == 'owned':
                 require(case == dict(mode=mode, hit='1', miss='1', **{'packed-alias':'1',
                         'exact-identities':'1', 'insertion-order':'1', 'generic-equal':'1',
                         'raw-publish-visible':'1'}), 'owned and generic exact semantics')

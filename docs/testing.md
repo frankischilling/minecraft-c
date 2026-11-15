@@ -1,5 +1,54 @@
 # Test scope and reproduction
 
+## Provider cache scopes and owner rebinding
+
+The [scope contract and measurements](performance/provider-cache-scopes.md)
+cover source-owned resident GET acceleration, construction-bound cache exports
+and scope closure after the Source provider field changes. The public
+`world.source_owned_cache` driver now runs sixteen genuine source-World modes.
+New cases check nullable and second-provider bindings, actual progress-callback
+rebinding, nested live-map publication/compaction/replacement, atomic capacity
+refusal, and nonselected corruption surviving until outer validation fails.
+
+A final shared test object runs 32 fresh processes against authentic old and
+candidate libraries. All thirteen retained modes have byte-identical old/new
+stdout; the three old owner modes fail their expected semantic guards. Every
+candidate mode passes. A previous independent owner-null proof retains its
+183-check positive and 34-check candidate controls. Captures distinguish these
+checked old failures from a timeout, crash or malformed process.
+
+Clang 18 Debug under Linux passes twelve focused tests in 16.92 seconds with
+ASan, UBSan and leak detection. They cover source ownership/saving/progress,
+provider generation/activation/maintenance, queries, acquisition, lifecycle and
+pending state. Three changed C units compile under strict GCC13. The new
+benchmark also compiles separately under strict GCC13 with 857 source/helper
+inputs unchanged. The isolated Linux build's 855,681,851 bytes are removed
+after archiving source/product hashes, test captures and cleanup receipts.
+
+The public benchmark runner's normal and optimized Python controls check
+transport completion, semantic flags/checksums and authored-file continuity,
+including all 256 sparse Chunk records. A native eight-resident depth-two
+smoke passes every runner guard. The larger balanced cohort and four native
+monitor-2 intervals retain their separate [fixed-work](../tests/benchmarks/provider_cache_scope_windows.json)
+and [frame](../tests/benchmarks/provider_cache_scope_frames_windows.json) records.
+
+```sh
+ctest --test-dir build --output-on-failure -R 'source_owned_cache|provider_cache_scope'
+```
+
+The [Ore reader fixture change](performance/reference-readers.md#redstone-ore-fixture-construction)
+also retains all 67 original-derived transports and all ten corruption-test
+methods. Its parser, model and 180-second watchdog remain unchanged. This
+increment makes native cache and ownership claims; the earlier original-game
+packets retain their own finite comparison scopes.
+
+The complete native Windows MSVC Release build succeeds. All 1,268 tests pass
+in 460.51 seconds, with unique JUnit names, no failures or skips, and all 6,232
+frozen source inputs unchanged throughout the suite. Both previously timed-out
+Ore controls pass in this run, taking 11.78 and 12.21 seconds. Final result
+prose and its current documentation bindings are updated after the suite;
+runtime, fixture, runner and finite measurement bytes remain unchanged.
+
 ## Sapling and Tall Grass during Player wake
 
 Two fresh unchanged-original JDK17 interpreters agree on eight prepared wake

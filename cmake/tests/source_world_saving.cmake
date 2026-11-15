@@ -51,6 +51,20 @@ if(BUILD_TESTING AND TARGET mc_world)
         LABELS "public;unit;world;ownership" TIMEOUT 60)
 endif()
 if(BUILD_TESTING AND Python3_Interpreter_FOUND)
+    foreach(_mc_scope_python_mode IN ITEMS normal optimized)
+        set(_mc_scope_python_flags -B)
+        if(_mc_scope_python_mode STREQUAL "optimized")
+            list(APPEND _mc_scope_python_flags -O)
+        endif()
+        add_test(NAME "tools.provider_cache_scope_${_mc_scope_python_mode}"
+            COMMAND Python3::Interpreter ${_mc_scope_python_flags} -m unittest discover
+            -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/benchmarks"
+            -p test_provider_cache_scope.py)
+        set_tests_properties("tools.provider_cache_scope_${_mc_scope_python_mode}" PROPERTIES
+            LABELS "public;unit;tools;world;performance" TIMEOUT 30)
+    endforeach()
+    unset(_mc_scope_python_flags)
+    unset(_mc_scope_python_mode)
     add_test(NAME tools.client_frame_observations COMMAND Python3::Interpreter -B -m unittest discover
         -s "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/benchmarks" -p test_client_frames_run.py)
     set_tests_properties(tools.client_frame_observations PROPERTIES
@@ -107,6 +121,10 @@ if(MC_BUILD_BENCHMARKS AND BUILD_TESTING AND TARGET mc_simulation)
     add_executable(mc_benchmark_world_queries tests/benchmarks/world_queries.c)
     target_include_directories(mc_benchmark_world_queries PRIVATE src)
     target_link_libraries(mc_benchmark_world_queries PRIVATE
+        mc_simulation mc_persistence mc_c_atomics mc_build_options)
+    add_executable(mc_benchmark_provider_cache_scope tests/benchmarks/provider_cache_scope.c)
+    target_include_directories(mc_benchmark_provider_cache_scope PRIVATE src src/platform/time)
+    target_link_libraries(mc_benchmark_provider_cache_scope PRIVATE
         mc_simulation mc_persistence mc_c_atomics mc_build_options)
     add_executable(mc_benchmark_light_drain tests/benchmarks/light_drain.c)
     target_include_directories(mc_benchmark_light_drain PRIVATE src)

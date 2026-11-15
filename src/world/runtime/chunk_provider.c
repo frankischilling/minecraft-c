@@ -319,6 +319,12 @@ mc_world_storage_status mc_chunk_provider_acquire_owner(const mc_chunk_provider 
     return result(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
+bool mc_chunk_provider_owns_cache(const mc_chunk_provider *provider, const mc_world_runtime *world,
+                                  const mc_chunk_cache *cache) {
+    return provider != NULL && provider->concrete_kind == MC_CHUNK_PROVIDER_MAP_CACHE &&
+           provider->world == world && &provider->cache == cache;
+}
+
 mc_world_storage_status mc_chunk_provider_maintenance(mc_chunk_provider *provider, bool *out,
                                                       mc_world_storage_error *error) {
     if (provider == NULL || out == NULL)

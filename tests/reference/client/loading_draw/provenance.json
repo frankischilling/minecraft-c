@@ -3122,12 +3122,12 @@
       "sha256": "d2a3d50f29f3e049b1078457d8523fabd027fd6e883cf98dbe072144cf316c8a"
     },
     "src/world/runtime/chunk_provider.c": {
-      "bytes": 18484,
-      "sha256": "131214790ed8715ae6161b891d6374d659a8de5b758e4c4da2c4fc0ed294a7b2"
+      "bytes": 18807,
+      "sha256": "216f95ded403c80994a57bc6dc6007e8c9a34dc24ea10fa2e920c0994898d9a2"
     },
     "src/world/runtime/chunk_provider_internal.h": {
-      "bytes": 11563,
-      "sha256": "197d511c00578e1d840d862f07ab37dc420840b70e1cdc3c5284f7d3b3497644"
+      "bytes": 12161,
+      "sha256": "4edef8d61edef011d6aaa4a45eeadf9232107ec115e26e2021607805466ebb80"
     },
     "src/world/runtime/chunk_provider_state_internal.h": {
       "bytes": 1519,
@@ -3526,8 +3526,8 @@
       "sha256": "c616c3e61c146eef37efed909e2184d3cce64ef9c74c9c379ed03629fc0008f3"
     },
     "src/world/runtime/runtime.c": {
-      "bytes": 71947,
-      "sha256": "4e43b01f389d611486563938963f4b609f16ca1fbed6015c9a1c7e8da4eb0539"
+      "bytes": 73387,
+      "sha256": "8007bf13c12073f0b3481bb2063d5abf405d22df822039f4e7055f8c25bd7dd5"
     },
     "src/world/runtime/runtime_internal.h": {
       "bytes": 6072,
@@ -7934,8 +7934,8 @@
       "sha256": "7e343b192ec286e343fd9496c793b38cb3cdeb0d470ee920772be8fdc222a288"
     },
     "cmake/tests/source_world_saving.cmake": {
-      "bytes": 15326,
-      "sha256": "3e8bcbf829d5f8ae40c608af9b2f03b218040fc8cd2784b87dfafba841bc381b"
+      "bytes": 16398,
+      "sha256": "81b0e7d1c1799ddf05036103c6bee276e2a0e2ed6824fc9a659ce78b37503269"
     },
     "src/world/runtime/tile_entities/source_save.inc": {
       "bytes": 11082,
@@ -8210,16 +8210,16 @@
       "sha256": "84786c930812caeb696bf777e2abb70177827376a6d72d6b15bd009933fde2b1"
     },
     "src/world/runtime/chunk_provider_owned.inc": {
-      "bytes": 11995,
-      "sha256": "81dbac9fcda9b07855755ec2081f9d37922ee318f53c7abeaacb3de2d37c8065"
+      "bytes": 13742,
+      "sha256": "77699de4b41cd462f53a883a1e2ddd63bb3eda9ef8d312695f55d53ceb112350"
     },
     "tests/tools/world/test_owned_cache.py": {
-      "bytes": 11388,
-      "sha256": "5d3c5989f39a0a0bc6d76e939bb1b2116df752d9aff3d70e23d91f908810b7eb"
+      "bytes": 13529,
+      "sha256": "111b84c4fd1469e61aa8dc80fe33dfe44bb26d6d9f7f789af2ea024d63acc380"
     },
     "tests/world/runtime/saving/test_owned_cache.c": {
-      "bytes": 41465,
-      "sha256": "2dd117ae72d31bf49e9a5d2e2bd7809b7a265b54177e9ff11d13e8ff0deb51af"
+      "bytes": 63430,
+      "sha256": "360e87bb44c08bb1ee0a571ef30cb5f5c2bfe433a2d895a592329155863bba26"
     },
     "src/world/storage/chunk_lookup.inc": {
       "bytes": 8386,
@@ -11703,7 +11703,7 @@
     },
     "tests/tools/world/test_kernel_execution.py": {
       "bytes": 25708,
-      "sha256": "69cf6cf8a5789ca540b01b5934cc4964c1a66aa1e9f3735626565cd724dc20eb"
+      "sha256": "72626e16a88951e755216ada7f1f3cf17847ac843bf588dfc07711694bd479a0"
     },
     "cmake/tests/world_query_controls.cmake": {
       "bytes": 9329,
@@ -11719,7 +11719,7 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76712,
-      "sha256": "94e2975b881cd4f70a6e933dffa130d1f6f2992be0fdbfc06b65545e8eabfe53"
+      "sha256": "3381d7259990567e1b33877ff55fc3018b9e6d114fbcc5b2530edbf6d81fca98"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -11895,7 +11895,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "1be6ff95f8d5077db192bffb5a6fe57737bb51cd41cf8bb6e88a33a8383833e2"
+      "sha256": "2cc32838e0da97363615c3d73ea6a0a1b6b91491a3860cdbc5ffd100e1cb36ca"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,
@@ -11903,7 +11903,7 @@
     },
     "tests/tools/entity/test_damage_native_close.py": {
       "bytes": 17605,
-      "sha256": "890a1aa0b43212a1eca769dfbb9b1e3466e58b4045f5f21bd74278b801e8809b"
+      "sha256": "11926b78c4d917e21b7d292dd056eefc4447909ff3c09abdcaf09fe6916699a8"
     },
     "tests/world/runtime/world_access/test_damage_close_execution.c": {
       "bytes": 30398,
