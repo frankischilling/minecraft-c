@@ -10308,3 +10308,80 @@ whereas the earlier failed opportunity recorded approximately 112.5/67.35.
 The original failing predicate was not recaptured. Observer timing remains a
 caveat; these prepared-route results establish neither a runtime fix nor
 general input/focus, original graphical equality or FPS qualification.
+
+## Flint and Steel use
+
+The [Flint and Steel packet](../tests/reference/item/flint_and_steel/README.md)
+declares 104 unchanged-original calls through direct YE, the real IZ wrapper
+and OB continuation. Two fresh sequential JDK17 VMs produce identical complete
+streams: 1,130,052 stdout bytes and 406 stderr bytes per VM, with 64 original
+class bindings, 13 unchanged authored helper products and all four preservation
+guards passing. Six original model/corruption groups pass normally and with
+Python optimization.
+
+The compiled MSVC replay matches all 104 profiles and 34,159 selected original
+scalars. It compares all five planes of every loaded Chunk, complete scheduled
+and light requests, ordered callbacks, World/Math/Item Random, the original
+prepared Item Random owner, full Stack fields, selected Player/caller fields,
+and complete sorted total/unsent statistic maps with their dirty flag.
+
+Profiles cover six face offsets, invalid faces, Java integer wrapping and the
+asymmetric X/Z bounds. They distinguish occupied wear, ordinary false setters,
+unsupported Fire, remote World input, both Portal orientations, callback
+interruptions, nullable operands and captured air versus a later Stone write.
+Sound callbacks mutate genuine fields or call the real setter. Late Fire,
+Stack ID and statistic reads retain their actual order; no getter or original
+class is replaced.
+
+Seven separate retained-receipt controls check the actual selected callback
+producer and exception class. Early producer retirement remains BUSY with two
+holds; retiring the enclosing caller leaves the external hold, and final
+producer retirement consumes it once. Ten native reader groups pass normally
+and with `-O`. They reject transport-clean plane, map, Stack, Random, event-order,
+source-witness and cleanup changes. A configured but unreached second Portal
+range callback correctly produces no receipt. Structurally valid native stops
+remain rejected by original comparison.
+
+One null IZ receiver fails at the authored probe invocation before any original
+IZ method enters. Its genuine exception and zero effects are paired; the
+native facade's internal boundary PC is explicitly unpaired for that one mode.
+Direct YE null Stack instead reaches the actual durability invocation at 130
+after prior effects. Native pairing also leaves App/statistics construction,
+statistic files, Java Map iteration order, inactive Entity constructor entropy
+and Java Throwable messages/stacks outside its comparison. The original-only
+reader separately checks its captured source diagnostics.
+
+The complete MSVC Release build and all 1,266 Windows CTests pass in 529.65
+seconds with four jobs, no skips and all 6,226 frozen source inputs
+unchanged. All 13 selected Clang Debug tests pass in 116.65 seconds with ASan,
+UBSan and leak detection. Both native hosts match all 104 profiles, 34,159
+selected scalars and seven receipt controls. Strict GCC13 compilation covers
+six changed C units, and pinned formatting checks 2,407 C files and fragments.
+Detailed Linux captures, executable/source hashes and the predecessor evidence
+are archived before the isolated temporary build is removed. This is a focused
+Linux qualification.
+
+Existing farming, redstone, dye, Ore and controller placement regressions pass.
+The earlier Item-placement control's obsolete YE frontier fails on the new
+implementation; its replacement checks the exact YE60 null-World failure,
+completed face adjustment, absent children and unchanged zero-count Stack.
+
+A selective predecessor restores the authentic preceding execute dispatcher,
+retaining current common helpers and the new direct YE entry. All 104 native
+processes complete with exact original before state and empty stderr. The 39
+eligible IZ/OB cases stop at the actual old YE0 frontier and fail the unchanged
+original comparison; 65 retained positives still match, including 60 direct
+YE calls and five pre-body cases. Candidate captures and an exact executable
+snapshot are independently revalidated. Invalid processes or preparation
+never count as negative evidence, and this does not claim a whole preceding
+runtime replay.
+
+## Native frame baseline
+
+The separate [frame record](performance/client-frame-baseline.md) retains one
+fresh Windows interval: 374 complete frames in 10.0085 seconds, 37.37 FPS,
+20.83 ms frame-time p50 and 63.34 ms p95. It advances 194 World ticks with
+normal random/display work, valid foreground and retained camera pose. Its
+source/library hashes, host scope and timing limits are independent of the
+Item-use comparison. It establishes no before/after improvement or original
+whole-scene equality.

@@ -804,7 +804,10 @@ cleanup:
     return ro_dispose(&o) && ok;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_ORE_ENTRY
+#define MC_ORE_ENTRY main
+#endif
+int MC_ORE_ENTRY(int argc, char **argv) {
     ro_profile p = {0};
     fr_profile *b = &p.prepared;
     char root[8192];

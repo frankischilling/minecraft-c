@@ -1,5 +1,6 @@
 #include "mc/item/use/use.h"
 #include "bed_internal.h"
+#include "flint_and_steel/flint_and_steel_internal.h"
 
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
@@ -62,6 +63,8 @@ struct mc_item_use_call {
 static const char *const use_block_descriptor = "(Liz;Lgs;Lfd;IIII)Z";
 static const char *const wrapper_block_descriptor = "(Lgs;Lfd;IIII)Z";
 static const char *const use_air_descriptor = "(Liz;Lfd;Lgs;)Liz;";
+
+typedef enum item_use_entry { ITEM_USE_IZ, ITEM_USE_LP, ITEM_USE_YE } item_use_entry;
 
 static mc_item_use_site site(const char *owner, const char *method, const char *descriptor,
                              unsigned int pc) {
@@ -196,6 +199,14 @@ static bool mutation_capture(mc_item_use_call *c, mc_world_mutation_error *m) {
     if (m == NULL)
         return true;
     const bool failed = m->status != MC_WORLD_STORAGE_OK;
+    if (failed && (m->world_access_source_fault != MC_WORLD_ACCESS_SOURCE_FAULT_NONE ||
+                   m->fire_source_null || m->fire_array_index)) {
+        c->error.source_exception = true;
+        c->error.source_error = false;
+        c->error.exception_class = m->fire_array_index ? "java/lang/ArrayIndexOutOfBoundsException"
+                                                       : "java/lang/NullPointerException";
+        c->error.native_policy = false;
+    }
     return receipt(c, &m->world_access_failure, failed) &&
            receipt(c, &m->publication.world_access_failure, failed) &&
            publication(c, &m->batch, &m->tile_entity, failed) &&
@@ -282,10 +293,15 @@ static bool query_xyz_at(mc_item_use_call *c, const char *owner, unsigned int pc
     c->queries[c->query_count++] = q;
     c->error.acquisition = q;
     ++c->source_epoch;
-    mc_world_storage_status status =
-        mc_world_runtime_block_get_detailed(c->state.world, x, y, z, out, &c->error.world, q);
-    if (status != MC_WORLD_STORAGE_OK)
-        fail(c, MC_ITEM_USE_WORLD, c->error.world.operation, true);
+    mc_world_storage_status status = mc_world_runtime_block_get_source_detailed(
+        c->state.world, x, y, z, out, &c->error.world, q, &c->error.query_provider_null);
+    if (status != MC_WORLD_STORAGE_OK) {
+        if (c->error.query_provider_null) {
+            c->error.child = site("fd", "c", "(II)Llm;", 6);
+            source_null(c, c->error.world.operation);
+        } else
+            fail(c, MC_ITEM_USE_WORLD, c->error.world.operation, true);
+    }
     return captured(c) && status == MC_WORLD_STORAGE_OK;
 }
 
@@ -485,7 +501,17 @@ static bool world_failed(mc_item_use_call *c, mc_world_mutation_error *m, const 
                          const char *descriptor) {
     c->error.world = m->cause;
     c->error.child = site("fd", method, descriptor, m->wrapper_bytecode);
-    return fail(c, MC_ITEM_USE_WORLD, m->operation, true);
+    bool native = true;
+    if (m->registry.status != MC_REGISTRY_OK) {
+        mc_item_render_throwable throwable;
+        c->error.registry = m->registry;
+        mc_item_render_registry_classification(mc_world_runtime_registry(c->state.world),
+                                               &m->registry, &throwable, &c->error.exception_class);
+        c->error.source_exception = throwable == MC_ITEM_RENDER_SOURCE_EXCEPTION;
+        c->error.source_error = throwable == MC_ITEM_RENDER_SOURCE_ERROR;
+        native = throwable == MC_ITEM_RENDER_NO_THROWABLE;
+    }
+    return fail(c, MC_ITEM_USE_WORLD, m->operation, native);
 }
 
 static bool metadata(mc_item_use_call *c) {
@@ -727,7 +753,7 @@ static bool singleton_id(mc_item_use_call *c, const char *owner, const char *nam
     return true;
 }
 
-/* LA/RK pop the ordinary World.f result. A normal false still reaches the
+/* LA/RK/IE/YE pop the ordinary World.f result. A normal false still reaches the
  * following Stack mutation; a failed native/callback invocation does not. */
 static bool farming_set(mc_item_use_call *c, const char *owner, unsigned int pc, int32_t id) {
     mc_item_use_state *s = &c->state;
@@ -813,13 +839,15 @@ static bool redstone(mc_item_use_call *c) {
     return true;
 }
 
-static bool hoe_damage(mc_item_use_call *c) {
-    at(c, "la", use_block_descriptor, 147);
-    if (!hold_player(c, "Hoe reached durability Player occurrence"))
+static bool durability(mc_item_use_call *c, const char *owner, unsigned int pc) {
+    at(c, owner, use_block_descriptor, pc);
+    if (c->state.stack == NULL)
+        return source_null(c, "Item use actual Stack durability invocation");
+    if (!hold_player(c, "Item use reached durability Player occurrence"))
         return false;
     c->durability = malloc(sizeof(*c->durability));
     if (c->durability == NULL)
-        return fail(c, MC_ITEM_USE_ALLOCATION, "Hoe reached durability diagnostic", true);
+        return fail(c, MC_ITEM_USE_ALLOCATION, "Item use reached durability diagnostic", true);
     c->error.durability = c->durability;
     const mc_entity_status status = mc_item_stack_combat_damage(c->state.registry, c->state.stack,
                                                                 1, c->state.player, c->durability);
@@ -890,12 +918,14 @@ static bool hoe(mc_item_use_call *c) {
     at(c, "la", use_block_descriptor, 137);
     /* The same captured Farmland survives the sound callback. */
     s->block_id = s->captured_block->fields.bn;
-    if (!farming_set(c, "la", 140, s->block_id) || !hoe_damage(c))
+    if (!farming_set(c, "la", 140, s->block_id) || !durability(c, "la", 147))
         return false;
     at(c, "la", use_block_descriptor, 151);
     s->result = true;
     return true;
 }
+
+#include "flint_and_steel/flint_and_steel.inc"
 
 static bool seeds(mc_item_use_call *c) {
     mc_item_use_state *s = &c->state;
@@ -1021,6 +1051,9 @@ static bool execute(mc_item_use_call *c) {
     } else if (k == MC_ITEM_HOE) {
         if (!hoe(c))
             return false;
+    } else if (k == MC_ITEM_FLINT_AND_STEEL) {
+        if (!flint_and_steel(c))
+            return false;
     } else if (k == MC_ITEM_SEEDS) {
         if (!seeds(c))
             return false;
@@ -1056,8 +1089,8 @@ static mc_item_use_status admission(mc_item_use_error *e, mc_item_use_status s,
 static mc_item_use_status begin(mc_registry_classes *r, mc_item_stack *stack, mc_entity *player,
                                 mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
                                 int32_t face, bool in_air, const mc_item_use_context *context,
-                                const mc_item *direct_bed, bool direct, mc_item_use_call **out,
-                                mc_item_use_error *error) {
+                                const mc_item *direct_receiver, item_use_entry entry,
+                                mc_item_use_call **out, mc_item_use_error *error) {
     if (r == NULL || out == NULL || *out != NULL)
         return admission(error, MC_ITEM_USE_ARGUMENT, "Item use actual Registry/empty output");
     mc_item_use_call *c = calloc(1, sizeof(*c));
@@ -1098,16 +1131,18 @@ static mc_item_use_status begin(mc_registry_classes *r, mc_item_stack *stack, mc
                                    .active = true,
                                    .error = &c->error};
     *out = c;
-    if (direct) {
-        c->state.item = direct_bed;
-        at(c, "lp", use_block_descriptor, 0);
-        if (direct_bed == NULL)
+    if (entry != ITEM_USE_IZ) {
+        c->state.item = direct_receiver;
+        const char *owner = entry == ITEM_USE_LP ? "lp" : "ye";
+        const mc_item_kind kind = entry == ITEM_USE_LP ? MC_ITEM_BED : MC_ITEM_FLINT_AND_STEEL;
+        at(c, owner, use_block_descriptor, 0);
+        if (direct_receiver == NULL)
             c->state.returned =
-                fail(c, MC_ITEM_USE_ARGUMENT, "LP canonical entered Item receiver", true);
-        else if (direct_bed->classes != r || direct_bed->kind != MC_ITEM_BED)
-            c->state.returned = fail(c, MC_ITEM_USE_ARGUMENT, "LP genuine Item code owner", true);
+                fail(c, MC_ITEM_USE_ARGUMENT, "Canonical entered Item receiver", true);
+        else if (direct_receiver->classes != r || direct_receiver->kind != kind)
+            c->state.returned = fail(c, MC_ITEM_USE_ARGUMENT, "Entered Item code owner", true);
         else
-            c->state.returned = bed(c);
+            c->state.returned = entry == ITEM_USE_LP ? bed(c) : flint_and_steel(c);
     } else
         c->state.returned = execute(c);
     c->state.active = false;
@@ -1128,7 +1163,8 @@ mc_item_use_status mc_item_use_on_block_with_context_begin(
     mc_registry_classes *r, mc_item_stack *stack, mc_entity *player, mc_world_runtime *world,
     int32_t x, int32_t y, int32_t z, int32_t face, const mc_item_use_context *context,
     mc_item_use_call **out, mc_item_use_error *error) {
-    return begin(r, stack, player, world, x, y, z, face, false, context, NULL, false, out, error);
+    return begin(r, stack, player, world, x, y, z, face, false, context, NULL, ITEM_USE_IZ, out,
+                 error);
 }
 
 mc_item_use_status mc_item_use_bed_begin(mc_registry_classes *r, const mc_item *receiver,
@@ -1136,14 +1172,24 @@ mc_item_use_status mc_item_use_bed_begin(mc_registry_classes *r, const mc_item *
                                          mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
                                          int32_t face, const mc_item_use_context *context,
                                          mc_item_use_call **out, mc_item_use_error *error) {
-    return begin(r, stack, player, world, x, y, z, face, false, context, receiver, true, out,
+    return begin(r, stack, player, world, x, y, z, face, false, context, receiver, ITEM_USE_LP, out,
+                 error);
+}
+
+mc_item_use_status mc_item_use_flint_and_steel_begin(mc_registry_classes *r,
+                                                     const mc_item *receiver, mc_item_stack *stack,
+                                                     mc_entity *player, mc_world_runtime *world,
+                                                     int32_t x, int32_t y, int32_t z, int32_t face,
+                                                     mc_item_use_call **out,
+                                                     mc_item_use_error *error) {
+    return begin(r, stack, player, world, x, y, z, face, false, NULL, receiver, ITEM_USE_YE, out,
                  error);
 }
 
 mc_item_use_status mc_item_use_in_air_begin(mc_registry_classes *r, mc_item_stack *stack,
                                             mc_world_runtime *world, mc_entity *player,
                                             mc_item_use_call **out, mc_item_use_error *error) {
-    return begin(r, stack, player, world, 0, 0, 0, 0, true, NULL, NULL, false, out, error);
+    return begin(r, stack, player, world, 0, 0, 0, 0, true, NULL, NULL, ITEM_USE_IZ, out, error);
 }
 
 bool mc_item_use_inspect(const mc_item_use_call *c, mc_item_use_state *out) {

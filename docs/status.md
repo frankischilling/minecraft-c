@@ -1,38 +1,41 @@
 # Development status
 
 Development targets a fully playable single-player client with Java Beta 1.7.3
-behavior on Windows and Linux. Full parity, sustained play and measured FPS
-remain incomplete. The [parity matrix](parity.md) records each qualified scope;
+behavior on Windows and Linux. Full parity, sustained play and performance
+qualification remain incomplete. The [parity matrix](parity.md) records each qualified scope;
 the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining work.
 
 ## Current client work
 
-Ordinary client [Redstone Ore activation and decay](world/redstone-ore.md)
-now joins left-click mining, walking, right-click Item continuation, display
-and scheduled/random ticks. The shared particle and activation bodies preserve
-their original reads and Random order. Right activation returns false after
-its effects, allowing the held BlockItem to place and update its use statistic.
+Ordinary client [Flint and Steel use](item/flint-and-steel.md) now reaches
+actual Fire addition and Portal creation through the real right-click caller.
+The shared body preserves face wrapping, double sound centers, the Item Random
+draw, sound-before-live-Fire loading, the discarded setter result and Stack
+wear even for occupied targets. Direct YE, the IZ wrapper and OB continuation
+retain their separate nullable reads and statistic effects.
 
-Two fresh unchanged-original VMs agree on 67 prepared profiles. Windows and
-sanitized Linux each match 19,187 selected original scalars and 15 separate
-retained receipt controls. The comparison includes complete Chunk planes,
-callbacks, light and scheduled queues, both Random streams, actual OS/OB caller state and Item/stat
-effects. Native controls distinguish the cached old ID from a fresh World read,
-and a fresh Block array lookup from a cached Block pointer.
+Two fresh unchanged-original VMs agree on 104 declared profiles. Windows and
+sanitized Linux each match 34,159 selected original scalars and seven retained-receipt
+controls. Compared state includes complete Chunk planes, callbacks, queues,
+World/Math/Item Random and the saved Item Random owner, Stack fields,
+Player/caller state and sorted statistic maps. Native diagnostics retain actual
+failed children through checked retirement. Provider-null classification comes
+from the same getter that reached the failed invocation.
 
-The full Windows MSVC Release suite passes all 1,261 tests in 528.75 seconds.
-All 15 selected Linux Clang tests pass in 184.19 seconds with ASan, UBSan and
-leak detection; strict GCC compilation covers 12 changed C units. The
-[test record](testing.md#redstone-ore-activation-and-decay) states the platform
-and scenario limits. Typed null-list diagnostics now survive legacy particle
-and notification calls; placement retains the actual failed producers through
-checked retirement.
+The complete Windows MSVC Release suite passes all 1,266 tests in 529.65 seconds.
+All 13 selected Linux Clang tests pass in 116.65 seconds with ASan, UBSan and
+leak detection; strict GCC compilation covers six changed C units. Both native
+hosts match the same selected original scalars and receipt controls. The
+[test record](testing.md#flint-and-steel-use) retains the predecessor control,
+obsolete frontier replacement and explicit comparison limits.
 
-The [preceding Fire checkpoint](history/status-checkpoints.md#ordinary-fire-checkpoint)
-retains its 71-profile comparison, full Windows and focused Linux results.
-Fresh graphical input/focus qualification remains incomplete. General mining
-destruction ownership, other ordinary-play blockers, sustained play/save drift,
-original audiovisual equality and measured FPS remain unfinished.
+A fresh [native frame baseline](performance/client-frame-baseline.md) records
+37.37 FPS and a 63.34 ms frame-time p95 in one authored Tiny sky-view interval.
+It includes active simulation and is not an optimization or original-game FPS
+comparison. Input/focus, extended play/save drift, original audiovisual equality
+and sustained frame-time qualification remain unfinished. The
+[Ore checkpoint](history/status-checkpoints.md#redstone-ore-checkpoint) retains
+its preceding comparisons and broader regression results.
 
 ## Next single-player work
 

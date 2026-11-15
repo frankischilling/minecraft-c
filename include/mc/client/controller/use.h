@@ -47,6 +47,9 @@ typedef struct mc_singleplayer_use_error {
     const char *operation, *exception_class;
     mc_player_site site, child;
     bool native_policy, source_exception, source_error;
+    /* Value witness returned by the actual OB7 World query. It is false for
+     * bounded returns and native admission/acquisition failures. */
+    bool query_provider_null;
     mc_registry_error registry;
     mc_world_storage_error world;
     mc_entity_status player;

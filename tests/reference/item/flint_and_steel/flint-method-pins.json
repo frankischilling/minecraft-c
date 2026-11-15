@@ -1,0 +1,40 @@
+{
+  "archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "classes": {
+    "ye": {
+      "name": "ye",
+      "super": "gm",
+      "interfaces": [],
+      "major": 49,
+      "minor": 0,
+      "access": 33,
+      "class_sha256": "c2b8b1a3b04e577928d52784949d650a3ffeb7febc790398e223bb82ce0d6f26",
+      "class_bytes": 759,
+      "fields": [],
+      "methods": [
+        {
+          "access": 1,
+          "name": "<init>",
+          "descriptor": "(I)V",
+          "code_length": 18,
+          "code_sha256": "aa85aa78edeafae884c2799dd7fc41b0716b8c04e05316f94139f71ceeaa7973",
+          "code_attribute_sha256": "4c9185cacb6c2315a2295421e9a1722b6bce067ccfdc96fbf39e0f5297881186",
+          "max_stack": 2,
+          "max_locals": 2,
+          "exception_table": []
+        },
+        {
+          "access": 1,
+          "name": "a",
+          "descriptor": "(Liz;Lgs;Lfd;IIII)Z",
+          "code_length": 135,
+          "code_sha256": "09b469cb0430ee0781267ed63678eeea9b1bbfdca870d9038376b5f7cf836594",
+          "code_attribute_sha256": "fa441394d28f9f27133e12e6d98172444e8c63ded939f494f3fe8266cfef0c27",
+          "max_stack": 11,
+          "max_locals": 9,
+          "exception_table": []
+        }
+      ]
+    }
+  }
+}

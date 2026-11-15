@@ -49,6 +49,9 @@ typedef struct mc_item_use_error {
     const char *operation, *exception_class;
     mc_item_use_site site, child;
     bool native_policy, source_exception, source_error;
+    /* Positive value witness from the actual acquiring World block getter's
+     * null provider invocation. Bounds/native admission leave it false. */
+    bool query_provider_null;
     mc_registry_error registry;
     mc_math_class_error math;
     mc_item_stack_status stack;
@@ -57,7 +60,7 @@ typedef struct mc_item_use_error {
     const mc_world_placement_error *placement;
     const mc_world_mutation_error *mutation, *sound;
     const mc_player_statistic_error *statistic;
-    /* Reached LA147 child, including its completed Stack mutation prefix and
+    /* Reached LA147/YE130 child, including its completed Stack mutation prefix and
      * nested broken-statistic cause. Borrows this call through retirement. */
     const mc_item_combat_error *durability;
     /* Latest reached Dye/Bed FD.h child and its explicit acquisition descendants.

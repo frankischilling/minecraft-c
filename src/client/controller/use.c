@@ -10,6 +10,7 @@
 #include "mc/world/runtime/placement.h"
 #include "mc/world/runtime/world_access.h"
 #include "mc/world/storage/source_chunk_loader.h"
+#include "world/runtime/block_queries_internal.h"
 #include "world/runtime/construction_internal.h"
 #include "world/runtime/runtime_internal.h"
 
@@ -145,6 +146,14 @@ static bool query_capture(mc_singleplayer_use_call *c) {
 }
 
 static void query_source_exception(mc_singleplayer_use_call *c) {
+    if (c->error.query_provider_null) {
+        c->error.source_exception = true;
+        c->error.source_error = false;
+        c->error.exception_class = "java/lang/NullPointerException";
+        c->error.native_policy = false;
+        c->error.child = (mc_player_site){"fd", "c", "(II)Llm;", 6};
+        return;
+    }
     const mc_world_runtime_acquisition_error *e = c->acquisition;
     const mc_world_access_failure *failures[] = {
         &e->batch.publication.world_access_failure, &e->tile_entity.world_access_failure,
@@ -215,9 +224,9 @@ static bool on_block(mc_singleplayer_use_call *c) {
         return fail(c, MC_SINGLEPLAYER_USE_ALLOCATION, "Use reached World query diagnostic", 7,
                     true);
     c->error.acquisition = c->acquisition;
-    const mc_world_storage_status status =
-        mc_world_runtime_block_get_detailed(c->state.world, c->state.x, c->state.y, c->state.z,
-                                            &c->state.clicked_id, &c->error.world, c->acquisition);
+    const mc_world_storage_status status = mc_world_runtime_block_get_source_detailed(
+        c->state.world, c->state.x, c->state.y, c->state.z, &c->state.clicked_id, &c->error.world,
+        c->acquisition, &c->error.query_provider_null);
     if (status != MC_WORLD_STORAGE_OK)
         fail(c, MC_SINGLEPLAYER_USE_WORLD, c->error.world.operation, 7, true);
     if (!query_capture(c)) {

@@ -4,6 +4,7 @@
 #include "../../world/chunk/object_state_internal.h"
 #include "../../world/storage/objects_internal.h"
 #include "acquisition_internal.h"
+#include "block_queries_internal.h"
 #include "blocks_execution_internal.h"
 #include "construction_internal.h"
 #include "execution_children_internal.h"
@@ -58,10 +59,14 @@ static void scalar_selected_view(mc_world_block_execution *execution) {
 static mc_world_storage_status
 acquire_chunk_detailed(mc_world_runtime *runtime, int32_t x, int32_t z, mc_chunk_state **out,
                        mc_world_storage_error *error, mc_world_runtime_acquisition_error *detail,
-                       bool *acquisition_failed, mc_world_block_execution *execution) {
+                       bool *acquisition_failed, mc_world_block_execution *execution,
+                       bool *provider_null) {
     /* World.c reads v before invoking provider.b, including a cached hit. */
-    if (runtime->fields.v == NULL)
+    if (runtime->fields.v == NULL) {
+        if (provider_null != NULL)
+            *provider_null = true;
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World block provider receiver");
+    }
     mc_chunk_acquire_status status;
     if (execution == NULL)
         status = mc_world_runtime_get_failure(runtime, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4),
@@ -111,14 +116,16 @@ acquire_chunk_detailed(mc_world_runtime *runtime, int32_t x, int32_t z, mc_chunk
 static mc_world_storage_status acquire_chunk(mc_world_runtime *runtime, int32_t x, int32_t z,
                                              mc_chunk_state **out, mc_world_storage_error *error) {
     mc_world_runtime_acquisition_error detail;
-    return acquire_chunk_detailed(runtime, x, z, out, error, &detail, NULL, NULL);
+    return acquire_chunk_detailed(runtime, x, z, out, error, &detail, NULL, NULL, NULL);
 }
 
 static mc_world_storage_status block_get(mc_world_runtime *runtime, int32_t x, int32_t y, int32_t z,
                                          int32_t *out, mc_world_storage_error *error,
                                          mc_world_runtime_acquisition_error *acquisition,
                                          bool *acquisition_failed,
-                                         mc_world_block_execution *execution) {
+                                         mc_world_block_execution *execution, bool *provider_null) {
+    if (provider_null != NULL)
+        *provider_null = false;
     if (runtime == NULL || out == NULL)
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World block arguments");
     if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME ||
@@ -132,7 +139,7 @@ static mc_world_storage_status block_get(mc_world_runtime *runtime, int32_t x, i
     mc_world_storage_status status =
         acquisition == NULL ? acquire_chunk(runtime, x, z, &chunk, error)
                             : acquire_chunk_detailed(runtime, x, z, &chunk, error, acquisition,
-                                                     acquisition_failed, execution);
+                                                     acquisition_failed, execution, provider_null);
     if (status != MC_WORLD_STORAGE_OK || (execution != NULL && execution->native_stopped))
         return status;
     if (chunk->blank) {
@@ -150,7 +157,7 @@ static mc_world_storage_status block_get(mc_world_runtime *runtime, int32_t x, i
 mc_world_storage_status mc_world_runtime_block_get(mc_world_runtime *runtime, int32_t x, int32_t y,
                                                    int32_t z, int32_t *out,
                                                    mc_world_storage_error *error) {
-    return block_get(runtime, x, y, z, out, error, NULL, NULL, NULL);
+    return block_get(runtime, x, y, z, out, error, NULL, NULL, NULL, NULL);
 }
 
 static void acquisition_reset(mc_world_runtime_acquisition_error *acquisition) {
@@ -170,7 +177,21 @@ mc_world_runtime_block_get_detailed(mc_world_runtime *runtime, int32_t x, int32_
         return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                       "World detailed block acquisition output");
     acquisition_reset(acquisition);
-    return block_get(runtime, x, y, z, out, error, acquisition, NULL, NULL);
+    return block_get(runtime, x, y, z, out, error, acquisition, NULL, NULL, NULL);
+}
+
+mc_world_storage_status
+mc_world_runtime_block_get_source_detailed(mc_world_runtime *runtime, int32_t x, int32_t y,
+                                           int32_t z, int32_t *out, mc_world_storage_error *error,
+                                           mc_world_runtime_acquisition_error *acquisition,
+                                           bool *provider_null) {
+    if (provider_null != NULL)
+        *provider_null = false;
+    if (acquisition == NULL || provider_null == NULL)
+        return result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                      "World block source diagnostic outputs");
+    acquisition_reset(acquisition);
+    return block_get(runtime, x, y, z, out, error, acquisition, NULL, NULL, provider_null);
 }
 
 mc_world_storage_status
@@ -182,7 +203,7 @@ mc_world_runtime_block_get_failure(mc_world_runtime *runtime, int32_t x, int32_t
                       "World detailed block acquisition output");
     bool acquisition_failed = false;
     const mc_world_storage_status status =
-        block_get(runtime, x, y, z, out, error, acquisition, &acquisition_failed, NULL);
+        block_get(runtime, x, y, z, out, error, acquisition, &acquisition_failed, NULL, NULL);
     if (status != MC_WORLD_STORAGE_OK && !acquisition_failed)
         acquisition_reset(acquisition);
     return status;
@@ -209,7 +230,7 @@ static mc_world_storage_status metadata_get(mc_world_runtime *runtime, int32_t x
     mc_world_storage_status status =
         acquisition == NULL ? acquire_chunk(runtime, x, z, &chunk, error)
                             : acquire_chunk_detailed(runtime, x, z, &chunk, error, acquisition,
-                                                     acquisition_failed, execution);
+                                                     acquisition_failed, execution, NULL);
     if (status != MC_WORLD_STORAGE_OK || (execution != NULL && execution->native_stopped))
         return status;
     if (chunk->blank) {
@@ -326,7 +347,7 @@ metadata_set_quiet(mc_world_runtime *runtime, int32_t x, int32_t y, int32_t z, i
     mc_world_storage_status status =
         acquisition == NULL ? acquire_chunk(runtime, x, z, &chunk, error)
                             : acquire_chunk_detailed(runtime, x, z, &chunk, error, acquisition,
-                                                     acquisition_failed, execution);
+                                                     acquisition_failed, execution, NULL);
     if (status != MC_WORLD_STORAGE_OK || (execution != NULL && execution->native_stopped))
         return status;
     if (!chunk->blank) {
@@ -459,7 +480,7 @@ bool mc_world_runtime_block_get_in_execution(mc_world_block_execution *frame,
     if (!scalar_enter(frame, world, out, error, status))
         return false;
     const mc_world_storage_status actual =
-        block_get(world, x, y, z, out, error, &frame->acquisition, NULL, frame);
+        block_get(world, x, y, z, out, error, &frame->acquisition, NULL, frame, NULL);
     return scalar_finish(frame, actual, status);
 }
 

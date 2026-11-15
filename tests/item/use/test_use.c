@@ -262,11 +262,21 @@ static bool literal_and_dispatch(fixture *f) {
           MC_ITEM_USE_SOURCE_NULL);
     CHECK(e.site.pc == 7 && e.source_exception && !e.native_policy && use_retire(&call));
     mc_item_stack_release(stack);
-    CHECK(use_stack(259, 0, 0, &stack)); /* YE overrides use-on-block, before World read. */
+    CHECK(use_stack(259, 0, 0, &stack)); /* Zero count still reaches YE's World query. */
     CHECK(mc_item_use_on_block_begin(f->registry, stack, NULL, NULL, 0, 0, 0, 0, &call, &e) ==
-          MC_ITEM_USE_UNSUPPORTED);
-    CHECK(e.site.pc == 14 && e.child.pc == 0 && strcmp(e.child.class_name, "ye") == 0 &&
-          e.native_policy && !e.source_exception && use_retire(&call));
+          MC_ITEM_USE_SOURCE_NULL);
+    CHECK(e.site.pc == 60 && strcmp(e.site.class_name, "ye") == 0 && e.source_exception &&
+          !e.source_error && !e.native_policy &&
+          strcmp(e.exception_class, "java/lang/NullPointerException") == 0 &&
+          !e.query_provider_null && e.child.class_name == NULL && e.acquisition == NULL &&
+          e.sound == NULL && e.mutation == NULL && e.durability == NULL);
+    CHECK(mc_item_use_inspect(call, &s) && s.item_resolved && !s.returned && s.source_pc == 60 &&
+          s.target_x == 0 && s.target_y == -1 && s.target_z == 0 && !s.sound_returned &&
+          !s.setter_returned && !s.statistic_entered);
+    int32_t damage;
+    CHECK(mc_item_stack_source_count_get(stack, &count) == MC_ITEM_STACK_OK && count == 0 &&
+          mc_item_stack_source_damage_get(stack, &damage) == MC_ITEM_STACK_OK && damage == 0 &&
+          use_retire(&call));
     mc_item_stack_release(stack);
     CHECK(use_stack(261, 0, 0, &stack)); /* QZ's actual in-air override. */
     CHECK(mc_item_use_in_air_begin(f->registry, stack, NULL, NULL, &call, &e) ==

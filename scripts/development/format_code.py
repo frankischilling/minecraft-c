@@ -81,6 +81,7 @@ def main():
                  "tests/item/registry/block_static_controls.inc",
                  "tests/item/use/dye_controls.inc",
                  "src/item/use/dye.inc",
+                 "src/item/use/flint_and_steel/flint_and_steel.inc",
                  "src/item/use/bed.inc",
                  "tests/item/use/farming_controls.inc",
                  "src/storage/nbt/stream_support.inc",
