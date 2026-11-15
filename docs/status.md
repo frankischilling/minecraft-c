@@ -7,6 +7,13 @@ the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining w
 
 ## Current client work
 
+The C region transport now handles long Windows target and temporary names.
+The [storage path record](world/native-storage-paths.md) covers the reproduced
+260-unit temporary-open failure, five Unicode path boundaries, replacement,
+collision ownership and fresh-cache reopen. Four focused storage tests pass on
+MSVC Release and GCC Debug with ASan/UBSan and leak detection. The separate
+Source File provider boundary and full-client save qualification remain open.
+
 Ordinary World setters now avoid initializing an unused successful acquisition
 diagnostic. The [quiet-setter record](performance/quiet-setter-acquisition.md)
 retains 64 measured processes and all 448 samples: the eight resident AIR no-op

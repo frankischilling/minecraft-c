@@ -29,6 +29,7 @@ typedef struct stat mc_ws_native_stat;
 typedef struct mc_ws_native_path {
     mc_ws_native_char *value;
     size_t length;
+    bool extended;
 } mc_ws_native_path;
 
 static mc_world_storage_status mc_ws_error(mc_world_storage_error *error,
@@ -43,6 +44,60 @@ static mc_world_storage_status mc_ws_error(mc_world_storage_error *error,
 static mc_world_storage_status mc_ws_success(mc_world_storage_error *error) {
     return mc_ws_error(error, MC_WORLD_STORAGE_OK, NULL, 0);
 }
+
+#ifdef _WIN32
+/* Keep source-facing paths intact. Only the private native transport uses an
+ * absolute extended name, including for temporary siblings of short targets. */
+static mc_world_storage_status mc_ws_extend(mc_ws_native_path *path,
+                                            mc_world_storage_error *error) {
+    wchar_t *input = path->value;
+    if (path->length >= 4u && input[0] == L'\\' && input[1] == L'\\' &&
+        (input[2] == L'?' || input[2] == L'.') && input[3] == L'\\')
+        return MC_WORLD_STORAGE_OK;
+    DWORD capacity = GetFullPathNameW(input, 0, NULL, NULL);
+    if (capacity == 0)
+        return mc_ws_error(error, MC_WORLD_STORAGE_IO_ERROR, "path.absolute.win32",
+                           (uint32_t)GetLastError());
+    if (capacity < MAX_PATH - 12u)
+        return MC_WORLD_STORAGE_OK;
+    if (capacity > 32768u)
+        return mc_ws_error(error, MC_WORLD_STORAGE_LIMIT, "path.extended_length", 0);
+    wchar_t *full = malloc(((size_t)capacity + 8u) * sizeof(*full));
+    if (full == NULL)
+        return mc_ws_error(error, MC_WORLD_STORAGE_ALLOCATION_FAILED, "path.absolute.allocate", 0);
+    DWORD length = GetFullPathNameW(input, capacity, full + 8, NULL);
+    if (length == 0 || length >= capacity) {
+        DWORD code = length == 0 ? GetLastError() : ERROR_INSUFFICIENT_BUFFER;
+        free(full);
+        return mc_ws_error(error, MC_WORLD_STORAGE_IO_ERROR, "path.absolute.win32", code);
+    }
+    /* Extended paths do not trim component suffixes. Avoid addressing a
+     * different object for these legacy aliases. Dot/parent components were
+     * already resolved by GetFullPathNameW. */
+    for (size_t i = 0; i < length; ++i) {
+        if ((full[8u + i] == L'.' || full[8u + i] == L' ') &&
+            (i + 1u == length || full[9u + i] == L'\\')) {
+            free(full);
+            return mc_ws_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                               "path.extended_component_alias", 0);
+        }
+    }
+    bool unc = length >= 2u && full[8] == L'\\' && full[9] == L'\\';
+    size_t prefix = unc ? 8u : 4u;
+    size_t skip = unc ? 2u : 0u;
+    if ((size_t)length - skip + prefix >= 32768u) {
+        free(full);
+        return mc_ws_error(error, MC_WORLD_STORAGE_LIMIT, "path.extended_length", 0);
+    }
+    memmove(full + prefix, full + 8u + skip, (length - skip + 1u) * sizeof(*full));
+    memcpy(full, unc ? L"\\\\?\\UNC\\" : L"\\\\?\\", prefix * sizeof(*full));
+    free(input);
+    path->value = full;
+    path->length = (size_t)length - skip + prefix;
+    path->extended = true;
+    return MC_WORLD_STORAGE_OK;
+}
+#endif
 
 static mc_world_storage_status mc_ws_errno(mc_world_storage_error *error, const char *operation,
                                            int code) {
@@ -146,6 +201,12 @@ static mc_world_storage_status mc_ws_native(const char *path, mc_ws_native_path 
     value[units] = L'\0';
     out->value = value;
     out->length = (size_t)units;
+    status = mc_ws_extend(out, error);
+    if (status != MC_WORLD_STORAGE_OK) {
+        free(out->value);
+        out->value = NULL;
+        return status;
+    }
 #else
     char *value = malloc(bytes + 1u);
     if (value == NULL) {
@@ -288,6 +349,32 @@ static mc_world_storage_status mc_ws_root_length(const mc_ws_native_path *path, 
                                                  mc_world_storage_error *error) {
     *length = 0;
 #ifdef _WIN32
+    if (path->extended) {
+        mc_ws_native_path ordinary = *path;
+        bool unc = path->value[4] == L'U';
+        if (!unc) {
+            ordinary.value += 4;
+            ordinary.length -= 4;
+            ordinary.extended = false;
+            mc_world_storage_status status = mc_ws_root_length(&ordinary, length, error);
+            *length += 4;
+            return status;
+        }
+        /* The generated UNC prefix replaces the ordinary leading two slashes.
+         * Locate the server/share root without creating either component. */
+        size_t at = 8;
+        for (unsigned int component = 0; component < 2; ++component) {
+            size_t start = at;
+            while (at < path->length && !mc_ws_separator(path->value[at]))
+                ++at;
+            if (at == start || (component == 0 && at == path->length))
+                return mc_ws_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "mkdirs.unc_root", 0);
+            if (component == 0)
+                ++at;
+        }
+        *length = at;
+        return MC_WORLD_STORAGE_OK;
+    }
     if (path->length >= 2 && path->value[1] == L':') {
         bool drive = (path->value[0] >= L'A' && path->value[0] <= L'Z') ||
                      (path->value[0] >= L'a' && path->value[0] <= L'z');
@@ -332,6 +419,12 @@ mc_world_storage_status mc_ws_mkdirs(const char *path, mc_world_storage_error *e
     if (status != MC_WORLD_STORAGE_OK) {
         return status;
     }
+#ifdef _WIN32
+    if (path[1] == ':' && path[2] != '/' && path[2] != '\\') {
+        free(native.value);
+        return mc_ws_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "mkdirs.drive_relative", 0);
+    }
+#endif
     size_t root_length = 0;
     status = mc_ws_root_length(&native, &root_length, error);
     if (status == MC_WORLD_STORAGE_OK && root_length != 0) {

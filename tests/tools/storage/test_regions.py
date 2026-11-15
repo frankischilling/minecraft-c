@@ -10,6 +10,7 @@ import base64
 import gzip
 import hashlib
 import json
+import os
 from pathlib import Path
 import queue
 import random
@@ -550,6 +551,56 @@ def malformed_inputs(executable):
             "input-budget prefix preserves prior NULL-root failure responses")
 
 
+def check_long_paths(executable, directory):
+    # Exercise real region creation, temporary replacement, eviction and reopening.
+    # 236 + the 24-unit temporary suffix reaches the legacy Windows boundary.
+    def units(path):
+        return len(str(path).encode("utf-16-le")) // 2
+
+    for target_units in (235, 236, 259, 260, 400):
+        root = directory.resolve() / f"long-{target_units}-caf\u00e9-\U0001f600"
+        while units(root / "region/r.0.0.mcr") < target_units:
+            remaining = target_units - units(root / "region/r.0.0.mcr")
+            require(remaining >= 2, "room for one bounded path component")
+            count = min(60, remaining - 1)
+            if remaining - count - 1 == 1:
+                count -= 1
+            root /= "a" * count
+        path = root / "region/r.0.0.mcr"
+        require(units(path) == target_units, "exact UTF16 path boundary including surrogate pair")
+        with Session(executable) as session:
+            session.root(root)
+            session.write(0, 0, b"first")
+            session.write(0, 0, b"replacement")
+        require(slot(path.read_bytes())[0] == b"replacement", "disk replacement at path boundary")
+        require(list(path.parent.glob("*.tmp")) == [], "no leaked temporary region")
+        with Session(executable) as session:
+            session.root(root)
+            session.read(0, 0, expected=b"replacement")
+        preexisting = path.with_name(path.name + ".mc-0000000000000000.tmp")
+        preexisting.write_bytes(b"not owned")
+        with Session(executable) as session:
+            # Relative spelling, slash conversion, and dot/parent resolution
+            # must still address the same ordinary file after native extension.
+            relative = os.path.relpath(root).replace(os.sep, "/") + "/./unused/.."
+            session.root(Path(relative))
+            session.write(0, 0, b"relative")
+        require(slot(path.read_bytes())[0] == b"relative", "same relative disk object")
+        require(preexisting.read_bytes() == b"not owned" and
+                list(path.parent.glob("*.tmp")) == [preexisting], "long-path collision preserves sibling")
+        if os.name == "nt" and target_units == 400:
+            for spelling, operation in (
+                (str(root) + "/trailing. /child", "path.extended_component_alias"),
+                (str(root)[:2] + str(root)[3:], "mkdirs.drive_relative"),
+                ("\\\\?\\" + str(root), "mkdirs.namespace"),
+            ):
+                with Session(executable) as session:
+                    session.root(Path(spelling))
+                    row = session.write(0, 0, b"rejected", status=5)
+                    require(row["error"]["operation"] == operation, "explicit path admission boundary")
+            require(slot(path.read_bytes())[0] == b"relative", "failed aliases leave target intact")
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--executable", type=Path, required=True)
@@ -558,10 +609,11 @@ def main(argv=None):
         directory = Path(temporary)
         for check in (check_original_global_paths, check_cache_and_shared_roots, check_raw_unicode_and_growth,
                       check_interop_and_dead_bytes, check_malformed_and_native_errors,
-                      check_limits_and_failure_outputs, check_replace_and_collision_cleanup):
+                      check_limits_and_failure_outputs, check_replace_and_collision_cleanup,
+                      check_long_paths):
             check(args.executable, directory)
     malformed_inputs(args.executable)
-    print("native regions: 7 owned filesystem scenarios;9 original-derived global mappings;16 malformed/bounded transport guards")
+    print("native regions: 8 owned filesystem scenarios;9 original-derived global mappings;16 malformed/bounded transport guards")
     return 0
 
 

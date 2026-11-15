@@ -19,8 +19,11 @@ typedef struct mc_ws_file_bytes {
 /* Private native-file helpers, without world/schema/session ownership. Paths
  * are nonempty NUL-terminated UTF-8 strings, at most PATH_MAX_BYTES excluding
  * NUL. Invalid UTF-8 is rejected, without locale conversion or normalization.
- * Windows uses strict UTF-8 -> UTF-16 and wide CRT/native APIs; converted paths
- * including NUL must fit 32768 UTF-16 units. Native component/total limits still
+ * Windows uses strict UTF-8 -> UTF-16 and wide CRT/native APIs. Long ordinary
+ * paths use a private absolute extended name; its prefix and NUL must fit 32768
+ * UTF-16 units. Long component trailing-dot/space aliases are unsupported rather
+ * than silently addressing a different object. Keep CWD stable during a call.
+ * Native component/total limits still
  * apply. POSIX uses the UTF-8 filename bytes directly.
  *
  * Grant exclusive access to paths/files throughout each call. These helpers

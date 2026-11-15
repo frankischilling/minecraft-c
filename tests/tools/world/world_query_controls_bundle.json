@@ -295,8 +295,8 @@
       "sha256": "427f023f458febece5d272af15a846eb32bd08884799666d265fca0f7c8fef11"
     },
     "src/world/storage/files.c": {
-      "bytes": 25963,
-      "sha256": "c07e5ceadda4ba01213b409b34226d661f9779e0e9f3a634d67024b54831d666"
+      "bytes": 30036,
+      "sha256": "027458f05b6ef38e40057ea5ca2b54ee7f7ea795460ad9f8db1ade8f45c3ed65"
     },
     "src/world/storage/store_source.inc": {
       "bytes": 38510,
