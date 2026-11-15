@@ -17,6 +17,7 @@
 #include "mc/world/runtime/collision/spawning.h"
 #include "mc/world/runtime/mutations.h"
 #include "mc/world/storage/source_chunk_loader.h"
+#include "mutation/fire/fire_internal.h"
 #include "mutation/mutation_internal.h"
 #include "plant_substrate_internal.h"
 #include "runtime_internal.h"
@@ -655,6 +656,53 @@ static bool base_predicate(mc_world_placement_error *e, const mc_block *block,
     e->site = site(declaring, "a", "(Lfd;III)Z", 0);
     e->base = e->site;
     e->predicate_entered = e->base_entered = true;
+    if (block->kind == MC_BLOCK_FIRE) {
+        if (!hold_world(e, world))
+            return false;
+        if (e->work->mutation == NULL) {
+            e->work->mutation = malloc(sizeof(*e->work->mutation));
+            if (e->work->mutation == NULL) {
+                fail(e, MC_WORLD_STORAGE_ALLOCATION_FAILED, "Fire placement diagnostic allocation",
+                     true);
+                return false;
+            }
+            e->mutation = e->work->mutation;
+        }
+        mc_world_mutation_error *child = e->work->mutation;
+        mc_world_mutation_error_init(child);
+        mc_world_storage_error admission = {0};
+        const mc_world_storage_status status = mc_world_runtime_call_enter(world, &admission);
+        if (status != MC_WORLD_STORAGE_OK) {
+            fail(e, status, admission.operation, true);
+            e->cause = admission;
+            return false;
+        }
+        bool value;
+        const bool complete =
+            mc_world_mutation_fire_can_place(world, block, x, y, z, &value, child);
+        mc_world_runtime_call_leave(world);
+        if (!complete) {
+            fail(e, child->status, child->operation, true);
+            e->cause = child->cause;
+            e->registry = child->registry;
+            if (child->registry.status != MC_REGISTRY_OK)
+                registry_failed_in(e, e->work->registry);
+            if (child->fire_source_null || child->fire_array_index) {
+                e->source_exception = true;
+                e->exception_class = child->fire_source_null
+                                         ? "java/lang/NullPointerException"
+                                         : "java/lang/ArrayIndexOutOfBoundsException";
+                e->native_policy = false;
+            }
+            if (!capture(e))
+                return false;
+            return false;
+        }
+        e->site.pc = e->base.pc = 30;
+        e->base_returned = e->predicate_returned = true;
+        e->base_value = *out = value;
+        return true;
+    }
     if (strcmp(declaring, "vm") == 0)
         return torch_predicate(e, world, x, y, z, query_index, out);
     if (block->kind == MC_BLOCK_LEVER)

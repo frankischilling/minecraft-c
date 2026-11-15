@@ -231,8 +231,8 @@
       "sha256": "27c630007d453a0c1bdb3e81f3630bf1137dcd49b933066fdc114a2e02bcdaa9"
     },
     "src/world/runtime/entity_publication.c": {
-      "bytes": 56160,
-      "sha256": "c99cc55bf66073d9011b16232a7424ffd96c8143fb7d1c5a677cbb43e084e1f5"
+      "bytes": 56231,
+      "sha256": "95245feaae82fc2f972c831c48ff6fffc0380e9e687de3ecd084bb9a6dce2182"
     },
     "src/world/runtime/entity_publication_detailed_execution_internal.h": {
       "bytes": 1167,
@@ -339,12 +339,12 @@
       "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
     },
     "cmake/tests/world_query_controls.cmake": {
-      "bytes": 9364,
-      "sha256": "7abc03885eb12867d586482e1da1c6d45e40ed091f547bb1a4bb5df707dff35e"
+      "bytes": 9329,
+      "sha256": "fe49c20bad99406c6e2c589d011c4e9a2b666a17f589abaeb9e2daf839614ca3"
     },
     "src/world/runtime/collision/blocks.c": {
-      "bytes": 93853,
-      "sha256": "c4ddbf4a40933bf49ea9b8196faa93e76cbe7e7b74c850cfa8d4759e5d551eea"
+      "bytes": 93894,
+      "sha256": "abc85065417a0c276594807cc5494314fad3903fceca8c435998438353aea321"
     },
     "src/world/runtime/collision/blocks_execution_internal.h": {
       "bytes": 6979,
@@ -483,8 +483,8 @@
       "sha256": "1015bc8d556470005c26ee710a7c02bc1f191b81a6f8719ed8eab465b2bf23f5"
     },
     "src/world/runtime/movement.c": {
-      "bytes": 29751,
-      "sha256": "8a9b441be8788d514cfe896c49a024ab7380b9f85aaaf418d0ba1762f43c05f3"
+      "bytes": 29943,
+      "sha256": "254e167c898907879c70fccca62c635d37bba596bfe1fe764239bde52a0e983e"
     },
     "src/world/runtime/presentation.c": {
       "bytes": 23431,
@@ -519,8 +519,8 @@
       "sha256": "ca8ccf2c7e4dce77600b314797fa8c2dfcb3cc22e6590d3eaa1e5ac943d2d499"
     },
     "include/mc/world/runtime/movement.h": {
-      "bytes": 5465,
-      "sha256": "16b31d42c9899f07f81691d90d3ddc28750ee057ed6adbb7d75f4b7851e1fcfd"
+      "bytes": 5487,
+      "sha256": "4baebeb8607f9a46d6a4565e90969c88872d33b138483e9aa8911f32cde4734f"
     },
     "include/mc/world/runtime/world_access_error.h": {
       "bytes": 2776,

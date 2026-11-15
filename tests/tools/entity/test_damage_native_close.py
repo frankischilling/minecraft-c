@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[3]
 MODES = ('sound-pop', 'sound-capture', 'ally-success', 'ally-unreached')
 TIMEOUT = 180
 LIMIT = 4 * 1024 ** 2
-BUNDLE_SHA = '6c8fe4c683a0d60373eabad3e78fb09f5ab2d9c7c19eda35d342d30f5b3ecb62'
+BUNDLE_SHA = '0e9df00a0add3baeb0019cafcab6e043d91750de9db8b4d15f8e274fe053a185'
 OPEN_LINE = (b'DAMAGE_CLOSE_OPEN ally-pop-fault/ally-capture-fault/consumed-nonOK/'
              b'full-damage741/Source-parity/FPS')
 

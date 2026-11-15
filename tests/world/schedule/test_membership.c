@@ -479,10 +479,60 @@ cleanup:
     return result;
 }
 
+/* Independent JDK17 public HashSet observation for the actual two scheduled
+ * Fire keys. Same-bucket insertion order is independent of due/sequence. */
+static int test_linked_bucket_order(void) {
+    int result = 1;
+    mc_scheduled_membership *membership = NULL;
+    mc_scheduled_tick *a = NULL, *b = NULL, *equal = NULL;
+    mc_scheduled_tick_sequence sequence = {21};
+    const mc_scheduled_tick *entries[2] = {NULL, NULL};
+    size_t written = 0, bytes = 0;
+    bool changed = false;
+    CHECK(mc_scheduled_tick_create(&sequence, 15, 64, 15, 51, &a) == MC_SCHEDULED_TICK_OK);
+    CHECK(mc_scheduled_tick_create(&sequence, 16, 64, 15, 51, &b) == MC_SCHEDULED_TICK_OK);
+    CHECK(mc_scheduled_tick_create(&sequence, 15, 64, 15, 51, &equal) == MC_SCHEDULED_TICK_OK);
+    CHECK(mc_scheduled_tick_time_set(a, 1000) == MC_SCHEDULED_TICK_OK &&
+          mc_scheduled_tick_time_set(b, -2000) == MC_SCHEDULED_TICK_OK &&
+          mc_scheduled_tick_time_set(equal, 17) == MC_SCHEDULED_TICK_OK);
+    CHECK(mc_scheduled_membership_create(2, SIZE_MAX, &membership) == MC_SCHEDULED_MEMBERSHIP_OK);
+    CHECK(mc_scheduled_membership_add(membership, a, &changed) == MC_SCHEDULED_MEMBERSHIP_OK &&
+          changed);
+    CHECK(mc_scheduled_membership_add(membership, b, &changed) == MC_SCHEDULED_MEMBERSHIP_OK &&
+          changed);
+    CHECK(mc_scheduled_membership_snapshot(membership, entries, 2, &written) ==
+              MC_SCHEDULED_MEMBERSHIP_OK &&
+          written == 2 && entries[0] == a && entries[1] == b);
+    CHECK(mc_scheduled_membership_native_bytes(membership, &bytes) == MC_SCHEDULED_MEMBERSHIP_OK);
+    CHECK(mc_scheduled_membership_add(membership, equal, &changed) == MC_SCHEDULED_MEMBERSHIP_OK &&
+          !changed);
+    CHECK(mc_scheduled_membership_shift_time(membership, INT64_MAX) == MC_SCHEDULED_MEMBERSHIP_OK &&
+          contains_is(membership, equal, true) && bytes_is(membership, bytes));
+    CHECK(mc_scheduled_membership_snapshot(membership, entries, 2, &written) ==
+              MC_SCHEDULED_MEMBERSHIP_OK &&
+          written == 2 && entries[0] == a && entries[1] == b);
+    CHECK(mc_scheduled_membership_remove(membership, equal, &changed) ==
+              MC_SCHEDULED_MEMBERSHIP_OK &&
+          changed);
+    CHECK(mc_scheduled_membership_add(membership, a, &changed) == MC_SCHEDULED_MEMBERSHIP_OK &&
+          changed);
+    CHECK(mc_scheduled_membership_snapshot(membership, entries, 2, &written) ==
+              MC_SCHEDULED_MEMBERSHIP_OK &&
+          written == 2 && entries[0] == b && entries[1] == a);
+    result = 0;
+cleanup:
+    mc_scheduled_membership_destroy(membership);
+    mc_scheduled_tick_release(a);
+    mc_scheduled_tick_release(b);
+    mc_scheduled_tick_release(equal);
+    return result;
+}
+
 int main(void) {
     if (test_collisions_identity_shift_and_removal() != 0 ||
         test_growth_and_public_budget_boundaries() != 0 ||
-        test_zero_entry_and_invalid_outputs() != 0 || test_readonly_snapshot() != 0) {
+        test_zero_entry_and_invalid_outputs() != 0 || test_readonly_snapshot() != 0 ||
+        test_linked_bucket_order() != 0) {
         return 1;
     }
     printf("scheduled membership contract checks: %u\n", checks);

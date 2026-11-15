@@ -2,8 +2,8 @@
 
 #include <stdlib.h>
 
-/* Native representation of reached F membership semantics.
- * Bucket/collision traversal order is not a Java HashSet identity-order claim. */
+/* Reached F membership with default JDK17 spread and linked-bin order.
+ * Collision-tree/identity ordering remains outside this native representation. */
 typedef struct scheduled_membership_node {
     mc_scheduled_tick *tick;
     uint32_t hash;
@@ -140,7 +140,7 @@ mc_scheduled_membership_contains(const mc_scheduled_membership *membership,
     if (membership == NULL || query == NULL || out == NULL) {
         return MC_SCHEDULED_MEMBERSHIP_INVALID_ARGUMENT;
     }
-    uint32_t hash;
+    uint32_t hash = 0;
     const mc_scheduled_membership_status status = membership_hash(query, &hash);
     if (status != MC_SCHEDULED_MEMBERSHIP_OK) {
         return status;
@@ -193,7 +193,7 @@ mc_scheduled_membership_status mc_scheduled_membership_add(mc_scheduled_membersh
     if (membership == NULL || tick == NULL || added == NULL) {
         return MC_SCHEDULED_MEMBERSHIP_INVALID_ARGUMENT;
     }
-    uint32_t hash;
+    uint32_t hash = 0;
     mc_scheduled_membership_status status = membership_hash(tick, &hash);
     if (status != MC_SCHEDULED_MEMBERSHIP_OK) {
         return status;
@@ -270,13 +270,24 @@ mc_scheduled_membership_status mc_scheduled_membership_add(mc_scheduled_membersh
     if (grow) {
         for (size_t i = 0; i < membership->bucket_count; ++i) {
             scheduled_membership_node *current = membership->buckets[i];
+            scheduled_membership_node *heads[2] = {NULL, NULL};
+            scheduled_membership_node *tails[2] = {NULL, NULL};
             while (current != NULL) {
                 scheduled_membership_node *next = current->next;
                 const size_t bucket = membership_bucket(current->hash, next_bucket_count);
-                current->next = new_buckets[bucket];
-                new_buckets[bucket] = current;
+                const size_t side = bucket == i ? 0u : 1u;
+                current->next = NULL;
+                if (tails[side] == NULL)
+                    heads[side] = current;
+                else
+                    tails[side]->next = current;
+                tails[side] = current;
                 current = next;
             }
+            /* A doubled table splits each old chain into low/high chains
+             * without reversing either partition's insertion history. */
+            new_buckets[i] = heads[0];
+            new_buckets[i + membership->bucket_count] = heads[1];
         }
         scheduled_membership_node **old_buckets = membership->buckets;
         membership->buckets = new_buckets;
@@ -286,8 +297,11 @@ mc_scheduled_membership_status mc_scheduled_membership_add(mc_scheduled_membersh
     const size_t bucket = membership_bucket(hash, membership->bucket_count);
     node->tick = tick;
     node->hash = hash;
-    node->next = membership->buckets[bucket];
-    membership->buckets[bucket] = node;
+    node->next = NULL;
+    scheduled_membership_node **tail = &membership->buckets[bucket];
+    while (*tail != NULL)
+        tail = &(*tail)->next;
+    *tail = node;
     membership->count += 1;
     membership->allocation_bytes = final_bytes;
     *added = true;
@@ -300,7 +314,7 @@ mc_scheduled_membership_status mc_scheduled_membership_remove(mc_scheduled_membe
     if (membership == NULL || query == NULL || removed == NULL) {
         return MC_SCHEDULED_MEMBERSHIP_INVALID_ARGUMENT;
     }
-    uint32_t hash;
+    uint32_t hash = 0;
     const mc_scheduled_membership_status status = membership_hash(query, &hash);
     if (status != MC_SCHEDULED_MEMBERSHIP_OK) {
         return status;

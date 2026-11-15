@@ -13,6 +13,7 @@
 #include "particles/particle_internal.h"
 #include "player/player_internal.h"
 #include "position_internal.h"
+#include "primed_tnt/internal.h"
 #include "watcher_payload_internal.h"
 
 #include <float.h>
@@ -187,6 +188,12 @@ mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_ent
     size_t bytes;
     mc_entity_status status;
     switch (kind) {
+        case MC_ENTITY_CLASS_KIND_PRIMED_TNT:
+            if (classes->source != MC_ENTITY_CLIENT)
+                return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
+            bytes = sizeof(mc_primed_tnt_entity_object);
+            status = mc_entity_base_class_initialize(classes, error);
+            break;
         case MC_ENTITY_CLASS_KIND_ARROW:
             if (classes->source != MC_ENTITY_CLIENT)
                 return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT, operation, 0);
@@ -247,7 +254,11 @@ mc_entity_status mc_entity_allocate_canonical(mc_entity_classes *classes, mc_ent
     if (storage == NULL)
         return error->status;
     mc_entity *entity;
-    if (kind == MC_ENTITY_CLASS_KIND_ARROW) {
+    if (kind == MC_ENTITY_CLASS_KIND_PRIMED_TNT) {
+        mc_primed_tnt_entity_object *object = storage;
+        *object = (mc_primed_tnt_entity_object){0};
+        entity = &object->entity;
+    } else if (kind == MC_ENTITY_CLASS_KIND_ARROW) {
         mc_arrow_entity_object *object = storage;
         *object = (mc_arrow_entity_object){0};
         entity = &object->entity;
@@ -497,7 +508,7 @@ mc_entity_status mc_entity_construct_base(mc_entity *entity, mc_world_runtime *w
     if (status != MC_ENTITY_OK)
         return status;
     entity->base_bytecode = 224;
-    /* Actual hl/ez, ju/gl, yl/pr and client sl/xw/C hooks are empty. DC and concrete
+    /* Actual hl/ez, ju/gl, yl/pr and client qw/sl/xw/C hooks are empty. DC and concrete
      * Mob hooks dispatch here, before any Living/subclass initialization. */
     if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
         status = mc_local_player_watcher_initialize(entity, error);
@@ -694,7 +705,9 @@ void mc_entity_terminal_pin(mc_entity *entity) {
 
 static void destroy_entity(mc_entity *entity) {
     mc_entity_classes *classes = entity->classes;
-    const size_t bytes = mc_entity_has_arrow(entity) ? sizeof(mc_arrow_entity_object)
+    const size_t bytes = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PRIMED_TNT)
+                             ? sizeof(mc_primed_tnt_entity_object)
+                         : mc_entity_has_arrow(entity) ? sizeof(mc_arrow_entity_object)
                          : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART)
                              ? sizeof(mc_minecart_entity_object)
                          : mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)

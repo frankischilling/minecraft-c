@@ -258,8 +258,8 @@
       "sha256": "5a20cf55f40ed6f1b30dd6837ebe805321ad7bf909cd038cfe902800e81d0031"
     },
     "include/mc/world/runtime/entities.h": {
-      "bytes": 7928,
-      "sha256": "eb54a753c7fd685aa9b0c3233180daf34ed0c570ed1c401f7b118255a9e06433"
+      "bytes": 7960,
+      "sha256": "2797d01e4c370db3f549562c8df1145063d96237130b7509ee92e2a8e70c0d5d"
     },
     "include/mc/world/runtime/entity_errors.h": {
       "bytes": 2125,
@@ -282,8 +282,8 @@
       "sha256": "b04e86d701c46a2c2ca54fe716375b44aedeef992244cefcb074ad6f9e2164db"
     },
     "include/mc/world/schedule/membership.h": {
-      "bytes": 6458,
-      "sha256": "352e1723d638d4666de2d23de427df785c3a6a424e5de636dad772ffdd3b495e"
+      "bytes": 6696,
+      "sha256": "3d4208208889ecd4d1b2352ae916fd98177767c0ffd827138e2b540622bfd34f"
     },
     "include/mc/world/schedule/ordered.h": {
       "bytes": 6579,

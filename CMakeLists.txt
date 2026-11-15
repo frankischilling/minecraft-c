@@ -726,6 +726,11 @@ add_library(mc_simulation STATIC
     src/world/runtime/mutation/redstone/lifecycle.c
     src/world/runtime/mutation/ticks.c
     src/world/runtime/mutation/fluids.c
+    src/world/runtime/mutation/fire/fire.c
+    src/world/runtime/mutation/portal.c
+    src/world/runtime/mutation/stairs/stairs.c
+    src/world/runtime/mutation/tnt/activation.c
+    src/entity/primed_tnt/construction.c
     src/world/runtime/mutation/falling.c
     src/world/runtime/mutation/snow.c
     src/world/runtime/mutation/torch.c
@@ -2053,6 +2058,11 @@ if(BUILD_TESTING)
     target_link_libraries(mc_stack_values_probe PRIVATE mc_registry mc_build_options)
 
     add_executable(mc_test_entity tests/entity/test_entity.c)
+    add_executable(mc_test_primed_tnt_construction tests/entity/primed_tnt/test_construction.c)
+    target_include_directories(mc_test_primed_tnt_construction PRIVATE src src/platform/time)
+    target_link_libraries(mc_test_primed_tnt_construction PRIVATE
+        mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME entity.primed_tnt_construction COMMAND mc_test_primed_tnt_construction)
     target_include_directories(mc_test_entity PRIVATE src/entity src/core/java)
     target_link_libraries(mc_test_entity PRIVATE mc_simulation mc_c_atomics mc_build_options)
     add_test(NAME entity.construction COMMAND mc_test_entity)
@@ -2142,6 +2152,21 @@ if(BUILD_TESTING)
 
     add_executable(mc_scheduled_ordered_probe tests/world/schedule/ordered_probe.c)
     target_link_libraries(mc_scheduled_ordered_probe PRIVATE mc_world mc_build_options)
+    add_executable(mc_scheduled_membership_probe tests/world/schedule/membership_probe.c)
+    target_link_libraries(mc_scheduled_membership_probe PRIVATE mc_world mc_build_options)
+    foreach(_mc_membership_mode IN ITEMS normal optimized)
+        set(_mc_membership_options -B)
+        if(_mc_membership_mode STREQUAL "optimized")
+            list(APPEND _mc_membership_options -O)
+        endif()
+        add_test(NAME "world.scheduled_membership_reference_${_mc_membership_mode}"
+            COMMAND Python3::Interpreter ${_mc_membership_options}
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/java/compare_scheduled_membership.py"
+            --executable "$<TARGET_FILE:mc_scheduled_membership_probe>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/scheduled-membership-${_mc_membership_mode}")
+        set_tests_properties("world.scheduled_membership_reference_${_mc_membership_mode}" PROPERTIES
+            LABELS "public;fixture;world;reference;java" TIMEOUT 90)
+    endforeach()
 
     add_executable(mc_test_stored_chunk tests/world/storage/test_chunk.c)
     target_link_libraries(mc_test_stored_chunk PRIVATE mc_persistence mc_build_options)
@@ -3011,6 +3036,28 @@ if(BUILD_TESTING)
     target_link_libraries(mc_piston_geometry_probe PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_fluids tests/world/runtime/test_fluids.c)
+    add_executable(mc_test_world_fire tests/world/runtime/test_fire.c)
+    target_include_directories(mc_test_world_fire PRIVATE src src/platform/time)
+    target_link_libraries(mc_test_world_fire PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME world.fire_reference COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/fire/run_native.py"
+        --executable "$<TARGET_FILE:mc_test_world_fire>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-fire-reference")
+    set_tests_properties(world.fire_reference PROPERTIES
+        LABELS "public;integration;world;entity;reference;replay" TIMEOUT 600)
+    foreach(_mc_fire_mode IN ITEMS normal optimized)
+        set(_mc_fire_options -B)
+        if(_mc_fire_mode STREQUAL "optimized")
+            list(APPEND _mc_fire_options -O)
+        endif()
+        foreach(_mc_fire_reader IN ITEMS packet native)
+            add_test(NAME "tools.fire_${_mc_fire_reader}_${_mc_fire_mode}" COMMAND Python3::Interpreter
+                ${_mc_fire_options}
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/fire/test_${_mc_fire_reader}.py")
+            set_tests_properties("tools.fire_${_mc_fire_reader}_${_mc_fire_mode}" PROPERTIES
+                LABELS "public;unit;world;reference;tools" TIMEOUT 180)
+        endforeach()
+    endforeach()
     target_link_libraries(mc_test_world_fluids PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
     add_executable(mc_test_world_falling tests/world/runtime/test_falling.c)
@@ -4685,6 +4732,19 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/reference-java-int-set-replay")
     set_tests_properties(core.java_int_set_replay PROPERTIES
         LABELS "public;fixture;java" TIMEOUT 90)
+    foreach(_mc_set_order_mode IN ITEMS normal optimized)
+        set(_mc_set_order_options -B)
+        if(_mc_set_order_mode STREQUAL "optimized")
+            list(APPEND _mc_set_order_options -O)
+        endif()
+        add_test(NAME "core.world_set_order_${_mc_set_order_mode}" COMMAND "${Python3_EXECUTABLE}"
+            ${_mc_set_order_options}
+            "${CMAKE_CURRENT_SOURCE_DIR}/scripts/reference/java/compare_world_set_order.py"
+            --executable "$<TARGET_FILE:mc_java_int_set_probe>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-set-order-${_mc_set_order_mode}")
+        set_tests_properties("core.world_set_order_${_mc_set_order_mode}" PROPERTIES
+            LABELS "public;fixture;java;world;reference" TIMEOUT 90)
+    endforeach()
 
     add_test(NAME world.chunk_pending_replay
         COMMAND "${Python3_EXECUTABLE}"

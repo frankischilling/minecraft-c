@@ -5,7 +5,9 @@ addition, neighbor and tick dispatch in
 [fluids.c](../../src/world/runtime/mutation/fluids.c). This is partial synchronous
 gameplay support. Selected Block quantity/item/damage bodies, drop construction
 and [actual Entity publication](entities.md) execute. Moving-piston TileEntity
-lookup, fire/portal effects and untyped WorldAccess receivers remain dependencies where reached. Population and
+lookup and untyped WorldAccess receivers remain dependencies where reached.
+Ordinary client ignition now enters the actual [Fire and Portal bodies](fire.md).
+Population and
 complete original/native fluid parity are not established by these bodies alone.
 
 ## Source behavior
@@ -39,8 +41,9 @@ its two Math draws. Float operations preserve their original rounding points.
 Lava contact checks water in -Z, +Z, -X, +X, +Y order and short-circuits. Contact
 can fizz even when metadata does not select a replacement. Still-lava ignition
 retains the original cumulative coordinate walk and six neighbor material tests.
-Any reached unfinished fire, portal or other concrete handler fails explicitly
-after its earlier effects.
+Ordinary client ignition preserves reached Fire addition, Portal creation and
+their recursive effects. Other unfinished concrete handlers fail explicitly
+after their earlier effects; owned Fire execution remains a separate boundary.
 
 ## World dependencies and ownership
 

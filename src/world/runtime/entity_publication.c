@@ -634,6 +634,7 @@ static bool enter_entity(mc_world_runtime *world, mc_entity *entity, mc_world_en
                            "World Entity application class");
     if (entity != NULL && !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PRIMED_TNT) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_C) && !mc_entity_has_mob(entity) &&

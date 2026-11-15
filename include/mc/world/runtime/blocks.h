@@ -111,6 +111,7 @@ typedef struct mc_world_solid_support_error {
     mc_world_storage_status status;
     const char *operation;
     unsigned int bytecode;
+    bool source_null;
     mc_world_storage_error cause;
     mc_registry_error registry;
 } mc_world_solid_support_error;

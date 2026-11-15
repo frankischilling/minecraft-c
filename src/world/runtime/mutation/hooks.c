@@ -1,6 +1,9 @@
+#include "fire/fire_internal.h"
 #include "mutation_internal.h"
 #include "plants/plants_internal.h"
+#include "portal_internal.h"
 #include "redstone_torch/redstone_torch_internal.h"
+#include "stairs/stairs_internal.h"
 #include "world_execution_internal.h"
 
 #include "../../../block/registry/registry_internal.h"
@@ -243,7 +246,9 @@ static bool block_removed(mc_world_runtime *world, const mc_block *block, int32_
                        ? mc_world_mutation_piston_removed(world, block, x, y, z, error)
                        : unjoined(owned, "Moving Piston removal requires owned execution");
         case MC_BLOCK_STAIRS:
-            return unavailable(world, block, "ss", "lu", "Block removal hook", error, owned);
+            return owned == NULL && block->classes->options.side == MC_REGISTRY_CLIENT
+                       ? mc_world_mutation_stairs_removed(world, block, x, y, z, error)
+                       : unavailable(world, block, "ss", "lu", "Block removal hook", error, owned);
         case MC_BLOCK_CHEST:
             return owned == NULL
                        ? tile_entity_hook(world, block, x, y, z, false, error)
@@ -380,9 +385,14 @@ static bool block_added(mc_world_runtime *world, const mc_block *block, int32_t 
                                      : unjoined(owned, "Torch addition requires owned execution");
             return unavailable(world, block, "vm", "np", "Block addition hook", error, owned);
         case MC_BLOCK_FIRE:
-            return unavailable(world, block, "yq", "pt", "Block fire addition hook", error, owned);
+            return owned == NULL && block->classes->options.side == MC_REGISTRY_CLIENT
+                       ? mc_world_mutation_fire_added(world, block, x, y, z, error)
+                       : unavailable(world, block, "yq", "pt", "Block fire addition hook", error,
+                                     owned);
         case MC_BLOCK_STAIRS:
-            return unavailable(world, block, "ss", "lu", "Block addition hook", error, owned);
+            return owned == NULL && block->classes->options.side == MC_REGISTRY_CLIENT
+                       ? mc_world_mutation_stairs_added(world, block, x, y, z, error)
+                       : unavailable(world, block, "ss", "lu", "Block addition hook", error, owned);
         case MC_BLOCK_REDSTONE:
             return owned == NULL ? mc_world_mutation_redstone_added(world, block, x, y, z, error)
                                  : unjoined(owned, "Redstone addition requires owned execution");
@@ -517,7 +527,10 @@ static bool block_neighbor(mc_world_runtime *world, const mc_block *block, int32
                                       : unjoined(owned, "Torch neighbor requires retained caller");
             return unavailable(world, block, "vm", "np", "Block neighbor hook", error, owned);
         case MC_BLOCK_FIRE:
-            return unavailable(world, block, "yq", "pt", "Block fire neighbor hook", error, owned);
+            return owned == NULL && block->classes->options.side == MC_REGISTRY_CLIENT
+                       ? mc_world_mutation_fire_neighbor(world, block, x, y, z, source_id, error)
+                       : unavailable(world, block, "yq", "pt", "Block fire neighbor hook", error,
+                                     owned);
         case MC_BLOCK_REDSTONE:
             return owned == NULL
                        ? mc_world_mutation_redstone_neighbor(world, block, x, y, z, source_id,
@@ -566,7 +579,9 @@ static bool block_neighbor(mc_world_runtime *world, const mc_block *block, int32
                        ? mc_world_mutation_snow_neighbor(world, block, x, y, z, source_id, error)
                        : unjoined(owned, "Snow neighbor hook requires owned execution");
         case MC_BLOCK_PORTAL:
-            return unavailable(world, block, "ak", "z", "Block neighbor hook", error, owned);
+            return owned == NULL && block->classes->options.side == MC_REGISTRY_CLIENT
+                       ? mc_world_mutation_portal_neighbor(world, block, x, y, z, source_id, error)
+                       : unavailable(world, block, "ak", "z", "Block neighbor hook", error, owned);
         case MC_BLOCK_CAKE:
             return unavailable(world, block, "um", "mw", "Block neighbor hook", error, owned);
         case MC_BLOCK_REPEATER:

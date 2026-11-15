@@ -122,7 +122,7 @@ if(BUILD_TESTING AND TARGET mc_test_world_kernel_loader_execution
                 --work-dir "${CMAKE_CURRENT_BINARY_DIR}/world-query-controls")
             set_tests_properties("world.${_mc_query_name}_${_mc_query_mode}" PROPERTIES
                 LABELS "public;integration;world;storage;ownership;filesystem"
-                RESOURCE_LOCK world_query_controls TIMEOUT 420)
+                TIMEOUT 420)
         endforeach()
     endforeach()
     unset(_mc_query_kind)

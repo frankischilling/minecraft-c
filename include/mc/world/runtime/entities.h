@@ -25,7 +25,8 @@ mc_entity_status mc_world_runtime_classes_bind_entities(mc_world_runtime_classes
  * World.b before invoking the concrete WorldAccess hook. Duplicates own separate
  * native holds. It does not change Entity.world or precheck source membership.
  *
- * This runtime publishes actual Item, FallingSand, Minecart, LocalPlayer and Mob owners.
+ * This runtime publishes actual Item, PrimedTNT, FallingSand, Minecart,
+ * LocalPlayer, Arrow, Lightning and Mob owners.
  * A real LocalPlayer bypasses presence, appends lowercase World.d, updates J
  * through fd.y, then enters the same Chunk/b/WorldAccess sequence. It retains
  * d/J even when a later getter, Chunk operation or callback fails. The live WorldAccess

@@ -2,6 +2,7 @@
 #define MC_WORLD_RUNTIME_MUTATIONS_H
 
 #include "mc/entity/entity.h"
+#include "mc/world/dimension/world_chunk_manager.h"
 #include "mc/world/info/info.h"
 #include "mc/world/runtime/collision/boxes.h"
 #include "mc/world/runtime/collision/entities.h"
@@ -33,6 +34,15 @@ typedef enum mc_world_redstone_torch_collection_failure {
     MC_WORLD_REDSTONE_TORCH_COLLECTION_INDEX,
     MC_WORLD_REDSTONE_TORCH_COLLECTION_NATIVE
 } mc_world_redstone_torch_collection_failure;
+
+/* Current Fire callers and their actual rain child. These are reached sites,
+ * not a recursive source stack or an execution/work limit. */
+typedef struct mc_world_fire_sites {
+    unsigned int added, neighbor, tick, can_place, neighbors, flammable;
+    unsigned int encouragement, spread, burn;
+    unsigned int rain_bytecode, raining_bytecode, rain_strength_bytecode;
+    unsigned int dimension_bytecode, biome_bytecode;
+} mc_world_fire_sites;
 
 typedef struct mc_world_mutation_error {
     mc_world_storage_status status;
@@ -75,6 +85,10 @@ typedef struct mc_world_mutation_error {
     bool lever_source_null;
     bool ladder_source_null;
     bool bed_source_null;
+    bool fire_source_null, fire_array_index, stairs_source_null;
+    mc_world_fire_sites fire;
+    mc_world_provider_status fire_dimension;
+    mc_world_chunk_manager_error fire_biome;
     /* Pressure contact/tick, private update and lifecycle calls are separate
      * source frames. Bounds and nearby retain the actual reached children. */
     unsigned int pressure_contact_bytecode, pressure_tick_bytecode, pressure_bytecode;

@@ -148,6 +148,7 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk_stat
     mc_world_nearby_error *lower = &error->nearby;
     lower->query.provider_bytecode = 6;
     if (world->fields.v == NULL) {
+        lower->query.source_null = true;
         fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Collision provider receiver");
         return false;
     }

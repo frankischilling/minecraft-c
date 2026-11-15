@@ -763,7 +763,7 @@ static bool tt_big_trial(fixture *f, size_t side, size_t owner_bytes, tt_big_con
     CHECK(mc_world_runtime_height(w, 8, 8, &y, &height_error) == MC_WORLD_STORAGE_OK && y == 64 &&
           tt_profile_is(f->profile, &profile, 0) && tt_big_quiescent(tree) && tree->world == NULL &&
           mc_test_java_random_equal(&tree->random, &constructor_random));
-    int64_t seed;
+    int64_t seed = 0;
     CHECK(tt_big_seed(height, control == TT_BIG_SPREAD, &seed));
     mc_java_random random, expected;
     tt_random(&random, seed);

@@ -7,36 +7,39 @@ the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining w
 
 ## Current client work
 
-[Lava mixing and fizz](world/fluids.md#owned-lava-mixing-during-player-wake)
-now share retained Player wake execution. Reached Obsidian/Cobblestone writes,
-height callbacks, light queues, recursive Water conversion and both possible
-fizz passes preserve their real order. Source callback exceptions and native
-refusals keep separate diagnostics and completed effects through checked
-cleanup.
+Ordinary client [Fire source bodies](world/fire.md) now run through scheduled
+and Player-centered random World ticks. Fire addition, support loss, rain,
+burning and spread use the actual World queries, quiet age write and notifying
+block writes. Reached Portal creation/collapse, delegated Stairs hooks and
+immediate TNT construction/publication/sound share those calls.
 
-Two fresh unchanged-original VMs agree on 29 prepared profiles. Native replay
-pairs selected before/after Player and Random state, all five complete Chunk
-planes, Lava/Water cells, light queues, scheduled-class state and ordered
-callbacks. Five ownership controls cover FP admission, sound/particle child
-scopes and the separate Java Math and Minecraft MathHelper dependencies.
+Two fresh unchanged-original VMs agree on 71 prepared profiles. Native replay
+on Windows and Linux matches 88,077 selected original scalars, including all
+five complete Chunk planes, Random streams, ordered callbacks, scheduled queues and TNT
+constructor fields. Three separate native lifetime controls retain failed
+callback receipts until the World tick retires.
 
-The [current test record](testing.md#lava-mixing-during-player-wake) separates
-these original pairs, native controls and regression scopes. Earlier
+The audit also corrected scheduled membership insertion and resize order.
+Independent JDK17 observations qualify the reached linked-bin histories;
+collision-tree identity order remains unqualified. Player-chunk set traversal
+already matched the observed Java order and needed no runtime change.
+
+The full Windows MSVC Release suite passes 1,256 tests in 364.40 seconds.
+Focused Linux Clang ASan/UBSan/leak checks pass 80 tests plus the revised plant
+lifecycle case; strict GCC compilation covers 25 changed C units. All sources
+remain frozen during their respective runs. Releasing an unnecessary lock lets
+56 isolated World query controls pass with eight jobs in 52.54 seconds.
+
+The [test record](testing.md#fire-source-bodies) keeps the original comparisons,
+native controls and regression results separate. Earlier
+[Lava wake](testing.md#lava-mixing-during-player-wake),
 [Cactus/Reeds](testing.md#cactus-and-reeds-during-player-wake) and
-[flower-family evidence](testing.md#remaining-flower-family-neighbors-during-player-wake)
-keep their own qualification. Natural encounters, complete owned ticks,
-original audiovisual equality and FPS remain unfinished.
-
-The full Windows MSVC Release suite passes 1,246 tests without skips. Focused
-Clang ASan/UBSan/leak-detection passes 112 tests; strict GCC compilation passes
-the new fixture and three changed runtime units. Windows and Linux each match
-9,811 selected original scalars plus 748 from supported ownership controls.
-
-Fresh monitor-2 Bed and Arrow/Pig scenes pass independent NBT readback, six
-inspected captures and complete window cleanup. The
-[preceding hosted checkpoint](https://github.com/frankischilling/minecraft-c/actions/runs/43670553109)
-passes formatting, Windows, GCC and Clang. New results belong to their recorded
-source snapshots and do not qualify unrestricted play.
+[flower-family](testing.md#remaining-flower-family-neighbors-during-player-wake)
+evidence retains its own scope. Retained owned Fire execution, delayed TNT
+ticks/explosions, Portal travel, unrestricted play, original audiovisual equality
+and measured FPS remain unfinished. Fresh monitor-2 graphical qualification
+also remains incomplete; the test record preserves failed Bed and Arrow/Pig
+opportunities and their separate diagnostic evidence.
 
 ## Next single-player work
 

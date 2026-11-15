@@ -110,6 +110,13 @@ static bool tick(mc_world_runtime *w, mc_scheduled_tick *record,
                 return true;
             e->call.registry = e->call.tick.registry;
             (void)cause(w, e, e->call.tick.cause);
+            if (e->call.tick.fire_source_null || e->call.tick.stairs_source_null ||
+                e->call.tick.fire_array_index) {
+                e->native_policy = false;
+                e->exception_class = e->call.tick.fire_array_index
+                                         ? "java/lang/ArrayIndexOutOfBoundsException"
+                                         : "java/lang/NullPointerException";
+            }
             /* The actual failed child may carry a null-sound failure by
              * value, without a concrete producer occurrence to retain. */
             const char *exception = NULL;

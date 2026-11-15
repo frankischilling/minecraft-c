@@ -819,7 +819,7 @@ static bool light_and_height(fixture *f, size_t side) {
     const mc_world_storage_status bad_height =
         mc_world_runtime_sky_visible(w, 8, 0, 8, &visible, &e);
     chunk->h = saved_h;
-    CHECK(bad_height == MC_WORLD_STORAGE_UNSUPPORTED_STATE && visible &&
+    CHECK(bad_height == MC_WORLD_STORAGE_UNSUPPORTED_STATE && visible && e.source_null &&
           failure_is(w, &e, 19, 10, MC_REGISTRY_OK));
     CHECK(mc_chunk_pending_contains(f->providers[side].pending, mc_chunk_cache_key(0, 0)));
     ok = true;
@@ -1807,12 +1807,18 @@ static bool nullable_block_provider(fixture *f, size_t side) {
         mc_world_runtime_metadata_set_quiet(w, 8, 64, 8, 7, &changed, &write_error);
     const mc_world_storage_status o =
         mc_world_runtime_block_get(w, 8, 128, 8, &outside, &outside_error);
+    mc_world_query_error sky_error;
+    bool visible = true;
+    const mc_world_storage_status sky =
+        mc_world_runtime_sky_visible(w, 8, 64, 8, &visible, &sky_error);
     w->fields.v = provider;
     CHECK(b == MC_WORLD_STORAGE_UNSUPPORTED_STATE && m == b && s == b && block == -123 &&
           metadata == -456 && changed && block_error.status == b && metadata_error.status == b &&
           write_error.status == b);
     CHECK(o == MC_WORLD_STORAGE_OK && outside == 0 && outside_error.status == o &&
           outside_error.operation == NULL && w->active_calls == 0 && w->local_leases == 0);
+    CHECK(sky == MC_WORLD_STORAGE_UNSUPPORTED_STATE && visible && sky_error.source_null &&
+          sky_error.bytecode == 7 && sky_error.provider_bytecode == 6);
     ok = true;
 cleanup:
     return ok;

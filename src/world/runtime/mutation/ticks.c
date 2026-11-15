@@ -1,6 +1,8 @@
+#include "fire/fire_internal.h"
 #include "mutation_internal.h"
 #include "plants/plants_internal.h"
 #include "redstone_torch/redstone_torch_internal.h"
+#include "stairs/stairs_internal.h"
 
 #include "../../../block/registry/registry_internal.h"
 #include "mc/core/java/java.h"
@@ -104,9 +106,13 @@ bool mc_world_mutation_block_tick(mc_world_runtime *world, const mc_block *block
                 return mc_world_mutation_torch_tick(world, block, x, y, z, random, error);
             return tick_unavailable(world, block, "vm", "np", error);
         case MC_BLOCK_FIRE:
-            return tick_unavailable(world, block, "yq", "pt", error);
+            return block->classes->options.side == MC_REGISTRY_CLIENT
+                       ? mc_world_mutation_fire_tick(world, block, x, y, z, random, error)
+                       : tick_unavailable(world, block, "yq", "pt", error);
         case MC_BLOCK_STAIRS:
-            return tick_unavailable(world, block, "ss", "lu", error);
+            return block->classes->options.side == MC_REGISTRY_CLIENT
+                       ? mc_world_mutation_stairs_tick(world, block, x, y, z, random, error)
+                       : tick_unavailable(world, block, "ss", "lu", error);
         case MC_BLOCK_CROPS:
             return mc_world_mutation_plant_tick(world, block, x, y, z, random, error);
         case MC_BLOCK_FARMLAND:

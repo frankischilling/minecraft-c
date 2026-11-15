@@ -30,6 +30,7 @@ typedef struct mc_world_movement_error {
     /* Typed actual List receiver fault, before any WorldAccess invocation.
      * This VALUE carries no producer/receipt and is not a generic Source flag. */
     mc_world_access_source_fault world_access_fault;
+    bool source_null;
     mc_world_access_failure world_access_failure;
 } mc_world_movement_error;
 

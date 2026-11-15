@@ -430,6 +430,13 @@ static bool mutation_fail(mc_world_random_tick_call *c) {
                     "World random tick WorldAccess failure capture", true, NULL);
     (void)storage_fail(c, c->mutation.cause);
     registry_exception(c, c->state.world->classes->registry, &c->mutation.registry);
+    if (c->mutation.fire_source_null || c->mutation.stairs_source_null ||
+        c->mutation.fire_array_index) {
+        c->error.native_policy = false;
+        c->error.exception_class = c->mutation.fire_array_index
+                                       ? "java/lang/ArrayIndexOutOfBoundsException"
+                                       : "java/lang/NullPointerException";
+    }
     const char *exception = NULL;
     if (mc_world_access_failure_source_exception(&c->mutation.world_access_failure, &exception)) {
         c->error.native_policy = false;

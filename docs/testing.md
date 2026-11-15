@@ -10137,3 +10137,97 @@ files/fragments. Source bindings pass 14,952 entries plus five live bundles.
 The temporary Linux source/build is removed after retaining receipts. Only
 result prose and its current bindings change after the full Windows run;
 runtime code, native fixtures and the sealed original packet remain byte-identical.
+
+## Fire source bodies
+
+The [Fire packet](../tests/reference/world/fire/README.md) records 71 declared
+calls to unchanged client Fire bodies and their reached children. Two fresh
+JDK17 VMs produce identical complete streams. The independent Java-free model
+checks actual placement, addition, neighbor/tick, Lava ignition, Portal frame
+creation and TNT priming, including real callback exceptions, null source
+fields and the complete selected failure prefixes. No original getter, class
+or method is replaced.
+
+Most profiles use four genuine loaded Chunks. The normal random-work profile
+constructs and publishes one actual LocalPlayer at `(-.5,64,32.5)`, then visits
+the full 361-Chunk footprint through `World.l`: 28,880 samples and exactly one
+Fire tick. All four or 361 complete five-plane inventories are compared before
+and after, alongside both Fire arrays, World/Math Random and Gaussian cache,
+weather, World time/flags, light regions, scheduled queues, class state,
+selected Player/TNT fields and ordered callbacks. Original scheduled and
+Entity class initialization/counters are explicit native inputs before Player
+allocation and prequeue work. Observed IDs and ordinals are not normalized.
+
+The current MSVC native replay passes all 71 original profiles and compares
+88,077 selected scalars. All ten replay inputs remain unchanged. Three
+World-tick interruption cases check actual retained callback receipts: early
+retirement returns BUSY without changing the hold count, caller retirement
+leaves the external occurrence, and final retirement consumes it once. Two of
+these cases interrupt TNT publication and Entity sound after the World time
+advance and scheduled-record removal; the retained Source exception stops the
+caller before random Chunk work. These receipt checks apply to the existing
+retained World scheduler, while ordinary Fire diagnostics borrow their producer
+graph.
+
+Scheduled `World.F` needed a real linked-bin ordering correction: insertions
+append and growth preserves each low/high chain's relative order. The
+[scheduled-membership fixture](../tests/reference/java/scheduled_membership_fixtures.json)
+and [replay](../scripts/reference/java/compare_scheduled_membership.py) keep this
+check separate from Fire projection. Collision-tree/identity-dependent F order
+is unqualified. The separate [World Set observation](../tests/reference/java/world_set_order_fixtures.json)
+uses the actual 361-Chunk `World.P` domain; its existing Integer Set runtime
+and older goldens require no change.
+
+The [runtime contract](world/fire.md) describes ordinary client Fire, Portal,
+Stairs delegation and synchronous TNT priming. Canonical owned mutation paths,
+server behavior, delayed TNT fuse/explosion/NBT/rendering/collision work,
+Portal travel, Flint and Steel use, natural encounters, original audiovisual
+equality and FPS remain separate. Native projection omits Java stack objects,
+unused default Entity Random entropy, cold IN initialization and unexposed
+fields. The component replay alone does not establish a full regression-suite
+or Linux result.
+
+The focused Clang18 Debug run passes 80 tests in 105.28 seconds with address,
+undefined-behavior and leak sanitizers. Its source snapshot remains unchanged;
+71 original/native profiles match the same 88,077 selected scalars and three
+receipt controls as Windows. Detailed captures, source/product hashes and test
+logs are retained before temporary source and build cleanup. Strict GCC13 `-O2`
+compilation passes the 24 changed C units, with a separate strict compilation
+and sanitized run for the revised plant lifecycle fixture.
+
+The first broad MSVC Release run executes all 1,256 cases: 1,255 pass, with all
+6,188 input files unchanged. The one failure expects the former Fire neighbor
+frontier during Cactus growth. Its replacement checks completed client growth,
+unsupported Fire removal and the exact Sand request reached by the notifying
+age reset: `(10,79,9)`, ID 12, due time plus three, one sequence increment and
+the same record owner in both scheduled sets. The server retains its existing
+`JE:74 -> PT:0` failure prefix. The revised test passes on Windows and sanitized
+Linux, preserving Entity count, Random streams, World flag and quiescent holds.
+
+The final Windows MSVC Release rerun passes all 1,256 tests in 364.40 seconds,
+without failures, errors, skips, duplicate names or unrun cases. All 6,189
+source inputs stay unchanged through that run. Result prose and current source
+bindings are updated afterward; runtime code, fixtures and the sealed original
+packet remain unchanged.
+
+The isolated preceding dispatcher control completes all 71 native processes
+with exact prepared inputs. None matches the original outcome: 68 fail effect
+comparison and three fail retained-receipt validation. Six declared ordinary
+successes specifically stop at the old Fire entry. Process crashes do not count
+as successful negative controls.
+
+An audit of [query-control scheduling](performance/query-controls.md) releases
+an unnecessary shared lock for 56 independently owned fixtures. All 56 pass
+with eight jobs in 52.54 seconds; the locked cases consumed 462.03 summed
+seconds within the preceding broad run. Commands, assertions, timeouts and
+immutable-input guards remain unchanged.
+
+Fresh monitor-2 graphical qualification remains incomplete. One Bed opportunity
+reaches genuine dawn but fails its final terrain/HUD predicate; another fails
+the placement hit check. An Arrow/Pig opportunity records Chrome as foreground
+instead of the game. A separate private diagnostic Bed run completes sleep,
+wake, save and cleanup, with every dawn predicate true and three inspected
+frames; its normal runner still rejects the intentional diagnostic stderr.
+Wake rotations differ between opportunities, and the original failed predicate
+was not recorded. These captures establish no runtime cause or general input,
+focus, graphical or FPS acceptance. Acceptance predicates were kept intact.

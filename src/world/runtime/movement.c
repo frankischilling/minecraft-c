@@ -188,6 +188,7 @@ mc_world_storage_status mc_world_runtime_area_loaded(mc_world_runtime *world, in
 }
 
 static bool query_failure(mc_world_movement_error *frame) {
+    frame->source_null = frame->query.source_null;
     frame->registry = frame->query.registry;
     frame->status = frame->query.status;
     frame->operation = frame->query.operation;
@@ -203,8 +204,10 @@ static bool rain_biome(mc_world_runtime *world, int32_t x, int32_t z, bool *valu
     frame->dimension_bytecode = 4;
     mc_world_provider_fields dimension;
     frame->dimension = mc_world_provider_fields_get(world->fields.t, &dimension);
-    if (frame->dimension != MC_WORLD_PROVIDER_OK)
+    if (frame->dimension != MC_WORLD_PROVIDER_OK) {
+        frame->source_null = world->fields.t == NULL;
         return fail(frame, dimension_status(frame->dimension), "World rain Dimension receiver");
+    }
     mc_world_chunk_manager *const manager = dimension.b;
     if (manager != NULL) {
         frame->dimension = mc_world_chunk_manager_retain(manager);
@@ -215,6 +218,7 @@ static bool rain_biome(mc_world_runtime *world, int32_t x, int32_t z, bool *valu
     frame->bytecode = 39;
     bool completed = false;
     if (manager == NULL) {
+        frame->source_null = true;
         (void)fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World rain point receiver");
         goto leave;
     }
@@ -232,6 +236,7 @@ static bool rain_biome(mc_world_runtime *world, int32_t x, int32_t z, bool *valu
     frame->bytecode = 46;
     const mc_biome_fields *fields = mc_biome_fields_get(biome);
     if (fields == NULL) {
+        frame->source_null = biome == NULL;
         (void)registry_null(world, frame, "World rain Biome.c receiver");
         goto leave;
     }

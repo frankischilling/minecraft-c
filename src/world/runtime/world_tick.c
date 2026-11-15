@@ -1270,6 +1270,14 @@ static bool scheduler(mc_world_tick_call *c) {
         c->error.child_bytecode = c->scheduled.call.bytecode;
         c->error.native_policy = c->scheduled.native_policy;
         c->error.exception_class = c->scheduled.exception_class;
+        const mc_world_access_failure *failure = &c->scheduled.call.tick.world_access_failure;
+        if (failure->receiver != NULL || failure->receipt != NULL ||
+            failure->render_global != NULL || failure->source_null_receiver) {
+            const mc_world_storage_status held =
+                mc_world_access_failure_retain(failure, &c->error.world_access);
+            if (held != MC_WORLD_STORAGE_OK)
+                return fail(c, held, "World tick scheduled failure occurrence retain", true);
+        }
         return cause(c, c->scheduled.call.cause);
     }
     c->state.scheduled_returned = true;

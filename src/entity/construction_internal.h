@@ -5,7 +5,7 @@
 
 struct mc_player_string;
 
-/* Concrete callers are Item, FallingSand, Minecart, local Player, pickup
+/* Concrete callers are Item, PrimedTNT, FallingSand, Minecart, local Player, pickup
  * particle, Lightning, Arrow, eleven client Overworld Mobs and Ghast. This is not a public
  * generic-kind factory. Preserve actual active use before live count/budget and header allocation.
  * Mob callers perform their selected initializer first; Minecart's branch performs its own

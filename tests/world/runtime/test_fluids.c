@@ -263,7 +263,7 @@ enum pattern {
     MIX_DEEP,
     DROP_FRONTIER,
     QUOTA,
-    FIRE_FRONTIER,
+    FIRE_IGNITION,
     CACHE_FRONTIER,
     NULL_RANDOM
 };
@@ -282,7 +282,7 @@ static const patch patches[] = {
     {22, 72, 9, STILL_LAVA},     {22, 88, 9, REENTER},        {9, 72, 9, LAVA_DELAY},
     {9, 88, 9, LAVA_CHANGE},     {9, 24, 22, MIX_SOURCE},     {9, 40, 22, MIX_LEVEL},
     {9, 56, 22, MIX_DEEP},       {9, 72, 22, DROP_FRONTIER},  {22, 24, 22, QUOTA},
-    {22, 88, 22, FIRE_FRONTIER}, {1, 104, 8, CACHE_FRONTIER}, {22, 104, 22, NULL_RANDOM}};
+    {22, 88, 22, FIRE_IGNITION}, {1, 104, 8, CACHE_FRONTIER}, {22, 104, 22, NULL_RANDOM}};
 
 enum { CHANNEL_X = 16, CHANNEL_Z = 16, CHANNEL_FLOOR = 110, CHANNEL_SOURCE = 118 };
 
@@ -315,7 +315,7 @@ static input_cell prepared(int32_t x, int32_t y, int32_t z) {
             v = (input_cell){9, 0};
         if (p->kind == STILL_LAVA && y == p->y + 1 && dx >= -1 && dx <= 1 && dz >= -1 && dz <= 1)
             v = (input_cell){1, 0};
-        if (p->kind == FIRE_FRONTIER && y == p->y + 2 && dx >= -1 && dx <= 1 && dz >= -1 && dz <= 1)
+        if (p->kind == FIRE_IGNITION && y == p->y + 2 && dx >= -1 && dx <= 1 && dz >= -1 && dz <= 1)
             v = (input_cell){5, 0};
         if (y != p->y)
             continue;
@@ -350,7 +350,7 @@ static input_cell prepared(int32_t x, int32_t y, int32_t z) {
                 v = (input_cell){9, 0};
                 break;
             case STILL_LAVA:
-            case FIRE_FRONTIER:
+            case FIRE_IGNITION:
                 v = (input_cell){11, 0};
                 break;
             case LAVA_DELAY:
@@ -935,10 +935,10 @@ static bool frontiers(fixture *f, size_t slot) {
         CHECK(c[i] == saved_c[i]);
     CHECK(f->providers[slot].cache->count == 4 && mc_world_store_chunk_count(f->stores[slot]) == 4);
 
-    /* Still-lava ignition reaches the actual fire addition barrier after a
-     * genuine byte write. The three-by-three wood ceiling makes every first
-     * random-walk destination have a real flammable +Y material. */
-    p = location(FIRE_FRONTIER);
+    /* Still-lava ignition reaches real Fire addition on the client. The
+     * three-by-three wood ceiling makes every first random-walk destination
+     * have a real flammable +Y material. Server Fire remains a separate body. */
+    p = location(FIRE_IGNITION);
     mc_java_random_seed(&passed, 2);
     mc_java_random expected = passed;
     int32_t steps = 0, dx = 0, dz = 0;
@@ -949,13 +949,19 @@ static bool frontiers(fixture *f, size_t slot) {
     CHECK(mc_registry_block_static_get(registry, "as", &fire, NULL) == MC_REGISTRY_OK &&
           fire != NULL);
     CHECK(scheduled(w, &before));
-    CHECK(tick(f, slot, 11, p, &passed, &error) == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
-          error.hook_class != NULL && strcmp(error.hook_class, still_class) == 0 &&
-          error.hook_bytecode == 165 && error.cause_hook_class != NULL &&
-          strcmp(error.cause_hook_class, slot % 2u == 0 ? "yq" : "pt") == 0 &&
-          error.cause_hook_bytecode == 0 &&
-          at(w, p->x + dx - 1, p->y + 1, p->z + dz - 1, mc_block_fields_get(fire)->bn, 0) &&
-          mc_test_java_random_equal(&passed, &expected) && delta(w, &before, 0, 0));
+    if (slot % 2u == 0) {
+        CHECK(tick(f, slot, 11, p, &passed, &error) == MC_WORLD_STORAGE_OK &&
+              error.hook_class == NULL &&
+              at(w, p->x + dx - 1, p->y + 1, p->z + dz - 1, mc_block_fields_get(fire)->bn, 0) &&
+              mc_test_java_random_equal(&passed, &expected) && delta(w, &before, 1, 1));
+    } else {
+        CHECK(tick(f, slot, 11, p, &passed, &error) == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+              error.hook_class != NULL && strcmp(error.hook_class, still_class) == 0 &&
+              error.hook_bytecode == 165 && error.cause_hook_class != NULL &&
+              strcmp(error.cause_hook_class, "pt") == 0 && error.cause_hook_bytecode == 0 &&
+              at(w, p->x + dx - 1, p->y + 1, p->z + dz - 1, mc_block_fields_get(fire)->bn, 0) &&
+              mc_test_java_random_equal(&passed, &expected) && delta(w, &before, 0, 0));
+    }
 
     ok = true;
 cleanup:

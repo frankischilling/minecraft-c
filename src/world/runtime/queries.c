@@ -119,8 +119,10 @@ static void query_selected_view(mc_world_query_execution *execution) {
 static bool acquire_query(mc_world_runtime *world, int32_t x, int32_t z, query_chunk *out,
                           mc_world_query_error *error, mc_world_query_execution *execution) {
     error->provider_bytecode = 6;
-    if (world->fields.v == NULL)
+    if (world->fields.v == NULL) {
+        error->source_null = true;
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World query provider receiver");
+    }
     const mc_chunk_provider *const provider = world->fields.v;
     /* Inspect only the four live bindings needed by this getter. The full
      * provider view has no callbacks and adds unrelated descriptor copies. */
@@ -482,7 +484,7 @@ static bool block_light_value(mc_world_runtime *world, int32_t x, int32_t y, int
         static const unsigned int field_pc[4] = {46, 57, 68, 79};
         bool samples_neighbors = false;
         for (size_t index = 0; index < 4; ++index) {
-            int32_t candidate;
+            int32_t candidate = 0;
             if (!block_light_static(world, names[index], capture_pc[index], field_pc[index],
                                     &candidate, error))
                 return false;
@@ -589,6 +591,7 @@ static mc_world_storage_status sky_visible(mc_world_runtime *world, int32_t x, i
     if (!chunk.state->blank) {
         frame.chunk_bytecode = 10;
         if (chunk.object->h == NULL) {
+            frame.source_null = true;
             (void)fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                        "Chunk sky-visible height backing");
             goto done;

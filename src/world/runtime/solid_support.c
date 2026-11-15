@@ -206,6 +206,7 @@ static mc_world_storage_status solid_support(mc_world_runtime *world, int32_t x,
     const mc_material *material = mc_block_fields_get(block)->bA;
     error->bytecode = 25;
     if (material == NULL) {
+        error->source_null = true;
         cause = empty_error().registry;
         cause.status = MC_REGISTRY_NULL_REFERENCE;
         cause.message = "World solid-support Material receiver";

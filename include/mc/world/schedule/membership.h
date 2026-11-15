@@ -61,7 +61,10 @@ mc_scheduled_membership_native_bytes(const mc_scheduled_membership *membership, 
  * occurs. Access is exclusive. Each pointer is valid only while a retained
  * record hold keeps that owner live; collection liveness alone is insufficient
  * after removal retires an entry. This call grants no independent caller hold.
- * Native bucket traversal is not a Java HashSet iteration-order claim.
+ * Default-JDK17 spread, append chaining and stable growth splitting preserve
+ * iteration for the qualified linked-bin histories. Collision treeification
+ * and equal-hash identity ordering remain unqualified; this is not a general
+ * Java HashSet iteration-order claim. Time changes do not rekey membership.
  * capacity counts pointer slots; NULL entries is valid only when capacity=0.
  * Required written and the buffer must be disjoint from all owners/records
  * and each other. Invalid arguments or insufficient capacity preserve both

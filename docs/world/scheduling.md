@@ -21,8 +21,11 @@ changes, and its allocation ceiling covers overlapping old/new bucket arrays.
 
 Uniform time shifting changes the actual retained records with wrapped long
 addition. It neither rebuilds ordering nor changes membership. The audited
-membership snapshot exposes native bucket traversal without callbacks. That
-order supplies an inventory, not an original Java HashSet iteration guarantee.
+membership snapshot exposes bucket traversal without callbacks. New records
+append to linked bins; growth preserves their low/high split order. This matches
+the recorded JDK17 linked-bin histories, including the two Fire requests that
+exposed the former reversed order. Collision-tree and identity-dependent order
+remain unqualified.
 
 The [ordered owner](../../include/mc/world/schedule/ordered.h) preserves the
 captured library profile's red-black tree history. Insertion and removal search
@@ -137,7 +140,7 @@ additional ownership controls and broader validation status.
 
 The retained immediate branch still stops at its selected virtual Block tick,
 `fd.c:142`. Broader tick execution requires its own retained caller. Owned Lava
-mixing likewise stops at its first material query, `rp.j:41`. These explicit
+mixing now has its separate [Player wake qualification](fluids.md#owned-lava-mixing-during-player-wake). These explicit
 boundaries do not qualify nonempty deferred sets, general fluid ticks, Lava,
 queue drainage, persistence or complete natural scheduling behavior. The
 ordinary entry and earlier collection results below retain their own scopes.
@@ -197,7 +200,7 @@ population, tick-draining or save-interoperability claim. See the
 
 ## Collection validation
 
-`world.scheduled_membership` exercises 370 native contracts for collisions,
+`world.scheduled_membership` exercises 385 native contracts for collisions,
 identity, wrapping, separate holds, growth limits and unchanged failure outputs.
 `world.scheduled_ordered` adds 984 native checks for identity, limits, successor
 holds, deletion histories, mutable-key search paths and full borrowed snapshots.
@@ -210,3 +213,23 @@ compilers. Its project-owned Java records compare the source-proven time/sequenc
 pair; it uses no original game classes. This qualifies the finite collection
 profile, while original/world scheduler comparisons remain pending. See the
 [source evidence and fixture provenance](../reference/state-records.md).
+
+### Linked-bin membership and Player-chunk traversal
+
+The project-owned scheduled-membership Java observer records 140 complete
+public-API responses. Native normal and optimized readers compare each response,
+including duplicate/equal-distinct owners, remove/reinsert histories, wrapped
+keys and growth through 13, 25 and 49 entries. Nine corruption controls reject
+altered responses. The original Fire packet separately observes actual World
+E/F sets; these collection-only experiments do not substitute for that evidence.
+
+The Player-chunk observer records 1,083 complete responses and six full
+checkpoints. Existing native integer-set traversal matches them without a
+runtime change. The real Fire random-tick profile visits 361 Player-centered
+Chunks and executes 28,880 samples. A 289-Chunk spawn domain has a different
+first entry and must not be used to infer that random-tick order.
+
+Both collection fixtures use the recorded JDK17 library profile. Raw Comparable
+scheduled records do not make equal-hash collision-tree ordering deterministic;
+the finite linked-bin result does not qualify arbitrary identity-based tree
+histories. See [Fire source bodies](fire.md) for the reached gameplay comparison.

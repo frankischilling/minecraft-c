@@ -6,6 +6,7 @@
 #undef main
 
 #include "../../../../src/world/runtime/mutation/plants/plants_internal.h"
+#include <inttypes.h>
 
 typedef struct plant_spec {
     int32_t id, support;
@@ -201,11 +202,88 @@ static bool plant_upright(fixture *f, size_t slot) {
           at(world, 25, 50, 9, 81, 15));
     CHECK(plant_call(world, cactus, 5, 127, 9, false, NULL, &error) && plant_success(&error) &&
           at(world, 5, 127, 9, 81, 0));
-    /* The upper write completes before a fire neighbor fails. Age reset has
-     * not run, and the newly placed upper block must remain published. */
-    CHECK(!plant_call(world, cactus, 10, 80, 9, false, NULL, &error) &&
-          error.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.hook_bytecode == 74 &&
-          at(world, 10, 80, 9, 81, 15) && at(world, 10, 81, 9, 81, 0));
+    /* OR grows the upper Cactus at74. Its notification removes the adjacent
+     * unsupported Fire through YQ.b; the reentered upper Cactus survives on
+     * its original lower block, then OR resets the lower age at84. That
+     * notifying reset reaches the Sand below and schedules its tick in3.
+     * Server PT remains an explicit frontier before the reset/Sand callback. */
+    const mc_java_random world_before = *world->fields.r;
+    const size_t entities_before = world->fields.b->count;
+    const bool notify_before = world->fields.o;
+    const size_t calls_before = world->active_calls, leases_before = world->local_leases;
+    schedule_state schedule_before = {0};
+    CHECK(f->profile->math != NULL && scheduled(world, &schedule_before));
+    const uint64_t math_before =
+        atomic_load_explicit(&f->profile->math->state, memory_order_relaxed);
+    int64_t world_time_before = 0;
+    CHECK(mc_world_info_time_get(world->fields.x, &world_time_before) == MC_WORLD_INFO_OK);
+    CHECK(at(world, 10, 80, 9, 81, 15) && at(world, 10, 81, 9, 0, 0) &&
+          at(world, 11, 81, 9, 51, 0) && at(world, 10, 79, 9, 12, 0));
+    const bool grew = plant_call(world, cactus, 10, 80, 9, false, NULL, &error);
+    if (registry->options.side == MC_REGISTRY_CLIENT) {
+        CHECK(grew && plant_success(&error) && at(world, 10, 80, 9, 81, 0) &&
+              at(world, 10, 81, 9, 81, 0) && at(world, 11, 81, 9, 0, 0));
+    } else {
+        CHECK(!grew && error.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+              error.hook_class != NULL && strcmp(error.hook_class, "je") == 0 &&
+              error.hook_bytecode == 74 && error.cause_hook_class != NULL &&
+              strcmp(error.cause_hook_class, "pt") == 0 && error.cause_hook_bytecode == 0 &&
+              at(world, 10, 80, 9, 81, 15) && at(world, 10, 81, 9, 81, 0) &&
+              at(world, 11, 81, 9, 51, 0));
+    }
+    schedule_state schedule_after = {0};
+    CHECK(scheduled(world, &schedule_after));
+    const uint64_t math_after =
+        atomic_load_explicit(&f->profile->math->state, memory_order_relaxed);
+    const int32_t schedule_delta = registry->options.side == MC_REGISTRY_CLIENT ? 1 : 0;
+    if (world->fields.b->count != entities_before || world->fields.o != notify_before ||
+        !mc_test_java_random_equal(world->fields.r, &world_before) || math_after != math_before ||
+        !delta(world, &schedule_before, schedule_delta, schedule_delta) ||
+        world->active_calls != 0 || world->local_leases != 0) {
+        fprintf(stderr,
+                "upright invariant side=%s entities=%zu->%zu o=%d->%d "
+                "WorldRandom=%016" PRIx64 "->%016" PRIx64 " equal=%d "
+                "Math=%016" PRIx64 "->%016" PRIx64 " "
+                "schedule=%" PRId64 "/%" PRId32 "/%" PRId32 "->%" PRId64 "/%" PRId32 "/%" PRId32
+                " expected-delta=%" PRId32 " calls=%zu->%zu leases=%zu->%zu\n",
+                registry->options.side == MC_REGISTRY_CLIENT ? "client" : "server", entities_before,
+                world->fields.b->count, (int)notify_before, (int)world->fields.o,
+                world_before.state, world->fields.r->state,
+                (int)mc_test_java_random_equal(world->fields.r, &world_before), math_before,
+                math_after, schedule_before.next, schedule_before.e, schedule_before.f,
+                schedule_after.next, schedule_after.e, schedule_after.f, schedule_delta,
+                calls_before, world->active_calls, leases_before, world->local_leases);
+    }
+    CHECK(world->fields.b->count == entities_before);
+    CHECK(world->fields.o == notify_before);
+    CHECK(mc_test_java_random_equal(world->fields.r, &world_before));
+    CHECK(math_after == math_before);
+    CHECK(delta(world, &schedule_before, schedule_delta, schedule_delta));
+    if (schedule_delta != 0) {
+        const mc_scheduled_tick *entries[512] = {0}, *sand_tick = NULL;
+        size_t count = 0;
+        CHECK(mc_scheduled_ordered_snapshot(world->fields.E, entries, COUNT(entries), &count) ==
+              MC_SCHEDULED_ORDERED_OK);
+        for (size_t i = 0; i < count; ++i) {
+            mc_scheduled_tick_fields fields = {0};
+            CHECK(mc_scheduled_tick_fields_get(entries[i], &fields) == MC_SCHEDULED_TICK_OK);
+            if (fields.sequence != schedule_before.next)
+                continue;
+            CHECK(sand_tick == NULL && fields.x == 10 && fields.y == 79 && fields.z == 9 &&
+                  fields.block == 12 && fields.due_time == mc_java_i64_add(world_time_before, 3));
+            sand_tick = entries[i];
+        }
+        CHECK(sand_tick != NULL);
+        CHECK(mc_scheduled_membership_snapshot(world->fields.F, entries, COUNT(entries), &count) ==
+              MC_SCHEDULED_MEMBERSHIP_OK);
+        size_t occurrences = 0;
+        for (size_t i = 0; i < count; ++i)
+            if (entries[i] == sand_tick)
+                ++occurrences;
+        CHECK(occurrences == 1 && at(world, 10, 79, 9, 12, 0));
+    }
+    CHECK(world->active_calls == 0);
+    CHECK(world->local_leases == 0);
     CHECK(mc_test_java_random_equal(&supplied, &expected));
     ok = true;
 cleanup:

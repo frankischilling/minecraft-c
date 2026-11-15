@@ -76,7 +76,7 @@ FOOTER_SCOPES = {'loader': b'kernel direct-loader',
  'insert': b'owned single-Entity insertion',
  'ray': b'owned Ray',
  'presentation-capture': b'detailed presentation native capture'}
-BUNDLE_SHA = '4b6ac2f59e98ac142f29a6719c41d90ecd480a2a850181ef63d19950a2066827'
+BUNDLE_SHA = '36bc2d34b689022a2a355c0471ac4020dc2dc6048377a9f1f3e8f51dca1f90ee'
 MODES = {'loader': ('error', 'null-error'),
  'lookup': ('map', 'lazy', 'armed', 'held', 'nested'),
  'collision': ('id-first',

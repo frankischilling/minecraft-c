@@ -49,8 +49,8 @@
       "sha256": "27c630007d453a0c1bdb3e81f3630bf1137dcd49b933066fdc114a2e02bcdaa9"
     },
     "src/world/runtime/entity_publication.c": {
-      "bytes": 56160,
-      "sha256": "c99cc55bf66073d9011b16232a7424ffd96c8143fb7d1c5a677cbb43e084e1f5"
+      "bytes": 56231,
+      "sha256": "95245feaae82fc2f972c831c48ff6fffc0380e9e687de3ecd084bb9a6dce2182"
     },
     "src/world/runtime/entity_publication_detailed_execution_internal.h": {
       "bytes": 1167,
@@ -89,8 +89,8 @@
       "sha256": "b0a0cf48ee2f249c7ec3384cd9f5f03648611ba2fa7a9462480f03bf94e181f8"
     },
     "include/mc/world/runtime/movement.h": {
-      "bytes": 5465,
-      "sha256": "16b31d42c9899f07f81691d90d3ddc28750ee057ed6adbb7d75f4b7851e1fcfd"
+      "bytes": 5487,
+      "sha256": "4baebeb8607f9a46d6a4565e90969c88872d33b138483e9aa8911f32cde4734f"
     },
     "include/mc/world/runtime/world_access_error.h": {
       "bytes": 2776,

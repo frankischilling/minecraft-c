@@ -8,6 +8,9 @@ typedef struct mc_world_query_error {
     mc_world_storage_status status;
     const char *operation;
     unsigned int bytecode, provider_bytecode, chunk_bytecode;
+    /* Set only at an actually reached source null dereference, independently
+     * of native admission, later pointer contents or copied status strings. */
+    bool source_null;
     mc_chunk_acquire_status acquisition;
     mc_world_storage_error cause;
     mc_registry_error registry;
