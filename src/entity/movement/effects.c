@@ -25,6 +25,7 @@
 #include "../../world/runtime/collision/blocks_internal.h"
 #include "../../world/runtime/mutation/drops/execution_internal.h"
 #include "../../world/runtime/mutation/notifications_execution_internal.h"
+#include "../../world/runtime/presentation_execution_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../../world/runtime/world_access_internal.h"
 #include "../entity_internal.h"
@@ -1341,6 +1342,29 @@ bool mc_entity_damage_execution_source_failure(mc_entity_damage_execution *frame
                                  mutation_site);
             *out = failure;
             return true;
+        }
+        mc_world_mutation_presentation_failure presentation;
+        if (mc_player_wake_execution_failed_presentation(view.wake, &presentation) &&
+            presentation.status != MC_WORLD_STORAGE_OK) {
+            const mc_world_mutation_error *child = presentation.error;
+            const mc_entity_tick_execution_site site = {"fd", "a",
+                                                        presentation.particle
+                                                            ? "(Ljava/lang/String;DDDDDD)V"
+                                                            : "(DDDLjava/lang/String;FF)V",
+                                                        (int)child->world_access_bytecode};
+            if (presentation.fault == MC_WORLD_ACCESS_SOURCE_FAULT_NULL_SIZE_LIST ||
+                presentation.fault == MC_WORLD_ACCESS_SOURCE_FAULT_NULL_GET_LIST) {
+                damage_named_failure(&failure, "java/lang/NullPointerException",
+                                     child->cause.operation, site);
+                *out = failure;
+                return true;
+            }
+            if (damage_protected_source(frame->execution, presentation.execution->world,
+                                        &child->world_access_failure, &child->cause, &name)) {
+                damage_named_failure(&failure, name, child->cause.operation, site);
+                *out = failure;
+                return true;
+            }
         }
         const mc_world_notification_execution *observer =
             mc_player_wake_execution_failure_observer(view.wake);

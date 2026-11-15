@@ -466,8 +466,8 @@
       "sha256": "743689a573ab229b843dca24d5390ad58557334d5e0bbbb530ef4e8da9b4b766"
     },
     "docs/parity.md": {
-      "bytes": 243390,
-      "sha256": "89379bbc1faa8e59e6f4767d511d00038f991c726fb72548fe0b310efdbb6472"
+      "bytes": 244210,
+      "sha256": "9b462494c37f24f02de372b7cc20a220c1038720b1d14feb50eee1f66b42a8a9"
     },
     "docs/reference/binaries.md": {
       "bytes": 8482,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 3198,
-      "sha256": "73669b7fa91b1b069ac95780f58c51f8364812b0b51d8c58f3d059408cb47354"
+      "bytes": 3247,
+      "sha256": "d2b20044ce3f43a8fecfc7e417f9c0f3e1925628584a691e368f98b6d1de5eec"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,24 +826,24 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 667653,
-      "sha256": "64d749a7ca410783367a1f5184753b4828c245880087e3c36c15e2a83c9333ec"
+      "bytes": 672201,
+      "sha256": "c12da1989f72c839708f1f711be170cff6ab4adc97e266eb46b52ff9d0299e1e"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
       "sha256": "2266d5edd099003b4b3fe304ecf79cf86bbfcab026ef1480936c04a391024957"
     },
     "docs/wiki/Build-and-tests.md": {
-      "bytes": 151908,
-      "sha256": "36461746f5d283ac4a157991b6494f6508c3858607d871332aeb04b2e3b3cf7b"
+      "bytes": 153188,
+      "sha256": "0f9408ffdccf03fe55c828a8c0371b3762fdfcbbb9ba91c97f9ce078d1d2cb0f"
     },
     "docs/wiki/History.md": {
       "bytes": 91421,
       "sha256": "1a6e3102bb80cb5dd798b7f389a94cd3308ecf7fd7315c052eb8496a61e38c79"
     },
     "docs/wiki/Home.md": {
-      "bytes": 3372,
-      "sha256": "217a0114fc583eebf86822155474e661c3b5b23c56c68f8048789bdba6a9965c"
+      "bytes": 3667,
+      "sha256": "dba2fcb38d1924814dddf97e6ed431b33f90ee4c1e22891b89fa7c86d20e1df1"
     },
     "docs/wiki/Startup.md": {
       "bytes": 7992,
@@ -854,8 +854,8 @@
       "sha256": "82cef3806c626dd62a9d870040b4731dfcfd5916232dec21afdc8efbff5f13dd"
     },
     "docs/wiki/World-simulation.md": {
-      "bytes": 60534,
-      "sha256": "0f233ce560e6fdaa333ae6108fff28a5d310e218b6829e6310411ccaaf1a8ffa"
+      "bytes": 61165,
+      "sha256": "6c441f77a4f8dee6c8a91b24c810d538495aed6171926a9eb63a5083c89ef274"
     },
     "docs/wiki/_Sidebar.md": {
       "bytes": 3239,
@@ -930,8 +930,8 @@
       "sha256": "1b75fd00c59ed7727aaa40a38827602dfb78689bfbc8bc9e1d3005a1767e0191"
     },
     "docs/world/fluids.md": {
-      "bytes": 8475,
-      "sha256": "5ad25e83fabc7b1b691d01d1f4f8e71bf6d57c547b7ae9aa88938d3110ad6f5b"
+      "bytes": 10654,
+      "sha256": "2fdebd709d0e71ed552e2490dbb3a18c323090670a7a5947a4ccf48ce9f48fa7"
     },
     "docs/world/full-save.md": {
       "bytes": 4530,
@@ -4006,8 +4006,8 @@
       "sha256": "ffeff1e593667e16efd2d0ec820aac3de624807991fc709fee291826f05b09e8"
     },
     "src/entity/movement/effects.c": {
-      "bytes": 88343,
-      "sha256": "fb215d5321d190015ec169bacd592fcf41ab42f583d1b6b5a59a799fa1b17eb5"
+      "bytes": 89851,
+      "sha256": "a8f828b0a01603d5c957dfdf18a0062b1ed28928703bff4fd108605f4c36efe0"
     },
     "src/entity/movement/environment.c": {
       "bytes": 24737,
@@ -4798,8 +4798,8 @@
       "sha256": "93b58c6004fe6c87a09b2b66393b5926cc17b8cc8d79c848a08d6950e8b4fa0d"
     },
     "src/world/runtime/mutation/fluids.c": {
-      "bytes": 52883,
-      "sha256": "b461b3009df600c871169fb65413b078f35951f5d6e848a0540110bc3e0c7b1e"
+      "bytes": 56017,
+      "sha256": "685bcfdee547faf7e3ab34a408fa7d20c8be1b639490fe3e2ef4a4019b3767f1"
     },
     "src/world/runtime/mutation/height.c": {
       "bytes": 14912,
@@ -4934,8 +4934,8 @@
       "sha256": "8a3b4be08eda7e4a7719e8e3cd55aa903a0292f5388a859dcbfc07b68ce833be"
     },
     "src/world/runtime/mutation/world.c": {
-      "bytes": 50471,
-      "sha256": "1ba761b0620c022bab8ae4e3f64a0e3612cab4f91f70d87badbf89c16b1b50e8"
+      "bytes": 69418,
+      "sha256": "88d718ef112b7f091b9c6cf23aff0504d9fed795ee4b2ea3923a5109820fa0ac"
     },
     "src/world/runtime/plants.c": {
       "bytes": 31190,
@@ -4990,8 +4990,8 @@
       "sha256": "5e1f353806f8030c36e3b1e5b7d7348287430a877b9ebb89912d5c590dec3a28"
     },
     "src/world/runtime/presentation.c": {
-      "bytes": 22937,
-      "sha256": "213129f7a912d449632d2e2e319a892c6b2980efbcd4bc6602ce3272f1277e2b"
+      "bytes": 23431,
+      "sha256": "06f9ebd7293b5aaf7b42741c6caba8ad729cfd2831608c2e75e6dff43c131653"
     },
     "src/world/runtime/propagation.c": {
       "bytes": 33028,
@@ -6407,7 +6407,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 855512,
-      "sha256": "95c9ff0672b7ed293778a628339e98afc0e79863e7bae831c39e1e862b4085f0"
+      "sha256": "676f5a4ccb6009ce28954f43ba6d477f6f90262aac5b5b09b7acf4256d6f80a2"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6471,7 +6471,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 979795,
-      "sha256": "2c51164e8c8425ad52fb2029070d650a01d0f9609b8af44a2a4e8029058bfbe4"
+      "sha256": "8335e31c04ae5c0cb634d022316f7de2fd08656d959e3a050342a78616e8a97c"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6603,7 +6603,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 852491,
-      "sha256": "2c3cc36b363b914127fbfcfed0ef5ecf8e20a21612ac0588a3382a08867dce30"
+      "sha256": "db3225707bd0152d5e44cd64388a05ce8864426877ac6f40e9b6c14f2e8b5b8d"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -21158,8 +21158,8 @@
       "sha256": "eb477a22925eb83fe2d2a0d7662dd0a437832ad2dcf619e8dbc465081e1f80d2"
     },
     "cmake/player_damage.cmake": {
-      "bytes": 17349,
-      "sha256": "a747881de3c4de4ee19f519ad9482124fbf7e5b3147ca8ca09bf06f36be94a85"
+      "bytes": 18902,
+      "sha256": "29271c4edf14d9371001d2e441820c13dde4dc718de0f071929905286d07d4d0"
     },
     "cmake/tests/armor.cmake": {
       "bytes": 739,
@@ -21678,8 +21678,8 @@
       "sha256": "2c9b0fce15f44e52734290717b76ffe410f1e90b7bd17485d08dbfd5b0e27792"
     },
     "src/entity/player/sleep.c": {
-      "bytes": 49455,
-      "sha256": "ea7e6fe33b0e918f58297cad1e7678c72b67170af75c8d18ae9715fe51bd311e"
+      "bytes": 49785,
+      "sha256": "ded7dbccdbcc3e985cb847dc20c7631c0fbcb6e98af0c0405bbb1203eb60d4c7"
     },
     "src/entity/player/sleep_internal.h": {
       "bytes": 852,
@@ -23343,11 +23343,11 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76712,
-      "sha256": "d358bf5f7af6d3a1c8f3ec4fab38e0c4d380d129afdd65b6ecb0dd087ac4a3eb"
+      "sha256": "e4e33a0e007182e530775e13f92eebfd88d40a1baa85d00a2bd31e7947202900"
     },
     "tests/tools/world/world_query_controls_bundle.json": {
       "bytes": 58244,
-      "sha256": "feacdc4c98307031783d51edb2aa17a7b4f7ee42a80fe35c96ddd1737a31fc2a"
+      "sha256": "4b6ac2f59e98ac142f29a6719c41d90ecd480a2a850181ef63d19950a2066827"
     },
     "tests/tools/world/world_query_controls_protocol.json": {
       "bytes": 33175,
@@ -23527,11 +23527,11 @@
     },
     "tests/tools/world/arrow_natural_flight_bundle.json": {
       "bytes": 8534,
-      "sha256": "2acc0130f898a13f006d5eda96e54fc6e10ce791ae08ec5ca9cd77ba7dee9125"
+      "sha256": "09d312a4c1f078bfd05ac5ee0cce93aad40d6af5f0cf065f424bd63da64456e5"
     },
     "tests/tools/world/test_arrow_natural_flight.py": {
       "bytes": 16754,
-      "sha256": "9675ee0ca78c429b52d7c03bf1a99422434a7e92637b07c1d038007be3c9996b"
+      "sha256": "8f78b5879449578546e0afe774532caa51ecce88f2cb241a805638d1f89d1d17"
     },
     "tests/world/runtime/test_arrow_natural_flight.c": {
       "bytes": 19352,
@@ -23547,11 +23547,11 @@
     },
     "tests/tools/client/arrow_world_tick_cleanup_bundle.json": {
       "bytes": 10002,
-      "sha256": "1e0bec515b2344da70c24719a9bda7a4940946cd5ac7e3f4c16ceeb7cedb0f14"
+      "sha256": "0a3e4de550afaf7e5a11117da03571bd0122bf7d04f17c95b1b6aab7f172ab36"
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "ee67de4d6506acfbb3e05f1ba4cbfc676f345e312e310bbad8db837dc8eaeaaa"
+      "sha256": "c13f3eb9b80c9970bd465c3400850fe850e5e9cc6872e051c3ee24a6eaf9e434"
     },
     "docs/entity/arrow-flight.md": {
       "bytes": 12048,
@@ -23610,8 +23610,8 @@
       "sha256": "21fc6bdf4be78a895a31dfae47562e74b2850fc87fd29837447ef56d57ec89aa"
     },
     "docs/wiki/Combat-and-projectiles.md": {
-      "bytes": 17954,
-      "sha256": "15c36250516f44294977d7ad8d79e712a3c468a79eba6197f6416f2a9b1c48f5"
+      "bytes": 19262,
+      "sha256": "60df8623dff61a35bfaf95d4a39485772a302a979709eaef6005492fcc34141f"
     },
     "tests/entity/mob/test_monster_damage.c": {
       "bytes": 11751,
@@ -23994,8 +23994,8 @@
       "sha256": "39cbbe086646137e8aa3cb94a913317b2ab7c11af87d5f155b05e94ed7f340b6"
     },
     "src/world/runtime/presentation_execution_internal.h": {
-      "bytes": 4096,
-      "sha256": "33470313a5e2f6741eddd064be8f2d994ae1d0b07b8c9b0e4188fbed669c26e5"
+      "bytes": 4143,
+      "sha256": "35bbebf0bc4d1f85552d40bc7b98f5eac5f436044fe0758bd5394ae46da8f951"
     },
     "tests/client/gameplay/test_arrow_pig.c": {
       "bytes": 18093,
@@ -24202,8 +24202,8 @@
       "sha256": "237f1a9cd295af640367c0e664a327c2eb9d0aa9a78e005be8eb6de2ae94f017"
     },
     "src/entity/player/sleep_execution_internal.h": {
-      "bytes": 1652,
-      "sha256": "1ec8c557aebabf3019294040fd2abd1029ba96b34ccc52b2576c35d16ab4d1ae"
+      "bytes": 1919,
+      "sha256": "bf0e4f0775cc267648074a7479b3536f77e75cbf166bb80e385dcbb21c6d9910"
     },
     "src/world/runtime/bed_occupancy_execution_internal.h": {
       "bytes": 1062,
@@ -24218,8 +24218,8 @@
       "sha256": "57f3b6fd2035a550cf796ad4ec289287bf2d53f4a321ee91e5c9520f0fce8692"
     },
     "src/world/runtime/mutation/world_execution_internal.h": {
-      "bytes": 11319,
-      "sha256": "044b17797fb0332d84a61647db11b5ddef7f55a6a064db5a38dff165ecd8303d"
+      "bytes": 14970,
+      "sha256": "8cbf7769788255167ef8e3f06fa1c3afac583c4dcae08975ff3ae95f5650dac3"
     },
     "tests/reference/entity/player_recursive_wake/README.md": {
       "bytes": 2592,

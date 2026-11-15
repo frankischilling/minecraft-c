@@ -268,3 +268,22 @@ graphical sleeping damage, original audiovisual equality and FPS remain open.
 See the [runtime contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/plants.md#owned-cactus-and-reeds-neighbors-during-player-wake),
 [original packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/entity/upright_plants_wake/README.md)
 and [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#cactus-and-reeds-during-player-wake).
+
+## Lava mixing during wake
+
+Retained Player wake now reaches actual Lava mixing and fizz. Levels zero and
+one through four select Obsidian and Cobblestone; higher levels can fizz twice
+through Still-to-Flowing conversion. Height callbacks, light queues, nested
+Water conversion, sound and particles keep their actual order and partial
+effects. Source exceptions and native refusals remain independent through
+checked cleanup.
+
+Two fresh unchanged-original VMs agree on 29 fixed profiles. Native replay
+compares selected Player/Random state and complete Chunk planes before and
+after the call, alongside exact Lava/Water, light, schedule and callback state.
+Five controls cover FP admission, sound/fourth-particle descendant scopes and
+absent MathHelper tables without blocking Java Math draws. Native Java stacks
+and unexposed Player fields remain unpaired. See the
+[runtime contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/fluids.md#owned-lava-mixing-during-player-wake),
+[original packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/entity/lava_wake/README.md)
+and [test scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#lava-mixing-during-player-wake).

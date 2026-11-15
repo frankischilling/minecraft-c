@@ -57,3 +57,8 @@ Arrow-hit controls keep their separate qualification scopes.
 also retain recursive drops, reached Sand/Water scheduling and interrupted
 range callbacks. Twenty-one prepared original profiles have Windows comparison;
 broader platform, graphical and natural-play qualification remains separate.
+
+[Lava mixing and fizz](Combat-and-projectiles#lava-mixing-during-wake) now share
+retained Player wake execution. Twenty-nine prepared original profiles cover
+replacement, light/height effects, two fizz passes and interrupted callbacks;
+natural encounters and whole-game parity remain separate.

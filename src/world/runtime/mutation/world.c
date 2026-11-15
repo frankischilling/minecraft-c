@@ -1,12 +1,14 @@
 #include "mutation_internal.h"
 #include "world_execution_internal.h"
 
+#include "../../../block/registry/registry_internal.h"
 #include "../../../block/registry/runtime_internal.h"
 #include "../../storage/objects_internal.h"
 #include "../blocks_execution_internal.h"
 #include "../construction_internal.h"
 #include "../execution_children_internal.h"
 #include "../plants_execution_internal.h"
+#include "../registry_execution_internal.h"
 #include "../scheduling_execution_internal.h"
 #include "../solid_support_execution_internal.h"
 #include "chunk_execution_internal.h"
@@ -15,6 +17,17 @@
 #include "mc/world/runtime/blocks.h"
 
 #include <stdlib.h>
+#include <string.h>
+
+typedef struct mutation_presentation {
+    mc_world_runtime *world;
+    mc_world_presentation_execution frame;
+    mc_world_mutation_error error;
+    mc_world_mutation_chunk_scope scope;
+    mc_world_storage_status status;
+    mc_java_random_profile_status math_status;
+    bool invoking, returned, completed, particle;
+} mutation_presentation;
 
 struct mc_world_mutation_execution_call {
     mc_world_mutation_execution_context context;
@@ -29,9 +42,12 @@ struct mc_world_mutation_execution_call {
     mc_world_solid_support_execution *support;
     mc_world_plant_execution *plant;
     mc_world_schedule_execution *schedule;
+    mc_world_material_execution *material;
+    mutation_presentation *presentation;
     mc_world_storage_status support_status;
     mc_world_storage_status plant_status;
     mc_world_storage_status schedule_status;
+    mc_world_storage_status material_status;
     bool active, close_done, support_returned, plant_returned;
 };
 
@@ -110,6 +126,315 @@ bool mc_world_mutation_execution_current(const mc_world_mutation_execution_call 
         return false;
     mc_world_access_failure_lease *lease = call->lease;
     return current(&call->context, world, &lease, site);
+}
+
+bool mc_world_mutation_execution_material(mc_world_mutation_execution_call *call,
+                                          mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
+                                          mc_material **out, mc_world_mutation_error *error,
+                                          mc_entity_tick_execution_site site) {
+    if (!mc_world_mutation_execution_current(call, world, site))
+        return false;
+    if (out == NULL || error == NULL || (call->material != NULL && !call->material->completed)) {
+        mc_world_runtime_execution_result_note(call->context.result, MC_WORLD_STORAGE_BUSY,
+                                               "Material requires fresh retained work", site);
+        return false;
+    }
+    if (call->material == NULL)
+        call->material = calloc(1, sizeof(*call->material));
+    if (call->material == NULL) {
+        mc_world_runtime_execution_result_note(call->context.result,
+                                               MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                                               "Material retained frame allocation", site);
+        return false;
+    }
+    mc_world_material_execution_init(call->material, call->context.execution,
+                                     call->context.code_classes, call->context.code, site,
+                                     call->context.result);
+    const bool completed = mc_world_runtime_material_get_retained(call->material, world, x, y, z,
+                                                                  out, &call->material_status);
+    if (completed)
+        return true;
+    if (call->material->native_stopped ||
+        call->context.result->ownership_status != MC_WORLD_STORAGE_OK)
+        return false;
+    error->material = call->material->detail;
+    error->registry = call->material->detail.registry;
+    error->status = call->material->detail.status;
+    error->operation = call->material->detail.operation;
+    error->cause = call->material->detail.cause;
+    return false;
+}
+
+static mc_world_storage_status presentation_note(mc_world_mutation_execution_call *call,
+                                                 mc_world_storage_status status,
+                                                 const char *operation,
+                                                 mc_entity_tick_execution_site site) {
+    mc_world_runtime_execution_result_note(call->context.result, status, operation, site);
+    return status;
+}
+
+static bool presentation_phase(const mc_world_mutation_execution_call *call,
+                               mc_entity_tick_execution_world_slot_phase *out) {
+    const mutation_presentation *p = call->presentation;
+    const mc_entity_tick_execution *execution = call->context.execution;
+    const mc_entity_tick_execution_world_token *token = &p->scope.token;
+    if (!p->scope.created || token->owner != execution || token->generation == 0 ||
+        token->slot >= MC_ENTITY_TICK_EXECUTION_WORLDS ||
+        execution->world_slots[token->slot].generation != token->generation)
+        return false;
+    *out = execution->world_slots[token->slot].phase;
+    return true;
+}
+
+static mc_world_storage_status presentation_pop(mc_world_mutation_execution_call *call) {
+    mutation_presentation *p = call->presentation;
+    const mc_world_storage_status status = mc_entity_tick_execution_pop_world(
+        call->context.execution, &p->scope.token, p->scope.failed);
+    mc_entity_tick_execution_world_slot_phase phase;
+    p->scope.consumed =
+        presentation_phase(call, &phase) && (phase == MC_ENTITY_TICK_EXECUTION_WORLD_FREE ||
+                                             phase == MC_ENTITY_TICK_EXECUTION_WORLD_RETAINED);
+    (void)presentation_note(call, status, "Presentation checked World close", p->scope.site);
+    if (status == MC_WORLD_STORAGE_OK && !p->scope.consumed)
+        return presentation_note(call, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                 "Presentation checked World close consumption", p->scope.site);
+    return status;
+}
+
+static bool presentation_current(mc_world_mutation_execution_call *call,
+                                 mc_entity_tick_execution_site site) {
+    if (call == NULL)
+        return false;
+    mutation_presentation *p = call->presentation;
+    if (p == NULL || !p->scope.created || p->scope.attempted || p->invoking || p->returned) {
+        (void)presentation_note(call, MC_WORLD_STORAGE_BUSY,
+                                "Presentation requires its entered argument frame", site);
+        return false;
+    }
+    mc_world_mutation_execution_context context = call->context;
+    context.world = p->scope.token;
+    return current(&context, p->world, &p->frame.lease, site);
+}
+
+bool mc_world_mutation_execution_presentation_begin(mc_world_mutation_execution_call *call,
+                                                    mc_world_runtime *world,
+                                                    mc_world_mutation_error *error,
+                                                    mc_entity_tick_execution_site site) {
+    if (!mc_world_mutation_execution_current(call, world, site))
+        return false;
+    mutation_presentation *p = call->presentation;
+    if (error == NULL || (p != NULL && (!p->completed || !p->scope.consumed))) {
+        (void)presentation_note(call, MC_WORLD_STORAGE_BUSY,
+                                "Presentation prior invocation remains retained", site);
+        return false;
+    }
+    if (p == NULL) {
+        p = calloc(1, sizeof(*p));
+        if (p == NULL) {
+            (void)presentation_note(call, MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                                    "Presentation retained invocation allocation", site);
+            return false;
+        }
+        call->presentation = p;
+    }
+    mc_entity_tick_execution_world_token token;
+    const mc_world_storage_status status =
+        mc_entity_tick_execution_push_world(call->context.execution, world, site, &token);
+    if (presentation_note(call, status, "Presentation actual World operand capture", site) !=
+        MC_WORLD_STORAGE_OK)
+        return false;
+    memset(p, 0, sizeof(*p));
+    p->world = world;
+    p->frame.execution = call->context.execution;
+    p->frame.owned = call->context.result;
+    p->frame.receiver_site = site;
+    p->scope = (mc_world_mutation_chunk_scope){.token = token, .site = site, .created = true};
+    mc_world_mutation_error_init(&p->error);
+    return true;
+}
+
+bool mc_world_mutation_execution_literal(mc_world_mutation_execution_call *call,
+                                         mc_registry_classes *classes, const char *text,
+                                         const mc_registry_string **out,
+                                         mc_world_mutation_error *error,
+                                         mc_entity_tick_execution_site site) {
+    if (!presentation_current(call, site))
+        return false;
+    if (classes != call->context.code_classes->registry || classes == NULL || text == NULL ||
+        out == NULL || error == NULL) {
+        (void)presentation_note(call, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                "Presentation literal defining Registry graph", site);
+        return false;
+    }
+    mutation_presentation *p = call->presentation;
+    mc_registry_error registry = mc_world_mutation_empty_registry();
+    const mc_registry_string *literal;
+    const mc_registry_status status =
+        mc_registry_runtime_literal_ascii(classes, text, &literal, &registry);
+    if (status != MC_REGISTRY_OK) {
+        if (p->world != NULL)
+            (void)mc_world_mutation_registry_fail(p->world, error, &registry,
+                                                  "Fluid source literal resolution");
+        else {
+            error->registry = registry;
+            error->status = mc_world_runtime_registry_status(status);
+            error->operation = "Fluid source literal resolution";
+            error->cause = (mc_world_storage_error){error->status, error->operation, 0};
+        }
+        p->error = *error;
+        return false;
+    }
+    if (!mc_registry_runtime_literal_owned(classes, literal)) {
+        (void)presentation_note(call, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                "Presentation actual literal pool ownership", site);
+        return false;
+    }
+    *out = literal;
+    return true;
+}
+
+bool mc_world_mutation_execution_math(mc_world_mutation_execution_call *call,
+                                      mc_java_random_profile *profile, double *out,
+                                      mc_world_mutation_error *error,
+                                      mc_entity_tick_execution_site site) {
+    if (!presentation_current(call, site))
+        return false;
+    mc_world_runtime_classes *classes = call->context.code_classes;
+    if (profile == NULL || profile != classes->profile || classes->registry == NULL ||
+        profile != classes->registry->options.random_profile || out == NULL || error == NULL) {
+        (void)presentation_note(call, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                "Presentation actual Math.random profile graph", site);
+        return false;
+    }
+    mutation_presentation *p = call->presentation;
+    double value;
+    p->math_status = mc_java_math_random(profile, &value);
+    if (p->world != NULL)
+        p->world->last_random_status = p->math_status;
+    if (p->math_status != MC_JAVA_RANDOM_PROFILE_OK) {
+        const mc_world_storage_status mapped =
+            p->math_status == MC_JAVA_RANDOM_PROFILE_LIMIT ? MC_WORLD_STORAGE_LIMIT
+            : p->math_status == MC_JAVA_RANDOM_PROFILE_ALLOCATION_FAILED
+                ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+            : p->math_status == MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT
+                ? MC_WORLD_STORAGE_INVALID_ARGUMENT
+                : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        (void)mc_world_mutation_fail(p->world, error, mapped, "Fluid actual Math.random");
+        p->error = *error;
+        (void)presentation_note(call, mapped, "Fluid actual Math.random", site);
+        return false;
+    }
+    if (!presentation_current(call, site))
+        return false;
+    *out = value;
+    return true;
+}
+
+static bool presentation_finish(mc_world_mutation_execution_call *call, bool completed,
+                                mc_world_mutation_error *error,
+                                mc_entity_tick_execution_site site) {
+    mutation_presentation *p = call->presentation;
+    p->invoking = false;
+    p->returned = true;
+    if (!completed)
+        *error = p->error;
+    if (completed && (call->context.result->ownership_status != MC_WORLD_STORAGE_OK ||
+                      call->context.result->selection_ready || call->context.result->math_failed ||
+                      !records_quiet(call->context.result))) {
+        (void)presentation_note(call, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                "Presentation completed child result not quiet", site);
+        completed = false;
+    }
+    p->scope.site = site;
+    p->scope.attempted = true;
+    p->scope.failed = !completed;
+    p->scope.initial_close_status = presentation_pop(call);
+    p->completed = completed && p->scope.initial_close_status == MC_WORLD_STORAGE_OK;
+    return p->completed;
+}
+
+bool mc_world_mutation_execution_sound(mc_world_mutation_execution_call *call,
+                                       mc_world_runtime *world, double x, double y, double z,
+                                       const mc_registry_string *name, float volume, float pitch,
+                                       mc_world_mutation_error *error,
+                                       mc_entity_tick_execution_site site) {
+    if (!presentation_current(call, site))
+        return false;
+    mutation_presentation *p = call->presentation;
+    if (world != p->world || error == NULL) {
+        (void)presentation_note(call, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                "Presentation exact sound operand and output", site);
+        return false;
+    }
+    p->invoking = true;
+    p->frame.receiver_site = site;
+    const bool completed = mc_world_runtime_sound_in_execution(
+        &p->frame, world, x, y, z, name, volume, pitch, &p->error, &p->status);
+    return presentation_finish(call, completed, error, site);
+}
+
+bool mc_world_mutation_execution_particle(mc_world_mutation_execution_call *call,
+                                          mc_world_runtime *world, const mc_registry_string *name,
+                                          double x, double y, double z, double vx, double vy,
+                                          double vz, mc_world_mutation_error *error,
+                                          mc_entity_tick_execution_site site) {
+    if (!presentation_current(call, site))
+        return false;
+    mutation_presentation *p = call->presentation;
+    if (world != p->world || error == NULL) {
+        (void)presentation_note(call, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                "Presentation exact particle operand and output", site);
+        return false;
+    }
+    p->particle = true;
+    p->invoking = true;
+    p->frame.receiver_site = site;
+    const bool completed = mc_world_runtime_particle_frame_in_execution(
+        &p->frame, world, name, x, y, z, vx, vy, vz, &p->error, &p->status);
+    return presentation_finish(call, completed, error, site);
+}
+
+mc_world_storage_status
+mc_world_mutation_execution_presentation_abort(mc_world_mutation_execution_call *call) {
+    if (call == NULL || call->presentation == NULL)
+        return MC_WORLD_STORAGE_OK;
+    mutation_presentation *p = call->presentation;
+    if (p->invoking)
+        return MC_WORLD_STORAGE_BUSY;
+    if (p->scope.consumed)
+        return MC_WORLD_STORAGE_OK;
+    if (p->scope.attempted)
+        return p->scope.initial_close_status;
+    p->scope.attempted = true;
+    p->scope.failed = true;
+    p->scope.initial_close_status = presentation_pop(call);
+    return p->scope.initial_close_status;
+}
+
+static mc_world_storage_status presentation_native_close(mc_world_mutation_execution_call *call) {
+    mutation_presentation *p = call->presentation;
+    if (p == NULL || !p->scope.created || p->scope.consumed)
+        return MC_WORLD_STORAGE_OK;
+    if (p->invoking || !p->scope.attempted)
+        return presentation_note(call, MC_WORLD_STORAGE_BUSY,
+                                 "Presentation native close lacks recorded return", p->scope.site);
+    mc_entity_tick_execution_world_slot_phase phase;
+    if (!presentation_phase(call, &phase))
+        return presentation_note(call, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                 "Presentation native close token identity", p->scope.site);
+    if (phase == MC_ENTITY_TICK_EXECUTION_WORLD_FREE ||
+        phase == MC_ENTITY_TICK_EXECUTION_WORLD_RETAINED) {
+        p->scope.consumed = true;
+        return MC_WORLD_STORAGE_OK;
+    }
+    mc_entity_tick_execution_world_token token;
+    if (phase != MC_ENTITY_TICK_EXECUTION_WORLD_OPEN ||
+        !mc_entity_tick_execution_current_world(call->context.execution, &token) ||
+        !same_world(&p->scope.token, &token))
+        return presentation_note(call, MC_WORLD_STORAGE_BUSY,
+                                 "Presentation native close awaits exact current token",
+                                 p->scope.site);
+    return presentation_pop(call);
 }
 
 static bool in_domain(int32_t x, int32_t y, int32_t z) {
@@ -695,6 +1020,17 @@ bool mc_world_mutation_execution_remove(mc_world_mutation_execution_call *call,
                            false);
 }
 
+bool mc_world_mutation_execution_set(mc_world_mutation_execution_call *call,
+                                     mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
+                                     int32_t id, bool *out, mc_world_mutation_error *error,
+                                     mc_entity_tick_execution_site site) {
+    if (!mc_world_mutation_execution_current(call, world, site))
+        return false;
+    mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
+    return block_set_owned(&call->context, world, x, y, z, id, out, &call->child, &raw, error,
+                           false);
+}
+
 bool mc_world_mutation_execution_set_quiet(mc_world_mutation_execution_call *call,
                                            mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
                                            int32_t id, int32_t metadata, bool *out,
@@ -816,6 +1152,12 @@ bool mc_world_mutation_execution_owns_world(const mc_world_mutation_execution_ca
                                             const mc_entity_tick_execution_world_token *world) {
     if (call == NULL || world == NULL || call->close_done)
         return false;
+    if (call->presentation != NULL && !call->presentation->scope.consumed &&
+        same_world(&call->presentation->scope.token, world)) {
+        mc_entity_tick_execution_world_slot_phase phase;
+        if (presentation_phase(call, &phase) && phase == MC_ENTITY_TICK_EXECUTION_WORLD_OPEN)
+            return true;
+    }
     return mc_world_mutation_drop_owns_world(call->drop, world) ||
            mc_world_mutation_execution_owns_world(call->child, world) ||
            (call->chunk != NULL &&
@@ -850,6 +1192,45 @@ mc_world_mutation_execution_failure_observer(const mc_world_mutation_execution_c
     return call->observer.entered && !call->observer.completed ? &call->observer : NULL;
 }
 
+bool mc_world_mutation_execution_failed_presentation(const mc_world_mutation_execution_call *call,
+                                                     mc_world_mutation_presentation_failure *out) {
+    if (call == NULL || call->active || out == NULL)
+        return false;
+    if (mc_world_mutation_execution_failed_presentation(call->child, out) ||
+        (call->chunk != NULL &&
+         mc_world_mutation_execution_failed_presentation(call->chunk->hook, out)))
+        return true;
+    const mutation_presentation *p = call->presentation;
+    if (p == NULL || p->invoking || !p->returned || !p->frame.entered || p->completed)
+        return false;
+    *out = (mc_world_mutation_presentation_failure){.execution = &p->frame,
+                                                    .error = &p->error,
+                                                    .status = p->status,
+                                                    .fault = p->frame.source_fault,
+                                                    .particle = p->particle};
+    return true;
+}
+
+const mc_world_material_execution *
+mc_world_mutation_execution_failed_material(const mc_world_mutation_execution_call *call,
+                                            mc_world_storage_status *raw) {
+    if (call == NULL || call->active || raw == NULL)
+        return NULL;
+    const mc_world_material_execution *child =
+        mc_world_mutation_execution_failed_material(call->child, raw);
+    if (child != NULL)
+        return child;
+    if (call->chunk != NULL) {
+        child = mc_world_mutation_execution_failed_material(call->chunk->hook, raw);
+        if (child != NULL)
+            return child;
+    }
+    if (call->material == NULL || !call->material->entered || call->material->completed)
+        return NULL;
+    *raw = call->material_status;
+    return call->material;
+}
+
 mc_world_storage_status
 mc_world_mutation_execution_native_close(mc_world_mutation_execution_call *call) {
     if (call == NULL || call->close_done)
@@ -861,6 +1242,8 @@ mc_world_mutation_execution_native_close(mc_world_mutation_execution_call *call)
         status = mc_world_mutation_chunk_native_close(call->chunk);
     if (status == MC_WORLD_STORAGE_OK)
         status = mc_world_mutation_drop_native_close(call->drop);
+    if (status == MC_WORLD_STORAGE_OK)
+        status = presentation_native_close(call);
     call->close_done = status == MC_WORLD_STORAGE_OK;
     return status;
 }
@@ -889,6 +1272,8 @@ mc_world_mutation_execution_retire(mc_world_mutation_execution_call **slot) {
     free(call->chunk);
     free(call->support);
     free(call->plant);
+    free(call->material);
+    free(call->presentation);
     free(call);
     *slot = NULL;
     return MC_WORLD_STORAGE_OK;

@@ -487,8 +487,8 @@
       "sha256": "8a9b441be8788d514cfe896c49a024ab7380b9f85aaaf418d0ba1762f43c05f3"
     },
     "src/world/runtime/presentation.c": {
-      "bytes": 22937,
-      "sha256": "213129f7a912d449632d2e2e319a892c6b2980efbcd4bc6602ce3272f1277e2b"
+      "bytes": 23431,
+      "sha256": "06f9ebd7293b5aaf7b42741c6caba8ad729cfd2831608c2e75e6dff43c131653"
     },
     "src/world/runtime/raytrace.c": {
       "bytes": 38793,
@@ -531,8 +531,8 @@
       "sha256": "ff3cf04e9bcfb028e2e372fc328da5a1277f30e7edb4b1346925312fb1970abb"
     },
     "src/world/runtime/presentation_execution_internal.h": {
-      "bytes": 4096,
-      "sha256": "33470313a5e2f6741eddd064be8f2d994ae1d0b07b8c9b0e4188fbed669c26e5"
+      "bytes": 4143,
+      "sha256": "35bbebf0bc4d1f85552d40bc7b98f5eac5f436044fe0758bd5394ae46da8f951"
     }
   },
   "helpers": {

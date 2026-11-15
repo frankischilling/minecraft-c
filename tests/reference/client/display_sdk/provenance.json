@@ -8078,8 +8078,8 @@
       "sha256": "eb477a22925eb83fe2d2a0d7662dd0a437832ad2dcf619e8dbc465081e1f80d2"
     },
     "cmake/player_damage.cmake": {
-      "bytes": 17349,
-      "sha256": "a747881de3c4de4ee19f519ad9482124fbf7e5b3147ca8ca09bf06f36be94a85"
+      "bytes": 18902,
+      "sha256": "29271c4edf14d9371001d2e441820c13dde4dc718de0f071929905286d07d4d0"
     },
     "cmake/tests/armor.cmake": {
       "bytes": 739,
@@ -8090,8 +8090,8 @@
       "sha256": "ae15e8fb904b7fde7d0b92a22beea685aaf1a6ba0ac106c30a54c8c02662f2a2"
     },
     "src/entity/movement/effects.c": {
-      "bytes": 88343,
-      "sha256": "fb215d5321d190015ec169bacd592fcf41ab42f583d1b6b5a59a799fa1b17eb5"
+      "bytes": 89851,
+      "sha256": "a8f828b0a01603d5c957dfdf18a0062b1ed28928703bff4fd108605f4c36efe0"
     },
     "src/entity/player/damage.c": {
       "bytes": 4943,
@@ -8510,8 +8510,8 @@
       "sha256": "3fab4fbbc6995fd85db93e86be5bb5f17c7499a97d6acda39c2e65dec3305556"
     },
     "src/entity/player/sleep.c": {
-      "bytes": 49455,
-      "sha256": "ea7e6fe33b0e918f58297cad1e7678c72b67170af75c8d18ae9715fe51bd311e"
+      "bytes": 49785,
+      "sha256": "ded7dbccdbcc3e985cb847dc20c7631c0fbcb6e98af0c0405bbb1203eb60d4c7"
     },
     "src/entity/player/sleep_internal.h": {
       "bytes": 852,
@@ -9847,7 +9847,7 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76712,
-      "sha256": "d358bf5f7af6d3a1c8f3ec4fab38e0c4d380d129afdd65b6ecb0dd087ac4a3eb"
+      "sha256": "e4e33a0e007182e530775e13f92eebfd88d40a1baa85d00a2bd31e7947202900"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -10011,7 +10011,7 @@
     },
     "tests/tools/world/test_arrow_natural_flight.py": {
       "bytes": 16754,
-      "sha256": "9675ee0ca78c429b52d7c03bf1a99422434a7e92637b07c1d038007be3c9996b"
+      "sha256": "8f78b5879449578546e0afe774532caa51ecce88f2cb241a805638d1f89d1d17"
     },
     "tests/world/runtime/test_arrow_natural_flight.c": {
       "bytes": 19352,
@@ -10027,7 +10027,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "ee67de4d6506acfbb3e05f1ba4cbfc676f345e312e310bbad8db837dc8eaeaaa"
+      "sha256": "c13f3eb9b80c9970bd465c3400850fe850e5e9cc6872e051c3ee24a6eaf9e434"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,
@@ -10390,12 +10390,12 @@
       "sha256": "39cbbe086646137e8aa3cb94a913317b2ab7c11af87d5f155b05e94ed7f340b6"
     },
     "src/world/runtime/presentation.c": {
-      "bytes": 22937,
-      "sha256": "213129f7a912d449632d2e2e319a892c6b2980efbcd4bc6602ce3272f1277e2b"
+      "bytes": 23431,
+      "sha256": "06f9ebd7293b5aaf7b42741c6caba8ad729cfd2831608c2e75e6dff43c131653"
     },
     "src/world/runtime/presentation_execution_internal.h": {
-      "bytes": 4096,
-      "sha256": "33470313a5e2f6741eddd064be8f2d994ae1d0b07b8c9b0e4188fbed669c26e5"
+      "bytes": 4143,
+      "sha256": "35bbebf0bc4d1f85552d40bc7b98f5eac5f436044fe0758bd5394ae46da8f951"
     },
     "src/world/runtime/world_access.c": {
       "bytes": 59580,
@@ -10594,8 +10594,8 @@
       "sha256": "237f1a9cd295af640367c0e664a327c2eb9d0aa9a78e005be8eb6de2ae94f017"
     },
     "src/entity/player/sleep_execution_internal.h": {
-      "bytes": 1652,
-      "sha256": "1ec8c557aebabf3019294040fd2abd1029ba96b34ccc52b2576c35d16ab4d1ae"
+      "bytes": 1919,
+      "sha256": "bf0e4f0775cc267648074a7479b3536f77e75cbf166bb80e385dcbb21c6d9910"
     },
     "src/world/runtime/bed_occupancy_execution_internal.h": {
       "bytes": 1062,
@@ -10610,8 +10610,8 @@
       "sha256": "57f3b6fd2035a550cf796ad4ec289287bf2d53f4a321ee91e5c9520f0fce8692"
     },
     "src/world/runtime/mutation/world_execution_internal.h": {
-      "bytes": 11319,
-      "sha256": "044b17797fb0332d84a61647db11b5ddef7f55a6a064db5a38dff165ecd8303d"
+      "bytes": 14970,
+      "sha256": "8cbf7769788255167ef8e3f06fa1c3afac583c4dcae08975ff3ae95f5650dac3"
     },
     "tests/reference/entity/player_recursive_wake/RecursiveWakeObservation.java": {
       "bytes": 7702,

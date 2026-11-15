@@ -963,6 +963,12 @@ mc_player_wake_execution_failed_drop(const mc_player_sleep_call *c) {
                : mc_world_mutation_execution_failed_drop(c->owned->mutation);
 }
 
+bool mc_player_wake_execution_failed_presentation(const mc_player_sleep_call *c,
+                                                  mc_world_mutation_presentation_failure *out) {
+    return c != NULL && c->owned != NULL && !c->state.active &&
+           mc_world_mutation_execution_failed_presentation(c->owned->mutation, out);
+}
+
 mc_world_storage_status mc_player_wake_execution_native_close(mc_player_sleep_call *c) {
     if (c == NULL || c->owned == NULL)
         return MC_WORLD_STORAGE_OK;

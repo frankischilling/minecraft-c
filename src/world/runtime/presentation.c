@@ -92,6 +92,9 @@ static bool presentation_note(mc_world_presentation_execution *frame,
 static bool presentation_current(mc_world_presentation_execution *frame, mc_world_runtime *world) {
     if (frame->owned->ownership_status != MC_WORLD_STORAGE_OK)
         return false;
+    if (frame->owned->math_failed || !presentation_quiet(frame->owned))
+        return presentation_note(frame, MC_WORLD_STORAGE_BUSY,
+                                 "World presentation canonical child work remains retained");
     mc_entity_tick_execution_world_token current;
     if (!mc_entity_tick_execution_current_world(frame->execution, &current))
         return presentation_note(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -141,8 +144,9 @@ static bool sound_body(mc_world_runtime *world, double x, double y, double z,
         mc_world_access *world_access = NULL;
         bool present = false;
         mc_world_storage_error cause = {0};
-        if (!mc_world_access_next(world, index, 9, 23, 28, &world_access, &present,
-                                  &error->world_access_bytecode, &cause))
+        if (!mc_world_access_next_detailed(world, index, 9, 23, 28, &world_access, &present,
+                                           &error->world_access_bytecode, &cause,
+                                           execution == NULL ? NULL : &execution->source_fault))
             return presentation_failure(world, error, cause);
         if (!present) {
             error->world_access_bytecode = 0;
@@ -183,8 +187,9 @@ static bool particle_body(mc_world_runtime *world, const mc_registry_string *nam
         mc_world_access *world_access = NULL;
         bool present = false;
         mc_world_storage_error cause = {0};
-        if (!mc_world_access_next(world, index, 9, 23, 28, &world_access, &present,
-                                  &error->world_access_bytecode, &cause))
+        if (!mc_world_access_next_detailed(world, index, 9, 23, 28, &world_access, &present,
+                                           &error->world_access_bytecode, &cause,
+                                           execution == NULL ? NULL : &execution->source_fault))
             return presentation_failure(world, error, cause);
         if (!present) {
             error->world_access_bytecode = 0;
@@ -263,7 +268,8 @@ static bool presentation_owned_enter(mc_world_presentation_execution *frame,
         frame->owned == NULL || world == NULL || error == NULL || status == NULL || frame->entered)
         return presentation_note(frame, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                                  "World presentation execution/fresh outputs required");
-    if (frame->owned->ownership_status != MC_WORLD_STORAGE_OK || !presentation_quiet(frame->owned))
+    if (frame->owned->ownership_status != MC_WORLD_STORAGE_OK || frame->owned->math_failed ||
+        !presentation_quiet(frame->owned))
         return presentation_note(frame, MC_WORLD_STORAGE_BUSY,
                                  "World presentation fresh result required");
     if (!mc_entity_tick_execution_current_world(frame->execution, &frame->world))

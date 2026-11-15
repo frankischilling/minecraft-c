@@ -160,6 +160,11 @@ static bool fluid_metadata(const fluid_frame *frame, unsigned int pc, int32_t x,
  * otherwise live m18/index23/selected bA24. Never read a stale World cause. */
 static bool fluid_material(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y,
                            int32_t z, mc_material **out) {
+    if (frame->owned != NULL) {
+        fluid_at(frame, pc);
+        return mc_world_mutation_execution_material(frame->owned, frame->world, x, y, z, out,
+                                                    frame->error, fluid_site(frame, pc));
+    }
     mc_world_mutation_error *lower = fluid_workspace(frame, pc);
     if (lower == NULL)
         return false;
@@ -248,6 +253,13 @@ static bool fluid_array_block(const fluid_frame *frame, unsigned int load_pc, un
 static bool fluid_write_id(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y,
                            int32_t z, int32_t id) {
     bool ignored;
+    if (frame->owned != NULL) {
+        fluid_at(frame, pc);
+        if (!mc_world_mutation_execution_set(frame->owned, frame->world, x, y, z, id, &ignored,
+                                             frame->error, fluid_site(frame, pc)))
+            return fluid_nested(frame, pc, frame->error);
+        return true;
+    }
     mc_world_mutation_error *lower = fluid_workspace(frame, pc);
     if (lower == NULL)
         return false;
@@ -657,7 +669,7 @@ static bool fluid_still_to_flow(mc_world_runtime *world, mc_block *block, int32_
 }
 
 static bool fluid_fizz(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y, int32_t z,
-                       mc_world_mutation_error *error);
+                       mc_world_mutation_error *error, mc_world_mutation_execution_call *owned);
 
 static bool fluid_spill(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y, int32_t z,
                         int32_t metadata, mc_world_mutation_error *error) {
@@ -673,7 +685,7 @@ static bool fluid_spill(mc_world_runtime *world, mc_block *block, int32_t x, int
         return false;
     if (old > 0) {
         if (block->fields.bA == fluid_material_static(&frame, MC_MATERIAL_h)) {
-            if (!fluid_fizz(world, block, x, y, z, error))
+            if (!fluid_fizz(world, block, x, y, z, error, NULL))
                 return fluid_nested(&frame, 43, error);
         } else {
             const mc_block *selected;
@@ -839,6 +851,9 @@ static bool fluid_literal(const fluid_frame *frame, unsigned int pc, const char 
                           const mc_registry_string **out) {
     mc_registry_error registry = mc_world_mutation_empty_registry();
     fluid_at(frame, pc);
+    if (frame->owned != NULL)
+        return mc_world_mutation_execution_literal(frame->owned, frame->block->classes, text, out,
+                                                   frame->error, fluid_site(frame, pc));
     if (mc_registry_runtime_literal_ascii(frame->block->classes, text, out, &registry) !=
         MC_REGISTRY_OK)
         return fluid_registry_fail(frame, pc, &registry, "Fluid source literal resolution");
@@ -847,6 +862,10 @@ static bool fluid_literal(const fluid_frame *frame, unsigned int pc, const char 
 
 static bool fluid_math(const fluid_frame *frame, unsigned int pc, double *out) {
     fluid_at(frame, pc);
+    if (frame->owned != NULL)
+        return mc_world_mutation_execution_math(frame->owned,
+                                                frame->block->classes->options.random_profile, out,
+                                                frame->error, fluid_site(frame, pc));
     const mc_java_random_profile_status status =
         mc_java_math_random(frame->block->classes->options.random_profile, out);
     frame->world->last_random_status = status;
@@ -860,14 +879,37 @@ static bool fluid_math(const fluid_frame *frame, unsigned int pc, double *out) {
     return mc_world_mutation_fail(frame->world, frame->error, mapped, "Fluid actual Math.random");
 }
 
+static bool fluid_presentation_failed(const fluid_frame *frame) {
+    /* Later argument evaluation may fail before the World invocation. Close
+     * only its actual captured operand; never retry Source or clear its cause. */
+    if (frame->owned != NULL)
+        (void)mc_world_mutation_execution_presentation_abort(frame->owned);
+    return false;
+}
+
 static bool fluid_fizz(mc_world_runtime *world, mc_block *block, int32_t x, int32_t y, int32_t z,
-                       mc_world_mutation_error *error) {
-    const fluid_frame frame =
+                       mc_world_mutation_error *error, mc_world_mutation_execution_call *owned) {
+    fluid_frame frame =
         fluid_frame_make(world, block, "rp", "kv", "i(Lfd;III)V", "h(Ldj;III)V", error);
+    fluid_owned(&frame, owned, "i", "(Lfd;III)V");
+    /* The World operand precedes the floats, String and Random arguments. Each
+     * particle iteration captures another occurrence before either Math draw. */
+    if (owned != NULL &&
+        !mc_world_mutation_execution_presentation_begin(owned, world, error, fluid_site(&frame, 0)))
+        return false;
     /* Native FP admission is at the first reached floating operation, not at
      * tick/add/neighbor entry before earlier integer/World effects. */
-    if ((_mm_getcsr() & 0xffc0u) != 0x1f80u)
-        return fluid_fail(&frame, 2, "Fluid fizz FP admission");
+    if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
+        if (owned == NULL)
+            return fluid_fail(&frame, 2, "Fluid fizz FP admission");
+        fluid_at(&frame, 2);
+        /* Native admission does not manufacture a Java exception or replace
+         * the ordinary Source status of already completed World mutations. */
+        mc_world_runtime_execution_result_note(mc_world_mutation_execution_result_of(owned),
+                                               MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                               "Fluid fizz FP admission", fluid_site(&frame, 2));
+        return fluid_presentation_failed(&frame);
+    }
     const float fx = (float)x;
     const float sx = fx + 0.5f;
     const float fy = (float)y;
@@ -876,49 +918,72 @@ static bool fluid_fizz(mc_world_runtime *world, mc_block *block, int32_t x, int3
     const float sz = fz + 0.5f;
     const mc_registry_string *sound;
     if (!fluid_literal(&frame, 20, "random.fizz", &sound))
-        return false;
+        return fluid_presentation_failed(&frame);
     mc_java_random *random = world->fields.r;
     fluid_at(&frame, 30);
-    if (random == NULL)
-        return fluid_fail(&frame, 30, "Fluid fizz Random receiver");
+    if (random == NULL) {
+        (void)fluid_fail(&frame, 30, "Fluid fizz Random receiver");
+        return fluid_presentation_failed(&frame);
+    }
     const float first = mc_java_random_next_float(random);
     random = world->fields.r;
     fluid_at(&frame, 37);
-    if (random == NULL)
-        return fluid_fail(&frame, 37, "Fluid fizz Random receiver");
+    if (random == NULL) {
+        (void)fluid_fail(&frame, 37, "Fluid fizz Random receiver");
+        return fluid_presentation_failed(&frame);
+    }
     const float second = mc_java_random_next_float(random);
     const float difference = first - second;
     const float scaled = difference * 0.8f;
     const float pitch = 2.6f + scaled;
-    mc_world_mutation_error *lower = fluid_workspace(&frame, 45);
-    if (lower == NULL)
-        return false;
     fluid_at(&frame, 45);
-    const bool sounded = mc_world_mutation_sound(world, (double)sx, (double)sy, (double)sz, sound,
-                                                 0.5f, pitch, lower);
-    if (!fluid_child_result(&frame, 45, lower, sounded))
-        return false;
+    if (owned != NULL) {
+        if (!mc_world_mutation_execution_sound(owned, world, (double)sx, (double)sy, (double)sz,
+                                               sound, 0.5f, pitch, error, fluid_site(&frame, 45))) {
+            (void)fluid_nested(&frame, 45, error);
+            return false;
+        }
+    } else {
+        mc_world_mutation_error *lower = fluid_workspace(&frame, 45);
+        if (lower == NULL)
+            return false;
+        const bool sounded = mc_world_mutation_sound(world, (double)sx, (double)sy, (double)sz,
+                                                     sound, 0.5f, pitch, lower);
+        if (!fluid_child_result(&frame, 45, lower, sounded))
+            return false;
+    }
     for (int32_t i = 0; i < 8; ++i) {
+        if (owned != NULL && !mc_world_mutation_execution_presentation_begin(
+                                 owned, world, error, fluid_site(&frame, 58)))
+            return false;
         const mc_registry_string *particle;
         if (!fluid_literal(&frame, 59, "largesmoke", &particle))
-            return false;
+            return fluid_presentation_failed(&frame);
         double draw_x;
         if (!fluid_math(&frame, 63, &draw_x))
-            return false;
+            return fluid_presentation_failed(&frame);
         const double px = (double)x + draw_x;
         const double py = (double)y + 1.2;
         double draw_z;
         if (!fluid_math(&frame, 76, &draw_z))
-            return false;
+            return fluid_presentation_failed(&frame);
         const double pz = (double)z + draw_z;
-        lower = fluid_workspace(&frame, 83);
-        if (lower == NULL)
-            return false;
         fluid_at(&frame, 83);
-        const bool emitted =
-            mc_world_mutation_particle(world, particle, px, py, pz, 0.0, 0.0, 0.0, lower);
-        if (!fluid_child_result(&frame, 83, lower, emitted))
-            return false;
+        if (owned != NULL) {
+            if (!mc_world_mutation_execution_particle(owned, world, particle, px, py, pz, 0.0, 0.0,
+                                                      0.0, error, fluid_site(&frame, 83))) {
+                (void)fluid_nested(&frame, 83, error);
+                return false;
+            }
+        } else {
+            mc_world_mutation_error *lower = fluid_workspace(&frame, 83);
+            if (lower == NULL)
+                return false;
+            const bool emitted =
+                mc_world_mutation_particle(world, particle, px, py, pz, 0.0, 0.0, 0.0, lower);
+            if (!fluid_child_result(&frame, 83, lower, emitted))
+                return false;
+        }
     }
     return fluid_return(&frame);
 }
@@ -935,15 +1000,6 @@ static bool fluid_mix(mc_world_runtime *world, mc_block *block, int32_t x, int32
         return fluid_return(&frame);
     if (block->fields.bA != fluid_material_static(&frame, MC_MATERIAL_h))
         return fluid_return(&frame);
-    if (owned != NULL) {
-        /* The ordinary Water body returns above. Lava's first material query
-         * needs its own retained mixing, fizz and notifying-write children. */
-        fluid_at(&frame, 41);
-        mc_world_runtime_execution_result_note(
-            mc_world_mutation_execution_result_of(owned), MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-            "Owned Lava mixing material query", fluid_site(&frame, 41));
-        return false;
-    }
     bool contact = false;
     static const unsigned int query_pc[5] = {41, 65, 89, 113, 137};
     for (int32_t direction = 0; direction < 5; ++direction) {
@@ -983,7 +1039,7 @@ static bool fluid_mix(mc_world_runtime *world, mc_block *block, int32_t x, int32
             if (!fluid_write_id(&frame, 204, x, y, z, id))
                 return false;
         }
-        if (!fluid_fizz(world, block, x, y, z, error))
+        if (!fluid_fizz(world, block, x, y, z, error, owned))
             return fluid_nested(&frame, 214, error);
     }
     return fluid_return(&frame);

@@ -32,6 +32,7 @@ typedef struct mc_world_presentation_execution {
     mc_entity_tick_execution_world_token world;
     mc_world_access_failure_lease *lease;
     mc_world_storage_status callback_status;
+    mc_world_access_source_fault source_fault;
     size_t callbacks_returned;
     bool entered, completed;
 } mc_world_presentation_execution;

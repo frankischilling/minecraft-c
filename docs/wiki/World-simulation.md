@@ -844,3 +844,14 @@ first scheduled request and `World.o=true`. The
 21-profile original/Windows comparison; the
 [scheduling contract](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/world/scheduling.md#retained-scheduling-during-player-wake)
 separates this retained path from general scheduling, Lava and tick execution.
+
+## Retained Lava mixing
+
+[Lava neighbors during Player wake](Combat-and-projectiles#lava-mixing-during-wake)
+use the same actual mixing/fizz bodies and World material queries as ordinary
+calls. Notifying replacement and quiet conversion retain Chunk metadata,
+height/light observers, nested Block addition and scheduled requests. Each
+sound/particle owns its evaluated World before later String/Random arguments.
+Callback exceptions and open child scopes preserve the reached effects rather
+than retrying the game operation during cleanup. Queued ticks, light
+propagation and unrestricted play remain separate qualification work.

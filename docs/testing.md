@@ -10066,3 +10066,74 @@ The temporary Linux source/build is removed after retaining exact source and
 product hashes, native captures, baseline failures and test logs. These scenes
 and component comparisons do not establish natural graphical damage wake,
 original audiovisual equality, sustained play or an FPS improvement.
+
+## Lava mixing during Player wake
+
+The [original packet](../tests/reference/entity/lava_wake/README.md) declares
+29 prepared calls through actual sleeping Player damage and World neighbor
+dispatch. Two fresh unchanged-original JDK17 VMs produce identical complete
+streams. The Java-free model checks each callback prefix, source stack,
+World/Math Random checkpoint, rounded sound pitch, particle position, all five
+Chunk plane hashes, height stores, light-region merging and scheduled-class
+state. Original classes and getters are neither replaced nor recompiled.
+
+Metadata zero selects Obsidian, one through four select Cobblestone, and five
+or fifteen retain hot Lava. Cases cover all five Water directions, no contact,
+Still Water, and genuine cell, height/range, sound and particle exceptions.
+High-level Still Lava can fizz once before conversion and again in Flowing
+Lava's addition body. Early and late range exceptions distinguish the height
+callback from the later conversion callback and preserve the actual reached
+metadata, light queue, suppression flag and scheduler prefix.
+
+The native fixture emits selected Player state, World/Player/Math Random,
+all five complete Chunk planes, Lava/Water cells, light queue and scheduled
+state before damage and after return, native close, cleanup and retirement.
+The controller compares the declared before-state and reached after-state
+directly with original observations. Duplicate fields in independent transport
+records must agree before projection. Diagnostic cleanup does not change the
+observed game state or repeat callbacks.
+
+Five separate native controls cover FP refusal at the first fizz float,
+an open child World at the first sound or fourth particle, and absent
+MathHelper tables on normal and range-error paths. The descendant controls
+prove raw Source success with native refusal, a blocked first close, one exact
+child pop and successful parent cleanup. Java Math still draws from its actual
+profile when Minecraft's unrelated trig owner is absent. Original packet
+corruption tests have six groups; native-reader tests have eight. Both pass
+with ordinary Python and `-O`.
+
+Native comparison omits Java stack frames, Player motion and AABB fields,
+object identities, damage-history/armor flags, statistics and other unexposed
+fields. Original scheduled-class initialization and sequence are explicit
+prepared native inputs. The missing scheduling-radius Chunks leave both
+scheduled sets empty; sequence consumption and interrupted requests are still
+compared exactly. These cases do not qualify natural class construction,
+scheduled ticks, light propagation, natural encounters, graphical sleeping
+damage, original audiovisual equality or FPS.
+
+Windows MSVC Release passes all 1,246 configured CTests in 461.60 seconds,
+without failures, errors, skips, duplicate names or unrun cases. All 6,154
+frozen source inputs stay unchanged during that run. The focused Linux Clang18
+Debug selection passes 112 tests in 61.19 seconds with address, undefined
+behavior and leak sanitizers. All 6,552 copied files stay unchanged; twelve
+product hashes and complete captures/logs are retained. This is not a current full Linux
+suite. Strict GCC13 `-O2` compilation passes the new fixture and the changed
+World mutation, fluid and presentation units with all configured diagnostics.
+
+Each native host matches 9,811 selected original scalars across the 29 profiles.
+The two supported absent-MathHelper controls match another 748 values. FP and
+sound/fourth-particle descendant controls verify their stopped prefixes through
+separate native predicates. Restoring the preceding fluid body makes all 29
+declared Lava scenarios fail without sanitizer errors; restoring the candidate
+passes the full focused selection. The baseline retains other current modules
+and uses each scenario's genuine prepared inputs.
+
+Fresh monitor-2 Bed and Arrow/Pig scenes pass independent NBT save readback,
+six inspected frames and complete window cleanup. Both retain all 2,404
+source/product inputs and 413 assets unchanged. These graphical checks use
+the same runtime code as the full suite; they do not qualify original Lava
+graphics/audio or graphical sleeping damage. Pinned formatting passes 2,387 C
+files/fragments. Source bindings pass 14,952 entries plus five live bundles.
+The temporary Linux source/build is removed after retaining receipts. Only
+result prose and its current bindings change after the full Windows run;
+runtime code, native fixtures and the sealed original packet remain byte-identical.

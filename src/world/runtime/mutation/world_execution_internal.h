@@ -1,6 +1,7 @@
 #ifndef MC_WORLD_RUNTIME_MUTATION_WORLD_EXECUTION_INTERNAL_H
 #define MC_WORLD_RUNTIME_MUTATION_WORLD_EXECUTION_INTERNAL_H
 
+#include "../presentation_execution_internal.h"
 #include "../runtime_execution_internal.h"
 #include "mc/world/runtime/mutations.h"
 #include "notifications_execution_internal.h"
@@ -45,6 +46,20 @@ bool mc_world_mutation_execution_source_null(const mc_world_mutation_execution_c
 const mc_world_notification_execution *
 mc_world_mutation_execution_failure_observer(const mc_world_mutation_execution_call *);
 
+/* Actual retained presentation body, independent of the mutable enclosing
+ * mutation projection. The exact World token can be RETAINED after its failed
+ * checked pop; its producer receipt stays owned by that execution slot. */
+typedef struct mc_world_mutation_presentation_failure {
+    const mc_world_presentation_execution *execution;
+    const mc_world_mutation_error *error;
+    mc_world_storage_status status;
+    mc_world_access_source_fault fault;
+    bool particle;
+} mc_world_mutation_presentation_failure;
+
+bool mc_world_mutation_execution_failed_presentation(const mc_world_mutation_execution_call *,
+                                                     mc_world_mutation_presentation_failure *);
+
 /* Shared descendants reuse the canonical result and retained call frames. */
 mc_registry_classes *mc_world_mutation_execution_registry(const mc_world_mutation_execution_call *);
 mc_world_runtime_execution_result *
@@ -54,6 +69,41 @@ bool mc_world_mutation_execution_current(const mc_world_mutation_execution_call 
 bool mc_world_mutation_execution_get(mc_world_mutation_execution_call *, mc_world_runtime *,
                                      int32_t, int32_t, int32_t, bool, int32_t *,
                                      mc_world_mutation_error *, mc_entity_tick_execution_site);
+bool mc_world_mutation_execution_material(mc_world_mutation_execution_call *, mc_world_runtime *,
+                                          int32_t, int32_t, int32_t, mc_material **,
+                                          mc_world_mutation_error *, mc_entity_tick_execution_site);
+typedef struct mc_world_material_execution mc_world_material_execution;
+const mc_world_material_execution *
+mc_world_mutation_execution_failed_material(const mc_world_mutation_execution_call *,
+                                            mc_world_storage_status *);
+bool mc_world_mutation_execution_set(mc_world_mutation_execution_call *, mc_world_runtime *,
+                                     int32_t, int32_t, int32_t, int32_t, bool *,
+                                     mc_world_mutation_error *, mc_entity_tick_execution_site);
+/* Begin captures the actual World operand before later arguments. Every
+ * accepted begin is paired with invoke or abort; neither repeats Source work.
+ * Invoke closes this exact occurrence, retaining failed producers and any
+ * refused close until native drainage. Abort is idempotent after consumption.
+ * String/Math qualification uses the defining Registry/World graph, never the
+ * unrelated MathHelper trig owner. All result/error/status storage is stable. */
+bool mc_world_mutation_execution_presentation_begin(mc_world_mutation_execution_call *,
+                                                    mc_world_runtime *, mc_world_mutation_error *,
+                                                    mc_entity_tick_execution_site);
+bool mc_world_mutation_execution_literal(mc_world_mutation_execution_call *, mc_registry_classes *,
+                                         const char *, const mc_registry_string **,
+                                         mc_world_mutation_error *, mc_entity_tick_execution_site);
+bool mc_world_mutation_execution_math(mc_world_mutation_execution_call *, mc_java_random_profile *,
+                                      double *, mc_world_mutation_error *,
+                                      mc_entity_tick_execution_site);
+bool mc_world_mutation_execution_sound(mc_world_mutation_execution_call *, mc_world_runtime *,
+                                       double, double, double, const mc_registry_string *, float,
+                                       float, mc_world_mutation_error *,
+                                       mc_entity_tick_execution_site);
+bool mc_world_mutation_execution_particle(mc_world_mutation_execution_call *, mc_world_runtime *,
+                                          const mc_registry_string *, double, double, double,
+                                          double, double, double, mc_world_mutation_error *,
+                                          mc_entity_tick_execution_site);
+mc_world_storage_status
+mc_world_mutation_execution_presentation_abort(mc_world_mutation_execution_call *);
 bool mc_world_mutation_execution_set_quiet(mc_world_mutation_execution_call *, mc_world_runtime *,
                                            int32_t, int32_t, int32_t, int32_t, int32_t, bool *,
                                            mc_world_mutation_error *,

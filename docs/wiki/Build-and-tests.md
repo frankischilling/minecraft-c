@@ -2163,3 +2163,23 @@ The [former build page](https://github.com/frankischilling/minecraft-c/blob/feat
 [normal-generation checks](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/history/wiki-builds.md#normal-generation-checks),
 retains older commands, counts and their original scope. Current reproduction
 commands and finite comparison limits are in the [test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md).
+
+## Lava wake comparison
+
+Two fresh unchanged-original VMs agree on 29 fixed Lava mixing/fizz profiles.
+The independent Java-free model checks exact callback/Random prefixes, rounded
+sound/particle parameters, Chunk planes, height/light effects and scheduling.
+Original-reader corruption tests pass six groups with ordinary Python and
+`-O`; native-reader tests pass eight groups, including exact before-state and
+duplicate-field checks. Native FP and descendant-scope controls have their own
+qualification. Reproduction and regression results are in the
+[test record](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/testing.md#lava-mixing-during-player-wake).
+
+The full Windows MSVC Release suite passes 1,246 tests without skips; focused
+Linux Clang ASan/UBSan/leak detection passes 112. Strict GCC compilation passes
+the fixture and three changed runtime units. Each host pairs 9,811 selected
+original scalars plus 748 from supported controls. The preceding fluid body
+fails all 29 Lava regressions in isolation; restoring the candidate passes.
+Fresh monitor-2 Bed and Arrow/Pig scenes pass independent save readback, six
+inspected captures and complete window cleanup. These results qualify neither
+unrestricted play nor a measured FPS gain.

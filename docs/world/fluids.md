@@ -5,7 +5,7 @@ addition, neighbor and tick dispatch in
 [fluids.c](../../src/world/runtime/mutation/fluids.c). This is partial synchronous
 gameplay support. Selected Block quantity/item/damage bodies, drop construction
 and [actual Entity publication](entities.md) execute. Moving-piston TileEntity
-lookup, fire/portal effects and nonempty WorldAccess receivers remain dependencies where reached. Population and
+lookup, fire/portal effects and untyped WorldAccess receivers remain dependencies where reached. Population and
 complete original/native fluid parity are not established by these bodies alone.
 
 ## Source behavior
@@ -139,3 +139,40 @@ maintenance round trip; flow continues and nonempty serialization refuses to
 overwrite the saved region. Moving-piston lookup still stops at PC 14. The
 [publication contract](entities.md) describes the separate native ownership and
 terminal disposal limits.
+
+## Owned Lava mixing during Player wake
+
+Lava neighbors reached by retained Player wake use the same mixing and fizz
+bodies as ordinary Block calls. The material child retains its actual scalar
+query, acquisition, raw status and native continuation independently. Its
+successful nullable Material result is compared with the live Water Material;
+queries stop at the first contact in north, south, west, east, above order.
+
+Level zero replaces Lava with the live Obsidian Block ID. Levels one through
+four select Cobblestone. Higher levels still fizz without that replacement.
+The notifying ID setter retains actual Chunk work, height observers and
+recursive neighbors. Fizz keeps the original Lava receiver after the cell
+changes. A Still Lava level above four can fizz again when its quiet conversion
+enters the Flowing Lava addition body. Those two sounds and sixteen particles
+remain distinct, with their original Random draws and callback order.
+
+Each sound or particle captures a fresh occurrence of its evaluated World
+before later arguments. The sound resolves its String before two separate
+`World.r` float draws. Each particle resolves its String before two shared
+Java Math double draws. Java Math uses the matching application Random profile;
+it does not require Minecraft's unrelated MathHelper trig tables. The existing
+WorldAccess loops retain actual failing producers and reload the live list
+after ordinary success.
+
+Source callback exceptions preserve completed block, light-queue, Random and
+observer effects. Native FP admission and an outstanding child World scope
+stop continuation through their own channel. Checked native cleanup closes
+only recorded operands and does not repeat callbacks or argument evaluation.
+The failure view points to the actual retained presentation diagnostic rather
+than reconstructing it from an enclosing mutation error.
+
+The [original packet](../../tests/reference/entity/lava_wake/README.md) and
+[test record](../testing.md#lava-mixing-during-player-wake) define the
+finite qualification. Scheduled ticks, light propagation, natural damage
+encounters, original rendering/audio equality and general FPS need separate
+evidence.
