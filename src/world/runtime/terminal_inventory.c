@@ -9,6 +9,7 @@
 #include "../../entity/particles/particle_internal.h"
 #include "../../entity/player/player_internal.h"
 #include "../../entity/player/terminal_inventory.h"
+#include "../../inventory/chest_internal.h"
 #include "construction_internal.h"
 #include "mc/entity/particles/particle.h"
 #include "mc/world/dimension/world_provider.h"
@@ -24,12 +25,14 @@ typedef enum terminal_record_kind {
     TERMINAL_SLOT,
     TERMINAL_CHUNK,
     TERMINAL_PATH,
-    TERMINAL_PATH_ARENA
+    TERMINAL_PATH_ARENA,
+    TERMINAL_CHEST
 } terminal_record_kind;
 
 typedef struct terminal_record {
     const void *identity;
     terminal_record_kind kind;
+    bool expanded;
     size_t holds, occurrences;
 } terminal_record;
 
@@ -372,6 +375,9 @@ static mc_world_storage_status collect_path(terminal_collector *c, const void *s
                                          : status;
 }
 
+static mc_world_storage_status collect_chest_inventory(terminal_collector *, const mc_entity *,
+                                                       mc_world_storage_error *);
+
 static mc_world_storage_status collect_entity_references(terminal_collector *c,
                                                          mc_world_storage_error *error) {
     /* Appending new identities keeps this traversal linear and avoids native
@@ -379,8 +385,10 @@ static mc_world_storage_status collect_entity_references(terminal_collector *c,
      * Entity identities or the actual owning slots supplied to collect_entity. */
     for (size_t i = 0; i < c->entity_count; ++i) {
         mc_entity *entity = c->entities[i];
-        mc_world_storage_status status =
-            collect_entity(c, &entity->mount_hold, entity->mount_hold, error);
+        mc_world_storage_status status = collect_chest_inventory(c, entity, error);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
+        status = collect_entity(c, &entity->mount_hold, entity->mount_hold, error);
         if (status != MC_WORLD_STORAGE_OK)
             return status;
         status = collect_entity(c, &entity->passenger_hold, entity->passenger_hold, error);
@@ -475,6 +483,8 @@ static mc_world_storage_status collect_tile(void *context, const void *slot, mc_
     return status == MC_WORLD_STORAGE_OK ? increment(&c->inventory.tile_entity_occurrences, error)
                                          : status;
 }
+
+#include "terminal_chest.inc"
 
 static mc_world_storage_status collect_chunk(void *context, const mc_world_chunk *chunk,
                                              mc_world_storage_error *error) {
@@ -638,7 +648,8 @@ static mc_world_storage_status audit(terminal_collector *c,
         const terminal_record *entry = &c->records[i];
         if (entry->identity == NULL ||
             (entry->kind != TERMINAL_ENTITY && entry->kind != TERMINAL_TILE &&
-             entry->kind != TERMINAL_PATH && entry->kind != TERMINAL_PATH_ARENA))
+             entry->kind != TERMINAL_PATH && entry->kind != TERMINAL_PATH_ARENA &&
+             entry->kind != TERMINAL_CHEST))
             continue;
         if (entry->holds < entry->occurrences)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -648,6 +659,8 @@ static mc_world_storage_status audit(terminal_collector *c,
                           entry->kind == TERMINAL_PATH ? "World terminal external Path hold"
                           : entry->kind == TERMINAL_PATH_ARENA
                               ? "World terminal external Path arena hold"
+                          : entry->kind == TERMINAL_CHEST
+                              ? "World terminal external Chest inventory hold"
                               : "World terminal external Entity or TileEntity hold");
     }
     if (c->world->persistent_bindings < c->inventory.expected_world_bindings)

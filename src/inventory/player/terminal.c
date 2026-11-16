@@ -1,14 +1,15 @@
+#include "../chest_internal.h"
 #include "../internal.h"
 #include "terminal_internal.h"
 
 #include <string.h>
 
-/* At most 46 Slot owners and thirteen other allocations per Container, plus
+/* At most 90 Slot owners and thirteen other allocations per Container, plus
  * IX's three allocations. No allocation, source call or owner mutation is
  * permitted while constructing this proof. Stack occurrences may alias. */
 typedef struct terminal_proof {
-    const void *allocations[128];
-    size_t sizes[128], count;
+    const void *allocations[192];
+    size_t sizes[192], count;
     mc_inventory_error error;
 } terminal_proof;
 
@@ -62,7 +63,27 @@ static bool slot_shape(const mc_container *c, const inv_slot *slot, size_t index
                                  .inventory = c->inventory,
                                  .container_index = (int32_t)index,
                                  .armor_type = -1};
-    if (index == 0) {
+    if (c->kind == MC_CONTAINER_CHEST) {
+        const size_t storage = (size_t)c->chest_rows * 9u;
+        const int32_t offset = (c->chest_rows - 4) * 18;
+        if (index < storage) {
+            s.inventory_kind = MC_SLOT_INVENTORY_CHEST;
+            s.inventory = c->chest;
+            s.inventory_index = (int32_t)index;
+            s.x = 8 + (int32_t)(index % 9u) * 18;
+            s.y = 18 + (int32_t)(index / 9u) * 18;
+        } else if (index < storage + 27u) {
+            const int32_t cell = (int32_t)(index - storage);
+            s.inventory_index = 9 + cell;
+            s.x = 8 + (cell % 9) * 18;
+            s.y = 103 + (cell / 9) * 18 + offset;
+        } else {
+            const int32_t cell = (int32_t)(index - storage - 27u);
+            s.inventory_index = cell;
+            s.x = 8 + cell * 18;
+            s.y = 161 + offset;
+        }
+    } else if (index == 0) {
         s.kind = MC_SLOT_CRAFTING;
         s.inventory_kind = MC_SLOT_INVENTORY_RESULT;
         s.inventory = c->result;
@@ -114,31 +135,48 @@ static bool container(terminal_proof *p, mc_container *c, mc_inventory_player *i
         return refuse(p, MC_INVENTORY_BUSY, "Inventory terminal entered Container or child hold");
     if (c->terminal_sealed != sealed)
         return refuse(p, MC_INVENTORY_BUSY, "Inventory terminal Container seal state");
-    const size_t count = aa ? 45u : 46u;
+    const bool chest = !aa && c->kind == MC_CONTAINER_CHEST;
+    const size_t count = aa ? 45u : chest ? (size_t)c->chest_rows * 9u + 36u : 46u;
     if (!budget_shape(&c->budget) || c->side != MC_REGISTRY_CLIENT ||
-        c->kind != (aa ? MC_CONTAINER_PLAYER : MC_CONTAINER_WORKBENCH) || c->classes != registry ||
-        c->inventory != ix || !c->inventory_bound || !c->constructor_entered || !c->constructed ||
-        c->constructor_failed || c->constructor_pc != (aa ? 290 : 266) || c->local != aa ||
-        c->world != (aa ? NULL : world))
+        c->kind != (aa      ? MC_CONTAINER_PLAYER
+                    : chest ? MC_CONTAINER_CHEST
+                            : MC_CONTAINER_WORKBENCH) ||
+        c->classes != registry || c->inventory != ix || !c->inventory_bound ||
+        !c->constructor_entered || !c->constructed || c->constructor_failed ||
+        c->constructor_pc != (aa      ? 290
+                              : chest ? 217
+                                      : 266) ||
+        c->local != aa || c->world != (aa || chest ? NULL : world) ||
+        (chest && (c->chest == NULL || (c->chest_rows != 3 && c->chest_rows != 6))) ||
+        (!chest && (c->chest != NULL || c->chest_rows != 0)))
         return refuse(p, MC_INVENTORY_INVALID_ARGUMENT, "Inventory terminal Container identity");
     mc_inventory_crafting *g = c->crafting;
     mc_inventory_result *r = c->result;
-    if (!allocation(p, g, sizeof(*g), &total) || !allocation(p, r, sizeof(*r), &total))
-        return false;
-    if (g->active)
-        return refuse(p, MC_INVENTORY_BUSY, "Inventory terminal entered Crafting grid");
-    if (g->terminal_sealed != sealed || r->terminal_sealed != sealed)
-        return refuse(p, MC_INVENTORY_BUSY, "Inventory terminal child seal state");
-    const size_t cells = aa ? 4u : 9u;
-    if (g->side != MC_REGISTRY_CLIENT || r->side != MC_REGISTRY_CLIENT || g->handler != c ||
-        g->budget != &c->budget || r->budget != &c->budget || !g->container_owned ||
-        !r->container_owned || g->width != (aa ? 2 : 3) || g->size != cells ||
-        g->local_budget.used != 0 || g->local_budget.limit != 0 || g->local_budget.max_slots != 0 ||
-        r->local_budget.used != 0 || r->local_budget.limit != 0 || r->local_budget.max_slots != 0)
-        return refuse(p, MC_INVENTORY_INVALID_ARGUMENT, "Inventory terminal owned grid/result");
-    if (!allocation(p, g->slots, cells * sizeof(*g->slots), &total) ||
-        !allocation(p, r->slots, sizeof(*r->slots), &total) ||
-        !list(p, c->slots, &c->budget, &total) || !list(p, c->snapshots, &c->budget, &total) ||
+    if (chest) {
+        if (g != NULL || r != NULL)
+            return refuse(p, MC_INVENTORY_INVALID_ARGUMENT, "CD owns no Crafting or result child");
+        if (inv_chest_terminal_admit(c->chest, sealed, &p->error) != MC_INVENTORY_OK)
+            return false;
+    } else {
+        if (!allocation(p, g, sizeof(*g), &total) || !allocation(p, r, sizeof(*r), &total))
+            return false;
+        if (g->active)
+            return refuse(p, MC_INVENTORY_BUSY, "Inventory terminal entered Crafting grid");
+        if (g->terminal_sealed != sealed || r->terminal_sealed != sealed)
+            return refuse(p, MC_INVENTORY_BUSY, "Inventory terminal child seal state");
+        const size_t cells = aa ? 4u : 9u;
+        if (g->side != MC_REGISTRY_CLIENT || r->side != MC_REGISTRY_CLIENT || g->handler != c ||
+            g->budget != &c->budget || r->budget != &c->budget || !g->container_owned ||
+            !r->container_owned || g->width != (aa ? 2 : 3) || g->size != cells ||
+            g->local_budget.used != 0 || g->local_budget.limit != 0 ||
+            g->local_budget.max_slots != 0 || r->local_budget.used != 0 ||
+            r->local_budget.limit != 0 || r->local_budget.max_slots != 0)
+            return refuse(p, MC_INVENTORY_INVALID_ARGUMENT, "Inventory terminal owned grid/result");
+        if (!allocation(p, g->slots, cells * sizeof(*g->slots), &total) ||
+            !allocation(p, r->slots, sizeof(*r->slots), &total))
+            return false;
+    }
+    if (!list(p, c->slots, &c->budget, &total) || !list(p, c->snapshots, &c->budget, &total) ||
         !list(p, c->listeners, &c->budget, &total) ||
         !allocation(p, c->blocked_players, sizeof(*c->blocked_players), &total))
         return false;
@@ -151,8 +189,8 @@ static bool container(terminal_proof *p, mc_container *c, mc_inventory_player *i
     if (set->members != NULL &&
         !allocation(p, set->members, set->capacity * sizeof(*set->members), &total))
         return false;
-    const inv_slot *nodes[46];
-    bool visited[46] = {0};
+    const inv_slot *nodes[90];
+    bool visited[90] = {0};
     for (size_t i = 0; i < count; ++i) {
         nodes[i] = c->slots->values[i];
         if (!allocation(p, nodes[i], sizeof(*nodes[i]), &total))
@@ -227,8 +265,14 @@ mc_inventory_status mc_inventory_player_terminal_prepare(mc_inventory_player *ix
         if (p.error.status == MC_INVENTORY_OK) {
             ix->terminal_sealed = true;
             aa->terminal_sealed = it->terminal_sealed = true;
-            aa->crafting->terminal_sealed = it->crafting->terminal_sealed = true;
-            aa->result->terminal_sealed = it->result->terminal_sealed = true;
+            aa->crafting->terminal_sealed = true;
+            aa->result->terminal_sealed = true;
+            if (it->crafting != NULL)
+                it->crafting->terminal_sealed = true;
+            if (it->result != NULL)
+                it->result->terminal_sealed = true;
+            if (it->chest != NULL)
+                inv_chest_terminal_seal(it->chest);
             *out = (mc_inventory_player_terminal){ix, aa, it, player, true};
         }
     }

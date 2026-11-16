@@ -2,6 +2,7 @@
 #include "load_world_terminal_internal.h"
 #include "respawn.h"
 
+#include "../../entity/player/terminal_inventory.h"
 #include "../../world/runtime/chunk_provider_internal.h"
 #include "../../world/runtime/saving/progress_internal.h"
 #include "../../world/runtime/source_terminal_internal.h"
@@ -1231,6 +1232,16 @@ static mc_client_world_load_status cleanup_prefix(mc_client_world_load_call *cal
     client_application *app = call->classes->app;
     if (cleanup_records(call) != MC_CLIENT_WORLD_LOAD_OK)
         return call->cleanup.status;
+    if (call->state.terminal_prepare_selected) {
+        mc_player_terminal_inventory_error inventory = {0};
+        const mc_entity_status ended = mc_player_terminal_inventory_end_calls(
+            call->state.player, app->registry, call->state.world, &inventory);
+        if (ended != MC_ENTITY_OK)
+            return cleanup_fail(call,
+                                ended == MC_ENTITY_BUSY ? MC_CLIENT_WORLD_LOAD_BUSY
+                                                        : MC_CLIENT_WORLD_LOAD_CHILD_FAILED,
+                                inventory.operation);
+    }
     if (call->render_world_owned) {
         const mc_client_render_global_status detached =
             call->state.terminal_prepare_selected

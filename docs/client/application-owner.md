@@ -2,14 +2,15 @@
 
 Minecraft class activation and the `kg` worker are integrated startup
 prerequisites. The combined source passes 393 Windows and 385 cases per sanitized
-Linux compiler. The normal no-connection startup path now returns from `Minecraft.a()`;
-frame-loop adoption and World entry remain unfinished.
+Linux compiler at that checkpoint. The normal no-connection startup path returns
+from `Minecraft.a()`; the [default runtime](menu-runtime.md) adopts the same App
+and continues through bounded [World loading](world-loading.md) and gameplay paths.
 
-The current title/inspection frontend remains a component bootstrap. Its native
+The separate title/inspection frontend remains a component bootstrap. Its native
 `running` and `captured` flags do not establish the roles of source volatile
 fields `J` and `o`. The complete App layout adds exactly one atomic
-storage location for each actual source field. Later source construction and
-run methods must read and write those locations at their actual callsites.
+storage location for each actual source field. Source construction and the
+runtime read and write those locations at their actual callsites.
 
 ## Class activation
 
@@ -33,9 +34,11 @@ setup precede the source initializer and are reported separately. The default
 claimed. A successful occurrence release clears its passed pointer even when
 another hold remains. Final release frees the arrays and native class owner.
 
-This module does not implement later static `a` publication at constructor264,
-static File selection, array updates in the run loop or emergency reserve
-release. Those methods must use the same class namespace when implemented.
+The App constructor now publishes static `a` at constructor264 in this same
+class namespace. Default File selection belongs to the
+[startup path](normal-startup.md). The class activation module does not itself
+implement run-loop array updates or emergency reserve release; their remaining
+work keeps the same namespace and ownership requirements.
 
 ## Actual App lifetime and atomics
 

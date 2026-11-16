@@ -79,6 +79,12 @@ mc_client_screen_status mc_client_screen_transitions_workbench(mc_client_screen_
                                                                mc_entity *actual_player, int32_t x,
                                                                int32_t y, int32_t z,
                                                                mc_client_screen_error *);
+/* Actual DC.a(LW): capture Minecraft.b before NEW HP, evaluate Player.c
+ * before the supplied nullable LW argument, then display HP synchronously. */
+mc_client_screen_status mc_client_screen_transitions_chest(mc_client_screen_transitions *,
+                                                           mc_entity *actual_player,
+                                                           mc_inventory_chest *actual_inventory,
+                                                           mc_client_screen_error *);
 /* Actual DC.r: GS.r publishes e=d before reading DC.b and synchronously
  * displaying NULL. No additional DA Escape focus call is inserted. */
 mc_client_screen_status mc_client_screen_transitions_player_close(mc_client_screen_transitions *,

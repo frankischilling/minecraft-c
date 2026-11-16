@@ -252,11 +252,9 @@ static bool retire_use(mc_client_gameplay_input *call) {
     return true;
 }
 
-static mc_world_storage_status workbench(void *context, mc_entity *player, int32_t x, int32_t y,
-                                         int32_t z, mc_world_placement_error *error) {
-    mc_client_gameplay_input *call = context;
-    const mc_client_screen_status status = mc_client_screen_transitions_workbench(
-        call->transitions, player, x, y, z, &call->screen.screen);
+static mc_world_storage_status screen_transition_result(mc_client_gameplay_input *call,
+                                                        mc_client_screen_status status,
+                                                        mc_world_placement_error *error) {
     if (status == MC_CLIENT_SCREEN_OK)
         return MC_WORLD_STORAGE_OK;
     const mc_client_screen_error *screen = &call->screen.screen;
@@ -278,6 +276,23 @@ static mc_world_storage_status workbench(void *context, mc_entity *player, int32
     error->site = (mc_world_placement_site){screen->site.class_name, screen->site.method,
                                             screen->site.descriptor, screen->site.pc};
     return error->status;
+}
+
+static mc_world_storage_status workbench(void *context, mc_entity *player, int32_t x, int32_t y,
+                                         int32_t z, mc_world_placement_error *error) {
+    mc_client_gameplay_input *call = context;
+    const mc_client_screen_status status = mc_client_screen_transitions_workbench(
+        call->transitions, player, x, y, z, &call->screen.screen);
+    return screen_transition_result(call, status, error);
+}
+
+static mc_world_storage_status chest(void *context, mc_entity *player,
+                                     mc_inventory_chest *inventory,
+                                     mc_world_placement_error *error) {
+    mc_client_gameplay_input *call = context;
+    const mc_client_screen_status status = mc_client_screen_transitions_chest(
+        call->transitions, player, inventory, &call->screen.screen);
+    return screen_transition_result(call, status, error);
 }
 
 static mc_world_storage_status player_message(void *context, mc_entity *player,
@@ -320,6 +335,7 @@ static bool use(client_application *app, mc_client_gameplay_input *call, bool on
     const mc_world_block_activation_context activation = {.context = call,
                                                           .player_code_registry = app->registry,
                                                           .workbench = workbench,
+                                                          .chest = chest,
                                                           .player_message = player_message};
     const mc_singleplayer_use_context sources = {.activation = &activation,
                                                  .math = app->source_math_classes};

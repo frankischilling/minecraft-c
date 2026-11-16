@@ -12,8 +12,8 @@
       "sha256": "a5e341ee59b1f3b1dcb75ab01ab481e01d145299d5636c8010dc76a427020b38"
     },
     "src/client/runtime/world_tick.c": {
-      "bytes": 20532,
-      "sha256": "8526f85902e7cfb75ee2ec1f4b12b038cb0e9b059c80f6de5dd794440ceba8b4"
+      "bytes": 20662,
+      "sha256": "1676b11a93bd588b03bf6c8ca7a441df1cbe02409007c052a9c31c6ee6a5dc28"
     },
     "src/entity/arrow/internal.h": {
       "bytes": 2085,
@@ -48,8 +48,8 @@
       "sha256": "c2bc52972d5cabdf108f5694672a9814de129f9a002731cd146b6d066363666b"
     },
     "src/world/runtime/terminal_inventory.c": {
-      "bytes": 45552,
-      "sha256": "c582292cef314081feac27fe93acb38f9a93b12a015336b28461f33235b70815"
+      "bytes": 46146,
+      "sha256": "d11bb00a954c4e440ac054b9a9b05386c734fa26ce0b558e29e6a8c9c4fb4321"
     },
     "tests/world/runtime/test_arrow_natural_flight.c": {
       "bytes": 19352,

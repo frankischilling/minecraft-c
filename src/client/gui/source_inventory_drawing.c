@@ -9,12 +9,21 @@ bool mc_inventory_draw_fail(mc_client_inventory_draw_call *c, mc_client_screen_s
     c->state.source_pc = pc;
     mc_screen_fail(&c->error.screen, status, operation, owner, method, descriptor, pc);
     c->error.screen.native_policy = native;
+    if (!native) {
+        const char *exception =
+            status == MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE ? "java/lang/NullPointerException"
+            : status == MC_CLIENT_SCREEN_SOURCE_INDEX ? "java/lang/ArrayIndexOutOfBoundsException"
+            : status == MC_CLIENT_SCREEN_SOURCE_ARITHMETIC ? "java/lang/ArithmeticException"
+                                                           : NULL;
+        c->error.screen.source_exception = exception != NULL;
+        c->error.screen.exception_class = exception;
+    }
     return false;
 }
 
 const char *mc_inventory_draw_descriptor(const mc_client_inventory_draw_call *c,
                                          const char *owner) {
-    if (strcmp(owner, "ue") == 0 || strcmp(owner, "oo") == 0)
+    if (strcmp(owner, "ue") == 0 || strcmp(owner, "oo") == 0 || strcmp(owner, "hp") == 0)
         return "(F)V";
     if (strcmp(owner, "ub") == 0)
         return "(IIIIII)V";
@@ -89,14 +98,19 @@ static bool slot_error(mc_client_inventory_draw_call *c, mc_inventory_status sta
     c->error.screen.parent_site = (mc_client_screen_site){"id", "a", descriptor, pc};
     const mc_inventory_site s = c->error.slot.site;
     if (s.class_name == NULL)
-        return mc_inventory_draw_fail(
+        (void)mc_inventory_draw_fail(
             c,
             c->error.slot.source_exception ? MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE
                                            : MC_CLIENT_SCREEN_APP_FAILED,
             c->error.slot.operation, "id", "a", descriptor, pc, c->error.slot.native_policy);
-    return mc_inventory_draw_fail(c, MC_CLIENT_SCREEN_APP_FAILED, c->error.slot.operation,
-                                  s.class_name, s.method, s.descriptor, (unsigned int)s.pc,
-                                  c->error.slot.native_policy);
+    else
+        (void)mc_inventory_draw_fail(c, MC_CLIENT_SCREEN_APP_FAILED, c->error.slot.operation,
+                                     s.class_name, s.method, s.descriptor, (unsigned int)s.pc,
+                                     c->error.slot.native_policy);
+    c->error.screen.source_exception = c->error.slot.source_exception;
+    c->error.screen.source_error = c->error.slot.source_error;
+    c->error.screen.exception_class = c->error.slot.exception_class;
+    return false;
 }
 
 static bool hold_stack(mc_client_inventory_draw_call *c, const mc_item_stack *s, unsigned int pc) {
@@ -253,6 +267,8 @@ static bool cursor(mc_client_inventory_draw_call *c, mc_inventory_player *invent
 static bool foreground(mc_client_inventory_draw_call *c) {
     if (c->owner->base.kind == MC_CLIENT_SCREEN_WORKBENCH)
         return mc_workbench_draw_foreground(c);
+    if (c->owner->base.kind == MC_CLIENT_SCREEN_CHEST)
+        return mc_chest_draw_foreground(c);
     mc_client_source_id *o = c->owner;
     mc_player_string *literal = NULL;
     if (!mc_screen_lock(o->base.classes, &c->error.screen))
@@ -354,8 +370,9 @@ static bool body(mc_client_inventory_draw_call *c) {
         return false;
     c->state.origin_x = mc_java_i32_sub(o->base.fields.c, o->id.a) / 2;
     c->state.origin_y = mc_java_i32_sub(o->base.fields.d, o->id.i) / 2;
-    if (!(o->base.kind == MC_CLIENT_SCREEN_INVENTORY ? mc_inventory_draw_background(c)
-                                                     : mc_workbench_draw_background(c)))
+    if (!(o->base.kind == MC_CLIENT_SCREEN_INVENTORY   ? mc_inventory_draw_background(c)
+          : o->base.kind == MC_CLIENT_SCREEN_WORKBENCH ? mc_workbench_draw_background(c)
+                                                       : mc_chest_draw_background(c)))
         return false;
     mc_client_display *d = c->services.display;
 #define GL(expr, pc)                                                                               \
@@ -528,9 +545,9 @@ mc_client_screen_status mc_inventory_draw_begin_id(mc_client_source_id *o,
     c->partial = partial;
     if (!mc_screen_lock(o->base.classes, &c->error.screen))
         goto done;
-    if ((expected != MC_CLIENT_SCREEN_INVENTORY && expected != MC_CLIENT_SCREEN_WORKBENCH) ||
-        o->base.kind != expected || o->base.phase != MC_CLIENT_SCREEN_READY ||
-        o->base.active_calls != 0 || o->base.last_initialization == NULL) {
+    if (!mc_screen_container_kind(expected) || o->base.kind != expected ||
+        o->base.phase != MC_CLIENT_SCREEN_READY || o->base.active_calls != 0 ||
+        o->base.last_initialization == NULL) {
         mc_inventory_draw_fail(c, MC_CLIENT_SCREEN_INVALID_PHASE,
                                "Inventory initialized exclusive draw owner", NULL, NULL, NULL, 0,
                                true);
@@ -541,6 +558,8 @@ mc_client_screen_status mc_inventory_draw_begin_id(mc_client_source_id *o,
     c->screen_entered = true;
     if (o->base.kind == MC_CLIENT_SCREEN_WORKBENCH)
         c->state.workbench = true;
+    if (o->base.kind == MC_CLIENT_SCREEN_CHEST)
+        c->state.chest = true;
     mtx_unlock(&o->base.classes->mutex);
     c->state.active = true;
     (void)body(c);

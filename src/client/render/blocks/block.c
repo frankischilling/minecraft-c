@@ -254,6 +254,8 @@ static bool registry_result(mc_cv_context *c, mc_registry_status status, unsigne
                       "actual Block texture virtual child", pc, true);
 }
 
+#include "chest_texture.inc"
+
 bool mc_cv_texture(mc_cv_context *c, const mc_block *b, int32_t x, int32_t y, int32_t z,
                    int32_t side, unsigned int pc, int32_t *out) {
     const char *name = b != NULL && b->kind == MC_BLOCK_GRASS          ? "wp"
@@ -298,8 +300,8 @@ bool mc_cv_texture(mc_cv_context *c, const mc_block *b, int32_t x, int32_t y, in
                                                                                       : -1);
         }
     } else if (b->kind == MC_BLOCK_CHEST || b->kind == MC_BLOCK_LOCKED_CHEST) {
-        return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
-                          "actual Chest texture adjacency child", 0, true);
+        if (!chest_texture_checked(c, b, x, y, z, side, &value))
+            return false;
     } else {
         int32_t metadata;
         if (!mc_cv_metadata(c, x, y, z, 7, &metadata))

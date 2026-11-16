@@ -29,6 +29,10 @@ bool inv_interaction_null(mc_container_interaction_error *e, const char *operati
 bool inv_interaction_inventory(mc_container_interaction_error *e, mc_inventory_status status) {
     if (status == MC_INVENTORY_OK)
         return true;
+    if (e->inventory.source_exception) {
+        e->source_exception = true;
+        e->exception_class = e->inventory.exception_class;
+    }
     if (e->inventory.frame_count != 0) {
         e->dependency = e->inventory.frames[0];
         if (status == MC_INVENTORY_NULL_REFERENCE || status == MC_INVENTORY_INDEX_OUT_OF_BOUNDS) {

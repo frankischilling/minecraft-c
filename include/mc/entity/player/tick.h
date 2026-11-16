@@ -4,6 +4,7 @@
 #include "mc/entity/player/sleep.h"
 #include "mc/entity/player/statistics.h"
 #include "mc/entity/tick/environment.h"
+#include "mc/inventory/errors.h"
 
 typedef struct mc_player_tick_limits {
     size_t max_animation_work;
@@ -17,7 +18,8 @@ typedef enum mc_player_tick_child {
     MC_PLAYER_TICK_CHILD_NONE,
     MC_PLAYER_TICK_CHILD_ENVIRONMENT,
     MC_PLAYER_TICK_CHILD_ACTION,
-    MC_PLAYER_TICK_CHILD_WAKE
+    MC_PLAYER_TICK_CHILD_WAKE,
+    MC_PLAYER_TICK_CHILD_CONTAINER
 } mc_player_tick_child;
 
 typedef struct mc_player_tick_wake {
@@ -65,6 +67,7 @@ typedef struct mc_player_tick_error {
         mc_entity_tick_error environment;
         mc_player_action_error action;
         mc_player_tick_wake wake;
+        mc_inventory_error container;
     } child_error;
 
     mc_player_statistic_error statistic;
@@ -91,7 +94,12 @@ void mc_player_tick_error_init(mc_player_tick_error *);
  * receipts borrow actor-owned work; retirement checks those actual tagged
  * children before releasing the parent Registry. An EFFECT refusal identifies
  * its exact nested receipt through cleanup.effect and leaves its first source
- * cause intact. Inspect the current cleanup discriminator only. */
+ * cause intact. A CONTAINER failure borrows its full checked LW/Tile diagnostic
+ * from the same live CD graph; retirement ends child_error.container.chest
+ * before independent Registry cleanup can refuse. Drain Chest native call
+ * records only after this borrowed view has ended. Source frames, exception
+ * flags and value diagnostics survive retirement. Inspect the current cleanup
+ * discriminator only. */
 bool mc_player_tick_error_retire(mc_player_tick_error *);
 /* Genuine canonical READY dc only. The action entry is dc.o, living names
  * invokespecial ls.w_, and player executes inherited gs.w_. Internal virtual

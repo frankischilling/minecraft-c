@@ -34,7 +34,10 @@ static bool get(inv_slot *slot, const mc_item_stack **out, mc_container_interact
             return inv_interaction_null(e, "Result source null getter array");
         }
         status = mc_inventory_result_borrow(result, index, out, &e->inventory);
-    } else
+    } else if (slot->state.inventory_kind == MC_SLOT_INVENTORY_CHEST)
+        status = mc_inventory_chest_borrow((mc_inventory_chest *)slot->state.inventory, index, out,
+                                           &e->inventory);
+    else
         return inv_interaction_fail(e, MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,
                                     "Slot actual Inventory getter type");
     if (!inv_interaction_inventory(e, status))
@@ -137,6 +140,9 @@ bool inv_interaction_slot_changed(mc_container_interaction_call *c, inv_slot *sl
     else if (slot->state.inventory_kind == MC_SLOT_INVENTORY_RESULT)
         status = mc_inventory_result_changed((mc_inventory_result *)slot->state.inventory,
                                              &e->inventory);
+    else if (slot->state.inventory_kind == MC_SLOT_INVENTORY_CHEST)
+        status =
+            mc_inventory_chest_changed((mc_inventory_chest *)slot->state.inventory, &e->inventory);
     else
         return inv_interaction_fail(e, MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,
                                     "Slot actual changed Inventory type");
@@ -166,7 +172,10 @@ bool inv_interaction_slot_put(mc_container_interaction_call *c, inv_slot *slot,
             return inv_interaction_null(e, "Slot setter null Result array store receiver");
         status = mc_inventory_result_set((mc_inventory_result *)slot->state.inventory, index, value,
                                          &e->inventory);
-    } else
+    } else if (slot->state.inventory_kind == MC_SLOT_INVENTORY_CHEST)
+        status = mc_inventory_chest_set((mc_inventory_chest *)slot->state.inventory, index, value,
+                                        &e->inventory);
+    else
         return inv_interaction_fail(e, MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,
                                     "Slot actual setter Inventory type");
     if (!inv_interaction_inventory(e, status))
@@ -187,6 +196,10 @@ bool inv_interaction_slot_limit(mc_container_interaction_call *c, inv_slot *slot
     e->child = (mc_inventory_site){"gp", "d", "()I", 4};
     if (slot->state.inventory == NULL)
         return inv_interaction_null(e, "Slot null Inventory limit invocation receiver");
+    if (slot->state.inventory_kind == MC_SLOT_INVENTORY_CHEST)
+        return inv_interaction_inventory(
+            e, mc_inventory_chest_limit((mc_inventory_chest *)slot->state.inventory, out,
+                                        &e->inventory));
     *out = 64; /* IX, MQ and WL all literal64; no constructor/field access. */
     return true;
 }
@@ -248,6 +261,20 @@ static bool split_inventory(mc_container_interaction_call *c, inv_slot *slot, in
         e->child = (mc_inventory_site){"gp", "a", "(I)Liz;", 9};
     if (slot == NULL || slot->state.inventory == NULL)
         return inv_interaction_null(e, "Slot null Inventory split invocation receiver");
+    if (slot->state.inventory_kind == MC_SLOT_INVENTORY_CHEST) {
+        mc_item_stack *removed = NULL;
+        if (!inv_interaction_inventory(
+                e, mc_inventory_chest_split((mc_inventory_chest *)slot->state.inventory,
+                                            slot->state.inventory_index, amount, &removed,
+                                            &e->inventory)))
+            return false;
+        if (!inv_interaction_adopt(c, removed)) {
+            mc_item_stack_release(removed);
+            return false;
+        }
+        *out = removed;
+        return true;
+    }
     int32_t index = slot->state.inventory_index, length;
     mc_item_stack **array;
     mc_inventory_crafting *grid = NULL;

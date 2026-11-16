@@ -61,8 +61,11 @@ Nonair work begins C+pass, compiles Push/translation/scale/translation commands,
 begins the same static NW and installs its actual translation. Standard
 RenderBlocks calls append four vertices per face; NW performs its source quad
 expansion. Successful passes draw, Pop, end the same list and reset translation
-before A/E publication. A missing specialized geometry or TileEntity eligibility
-child retains its reached prefix.
+before A/E publication. TileEntity eligibility now calls the actual LL dispatcher
+and preserves its Class lookup/cache effects. Eligible entries receive their own
+native B List occurrences; the later nonempty special-renderer List/HashSet
+continuation remains unfinished. A missing specialized geometry child retains
+its reached prefix. See the [Chest qualification](chests.md).
 
 Compiled matrix commands execute on the canonical selected matrix and stacks.
 Compilation copies operands without changing them. Failed native replay keeps

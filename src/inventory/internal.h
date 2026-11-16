@@ -60,6 +60,8 @@ struct mc_container {
     mc_inventory_player *inventory;
     mc_inventory_crafting *crafting;
     mc_inventory_result *result;
+    mc_inventory_chest *chest;
+    int32_t chest_rows;
     mc_world_runtime *world;
     inv_list *snapshots, *slots, *listeners;
     inv_set *blocked_players;

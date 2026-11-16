@@ -19,7 +19,7 @@ def digest(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--executable", type=Path, required=True)
-    parser.add_argument("--mode", choices=("world", "callbacks", "item", "controller"), required=True)
+    parser.add_argument("--mode", choices=("world", "chest", "chest_terminal", "callbacks", "item", "controller"), required=True)
     parser.add_argument("--work-dir", type=Path, required=True)
     args = parser.parse_args()
     executable = args.executable.resolve(strict=True)
@@ -40,6 +40,12 @@ def main():
     if args.mode == "world":
         arguments = ["world-placement", str(world).encode("utf-8").hex()]
         marker = r"PASS: ([1-9][0-9]*) World placement source-order/ownership checks"
+    elif args.mode == "chest":
+        arguments = ["world-chest-activation", str(world).encode("utf-8").hex()]
+        marker = r"PASS: ([1-9][0-9]*) World Chest activation/operand/ownership checks"
+    elif args.mode == "chest_terminal":
+        arguments = ["world-chest-terminal", str(world).encode("utf-8").hex()]
+        marker = r"PASS: ([1-9][0-9]*) native World Chest terminal ownership checks"
     elif args.mode == "callbacks":
         source = Path(__file__).resolve().parents[1] / "world/test_source_saving.py"
         spec = importlib.util.spec_from_file_location("placement_authored_save", source)

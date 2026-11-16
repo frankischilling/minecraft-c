@@ -19,6 +19,9 @@ typedef struct mc_player_error mc_player_error;
 typedef struct mc_player_sleep_result_error mc_player_sleep_result_error;
 typedef struct mc_player_sleep_cleanup mc_player_sleep_cleanup;
 typedef struct mc_world_provider_error mc_world_provider_error;
+typedef struct mc_inventory_chest mc_inventory_chest;
+typedef struct mc_inventory_error mc_inventory_error;
+typedef struct mc_live_tile_entity_error mc_live_tile_entity_error;
 struct mc_world_step_error;
 
 /* Reached Player virtual children supplied by the enclosing client call.
@@ -32,6 +35,11 @@ typedef struct mc_world_block_activation_context {
     mc_registry_classes *player_code_registry;
     mc_world_storage_status (*workbench)(void *, mc_entity *, int32_t, int32_t, int32_t,
                                          mc_world_placement_error *);
+    /* Actual GS.a(LW) virtual. The nullable receiver argument is the same
+     * ordered Chest inventory constructed by E; a returned screen retains its
+     * own occurrence before the enclosing placement diagnostic can retire. */
+    mc_world_storage_status (*chest)(void *, mc_entity *, mc_inventory_chest *,
+                                     mc_world_placement_error *);
     /* Actual reached Player.b(String) virtual. key is the same nullable
      * Registry String identity from key_owner's code literal pool. Preserve
      * this error's work/ownership fields; retain actual failed client children
@@ -61,6 +69,11 @@ struct mc_world_placement_error {
     bool base_entered, base_returned, base_value, below_read;
     bool substrate_entered, substrate_returned;
     bool remote_read, remote, workbench_entered, workbench_returned;
+    bool chest_entered, chest_returned, chest_blocked;
+    size_t chest_tile_count, chest_join_count;
+    mc_inventory_chest *chest_inventory; /* Borrowed actual GS.a operand. */
+    const mc_live_tile_entity_error *chest_tile;
+    const mc_inventory_error *chest;
     bool bed_entered, bed_head, bed_occupied, bed_partner_read, bed_occupancy_cleared;
     bool bed_sleep_returned, player_message_entered, player_message_returned;
     int32_t bed_metadata, bed_direction, bed_x, bed_y, bed_z;

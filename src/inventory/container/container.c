@@ -5,11 +5,15 @@
 #include <string.h>
 
 static const char *container_class(const mc_container *container) {
+    if (container->kind == MC_CONTAINER_CHEST)
+        return "cd";
     return container->kind == MC_CONTAINER_PLAYER ? inv_class(container->side, "aa", "o")
                                                   : inv_class(container->side, "it", "fu");
 }
 
 static const char *constructor_desc(const mc_container *container) {
+    if (container->kind == MC_CONTAINER_CHEST)
+        return "(Llw;Llw;)V";
     return container->kind == MC_CONTAINER_PLAYER
                ? inv_class(container->side, "(Lix;Z)V", "(Lfx;Z)V")
                : inv_class(container->side, "(Lix;Lfd;III)V", "(Lfx;Ldj;III)V");
@@ -143,6 +147,7 @@ void inv_container_free(mc_container *container) {
     }
     if (container->inventory_bound)
         --container->inventory->containers;
+    mc_inventory_chest_release(container->chest);
     inv_free(&container->budget, container);
 }
 
@@ -157,6 +162,8 @@ mc_inventory_status inv_container_notify(mc_container *container, mc_inventory_e
                                       .operation = "Container matching already active"};
         return error->status;
     }
+    if (container->kind == MC_CONTAINER_CHEST)
+        return MC_INVENTORY_OK; /* CD inherits literal DW.a(LW) return. */
     const bool prior_active = container->active;
     container->active = true;
     /* The result receiver is evaluated before class active-use and matching. */
@@ -387,6 +394,134 @@ mc_inventory_status mc_container_workbench_allocate(mc_registry_side side,
     return allocate(side, classes, MC_CONTAINER_WORKBENCH, limits, out, error);
 }
 
+mc_inventory_status mc_container_chest_allocate(mc_registry_side side, mc_registry_classes *classes,
+                                                const mc_inventory_limits *limits,
+                                                mc_container **out, mc_inventory_error *error) {
+    if (side != MC_REGISTRY_CLIENT) {
+        mc_inventory_error e = {.status = MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,
+                                .operation = "CD client source scope"};
+        return inv_finish(error, &e);
+    }
+    return allocate(side, classes, MC_CONTAINER_CHEST, limits, out, error);
+}
+
+mc_inventory_status mc_container_chest_construct(mc_container *c, mc_inventory_player *inventory,
+                                                 mc_inventory_chest *chest,
+                                                 mc_inventory_error *result) {
+    mc_inventory_error e = {0};
+    if (c == NULL || c->kind != MC_CONTAINER_CHEST || c->constructor_entered || c->active ||
+        c->terminal_sealed ||
+        (inventory != NULL && (inventory->side != c->side || inventory->terminal_sealed))) {
+        e.status = MC_INVENTORY_INVALID_ARGUMENT;
+        e.operation = "CD one source constructor native admission";
+        return inv_finish(result, &e);
+    }
+    c->constructor_entered = c->constructing = c->active = true;
+    c->constructor_pc = 1;
+    c->snapshots = list_new(c, 5, &e);
+    if (c->snapshots == NULL)
+        goto base_failed;
+    c->slots = list_new(c, 16, &e);
+    if (c->slots == NULL)
+        goto base_failed;
+    c->listeners = list_new(c, 37, &e);
+    if (c->listeners == NULL)
+        goto base_failed;
+    c->blocked_players = inv_alloc(&c->budget, sizeof(*c->blocked_players), &e);
+    if (c->blocked_players == NULL) {
+        inv_frame(&e, c->side, "dw", "cl", "<init>", "()V", 48);
+        goto base_failed;
+    }
+    /* Native occurrences protect nullable source arguments, without reading a
+     * Player field or rejecting null GP Inventory arguments. */
+    if (inventory != NULL) {
+        if (inventory->containers == SIZE_MAX) {
+            e.status = MC_INVENTORY_LIMIT;
+            e.operation = "CD native Player Inventory binding overflow";
+            goto failed;
+        }
+        ++inventory->containers;
+        c->inventory_bound = true;
+    }
+    c->inventory = inventory;
+    c->constructor_pc = 6;
+    if (mc_inventory_chest_retain(chest, &e) != MC_INVENTORY_OK)
+        goto failed;
+    c->chest = chest;
+    c->constructor_pc = 11;
+    int32_t size;
+    if (mc_inventory_chest_size(chest, &size, &e) != MC_INVENTORY_OK) {
+        constructor_frame(&e, c, 11);
+        goto failed;
+    }
+    c->chest_rows = size / 9; /* Java idiv, truncates toward zero. */
+    c->constructor_pc = 19;
+    const int32_t offset = mc_java_i32_mul(mc_java_i32_sub(c->chest_rows, 4), 18);
+    for (int32_t row = 0; row < c->chest_rows; row = mc_java_i32_add(row, 1))
+        for (int32_t col = 0; col < 9; ++col)
+            if (!slot_add(c, MC_SLOT_NORMAL, MC_SLOT_INVENTORY_CHEST, chest,
+                          mc_java_i32_add(col, mc_java_i32_mul(row, 9)), 8 + col * 18,
+                          mc_java_i32_add(18, mc_java_i32_mul(row, 18)), -1, 55, 87, &e))
+                goto failed;
+    for (int32_t row = 0; row < 3; ++row)
+        for (int32_t col = 0; col < 9; ++col)
+            if (!slot_add(c, MC_SLOT_NORMAL, MC_SLOT_INVENTORY_PLAYER, inventory, col + row * 9 + 9,
+                          8 + col * 18, mc_java_i32_add(103 + row * 18, offset), -1, 122, 159, &e))
+                goto failed;
+    for (int32_t col = 0; col < 9; ++col)
+        if (!slot_add(c, MC_SLOT_NORMAL, MC_SLOT_INVENTORY_PLAYER, inventory, col, 8 + col * 18,
+                      mc_java_i32_add(161, offset), -1, 185, 208, &e))
+            goto failed;
+    c->constructor_pc = 217;
+    c->constructed = true;
+    c->constructing = c->active = false;
+    return inv_finish(result, &e);
+base_failed:
+    constructor_frame(&e, c, 1);
+failed:
+    c->constructor_failed = true;
+    c->constructing = c->active = false;
+    return inv_finish(result, &e);
+}
+
+mc_inventory_status mc_container_chest_create(mc_registry_side side, mc_registry_classes *classes,
+                                              mc_inventory_player *inventory,
+                                              mc_inventory_chest *chest,
+                                              const mc_inventory_limits *limits, mc_container **out,
+                                              mc_inventory_error *result) {
+    mc_inventory_error e = {0};
+    if (out == NULL || *out != NULL)
+        e.status = MC_INVENTORY_INVALID_ARGUMENT;
+    else {
+        mc_container *c = NULL;
+        if (mc_container_chest_allocate(side, classes, limits, &c, &e) == MC_INVENTORY_OK) {
+            if (mc_container_chest_construct(c, inventory, chest, &e) == MC_INVENTORY_OK)
+                *out = c;
+            else
+                inv_container_free(c);
+        }
+    }
+    return inv_finish(result, &e);
+}
+
+mc_inventory_status mc_container_chest_usable(mc_container *c, mc_entity *player, bool *out,
+                                              mc_inventory_error *result) {
+    mc_inventory_error e = {0};
+    if (c == NULL || c->kind != MC_CONTAINER_CHEST || !c->constructed || out == NULL) {
+        e.status = MC_INVENTORY_INVALID_ARGUMENT;
+        e.operation = "CD source eligibility native admission";
+    } else if (c->active || c->terminal_sealed) {
+        e.status = MC_INVENTORY_BUSY;
+        e.operation = "CD source eligibility already active";
+    } else {
+        c->active = true;
+        if (mc_inventory_chest_usable(c->chest, player, out, &e) != MC_INVENTORY_OK)
+            inv_frame(&e, c->side, "cd", "cd", "b", "(Lgs;)Z", 5);
+        c->active = false;
+    }
+    return inv_finish(result, &e);
+}
+
 mc_inventory_status mc_container_workbench_construct(mc_container *container,
                                                      mc_inventory_player *inventory,
                                                      mc_world_runtime *world, int32_t x, int32_t y,
@@ -479,6 +614,8 @@ bool mc_container_read_state(const mc_container *container, mc_container_state *
         .crafting = container->crafting,
         .result = container->result,
         .player_inventory = container->inventory,
+        .chest_inventory = container->chest,
+        .chest_rows = container->chest_rows,
         .world = container->world,
         .x = container->x,
         .y = container->y,

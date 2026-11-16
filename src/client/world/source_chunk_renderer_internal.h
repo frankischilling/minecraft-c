@@ -3,6 +3,12 @@
 #include "mc/client/world/source_chunk_renderer.h"
 #include "render_global_internal.h"
 
+typedef struct mc_source_dk_tile_hold {
+    struct mc_source_dk_tile_hold *next;
+    mc_client_render_list *list;
+    mc_tile_entity *tile;
+} mc_source_dk_tile_hold;
+
 struct mc_client_source_dk {
     mc_client_render_global *owner;
     mc_client_source_dk *next;
@@ -13,6 +19,7 @@ struct mc_client_source_dk {
     mc_entity_bounds *pending_pooled_bounds;
     mc_entity_bounds *displaced_bounds;
     const mc_client_render_global_error *failure; /* Same owner's retained current failure. */
+    mc_source_dk_tile_hold *tile_holds; /* Actual B List owning occurrences, native ledger. */
 };
 
 mc_client_source_dk *mc_source_dk_allocate(mc_client_render_global *,
@@ -33,6 +40,9 @@ bool mc_source_dk_call_bounds(mc_client_source_dk *, mc_client_render_global_err
 void mc_source_dk_dirty(mc_client_source_dk *);
 mc_client_render_global_status mc_source_dk_native_retire(mc_client_source_dk *,
                                                           mc_client_render_global_error *);
+/* End only native Tile rights for this cleared List, or all rights at native
+ * DK retirement (list NULL). Source clear/close is never synthesized here. */
+void mc_source_dk_tile_occurrences_release(mc_client_source_dk *, mc_client_render_list *list);
 
 bool mc_render_global_pointer_append(mc_client_render_global *, mc_client_render_list *, void *,
                                      mc_client_graphics_site, mc_client_render_global_error *);

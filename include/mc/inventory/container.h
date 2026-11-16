@@ -1,20 +1,26 @@
 #ifndef MC_INVENTORY_CONTAINER_H
 #define MC_INVENTORY_CONTAINER_H
 
+#include "mc/inventory/chest.h"
 #include "mc/inventory/crafting.h"
 #include "mc/inventory/player.h"
 #include "mc/inventory/result.h"
 
 typedef struct mc_world_runtime mc_world_runtime;
 
-typedef enum mc_container_kind { MC_CONTAINER_PLAYER, MC_CONTAINER_WORKBENCH } mc_container_kind;
+typedef enum mc_container_kind {
+    MC_CONTAINER_PLAYER,
+    MC_CONTAINER_WORKBENCH,
+    MC_CONTAINER_CHEST
+} mc_container_kind;
 
 typedef enum mc_slot_kind { MC_SLOT_NORMAL, MC_SLOT_CRAFTING, MC_SLOT_ARMOR } mc_slot_kind;
 
 typedef enum mc_slot_inventory_kind {
     MC_SLOT_INVENTORY_CRAFTING,
     MC_SLOT_INVENTORY_RESULT,
-    MC_SLOT_INVENTORY_PLAYER
+    MC_SLOT_INVENTORY_PLAYER,
+    MC_SLOT_INVENTORY_CHEST
 } mc_slot_inventory_kind;
 
 typedef struct mc_container_slot_state {
@@ -40,6 +46,8 @@ typedef struct mc_container_state {
     mc_inventory_crafting *crafting;
     mc_inventory_result *result;
     mc_inventory_player *player_inventory;
+    mc_inventory_chest *chest_inventory;
+    int32_t chest_rows;
     mc_world_runtime *world;
     int32_t x, y, z;
 } mc_container_state;
@@ -72,6 +80,23 @@ mc_inventory_status mc_container_workbench_allocate(mc_registry_side, mc_registr
 mc_inventory_status mc_container_workbench_construct(mc_container *, mc_inventory_player *,
                                                      mc_world_runtime *, int32_t, int32_t, int32_t,
                                                      mc_inventory_error *);
+/* CD.<init>(LW,LW), retaining partial Slots/fields on constructor failure. The
+ * supplied Player Inventory is a nullable LW argument; CD does not dereference
+ * it while building ordinary GP Slots. CD owns the Chest and Player bindings.
+ * Negative/partial rows use Java division and wrapping layout arithmetic. */
+mc_inventory_status mc_container_chest_allocate(mc_registry_side, mc_registry_classes *,
+                                                const mc_inventory_limits *, mc_container **,
+                                                mc_inventory_error *);
+mc_inventory_status mc_container_chest_construct(mc_container *, mc_inventory_player *,
+                                                 mc_inventory_chest *, mc_inventory_error *);
+mc_inventory_status mc_container_chest_create(mc_registry_side, mc_registry_classes *,
+                                              mc_inventory_player *, mc_inventory_chest *,
+                                              const mc_inventory_limits *, mc_container **,
+                                              mc_inventory_error *);
+/* Actual CD.b(GS) invokes its storage's LW.a_(GS), with original null and child
+ * frames. This is source eligibility, independent of native retirement. */
+mc_inventory_status mc_container_chest_usable(mc_container *, mc_entity *, bool *,
+                                              mc_inventory_error *);
 mc_inventory_status mc_container_player_create_default(
     mc_registry_side side, mc_registry_classes *classes, mc_inventory_player *inventory,
     const mc_inventory_limits *limits, mc_container **out, mc_inventory_error *error);

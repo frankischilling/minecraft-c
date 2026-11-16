@@ -1,3 +1,4 @@
+#include "source_chest_screen_internal.h"
 #include "source_create_world_internal.h"
 #include "source_death_screen_internal.h"
 #include "source_inventory_screen_internal.h"
@@ -151,7 +152,7 @@ bool mc_screen_instance_hold_locked(mc_client_source_da *o, mc_client_screen_err
 }
 
 static bool prepare_final(mc_client_source_da *o, mc_client_screen_error *e) {
-    if ((o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_WORKBENCH) &&
+    if (mc_screen_container_kind(o->kind) &&
         !mc_screen_container_retirement_admit_locked((mc_client_source_id *)o, e))
         return false;
     o->phase = MC_CLIENT_SCREEN_RETIRING;
@@ -166,7 +167,7 @@ static bool prepare_final(mc_client_source_da *o, mc_client_screen_error *e) {
         ready = mc_screen_death_cleanup_locked((mc_client_source_ch *)o, e);
     else if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD)
         ready = mc_screen_create_world_cleanup_locked((mc_client_source_fj *)o, e);
-    else if ((o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_WORKBENCH))
+    else if (mc_screen_container_kind(o->kind))
         ready = mc_screen_container_cleanup_locked((mc_client_source_id *)o, e);
     if (ready)
         ready = mc_screen_button_release_locked(&o->selected_cleanup, e);
@@ -249,7 +250,7 @@ mc_client_screen_status mc_client_screen_closed(mc_client_source_da *o,
                            "h", "()V", 0);
         else if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD)
             (void)mc_screen_create_world_closed_locked((mc_client_source_fj *)o, &e);
-        else if (o->kind == MC_CLIENT_SCREEN_INVENTORY)
+        else if (o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_CHEST)
             (void)mc_screen_container_closed_locked((mc_client_source_id *)o, &e);
         else if (o->kind == MC_CLIENT_SCREEN_WORKBENCH) {
             if (mc_screen_container_closed_locked((mc_client_source_id *)o, &e))
@@ -284,13 +285,10 @@ mc_client_screen_status mc_client_screen_pauses_game(mc_client_source_da *o, boo
             case MC_CLIENT_SCREEN_CREATE_WORLD:
             case MC_CLIENT_SCREEN_INVENTORY:
             case MC_CLIENT_SCREEN_WORKBENCH:
-                *out =
-                    o->kind != MC_CLIENT_SCREEN_INVENTORY && o->kind != MC_CLIENT_SCREEN_WORKBENCH;
-                e.site = (mc_client_screen_site){
-                    (o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_WORKBENCH)
-                        ? "id"
-                        : "da",
-                    "c", "()Z", 1};
+            case MC_CLIENT_SCREEN_CHEST:
+                *out = !mc_screen_container_kind(o->kind);
+                e.site = (mc_client_screen_site){mc_screen_container_kind(o->kind) ? "id" : "da",
+                                                 "c", "()Z", 1};
                 e.source_returned = true;
                 break;
             case MC_CLIENT_SCREEN_DEATH:
@@ -390,7 +388,7 @@ mc_client_screen_status mc_client_screen_inspect(mc_client_source_da *o,
         v.store_count = o->store_count;
         memcpy(v.stores, o->stores, sizeof(v.stores));
         v.failure = o->failure;
-        if ((o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_WORKBENCH)) {
+        if (mc_screen_container_kind(o->kind)) {
             const mc_client_source_id *inventory = (const mc_client_source_id *)o;
             v.id = inventory->id;
             v.last_pc = inventory->last_pc;
@@ -398,6 +396,13 @@ mc_client_screen_status mc_client_screen_inspect(mc_client_source_da *o,
                 v.id.j = NULL;
             if (o->kind == MC_CLIENT_SCREEN_INVENTORY)
                 v.ue = ((const mc_client_source_ue *)o)->fields;
+            else if (o->kind == MC_CLIENT_SCREEN_CHEST) {
+                v.hp = ((const mc_client_source_hp *)o)->fields;
+                if (o->phase == MC_CLIENT_SCREEN_RETIRING) {
+                    v.hp.l = NULL;
+                    v.hp.m = NULL;
+                }
+            }
         }
         if (o->kind == MC_CLIENT_SCREEN_MAIN_MENU) {
             const mc_client_source_fu *m = (const mc_client_source_fu *)o;

@@ -2,6 +2,7 @@
 #define MC_CLIENT_GUI_SOURCE_CONTAINER_SCREEN_INTERNAL_H
 
 #include "mc/client/controller/singleplayer.h"
+#include "mc/inventory/chest.h"
 #include "source_inventory_screen.h"
 #include "source_screen_internal.h"
 
@@ -18,7 +19,7 @@ typedef struct mc_screen_id_player_hold {
     mc_entity *player;
 } mc_screen_id_player_hold;
 
-/* The actual inherited ID subobject, shared physically by UE and OO. Only
+/* The actual inherited ID subobject, shared physically by UE, OO and HP. Only
  * the concrete UE owns mouse-position fields/Player preview state. */
 typedef struct mc_client_source_id {
     mc_client_source_da base;
@@ -33,6 +34,8 @@ typedef struct mc_client_source_id {
     mc_inventory_screen_call *closed_parent, *closed_direct;
     bool inherited_closed_returned, direct_closed_returned;
     mc_inventory_player *constructor_inventory;
+    mc_inventory_chest *constructor_chest;
+    bool chest_held;
     mc_world_runtime *constructor_world;
     bool world_held;
     mc_client_inventory_screen_error detail;
@@ -49,12 +52,15 @@ bool mc_screen_container_construct_locked(mc_client_source_id *, mc_container *,
                                           mc_client_screen_error *);
 bool mc_screen_container_initialize_locked(mc_client_source_id *, mc_client_screen_error *);
 bool mc_screen_container_cleanup_locked(mc_client_source_id *, mc_client_screen_error *);
+/* End only borrowed Chest failure views after their native child occurrences
+ * have retired. Source scalar receipts, exceptions and fields remain unchanged. */
+void mc_screen_container_expire_chest_views(mc_client_inventory_screen_error *);
 bool mc_screen_container_retirement_admit_locked(mc_client_source_id *, mc_client_screen_error *);
 bool mc_screen_container_terminal_prepare_locked(mc_client_source_id *, mc_client_screen_error *);
 struct mc_client_bootstrap_terminal_scope;
 /* Trusted selected-root transfer only, after the router proves the exact
  * retained epoch and constructor/publication ledger. The scope is revalidated;
- * ordinary Screen retirement still refuses a published owned IT. */
+ * ordinary Screen retirement still refuses a published owned IT or CD. */
 bool mc_screen_container_terminal_handoff_locked(mc_client_source_id *,
                                                  const struct mc_client_bootstrap_terminal_scope *,
                                                  mc_entity *, mc_registry_classes *,

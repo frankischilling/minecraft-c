@@ -18,8 +18,8 @@
       "sha256": "a5e341ee59b1f3b1dcb75ab01ab481e01d145299d5636c8010dc76a427020b38"
     },
     "src/client/runtime/world_tick.c": {
-      "bytes": 20532,
-      "sha256": "8526f85902e7cfb75ee2ec1f4b12b038cb0e9b059c80f6de5dd794440ceba8b4"
+      "bytes": 20662,
+      "sha256": "1676b11a93bd588b03bf6c8ca7a441df1cbe02409007c052a9c31c6ee6a5dc28"
     },
     "src/entity/arrow/internal.h": {
       "bytes": 2085,
@@ -54,8 +54,8 @@
       "sha256": "c2bc52972d5cabdf108f5694672a9814de129f9a002731cd146b6d066363666b"
     },
     "src/world/runtime/terminal_inventory.c": {
-      "bytes": 45552,
-      "sha256": "c582292cef314081feac27fe93acb38f9a93b12a015336b28461f33235b70815"
+      "bytes": 46146,
+      "sha256": "d11bb00a954c4e440ac054b9a9b05386c734fa26ce0b558e29e6a8c9c4fb4321"
     },
     "tests/world/runtime/test_arrow_natural_flight.c": {
       "bytes": 19352,
@@ -66,8 +66,8 @@
       "sha256": "80d866a4df85af27011535b381728a1cae45bfbd24da103b2b453d5ed5056042"
     },
     "CMakeLists.txt": {
-      "bytes": 352297,
-      "sha256": "25ae75b21c9ecf69391d25788269d855ed73f35ff3308a5f6c5443de719476bb"
+      "bytes": 352376,
+      "sha256": "102428173e9278283fa4f944b7677c13c89f2a6fa50165450bfea6687d24a186"
     },
     "cmake/tests/arrow_world_tick_cleanup.cmake": {
       "bytes": 2831,

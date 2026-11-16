@@ -3,12 +3,14 @@ option(MC_ENABLE_CLIENT_INVENTORY_TESTS "Run genuine saved-World SDK Inventory a
 
 target_sources(mc_registry PRIVATE src/item/render/name.c)
 target_sources(mc_inventory PRIVATE
+    src/inventory/chest.c
     src/inventory/container/interaction.c
     src/inventory/container/interaction_core.c
     src/inventory/container/interaction_click.c
     src/inventory/container/interaction_errors.c
     src/inventory/container/slot_source.c)
-target_sources(mc_simulation PRIVATE src/entity/player/container_interaction.c)
+target_sources(mc_simulation PRIVATE src/entity/player/container_interaction.c
+    src/inventory/chest_tile.c)
 
 target_sources(mc_client_screen_classes PRIVATE src/client/gui/source_inventory_classes.c)
 target_include_directories(mc_client_screen_classes PRIVATE src)
@@ -60,6 +62,15 @@ if(BUILD_TESTING AND TARGET mc_test_world_selection_loop)
 endif()
 
 if(BUILD_TESTING)
+    add_executable(mc_test_chest_inventory tests/inventory/chest.c)
+    target_include_directories(mc_test_chest_inventory PRIVATE src)
+    target_link_libraries(mc_test_chest_inventory PRIVATE mc_simulation mc_resources mc_build_options)
+    add_test(NAME inventory.chest_backend COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/inventory/run_chest.py"
+        --executable "$<TARGET_FILE:mc_test_chest_inventory>"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/chest-backend-controls")
+    set_tests_properties(inventory.chest_backend PROPERTIES
+        LABELS "public;integration;inventory;world;ownership" TIMEOUT 240)
     add_executable(mc_test_item_name tests/item/render/test_name.c)
     target_include_directories(mc_test_item_name PRIVATE src src/core/java src/platform/time)
     target_link_libraries(mc_test_item_name PRIVATE mc_simulation mc_resources

@@ -3,8 +3,10 @@
 The normal no-connection startup owner implements Beta 1.7.3's
 `Minecraft.a()V`. It uses the same constructed App and real class/service
 owners. The default executable continues from that graph through the
-[no-World menu runtime](menu-runtime.md). Its focused Windows runtime checks
-pass; normal World entry and gameplay remain unfinished.
+[default menu runtime](menu-runtime.md), then through bounded
+[World loading](world-loading.md), [gameplay input](gameplay-input.md) and
+[save/title](world-saving.md) paths. These returning scenarios use the same App;
+they do not establish complete gameplay or the original run-loop comparison.
 
 ## Reached construction
 
@@ -193,13 +195,14 @@ The later test record also retains failed-statistics/shared-Font cleanup,
 five prepared logo profiles and cursor controls. Wider Linux qualification is
 still recorded separately from the Windows default-directory profile.
 
-Nonempty physical Controllers mapping, remaining screen transitions, World/Player
-publication and gameplay remain unfinished. The default menu loop now adopts
-the genuine [World-selection screen](world-selection.md), with focused Windows
-empty/populated, scrolling and double-click loops passing. All 468 selected
-Windows CTests and formatting for 1,356 files pass; [earlier hosted results](../testing.md#hosted-runtime-checkpoint-de4290b)
-retain their own source scope. Full source run/PX rendering and `Minecraft.d()`
-shutdown parity remain unproven.
+Nonempty physical Controllers mapping and remaining screen/gameplay routes
+remain unfinished. The default runtime adopts the genuine
+[World-selection screen](world-selection.md), publishes the loaded World and
+Player, and returns through bounded input/render/save/reload scenarios. At the
+earlier selection checkpoint, all 468 selected Windows CTests and formatting for
+1,356 files passed; [earlier hosted results](../testing.md#hosted-runtime-checkpoint-de4290b)
+retain their own source scope. Full source run/PX rendering, sustained play and
+`Minecraft.d()` shutdown parity remain unproven.
 
 ## Menu ownership and verification
 

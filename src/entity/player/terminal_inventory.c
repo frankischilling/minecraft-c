@@ -3,6 +3,7 @@
 #include "../../block/registry/registry_internal.h"
 #include "../../world/runtime/construction_internal.h"
 #include "../../world/runtime/runtime_internal.h"
+#include "mc/inventory/chest.h"
 #include "player_internal.h"
 
 static mc_entity_status fail(mc_player_terminal_inventory_error *error, mc_entity_status status,
@@ -141,6 +142,29 @@ bool mc_player_terminal_inventory_inspect(const mc_entity *player,
         return false;
     *out = player->local_player->terminal_inventory;
     return true;
+}
+
+mc_entity_status mc_player_terminal_inventory_end_calls(mc_entity *player,
+                                                        mc_registry_classes *registry,
+                                                        mc_world_runtime *world,
+                                                        mc_player_terminal_inventory_error *out) {
+    mc_player_terminal_inventory_error error = {0};
+    if (!mc_local_player_terminal_sealed(player))
+        return publish(out, &error);
+    const mc_entity_status admitted =
+        mc_player_terminal_inventory_admit(player, registry, world, &error);
+    if (admitted != MC_ENTITY_OK)
+        return publish(out, &error);
+    mc_container_state container;
+    if (!mc_container_read_state(player->local_player->terminal_inventory.active_container,
+                                 &container)) {
+        fail(&error, MC_ENTITY_STATE_ERROR, "Player terminal actual Container diagnostic owner");
+        return publish(out, &error);
+    }
+    if (container.kind == MC_CONTAINER_CHEST)
+        (void)inventory(&error,
+                        mc_inventory_chest_end_calls(container.chest_inventory, &error.inventory));
+    return publish(out, &error);
 }
 
 bool mc_local_player_terminal_sealed(const mc_entity *player) {

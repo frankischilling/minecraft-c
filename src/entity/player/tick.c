@@ -143,6 +143,8 @@ bool mc_player_tick_error_retire(mc_player_tick_error *e) {
         return false;
     if (!tick_effects_retire(e))
         return false;
+    if (e->child == MC_PLAYER_TICK_CHILD_CONTAINER)
+        e->child_error.container.chest = NULL;
     if (e->retained_registry != NULL) {
         const mc_registry_status status =
             mc_registry_classes_release(e->retained_registry, &e->cleanup.registry);

@@ -341,6 +341,14 @@ static mc_client_render_global_status retire_bounds(mc_client_source_dk *o, mc_e
     return MC_CLIENT_RENDER_GLOBAL_OK;
 }
 
+void mc_source_dk_tile_occurrences_release(mc_client_source_dk *o, mc_client_render_list *list) {
+    for (mc_source_dk_tile_hold *h = o->tile_holds; h != NULL; h = h->next)
+        if (h->tile != NULL && (list == NULL || h->list == list)) {
+            mc_tile_entity_release(h->tile);
+            h->tile = NULL;
+        }
+}
+
 mc_client_render_global_status mc_source_dk_native_retire(mc_client_source_dk *o,
                                                           mc_client_render_global_error *e) {
     if (retire_bounds(o, &o->displaced_bounds, "DK displaced bounds native cleanup", e) !=
@@ -366,6 +374,7 @@ mc_client_render_global_status mc_source_dk_native_retire(mc_client_source_dk *o
         o->world_held = false;
         o->fields.a = NULL; /* Consumed native view, no source c() credited. */
     }
+    mc_source_dk_tile_occurrences_release(o, NULL);
     o->phase = MC_CLIENT_RENDER_GLOBAL_RETIRING;
     return MC_CLIENT_RENDER_GLOBAL_OK;
 }

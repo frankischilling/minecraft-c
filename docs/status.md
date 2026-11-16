@@ -7,6 +7,15 @@ the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining w
 
 ## Current client work
 
+Existing [Chest access](client/chests.md) now connects right-click activation,
+single/double inventory views, container transfers, drawing, close and saved
+World reselection. All five authored Windows monitor-2 scenarios pass, including
+90 occupied slots, blocked access and native shutdown with the screen open.
+Twelve selected Windows tests and five GCC sanitizer tests pass. A separate
+111-call original component packet qualifies declared container/screen behavior;
+it does not qualify concrete original Worlds or drawing. Chest placement,
+unrestricted play and sustained frame performance remain unfinished.
+
 The C region transport now handles long Windows target and temporary names.
 The [storage path record](world/native-storage-paths.md) covers the reproduced
 260-unit temporary-open failure, five Unicode path boundaries, replacement,

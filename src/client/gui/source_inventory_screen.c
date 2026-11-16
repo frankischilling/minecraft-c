@@ -181,8 +181,8 @@ mc_client_screen_status mc_client_screen_inventory_construct(mc_client_source_ue
 }
 
 bool mc_screen_container_initialize_locked(mc_client_source_id *o, mc_client_screen_error *e) {
-    if (o->base.kind == MC_CLIENT_SCREEN_WORKBENCH) {
-        /* OO inherits actual ID.b: DA.b returns before these fresh reads. */
+    if (o->base.kind == MC_CLIENT_SCREEN_WORKBENCH || o->base.kind == MC_CLIENT_SCREEN_CHEST) {
+        /* OO and HP inherit actual ID.b: DA.b returns before these fresh reads. */
         client_application *a = o->base.fields.b;
         if (a == NULL)
             return fail(o, e, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE,
@@ -324,6 +324,11 @@ bool mc_screen_container_cleanup_locked(mc_client_source_id *o, mc_client_screen
         o->container_held = false;
         o->captured_container = NULL;
     }
+    if (o->chest_held) {
+        mc_inventory_chest_release(o->constructor_chest);
+        o->constructor_chest = NULL;
+        o->chest_held = false;
+    }
     if (o->player_held) {
         mc_entity_release(o->constructor_player);
         o->constructor_player = NULL;
@@ -341,7 +346,19 @@ bool mc_screen_container_cleanup_locked(mc_client_source_id *o, mc_client_screen
         mc_entity_release(hold->player);
         hold->player = NULL;
     }
+    mc_screen_container_expire_chest_views(&o->detail);
     return true;
+}
+
+void mc_screen_container_expire_chest_views(mc_client_inventory_screen_error *detail) {
+    if (detail == NULL)
+        return;
+    detail->ownership.chest = NULL;
+    detail->cleanup_ownership.chest = NULL;
+    detail->container.interaction.inventory.chest = NULL;
+    detail->cleanup_container.interaction.inventory.chest = NULL;
+    detail->inherited_close.interaction.inventory.chest = NULL;
+    detail->direct_close.interaction.inventory.chest = NULL;
 }
 
 bool mc_screen_container_terminal_prepare_locked(mc_client_source_id *o,
@@ -371,8 +388,9 @@ bool mc_screen_container_terminal_handoff_locked(mc_client_source_id *o,
                                                  mc_client_screen_error *e) {
     if (!mc_client_bootstrap_terminal_scope_matches(scope, o->base.fields.b))
         return handoff_failure(o, e, "OO native selected terminal root scope");
-    if (o->base.kind != MC_CLIENT_SCREEN_WORKBENCH || o->base.active_calls != 0 ||
-        o->base.holds != 1 || o->base.phase == MC_CLIENT_SCREEN_CONSTRUCTING)
+    if ((o->base.kind != MC_CLIENT_SCREEN_WORKBENCH && o->base.kind != MC_CLIENT_SCREEN_CHEST) ||
+        o->base.active_calls != 0 || o->base.holds != 1 ||
+        o->base.phase == MC_CLIENT_SCREEN_CONSTRUCTING)
         return handoff_failure(o, e, "OO terminal handoff active/external Screen occurrence");
     if (o->terminal_handoff_done) {
         /* The actual Player may already have been consumed by a later native

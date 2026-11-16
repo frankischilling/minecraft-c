@@ -280,11 +280,10 @@ static bool mouse(mc_client_source_da *o, const mc_client_sdk_mouse_event *event
     r->mouse_x = x;
     r->mouse_y = y;
     if (!down)
-        return (o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_WORKBENCH) ||
-               release_button(o, event->button, r, e);
+        return mc_screen_container_kind(o->kind) || release_button(o, event->button, r, e);
     if (!press(o, x, y, event->button, r, e))
         return false;
-    if ((o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_WORKBENCH)) {
+    if (mc_screen_container_kind(o->kind)) {
         if (input == NULL && o->fields.b != NULL)
             input = mc_client_display_inputs(o->fields.b->display);
         return mc_screen_container_mouse_after_base_locked((mc_client_source_id *)o, x, y,
@@ -376,7 +375,7 @@ static bool key(mc_client_source_da *o, const mc_client_sdk_key_event *event,
         return mc_screen_create_world_key_locked(fj, (uint16_t)event->character, event->key, &hooks,
                                                  create_enter, &context, &e->screen);
     }
-    if ((o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_WORKBENCH)) {
+    if (mc_screen_container_kind(o->kind)) {
         mc_entity *player = NULL;
         if (!mc_screen_container_key_locked((mc_client_source_id *)o, event->key, &player,
                                             &e->screen))
@@ -567,7 +566,7 @@ mc_client_screen_status mc_client_screen_tick_with_transitions(mc_client_source_
         mc_screen_pause_tick_locked((mc_client_source_oz *)o, &e->screen);
     else if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD)
         (void)mc_screen_create_world_tick_locked((mc_client_source_fj *)o, &e->screen);
-    else if ((o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_WORKBENCH)) {
+    else if (mc_screen_container_kind(o->kind)) {
         mc_entity *player = NULL;
         if (mc_screen_container_tick_locked((mc_client_source_id *)o, &player, &e->screen) &&
             (player == NULL || inventory_close(o, player, "()V", 37, NULL, e)))

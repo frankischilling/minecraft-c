@@ -599,56 +599,64 @@ mc_registry_status mc_block_render_texture_metadata(const mc_block *block, int32
 
 static int32_t chest_texture(const mc_block *b, const mc_block_render_access *a, int32_t x,
                              int32_t y, int32_t z, int32_t side, bool locked) {
-    int32_t t = b->fields.bm;
-    if (side <= 1)
-        return t - 1;
-    int32_t north = a->block(a->owner, x, y, z - 1);
-    int32_t south = a->block(a->owner, x, y, z + 1);
-    int32_t west = a->block(a->owner, x - 1, y, z);
-    int32_t east = a->block(a->owner, x + 1, y, z);
-    const bool *o = b->classes->blocks.o;
+    if (side == 0 || side == 1)
+        return mc_java_i32_sub(b->fields.bm, 1);
+    int32_t north = a->block(a->owner, x, y, mc_java_i32_sub(z, 1));
+    int32_t south = a->block(a->owner, x, y, mc_java_i32_add(z, 1));
+    int32_t west = a->block(a->owner, mc_java_i32_sub(x, 1), y, z);
+    int32_t east = a->block(a->owner, mc_java_i32_add(x, 1), y, z);
     if (!locked && (north == b->fields.bn || south == b->fields.bn)) {
         if (side == 2 || side == 3)
-            return t;
+            return b->fields.bm;
         int32_t offset = north == b->fields.bn ? -1 : 0;
-        int32_t zz = north == b->fields.bn ? z - 1 : z + 1;
-        int32_t nw = a->block(a->owner, x - 1, y, zz);
-        int32_t ne = a->block(a->owner, x + 1, y, zz);
+        int32_t nw =
+            a->block(a->owner, mc_java_i32_sub(x, 1), y,
+                     north == b->fields.bn ? mc_java_i32_sub(z, 1) : mc_java_i32_add(z, 1));
+        int32_t ne =
+            a->block(a->owner, mc_java_i32_add(x, 1), y,
+                     north == b->fields.bn ? mc_java_i32_sub(z, 1) : mc_java_i32_add(z, 1));
         if (side == 4)
-            offset = -1 - offset;
+            offset = mc_java_i32_sub(-1, offset);
         int32_t front = 5;
-        if ((o[west] || o[nw]) && !o[east] && !o[ne])
+        if ((b->classes->blocks.o[west] || b->classes->blocks.o[nw]) &&
+            !b->classes->blocks.o[east] && !b->classes->blocks.o[ne])
             front = 5;
-        if ((o[east] || o[ne]) && !o[west] && !o[nw])
+        if ((b->classes->blocks.o[east] || b->classes->blocks.o[ne]) &&
+            !b->classes->blocks.o[west] && !b->classes->blocks.o[nw])
             front = 4;
-        return (side == front ? t + 16 : t + 32) + offset;
+        return mc_java_i32_add(mc_java_i32_add(b->fields.bm, side == front ? 16 : 32), offset);
     }
     if (!locked && (west == b->fields.bn || east == b->fields.bn)) {
         if (side == 4 || side == 5)
-            return t;
+            return b->fields.bm;
         int32_t offset = west == b->fields.bn ? -1 : 0;
-        int32_t xx = west == b->fields.bn ? x - 1 : x + 1;
-        int32_t nw = a->block(a->owner, xx, y, z - 1);
-        int32_t sw = a->block(a->owner, xx, y, z + 1);
+        int32_t nw =
+            a->block(a->owner, west == b->fields.bn ? mc_java_i32_sub(x, 1) : mc_java_i32_add(x, 1),
+                     y, mc_java_i32_sub(z, 1));
+        int32_t sw =
+            a->block(a->owner, west == b->fields.bn ? mc_java_i32_sub(x, 1) : mc_java_i32_add(x, 1),
+                     y, mc_java_i32_add(z, 1));
         if (side == 3)
-            offset = -1 - offset;
+            offset = mc_java_i32_sub(-1, offset);
         int32_t front = 3;
-        if ((o[north] || o[nw]) && !o[south] && !o[sw])
+        if ((b->classes->blocks.o[north] || b->classes->blocks.o[nw]) &&
+            !b->classes->blocks.o[south] && !b->classes->blocks.o[sw])
             front = 3;
-        if ((o[south] || o[sw]) && !o[north] && !o[nw])
+        if ((b->classes->blocks.o[south] || b->classes->blocks.o[sw]) &&
+            !b->classes->blocks.o[north] && !b->classes->blocks.o[nw])
             front = 2;
-        return (side == front ? t + 16 : t + 32) + offset;
+        return mc_java_i32_add(mc_java_i32_add(b->fields.bm, side == front ? 16 : 32), offset);
     }
     int32_t front = 3;
-    if (o[north] && !o[south])
+    if (b->classes->blocks.o[north] && !b->classes->blocks.o[south])
         front = 3;
-    if (o[south] && !o[north])
+    if (b->classes->blocks.o[south] && !b->classes->blocks.o[north])
         front = 2;
-    if (o[west] && !o[east])
+    if (b->classes->blocks.o[west] && !b->classes->blocks.o[east])
         front = 5;
-    if (o[east] && !o[west])
+    if (b->classes->blocks.o[east] && !b->classes->blocks.o[west])
         front = 4;
-    return side == front ? t + 1 : t;
+    return side == front ? mc_java_i32_add(b->fields.bm, 1) : b->fields.bm;
 }
 
 mc_registry_status mc_block_render_texture(const mc_block *b, const mc_block_render_access *a,

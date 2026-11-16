@@ -171,10 +171,11 @@ static bool merge(mc_container_interaction_call *c, mc_item_stack *incoming, int
 static bool transfer(mc_container_interaction_call *c, int32_t index, mc_item_stack **out) {
     ++c->state.shift_calls;
     const bool workbench = c->state.container->kind == MC_CONTAINER_WORKBENCH;
-    if (!workbench && c->state.container->kind != MC_CONTAINER_PLAYER)
+    const bool chest = c->state.container->kind == MC_CONTAINER_CHEST;
+    if (!workbench && !chest && c->state.container->kind != MC_CONTAINER_PLAYER)
         return inv_interaction_fail(&c->error, MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,
                                     "Container concrete Shift body");
-    c->error.child = (mc_inventory_site){workbench ? "it" : "aa", "a", "(I)Liz;", 7};
+    c->error.child = (mc_inventory_site){chest ? "cd" : workbench ? "it" : "aa", "a", "(I)Liz;", 7};
     inv_slot *s;
     if (!slot(c, index, &s))
         return false;
@@ -191,6 +192,27 @@ static bool transfer(mc_container_interaction_call *c, int32_t index, mc_item_st
     mc_item_stack *copy;
     if (!inv_interaction_clone(c, value, &copy))
         return false;
+    if (chest) {
+        const int32_t first = mc_java_i32_mul(c->state.container->chest_rows, 9);
+        const int32_t last = (int32_t)c->state.container->slots->size;
+        /* CD returns its clone even if no transfer occurs. It does not execute
+         * AA/IT's unchanged-count test or GP pickup continuation. */
+        c->error.child.pc = index < first ? 70 : 88;
+        if (!merge(c, value, index < first ? first : 0, index < first ? last : first,
+                   index < first))
+            return false;
+        int32_t remaining;
+        if (!count(c, value, &remaining))
+            return false;
+        c->error.child = (mc_inventory_site){"cd", "a", "(I)Liz;", remaining == 0 ? 101 : 108};
+        if (remaining == 0) {
+            if (!inv_interaction_slot_put(c, s, NULL))
+                return false;
+        } else if (!inv_interaction_slot_changed(c, s))
+            return false;
+        *out = copy;
+        return true;
+    }
     const int32_t main_first = workbench ? 10 : 9;
     const int32_t hotbar_first = workbench ? 37 : 36;
     const int32_t last = workbench ? 46 : 45;
@@ -566,6 +588,10 @@ bool inv_interaction_close_body(mc_container_interaction_call *c) {
         if (!inv_interaction_cursor_put(c, inventory, NULL))
             return false;
         c->state.cursor_cleared = true;
+    }
+    if (c->state.container->kind == MC_CONTAINER_CHEST) {
+        c->error.site.pc = 25; /* CD inherits DW.a(GS), no storage close body. */
+        return true;
     }
     if (c->state.container->kind == MC_CONTAINER_WORKBENCH) {
         c->error.site = (mc_inventory_site){"it", "a", "(Lgs;)V", 9};

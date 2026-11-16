@@ -58,9 +58,11 @@ break scenarios now complete the click, hand frames, death/removal and exact
 live-Inventory/NBT autosave checks. The full public suites pass on Windows and
 sanitized Linux; these finite results do not qualify unrestricted play or FPS.
 Hosted checks apply to their exact tested commit. Extend the held scenarios
-and Linux saved-World SDK coverage, then address
-remaining target overrides, Player death/respawn and Inventory UI
-on the same input/World loop.
+and Linux saved-World SDK coverage. Ordinary Overworld
+[death/respawn](client/death-respawn.md), [Inventory](client/inventory.md) and
+[Workbench](client/workbench.md) now have connected returning controls on that
+same loop. Remaining work includes environmental death qualification, dimension
+respawn, other containers and target overrides.
 The loader has no fixed session count limit, and a retained Windows Tiny
 scenario covers ten saves/reloads plus a successor conversion failure before
 storage acquisition. Reclaim superseded Worlds during play and qualify later

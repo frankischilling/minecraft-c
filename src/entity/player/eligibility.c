@@ -1,4 +1,36 @@
 #include "active_internal.h"
+#include "mc/world/runtime/tile_entities/errors.h"
+
+static mc_entity_status container_status(const mc_inventory_error *e) {
+    switch (e->status) {
+        case MC_INVENTORY_OK:
+            return MC_ENTITY_OK;
+        case MC_INVENTORY_LIMIT:
+            return MC_ENTITY_LIMIT;
+        case MC_INVENTORY_ALLOCATION_FAILED:
+            return MC_ENTITY_ALLOCATION_FAILED;
+        case MC_INVENTORY_BUSY:
+            return MC_ENTITY_BUSY;
+        case MC_INVENTORY_REGISTRY_FAILED:
+            return MC_ENTITY_CLASS_FAILED_STATUS;
+        case MC_INVENTORY_STACK_FAILED:
+            return MC_ENTITY_ITEM_FAILED;
+        default:
+            if (e->chest != NULL) {
+                switch (e->chest->status) {
+                    case MC_WORLD_STORAGE_LIMIT:
+                        return MC_ENTITY_LIMIT;
+                    case MC_WORLD_STORAGE_ALLOCATION_FAILED:
+                        return MC_ENTITY_ALLOCATION_FAILED;
+                    case MC_WORLD_STORAGE_BUSY:
+                        return MC_ENTITY_BUSY;
+                    default:
+                        return MC_ENTITY_WORLD_FAILED;
+                }
+            }
+            return MC_ENTITY_STATE_ERROR;
+    }
+}
 
 bool mc_active_container(mc_active_scope *s, mc_container *container, bool *out,
                          mc_player_tick_error *e) {
@@ -11,6 +43,25 @@ bool mc_active_container(mc_active_scope *s, mc_container *container, bool *out,
         *out = true;
         return true;
     } /* Actual aa.b(gs): iconst_1/ireturn. */
+    if (state.kind == MC_CONTAINER_CHEST) {
+        e->source_class = "cd";
+        e->source_method = "b(Lgs;)Z";
+        e->container_bytecode = 5;
+        e->child = MC_PLAYER_TICK_CHILD_CONTAINER;
+        e->child_error.container = (mc_inventory_error){0};
+        const mc_inventory_status status =
+            mc_container_chest_usable(container, s->player, out, &e->child_error.container);
+        if (status != MC_INVENTORY_OK) {
+            if (e->child_error.container.chest != NULL)
+                e->world = e->child_error.container.chest->cause;
+            return mc_active_fail(e, container_status(&e->child_error.container),
+                                  e->child_error.container.operation);
+        }
+        e->container_bytecode = 10;
+        e->child_error.container = (mc_inventory_error){0};
+        e->child = MC_PLAYER_TICK_CHILD_NONE;
+        return true;
+    }
     if (state.kind != MC_CONTAINER_WORKBENCH)
         return mc_active_fail(e, MC_ENTITY_STATE_ERROR,
                               "Active Player unsupported Container eligibility descendant");

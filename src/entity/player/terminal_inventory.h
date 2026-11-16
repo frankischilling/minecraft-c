@@ -44,6 +44,14 @@ mc_entity_status mc_player_terminal_inventory_admit(const mc_entity *player,
                                                     mc_world_runtime *world,
                                                     mc_player_terminal_inventory_error *error);
 
+/* Trusted terminal prefix after every enclosing GUI/input/draw diagnostic
+ * borrow has ended. Drain completed CD adapter receipts before N detaches;
+ * retain the sealed source Inventory/Tile/World graph and its native rights.
+ * This neither closes a Container nor changes Source fields or Stack state. */
+mc_entity_status mc_player_terminal_inventory_end_calls(mc_entity *, mc_registry_classes *,
+                                                        mc_world_runtime *,
+                                                        mc_player_terminal_inventory_error *);
+
 /* Passive copy of native state, including an empty unsealed sidecar. All
  * pointers in out borrow the actual live Player/Inventory owners. Invalid
  * represented storage or NULL out preserves *out and returns false. */

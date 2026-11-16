@@ -113,6 +113,12 @@ static bool bound_dispatch_controls(picking_fixture *f) {
     f->chunks[0]->data->metadata[index / 2u] = previous_metadata;
     const int32_t chest_ids[] = {54, 95};
     const char *const chest_classes[] = {"e", "ks"};
+    const size_t neighbors[] = {index - 128, index + 128, index - 2048, index + 2048};
+    uint8_t previous_neighbors[4];
+    for (size_t i = 0; i < 4; ++i) {
+        previous_neighbors[i] = f->chunks[0]->data->blocks[neighbors[i]];
+        f->chunks[0]->data->blocks[neighbors[i]] = 0;
+    }
     for (size_t i = 0; i < 2; ++i) {
         const mc_block *block = NULL;
         CHECK(mc_registry_block_get(f->base.registry, chest_ids[i], &block, NULL) ==
@@ -123,11 +129,21 @@ static bool bound_dispatch_controls(picking_fixture *f) {
         mc_cv_context c = {.fields = &fields, .cache = cache, .registry = f->base.registry};
         int32_t out = 123;
         CHECK(mc_cv_push(&c, "b", "(Luu;IIIFFF)Z"));
+        CHECK(mc_cv_texture(&c, block, 8, 64, 8, 2, 454, &out) &&
+              out == mc_block_fields_get(block)->bm && c.depth == 1 && !c.failed);
+        /* A declared NULL XP fails at the first real adjacency invocation;
+         * the caller and actual E/KS frames retain their reached PCs. */
+        fields.c = NULL;
+        c = (mc_cv_context){.fields = &fields, .cache = cache, .registry = f->base.registry};
+        out = 123;
+        CHECK(mc_cv_push(&c, "b", "(Luu;IIIFFF)Z"));
         CHECK(!mc_cv_texture(&c, block, 8, 64, 8, 2, 454, &out) && out == 123 && c.depth == 2 &&
               c.frames[0].pc == 454 && strcmp(c.failure.source_class, chest_classes[i]) == 0 &&
-              c.failure.source_pc == 0 &&
-              c.failure.status == MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY);
+              c.failure.source_pc == 32 && !c.failure.native_policy &&
+              c.failure.status == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE);
     }
+    for (size_t i = 0; i < 4; ++i)
+        f->chunks[0]->data->blocks[neighbors[i]] = previous_neighbors[i];
     CHECK(mc_client_chunk_cache_retire(&cache, &cache_error) == MC_CLIENT_CHUNK_CACHE_OK);
     return true;
 }

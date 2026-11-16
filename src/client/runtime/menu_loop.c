@@ -1,6 +1,7 @@
 #include "menu_loop.h"
 #include "../gui/achievement_notice_draw.h"
 #include "../gui/loading_internal.h"
+#include "../gui/source_chest_drawing.h"
 #include "../gui/source_inventory_drawing.h"
 #include "../gui/source_screen_initialize.h"
 #include "../gui/source_workbench_drawing.h"
@@ -633,7 +634,8 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
                             loop->create_world_draw.screen.site.pc);
             loop->state.font_measurements += loop->create_world_draw.font_measurements;
         } else if (drawn.kind == MC_CLIENT_SCREEN_INVENTORY ||
-                   drawn.kind == MC_CLIENT_SCREEN_WORKBENCH) {
+                   drawn.kind == MC_CLIENT_SCREEN_WORKBENCH ||
+                   drawn.kind == MC_CLIENT_SCREEN_CHEST) {
             const mc_client_manager_draw_services services = {.math = loop->math,
                                                               .graphics = loop->graphics,
                                                               .display = app->display,
@@ -644,9 +646,13 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
                     ? mc_client_source_inventory_draw_begin(
                           (mc_client_source_ue *)app->r, mouse, partial, &services,
                           &loop->inventory_draw, &loop->inventory_error)
-                    : mc_client_source_workbench_draw_begin(
+                : drawn.kind == MC_CLIENT_SCREEN_WORKBENCH
+                    ? mc_client_source_workbench_draw_begin(
                           (mc_client_source_oo *)app->r, mouse, partial, &services,
-                          &loop->inventory_draw, &loop->inventory_error);
+                          &loop->inventory_draw, &loop->inventory_error)
+                    : mc_client_source_chest_draw_begin((mc_client_source_hp *)app->r, mouse,
+                                                        partial, &services, &loop->inventory_draw,
+                                                        &loop->inventory_error);
             if (loop->inventory_draw != NULL) {
                 (void)mc_client_source_inventory_draw_inspect(loop->inventory_draw,
                                                               &loop->inventory_state);
@@ -771,6 +777,13 @@ bool mc_client_menu_loop_create(mc_client_bootstrap *bootstrap, mc_client_menu_l
     return true;
 }
 
+static void expire_inventory_draw_chest_views(mc_client_menu_loop *loop) {
+    loop->inventory_error.inventory.chest = NULL;
+    loop->inventory_error.slot.inventory.chest = NULL;
+    loop->inventory_cleanup.inventory.chest = NULL;
+    loop->inventory_cleanup.slot.inventory.chest = NULL;
+}
+
 static bool retire_completed_draws(mc_client_menu_loop *loop) {
     /* Completed frame receipts stay inspectable through that frame. Drain
      * their native occurrences before the next source pool reset or tick. */
@@ -778,6 +791,7 @@ static bool retire_completed_draws(mc_client_menu_loop *loop) {
         if (mc_client_source_inventory_draw_retire(&loop->inventory_draw,
                                                    &loop->inventory_cleanup) != MC_CLIENT_SCREEN_OK)
             return run_stop(loop, "completed Inventory draw native retirement", 0);
+        expire_inventory_draw_chest_views(loop);
         loop->state.inventory = NULL;
     }
     if (loop->notice_draw != NULL && loop->notice_state.returned) {
@@ -1070,6 +1084,7 @@ static bool retire_calls(mc_client_menu_loop *loop) {
     if (mc_client_source_inventory_draw_retire(&loop->inventory_draw, &loop->inventory_cleanup) !=
         MC_CLIENT_SCREEN_OK)
         return false;
+    expire_inventory_draw_chest_views(loop);
     loop->state.inventory = NULL;
     if (mc_client_notice_draw_retire(&loop->notice_draw, &loop->notice_cleanup) !=
         MC_CLIENT_NOTICE_DRAW_OK)

@@ -1,6 +1,7 @@
 #include "world_tick.h"
 
 #include "../application_state.h"
+#include "../gui/source_container_screen_internal.h"
 #include "../gui/source_screen_transitions.h"
 #include "../world/render_global_internal.h"
 #include "mc/client/particles/effect_renderer.h"
@@ -414,6 +415,7 @@ bool mc_client_world_tick_cleanup(mc_client_world_tick *call) {
     call->close_receipts.inventory_source = NULL;
     call->close_receipts.initialization_source = NULL;
     call->close_receipts.initialization.screen.initialization = NULL;
+    mc_screen_container_expire_chest_views(&call->close_receipts.inventory);
     for (size_t i = 0; i < MC_CLIENT_WORLD_TICK_CLOSE_CHILDREN; ++i)
         call->close_publications[i].world_access_failure = (mc_world_access_failure){0};
     return true;

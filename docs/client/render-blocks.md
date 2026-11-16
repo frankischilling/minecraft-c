@@ -160,10 +160,12 @@ matrix prefixes remain visible. Native retirement releases admitted owners
 without replaying source work or inventing successful end-list operations.
 The N caller clears `DK.u` only after that same compiler returns normally.
 
-TileEntity renderer eligibility at `dk.a()V:399` and the chest texture
-adjacency helper remain missing children. Together with the 10 remaining specialized
-geometry families, these limits prevent a claim that all Block rendering or
-all nonempty sections are complete.
+TileEntity renderer eligibility at `dk.a()V:399` now reaches the actual LL
+dispatcher, and the checked Chest adjacency texture path follows E/KS queries.
+The [Chest record](chests.md) describes their finite controls. The later nonempty
+special-renderer TileEntity List/HashSet continuation and the remaining
+specialized geometry families prevent a claim that all Block rendering or all
+nonempty sections are complete.
 
 ## Focused evidence
 

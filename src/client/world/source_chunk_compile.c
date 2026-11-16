@@ -8,6 +8,7 @@
 #include "../display/camera_surface.h"
 #include "../render/blocks/internal.h"
 #include "../render/model_graph_internal.h"
+#include "../render/tile_entity_renderer/internal.h"
 #include "../render_engine/chunk_statistics.h"
 #include "../render_engine/internal.h"
 #include "mc/block/registry/rendering.h"
@@ -29,8 +30,12 @@ struct mc_source_dk_compile {
     mc_tile_entity **old_tiles;
     size_t old_count;
     mc_tile_entity *tile;
+    mc_client_tile_renderer_dispatcher *ll;
+    mc_client_tile_renderer_error tiles, tiles_cleanup;
     int32_t open_list;
 };
+
+static bool shape(mc_source_dk_compile *, mc_client_render_list *, unsigned int);
 
 static bool fail(mc_source_dk_compile *c, mc_client_render_global_status status,
                  const char *operation, unsigned int pc, bool native) {
@@ -71,6 +76,107 @@ static bool cache_result(mc_source_dk_compile *c, mc_client_chunk_cache_status s
                 : status == MC_CLIENT_CHUNK_CACHE_LIMIT ? MC_CLIENT_RENDER_GLOBAL_LIMIT
                                                         : MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
                 c->cache_error.operation, pc, c->cache_error.native_policy);
+}
+
+static bool tile_failure(mc_source_dk_compile *c, unsigned int pc) {
+    mc_client_render_global_status status;
+    switch (c->tiles.status) {
+        case MC_CLIENT_TILE_RENDERER_BUSY:
+            status = MC_CLIENT_RENDER_GLOBAL_BUSY;
+            break;
+        case MC_CLIENT_TILE_RENDERER_LIMIT:
+            status = MC_CLIENT_RENDER_GLOBAL_LIMIT;
+            break;
+        case MC_CLIENT_TILE_RENDERER_ALLOCATION_FAILED:
+            status = MC_CLIENT_RENDER_GLOBAL_ALLOCATION_FAILED;
+            break;
+        case MC_CLIENT_TILE_RENDERER_NULL_REFERENCE:
+            status = MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE;
+            break;
+        case MC_CLIENT_TILE_RENDERER_UNSUPPORTED_FP:
+        case MC_CLIENT_TILE_RENDERER_UNSUPPORTED_NUMERIC:
+            status = MC_CLIENT_RENDER_GLOBAL_UNSUPPORTED_FP;
+            break;
+        default:
+            status = MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED;
+            break;
+    }
+    (void)fail(c, status, c->tiles.operation, pc, c->tiles.native_policy);
+    c->failure.tile_renderer = &c->tiles;
+    c->failure.child = (mc_client_graphics_site){c->tiles.source_class, c->tiles.source_method,
+                                                 c->tiles.source_descriptor, c->tiles.pc};
+    return false;
+}
+
+static bool tile_eligibility(mc_source_dk_compile *c) {
+    mc_client_source_dk *dk = c->state.chunk;
+    mc_client_render_global *n = dk->owner;
+    client_application *app = n->fields.t;
+    c->state.tile_eligibility_returned = false;
+    c->state.tile_eligible = false;
+    if (mc_client_tile_renderer_dispatcher_release(&c->ll, &c->tiles_cleanup) !=
+        MC_CLIENT_TILE_RENDERER_OK)
+        return fail(c, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED, c->tiles_cleanup.operation, 394,
+                    true);
+    c->state.source_pc = dk->source_pc = 394;
+    if (app == NULL || app->render_classes == NULL || app->profile == NULL ||
+        c->world_classes == NULL)
+        return fail(c, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
+                    "DK reached actual LL defining namespace", 394, true);
+    mc_client_tile_renderer_classes *classes = NULL;
+    if (mc_client_tile_entity_renderer_classes_existing(
+            app->render_classes, c->world_classes->registry, c->world_classes, &classes,
+            &c->tiles) != MC_CLIENT_TILE_RENDERER_OK)
+        return tile_failure(c, 394);
+    if (classes == NULL && mc_client_tile_renderer_classes_bind(
+                               app->render_classes, c->world_classes, app->profile, NULL, &classes,
+                               &c->tiles) != MC_CLIENT_TILE_RENDERER_OK)
+        return tile_failure(c, 394);
+    if (!n->tile_consumer.attached) {
+        if (mc_client_tile_renderer_consumer_attach(classes, &n->tile_consumer, &c->tiles) !=
+            MC_CLIENT_TILE_RENDERER_OK)
+            return tile_failure(c, 394);
+    } else if (n->tile_consumer.classes != classes)
+        return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
+                    "DK actual N LL consumer association changed", 394, true);
+    mc_client_tile_renderer_dispatcher *receiver = NULL;
+    if (mc_client_tile_renderer_static_get(n->tile_consumer.classes, &receiver, &c->tiles) !=
+        MC_CLIENT_TILE_RENDERER_OK)
+        return tile_failure(c, 394);
+    if (receiver != NULL && mc_client_tile_renderer_dispatcher_retain(receiver, &c->tiles) !=
+                                MC_CLIENT_TILE_RENDERER_OK)
+        return tile_failure(c, 394);
+    c->ll = receiver; /* Captured fresh actual getstatic, including NULL. */
+    ++c->state.tile_eligibility_calls;
+    if (receiver == NULL)
+        return fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
+                    "DK actual null LL eligibility invocation receiver", 399, false);
+    bool eligible;
+    if (mc_client_tile_renderer_has_renderer(receiver, c->tile, &eligible, &c->tiles) !=
+        MC_CLIENT_TILE_RENDERER_OK)
+        return tile_failure(c, 399);
+    c->state.tile_eligibility_returned = true;
+    c->state.tile_eligible = eligible;
+    if (eligible) {
+        if (!shape(c, dk->fields.B, 411))
+            return false;
+        const mc_client_graphics_site at = {"dk", "a", "()V", 411};
+        mc_source_dk_tile_hold *hold = mc_render_global_allocate(n, sizeof(*hold), at, &c->failure);
+        if (hold == NULL)
+            return fail(c, c->failure.status, c->failure.operation, 411, true);
+        if (c->tile != NULL && mc_tile_entity_retain(c->tile) != MC_TILE_ENTITY_OK)
+            return fail(c, MC_CLIENT_RENDER_GLOBAL_BUSY, "DK B native Tile occurrence", 411, true);
+        if (!mc_render_global_pointer_append(n, dk->fields.B, c->tile, at, &c->failure)) {
+            mc_tile_entity_release(c->tile);
+            return fail(c, c->failure.status, c->failure.operation, 411, c->failure.native_policy);
+        }
+        hold->tile = c->tile;
+        hold->list = dk->fields.B;
+        hold->next = dk->tile_holds;
+        dk->tile_holds = hold;
+    }
+    c->state.source_pc = dk->source_pc = 417;
+    return true;
 }
 
 static bool shape(mc_source_dk_compile *c, mc_client_render_list *list, unsigned int pc) {
@@ -116,6 +222,7 @@ static bool old_set(mc_source_dk_compile *c) {
     for (size_t i = 0; i < b->count; ++i)
         b->entries[i] = NULL;
     b->count = 0;
+    mc_source_dk_tile_occurrences_release(c->state.chunk, b);
     return true;
 }
 
@@ -193,8 +300,8 @@ static bool block(mc_source_dk_compile *c) {
                                                                 &c->cache_error),
                               387))
                 return false;
-            return fail(c, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
-                        "actual TileEntity renderer eligibility child is not connected", 399, true);
+            if (!tile_eligibility(c))
+                return false;
         }
     }
     const mc_block *b = NULL;
@@ -202,6 +309,9 @@ static bool block(mc_source_dk_compile *c) {
         MC_REGISTRY_OK)
         return fail(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED, c->failure.registry.message, 422,
                     true);
+    /* astore19 at423 overwrites the Tile local after the actual array load. */
+    mc_tile_entity_release(c->tile);
+    c->tile = NULL;
     if (b == NULL)
         return fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE, "actual Block render-pass receiver",
                     427, false);
@@ -400,6 +510,41 @@ bool mc_source_dk_compile_inspect(const mc_source_dk_compile *c,
     return true;
 }
 
+bool mc_source_dk_tile_eligibility_entered(mc_client_source_dk *dk, mc_tile_entity *tile,
+                                           mc_source_dk_compile **out,
+                                           mc_client_render_global_error *error) {
+    if (dk == NULL || out == NULL || *out != NULL || !dk->owner->active) {
+        mc_render_global_source_fail(error, MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT,
+                                     "DK Tile eligibility borrowed N operation", NULL, NULL, NULL,
+                                     0, true);
+        return false;
+    }
+    mc_source_dk_compile *c = calloc(1, sizeof(*c));
+    if (c == NULL) {
+        mc_render_global_source_fail(error, MC_CLIENT_RENDER_GLOBAL_ALLOCATION_FAILED,
+                                     "DK Tile eligibility native call", NULL, NULL, NULL, 0, true);
+        return false;
+    }
+    *out = c;
+    c->state.chunk = dk;
+    c->state.failure = &c->failure;
+    c->world_classes =
+        dk->fields.a == NULL
+            ? (dk->owner->fields.t == NULL ? NULL : dk->owner->fields.t->world_classes)
+            : dk->fields.a->classes;
+    c->state.active = true;
+    bool ok;
+    if (tile != NULL && mc_tile_entity_retain(tile) != MC_TILE_ENTITY_OK)
+        ok = fail(c, MC_CLIENT_RENDER_GLOBAL_BUSY, "DK Tile local native occurrence", 392, true);
+    else {
+        c->tile = tile;
+        ok = tile_eligibility(c);
+    }
+    c->state.active = false;
+    *error = c->failure;
+    return ok;
+}
+
 mc_client_render_global_status mc_source_dk_compile_retire(mc_source_dk_compile **slot,
                                                            mc_client_render_global_error *error) {
     *error = (mc_client_render_global_error){0};
@@ -414,6 +559,12 @@ mc_client_render_global_status mc_source_dk_compile_retire(mc_source_dk_compile 
         return mc_render_global_source_fail(error, MC_CLIENT_RENDER_GLOBAL_BUSY,
                                             "DK compile active native retirement", NULL, NULL, NULL,
                                             0, true);
+    if (mc_client_tile_renderer_dispatcher_release(&c->ll, &c->tiles_cleanup) !=
+        MC_CLIENT_TILE_RENDERER_OK) {
+        error->tile_renderer = &c->tiles_cleanup;
+        return mc_render_global_source_fail(error, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED,
+                                            c->tiles_cleanup.operation, NULL, NULL, NULL, 0, true);
+    }
     if (c->state.list_open) {
         if (!mc_client_display_lists_abort(c->state.chunk->owner->display, c->open_list,
                                            &error->cleanup_display))

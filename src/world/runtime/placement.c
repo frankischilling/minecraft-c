@@ -12,10 +12,12 @@
 #include "entity_publication_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/entity/player/sleep.h"
+#include "mc/inventory/chest.h"
 #include "mc/world/runtime/bed_state.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/collision/spawning.h"
 #include "mc/world/runtime/mutations.h"
+#include "mc/world/runtime/tile_entities/tile_entities.h"
 #include "mc/world/storage/source_chunk_loader.h"
 #include "mutation/fire/fire_internal.h"
 #include "mutation/mutation_internal.h"
@@ -49,6 +51,11 @@ struct mc_world_placement_work {
     mc_player_error *bed_occupant;
     mc_player_sleep_result_error *sleep_result;
     mc_world_provider_error provider;
+    mc_live_tile_entity_error *chest_tiles[5];
+    mc_tile_entity *chest_receivers[5];
+    mc_inventory_chest *chest_views[9];
+    size_t chest_view_count;
+    mc_inventory_error chest_error;
     mc_world_source_chunk_error *sources[PLACEMENT_SOURCES];
     const mc_world_source_chunk_error *source_identities[PLACEMENT_SOURCES];
     mc_world_access_failure receipts[PLACEMENT_RECEIPTS];
@@ -258,6 +265,9 @@ static bool capture(mc_world_placement_error *e) {
             (!copy_source(e, &w->queries[i]->source_chunk) ||
              !publication_receipts(e, &w->queries[i]->batch, &w->queries[i]->tile_entity)))
             return false;
+    for (size_t i = 0; i < e->chest_tile_count; ++i)
+        if (!publication_receipts(e, &w->chest_tiles[i]->batch, w->chest_tiles[i]))
+            return false;
     mc_world_nearby_error *nearby[] = {w->collision == NULL ? NULL : &w->collision->nearby,
                                        w->entities == NULL ? NULL : &w->entities->nearby,
                                        w->step == NULL ? NULL : &w->step->block_read.nearby};
@@ -438,6 +448,7 @@ static bool torch_predicate(mc_world_placement_error *e, mc_world_runtime *world
 }
 
 #include "placement/bed.inc"
+#include "placement/chest.inc"
 #include "placement/lever.inc"
 
 static const char *activation_class(mc_block_kind kind) {
@@ -1158,6 +1169,10 @@ mc_world_storage_status mc_world_block_activate_with_context(
         const bool returned = bed_activate(e, block, world, x, y, z, player, context);
         return finish(e, returned, returned, out);
     }
+    if (block->kind == MC_BLOCK_CHEST) {
+        const bool returned = chest_activate(e, block, world, x, y, z, player, context);
+        return finish(e, returned, returned, out);
+    }
     if (block->kind == MC_BLOCK_CRAFTING_TABLE) {
         e->site = site("fi", "a", "(Lfd;IIILgs;)Z", 1);
         if (!hold_world(e, world))
@@ -1369,6 +1384,12 @@ bool mc_world_placement_error_retire(mc_world_placement_error *e) {
         free(w->queries[i]);
     for (size_t i = 0; i < e->support_query_count; ++i)
         free(w->supports[i]);
+    for (size_t i = w->chest_view_count; i != 0; --i)
+        mc_inventory_chest_release(w->chest_views[i - 1]);
+    for (size_t i = 0; i < e->chest_tile_count; ++i) {
+        mc_tile_entity_release(w->chest_receivers[i]);
+        free(w->chest_tiles[i]);
+    }
     free(w->mutation);
     free(w->step);
     free(w->collision);

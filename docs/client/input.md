@@ -3,8 +3,8 @@
 The source MouseHelper (`vy`) and SDK Cursor use the existing Display/input
 namespace. The normal constructor receives the live Minecraft.m value after
 allocation, finishes before Minecraft.C publication and creates the actual
-native cursor. A null component is the ordinary startup profile; a nonnull
-borrowed component must outlive its user.
+native cursor. Standalone startup supplies its owned Frame's Canvas. Component
+fixtures retain the nullable profile; a borrowed component must outlive its user.
 
 Cursor creation retains a Display context lease and independent native pixel
 storage. Temporary MouseHelper buffers can retire without invalidating it.
@@ -16,9 +16,12 @@ MouseHelper's grab method calls the existing SDK `Mouse.setGrabbed(true)` before
 zeroing its two motion fields. Its motion method consumes `getDX` and `getDY`
 independently, storing each result in source order. It adds no polling or event
 removal. The release method first reads the supplied Component's width. A null
-Component reports the source null-reference failure at that read; nonnull
-Component sizing remains unfinished. Window dimensions do not replace it.
-The method successor passes 4,225 CPU checks and 91 real-window checks on Windows
+Component reports the source null-reference failure at that read. The nonnull
+path reads the Component's own width and height, divides each by two, positions
+the cursor and then releases the grab. SDL window dimensions do not replace
+those source fields. The [Frame/Canvas record](frame-canvas.md#mouse-and-focus)
+describes that later integration.
+The earlier method checkpoint passes 4,225 CPU checks and 91 real-window checks on Windows
 MSVC Debug. The window test transfers authored SDL motion through the retained
 Display transport before SDK polling, verifies exact accumulated deltas and
 checks that MouseHelper motion reads leave later mouse/keyboard events queued.

@@ -3,7 +3,7 @@
 
 #include "mc/inventory/container.h"
 
-/* Native-only final ownership of one actual IX, constructor AA and live IT.
+/* Native-only final ownership of one actual IX, constructor AA and live IT/CD.
  * The Player outer owner proves canonical READY Entity/Registry/World identity;
  * this module proves the exact local Inventory graph before changing seals.
  * Exclusive graph access and a disjoint empty output are required. */
@@ -17,7 +17,7 @@ typedef struct mc_inventory_player_terminal {
 
 /* No allocation, source invocation/store, Stack restriction or partial seal.
  * Failure preserves every source/native field and output, with site-empty
- * native diagnostics. Success seals IX/AA/IT and their grid/result children.
+ * native diagnostics. Success seals IX/AA/IT/CD and existing grid/result children.
  * New mutations/owning holds/bindings are refused afterward; passive borrows,
  * inspection and release of existing rights remain allowed. */
 mc_inventory_status mc_inventory_player_terminal_prepare(mc_inventory_player *, mc_entity *,

@@ -18,6 +18,8 @@ typedef struct mc_client_screen_init_error mc_client_screen_init_error;
 typedef struct mc_client_inventory_screen_error mc_client_inventory_screen_error;
 typedef struct mc_entity mc_entity;
 typedef struct mc_container mc_container;
+typedef struct mc_inventory_player mc_inventory_player;
+typedef struct mc_inventory_chest mc_inventory_chest;
 
 typedef enum mc_client_screen_status {
     MC_CLIENT_SCREEN_OK,
@@ -61,7 +63,8 @@ typedef enum mc_client_screen_kind {
     MC_CLIENT_SCREEN_CREATE_WORLD,
     MC_CLIENT_SCREEN_INVENTORY,
     MC_CLIENT_SCREEN_WORKBENCH,
-    MC_CLIENT_SCREEN_DEATH
+    MC_CLIENT_SCREEN_DEATH,
+    MC_CLIENT_SCREEN_CHEST
 } mc_client_screen_kind;
 
 typedef enum mc_client_screen_class_phase {
@@ -163,6 +166,12 @@ typedef struct mc_client_screen_ue_fields {
     float l, m;
 } mc_client_screen_ue_fields;
 
+typedef struct mc_client_screen_hp_fields {
+    mc_inventory_player *l;
+    mc_inventory_chest *m;
+    int32_t n;
+} mc_client_screen_hp_fields;
+
 typedef struct mc_client_screen_state {
     mc_client_screen_phase phase;
     size_t holds, arena_bytes, allocations, allocation_attempts;
@@ -172,6 +181,7 @@ typedef struct mc_client_screen_state {
     mc_client_screen_fu_fields fu;
     mc_client_screen_id_fields id;
     mc_client_screen_ue_fields ue;
+    mc_client_screen_hp_fields hp;
     unsigned int last_pc, store_count;
     mc_client_screen_site stores[16];
     mc_client_screen_exception caught_exception;

@@ -25,7 +25,7 @@ struct mc_client_inventory_draw_call {
     bool screen_entered;
     mc_entity *players[24];
     size_t player_count;
-    mc_item_stack *stacks[64];
+    mc_item_stack *stacks[96]; /* Double Chest's90 Slots plus cursor/tooltip occurrences. */
     size_t stack_count;
     mc_client_render_manager *store_manager;
     mc_client_render_manager_draw_call *preview;
@@ -52,6 +52,8 @@ bool mc_inventory_draw_tile(mc_client_inventory_draw_call *, int32_t, int32_t, i
 bool mc_inventory_draw_background(mc_client_inventory_draw_call *);
 bool mc_workbench_draw_background(mc_client_inventory_draw_call *);
 bool mc_workbench_draw_foreground(mc_client_inventory_draw_call *);
+bool mc_chest_draw_background(mc_client_inventory_draw_call *);
+bool mc_chest_draw_foreground(mc_client_inventory_draw_call *);
 mc_client_screen_status mc_inventory_draw_begin_id(mc_client_source_id *, mc_client_screen_kind,
                                                    mc_gui_mouse_position, float,
                                                    const mc_client_manager_draw_services *,
