@@ -1099,6 +1099,35 @@ static int transfer(fixture *f) {
     return 0;
 }
 
+static int position_mouse(fixture *f, SDL_Window *window, float x, float y) {
+    const bool witness = !(SDL_GetWindowFlags(window) & SDL_WINDOW_HIDDEN) &&
+                         !SDL_GetWindowRelativeMouseMode(window);
+    mc_client_events_error error = {0};
+    mc_client_event_port *port = mc_client_display_event_port(f->app->display);
+    /* Finish pending native activation before requesting the warp. Keep every
+     * occurrence in the event owner; no Source tick or input consumer runs. */
+    if (witness)
+        CHECK(mc_client_events_pump(port, &error) == MC_CLIENT_EVENTS_OK);
+    SDL_WarpMouseInWindow(window, x, y);
+    if (!witness)
+        return 0;
+    float actual_x = 0, actual_y = 0;
+    const uint64_t deadline = SDL_GetTicks() + 2000;
+    do {
+        CHECK(mc_client_events_pump(port, &error) == MC_CLIENT_EVENTS_OK);
+        SDL_GetMouseState(&actual_x, &actual_y);
+        if (SDL_GetMouseFocus() == window &&
+            mc_java_float_to_i32(actual_x) == mc_java_float_to_i32(x) &&
+            mc_java_float_to_i32(actual_y) == mc_java_float_to_i32(y))
+            return 0;
+        SDL_Delay(1);
+    } while (SDL_GetTicks() < deadline);
+    fprintf(stderr, "Fixture pointer window=%u focus=%u expected=%g,%g polled=%g,%g\n",
+            SDL_GetWindowID(window), SDL_GetWindowID(SDL_GetMouseFocus()), (double)x, (double)y,
+            (double)actual_x, (double)actual_y);
+    return 1;
+}
+
 static int push_mouse(fixture *f, mc_client_source_da *screen, int32_t x, int32_t y, bool down) {
     int width, height;
     SDL_Window *window = mc_client_display_window(f->app->display);
@@ -1109,7 +1138,7 @@ static int push_mouse(fixture *f, mc_client_source_da *screen, int32_t x, int32_
     /* LG reads polled Mouse coordinates during drawing. Pushed event records
      * alone do not change SDL's device state; establish the real local pointer
      * position as well as the authored event/button occurrences below. */
-    SDL_WarpMouseInWindow(window, native_x, native_y);
+    CHECK(position_mouse(f, window, native_x, native_y) == 0);
     SDL_Event motion = {0};
     motion.type = SDL_EVENT_MOUSE_MOTION;
     motion.motion.windowID = SDL_GetWindowID(window);
@@ -1136,7 +1165,7 @@ static int move_mouse(fixture *f, mc_client_source_da *screen, int32_t x, int32_
     CHECK(screen->fields.c > 0 && screen->fields.d > 0);
     const float native_x = (float)((int64_t)x * width / screen->fields.c),
                 native_y = (float)((int64_t)y * height / screen->fields.d);
-    SDL_WarpMouseInWindow(window, native_x, native_y);
+    CHECK(position_mouse(f, window, native_x, native_y) == 0);
     SDL_Event motion = {0};
     motion.type = SDL_EVENT_MOUSE_MOTION;
     motion.motion.windowID = SDL_GetWindowID(window);

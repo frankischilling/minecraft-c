@@ -18,10 +18,10 @@
       "source_input_sha256": {
         "tests/client/gameplay/redstone/test_placement.c": "47813c47f9c8ea85484bac84c1ee5857e56b88cc07b665ada7ac3f7e0b214e23",
         "tests/client/gameplay/test_torch_placement.c": "d3a73c0ecf37131ca1171a587570a691425c33388c801790bd5fd8a51c12a12c",
-        "tests/client/startup/test_world_selection_loop.c": "d3be65356e0efc8c07d31328f8691d2cad8e49a3e62873d4e7d94fd05393e6fb",
+        "tests/client/startup/test_world_selection_loop.c": "50a6b1501c05bc9ddf23ca370e4659b5f5188285f63be599e598d257a7436b5e",
         "tests/tools/client/test_farming_loop.py": "5d97de151dac6e1ce79759d5a6eac552dab37792ba53bb36d2465751185f4b9e",
         "tests/tools/client/test_torch_placement_loop.py": "875b711691f95768053bb12493fcf85c7376e79d78eafc4481a4470b437159ee",
-        "tests/tools/client/test_world_selection_loop.py": "baa5ad2013f3e44160b37faa95e457b7b33dae98d7a14b2f2ecf3a5c06f29a1f"
+        "tests/tools/client/test_world_selection_loop.py": "c04a33996bfb1f5c73047c992005794097a4eb502f93166c6dee833998a6e958"
       }
     },
     "lever": {
@@ -38,8 +38,8 @@
         }
       },
       "source_input_sha256": {
-        "tests/client/startup/test_world_selection_loop.c": "d3be65356e0efc8c07d31328f8691d2cad8e49a3e62873d4e7d94fd05393e6fb",
-        "tests/tools/client/test_world_selection_loop.py": "baa5ad2013f3e44160b37faa95e457b7b33dae98d7a14b2f2ecf3a5c06f29a1f",
+        "tests/client/startup/test_world_selection_loop.c": "50a6b1501c05bc9ddf23ca370e4659b5f5188285f63be599e598d257a7436b5e",
+        "tests/tools/client/test_world_selection_loop.py": "c04a33996bfb1f5c73047c992005794097a4eb502f93166c6dee833998a6e958",
         "tests/tools/client/test_farming_loop.py": "5d97de151dac6e1ce79759d5a6eac552dab37792ba53bb36d2465751185f4b9e",
         "tests/tools/client/test_torch_placement_loop.py": "875b711691f95768053bb12493fcf85c7376e79d78eafc4481a4470b437159ee",
         "tests/tools/client/test_mining_loop.py": "96f055d9ff7085b136c61db7864b1ae6a98ce5959e761374f6b7a646a1969916",

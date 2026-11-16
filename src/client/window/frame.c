@@ -46,7 +46,11 @@ static bool native_event(void *context, const SDL_Event *event) {
     } else if (event->type == SDL_EVENT_WINDOW_FOCUS_GAINED) {
         const SDL_WindowFlags flags =
             SDL_GetWindowFlags(f->window) | SDL_GetWindowFlags(f->canvas_peer);
-        if ((flags & (SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED)) == 0)
+        /* Dispatch follows retention of the entire native batch. A later
+         * window may already own keyboard focus; an old Frame gain must not
+         * reactivate this host or steal focus from its already-focused Canvas. */
+        if ((flags & (SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED)) == 0 &&
+            SDL_GetKeyboardFocus() == f->window)
             ok = mc_client_frame_native_focus(f->canvas_peer, e);
     }
     f->active = false;

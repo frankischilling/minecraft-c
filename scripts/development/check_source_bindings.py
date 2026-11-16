@@ -81,8 +81,21 @@ def check_live_bundles(root, observed=None):
     return count
 
 
+def check_scene_inputs(root):
+    # Use each runner's frozen scene identity and current-input validator. This
+    # admits today's fixture bytes without rewriting historical native evidence.
+    for profile in ("lever", "redstone_torch"):
+        path = root / f"tests/tools/client/test_{profile}_loop.py"
+        spec = importlib.util.spec_from_file_location(f"{profile}_source_bindings", path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        module.read_current_plan()
+    print("Current scenes: 2 fixture input declarations; historical results not requalified")
+
+
 def check(root):
     root = root.resolve(strict=True)
+    check_scene_inputs(root)
     observed = {}
     count = 0
     for profile, groups in PROFILES:

@@ -64,7 +64,8 @@ class PureControls(unittest.TestCase):
         binding=json.loads((G.ROOT/'tests/client/gameplay/current_scene_inputs.json').read_text())
         predecessor=binding['profiles']['redstone_torch']['predecessor']['source_input_sha256']
         changed=[name for name,pin in predecessor.items() if G.digest(G.ROOT/name)!=pin]
-        self.assertEqual(changed,['tests/client/startup/test_world_selection_loop.c'])
+        self.assertEqual(changed,['tests/client/startup/test_world_selection_loop.c',
+                                  'tests/tools/client/test_world_selection_loop.py'])
         with self.assertRaises(ValueError):G.read_plan()
 
     def test_positive_synthetic_decoder_only(self):

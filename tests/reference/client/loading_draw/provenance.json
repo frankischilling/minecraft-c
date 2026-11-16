@@ -5710,8 +5710,8 @@
       "sha256": "a2de1a7a93eeb45db5eef8ddfc9b1ceef1d75b321d1603e5dec205159fe749f5"
     },
     "cmake/tests/client_world_selection_loop.cmake": {
-      "bytes": 10396,
-      "sha256": "4e1b27d26e7cdeafeaa83d63ae0589836f4842e149d1142c00a090fb15e8ae81"
+      "bytes": 11748,
+      "sha256": "409bdb31a33b02c26b4b01a1fa2125c0c2aaf9a22afc682f8480a435eed422b9"
     },
     "cmake/tests/platform_date_format.cmake": {
       "bytes": 2244,
@@ -5778,8 +5778,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 396914,
-      "sha256": "0a05809c185ba5f18b21f424aece971adb878510e2649ed759e1a6aaa58a742c"
+      "bytes": 398349,
+      "sha256": "50a6b1501c05bc9ddf23ca370e4659b5f5188285f63be599e598d257a7436b5e"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -7826,8 +7826,8 @@
       "sha256": "991cd2364d4ae08f8fcb6cf6fe524d56ad77cf3522fb454f9d453cc10dcf2361"
     },
     "src/client/window/frame.c": {
-      "bytes": 8243,
-      "sha256": "145e86f9fc5864f60065af61ef0cca6daf2674be6c939faab26e3a2ad079d0f6"
+      "bytes": 8528,
+      "sha256": "061fceffe35d13af96b9a51e00ff2dc9c209c4f70743bec9fd131630b985c79b"
     },
     "src/client/window/frame.h": {
       "bytes": 1805,
@@ -10463,7 +10463,7 @@
     },
     "tests/tools/client/scene_inputs.py": {
       "bytes": 3861,
-      "sha256": "6c1d21e581b92c31cbc2d3bc49819d9347e882e98d1559fc94f50e3bfa55d7ae"
+      "sha256": "d2d5b45bfa73275f60c591dedb5bdab574a4b8f5987ed4b8bffb1e0111ce49dd"
     },
     "tests/tools/client/test_death_respawn.py": {
       "bytes": 4935,
@@ -10474,8 +10474,8 @@
       "sha256": "18e0c4ecdd0868777980676771cddc555d4aeb075e049eb9f3afac42650c618b"
     },
     "tests/tools/client/test_lever_controls.py": {
-      "bytes": 7685,
-      "sha256": "3c317641a18c9b6d5043dbbbf224da107dae029c7dc90b676ebe9740924f534e"
+      "bytes": 7770,
+      "sha256": "e287507cbd65a013d44527f50f8c6cc6dc481a28a15cdc4be76ab2ba6dd05aae"
     },
     "tests/tools/client/test_lever_loop.py": {
       "bytes": 28607,
@@ -10486,8 +10486,8 @@
       "sha256": "c9b9ebc3309970b9e656e94f4d17dff0efb066bfedbbff7be8282aa3af4005bd"
     },
     "tests/tools/client/test_redstone_torch_controls.py": {
-      "bytes": 6407,
-      "sha256": "39b8cbb729c987acc4109f154dce32d76c00eb9b19c6042f618fabfb242e78c8"
+      "bytes": 6492,
+      "sha256": "6aebb572352e550cf2e67c9f84a30f922a8e95d3fabe38e2d23d47d652e225ea"
     },
     "tests/tools/client/test_redstone_torch_loop.py": {
       "bytes": 20489,

@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 5286,
-      "sha256": "e98855016c553ec204f87cd1047308bf5a25135010d7add0f15a2c0a049d9538"
+      "bytes": 5492,
+      "sha256": "a020a7f8ee6d47982d82c27ecd77c46241afaba201eabaa04bc273de66ef7b3c"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -2002,8 +2002,8 @@
       "sha256": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2"
     },
     "scripts/development/check_source_bindings.py": {
-      "bytes": 5501,
-      "sha256": "918f9c4d262693508d1121f04d3512558e2ed5ca310668abe0af233872240ce1"
+      "bytes": 6152,
+      "sha256": "fce091d46c9648c32fdd0580355ca3a255730f8b65ca8d87211668207cefd196"
     },
     "scripts/development/format_code.py": {
       "bytes": 6989,
@@ -6411,7 +6411,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 855667,
-      "sha256": "4fd60cc85a4f38596b49e1b00f77776035bb2af1fbd4bcbc0fc463903a2aa8b8"
+      "sha256": "6996ff8ea9ff95f5395c6717665991d264dc3e3b7f30bf9b3b83d9b95e9d71f5"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6475,7 +6475,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 979949,
-      "sha256": "d85a17abc85194d978a302974878ae996acc484d7226b198f80551a4baa0e267"
+      "sha256": "5b776de96f846c5fb3275fc18b511299204aca30e8926465c253366b1ef0f75a"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6607,7 +6607,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 852492,
-      "sha256": "b08997d58f8057fc2b4ed59ab2f411d74542a3606b74b24bc5782aebc3f865cf"
+      "sha256": "caccdff72d276d9429138bfea7bb3c132a250c872037e9be8475c502bf9bed83"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9858,8 +9858,8 @@
       "sha256": "a2de1a7a93eeb45db5eef8ddfc9b1ceef1d75b321d1603e5dec205159fe749f5"
     },
     "cmake/tests/client_world_selection_loop.cmake": {
-      "bytes": 10396,
-      "sha256": "4e1b27d26e7cdeafeaa83d63ae0589836f4842e149d1142c00a090fb15e8ae81"
+      "bytes": 11748,
+      "sha256": "409bdb31a33b02c26b4b01a1fa2125c0c2aaf9a22afc682f8480a435eed422b9"
     },
     "cmake/tests/platform_date_format.cmake": {
       "bytes": 2244,
@@ -9870,8 +9870,8 @@
       "sha256": "3c5e6921480e25096de451c6ab70a47e50fa210b2b67c4ffe4be48e82f7fcf25"
     },
     "docs/client/world-selection.md": {
-      "bytes": 5845,
-      "sha256": "f30138e72ad6e415ad0989184078beec6bbc239b63868e09ebcc1510d9f27ebc"
+      "bytes": 6026,
+      "sha256": "793cb62a0be1676be336174757252b68f7a33e134fc20ae84c95e2e48be89474"
     },
     "src/client/display/source_world_list_surface.h": {
       "bytes": 795,
@@ -9930,8 +9930,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 396914,
-      "sha256": "0a05809c185ba5f18b21f424aece971adb878510e2649ed759e1a6aaa58a742c"
+      "bytes": 398349,
+      "sha256": "50a6b1501c05bc9ddf23ca370e4659b5f5188285f63be599e598d257a7436b5e"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -14710,8 +14710,8 @@
       "sha256": "991cd2364d4ae08f8fcb6cf6fe524d56ad77cf3522fb454f9d453cc10dcf2361"
     },
     "src/client/window/frame.c": {
-      "bytes": 8243,
-      "sha256": "145e86f9fc5864f60065af61ef0cca6daf2674be6c939faab26e3a2ad079d0f6"
+      "bytes": 8528,
+      "sha256": "061fceffe35d13af96b9a51e00ff2dc9c209c4f70743bec9fd131630b985c79b"
     },
     "src/client/window/frame.h": {
       "bytes": 1805,
@@ -15182,8 +15182,8 @@
       "sha256": "15ea218fe4cb6de9aa33b2a4d629f01ee3ad1e39a0377c091bfbe76a3b8304e3"
     },
     "docs/client/frame-canvas.md": {
-      "bytes": 8257,
-      "sha256": "0f29b7058d76ab8ce1e07a9a2d03f22ad00a216e419f9f23cc6efd92d4d78b06"
+      "bytes": 11183,
+      "sha256": "27870fc1d47b0eb0d2cae26fe78ea3d5b0a57522c3868e017c99eb62899fbbde"
     },
     "docs/client/mining.md": {
       "bytes": 8268,
@@ -20638,8 +20638,8 @@
       "sha256": "d08ee154991316fe20128cb9dd469fe9f8d7303e4c548799ce6962ae217fcaca"
     },
     "tests/tools/client/test_redstone_torch_controls.py": {
-      "bytes": 6407,
-      "sha256": "39b8cbb729c987acc4109f154dce32d76c00eb9b19c6042f618fabfb242e78c8"
+      "bytes": 6492,
+      "sha256": "6aebb572352e550cf2e67c9f84a30f922a8e95d3fabe38e2d23d47d652e225ea"
     },
     "tests/tools/client/test_redstone_torch_loop.py": {
       "bytes": 20489,
@@ -21070,8 +21070,8 @@
       "sha256": "6eae510dab45bc8e2cc31b1da2e5d1e925223cb71e12048408c81b8bfa526199"
     },
     "tests/tools/client/test_lever_controls.py": {
-      "bytes": 7685,
-      "sha256": "3c317641a18c9b6d5043dbbbf224da107dae029c7dc90b676ebe9740924f534e"
+      "bytes": 7770,
+      "sha256": "e287507cbd65a013d44527f50f8c6cc6dc481a28a15cdc4be76ab2ba6dd05aae"
     },
     "tests/tools/client/test_lever_geometry.py": {
       "bytes": 3834,
@@ -21311,7 +21311,7 @@
     },
     "tests/client/gameplay/current_scene_inputs.json": {
       "bytes": 3669,
-      "sha256": "41d61b5879f2895a6b6da26269194371424b5220af209c40aa4768d34b445d2b"
+      "sha256": "a324c6f8396e174e320f2a444989d24bd69d019b7e612274c5e51123a6af4025"
     },
     "tests/client/gui/test_death_screen.c": {
       "bytes": 9609,
@@ -21363,7 +21363,7 @@
     },
     "tests/tools/client/scene_inputs.py": {
       "bytes": 3861,
-      "sha256": "6c1d21e581b92c31cbc2d3bc49819d9347e882e98d1559fc94f50e3bfa55d7ae"
+      "sha256": "d2d5b45bfa73275f60c591dedb5bdab574a4b8f5987ed4b8bffb1e0111ce49dd"
     },
     "tests/tools/client/test_death_respawn.py": {
       "bytes": 4935,

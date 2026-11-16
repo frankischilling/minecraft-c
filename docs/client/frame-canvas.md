@@ -134,3 +134,53 @@ Each standalone profile preserves its output under the build directory's
 `standalone-canvas-contracts` directory. Retain and retire the Xvfb, Openbox and
 child process identities belonging to that run; the isolated result supplies
 no WSLg desktop qualification.
+
+## Retained Windows focus events
+
+The event owner retains a native batch before dispatching Frame listeners.
+A Frame focus-gained record can therefore reach its listener after a peer
+window has already acquired focus. The listener previously focused Canvas
+unconditionally, taking focus back from that peer. It now redirects focus only
+while SDL still names this Frame as the keyboard owner. Current Canvas focus
+also remains undisturbed.
+
+An asset-independent Windows control creates the real Frame, embedded Canvas,
+GL context and an auxiliary peer. Each of 200 cycles first gives Frame genuine
+native focus, then activates the peer before the event-owner pump. The peer
+must retain native, foreground and SDL keyboard focus after that pump; a
+witnessed theft fails immediately. The positive control then activates Frame,
+pumps its listener and requires native and SDL keyboard focus on Canvas, plus
+actual polled pointer position `426,120`. It does not assign SDK coordinates or
+fabricate focus events. All three window rectangles must fit physical monitor
+2, and all three window IDs must disappear during checked teardown.
+
+The strengthened control fails with the old listener: peer focus is confirmed
+before pumping and Canvas owns it afterward. Restoring the guard passes all
+200 cycles. The runner retains bounded stdout/stderr, timeout status, monitor
+inventory and before/after fingerprints of the executable, sibling DLLs and
+selected sources/helpers. These fingerprints are observation continuity checks,
+not complete compiler or dependency provenance. Failed attempts remain retained.
+
+```powershell
+cmake --build BUILD --config Release --target mc_test_embedded_focus
+python -B tests/tools/client/test_embedded_focus.py --executable BUILD/Release/mc_test_embedded_focus.exe --artifacts .local/embedded-focus
+```
+
+This control requires Windows and a physical second monitor. To register it
+with CTest, also enable `MC_ENABLE_EMBEDDED_FOCUS_TESTS` and
+`MC_ENABLE_CLIENT_DISPLAY_TESTS`. Its desktop resource lock prevents overlap
+with the World-selection scenarios; separate test invocations must also run
+serially.
+
+The visible World-selection fixture now pumps the event owner before its native
+pointer warp and observes actual mouse focus and local coordinates before
+queueing button events. This corrects fixture preparation without changing SDK
+polling. The fixed client passes save/title and ten actual reload epochs at
+both 64-unit and 300-unit Windows game directories, with Frame and Canvas on
+monitor 2. Five selected owner, screen-event and Python control CTests pass;
+strict GCC syntax checking passes for the changed World-selection fixture.
+
+The earlier observation of native Canvas/foreground ownership with no SDL
+keyboard owner remains a distinct unresolved case. These bounded controls do
+not establish sustained interactive play, original AWT parity, Linux focus
+behavior or an FPS improvement.

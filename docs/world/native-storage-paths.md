@@ -149,7 +149,11 @@ obtain a snapshot. Entry/file/byte/depth budgets remain in force.
 Earlier failures remain retained locally: a short selection reported SDK
 coordinates `0,0`, another had real Canvas focus but no SDL keyboard focus,
 and long-path observer/reader preparations failed before full acceptance.
-The successful final scenarios do not resolve that focus instability. General
+Later [Frame/input work](../client/frame-canvas.md#retained-windows-focus-events)
+corrects pointer preparation in the fixture and fixes stale Frame events
+stealing peer focus. Fresh save/title and ten-epoch reload controls pass at both
+path lengths with that runtime fix. The missing SDL keyboard-owner observation
+remains unresolved. General
 interactive play, extended sessions, original-game save round trips, UNC
 network behavior and every Windows name alias remain unqualified. Long
 trailing-dot/space component aliases remain an explicit unsupported boundary.

@@ -1,4 +1,25 @@
 if(BUILD_TESTING AND TARGET mc_client_runtime)
+    if(WIN32)
+        option(MC_ENABLE_EMBEDDED_FOCUS_TESTS "Run visible monitor-2 native Frame/Canvas controls" OFF)
+        add_executable(mc_test_embedded_focus tests/client/window/test_embedded_focus.c)
+        target_include_directories(mc_test_embedded_focus PRIVATE src)
+        target_link_libraries(mc_test_embedded_focus PRIVATE mc_client_runtime mc_build_options)
+        if(CMAKE_CXX_COMPILER_LOADED)
+            set_property(TARGET mc_test_embedded_focus PROPERTY LINKER_LANGUAGE CXX)
+        endif()
+        add_custom_command(TARGET mc_test_embedded_focus POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
+                "$<TARGET_FILE_DIR:mc_test_embedded_focus>")
+        if(MC_ENABLE_EMBEDDED_FOCUS_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS)
+            add_test(NAME client.embedded_focus COMMAND Python3::Interpreter -B
+                "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_embedded_focus.py"
+                --executable "$<TARGET_FILE:mc_test_embedded_focus>"
+                --artifacts "${CMAKE_CURRENT_BINARY_DIR}/embedded-focus-captures")
+            set_tests_properties(client.embedded_focus PROPERTIES
+                LABELS "local;integration;client;input;graphics;ownership"
+                TIMEOUT 120 RESOURCE_LOCK mc_desktop_focus)
+        endif()
+    endif()
     add_executable(mc_test_world_selection_loop tests/client/startup/test_world_selection_loop.c
         tests/client/world/test_load_world_foreign_loading.c
         tests/client/world/test_render_global_entities.c)
