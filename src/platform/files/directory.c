@@ -120,10 +120,9 @@ directory_status native_path(const char *path, wchar_t **out, directory_error *e
     if (count <= 0)
         return result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_FILENAME_ENCODING,
                       (int)GetLastError(), "game directory UTF8 to UTF16");
-    /* Extended-length native File conversion is not implemented by this slice. */
-    if (count >= MAX_PATH - 12)
-        return result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
-                      "game directory extended Windows path");
+    if (count >= 32768)
+        return result(error, MC_CLIENT_GAME_DIRECTORY_LIMIT, 0,
+                      "game directory native UTF16 length");
     wchar_t *native = malloc(((size_t)count + 1u) * sizeof(*native));
     if (native == NULL)
         return result(error, MC_CLIENT_GAME_DIRECTORY_ALLOCATION_FAILED, 0,
@@ -136,6 +135,12 @@ directory_status native_path(const char *path, wchar_t **out, directory_error *e
                       "game directory UTF8 conversion");
     }
     native[count] = L'\0';
+    bool extended = false;
+    directory_status status = mc_file_native_extend(&native, &extended, error);
+    if (status != MC_CLIENT_GAME_DIRECTORY_OK) {
+        free(native);
+        return status;
+    }
     *out = native;
     return MC_CLIENT_GAME_DIRECTORY_OK;
 }
@@ -164,50 +169,81 @@ static bool tolerated_find_error(DWORD code) {
            code == ERROR_NO_MORE_FILES;
 }
 
+#ifndef MC_FILE_NATIVE_FULLPATH
+#define MC_FILE_NATIVE_FULLPATH _wfullpath
+#else
+extern wchar_t *MC_FILE_NATIVE_FULLPATH(wchar_t *output, const wchar_t *input, size_t capacity);
+#endif
+
 static directory_status canonical_native(const wchar_t *input, wchar_t **out,
                                          directory_state *state, directory_error *error) {
     ++state->canonicalize_calls;
+    const bool extended = wcsncmp(input, L"\\\\?\\", 4) == 0;
     /* These native forms need source-specific canonicalization still. */
-    if (wcspbrk(input, L"*?") != NULL)
+    if (wcspbrk(input + (extended ? 4u : 0u), L"*?") != NULL)
         return result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
                       "game directory wildcard canonicalization");
-    wchar_t full[MAX_PATH];
     errno = 0;
-    if (_wfullpath(full, input, MAX_PATH) == NULL) {
+    wchar_t short_full[MAX_PATH], short_normalized[MAX_PATH];
+    wchar_t *full = extended ? MC_FILE_NATIVE_FULLPATH(NULL, input, 0)
+                             : MC_FILE_NATIVE_FULLPATH(short_full, input, MAX_PATH);
+    if (full == NULL) {
         state->last_native_error = errno;
+        if (errno == ENOMEM)
+            return result(error, MC_CLIENT_GAME_DIRECTORY_ALLOCATION_FAILED, ENOMEM,
+                          "game directory fullpath allocation");
         return MC_CLIENT_GAME_DIRECTORY_CREATION_FAILED;
     }
     const size_t length = wcslen(full);
-    if (length >= MAX_PATH - 12u)
-        return result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
-                      "game directory extended canonical path");
-    for (size_t i = 0; i < length; ++i) {
-        if (full[i] == L'.' && (i + 1u == length || full[i + 1u] == L'\\'))
-            return result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
-                          "game directory trailing-dot canonicalization");
+    const size_t capacity = extended ? 32768u : MAX_PATH;
+    directory_status status = MC_CLIENT_GAME_DIRECTORY_OK;
+    wchar_t *normalized = NULL;
+    if (length >= capacity) {
+        status = result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
+                        "game directory extended canonical path");
+        goto done;
     }
-    wchar_t normalized[MAX_PATH];
+    for (size_t i = 0; i < length; ++i) {
+        if (full[i] == L'.' && (i + 1u == length || full[i + 1u] == L'\\')) {
+            status = result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
+                            "game directory trailing-dot canonicalization");
+            goto done;
+        }
+    }
+    normalized = extended ? malloc(capacity * sizeof(*normalized)) : short_normalized;
+    if (normalized == NULL) {
+        status = result(error, MC_CLIENT_GAME_DIRECTORY_ALLOCATION_FAILED, 0,
+                        "game directory canonical allocation");
+        goto done;
+    }
     size_t used = 0, next;
-    if (length >= 3u && full[1] == L':' && full[2] == L'\\') {
-        normalized[used++] =
-            full[0] >= L'a' && full[0] <= L'z' ? (wchar_t)(full[0] - L'a' + L'A') : full[0];
-        normalized[used++] = L':';
-        next = 2u;
-    } else if (length >= 2u && full[0] == L'\\' && full[1] == L'\\') {
-        next = 2u;
+    size_t drive = extended ? 4u : 0u;
+    if (length >= drive + 3u && full[drive + 1u] == L':' && full[drive + 2u] == L'\\') {
+        memcpy(normalized, full, (drive + 2u) * sizeof(*full));
+        normalized[drive] = full[drive] >= L'a' && full[drive] <= L'z'
+                                ? (wchar_t)(full[drive] - L'a' + L'A')
+                                : full[drive];
+        used = drive + 2u;
+        next = used;
+    } else if ((!extended && length >= 2u && full[0] == L'\\' && full[1] == L'\\') ||
+               (extended && length >= 8u && wcsncmp(full + 4u, L"UNC\\", 4) == 0)) {
+        next = extended ? 8u : 2u;
         while (next < length && full[next] != L'\\')
             ++next;
-        if (next == length)
-            return result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
-                          "game directory incomplete UNC canonicalization");
+        if (next == length) {
+            status = result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
+                            "game directory incomplete UNC canonicalization");
+            goto done;
+        }
         ++next;
         while (next < length && full[next] != L'\\')
             ++next;
         memcpy(normalized, full, next * sizeof(*full));
         used = next;
     } else {
-        return result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
-                      "game directory canonical prefix");
+        status = result(error, MC_CLIENT_GAME_DIRECTORY_UNSUPPORTED_PATH, 0,
+                        "game directory canonical prefix");
+        goto done;
     }
     while (next < length) {
         size_t end = next + 1u;
@@ -221,39 +257,59 @@ static directory_status canonical_native(const wchar_t *input, wchar_t **out,
         full[end] = saved;
         if (search == INVALID_HANDLE_VALUE) {
             state->last_native_error = (int)failure;
-            if (!tolerated_find_error(failure))
-                return MC_CLIENT_GAME_DIRECTORY_CREATION_FAILED;
+            if (!tolerated_find_error(failure)) {
+                status = MC_CLIENT_GAME_DIRECTORY_CREATION_FAILED;
+                goto done;
+            }
+            if (length - next >= capacity - used) {
+                status = result(error, MC_CLIENT_GAME_DIRECTORY_LIMIT, 0,
+                                "game directory canonical suffix length");
+                goto done;
+            }
             memcpy(normalized + used, full + next, (length - next) * sizeof(*full));
             used += length - next;
             break;
         }
-        if (!FindClose(search))
-            return result(error, MC_CLIENT_GAME_DIRECTORY_NATIVE_IO_ERROR, (int)GetLastError(),
-                          "game directory search close");
+        if (!FindClose(search)) {
+            status = result(error, MC_CLIENT_GAME_DIRECTORY_NATIVE_IO_ERROR, (int)GetLastError(),
+                            "game directory search close");
+            goto done;
+        }
         const size_t component = wcslen(found.cFileName);
-        if (used + component + 1u >= MAX_PATH)
-            return result(error, MC_CLIENT_GAME_DIRECTORY_LIMIT, 0,
-                          "game directory canonical component length");
+        if (used + component + 1u >= capacity) {
+            status = result(error, MC_CLIENT_GAME_DIRECTORY_LIMIT, 0,
+                            "game directory canonical component length");
+            goto done;
+        }
         normalized[used++] = L'\\';
         memcpy(normalized + used, found.cFileName, component * sizeof(*full));
         used += component;
         next = end;
     }
     normalized[used] = L'\0';
-    return wide_copy(normalized, out, error);
+    status = wide_copy(normalized, out, error);
+done:
+    if (extended) {
+        free(normalized);
+        free(full);
+    }
+    return status;
 }
 
 static native_char *parent_native(native_char *path) {
     const size_t length = wcslen(path);
+    const bool extended = wcsncmp(path, L"\\\\?\\", 4) == 0;
+    const size_t drive = extended ? 4u : 0u;
     wchar_t *separator = wcsrchr(path, L'\\');
-    if (separator == NULL || (length == 3u && path[1] == L':'))
+    if (separator == NULL || (length == drive + 3u && path[drive + 1u] == L':'))
         return NULL;
-    if (separator == path + 2 && path[1] == L':') {
-        path[3] = L'\0';
+    if (separator == path + drive + 2u && path[drive + 1u] == L':') {
+        path[drive + 3u] = L'\0';
         return path;
     }
-    if (path[0] == L'\\' && path[1] == L'\\') {
-        wchar_t *server = wcschr(path + 2, L'\\');
+    if ((!extended && path[0] == L'\\' && path[1] == L'\\') ||
+        (extended && wcsncmp(path + 4u, L"UNC\\", 4) == 0)) {
+        wchar_t *server = wcschr(path + (extended ? 8u : 2u), L'\\');
         if (server == NULL || separator == server)
             return NULL;
     }

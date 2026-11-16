@@ -505,7 +505,8 @@ target_include_directories(mc_world_info PRIVATE src/platform/time)
 target_link_libraries(mc_world_info PUBLIC mc_storage PRIVATE mc_platform_time mc_build_options)
 
 # Canonical File/stream/SaveFormat prerequisites; no SDL/device dependency.
-add_library(mc_platform_files STATIC src/platform/files/directory.c src/platform/files/byte_output.c)
+add_library(mc_platform_files STATIC src/platform/files/directory.c src/platform/files/byte_output.c
+    src/platform/files/windows_path.c)
 target_include_directories(mc_platform_files PUBLIC src/platform/files)
 target_link_libraries(mc_platform_files PRIVATE mc_build_options)
 target_link_libraries(mc_core PRIVATE mc_platform_files)
@@ -5491,6 +5492,7 @@ if(BUILD_TESTING)
     target_link_libraries(mc_file_attributes_fault_native PRIVATE mc_build_options)
     if(WIN32)
         target_compile_definitions(mc_file_attributes_fault_native PRIVATE
+            MC_FILE_NATIVE_FULLPATH=mc_test_file_fullpath
             MC_FILE_NATIVE_GET_TIME=mc_test_file_time
             MC_FILE_NATIVE_CLOSE_HANDLE=mc_test_file_close)
     else()

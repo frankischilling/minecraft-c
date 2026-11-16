@@ -68,6 +68,10 @@ mc_file_io_status mc_file_native_attribute(const mc_file_native_char *path,
                                            mc_file_attribute_kind kind, int64_t *out,
                                            mc_file_io_state *state, mc_file_io_error *error);
 #ifdef _WIN32
+/* Private transport conversion. On success, an extended absolute name replaces
+ * the malloc-owned input only when the ordinary absolute name is long. Failure
+ * preserves input and extended. CWD must stay stable through this operation. */
+mc_file_io_status mc_file_native_extend(wchar_t **owned, bool *extended, mc_file_io_error *error);
 mc_file_io_status mc_file_native_wide_copy(const wchar_t *input, wchar_t **out,
                                            mc_file_io_error *error);
 #endif

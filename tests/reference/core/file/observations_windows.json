@@ -1,0 +1,77 @@
+{
+  "input_encoding": "ASCII hex of UTF-16BE path units",
+  "source_sha256": "820f7dffd8006d290a203c23e2c83abf1d1cf2cc05227d52367a19ae9020119f",
+  "java_version": "openjdk version \"17.0.17\" 2025-10-21\r\nOpenJDK Runtime Environment Temurin-17.0.17+10 (build 17.0.17+10)\r\nOpenJDK 64-Bit Server VM Temurin-17.0.17+10 (build 17.0.17+10, mixed mode, sharing)\r\n",
+  "rows": [
+    {
+      "mode": "full",
+      "root_units": 235,
+      "exit": 0,
+      "stdout": "PASS: mkdirs, attributes, streams, rename, delete, canonical identity\r\n",
+      "stderr": ""
+    },
+    {
+      "mode": "full",
+      "root_units": 236,
+      "exit": 0,
+      "stdout": "PASS: mkdirs, attributes, streams, rename, delete, canonical identity\r\n",
+      "stderr": ""
+    },
+    {
+      "mode": "full",
+      "root_units": 247,
+      "exit": 0,
+      "stdout": "PASS: mkdirs, attributes, streams, rename, delete, canonical identity\r\n",
+      "stderr": ""
+    },
+    {
+      "mode": "full",
+      "root_units": 248,
+      "exit": 0,
+      "stdout": "PASS: mkdirs, attributes, streams, rename, delete, canonical identity\r\n",
+      "stderr": ""
+    },
+    {
+      "mode": "full",
+      "root_units": 249,
+      "exit": 0,
+      "stdout": "PASS: mkdirs, attributes, streams, rename, delete, canonical identity\r\n",
+      "stderr": ""
+    },
+    {
+      "mode": "full",
+      "root_units": 259,
+      "exit": 0,
+      "stdout": "PASS: mkdirs, attributes, streams, rename, delete, canonical identity\r\n",
+      "stderr": ""
+    },
+    {
+      "mode": "full",
+      "root_units": 260,
+      "exit": 0,
+      "stdout": "PASS: mkdirs, attributes, streams, rename, delete, canonical identity\r\n",
+      "stderr": ""
+    },
+    {
+      "mode": "full",
+      "root_units": 261,
+      "exit": 0,
+      "stdout": "PASS: mkdirs, attributes, streams, rename, delete, canonical identity\r\n",
+      "stderr": ""
+    },
+    {
+      "mode": "full",
+      "root_units": 400,
+      "exit": 0,
+      "stdout": "PASS: mkdirs, attributes, streams, rename, delete, canonical identity\r\n",
+      "stderr": ""
+    },
+    {
+      "mode": "absent-alias",
+      "root_units": 247,
+      "exit": 0,
+      "stdout": "PASS: missing File.exists returns false\r\n",
+      "stderr": ""
+    }
+  ]
+}

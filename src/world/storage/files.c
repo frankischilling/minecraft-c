@@ -3,6 +3,7 @@
 #endif
 
 #include "files.h"
+#include "../../platform/files/directory.h"
 
 #include <errno.h>
 #include <stdio.h>
@@ -46,56 +47,21 @@ static mc_world_storage_status mc_ws_success(mc_world_storage_error *error) {
 }
 
 #ifdef _WIN32
-/* Keep source-facing paths intact. Only the private native transport uses an
- * absolute extended name, including for temporary siblings of short targets. */
 static mc_world_storage_status mc_ws_extend(mc_ws_native_path *path,
                                             mc_world_storage_error *error) {
-    wchar_t *input = path->value;
-    if (path->length >= 4u && input[0] == L'\\' && input[1] == L'\\' &&
-        (input[2] == L'?' || input[2] == L'.') && input[3] == L'\\')
+    mc_file_io_error child = {0};
+    mc_file_io_status status = mc_file_native_extend(&path->value, &path->extended, &child);
+    if (status == MC_FILE_IO_OK) {
+        if (path->extended)
+            path->length = wcslen(path->value);
         return MC_WORLD_STORAGE_OK;
-    DWORD capacity = GetFullPathNameW(input, 0, NULL, NULL);
-    if (capacity == 0)
-        return mc_ws_error(error, MC_WORLD_STORAGE_IO_ERROR, "path.absolute.win32",
-                           (uint32_t)GetLastError());
-    if (capacity < MAX_PATH - 12u)
-        return MC_WORLD_STORAGE_OK;
-    if (capacity > 32768u)
-        return mc_ws_error(error, MC_WORLD_STORAGE_LIMIT, "path.extended_length", 0);
-    wchar_t *full = malloc(((size_t)capacity + 8u) * sizeof(*full));
-    if (full == NULL)
-        return mc_ws_error(error, MC_WORLD_STORAGE_ALLOCATION_FAILED, "path.absolute.allocate", 0);
-    DWORD length = GetFullPathNameW(input, capacity, full + 8, NULL);
-    if (length == 0 || length >= capacity) {
-        DWORD code = length == 0 ? GetLastError() : ERROR_INSUFFICIENT_BUFFER;
-        free(full);
-        return mc_ws_error(error, MC_WORLD_STORAGE_IO_ERROR, "path.absolute.win32", code);
     }
-    /* Extended paths do not trim component suffixes. Avoid addressing a
-     * different object for these legacy aliases. Dot/parent components were
-     * already resolved by GetFullPathNameW. */
-    for (size_t i = 0; i < length; ++i) {
-        if ((full[8u + i] == L'.' || full[8u + i] == L' ') &&
-            (i + 1u == length || full[9u + i] == L'\\')) {
-            free(full);
-            return mc_ws_error(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                               "path.extended_component_alias", 0);
-        }
-    }
-    bool unc = length >= 2u && full[8] == L'\\' && full[9] == L'\\';
-    size_t prefix = unc ? 8u : 4u;
-    size_t skip = unc ? 2u : 0u;
-    if ((size_t)length - skip + prefix >= 32768u) {
-        free(full);
-        return mc_ws_error(error, MC_WORLD_STORAGE_LIMIT, "path.extended_length", 0);
-    }
-    memmove(full + prefix, full + 8u + skip, (length - skip + 1u) * sizeof(*full));
-    memcpy(full, unc ? L"\\\\?\\UNC\\" : L"\\\\?\\", prefix * sizeof(*full));
-    free(input);
-    path->value = full;
-    path->length = (size_t)length - skip + prefix;
-    path->extended = true;
-    return MC_WORLD_STORAGE_OK;
+    mc_world_storage_status mapped =
+        status == MC_FILE_IO_LIMIT               ? MC_WORLD_STORAGE_LIMIT
+        : status == MC_FILE_IO_ALLOCATION_FAILED ? MC_WORLD_STORAGE_ALLOCATION_FAILED
+        : status == MC_FILE_IO_UNSUPPORTED_PATH  ? MC_WORLD_STORAGE_UNSUPPORTED_STATE
+                                                 : MC_WORLD_STORAGE_IO_ERROR;
+    return mc_ws_error(error, mapped, child.operation, (uint32_t)child.system_error);
 }
 #endif
 

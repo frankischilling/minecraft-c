@@ -6,7 +6,8 @@
 /* Private transport only, never a source File/String identity. Requires a
  * live READY/exclusive File under the unchanged f native environment/CWD
  * lifetime domain. Uses SAME mc_file_native encoding/bounds/provider kernel,
- * performs no File attribute/open operation, and creates no File/normalization.
+ * performs no File attribute/open operation or source File/String normalization.
+ * Long Windows names use a private absolute extended transport name.
  * Success returns an independent malloc-owned NUL-terminated native name;
  * caller free()s it. Failure preserves out. No hidden File hold is acquired:
  * caller retains the SAME File above native open/ZIP/stream lifetime. */

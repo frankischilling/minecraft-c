@@ -123,6 +123,44 @@ static void deletion(mc_java_files *files, mc_java_file *root) {
     CHECK(mc_java_file_release(&regular, &error) == MC_JAVA_FILE_OK);
 }
 
+static void rename_and_list(mc_java_files *files, mc_java_file *root) {
+    mc_java_file_error error;
+    mc_java_file *directory = child(files, root, "rename-list");
+    bool made = false;
+    CHECK(mc_java_file_mkdir(directory, &made, &error) == MC_JAVA_FILE_OK && made);
+    mc_java_file *before = child(files, directory, "before.bin");
+    mc_java_file *after = child(files, directory, "after.bin");
+    write_file(before, false);
+    bool renamed = false;
+    CHECK(mc_java_file_rename_to(before, after, &renamed, &error) == MC_JAVA_FILE_OK && renamed);
+    bool exists = true;
+    CHECK(mc_java_file_exists(before, &exists, &error) == MC_JAVA_FILE_OK && !exists);
+    mc_java_file_array *array = NULL;
+    CHECK(mc_java_file_list(directory, &array, &error) == MC_JAVA_FILE_OK && array != NULL &&
+          mc_java_file_array_length(array) == 1);
+    mc_java_file *listed = mc_java_file_array_at(array, 0);
+    mc_nbt_string expected = mc_world_info_name_text(mc_java_file_path(after));
+    mc_nbt_string actual = mc_world_info_name_text(mc_java_file_path(listed));
+    CHECK(actual.length == expected.length &&
+          memcmp(actual.units, expected.units, actual.length * sizeof(*actual.units)) == 0);
+    mc_java_file_stream *stream = NULL;
+    CHECK(mc_java_file_stream_allocate(files, &stream, &error) == MC_JAVA_FILE_OK &&
+          mc_java_file_stream_construct(stream, listed, &error) == MC_JAVA_FILE_OK);
+    uint8_t bytes[4] = {0};
+    mc_java_file_read read;
+    CHECK(mc_java_file_stream_read(stream, bytes, sizeof(bytes), &read, &error) ==
+              MC_JAVA_FILE_OK &&
+          read.count == 3 && bytes[0] == 1 && bytes[1] == 2 && bytes[2] == 3);
+    CHECK(mc_java_file_stream_source_close(stream, &error) == MC_JAVA_FILE_OK &&
+          mc_java_file_stream_release(&stream, &error) == MC_JAVA_FILE_OK);
+    CHECK(mc_java_file_array_release(&array, &error) == MC_JAVA_FILE_OK);
+    CHECK(mc_java_file_delete(after, &exists, &error) == MC_JAVA_FILE_OK && exists);
+    CHECK(mc_java_file_delete(directory, &exists, &error) == MC_JAVA_FILE_OK && exists);
+    CHECK(mc_java_file_release(&before, &error) == MC_JAVA_FILE_OK &&
+          mc_java_file_release(&after, &error) == MC_JAVA_FILE_OK &&
+          mc_java_file_release(&directory, &error) == MC_JAVA_FILE_OK);
+}
+
 static void set_time(mc_java_file *f, int64_t milliseconds) {
     mc_file_native_char *p = path(f);
 #ifdef _WIN32
@@ -185,6 +223,39 @@ static void reenter(void) {
 #ifdef _WIN32
 static bool fail_close;
 static size_t close_calls;
+static bool fail_fullpath;
+
+wchar_t *mc_test_file_fullpath(wchar_t *output, const wchar_t *input, size_t capacity) {
+    if (output == NULL && fail_fullpath) {
+        fail_fullpath = false;
+        errno = ENOMEM;
+        return NULL;
+    }
+    return _wfullpath(output, input, capacity);
+}
+
+static void fullpath_allocation_failure(mc_java_files *files, mc_java_file *root) {
+    mc_java_file *parts[8];
+    mc_java_file *parent = root;
+    for (size_t i = 0; i < 8; ++i) {
+        parts[i] = child(files, parent, "allocation-budget-abcdefghijklmnopqrstuvwxyz-0123456789");
+        parent = parts[i];
+    }
+    mc_java_file_error error;
+    fail_fullpath = true;
+    bool made = true;
+    CHECK(mc_java_file_mkdirs(parent, &made, &error) == MC_JAVA_FILE_ALLOCATION_FAILED && made &&
+          !fail_fullpath && error.system_error == ENOMEM &&
+          strcmp(error.operation, "game directory fullpath allocation") == 0);
+    mc_java_file_state state;
+    CHECK(mc_java_file_read_state(parent, &state, &error) == MC_JAVA_FILE_OK && !state.active &&
+          state.phase == MC_JAVA_FILE_READY && state.last_native_error == ENOMEM);
+    CHECK(mc_java_file_mkdirs(parent, &made, &error) == MC_JAVA_FILE_OK && made);
+    for (size_t i = 8; i > 0; --i) {
+        CHECK(mc_java_file_delete(parts[i - 1u], &made, &error) == MC_JAVA_FILE_OK && made);
+        CHECK(mc_java_file_release(&parts[i - 1u], &error) == MC_JAVA_FILE_OK);
+    }
+}
 
 BOOL mc_test_file_time(HANDLE h, LPFILETIME created, LPFILETIME accessed, LPFILETIME modified) {
     reenter();
@@ -298,11 +369,13 @@ static void run(mc_nbt_string text) {
 #endif
     watched = NULL;
 #ifdef _WIN32
+    fullpath_allocation_failure(files, root);
     size_t retirement_close_count = close_calls;
 #endif
 #endif
     mc_java_file *raw = NULL;
     deletion(files, root);
+    rename_and_list(files, root);
     CHECK(mc_java_file_allocate(files, &raw, &e) == MC_JAVA_FILE_OK);
     rejected(raw, MC_JAVA_FILE_STATE_ERROR);
     CHECK(mc_java_file_construct_string(raw, NULL, &e) == MC_JAVA_FILE_SOURCE_NULL_STRING);
@@ -361,7 +434,27 @@ static int arguments(void) {
     return 2;
 }
 #ifdef _WIN32
+static void absent_alias(mc_nbt_string text) {
+    mc_java_files *files = NULL;
+    mc_java_file_error error;
+    CHECK(mc_java_files_create(NULL, &files, &error) == MC_JAVA_FILE_OK);
+    mc_world_info_name *name = copy_name(text);
+    mc_java_file *missing = file(files, NULL, name);
+    mc_world_info_name_release(name);
+    mc_world_info_name *identity = mc_java_file_path(missing);
+    bool exists = true;
+    CHECK(mc_java_file_exists(missing, &exists, &error) == MC_JAVA_FILE_OK && !exists);
+    CHECK(mc_java_file_path(missing) == identity);
+    CHECK(mc_java_file_release(&missing, &error) == MC_JAVA_FILE_OK &&
+          mc_java_files_release(&files, &error) == MC_JAVA_FILE_OK);
+    puts("File alias: successful missing-path query");
+}
+
 int wmain(int argc, wchar_t **argv) {
+    if (argc == 3 && wcscmp(argv[2], L"absent-alias") == 0) {
+        absent_alias((mc_nbt_string){(const uint16_t *)argv[1], wcslen(argv[1])});
+        return 0;
+    }
     if (argc != 2)
         return arguments();
     _Static_assert(sizeof(wchar_t) == sizeof(uint16_t), "Windows UTF16 argv");

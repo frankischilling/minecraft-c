@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef _WIN32
+#include <share.h>
+#include <wchar.h>
+#endif
 
 void mc_test_region_raf_fault_once(void);
 size_t mc_test_region_raf_close_calls(void);
@@ -110,6 +114,28 @@ static int opened(fixture *f, int32_t x, int32_t z, mc_world_source_region_outpu
     return 0;
 }
 
+/* Independent test transport: never call the production File conversion or
+ * region reader to obtain the disk snapshot being checked. Fixture names are
+ * absolute ASCII paths; Windows opens their literal wide extended form. */
+static FILE *snapshot_open(const char *path, bool writing) {
+#ifdef _WIN32
+    wchar_t wide[4100] = {L'\\', L'\\', L'?', L'\\'};
+    size_t length = strlen(path);
+    if (length < 3 || length > 4095 || path[1] != ':' || (path[2] != '/' && path[2] != '\\'))
+        return NULL;
+    for (size_t i = 0; i < length; ++i) {
+        if ((unsigned char)path[i] > 127)
+            return NULL;
+        wide[4u + i] = path[i] == '/' ? L'\\' : (wchar_t)(unsigned char)path[i];
+    }
+    wide[4u + length] = 0;
+    /* Observe the live RAF without the secure CRT's default sharing denial. */
+    return _wfsopen(wide, writing ? L"wb" : L"rb", _SH_DENYNO);
+#else
+    return fopen(path, writing ? "wb" : "rb");
+#endif
+}
+
 static int copy_region(fixture *f, const char *label, const mc_java_file *file, size_t *extent) {
     const mc_nbt_string path = mc_world_info_name_text(mc_java_file_path(file));
     char source[4096], destination[4096];
@@ -122,7 +148,7 @@ static int copy_region(fixture *f, const char *label, const mc_java_file *file, 
     const int n =
         snprintf(destination, sizeof(destination), "%s/snapshots/%s.mcr", f->root_path, label);
     CHECK(n > 0 && (size_t)n < sizeof(destination));
-    FILE *in = fopen(source, "rb"), *out = fopen(destination, "wb");
+    FILE *in = snapshot_open(source, false), *out = snapshot_open(destination, true);
     CHECK(in != NULL && out != NULL);
     uint8_t bytes[4096];
     size_t total = 0, count;

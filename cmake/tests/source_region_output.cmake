@@ -21,4 +21,12 @@ if(BUILD_TESTING)
         --work-dir "${CMAKE_CURRENT_BINARY_DIR}/source-region-output-controls")
     set_tests_properties(storage.source_region_output PROPERTIES
         LABELS "public;integration;storage;ownership;filesystem" TIMEOUT 180)
+    add_test(NAME storage.source_region_output_long_path COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/storage/test_source_region_output.py"
+        --executable "$<TARGET_FILE:mc_test_source_region_output>"
+        --source-root "${CMAKE_CURRENT_SOURCE_DIR}"
+        --work-dir "${CMAKE_CURRENT_BINARY_DIR}/source-region-output-long-controls"
+        --long-paths)
+    set_tests_properties(storage.source_region_output_long_path PROPERTIES
+        LABELS "public;integration;storage;ownership;filesystem" TIMEOUT 180)
 endif()

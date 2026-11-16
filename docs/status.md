@@ -11,8 +11,11 @@ The C region transport now handles long Windows target and temporary names.
 The [storage path record](world/native-storage-paths.md) covers the reproduced
 260-unit temporary-open failure, five Unicode path boundaries, replacement,
 collision ownership and fresh-cache reopen. Four focused storage tests pass on
-MSVC Release and GCC Debug with ASan/UBSan and leak detection. The separate
-Source File provider boundary and full-client save qualification remain open.
+MSVC Release and GCC Debug with ASan/UBSan and leak detection. The Source File
+provider now shares that transport and passes long Unicode attribute,
+enumeration, rename and input-stream controls. A separate 400-unit region-output
+scenario exercises actual RAF saves and independent NBT readback. Full-client
+save and network-share qualification remain open.
 
 Ordinary World setters now avoid initializing an unused successful acquisition
 diagnostic. The [quiet-setter record](performance/quiet-setter-acquisition.md)

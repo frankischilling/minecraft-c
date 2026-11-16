@@ -94,6 +94,8 @@ def main():
     parser.add_argument('--executable', type=Path, required=True)
     parser.add_argument('--source-root', type=Path, default=Path(__file__).resolve().parents[3])
     parser.add_argument('--work-dir', type=Path, required=True)
+    parser.add_argument('--long-paths', action='store_true',
+                        help='Run the same region controls under a 400-unit work root')
     args = parser.parse_args()
     source = args.source_root.resolve()
     helper = source / 'tests/reference/client/statistics/support.py'
@@ -110,10 +112,26 @@ def main():
     before = freeze()
     args.work_dir.mkdir(parents=True, exist_ok=True)
     work = Path(tempfile.mkdtemp(prefix='source-region-output-', dir=args.work_dir.resolve()))
+    capture_root = work
+    if args.long_paths:
+        units = lambda path: len(str(path).encode('utf-16-le')) // 2
+        require(units(work) <= 398, 'work parent leaves room for exact long root')
+        while units(work) < 400:
+            remaining = 400 - units(work)
+            count = min(60, remaining - 1)
+            if remaining - count - 1 == 1:
+                count -= 1
+            require(count > 0, 'bounded long path component')
+            work /= 'a' * count
+        work.mkdir(parents=True)
+        require(units(work) == 400, 'exact long work root')
     results = {}
     for mode in ('flow', 'owners', 'cleanup-failure', 'constructor-budget'):
-        directory = work / mode
-        owned = directory / 'owned'
+        # Windows process creation has its own CWD bound. Keep capture/CWD
+        # short while passing the genuine long absolute fixture to the child.
+        directory = capture_root / mode
+        directory.mkdir(parents=True, exist_ok=True)
+        owned = work / mode / 'owned'
         (owned / 'snapshots').mkdir(parents=True)
         capture = support.run_bounded([str(args.executable.resolve()), str(owned), mode],
                                       directory, 'native', timeout=45, limit=BOUND)
@@ -234,7 +252,8 @@ def main():
                         'consumed lower close retains inactive native quarantine; retry adds no source work')
         inventory = {path.relative_to(owned).as_posix(): fingerprint(path)
                      for path in sorted(owned.rglob('*')) if path.is_file()}
-        results[mode] = {'root': str(owned), 'capture': capture.capture_report, 'summary': rows[-1],
+        results[mode] = {'root': str(owned), 'capture_directory': str(directory),
+                         'capture': capture.capture_report, 'summary': rows[-1],
                          'states': states, 'files': inventory, 'snapshots': snapshots}
     after = freeze()
     require(before == after, 'fixture/scenarios/helper/product unchanged through execution')

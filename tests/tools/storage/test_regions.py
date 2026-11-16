@@ -131,10 +131,10 @@ def original_mapping():
 
 
 class Session:
-    def __init__(self, executable):
+    def __init__(self, executable, cwd=None):
         self.errors = tempfile.TemporaryFile()
         self.child = subprocess.Popen([str(executable.resolve())], stdin=subprocess.PIPE,
-                                      stdout=subprocess.PIPE, stderr=self.errors)
+                                      stdout=subprocess.PIPE, stderr=self.errors, cwd=cwd)
         self.lines = queue.Queue()
         self.total_output = 0
         self.closed = False
@@ -579,10 +579,10 @@ def check_long_paths(executable, directory):
             session.read(0, 0, expected=b"replacement")
         preexisting = path.with_name(path.name + ".mc-0000000000000000.tmp")
         preexisting.write_bytes(b"not owned")
-        with Session(executable) as session:
+        with Session(executable, cwd=directory) as session:
             # Relative spelling, slash conversion, and dot/parent resolution
             # must still address the same ordinary file after native extension.
-            relative = os.path.relpath(root).replace(os.sep, "/") + "/./unused/.."
+            relative = os.path.relpath(root, directory).replace(os.sep, "/") + "/./unused/.."
             session.root(Path(relative))
             session.write(0, 0, b"relative")
         require(slot(path.read_bytes())[0] == b"relative", "same relative disk object")
