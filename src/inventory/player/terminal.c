@@ -63,7 +63,29 @@ static bool slot_shape(const mc_container *c, const inv_slot *slot, size_t index
                                  .inventory = c->inventory,
                                  .container_index = (int32_t)index,
                                  .armor_type = -1};
-    if (c->kind == MC_CONTAINER_CHEST) {
+    if (c->kind == MC_CONTAINER_FURNACE) {
+        if (index < 3u) {
+            s.inventory_kind = MC_SLOT_INVENTORY_FURNACE;
+            s.inventory = c->furnace;
+            s.inventory_index = (int32_t)index;
+            s.x = index == 2u ? 116 : 56;
+            s.y = index == 0u ? 17 : index == 1u ? 53 : 35;
+            if (index == 2u) {
+                s.kind = MC_SLOT_FURNACE;
+                s.player = c->inventory->player;
+            }
+        } else if (index < 30u) {
+            const int32_t cell = (int32_t)index - 3;
+            s.inventory_index = 9 + cell;
+            s.x = 8 + (cell % 9) * 18;
+            s.y = 84 + (cell / 9) * 18;
+        } else {
+            const int32_t cell = (int32_t)index - 30;
+            s.inventory_index = cell;
+            s.x = 8 + cell * 18;
+            s.y = 142;
+        }
+    } else if (c->kind == MC_CONTAINER_CHEST) {
         const size_t storage = (size_t)c->chest_rows * 9u;
         const int32_t offset = (c->chest_rows - 4) * 18;
         if (index < storage) {
@@ -136,26 +158,31 @@ static bool container(terminal_proof *p, mc_container *c, mc_inventory_player *i
     if (c->terminal_sealed != sealed)
         return refuse(p, MC_INVENTORY_BUSY, "Inventory terminal Container seal state");
     const bool chest = !aa && c->kind == MC_CONTAINER_CHEST;
-    const size_t count = aa ? 45u : chest ? (size_t)c->chest_rows * 9u + 36u : 46u;
+    const bool furnace = !aa && c->kind == MC_CONTAINER_FURNACE;
+    const size_t count = aa ? 45u : furnace ? 39u : chest ? (size_t)c->chest_rows * 9u + 36u : 46u;
     if (!budget_shape(&c->budget) || c->side != MC_REGISTRY_CLIENT ||
-        c->kind != (aa      ? MC_CONTAINER_PLAYER
-                    : chest ? MC_CONTAINER_CHEST
-                            : MC_CONTAINER_WORKBENCH) ||
+        c->kind != (aa        ? MC_CONTAINER_PLAYER
+                    : furnace ? MC_CONTAINER_FURNACE
+                    : chest   ? MC_CONTAINER_CHEST
+                              : MC_CONTAINER_WORKBENCH) ||
         c->classes != registry || c->inventory != ix || !c->inventory_bound ||
         !c->constructor_entered || !c->constructed || c->constructor_failed ||
-        c->constructor_pc != (aa      ? 290
-                              : chest ? 217
-                                      : 266) ||
-        c->local != aa || c->world != (aa || chest ? NULL : world) ||
+        c->constructor_pc != (aa        ? 290
+                              : furnace ? 182
+                              : chest   ? 217
+                                        : 266) ||
+        c->local != aa || c->world != (aa || chest || furnace ? NULL : world) ||
         (chest && (c->chest == NULL || (c->chest_rows != 3 && c->chest_rows != 6))) ||
-        (!chest && (c->chest != NULL || c->chest_rows != 0)))
+        (!chest && (c->chest != NULL || c->chest_rows != 0)) ||
+        (furnace ? c->furnace == NULL : c->furnace != NULL))
         return refuse(p, MC_INVENTORY_INVALID_ARGUMENT, "Inventory terminal Container identity");
     mc_inventory_crafting *g = c->crafting;
     mc_inventory_result *r = c->result;
-    if (chest) {
+    if (chest || furnace) {
         if (g != NULL || r != NULL)
             return refuse(p, MC_INVENTORY_INVALID_ARGUMENT, "CD owns no Crafting or result child");
-        if (inv_chest_terminal_admit(c->chest, sealed, &p->error) != MC_INVENTORY_OK)
+        if ((furnace ? inv_furnace_terminal_admit(c->furnace, sealed, &p->error)
+                     : inv_chest_terminal_admit(c->chest, sealed, &p->error)) != MC_INVENTORY_OK)
             return false;
     } else {
         if (!allocation(p, g, sizeof(*g), &total) || !allocation(p, r, sizeof(*r), &total))
@@ -273,6 +300,8 @@ mc_inventory_status mc_inventory_player_terminal_prepare(mc_inventory_player *ix
                 it->result->terminal_sealed = true;
             if (it->chest != NULL)
                 inv_chest_terminal_seal(it->chest);
+            if (it->furnace != NULL)
+                inv_furnace_terminal_seal(it->furnace);
             *out = (mc_inventory_player_terminal){ix, aa, it, player, true};
         }
     }

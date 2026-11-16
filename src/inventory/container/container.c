@@ -7,6 +7,8 @@
 static const char *container_class(const mc_container *container) {
     if (container->kind == MC_CONTAINER_CHEST)
         return "cd";
+    if (container->kind == MC_CONTAINER_FURNACE)
+        return "bm";
     return container->kind == MC_CONTAINER_PLAYER ? inv_class(container->side, "aa", "o")
                                                   : inv_class(container->side, "it", "fu");
 }
@@ -14,6 +16,8 @@ static const char *container_class(const mc_container *container) {
 static const char *constructor_desc(const mc_container *container) {
     if (container->kind == MC_CONTAINER_CHEST)
         return "(Llw;Llw;)V";
+    if (container->kind == MC_CONTAINER_FURNACE)
+        return "(Lix;Lsk;)V";
     return container->kind == MC_CONTAINER_PLAYER
                ? inv_class(container->side, "(Lix;Z)V", "(Lfx;Z)V")
                : inv_class(container->side, "(Lix;Lfd;III)V", "(Lfx;Ldj;III)V");
@@ -88,7 +92,7 @@ static bool slot_publish(mc_container *container, inv_slot *slot, mc_slot_kind k
     slot->state.inventory_index = index;
     slot->state.x = x;
     slot->state.y = y;
-    slot->state.player = kind == MC_SLOT_CRAFTING ? player : NULL;
+    slot->state.player = kind == MC_SLOT_CRAFTING || kind == MC_SLOT_FURNACE ? player : NULL;
     slot->state.crafting_input = kind == MC_SLOT_CRAFTING ? container->crafting : NULL;
     slot->state.container_index = (int32_t)container->slots->size;
     container->constructor_pc = source_add;
@@ -148,6 +152,7 @@ void inv_container_free(mc_container *container) {
     if (container->inventory_bound)
         --container->inventory->containers;
     mc_inventory_chest_release(container->chest);
+    mc_inventory_furnace_release(container->furnace);
     inv_free(&container->budget, container);
 }
 
@@ -162,7 +167,7 @@ mc_inventory_status inv_container_notify(mc_container *container, mc_inventory_e
                                       .operation = "Container matching already active"};
         return error->status;
     }
-    if (container->kind == MC_CONTAINER_CHEST)
+    if (container->kind == MC_CONTAINER_CHEST || container->kind == MC_CONTAINER_FURNACE)
         return MC_INVENTORY_OK; /* CD inherits literal DW.a(LW) return. */
     const bool prior_active = container->active;
     container->active = true;
@@ -544,6 +549,135 @@ mc_inventory_status mc_container_workbench_construct(mc_container *container,
     return construct_entered(container, inventory, false, world, x, y, z, result);
 }
 
+mc_inventory_status mc_container_furnace_allocate(mc_registry_side side,
+                                                  mc_registry_classes *classes,
+                                                  const mc_inventory_limits *limits,
+                                                  mc_container **out, mc_inventory_error *error) {
+    if (side != MC_REGISTRY_CLIENT) {
+        const mc_inventory_error e = {.status = MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,
+                                      .operation = "BM client source scope"};
+        return inv_finish(error, &e);
+    }
+    return allocate(side, classes, MC_CONTAINER_FURNACE, limits, out, error);
+}
+
+mc_inventory_status mc_container_furnace_construct(mc_container *c, mc_inventory_player *inventory,
+                                                   mc_inventory_furnace *furnace,
+                                                   mc_inventory_error *result) {
+    mc_inventory_error e = {0};
+    if (c == NULL || c->kind != MC_CONTAINER_FURNACE || c->constructor_entered || c->active ||
+        c->terminal_sealed ||
+        (inventory != NULL && (inventory->side != c->side || inventory->terminal_sealed))) {
+        e.status = MC_INVENTORY_INVALID_ARGUMENT;
+        e.operation = "BM one source constructor native admission";
+        return inv_finish(result, &e);
+    }
+    c->constructor_entered = c->constructing = c->active = true;
+    c->constructor_pc = 1;
+    c->snapshots = list_new(c, 5, &e);
+    if (c->snapshots == NULL)
+        goto base_failed;
+    c->slots = list_new(c, 16, &e);
+    if (c->slots == NULL)
+        goto base_failed;
+    c->listeners = list_new(c, 37, &e);
+    if (c->listeners == NULL)
+        goto base_failed;
+    c->blocked_players = inv_alloc(&c->budget, sizeof(*c->blocked_players), &e);
+    if (c->blocked_players == NULL) {
+        inv_frame(&e, c->side, "dw", "dw", "<init>", "()V", 48);
+        goto base_failed;
+    }
+    /* Native argument occurrences do not dereference nullable source IX/SK. */
+    if (inventory != NULL) {
+        if (inventory->containers == SIZE_MAX) {
+            e.status = MC_INVENTORY_LIMIT;
+            goto failed;
+        }
+        ++inventory->containers;
+        c->inventory_bound = true;
+    }
+    c->inventory = inventory;
+    c->furnace_cook = c->furnace_burn = c->furnace_fuel = 0; /* BM5/10/15 stores. */
+    c->constructor_pc = 21;
+    if (mc_inventory_furnace_retain(furnace, &e) != MC_INVENTORY_OK)
+        goto failed;
+    c->furnace = furnace;
+    if (!slot_add(c, MC_SLOT_NORMAL, MC_SLOT_INVENTORY_FURNACE, furnace, 0, 56, 17, -1, 25, 38,
+                  &e) ||
+        !slot_add(c, MC_SLOT_NORMAL, MC_SLOT_INVENTORY_FURNACE, furnace, 1, 56, 53, -1, 42, 55, &e))
+        goto failed;
+    inv_slot *output = slot_new(c, MC_SLOT_FURNACE, 59, &e);
+    if (output == NULL)
+        goto failed;
+    if (inventory == NULL) {
+        e.status = MC_INVENTORY_NULL_REFERENCE;
+        e.operation = "BM output Slot null IX Player field receiver";
+        e.source_exception = true;
+        e.exception_class = "java/lang/NullPointerException";
+        constructor_frame(&e, c, 64);
+        goto failed;
+    }
+    if (!slot_publish(c, output, MC_SLOT_FURNACE, MC_SLOT_INVENTORY_FURNACE, furnace, 2, 116, 35,
+                      -1, inventory->player, 76, &e))
+        goto failed;
+    for (int32_t row = 0; row < 3; ++row)
+        for (int32_t col = 0; col < 9; ++col)
+            if (!slot_add(c, MC_SLOT_NORMAL, MC_SLOT_INVENTORY_PLAYER, inventory, col + row * 9 + 9,
+                          8 + col * 18, 84 + row * 18, -1, 97, 130, &e))
+                goto failed;
+    for (int32_t col = 0; col < 9; ++col)
+        if (!slot_add(c, MC_SLOT_NORMAL, MC_SLOT_INVENTORY_PLAYER, inventory, col, 8 + col * 18,
+                      142, -1, 154, 173, &e))
+            goto failed;
+    c->constructor_pc = 182;
+    c->constructed = true;
+    c->constructing = c->active = false;
+    return inv_finish(result, &e);
+base_failed:
+    constructor_frame(&e, c, 1);
+failed:
+    c->constructor_failed = true;
+    c->constructing = c->active = false;
+    return inv_finish(result, &e);
+}
+
+mc_inventory_status mc_container_furnace_create(mc_registry_side side, mc_registry_classes *classes,
+                                                mc_inventory_player *inventory,
+                                                mc_inventory_furnace *furnace,
+                                                const mc_inventory_limits *limits,
+                                                mc_container **out, mc_inventory_error *result) {
+    mc_inventory_error e = {0};
+    if (out == NULL || *out != NULL)
+        e.status = MC_INVENTORY_INVALID_ARGUMENT;
+    else {
+        mc_container *c = NULL;
+        if (mc_container_furnace_allocate(side, classes, limits, &c, &e) == MC_INVENTORY_OK) {
+            if (mc_container_furnace_construct(c, inventory, furnace, &e) == MC_INVENTORY_OK)
+                *out = c;
+            else
+                inv_container_free(c);
+        }
+    }
+    return inv_finish(result, &e);
+}
+
+mc_inventory_status mc_container_furnace_usable(mc_container *c, mc_entity *player, bool *out,
+                                                mc_inventory_error *result) {
+    mc_inventory_error e = {0};
+    if (c == NULL || c->kind != MC_CONTAINER_FURNACE || !c->constructed || out == NULL)
+        e.status = MC_INVENTORY_INVALID_ARGUMENT;
+    else if (c->active || c->terminal_sealed)
+        e.status = MC_INVENTORY_BUSY;
+    else {
+        c->active = true;
+        if (mc_inventory_furnace_usable(c->furnace, player, out, &e) != MC_INVENTORY_OK)
+            inv_frame(&e, c->side, "bm", "bm", "b", "(Lgs;)Z", 5);
+        c->active = false;
+    }
+    return inv_finish(result, &e);
+}
+
 mc_inventory_status mc_container_player_create(mc_registry_side side, mc_registry_classes *classes,
                                                mc_inventory_player *inventory, bool local,
                                                const mc_inventory_limits *limits,
@@ -615,6 +749,10 @@ bool mc_container_read_state(const mc_container *container, mc_container_state *
         .result = container->result,
         .player_inventory = container->inventory,
         .chest_inventory = container->chest,
+        .furnace_inventory = container->furnace,
+        .furnace_cook = container->furnace_cook,
+        .furnace_burn = container->furnace_burn,
+        .furnace_fuel = container->furnace_fuel,
         .chest_rows = container->chest_rows,
         .world = container->world,
         .x = container->x,

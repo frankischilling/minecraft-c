@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 static mc_inventory_status begin(mc_container *container, mc_entity *player, int32_t slot,
-                                 int32_t button, bool shift, bool close,
+                                 int32_t button, bool shift, bool close, bool direct_transfer,
                                  const mc_container_interaction_host *host,
                                  mc_container_interaction_call **out,
                                  mc_container_interaction_error *error) {
@@ -57,9 +57,12 @@ static mc_inventory_status begin(mc_container *container, mc_entity *player, int
                                        "Container actual interaction already active");
         else {
             c->state.active = container->interaction_active = true;
+            if (direct_transfer)
+                c->error.site = (mc_inventory_site){"bm", "a", "(I)Liz;", 0};
             const bool returned =
-                close ? inv_interaction_close_body(c)
-                      : inv_interaction_click_body(c, slot, button, shift, 0, &c->result);
+                direct_transfer ? inv_interaction_transfer_body(c, slot, &c->result)
+                : close         ? inv_interaction_close_body(c)
+                                : inv_interaction_click_body(c, slot, button, shift, 0, &c->result);
             c->state.active = container->interaction_active = false;
             c->state.returned = returned && c->error.status == MC_INVENTORY_OK;
             c->state.result = c->result;
@@ -76,14 +79,29 @@ mc_inventory_status mc_container_click_begin(mc_container *container, mc_entity 
                                              const mc_container_interaction_host *host,
                                              mc_container_interaction_call **out,
                                              mc_container_interaction_error *error) {
-    return begin(container, player, slot, button, shift, false, host, out, error);
+    return begin(container, player, slot, button, shift, false, false, host, out, error);
 }
 
 mc_inventory_status mc_container_close_begin(mc_container *container, mc_entity *player,
                                              const mc_container_interaction_host *host,
                                              mc_container_interaction_call **out,
                                              mc_container_interaction_error *error) {
-    return begin(container, player, 0, 0, false, true, host, out, error);
+    return begin(container, player, 0, 0, false, true, false, host, out, error);
+}
+
+mc_inventory_status mc_container_furnace_transfer_begin(mc_container *container, int32_t slot,
+                                                        const mc_container_interaction_host *host,
+                                                        mc_container_interaction_call **out,
+                                                        mc_container_interaction_error *error) {
+    if (container != NULL && container->kind != MC_CONTAINER_FURNACE) {
+        if (error != NULL) {
+            mc_container_interaction_error_init(error);
+            (void)inv_interaction_fail(error, MC_INVENTORY_INVALID_ARGUMENT,
+                                       "BM direct transfer native Container kind");
+        }
+        return MC_INVENTORY_INVALID_ARGUMENT;
+    }
+    return begin(container, NULL, slot, 0, true, false, true, host, out, error);
 }
 
 bool mc_container_interaction_inspect(const mc_container_interaction_call *c,

@@ -48,6 +48,11 @@ static bool slot(mc_container_interaction_call *c, int32_t index, inv_slot **out
     return inv_interaction_fail(&c->error, e.status, e.operation);
 }
 
+static void transfer_at(mc_container_interaction_call *c, int32_t pc) {
+    if (c->state.container->kind == MC_CONTAINER_FURNACE)
+        c->error.transfer = (mc_inventory_site){"bm", "a", "(I)Liz;", pc};
+}
+
 bool inv_interaction_cursor_get(mc_container_interaction_call *c, mc_inventory_player *inventory,
                                 mc_item_stack **out) {
     c->error.child = (mc_inventory_site){"ix", "i", "()Liz;", 1};
@@ -168,14 +173,21 @@ static bool merge(mc_container_interaction_call *c, mc_item_stack *incoming, int
     return true;
 }
 
-static bool transfer(mc_container_interaction_call *c, int32_t index, mc_item_stack **out) {
+bool inv_interaction_transfer_body(mc_container_interaction_call *c, int32_t index,
+                                   mc_item_stack **out) {
     ++c->state.shift_calls;
     const bool workbench = c->state.container->kind == MC_CONTAINER_WORKBENCH;
     const bool chest = c->state.container->kind == MC_CONTAINER_CHEST;
-    if (!workbench && !chest && c->state.container->kind != MC_CONTAINER_PLAYER)
+    const bool furnace = c->state.container->kind == MC_CONTAINER_FURNACE;
+    if (!workbench && !chest && !furnace && c->state.container->kind != MC_CONTAINER_PLAYER)
         return inv_interaction_fail(&c->error, MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,
                                     "Container concrete Shift body");
-    c->error.child = (mc_inventory_site){chest ? "cd" : workbench ? "it" : "aa", "a", "(I)Liz;", 7};
+    c->error.child = (mc_inventory_site){furnace     ? "bm"
+                                         : chest     ? "cd"
+                                         : workbench ? "it"
+                                                     : "aa",
+                                         "a", "(I)Liz;", 7};
+    transfer_at(c, 7);
     inv_slot *s;
     if (!slot(c, index, &s))
         return false;
@@ -183,13 +195,16 @@ static bool transfer(mc_container_interaction_call *c, int32_t index, mc_item_st
     if (s == NULL)
         return true;
     mc_item_stack *value;
+    transfer_at(c, 21);
     if (!inv_interaction_slot_get(c, s, &value))
         return false;
     if (value == NULL)
         return true;
+    transfer_at(c, 28);
     if (!inv_interaction_slot_get(c, s, &value))
         return false;
     mc_item_stack *copy;
+    transfer_at(c, 35);
     if (!inv_interaction_clone(c, value, &copy))
         return false;
     if (chest) {
@@ -213,24 +228,34 @@ static bool transfer(mc_container_interaction_call *c, int32_t index, mc_item_st
         *out = copy;
         return true;
     }
-    const int32_t main_first = workbench ? 10 : 9;
-    const int32_t hotbar_first = workbench ? 37 : 36;
-    const int32_t last = workbench ? 46 : 45;
+    const int32_t main_first = furnace ? 3 : workbench ? 10 : 9;
+    const int32_t hotbar_first = furnace ? 30 : workbench ? 37 : 36;
+    const int32_t last = furnace ? 39 : workbench ? 46 : 45;
+    transfer_at(c, index == 2                  ? 51
+                   : index >= 3 && index < 30  ? 76
+                   : index >= 30 && index < 39 ? 101
+                                               : 114);
     if (!merge(c, value, index >= main_first && index < hotbar_first ? hotbar_first : main_first,
-               index >= hotbar_first && index < last ? hotbar_first : last, index == 0))
+               index >= hotbar_first && index < last ? hotbar_first : last,
+               furnace ? index == 2 : index == 0))
         return false;
     int32_t remaining, original;
     if (!count(c, value, &remaining))
         return false;
     if (remaining == 0) {
+        transfer_at(c, 127);
         if (!inv_interaction_slot_put(c, s, NULL))
             return false;
-    } else if (!inv_interaction_slot_changed(c, s))
-        return false;
+    } else {
+        transfer_at(c, 134);
+        if (!inv_interaction_slot_changed(c, s))
+            return false;
+    }
     if (!count(c, value, &remaining) || !count(c, copy, &original))
         return false;
     if (remaining == original)
         return true;
+    transfer_at(c, 152);
     if (!inv_interaction_slot_pickup(c, s, value))
         return false;
     *out = copy;
@@ -300,7 +325,7 @@ bool inv_interaction_click_body(mc_container_interaction_call *c, int32_t index,
     if (shift) {
         at(c, 106);
         mc_item_stack *moved;
-        if (!transfer(c, index, &moved))
+        if (!inv_interaction_transfer_body(c, index, &moved))
             return false;
         if (moved != NULL) {
             int32_t original;
@@ -589,7 +614,8 @@ bool inv_interaction_close_body(mc_container_interaction_call *c) {
             return false;
         c->state.cursor_cleared = true;
     }
-    if (c->state.container->kind == MC_CONTAINER_CHEST) {
+    if (c->state.container->kind == MC_CONTAINER_CHEST ||
+        c->state.container->kind == MC_CONTAINER_FURNACE) {
         c->error.site.pc = 25; /* CD inherits DW.a(GS), no storage close body. */
         return true;
     }

@@ -2,6 +2,7 @@
 #define MC_WORLD_RUNTIME_PLACEMENT_H
 
 #include "mc/block/registry/runtime.h"
+#include "mc/core/math/classes.h"
 #include "mc/entity/errors.h"
 #include "mc/world/runtime/runtime.h"
 
@@ -20,6 +21,7 @@ typedef struct mc_player_sleep_result_error mc_player_sleep_result_error;
 typedef struct mc_player_sleep_cleanup mc_player_sleep_cleanup;
 typedef struct mc_world_provider_error mc_world_provider_error;
 typedef struct mc_inventory_chest mc_inventory_chest;
+typedef struct mc_inventory_furnace mc_inventory_furnace;
 typedef struct mc_inventory_error mc_inventory_error;
 typedef struct mc_live_tile_entity_error mc_live_tile_entity_error;
 struct mc_world_step_error;
@@ -40,6 +42,9 @@ typedef struct mc_world_block_activation_context {
      * own occurrence before the enclosing placement diagnostic can retire. */
     mc_world_storage_status (*chest)(void *, mc_entity *, mc_inventory_chest *,
                                      mc_world_placement_error *);
+    /* Actual GS.a(SK), with the same nullable SK receiver identity. */
+    mc_world_storage_status (*furnace)(void *, mc_entity *, mc_inventory_furnace *,
+                                       mc_world_placement_error *);
     /* Actual reached Player.b(String) virtual. key is the same nullable
      * Registry String identity from key_owner's code literal pool. Preserve
      * this error's work/ownership fields; retain actual failed client children
@@ -89,6 +94,10 @@ struct mc_world_placement_error {
     mc_inventory_chest *chest_inventory; /* Borrowed actual GS.a operand. */
     const mc_live_tile_entity_error *chest_tile;
     const mc_inventory_error *chest;
+    bool furnace_entered, furnace_returned;
+    mc_inventory_furnace *furnace_inventory;
+    const mc_live_tile_entity_error *furnace_tile;
+    const mc_inventory_error *furnace;
     bool bed_entered, bed_head, bed_occupied, bed_partner_read, bed_occupancy_cleared;
     bool bed_sleep_returned, player_message_entered, player_message_returned;
     int32_t bed_metadata, bed_direction, bed_x, bed_y, bed_z;
@@ -101,6 +110,7 @@ struct mc_world_placement_error {
     const mc_entity_bounds *box;
     mc_world_storage_error cause;
     mc_registry_error registry;
+    mc_math_class_error math;
     mc_entity_status bounds_status;
     const mc_world_runtime_acquisition_error *acquisition;
     /* Common ID/metadata queries retain their frames in source order; E's
@@ -123,6 +133,7 @@ struct mc_world_placement_error {
     const mc_world_provider_error *provider;
     mc_world_storage_error cleanup;
     mc_registry_error cleanup_registry;
+    mc_math_class_error cleanup_math;
     mc_entity_status cleanup_bounds;
     mc_entity_status cleanup_enum_classes;
     const mc_player_sleep_cleanup *cleanup_sleep;
@@ -182,6 +193,12 @@ mc_world_storage_status mc_world_block_placed_by(mc_registry_classes *code_regis
                                                  const mc_block *, mc_world_runtime *, int32_t x,
                                                  int32_t y, int32_t z, mc_entity *nullable_living,
                                                  mc_world_placement_error *);
+/* The defining IN namespace is independent of the nullable World argument.
+ * TC reads yaw and computes its argument before reached active use at16.
+ * The ordinary entry above supplies no namespace; inherited bodies need none. */
+mc_world_storage_status mc_world_block_placed_by_with_math(
+    mc_registry_classes *code_registry, const mc_block *, mc_world_runtime *, int32_t x, int32_t y,
+    int32_t z, mc_entity *nullable_living, mc_math_classes *, mc_world_placement_error *);
 
 /* Consumes only native occurrences/diagnostics. False preserves remaining
  * ownership and the original source failure; cleanup has the separate cause.

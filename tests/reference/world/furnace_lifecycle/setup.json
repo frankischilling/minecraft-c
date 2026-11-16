@@ -1,0 +1,278 @@
+{
+  "schema": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "world": {
+    "world_class": "fd",
+    "provider_class": "rh",
+    "provider_fields": {
+      "c": {
+        "type": "boolean",
+        "value": false
+      },
+      "d": {
+        "type": "boolean",
+        "value": false
+      },
+      "e": {
+        "type": "boolean",
+        "value": false
+      },
+      "g": {
+        "type": "int",
+        "value": 0
+      }
+    },
+    "chunk_provider_class": "ok",
+    "info_fields": {
+      "a": {
+        "type": "long",
+        "value": 23
+      },
+      "b": {
+        "type": "int",
+        "value": 0
+      },
+      "c": {
+        "type": "int",
+        "value": 64
+      },
+      "d": {
+        "type": "int",
+        "value": 0
+      },
+      "e": {
+        "type": "long",
+        "value": 0
+      },
+      "f": {
+        "type": "long",
+        "value": 123
+      },
+      "g": {
+        "type": "long",
+        "value": 0
+      },
+      "i": {
+        "type": "int",
+        "value": 0
+      },
+      "k": {
+        "type": "int",
+        "value": 19132
+      },
+      "l": {
+        "type": "boolean",
+        "value": false
+      },
+      "m": {
+        "type": "int",
+        "value": 0
+      },
+      "n": {
+        "type": "boolean",
+        "value": false
+      },
+      "o": {
+        "type": "int",
+        "value": 0
+      }
+    },
+    "remote": false,
+    "chunks": [
+      {
+        "position": [
+          0,
+          0
+        ],
+        "fields": {
+          "c": {
+            "type": "boolean",
+            "value": true
+          },
+          "i": {
+            "type": "int",
+            "value": 0
+          },
+          "j": {
+            "type": "int",
+            "value": 0
+          },
+          "k": {
+            "type": "int",
+            "value": 0
+          },
+          "n": {
+            "type": "boolean",
+            "value": true
+          },
+          "o": {
+            "type": "boolean",
+            "value": false
+          },
+          "p": {
+            "type": "boolean",
+            "value": false
+          },
+          "q": {
+            "type": "boolean",
+            "value": false
+          },
+          "r": {
+            "type": "long",
+            "value": 0
+          }
+        }
+      },
+      {
+        "position": [
+          0,
+          1
+        ],
+        "fields": {
+          "c": {
+            "type": "boolean",
+            "value": true
+          },
+          "i": {
+            "type": "int",
+            "value": 0
+          },
+          "j": {
+            "type": "int",
+            "value": 0
+          },
+          "k": {
+            "type": "int",
+            "value": 1
+          },
+          "n": {
+            "type": "boolean",
+            "value": true
+          },
+          "o": {
+            "type": "boolean",
+            "value": false
+          },
+          "p": {
+            "type": "boolean",
+            "value": false
+          },
+          "q": {
+            "type": "boolean",
+            "value": false
+          },
+          "r": {
+            "type": "long",
+            "value": 0
+          }
+        }
+      },
+      {
+        "position": [
+          1,
+          0
+        ],
+        "fields": {
+          "c": {
+            "type": "boolean",
+            "value": true
+          },
+          "i": {
+            "type": "int",
+            "value": 0
+          },
+          "j": {
+            "type": "int",
+            "value": 1
+          },
+          "k": {
+            "type": "int",
+            "value": 0
+          },
+          "n": {
+            "type": "boolean",
+            "value": true
+          },
+          "o": {
+            "type": "boolean",
+            "value": false
+          },
+          "p": {
+            "type": "boolean",
+            "value": false
+          },
+          "q": {
+            "type": "boolean",
+            "value": false
+          },
+          "r": {
+            "type": "long",
+            "value": 0
+          }
+        }
+      },
+      {
+        "position": [
+          1,
+          1
+        ],
+        "fields": {
+          "c": {
+            "type": "boolean",
+            "value": true
+          },
+          "i": {
+            "type": "int",
+            "value": 0
+          },
+          "j": {
+            "type": "int",
+            "value": 1
+          },
+          "k": {
+            "type": "int",
+            "value": 1
+          },
+          "n": {
+            "type": "boolean",
+            "value": true
+          },
+          "o": {
+            "type": "boolean",
+            "value": false
+          },
+          "p": {
+            "type": "boolean",
+            "value": false
+          },
+          "q": {
+            "type": "boolean",
+            "value": false
+          },
+          "r": {
+            "type": "long",
+            "value": 0
+          }
+        }
+      }
+    ],
+    "open_calls": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        1,
+        1
+      ]
+    ]
+  }
+}

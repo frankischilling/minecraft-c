@@ -86,6 +86,7 @@ typedef struct mc_world_mutation_error {
     bool ladder_source_null;
     bool bed_source_null;
     bool fire_source_null, fire_array_index, stairs_source_null;
+    bool furnace_source_null;
     unsigned int redstone_ore_tick_bytecode;
     bool redstone_ore_source_null;
     mc_world_fire_sites fire;

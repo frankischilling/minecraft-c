@@ -23,12 +23,12 @@ mc_tile_entity_status mc_tile_entity_build_source_nbt(const mc_tile_entity *tile
     const mc_nbt_tag *item_children[36][4] = {0}, *record_children[36] = {0};
     mc_item_stack *held[36] = {0};
     size_t occupied = 0;
-    if (tile->kind == MC_TILE_ENTITY_CHEST) {
-        if (tile->state.chest.capacity > 36 ||
-            (tile->state.chest.capacity != 0 && tile->state.chest.slots == NULL))
+    if (tile_entity_has_slots(tile)) {
+        if (tile_entity_slot_capacity(tile) > 36 ||
+            (tile_entity_slot_capacity(tile) != 0 && tile_entity_slots(tile) == NULL))
             return tile_entity_status(error, MC_TILE_ENTITY_STATE_ERROR, "Items", SIZE_MAX);
-        for (size_t slot = 0; slot < tile->state.chest.capacity; ++slot) {
-            mc_item_stack *stack = tile->state.chest.slots[slot];
+        for (size_t slot = 0; slot < tile_entity_slot_capacity(tile); ++slot) {
+            mc_item_stack *stack = tile_entity_slots(tile)[slot];
             if (stack == NULL)
                 continue;
             const mc_item_stack_status retained = mc_item_stack_retain(stack);
@@ -67,8 +67,12 @@ mc_tile_entity_status mc_tile_entity_build_source_nbt(const mc_tile_entity *tile
                 (mc_nbt_tag){.type = MC_NBT_COMPOUND, .value.compound = {item_children[i], 4}};
             record_children[i] = &records[i];
         }
-        fields[4].value.list.items = occupied == 0 ? NULL : record_children;
-        fields[4].value.list.length = occupied;
+        fields[tile_entity_items_field(tile)].value.list.items =
+            occupied == 0 ? NULL : record_children;
+        fields[tile_entity_items_field(tile)].value.list.length = occupied;
+        if (tile->kind == MC_TILE_ENTITY_FURNACE)
+            fields[tile_entity_items_field(tile)].value.list.element_type =
+                occupied == 0 ? MC_NBT_END : MC_NBT_COMPOUND;
     }
     const mc_nbt_tag *children[9] = {0};
     for (size_t i = 0; i < field_count; ++i)

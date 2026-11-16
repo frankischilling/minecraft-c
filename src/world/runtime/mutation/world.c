@@ -938,19 +938,19 @@ static bool admit_owned(const mc_world_mutation_execution_context *context, mc_w
 }
 
 /* A Block hook receives World as an ordinary nullable argument. Only this
- * Chest RW body may evaluate factory15 before invoking that value at18;
+ * Chest/Furnace RW bodies may evaluate factory15 before invoking that value at18;
  * nullable World method receivers retain admit_owned's earlier refusal. */
-static bool admit_nullable_chest_added(const mc_world_mutation_execution_context *context,
-                                       mc_world_mutation_execution_call **slot,
-                                       const mc_world_mutation_error *out,
-                                       mc_world_access_failure_lease **lease,
-                                       mc_entity_tick_execution_site site) {
+static bool admit_nullable_tile_added(const mc_world_mutation_execution_context *context,
+                                      mc_world_mutation_execution_call **slot,
+                                      const mc_world_mutation_error *out,
+                                      mc_world_access_failure_lease **lease,
+                                      mc_entity_tick_execution_site site) {
     if (context == NULL || context->result == NULL)
         return false;
     if (context->execution == NULL || context->execution->identity != context->execution ||
         context->code_classes == NULL || slot == NULL || *slot != NULL || out == NULL) {
         mc_world_runtime_execution_result_note(context->result, MC_WORLD_STORAGE_INVALID_ARGUMENT,
-                                               "Chest hook execution and fresh outputs", site);
+                                               "TileEntity hook execution and fresh outputs", site);
         return false;
     }
     return current(context, NULL, lease, site);
@@ -1011,6 +1011,17 @@ bool mc_world_runtime_metadata_set_in_execution(const mc_world_mutation_executio
     const bool completed = metadata_body(world, x, y, z, metadata, &call->error, call,
                                          MUTATION_SUCCESS_RESET_RETAINED);
     return finish_owned(slot, completed, raw, out, metadata_site, true);
+}
+
+bool mc_world_mutation_execution_metadata(mc_world_mutation_execution_call *call,
+                                          mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
+                                          int32_t metadata, mc_world_mutation_error *error,
+                                          mc_entity_tick_execution_site site) {
+    if (!mc_world_mutation_execution_current(call, world, site))
+        return false;
+    mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
+    return mc_world_runtime_metadata_set_in_execution(&call->context, world, x, y, z, metadata,
+                                                      &call->child, &raw, error);
 }
 
 static bool block_set_owned(const mc_world_mutation_execution_context *context,
@@ -1109,10 +1120,11 @@ bool mc_world_mutation_execution_added(const mc_world_mutation_execution_context
                                        mc_entity_tick_execution_site site) {
     mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
     mc_world_access_failure_lease *lease = NULL;
-    const bool nullable_chest = world == NULL && block != NULL && block->kind == MC_BLOCK_CHEST &&
-                                block->classes->options.side == MC_REGISTRY_CLIENT;
-    if (!(nullable_chest ? admit_nullable_chest_added(context, slot, error, &lease, site)
-                         : admit_owned(context, world, true, slot, &raw, error, &lease, site)))
+    const bool nullable_tile = world == NULL && block != NULL &&
+                               (block->kind == MC_BLOCK_CHEST || block->kind == MC_BLOCK_FURNACE) &&
+                               block->classes->options.side == MC_REGISTRY_CLIENT;
+    if (!(nullable_tile ? admit_nullable_tile_added(context, slot, error, &lease, site)
+                        : admit_owned(context, world, true, slot, &raw, error, &lease, site)))
         return false;
     mc_world_mutation_execution_call *call = start_owned(context, slot, lease, site);
     if (call == NULL)
@@ -1284,17 +1296,17 @@ mc_world_mutation_execution_failed_material(const mc_world_mutation_execution_ca
     return call->material;
 }
 
-bool mc_world_mutation_execution_chest_added(mc_world_mutation_execution_call *call,
-                                             mc_world_runtime *world, const mc_block *block,
-                                             int32_t x, int32_t y, int32_t z,
-                                             mc_world_mutation_error *error) {
+bool mc_world_mutation_execution_tile_added(mc_world_mutation_execution_call *call,
+                                            mc_world_runtime *world, const mc_block *block,
+                                            int32_t x, int32_t y, int32_t z,
+                                            mc_world_mutation_error *error) {
     const mc_entity_tick_execution_site site = {"rw", "c", "(Lfd;III)V", 18};
     if (!mc_world_mutation_execution_current(call, world, site))
         return false;
     if (call->tile_added != NULL || error == NULL || block == NULL ||
-        block->kind != MC_BLOCK_CHEST) {
+        (block->kind != MC_BLOCK_CHEST && block->kind != MC_BLOCK_FURNACE)) {
         mc_world_runtime_execution_result_note(call->context.result, MC_WORLD_STORAGE_BUSY,
-                                               "Chest addition requires fresh retained child",
+                                               "TileEntity addition requires fresh retained child",
                                                site);
         return false;
     }
@@ -1302,7 +1314,7 @@ bool mc_world_mutation_execution_chest_added(mc_world_mutation_execution_call *c
     if (call->tile_added == NULL) {
         mc_world_runtime_execution_result_note(call->context.result,
                                                MC_WORLD_STORAGE_ALLOCATION_FAILED,
-                                               "World retained Chest addition child", site);
+                                               "World retained TileEntity addition child", site);
         return false;
     }
     call->tile_added_status = mc_live_tile_entities_block_added_in_execution(

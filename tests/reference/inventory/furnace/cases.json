@@ -1,0 +1,8843 @@
+{
+  "schema": 1,
+  "cases": [
+    {
+      "profile": "construct",
+      "operation": "construct",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "size",
+      "operation": "size",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "limit",
+      "operation": "limit",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "name",
+      "operation": "name",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "get-m2147483648",
+      "operation": "get",
+      "index": -2147483648,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "get-m1",
+      "operation": "get",
+      "index": -1,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "get-0",
+      "operation": "get",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "get-1",
+      "operation": "get",
+      "index": 1,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "get-2",
+      "operation": "get",
+      "index": 2,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "get-3",
+      "operation": "get",
+      "index": 3,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "get-2147483647",
+      "operation": "get",
+      "index": 2147483647,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "get-null-array",
+      "operation": "get",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": true,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "set-count-m3",
+      "operation": "set",
+      "index": 1,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": -3,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "set-count-0",
+      "operation": "set",
+      "index": 1,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 0,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "set-count-1",
+      "operation": "set",
+      "index": 1,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 1,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "set-count-64",
+      "operation": "set",
+      "index": 1,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 64,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "set-count-65",
+      "operation": "set",
+      "index": 1,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 65,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "set-count-2147483647",
+      "operation": "set",
+      "index": 1,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 2147483647,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "set-shared-alias",
+      "operation": "set",
+      "index": 1,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 65,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A",
+        "2": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "set-bad-index-m1",
+      "operation": "set",
+      "index": -1,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "set-bad-index-3",
+      "operation": "set",
+      "index": 3,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "set-bad-index-2147483647",
+      "operation": "set",
+      "index": 2147483647,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "set-null",
+      "operation": "set",
+      "index": 1,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "set-null-array",
+      "operation": "set",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": true,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removemm3mm2",
+      "operation": "remove",
+      "index": 0,
+      "amount": -2,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": -3,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removemm3m0",
+      "operation": "remove",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": -3,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removemm3m1",
+      "operation": "remove",
+      "index": 0,
+      "amount": 1,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": -3,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removemm3m4",
+      "operation": "remove",
+      "index": 0,
+      "amount": 4,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": -3,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removemm3m5",
+      "operation": "remove",
+      "index": 0,
+      "amount": 5,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": -3,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removemm3m65",
+      "operation": "remove",
+      "index": 0,
+      "amount": 65,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": -3,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removemm3mm2147483648",
+      "operation": "remove",
+      "index": 0,
+      "amount": -2147483648,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": -3,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removemm3m2147483647",
+      "operation": "remove",
+      "index": 0,
+      "amount": 2147483647,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": -3,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem0mm2",
+      "operation": "remove",
+      "index": 0,
+      "amount": -2,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 0,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem0m0",
+      "operation": "remove",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 0,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem0m1",
+      "operation": "remove",
+      "index": 0,
+      "amount": 1,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 0,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem0m4",
+      "operation": "remove",
+      "index": 0,
+      "amount": 4,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 0,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem0m5",
+      "operation": "remove",
+      "index": 0,
+      "amount": 5,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 0,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem0m65",
+      "operation": "remove",
+      "index": 0,
+      "amount": 65,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 0,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem0mm2147483648",
+      "operation": "remove",
+      "index": 0,
+      "amount": -2147483648,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 0,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem0m2147483647",
+      "operation": "remove",
+      "index": 0,
+      "amount": 2147483647,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 0,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem1mm2",
+      "operation": "remove",
+      "index": 0,
+      "amount": -2,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 1,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem1m0",
+      "operation": "remove",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 1,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem1m1",
+      "operation": "remove",
+      "index": 0,
+      "amount": 1,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 1,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem1m4",
+      "operation": "remove",
+      "index": 0,
+      "amount": 4,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 1,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem1m5",
+      "operation": "remove",
+      "index": 0,
+      "amount": 5,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 1,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem1m65",
+      "operation": "remove",
+      "index": 0,
+      "amount": 65,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 1,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem1mm2147483648",
+      "operation": "remove",
+      "index": 0,
+      "amount": -2147483648,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 1,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem1m2147483647",
+      "operation": "remove",
+      "index": 0,
+      "amount": 2147483647,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 1,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem5mm2",
+      "operation": "remove",
+      "index": 0,
+      "amount": -2,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem5m0",
+      "operation": "remove",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem5m1",
+      "operation": "remove",
+      "index": 0,
+      "amount": 1,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem5m4",
+      "operation": "remove",
+      "index": 0,
+      "amount": 4,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem5m5",
+      "operation": "remove",
+      "index": 0,
+      "amount": 5,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem5m65",
+      "operation": "remove",
+      "index": 0,
+      "amount": 65,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem5mm2147483648",
+      "operation": "remove",
+      "index": 0,
+      "amount": -2147483648,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem5m2147483647",
+      "operation": "remove",
+      "index": 0,
+      "amount": 2147483647,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem64mm2",
+      "operation": "remove",
+      "index": 0,
+      "amount": -2,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 64,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem64m0",
+      "operation": "remove",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 64,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem64m1",
+      "operation": "remove",
+      "index": 0,
+      "amount": 1,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 64,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem64m4",
+      "operation": "remove",
+      "index": 0,
+      "amount": 4,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 64,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem64m5",
+      "operation": "remove",
+      "index": 0,
+      "amount": 5,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 64,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem64m65",
+      "operation": "remove",
+      "index": 0,
+      "amount": 65,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 64,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem64mm2147483648",
+      "operation": "remove",
+      "index": 0,
+      "amount": -2147483648,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 64,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "removem64m2147483647",
+      "operation": "remove",
+      "index": 0,
+      "amount": 2147483647,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 64,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "remove-shared-split",
+      "operation": "remove",
+      "index": 0,
+      "amount": 2,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "remove-shared-whole",
+      "operation": "remove",
+      "index": 0,
+      "amount": 5,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "remove-empty-bad-m1",
+      "operation": "remove",
+      "index": -1,
+      "amount": 1,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "remove-empty-bad-3",
+      "operation": "remove",
+      "index": 3,
+      "amount": 1,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "remove-empty",
+      "operation": "remove",
+      "index": 0,
+      "amount": -1,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "cookmscalem0m24",
+      "operation": "cook-scale",
+      "index": 0,
+      "amount": 24,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "cookmscalem199m24",
+      "operation": "cook-scale",
+      "index": 0,
+      "amount": 24,
+      "fields": [
+        0,
+        0,
+        199
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "cookmscalem200m24",
+      "operation": "cook-scale",
+      "index": 0,
+      "amount": 24,
+      "fields": [
+        0,
+        0,
+        200
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "cookmscalemm1m24",
+      "operation": "cook-scale",
+      "index": 0,
+      "amount": 24,
+      "fields": [
+        0,
+        0,
+        -1
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "cookmscalemm200mm24",
+      "operation": "cook-scale",
+      "index": 0,
+      "amount": -24,
+      "fields": [
+        0,
+        0,
+        -200
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "cookmscalem2147483647m24",
+      "operation": "cook-scale",
+      "index": 0,
+      "amount": 24,
+      "fields": [
+        0,
+        0,
+        2147483647
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "cookmscalemm2147483648mm1",
+      "operation": "cook-scale",
+      "index": 0,
+      "amount": -1,
+      "fields": [
+        0,
+        0,
+        -2147483648
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "cookmscalem2147483647m2147483647",
+      "operation": "cook-scale",
+      "index": 0,
+      "amount": 2147483647,
+      "fields": [
+        0,
+        0,
+        2147483647
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "burnmscalem0m0m12",
+      "operation": "burn-scale",
+      "index": 0,
+      "amount": 12,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "burnmscalem1m0m12",
+      "operation": "burn-scale",
+      "index": 0,
+      "amount": 12,
+      "fields": [
+        1,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "burnmscalem199m200m12",
+      "operation": "burn-scale",
+      "index": 0,
+      "amount": 12,
+      "fields": [
+        199,
+        200,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "burnmscalem200m200m12",
+      "operation": "burn-scale",
+      "index": 0,
+      "amount": 12,
+      "fields": [
+        200,
+        200,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "burnmscalemm200m200m12",
+      "operation": "burn-scale",
+      "index": 0,
+      "amount": 12,
+      "fields": [
+        -200,
+        200,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "burnmscalem200mm200m12",
+      "operation": "burn-scale",
+      "index": 0,
+      "amount": 12,
+      "fields": [
+        200,
+        -200,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "burnmscalemm2147483648mm1m1",
+      "operation": "burn-scale",
+      "index": 0,
+      "amount": 1,
+      "fields": [
+        -2147483648,
+        -1,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "burnmscalem2147483647m0m2147483647",
+      "operation": "burn-scale",
+      "index": 0,
+      "amount": 2147483647,
+      "fields": [
+        2147483647,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "burning-m2147483648",
+      "operation": "burning",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        -2147483648,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "burning-m1",
+      "operation": "burning",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        -1,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "burning-0",
+      "operation": "burning",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "burning-1",
+      "operation": "burning",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        1,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "burning-2147483647",
+      "operation": "burning",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        2147483647,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-null",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-1",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-5",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 5,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-6",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 6,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-17",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 17,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-35",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 35,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-47",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 47,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-53",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 53,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-54",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 54,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-58",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 58,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-61",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 61,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-63",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 63,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-64",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 64,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-85",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 85,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-96",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 96,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-263",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 263,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-280",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 280,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-327",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 327,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-260",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 260,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-268",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 268,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-264",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 264,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-m1",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": -1,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-0",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 0,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-255",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 255,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-256",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 256,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-31999",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 31999,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-32000",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 32000,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-2147483647",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 2147483647,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "fuel-charcoal",
+      "operation": "fuel",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 263,
+          "count": -2,
+          "damage": 1,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "can-smelt-empty",
+      "operation": "can-smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "can-smelt-no-recipe",
+      "operation": "can-smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 1,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "can-smelt-invalid-item",
+      "operation": "can-smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": -1,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "can-smelt-output-m1",
+      "operation": "can-smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 3,
+          "damage": 0,
+          "animation": 0
+        },
+        "B": {
+          "id": 265,
+          "count": -1,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "2": "B"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "can-smelt-output-0",
+      "operation": "can-smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 3,
+          "damage": 0,
+          "animation": 0
+        },
+        "B": {
+          "id": 265,
+          "count": 0,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "2": "B"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "can-smelt-output-1",
+      "operation": "can-smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 3,
+          "damage": 0,
+          "animation": 0
+        },
+        "B": {
+          "id": 265,
+          "count": 1,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "2": "B"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "can-smelt-output-63",
+      "operation": "can-smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 3,
+          "damage": 0,
+          "animation": 0
+        },
+        "B": {
+          "id": 265,
+          "count": 63,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "2": "B"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "can-smelt-output-64",
+      "operation": "can-smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 3,
+          "damage": 0,
+          "animation": 0
+        },
+        "B": {
+          "id": 265,
+          "count": 64,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "2": "B"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "can-smelt-output-65",
+      "operation": "can-smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 3,
+          "damage": 0,
+          "animation": 0
+        },
+        "B": {
+          "id": 265,
+          "count": 65,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "2": "B"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "can-smelt-output-2147483647",
+      "operation": "can-smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 3,
+          "damage": 0,
+          "animation": 0
+        },
+        "B": {
+          "id": 265,
+          "count": 2147483647,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "2": "B"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "canmsmeltmmismatchm266m0",
+      "operation": "can-smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 3,
+          "damage": 0,
+          "animation": 0
+        },
+        "B": {
+          "id": 266,
+          "count": 1,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "2": "B"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "canmsmeltmmismatchm265m1",
+      "operation": "can-smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 3,
+          "damage": 0,
+          "animation": 0
+        },
+        "B": {
+          "id": 265,
+          "count": 1,
+          "damage": 1,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "2": "B"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "canmsmeltmmismatchm0m0",
+      "operation": "can-smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 3,
+          "damage": 0,
+          "animation": 0
+        },
+        "B": {
+          "id": 0,
+          "count": 1,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "2": "B"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "canmsmeltmmismatchmm1m0",
+      "operation": "can-smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 3,
+          "damage": 0,
+          "animation": 0
+        },
+        "B": {
+          "id": -1,
+          "count": 1,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "2": "B"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-recipe-15",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-recipe-14",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 14,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-recipe-56",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 56,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-recipe-12",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 12,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-recipe-319",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 319,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-recipe-349",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 349,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-recipe-4",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 4,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-recipe-337",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 337,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-recipe-81",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 81,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-recipe-17",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 17,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-input-m2147483648",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": -2147483648,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-input-m1",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": -1,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-input-0",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 0,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-input-1",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 1,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-output-m1",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 3,
+          "damage": 0,
+          "animation": 0
+        },
+        "B": {
+          "id": 265,
+          "count": -1,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "2": "B"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-output-63",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 3,
+          "damage": 0,
+          "animation": 0
+        },
+        "B": {
+          "id": 265,
+          "count": 63,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "2": "B"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-output-64",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 3,
+          "damage": 0,
+          "animation": 0
+        },
+        "B": {
+          "id": 265,
+          "count": 64,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "2": "B"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-output-65",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 3,
+          "damage": 0,
+          "animation": 0
+        },
+        "B": {
+          "id": 265,
+          "count": 65,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "2": "B"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-shared-input-fuel",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-empty",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "smelt-invalid-item",
+      "operation": "smelt",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": -1,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "read-empty",
+      "operation": "read",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 123,
+        "cook": 199,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "read-coal",
+      "operation": "read",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 1600,
+        "cook": 40,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [
+          [
+            0,
+            15,
+            2,
+            0
+          ],
+          [
+            1,
+            263,
+            3,
+            1
+          ]
+        ],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "read-wood",
+      "operation": "read",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": -1,
+        "cook": -2,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [
+          [
+            1,
+            17,
+            1,
+            2
+          ]
+        ],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "read-lava",
+      "operation": "read",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 20000,
+        "cook": 199,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [
+          [
+            1,
+            327,
+            1,
+            0
+          ]
+        ],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "read-nonfuel",
+      "operation": "read",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 12,
+        "cook": 13,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [
+          [
+            1,
+            1,
+            1,
+            0
+          ]
+        ],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "read-duplicate",
+      "operation": "read",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 40000,
+        "cook": 65535,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [
+          [
+            1,
+            263,
+            3,
+            0
+          ],
+          [
+            1,
+            280,
+            -2,
+            1
+          ]
+        ],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "read-ignored-slots",
+      "operation": "read",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 32768,
+        "cook": -32769,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [
+          [
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          [
+            3,
+            15,
+            5,
+            0
+          ],
+          [
+            255,
+            263,
+            1,
+            0
+          ]
+        ],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "read-negative-count",
+      "operation": "read",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": -32768,
+        "cook": 32767,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [
+          [
+            0,
+            15,
+            -128,
+            -1
+          ],
+          [
+            2,
+            265,
+            127,
+            32767
+          ]
+        ],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "read-invalid-fuel",
+      "operation": "read",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 123,
+        "cook": 456,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [
+          [
+            0,
+            15,
+            1,
+            0
+          ],
+          [
+            1,
+            -1,
+            1,
+            0
+          ]
+        ],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "read-missing-items",
+      "operation": "read",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 12,
+        "cook": 34,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "missing-items"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "read-wrong-items",
+      "operation": "read",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 12,
+        "cook": 34,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "wrong-items"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "read-wrong-burn",
+      "operation": "read",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 12,
+        "cook": 34,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [
+          [
+            0,
+            15,
+            1,
+            0
+          ]
+        ],
+        "mode": "wrong-burn"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "writem0m0",
+      "operation": "write",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        999,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 257,
+          "damage": 65535,
+          "animation": 0
+        },
+        "B": {
+          "id": 263,
+          "count": -129,
+          "damage": 32768,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "B",
+        "2": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "roundtripm0m0",
+      "operation": "roundtrip",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        999,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 257,
+          "damage": 65535,
+          "animation": 0
+        },
+        "B": {
+          "id": 263,
+          "count": -129,
+          "damage": 32768,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "B",
+        "2": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "writem32767m32768",
+      "operation": "write",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        32767,
+        999,
+        32768
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 257,
+          "damage": 65535,
+          "animation": 0
+        },
+        "B": {
+          "id": 263,
+          "count": -129,
+          "damage": 32768,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "B",
+        "2": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "roundtripm32767m32768",
+      "operation": "roundtrip",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        32767,
+        999,
+        32768
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 257,
+          "damage": 65535,
+          "animation": 0
+        },
+        "B": {
+          "id": 263,
+          "count": -129,
+          "damage": 32768,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "B",
+        "2": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "writemm32769m65535",
+      "operation": "write",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        -32769,
+        999,
+        65535
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 257,
+          "damage": 65535,
+          "animation": 0
+        },
+        "B": {
+          "id": 263,
+          "count": -129,
+          "damage": 32768,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "B",
+        "2": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "roundtripmm32769m65535",
+      "operation": "roundtrip",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        -32769,
+        999,
+        65535
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 257,
+          "damage": 65535,
+          "animation": 0
+        },
+        "B": {
+          "id": 263,
+          "count": -129,
+          "damage": 32768,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "B",
+        "2": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "writem2147483647mm2147483648",
+      "operation": "write",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        2147483647,
+        999,
+        -2147483648
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 257,
+          "damage": 65535,
+          "animation": 0
+        },
+        "B": {
+          "id": 263,
+          "count": -129,
+          "damage": 32768,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "B",
+        "2": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "roundtripm2147483647mm2147483648",
+      "operation": "roundtrip",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        2147483647,
+        999,
+        -2147483648
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 257,
+          "damage": 65535,
+          "animation": 0
+        },
+        "B": {
+          "id": 263,
+          "count": -129,
+          "damage": 32768,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "B",
+        "2": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "roundtrip-empty-fuel",
+      "operation": "roundtrip",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        1200,
+        1600,
+        99
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "write-null-array",
+      "operation": "write",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": true,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "tick-null-0",
+      "operation": "tick-null",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        1600,
+        199
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "tick-null-1",
+      "operation": "tick-null",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        1,
+        1600,
+        199
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "tick-null-m1",
+      "operation": "tick-null",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        -1,
+        1600,
+        199
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "usable-null-world",
+      "operation": "usable-null",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-layout-0-0",
+      "operation": "bm-layout",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-layout-0-1",
+      "operation": "bm-layout",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": true
+    },
+    {
+      "profile": "bm-layout-1-0",
+      "operation": "bm-layout",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": true,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-shift-m1",
+      "operation": "bm-shift",
+      "index": -1,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "A",
+        "2": "A"
+      },
+      "player": {
+        "9": "A",
+        "0": "A"
+      },
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-shift-0",
+      "operation": "bm-shift",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "A",
+        "2": "A"
+      },
+      "player": {
+        "9": "A",
+        "0": "A"
+      },
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-shift-1",
+      "operation": "bm-shift",
+      "index": 1,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "A",
+        "2": "A"
+      },
+      "player": {
+        "9": "A",
+        "0": "A"
+      },
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-shift-2",
+      "operation": "bm-shift",
+      "index": 2,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "A",
+        "2": "A"
+      },
+      "player": {
+        "9": "A",
+        "0": "A"
+      },
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-shift-3",
+      "operation": "bm-shift",
+      "index": 3,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "A",
+        "2": "A"
+      },
+      "player": {
+        "9": "A",
+        "0": "A"
+      },
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-shift-29",
+      "operation": "bm-shift",
+      "index": 29,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "A",
+        "2": "A"
+      },
+      "player": {
+        "9": "A",
+        "0": "A"
+      },
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-shift-30",
+      "operation": "bm-shift",
+      "index": 30,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "A",
+        "2": "A"
+      },
+      "player": {
+        "9": "A",
+        "0": "A"
+      },
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-shift-38",
+      "operation": "bm-shift",
+      "index": 38,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "A",
+        "2": "A"
+      },
+      "player": {
+        "9": "A",
+        "0": "A"
+      },
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-shift-39",
+      "operation": "bm-shift",
+      "index": 39,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A",
+        "1": "A",
+        "2": "A"
+      },
+      "player": {
+        "9": "A",
+        "0": "A"
+      },
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-shift-single-0",
+      "operation": "bm-shift",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "0": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-shift-single-1",
+      "operation": "bm-shift",
+      "index": 1,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "1": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-shift-single-2",
+      "operation": "bm-shift",
+      "index": 2,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {
+        "2": "A"
+      },
+      "player": {},
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-shift-single-3",
+      "operation": "bm-shift",
+      "index": 3,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {},
+      "player": {
+        "9": "A"
+      },
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-shift-single-30",
+      "operation": "bm-shift",
+      "index": 30,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 15,
+          "count": 5,
+          "damage": 0,
+          "animation": 7
+        }
+      },
+      "tile": {},
+      "player": {
+        "0": "A"
+      },
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-output-full-unchanged",
+      "operation": "bm-shift",
+      "index": 2,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {
+        "A": {
+          "id": 265,
+          "count": 5,
+          "damage": 0,
+          "animation": 0
+        },
+        "B": {
+          "id": 1,
+          "count": 64,
+          "damage": 0,
+          "animation": 0
+        }
+      },
+      "tile": {
+        "2": "A"
+      },
+      "player": {
+        "0": "B",
+        "1": "B",
+        "2": "B",
+        "3": "B",
+        "4": "B",
+        "5": "B",
+        "6": "B",
+        "7": "B",
+        "8": "B",
+        "9": "B",
+        "10": "B",
+        "11": "B",
+        "12": "B",
+        "13": "B",
+        "14": "B",
+        "15": "B",
+        "16": "B",
+        "17": "B",
+        "18": "B",
+        "19": "B",
+        "20": "B",
+        "21": "B",
+        "22": "B",
+        "23": "B",
+        "24": "B",
+        "25": "B",
+        "26": "B",
+        "27": "B",
+        "28": "B",
+        "29": "B",
+        "30": "B",
+        "31": "B",
+        "32": "B",
+        "33": "B",
+        "34": "B",
+        "35": "B"
+      },
+      "argument": "A",
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-shift-empty",
+      "operation": "bm-shift",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-progress-m1",
+      "operation": "bm-progress",
+      "index": -1,
+      "amount": -2147483648,
+      "fields": [
+        12,
+        34,
+        56
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-progress-0",
+      "operation": "bm-progress",
+      "index": 0,
+      "amount": -2147483648,
+      "fields": [
+        12,
+        34,
+        56
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-progress-1",
+      "operation": "bm-progress",
+      "index": 1,
+      "amount": -2147483648,
+      "fields": [
+        12,
+        34,
+        56
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-progress-2",
+      "operation": "bm-progress",
+      "index": 2,
+      "amount": -2147483648,
+      "fields": [
+        12,
+        34,
+        56
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-progress-3",
+      "operation": "bm-progress",
+      "index": 3,
+      "amount": -2147483648,
+      "fields": [
+        12,
+        34,
+        56
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-update-empty",
+      "operation": "bm-update",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-update-counters",
+      "operation": "bm-update",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        12,
+        34,
+        56
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    },
+    {
+      "profile": "bm-usable-null-world",
+      "operation": "bm-usable",
+      "index": 0,
+      "amount": 0,
+      "fields": [
+        0,
+        0,
+        0
+      ],
+      "xyz": [
+        -8,
+        64,
+        19
+      ],
+      "stacks": {},
+      "tile": {},
+      "player": {},
+      "argument": null,
+      "nbt": {
+        "burn": 0,
+        "cook": 0,
+        "xyz": [
+          11,
+          -12,
+          13
+        ],
+        "items": [],
+        "mode": "normal"
+      },
+      "array_null": false,
+      "player_null": false,
+      "tile_null": false
+    }
+  ]
+}

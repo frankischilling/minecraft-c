@@ -9,7 +9,7 @@
 
 #include <stdbool.h>
 
-/* Concrete Chest/Spawner/Piston TileEntity owner. Caller-facing runtime and persistence
+/* Concrete Chest/Spawner/Piston/Furnace TileEntity owner. Caller-facing runtime and persistence
  * joins require the coordinated actual owners; reached missing descendants
  * remain explicit failures. Full gameplay/tick qualification is separate. */
 typedef struct mc_world_runtime mc_world_runtime;
@@ -24,7 +24,8 @@ typedef struct mc_tile_entity_map_backing mc_tile_entity_map_backing;
 typedef enum mc_tile_entity_kind {
     MC_TILE_ENTITY_CHEST = 0,
     MC_TILE_ENTITY_SPAWNER,
-    MC_TILE_ENTITY_PISTON
+    MC_TILE_ENTITY_PISTON,
+    MC_TILE_ENTITY_FURNACE
 } mc_tile_entity_kind;
 
 typedef enum mc_tile_entity_class_phase {
@@ -200,7 +201,8 @@ mc_tile_entity_status mc_tile_entity_name_get_view(const mc_tile_entity_name *na
 size_t mc_tile_entity_name_native_bytes(const mc_tile_entity_name *name);
 
 /* Allocate raw zero fields before constructor work, with one native hold and
- * fixed concrete kind. Construct only RAW: chest allocates36 null physical
+ * fixed concrete kind. Construct only RAW: Furnace allocates3 null slots;
+ * chest allocates36 null physical
  * slots; spawner executes delay-1/previous0/Pig/delay20; Piston default invokes
  * only the empty base constructor and leaves every raw field zero. Piston's
  * separate static ArrayList initializes before any instance allocation.
@@ -416,7 +418,7 @@ mc_tile_entity_status mc_tile_entity_build(const mc_tile_entity *tile_entity,
 
 /* Fresh source ow.b/concrete writer result. Uses genuine current base/subtype
  * fields and direct Stack id/Count/Damage with Slot, without unknown provenance
- * overlays. Supported READY Chest/Spawner/Piston owners only; no source heap,
+ * overlays. Supported READY Chest/Spawner/Piston/Furnace owners only; no source heap,
  * mutable setter or HashMap wire-order claim. Tree/new scratch allocations obey
  * the operation ceiling; supplying owner graphs have their separate budgets. */
 mc_tile_entity_status mc_tile_entity_build_source_nbt(const mc_tile_entity *, const mc_nbt_limits *,

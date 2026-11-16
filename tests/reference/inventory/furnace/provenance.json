@@ -1,0 +1,316 @@
+{
+  "schema": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "capture": {
+    "id": "capture-02",
+    "sha256": "44a1ebc07a276d07d9702ef5d8d3bfbbf75996179f64e94188e6c87b27cc1f7f",
+    "status": "PASS",
+    "ordinary_targets": 2,
+    "traced_targets": 2,
+    "cases_per_target": 207
+  },
+  "execution_helpers": {
+    "FurnaceObservation.java": "9d0bee31f983573dc3f7d29abb1b0731915c880104a2e76a0c86a953eb4abd48",
+    "FurnaceJdi.java": "afd8348559d375b3f1c0af470151b2a78b8c42c844476a8c405342ed492240b3",
+    "declare.py": "4fd621f90a9b6a765d5a2107b3c6167ea35d2114278be92f4e7ee50f7ab25542",
+    "cases.json": "1db86e1cc34c1d7adf1c018afb7ba0d1329e09d2f12282120dbdba98f1c97a1a",
+    "capture.py": "d56b0aa8462c6d012e7b02a08cc0ac9397681ad8a91111ee66489d9def1b31ae"
+  },
+  "publication_helpers": {
+    "projection.py": "254cd8a188919af7a76cbb6ed35dab05d8bedfa77713a43660227117cd4e1ab3",
+    "audit.py": "4024206fcd6eb6ed746d54c076b33405ad7dcc7e67dcfe706de439c64a131485",
+    "publish.py": "448bfb113164437fafb0b999f836f721cd33b7845ce823dddee86d34b5dc23d6",
+    "test_packet.py": "612d48fa79f74bf576ff88261fab04462284e7bba699150142597d8be5ef3334",
+    "README.md": "cf902aab47216810931f3eb615d629c131030cba207aaa48fefc378dd8388b15",
+    "scan_callers.py": "6862d01a2449912784edd48546d95e28e8009f2df80854b42ef317f144cb88fc"
+  },
+  "outputs": {
+    "finite.json": "b9e83275a23bb7072e7783341e82a445ba6817eb7f967516256e4083d82734ff",
+    "source-pins.json": "c608ab8200e57476bdaa9724be3d8880a7303b85623355bc67ca51cd15c4e412",
+    "traces.json": "27b777bd60edff7d0858d373cbc262679c01e0296ad935e10e55d538adc19616",
+    "caller-inventory.json": "b1076d14194454a4999faf972e15261069cc30482d1e6a1a8320a116668a8bec",
+    "native-observations.h": "df6a035be95869d3f8c33b6b3e22c16fa06ff2fde4c6d141c40597cd5f2badf7"
+  },
+  "inputs_before": {
+    "C:\\Users\\admin\\minecraft\\b1.7.3.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\lib\\modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\server\\jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\furnace\\FurnaceObservation.java": "9d0bee31f983573dc3f7d29abb1b0731915c880104a2e76a0c86a953eb4abd48",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\furnace\\FurnaceJdi.java": "afd8348559d375b3f1c0af470151b2a78b8c42c844476a8c405342ed492240b3",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\furnace\\cases.json": "1db86e1cc34c1d7adf1c018afb7ba0d1329e09d2f12282120dbdba98f1c97a1a",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\furnace\\capture.py": "d56b0aa8462c6d012e7b02a08cc0ac9397681ad8a91111ee66489d9def1b31ae",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\furnace\\declare.py": "4fd621f90a9b6a765d5a2107b3c6167ea35d2114278be92f4e7ee50f7ab25542",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\client\\controller\\capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\client\\controller\\classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+    "C:\\Users\\admin\\minecraft\\tests\\tools\\world\\test_source_saving.py": "1fc2f69d04e2ab6e5c48f9d2ebef1d9dd7de0c50a5a7278a81735b0a63edcff9",
+    "C:\\Users\\admin\\minecraft\\.local\\furnace-reference\\capture-02\\declared-inputs.tsv": "85bac7252a10f26b6b295c7d70c294e6064b5860369a860894ce4071ee1e2351"
+  },
+  "inputs_after": {
+    "C:\\Users\\admin\\minecraft\\b1.7.3.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\lib\\modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\server\\jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\furnace\\FurnaceObservation.java": "9d0bee31f983573dc3f7d29abb1b0731915c880104a2e76a0c86a953eb4abd48",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\furnace\\FurnaceJdi.java": "afd8348559d375b3f1c0af470151b2a78b8c42c844476a8c405342ed492240b3",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\furnace\\cases.json": "1db86e1cc34c1d7adf1c018afb7ba0d1329e09d2f12282120dbdba98f1c97a1a",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\furnace\\capture.py": "d56b0aa8462c6d012e7b02a08cc0ac9397681ad8a91111ee66489d9def1b31ae",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\furnace\\declare.py": "4fd621f90a9b6a765d5a2107b3c6167ea35d2114278be92f4e7ee50f7ab25542",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\client\\controller\\capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\client\\controller\\classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+    "C:\\Users\\admin\\minecraft\\tests\\tools\\world\\test_source_saving.py": "1fc2f69d04e2ab6e5c48f9d2ebef1d9dd7de0c50a5a7278a81735b0a63edcff9",
+    "C:\\Users\\admin\\minecraft\\.local\\furnace-reference\\capture-02\\declared-inputs.tsv": "85bac7252a10f26b6b295c7d70c294e6064b5860369a860894ce4071ee1e2351"
+  },
+  "compiled_before": {
+    "classes\\FurnaceJdi$Drain.class": "5e2d206f8bb4c0166fe636e23961d043b99f6deb68461b2abe36965f5ad29ee0",
+    "classes\\FurnaceJdi.class": "00be1640b0781d935f4398d2db2e3221eb8316cc9dfda41fb1a998be6e7beedf",
+    "classes\\FurnaceObservation$1.class": "1a7816fb38d2706afb19066b7ba316a1ed73c411e57695876b8b8b51d268fa07",
+    "classes\\FurnaceObservation.class": "8a10bd5095a5a20eef46ed33c47e83737657e8e3dacc61de1984dd633de89c6f"
+  },
+  "compiled_after": {
+    "classes\\FurnaceJdi$Drain.class": "5e2d206f8bb4c0166fe636e23961d043b99f6deb68461b2abe36965f5ad29ee0",
+    "classes\\FurnaceJdi.class": "00be1640b0781d935f4398d2db2e3221eb8316cc9dfda41fb1a998be6e7beedf",
+    "classes\\FurnaceObservation$1.class": "1a7816fb38d2706afb19066b7ba316a1ed73c411e57695876b8b8b51d268fa07",
+    "classes\\FurnaceObservation.class": "8a10bd5095a5a20eef46ed33c47e83737657e8e3dacc61de1984dd633de89c6f"
+  },
+  "processes": {
+    "compile": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javac.exe",
+        "-encoding",
+        "UTF-8",
+        "-classpath",
+        "C:\\Users\\admin\\minecraft\\.local\\furnace-reference\\capture-02\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+        "-d",
+        "C:\\Users\\admin\\minecraft\\.local\\furnace-reference\\capture-02\\classes",
+        "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\furnace\\FurnaceObservation.java",
+        "C:\\Users\\admin\\minecraft\\tests\\reference\\inventory\\furnace\\FurnaceJdi.java"
+      ],
+      "exit": 0,
+      "timeout_seconds": 60,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "compile.stdout",
+      "stderr_file": "compile.stderr",
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    "java_version": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+        "-version"
+      ],
+      "exit": 0,
+      "timeout_seconds": 20,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "java-version.stdout",
+      "stderr_file": "java-version.stderr",
+      "stdout_bytes": 0,
+      "stderr_bytes": 190,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "60aba3fe0d7bf59797df0e8cb7af289d0843e978623fafea7e3ae5ef925b6622",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    "javac_version": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javac.exe",
+        "-version"
+      ],
+      "exit": 0,
+      "timeout_seconds": 20,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "javac-version.stdout",
+      "stderr_file": "javac-version.stderr",
+      "stdout_bytes": 15,
+      "stderr_bytes": 0,
+      "stdout_sha256": "825ce50fb46a3e8bd8d38f6da5bf8449d442a9f210d9d38c83709234bfa8ee9c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    "original": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+        "-Xint",
+        "-Xverify:all",
+        "-Xmx256m",
+        "-Djava.awt.headless=true",
+        "-Djava.security.manager=allow",
+        "-classpath",
+        "C:\\Users\\admin\\minecraft\\.local\\furnace-reference\\capture-02\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+        "FurnaceObservation",
+        "C:\\Users\\admin\\minecraft\\.local\\furnace-reference\\capture-02\\declared-inputs.tsv"
+      ],
+      "exit": 0,
+      "timeout_seconds": 60,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "original.stdout",
+      "stderr_file": "original.stderr",
+      "stdout_bytes": 237509,
+      "stderr_bytes": 381,
+      "stdout_sha256": "a69eaa5db4bb872192cf8edee292c00c7c47e57b5ce88bad10e6a4fb74779cfa",
+      "stderr_sha256": "3bcde98fec5a5408350a7e46d73a0a51d05a75b892d709d9cdb88a659c7285f2",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    "original-repeat": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+        "-Xverify:all",
+        "-Xmx256m",
+        "-Djava.awt.headless=true",
+        "-Djava.security.manager=allow",
+        "-classpath",
+        "C:\\Users\\admin\\minecraft\\.local\\furnace-reference\\capture-02\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+        "FurnaceObservation",
+        "C:\\Users\\admin\\minecraft\\.local\\furnace-reference\\capture-02\\declared-inputs.tsv"
+      ],
+      "exit": 0,
+      "timeout_seconds": 60,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "original-repeat.stdout",
+      "stderr_file": "original-repeat.stderr",
+      "stdout_bytes": 237509,
+      "stderr_bytes": 381,
+      "stdout_sha256": "a69eaa5db4bb872192cf8edee292c00c7c47e57b5ce88bad10e6a4fb74779cfa",
+      "stderr_sha256": "3bcde98fec5a5408350a7e46d73a0a51d05a75b892d709d9cdb88a659c7285f2",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    "trace-interpreter": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+        "--add-modules=jdk.jdi",
+        "-Xmx256m",
+        "-classpath",
+        "C:\\Users\\admin\\minecraft\\.local\\furnace-reference\\capture-02\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+        "FurnaceJdi",
+        "C:\\Users\\admin\\minecraft\\.local\\furnace-reference\\capture-02\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot",
+        "C:\\Users\\admin\\minecraft\\.local\\furnace-reference\\capture-02\\trace-interpreter-jdi",
+        "C:\\Users\\admin\\minecraft\\.local\\furnace-reference\\capture-02\\declared-inputs.tsv",
+        "interpreter"
+      ],
+      "exit": 0,
+      "timeout_seconds": 300,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "trace-interpreter.stdout",
+      "stderr_file": "trace-interpreter.stderr",
+      "stdout_bytes": 59,
+      "stderr_bytes": 0,
+      "stdout_sha256": "673d17cdbf26b7a4fcfba624e61a04bb940fcaae0f3989871780900e2437bc0b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    "trace-default": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+        "--add-modules=jdk.jdi",
+        "-Xmx256m",
+        "-classpath",
+        "C:\\Users\\admin\\minecraft\\.local\\furnace-reference\\capture-02\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+        "FurnaceJdi",
+        "C:\\Users\\admin\\minecraft\\.local\\furnace-reference\\capture-02\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot",
+        "C:\\Users\\admin\\minecraft\\.local\\furnace-reference\\capture-02\\trace-default-jdi",
+        "C:\\Users\\admin\\minecraft\\.local\\furnace-reference\\capture-02\\declared-inputs.tsv",
+        "default"
+      ],
+      "exit": 0,
+      "timeout_seconds": 300,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "trace-default.stdout",
+      "stderr_file": "trace-default.stderr",
+      "stdout_bytes": 59,
+      "stderr_bytes": 0,
+      "stdout_sha256": "673d17cdbf26b7a4fcfba624e61a04bb940fcaae0f3989871780900e2437bc0b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    }
+  },
+  "trace_artifacts": {
+    "trace-interpreter": {
+      "target.stdout": {
+        "bytes": 237509,
+        "sha256": "a69eaa5db4bb872192cf8edee292c00c7c47e57b5ce88bad10e6a4fb74779cfa"
+      },
+      "target.stderr": {
+        "bytes": 381,
+        "sha256": "3bcde98fec5a5408350a7e46d73a0a51d05a75b892d709d9cdb88a659c7285f2"
+      },
+      "calls.ndjson": {
+        "bytes": 437718,
+        "sha256": "0bb248b3e6680a455fd4de503965355ac3721e48b98bd8a1529146b81d25a8b9"
+      },
+      "live-Code.json": {
+        "bytes": 8492,
+        "sha256": "e32ddde5a76a72a4091380ee0fe0eeb98da5eaa21d7e55370ed5f5ab3244f019"
+      }
+    },
+    "trace-default": {
+      "target.stdout": {
+        "bytes": 237509,
+        "sha256": "a69eaa5db4bb872192cf8edee292c00c7c47e57b5ce88bad10e6a4fb74779cfa"
+      },
+      "target.stderr": {
+        "bytes": 381,
+        "sha256": "3bcde98fec5a5408350a7e46d73a0a51d05a75b892d709d9cdb88a659c7285f2"
+      },
+      "calls.ndjson": {
+        "bytes": 437718,
+        "sha256": "0bb248b3e6680a455fd4de503965355ac3721e48b98bd8a1529146b81d25a8b9"
+      },
+      "live-Code.json": {
+        "bytes": 8492,
+        "sha256": "e32ddde5a76a72a4091380ee0fe0eeb98da5eaa21d7e55370ed5f5ab3244f019"
+      }
+    }
+  },
+  "preparations": [
+    {
+      "id": "capture-01",
+      "bytes": 930425,
+      "sha256": "cd3807e18b501201e7c2c3c09780ed3daa59805ab4d9be6cc0524dd284cab3f8",
+      "status": "PASS",
+      "scope": "Retained preparation, not part of final four-target cohort"
+    }
+  ],
+  "publication_scope": "Later readback/generation only, no game execution. Both ordinary and both traced streams, journals/live Code and current retained input/product hashes rechecked before public writes."
+}

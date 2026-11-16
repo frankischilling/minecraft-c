@@ -263,8 +263,8 @@
       "sha256": "7ed00a398aa780d9df7db9bac1542dc4465babc10fac489ba0148573b901a286"
     },
     "src/world/runtime/tile_entities/tile_entities.c": {
-      "bytes": 285032,
-      "sha256": "d70a3eaba9e390a851eddbe2db84be790bca39ca6f4f526e48bcc30c56788a65"
+      "bytes": 292390,
+      "sha256": "025eed19065b269f3760bdd53ec33e4c181cf6b3d6de59228f214994719d7bd4"
     },
     "tests/world/runtime/world_access/test_kernel_execution.c": {
       "bytes": 25462,
@@ -343,8 +343,8 @@
       "sha256": "fe49c20bad99406c6e2c589d011c4e9a2b666a17f589abaeb9e2daf839614ca3"
     },
     "src/world/runtime/collision/blocks.c": {
-      "bytes": 93894,
-      "sha256": "abc85065417a0c276594807cc5494314fad3903fceca8c435998438353aea321"
+      "bytes": 93945,
+      "sha256": "c6f27bbc394d81255664e998645f2c4099ecc904a713cc4c55eaec8fe69c21af"
     },
     "src/world/runtime/collision/blocks_execution_internal.h": {
       "bytes": 6979,

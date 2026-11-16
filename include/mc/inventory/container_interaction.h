@@ -10,6 +10,7 @@ typedef struct mc_container_interaction_error {
     mc_inventory_status status;
     const char *operation, *exception_class;
     mc_inventory_site site, child, dependency;
+    mc_inventory_site transfer; /* Reached BM.a(I) caller, independent of GP/IZ children. */
     bool native_policy, source_exception, source_error;
     mc_inventory_error inventory;
     mc_registry_error registry;
@@ -35,6 +36,9 @@ typedef struct mc_container_interaction_host {
                                    mc_container_interaction_error *);
     mc_inventory_status (*world_remote)(void *, mc_world_runtime *, bool *,
                                         mc_container_interaction_error *);
+    /* Actual VQ IZ.b/iron/fish prefix, distinct from YV achievements. */
+    mc_inventory_status (*furnace_crafted)(void *, mc_entity *, mc_item_stack *,
+                                           mc_container_interaction_error *);
 } mc_container_interaction_host;
 
 typedef struct mc_container_interaction_state {
@@ -93,6 +97,12 @@ mc_inventory_status mc_container_close_begin(mc_container *, mc_entity *,
                                              mc_container_interaction_error *);
 bool mc_container_interaction_inspect(const mc_container_interaction_call *,
                                       mc_container_interaction_state *);
+/* Actual BM.a(I), without the enclosing DW click recursion or second clone.
+ * The same native invocation/result holds and checked retirement apply. */
+mc_inventory_status mc_container_furnace_transfer_begin(mc_container *, int32_t,
+                                                        const mc_container_interaction_host *,
+                                                        mc_container_interaction_call **,
+                                                        mc_container_interaction_error *);
 /* Transfer the actual successfully returned source clone, including NULL.
  * No second clone is made. A failed/active call preserves out. */
 mc_inventory_status mc_container_interaction_take_result(mc_container_interaction_call *,

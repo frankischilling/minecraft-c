@@ -23,7 +23,8 @@ bool mc_inventory_draw_fail(mc_client_inventory_draw_call *c, mc_client_screen_s
 
 const char *mc_inventory_draw_descriptor(const mc_client_inventory_draw_call *c,
                                          const char *owner) {
-    if (strcmp(owner, "ue") == 0 || strcmp(owner, "oo") == 0 || strcmp(owner, "hp") == 0)
+    if (strcmp(owner, "ue") == 0 || strcmp(owner, "oo") == 0 || strcmp(owner, "hp") == 0 ||
+        strcmp(owner, "ov") == 0)
         return "(F)V";
     if (strcmp(owner, "ub") == 0)
         return "(IIIIII)V";
@@ -269,6 +270,8 @@ static bool foreground(mc_client_inventory_draw_call *c) {
         return mc_workbench_draw_foreground(c);
     if (c->owner->base.kind == MC_CLIENT_SCREEN_CHEST)
         return mc_chest_draw_foreground(c);
+    if (c->owner->base.kind == MC_CLIENT_SCREEN_FURNACE)
+        return mc_furnace_draw_foreground(c);
     mc_client_source_id *o = c->owner;
     mc_player_string *literal = NULL;
     if (!mc_screen_lock(o->base.classes, &c->error.screen))
@@ -372,7 +375,8 @@ static bool body(mc_client_inventory_draw_call *c) {
     c->state.origin_y = mc_java_i32_sub(o->base.fields.d, o->id.i) / 2;
     if (!(o->base.kind == MC_CLIENT_SCREEN_INVENTORY   ? mc_inventory_draw_background(c)
           : o->base.kind == MC_CLIENT_SCREEN_WORKBENCH ? mc_workbench_draw_background(c)
-                                                       : mc_chest_draw_background(c)))
+          : o->base.kind == MC_CLIENT_SCREEN_CHEST     ? mc_chest_draw_background(c)
+                                                       : mc_furnace_draw_background(c)))
         return false;
     mc_client_display *d = c->services.display;
 #define GL(expr, pc)                                                                               \
@@ -560,6 +564,8 @@ mc_client_screen_status mc_inventory_draw_begin_id(mc_client_source_id *o,
         c->state.workbench = true;
     if (o->base.kind == MC_CLIENT_SCREEN_CHEST)
         c->state.chest = true;
+    if (o->base.kind == MC_CLIENT_SCREEN_FURNACE)
+        c->state.furnace = true;
     mtx_unlock(&o->base.classes->mutex);
     c->state.active = true;
     (void)body(c);

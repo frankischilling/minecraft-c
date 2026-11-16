@@ -7,7 +7,7 @@ void mc_container_interaction_error_init(mc_container_interaction_error *e) {
         return;
     memset(e, 0, sizeof(*e));
     e->native_policy = true;
-    e->site.pc = e->child.pc = e->dependency.pc = -1;
+    e->site.pc = e->child.pc = e->dependency.pc = e->transfer.pc = -1;
     e->registry.initializer_pc = e->registry.constructor_pc = e->registry.active_initializer_pc =
         e->registry.block_id = e->registry.item_argument = -1;
 }

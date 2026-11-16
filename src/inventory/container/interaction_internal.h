@@ -55,6 +55,7 @@ bool inv_interaction_cursor_put(mc_container_interaction_call *, mc_inventory_pl
                                 mc_item_stack *);
 bool inv_interaction_click_body(mc_container_interaction_call *, int32_t, int32_t, bool,
                                 unsigned int, mc_item_stack **);
+bool inv_interaction_transfer_body(mc_container_interaction_call *, int32_t, mc_item_stack **);
 bool inv_interaction_close_body(mc_container_interaction_call *);
 
 #endif

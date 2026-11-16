@@ -14,8 +14,8 @@
       "sha256": "b8e36bd83ca8869a407abcd283d05fd300a80664bee7ed2c9acbce9f697b3a40"
     },
     "include/mc/world/runtime/entity_tick.h": {
-      "bytes": 8014,
-      "sha256": "a5e341ee59b1f3b1dcb75ab01ab481e01d145299d5636c8010dc76a427020b38"
+      "bytes": 8150,
+      "sha256": "1cdf1082c07ad16e5ac032d557324951bc27ac0f8811a1f8ac91d27d07f77841"
     },
     "src/client/runtime/world_tick.c": {
       "bytes": 20662,
@@ -46,16 +46,16 @@
       "sha256": "ecc11ed7cecd1a973fe31d62b3b4abd13c37b2b8a617840213024d33e0373101"
     },
     "src/world/runtime/entity_tick.c": {
-      "bytes": 12480,
-      "sha256": "2e22aadf1a418e0eebe4729eee2196c4742f4d01eaf70d3d23c5277299aec90b"
+      "bytes": 12630,
+      "sha256": "ba76ad21b589526e50f13bd591d8c7d05f47123794b1233b45f56cb9aa46728a"
     },
     "src/world/runtime/entity_tick_dispatch.c": {
       "bytes": 16532,
       "sha256": "c2bc52972d5cabdf108f5694672a9814de129f9a002731cd146b6d066363666b"
     },
     "src/world/runtime/terminal_inventory.c": {
-      "bytes": 46146,
-      "sha256": "d11bb00a954c4e440ac054b9a9b05386c734fa26ce0b558e29e6a8c9c4fb4321"
+      "bytes": 46595,
+      "sha256": "1d7a39986766016c8c02903d697d86be9804980753746f9d3b57cff87102544a"
     },
     "tests/world/runtime/test_arrow_natural_flight.c": {
       "bytes": 19352,
@@ -66,8 +66,8 @@
       "sha256": "80d866a4df85af27011535b381728a1cae45bfbd24da103b2b453d5ed5056042"
     },
     "CMakeLists.txt": {
-      "bytes": 352376,
-      "sha256": "102428173e9278283fa4f944b7677c13c89f2a6fa50165450bfea6687d24a186"
+      "bytes": 352412,
+      "sha256": "e4d03b36aec744b34f5883a5ddd707be7b2715ac9e86e201bb99c89c22554ceb"
     },
     "cmake/tests/arrow_world_tick_cleanup.cmake": {
       "bytes": 2831,
@@ -177,7 +177,7 @@
   "helpers": {
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76712,
-      "sha256": "7b211e731a6069baa4a58ace5d7361b59f0d281747d5b9897e4faea02a88e846"
+      "sha256": "8fb9dbc527f1fbbf044174a269168a650c97cc656cfac8ab2f0e394671eba886"
     },
     "tests/tools/world/test_execution_ownership.py": {
       "bytes": 8350,

@@ -200,7 +200,7 @@ static bool mutation_capture(mc_item_use_call *c, mc_world_mutation_error *m) {
         return true;
     const bool failed = m->status != MC_WORLD_STORAGE_OK;
     if (failed && (m->world_access_source_fault != MC_WORLD_ACCESS_SOURCE_FAULT_NONE ||
-                   m->fire_source_null || m->fire_array_index)) {
+                   m->fire_source_null || m->fire_array_index || m->furnace_source_null)) {
         c->error.source_exception = true;
         c->error.source_error = false;
         c->error.exception_class = m->fire_array_index ? "java/lang/ArrayIndexOutOfBoundsException"
@@ -715,8 +715,9 @@ static bool ck(mc_item_use_call *c) {
             return false;
         at(c, "ck", use_block_descriptor, 204);
         c->error.placement = &c->by;
-        if (mc_world_block_placed_by(s->registry, block, s->world, s->target_x, s->target_y,
-                                     s->target_z, s->player, &c->by) != MC_WORLD_STORAGE_OK)
+        if (mc_world_block_placed_by_with_math(s->registry, block, s->world, s->target_x,
+                                               s->target_y, s->target_z, s->player, s->math,
+                                               &c->by) != MC_WORLD_STORAGE_OK)
             return placement_failed(c, &c->by);
         s->placed_by_returned = true;
         static const sound_sites pcs = {"ck", 210, 217, 224, 231, 234, 242, 246, 254, 259, 260};

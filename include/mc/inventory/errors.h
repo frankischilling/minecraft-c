@@ -43,6 +43,7 @@ typedef struct mc_inventory_error {
     /* Borrowed retained Chest adapter failure; valid until that adapter's final
      * native release. Includes dirty/WorldAccess prefix ownership. */
     const mc_live_tile_entity_error *chest;
+    const mc_live_tile_entity_error *furnace;
     bool source_exception;
     const char *exception_class;
 } mc_inventory_error;

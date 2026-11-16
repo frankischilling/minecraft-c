@@ -85,6 +85,10 @@ mc_client_screen_status mc_client_screen_transitions_chest(mc_client_screen_tran
                                                            mc_entity *actual_player,
                                                            mc_inventory_chest *actual_inventory,
                                                            mc_client_screen_error *);
+mc_client_screen_status mc_client_screen_transitions_furnace(mc_client_screen_transitions *,
+                                                             mc_entity *actual_player,
+                                                             mc_inventory_furnace *actual_inventory,
+                                                             mc_client_screen_error *);
 /* Actual DC.r: GS.r publishes e=d before reading DC.b and synchronously
  * displaying NULL. No additional DA Escape focus call is inserted. */
 mc_client_screen_status mc_client_screen_transitions_player_close(mc_client_screen_transitions *,

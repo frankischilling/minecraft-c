@@ -9,6 +9,7 @@
 #include "mc/world/chunk/entity_errors.h"
 #include "mc/world/runtime/acquisition_error.h"
 #include "mc/world/runtime/mob_hurt_observation.h"
+#include "mc/world/runtime/tile_entities/furnace_tick.h"
 #include "mc/world/runtime/tile_entities/piston.h"
 #include "mc/world/runtime/world_access_error.h"
 
@@ -53,7 +54,8 @@ typedef enum mc_world_entity_tick_child {
     MC_WORLD_ENTITY_TICK_CHILD_REGISTRY,
     MC_WORLD_ENTITY_TICK_CHILD_MOB,
     MC_WORLD_ENTITY_TICK_CHILD_FALLING_SAND,
-    MC_WORLD_ENTITY_TICK_CHILD_ARROW
+    MC_WORLD_ENTITY_TICK_CHILD_ARROW,
+    MC_WORLD_ENTITY_TICK_CHILD_FURNACE
 } mc_world_entity_tick_child;
 
 typedef struct mc_world_entity_tick_error {
@@ -86,6 +88,7 @@ typedef struct mc_world_entity_tick_error {
         mc_registry_error registry;
         mc_mob_tick_error mob;
         mc_falling_entity_tick_error falling;
+        mc_furnace_tick_error furnace;
 
         struct {
             /* Owning call occurrence; copying this error is transfer only. */

@@ -3,6 +3,7 @@
 
 #include "mc/inventory/chest.h"
 #include "mc/inventory/crafting.h"
+#include "mc/inventory/furnace.h"
 #include "mc/inventory/player.h"
 #include "mc/inventory/result.h"
 
@@ -11,16 +12,23 @@ typedef struct mc_world_runtime mc_world_runtime;
 typedef enum mc_container_kind {
     MC_CONTAINER_PLAYER,
     MC_CONTAINER_WORKBENCH,
-    MC_CONTAINER_CHEST
+    MC_CONTAINER_CHEST,
+    MC_CONTAINER_FURNACE
 } mc_container_kind;
 
-typedef enum mc_slot_kind { MC_SLOT_NORMAL, MC_SLOT_CRAFTING, MC_SLOT_ARMOR } mc_slot_kind;
+typedef enum mc_slot_kind {
+    MC_SLOT_NORMAL,
+    MC_SLOT_CRAFTING,
+    MC_SLOT_ARMOR,
+    MC_SLOT_FURNACE
+} mc_slot_kind;
 
 typedef enum mc_slot_inventory_kind {
     MC_SLOT_INVENTORY_CRAFTING,
     MC_SLOT_INVENTORY_RESULT,
     MC_SLOT_INVENTORY_PLAYER,
-    MC_SLOT_INVENTORY_CHEST
+    MC_SLOT_INVENTORY_CHEST,
+    MC_SLOT_INVENTORY_FURNACE
 } mc_slot_inventory_kind;
 
 typedef struct mc_container_slot_state {
@@ -47,6 +55,8 @@ typedef struct mc_container_state {
     mc_inventory_result *result;
     mc_inventory_player *player_inventory;
     mc_inventory_chest *chest_inventory;
+    mc_inventory_furnace *furnace_inventory;
+    int32_t furnace_cook, furnace_burn, furnace_fuel;
     int32_t chest_rows;
     mc_world_runtime *world;
     int32_t x, y, z;
@@ -97,6 +107,26 @@ mc_inventory_status mc_container_chest_create(mc_registry_side, mc_registry_clas
  * frames. This is source eligibility, independent of native retirement. */
 mc_inventory_status mc_container_chest_usable(mc_container *, mc_entity *, bool *,
                                               mc_inventory_error *);
+/* BM has two ordinary GP inputs, actual VQ output, and 36 Player Slots.
+ * Nullable SK is stored without dereference; nullable IX fails at field64
+ * after the two input Slots. Failed constructor prefixes remain inspectable. */
+mc_inventory_status mc_container_furnace_allocate(mc_registry_side, mc_registry_classes *,
+                                                  const mc_inventory_limits *, mc_container **,
+                                                  mc_inventory_error *);
+mc_inventory_status mc_container_furnace_construct(mc_container *, mc_inventory_player *,
+                                                   mc_inventory_furnace *, mc_inventory_error *);
+mc_inventory_status mc_container_furnace_create(mc_registry_side, mc_registry_classes *,
+                                                mc_inventory_player *, mc_inventory_furnace *,
+                                                const mc_inventory_limits *, mc_container **,
+                                                mc_inventory_error *);
+mc_inventory_status mc_container_furnace_usable(mc_container *, mc_entity *, bool *,
+                                                mc_inventory_error *);
+/* Actual BM.a()/DW snapshots and local empty-list progress-cache stores.
+ * Reached unsupported EC callbacks refuse with the preceding snapshot intact. */
+mc_inventory_status mc_container_furnace_detect_changes(mc_container *, mc_inventory_error *);
+/* Direct actual BM.a(II) field stores; this does not simulate a packet/listener. */
+mc_inventory_status mc_container_furnace_progress(mc_container *, int32_t, int32_t,
+                                                  mc_inventory_error *);
 mc_inventory_status mc_container_player_create_default(
     mc_registry_side side, mc_registry_classes *classes, mc_inventory_player *inventory,
     const mc_inventory_limits *limits, mc_container **out, mc_inventory_error *error);

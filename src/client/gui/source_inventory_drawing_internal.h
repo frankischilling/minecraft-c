@@ -54,6 +54,8 @@ bool mc_workbench_draw_background(mc_client_inventory_draw_call *);
 bool mc_workbench_draw_foreground(mc_client_inventory_draw_call *);
 bool mc_chest_draw_background(mc_client_inventory_draw_call *);
 bool mc_chest_draw_foreground(mc_client_inventory_draw_call *);
+bool mc_furnace_draw_background(mc_client_inventory_draw_call *);
+bool mc_furnace_draw_foreground(mc_client_inventory_draw_call *);
 mc_client_screen_status mc_inventory_draw_begin_id(mc_client_source_id *, mc_client_screen_kind,
                                                    mc_gui_mouse_position, float,
                                                    const mc_client_manager_draw_services *,

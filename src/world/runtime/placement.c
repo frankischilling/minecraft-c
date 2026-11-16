@@ -3,6 +3,7 @@
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
 #include "../../entity/entity_internal.h"
+#include "../../entity/living/fields_internal.h"
 #include "../../entity/player/nbt_internal.h"
 #include "../../item/render/internal.h"
 #include "bed_occupancy_execution_internal.h"
@@ -13,6 +14,7 @@
 #include "mc/core/java/java.h"
 #include "mc/entity/player/sleep.h"
 #include "mc/inventory/chest.h"
+#include "mc/inventory/furnace.h"
 #include "mc/world/runtime/bed_state.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/collision/spawning.h"
@@ -26,6 +28,7 @@
 #include "step_internal.h"
 #include "torch_support_internal.h"
 
+#include <emmintrin.h>
 #include <stdlib.h>
 #include <string.h>
 #include <xmmintrin.h>
@@ -37,6 +40,13 @@ typedef struct chest_placement_work {
     mc_world_runtime_acquisition_error *queries[24];
 } chest_placement_work;
 
+typedef struct furnace_activation_work {
+    mc_live_tile_entity_error tile_error;
+    mc_tile_entity *tile;
+    mc_inventory_furnace *inventory;
+    mc_inventory_error inventory_error;
+} furnace_activation_work;
+
 struct mc_world_placement_work {
     mc_world_runtime *world;
     mc_registry_classes *registry;
@@ -44,6 +54,8 @@ struct mc_world_placement_work {
     mc_entity_bounds *box;
     mc_world_runtime_acquisition_error *queries[PLACEMENT_QUERIES];
     chest_placement_work *chest_placement;
+    furnace_activation_work *furnace;
+    mc_math_classes *math;
     mc_world_solid_support_detail *supports[5];
     mc_world_mutation_error *mutation;
     mc_world_step_error *step;
@@ -281,6 +293,9 @@ static bool capture(mc_world_placement_error *e) {
     for (size_t i = 0; i < e->chest_tile_count; ++i)
         if (!publication_receipts(e, &w->chest_tiles[i]->batch, w->chest_tiles[i]))
             return false;
+    if (w->furnace != NULL &&
+        !publication_receipts(e, &w->furnace->tile_error.batch, &w->furnace->tile_error))
+        return false;
     mc_world_nearby_error *nearby[] = {w->collision == NULL ? NULL : &w->collision->nearby,
                                        w->entities == NULL ? NULL : &w->entities->nearby,
                                        w->step == NULL ? NULL : &w->step->block_read.nearby};
@@ -468,6 +483,7 @@ static bool torch_predicate(mc_world_placement_error *e, mc_world_runtime *world
 #include "placement/bed.inc"
 #include "placement/chest.inc"
 #include "placement/chest_predicate.inc"
+#include "placement/furnace.inc"
 #include "placement/lever.inc"
 
 static const char *activation_class(mc_block_kind kind) {
@@ -1194,6 +1210,10 @@ mc_world_storage_status mc_world_block_activate_with_context(
         const bool returned = chest_activate(e, block, world, x, y, z, player, context);
         return finish(e, returned, returned, out);
     }
+    if (block->kind == MC_BLOCK_FURNACE) {
+        const bool returned = furnace_activate(e, world, x, y, z, player, context);
+        return finish(e, returned, returned, out);
+    }
     if (block->kind == MC_BLOCK_CRAFTING_TABLE) {
         e->site = site("fi", "a", "(Lfd;IIILgs;)Z", 1);
         if (!hold_world(e, world))
@@ -1308,22 +1328,25 @@ mc_world_storage_status mc_world_block_placed_face(mc_registry_classes *registry
     return finish(e, inherited(e, placed_face_class(block->kind)), false, NULL);
 }
 
-mc_world_storage_status mc_world_block_placed_by(mc_registry_classes *registry,
-                                                 const mc_block *block, mc_world_runtime *world,
-                                                 int32_t x, int32_t y, int32_t z, mc_entity *living,
-                                                 mc_world_placement_error *e) {
-    (void)world;
-    (void)x;
-    (void)y;
-    (void)z;
-    (void)living;
+mc_world_storage_status mc_world_block_placed_by_with_math(
+    mc_registry_classes *registry, const mc_block *block, mc_world_runtime *world, int32_t x,
+    int32_t y, int32_t z, mc_entity *living, mc_math_classes *math, mc_world_placement_error *e) {
     if (e == NULL)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     if (e->work != NULL)
         return MC_WORLD_STORAGE_BUSY;
     if (!block_entry(e, registry, block, "a", "(Lfd;IIILls;)V"))
         return e->status;
+    if (block->kind == MC_BLOCK_FURNACE)
+        return finish(e, furnace_placed_by(e, world, x, y, z, living, math), false, NULL);
     return finish(e, inherited(e, placed_by_class(block->kind)), false, NULL);
+}
+
+mc_world_storage_status mc_world_block_placed_by(mc_registry_classes *registry,
+                                                 const mc_block *block, mc_world_runtime *world,
+                                                 int32_t x, int32_t y, int32_t z, mc_entity *living,
+                                                 mc_world_placement_error *e) {
+    return mc_world_block_placed_by_with_math(registry, block, world, x, y, z, living, NULL, e);
 }
 
 bool mc_world_placement_error_retire(mc_world_placement_error *e) {
@@ -1397,6 +1420,11 @@ bool mc_world_placement_error_retire(mc_world_placement_error *e) {
         w->registry = NULL;
         e->existing = e->candidate = NULL;
     }
+    if (w->math != NULL &&
+        mc_math_classes_release(&w->math, &e->cleanup_math) != MC_MATH_CLASS_OK) {
+        e->cleanup = (mc_world_storage_error){MC_WORLD_STORAGE_BUSY, e->cleanup_math.operation, 0};
+        return false;
+    }
     for (size_t i = 0; i < w->receipt_count; ++i)
         mc_world_access_failure_release(&w->receipts[i]);
     for (size_t i = 0; i < w->source_count; ++i)
@@ -1415,6 +1443,11 @@ bool mc_world_placement_error_retire(mc_world_placement_error *e) {
     for (size_t i = 0; i < e->chest_tile_count; ++i) {
         mc_tile_entity_release(w->chest_receivers[i]);
         free(w->chest_tiles[i]);
+    }
+    if (w->furnace != NULL) {
+        mc_inventory_furnace_release(w->furnace->inventory);
+        mc_tile_entity_release(w->furnace->tile);
+        free(w->furnace);
     }
     free(w->mutation);
     free(w->step);

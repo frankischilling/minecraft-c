@@ -66,6 +66,10 @@ respawn, other containers and target overrides.
 [Chest access](client/chests.md) and [placement](world/chest-placement.md) now have
 bounded single/double storage and held-Item/save controls. Extend those prepared
 cases to unrestricted Worlds and remaining mutation/ownership routes.
+[Furnaces](client/furnaces.md) now have real inventory, smelting, Block changes,
+screen, save/reload and open-screen shutdown controls. Complete the retained
+owned lazy-orientation join, extend original save round trips and qualify
+sustained gameplay alongside the other containers.
 The loader has no fixed session count limit, and a retained Windows Tiny
 scenario covers ten saves/reloads plus a successor conversion failure before
 storage acquisition. Reclaim superseded Worlds during play and qualify later

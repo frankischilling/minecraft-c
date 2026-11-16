@@ -48,6 +48,23 @@ bool wt_tile_active(wt_scope *s) {
             s->error.tile_bytecode = 0;
             if (tile->kind == MC_TILE_ENTITY_CHEST) {
                 /* Actual js inherits the literal-return ow.n_()V. */
+            } else if (tile->kind == MC_TILE_ENTITY_FURNACE) {
+                if (!s->has_error_output)
+                    ok = wt_fail(s, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                 "World Furnace tick requires retained child output");
+                else {
+                    s->error.virtual_class = "sk";
+                    s->error.virtual_method = "n_()V";
+                    s->error.child = MC_WORLD_ENTITY_TICK_CHILD_FURNACE;
+                    s->error.child_error.furnace = (mc_furnace_tick_error){0};
+                    const mc_world_storage_status status =
+                        mc_tile_entity_furnace_tick(tile, &s->error.child_error.furnace);
+                    if (status != MC_WORLD_STORAGE_OK) {
+                        s->error.tile_bytecode = s->error.child_error.furnace.bytecode;
+                        ok = wt_fail(s, status, s->error.child_error.furnace.operation);
+                    } else
+                        s->error.child = MC_WORLD_ENTITY_TICK_CHILD_NONE;
+                }
             } else if (tile->kind == MC_TILE_ENTITY_SPAWNER)
                 ok = wt_spawner(s, tile);
             else if (tile->kind == MC_TILE_ENTITY_PISTON) {

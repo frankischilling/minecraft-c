@@ -1,7 +1,14 @@
 #include "mc/world/runtime/tile_entities/tile_entities.h"
 #include "tick_internal.h"
 
+#include "../../../item/recipes/recipes_internal.h"
+#include "../../../item/registry/registry_internal.h"
+#include "../../../item/stack/source_internal.h"
+#include "mc/block/registry/runtime.h"
+#include "mc/item/recipes/recipes.h"
+#include "mc/item/registry/runtime.h"
 #include "mc/storage/nbt/tree.h"
+#include "mc/world/runtime/tile_entities/furnace.h"
 
 #include "../../../block/registry/registry_internal.h"
 #include "../../../block/registry/runtime_internal.h"
@@ -11,6 +18,7 @@
 #include "../chunk_provider_internal.h"
 #include "../construction_internal.h"
 #include "../execution_children_internal.h"
+#include "../mutation/furnace/furnace_internal.h"
 #include "../mutation/mutation_internal.h"
 #include "../runtime_internal.h"
 #include "../terminal_inventory_internal.h"
@@ -196,6 +204,8 @@ static const uint16_t tile_entity_x_name[] = {'x'};
 static const uint16_t tile_entity_y_name[] = {'y'};
 static const uint16_t tile_entity_z_name[] = {'z'};
 static const uint16_t tile_entity_items_name[] = {'I', 't', 'e', 'm', 's'};
+static const uint16_t tile_entity_burn_name[] = {'B', 'u', 'r', 'n', 'T', 'i', 'm', 'e'};
+static const uint16_t tile_entity_cook_name[] = {'C', 'o', 'o', 'k', 'T', 'i', 'm', 'e'};
 static const uint16_t tile_entity_slot_name[] = {'S', 'l', 'o', 't'};
 static const uint16_t tile_entity_name[] = {'E', 'n', 't', 'i', 't', 'y', 'I', 'd'};
 static const uint16_t tile_entity_delay_name[] = {'D', 'e', 'l', 'a', 'y'};
@@ -272,6 +282,24 @@ static mc_tile_entity_status tile_entity_kind_ready(const mc_tile_entity *tile_e
         return status;
     }
     return tile_entity->kind == kind ? MC_TILE_ENTITY_OK : MC_TILE_ENTITY_INVALID_KIND;
+}
+
+static bool tile_entity_has_slots(const mc_tile_entity *tile) {
+    return tile->kind == MC_TILE_ENTITY_CHEST || tile->kind == MC_TILE_ENTITY_FURNACE;
+}
+
+static size_t tile_entity_slot_capacity(const mc_tile_entity *tile) {
+    return tile->kind == MC_TILE_ENTITY_FURNACE ? tile->state.furnace.capacity
+                                                : tile->state.chest.capacity;
+}
+
+static mc_item_stack **tile_entity_slots(const mc_tile_entity *tile) {
+    return tile->kind == MC_TILE_ENTITY_FURNACE ? tile->state.furnace.slots
+                                                : tile->state.chest.slots;
+}
+
+static size_t tile_entity_items_field(const mc_tile_entity *tile) {
+    return tile->kind == MC_TILE_ENTITY_FURNACE ? 6u : 4u;
 }
 
 static mc_tile_entity_status tile_entity_chest_slot(const mc_tile_entity *tile_entity,
@@ -383,7 +411,7 @@ mc_tile_entity_status mc_tile_entity_allocate(mc_world_runtime *world, mc_tile_e
     if (out == NULL)
         return MC_TILE_ENTITY_INVALID_ARGUMENT;
     if (kind != MC_TILE_ENTITY_CHEST && kind != MC_TILE_ENTITY_SPAWNER &&
-        kind != MC_TILE_ENTITY_PISTON)
+        kind != MC_TILE_ENTITY_PISTON && kind != MC_TILE_ENTITY_FURNACE)
         return MC_TILE_ENTITY_INVALID_KIND;
     mc_tile_entity_classes *classes = NULL;
     const mc_tile_entity_status active = live_classes_get(world, &classes);
@@ -396,7 +424,7 @@ mc_tile_entity_status mc_tile_entity_allocate_in_classes(mc_world_runtime_classe
     if (out == NULL)
         return MC_TILE_ENTITY_INVALID_ARGUMENT;
     if (kind != MC_TILE_ENTITY_CHEST && kind != MC_TILE_ENTITY_SPAWNER &&
-        kind != MC_TILE_ENTITY_PISTON)
+        kind != MC_TILE_ENTITY_PISTON && kind != MC_TILE_ENTITY_FURNACE)
         return MC_TILE_ENTITY_INVALID_KIND;
     mc_tile_entity_classes *classes = NULL;
     mc_tile_entity_status active = live_classes_owner_in(parent, &classes);
@@ -427,6 +455,19 @@ static mc_tile_entity_status tile_entity_construct(mc_tile_entity *raw,
         }
         raw->state.chest.slots = slots;
         raw->state.chest.capacity = 36;
+    } else if (raw->kind == MC_TILE_ENTITY_FURNACE) {
+        const mc_tile_entity_status admitted = tile_entity_import_admit(
+            raw, context, 3u * sizeof(mc_item_stack *), error, NULL, SIZE_MAX);
+        if (admitted != MC_TILE_ENTITY_OK)
+            return admitted;
+        mc_item_stack **slots = calloc(3u, sizeof(*slots));
+        if (slots == NULL)
+            return tile_entity_status(error, MC_TILE_ENTITY_ALLOCATION_FAILED, NULL, SIZE_MAX);
+        raw->state.furnace.slots = slots; /* SK.i9. */
+        raw->state.furnace.capacity = 3;
+        raw->state.furnace.burn_remaining = 0;
+        raw->state.furnace.fuel_duration = 0;
+        raw->state.furnace.cook_progress = 0;
     } else if (raw->kind == MC_TILE_ENTITY_SPAWNER) {
         raw->state.spawner.delay = -1;
         raw->state.spawner.previous_rotation = 0.0;
@@ -542,9 +583,9 @@ void mc_tile_entity_release(mc_tile_entity *tile_entity) {
     if (tile_entity == NULL || --tile_entity->holds != 0) {
         return;
     }
-    if (tile_entity->kind == MC_TILE_ENTITY_CHEST) {
-        tile_entity_slots_release(tile_entity->state.chest.slots,
-                                  tile_entity->state.chest.capacity);
+    if (tile_entity_has_slots(tile_entity)) {
+        tile_entity_slots_release(tile_entity_slots(tile_entity),
+                                  tile_entity_slot_capacity(tile_entity));
     } else if (tile_entity->kind == MC_TILE_ENTITY_SPAWNER) {
         mc_tile_entity_name_release(tile_entity->state.spawner.name);
     }
@@ -596,9 +637,10 @@ size_t mc_tile_entity_native_bytes(const mc_tile_entity *tile_entity) {
     if (tile_entity == NULL) {
         return 0;
     }
-    return sizeof(*tile_entity) + (tile_entity->kind == MC_TILE_ENTITY_CHEST
-                                       ? tile_entity->state.chest.capacity * sizeof(mc_item_stack *)
-                                       : 0);
+    return sizeof(*tile_entity) +
+           (tile_entity_has_slots(tile_entity)
+                ? tile_entity_slot_capacity(tile_entity) * sizeof(mc_item_stack *)
+                : 0);
 }
 
 const mc_nbt_tag *mc_tile_entity_source(const mc_tile_entity *tile_entity) {
@@ -633,10 +675,12 @@ mc_tile_entity_status mc_tile_entity_storage_bytes(const mc_tile_entity *tile_en
     if (!tile_entity_size_add(&bytes, mc_nbt_tree_allocation_bytes(tile_entity->source))) {
         return MC_TILE_ENTITY_LIMIT;
     }
-    if (tile_entity->kind == MC_TILE_ENTITY_CHEST) {
-        const size_t capacity = tile_entity->state.chest.capacity;
-        if ((capacity != 0 && capacity != 27 && capacity != 36) ||
-            (tile_entity->state.chest.slots == NULL) != (capacity == 0) ||
+    if (tile_entity_has_slots(tile_entity)) {
+        const size_t capacity = tile_entity_slot_capacity(tile_entity);
+        if ((tile_entity->kind == MC_TILE_ENTITY_FURNACE
+                 ? (capacity != 0 && capacity != 3)
+                 : (capacity != 0 && capacity != 27 && capacity != 36)) ||
+            (tile_entity_slots(tile_entity) == NULL) != (capacity == 0) ||
             (tile_entity->phase == MC_TILE_ENTITY_READY && capacity == 0)) {
             return MC_TILE_ENTITY_STATE_ERROR;
         }
@@ -645,13 +689,13 @@ mc_tile_entity_status mc_tile_entity_storage_bytes(const mc_tile_entity *tile_en
             return MC_TILE_ENTITY_LIMIT;
         }
         for (size_t i = 0; i < capacity; ++i) {
-            const mc_item_stack *stack = tile_entity->state.chest.slots[i];
+            const mc_item_stack *stack = tile_entity_slots(tile_entity)[i];
             if (stack == NULL) {
                 continue;
             }
             bool seen = false;
             for (size_t j = 0; j < i; ++j) {
-                if (tile_entity->state.chest.slots[j] == stack) {
+                if (tile_entity_slots(tile_entity)[j] == stack) {
                     seen = true;
                     break;
                 }
@@ -845,6 +889,8 @@ mc_tile_entity_status mc_tile_entity_dirty_in_execution(mc_entity_tick_execution
 mc_tile_entity_status mc_tile_entity_dirty(mc_tile_entity *tile_entity) {
     return mc_tile_entity_dirty_detailed(tile_entity, NULL);
 }
+
+#include "furnace_core.inc"
 
 mc_tile_entity_status mc_tile_entity_chest_size(const mc_tile_entity *tile_entity, int32_t *out) {
     if (out == NULL) {
@@ -1351,19 +1397,25 @@ static mc_tile_entity_status tile_entity_piston_read(mc_tile_entity *tile_entity
     return tile_entity_status(error, MC_TILE_ENTITY_OK, NULL, SIZE_MAX);
 }
 
+#include "furnace_nbt.inc"
+
 static mc_tile_entity_status tile_entity_read_nbt(mc_tile_entity *tile_entity,
                                                   const mc_nbt_tag *compound,
                                                   tile_entity_import_context *context,
                                                   mc_tile_entity_error *error) {
     const mc_tile_entity_status status = mc_tile_entity_read_base(tile_entity, compound, error);
     if (status != MC_TILE_ENTITY_OK) {
-        if (error != NULL && tile_entity != NULL && tile_entity->kind == MC_TILE_ENTITY_PISTON &&
+        if (error != NULL && tile_entity != NULL &&
+            (tile_entity->kind == MC_TILE_ENTITY_PISTON ||
+             tile_entity->kind == MC_TILE_ENTITY_FURNACE) &&
             error->base_read_bytecode != 0)
             error->read_bytecode = 2;
         return status;
     }
     if (tile_entity->kind == MC_TILE_ENTITY_CHEST)
         return tile_entity_chest_read(tile_entity, compound, context, error);
+    if (tile_entity->kind == MC_TILE_ENTITY_FURNACE)
+        return tile_entity_furnace_read(tile_entity, compound, context, error);
     if (tile_entity->kind == MC_TILE_ENTITY_SPAWNER)
         return tile_entity_spawner_read(tile_entity, compound, context, error);
     if (tile_entity->kind == MC_TILE_ENTITY_PISTON)
@@ -1385,14 +1437,16 @@ tile_entity_attach_import_sources(mc_tile_entity *tile_entity, const mc_nbt_tag 
         tile_entity->phase != MC_TILE_ENTITY_READY) {
         return tile_entity_status(error, MC_TILE_ENTITY_STATE_ERROR, NULL, SIZE_MAX);
     }
-    if (tile_entity->kind == MC_TILE_ENTITY_CHEST) {
-        if (tile_entity->state.chest.capacity != 27 || tile_entity->state.chest.slots == NULL) {
+    if (tile_entity_has_slots(tile_entity)) {
+        if (tile_entity_slot_capacity(tile_entity) !=
+                (tile_entity->kind == MC_TILE_ENTITY_FURNACE ? 3u : 27u) ||
+            tile_entity_slots(tile_entity) == NULL) {
             return tile_entity_status(error, MC_TILE_ENTITY_STATE_ERROR, "Items", SIZE_MAX);
         }
         const mc_nbt_tag *items = mc_nbt_compound_get(compound, tile_entity_items_name, 5);
-        for (size_t i = 0; i < 27; ++i) {
+        for (size_t i = 0; i < tile_entity_slot_capacity(tile_entity); ++i) {
             const tile_entity_loaded_record *winner = &context->winners[i];
-            if (tile_entity->state.chest.slots[i] != winner->stack) {
+            if (tile_entity_slots(tile_entity)[i] != winner->stack) {
                 return tile_entity_status(error, MC_TILE_ENTITY_STATE_ERROR, "Items[]",
                                           winner->index);
             }
@@ -1435,15 +1489,15 @@ tile_entity_attach_import_sources(mc_tile_entity *tile_entity, const mc_nbt_tag 
     }
     tile_entity->source = source;
 
-    if (tile_entity->kind == MC_TILE_ENTITY_CHEST) {
+    if (tile_entity_has_slots(tile_entity)) {
         const mc_nbt_tag *items =
             mc_nbt_compound_get(mc_nbt_tree_root(source), tile_entity_items_name, 5);
-        for (size_t i = 0; i < 27; ++i) {
+        for (size_t i = 0; i < tile_entity_slot_capacity(tile_entity); ++i) {
             const tile_entity_loaded_record *winner = &context->winners[i];
             if (winner->stack == NULL) {
                 continue;
             }
-            if (tile_entity->state.chest.slots[i] != winner->stack || items == NULL ||
+            if (tile_entity_slots(tile_entity)[i] != winner->stack || items == NULL ||
                 items->type != MC_NBT_LIST || winner->index >= items->value.list.length) {
                 return tile_entity_status(error, MC_TILE_ENTITY_STATE_ERROR, "Items[]",
                                           winner->index);
@@ -1493,7 +1547,7 @@ tile_entity_import_storage_scoped(mc_world_runtime *world, mc_tile_entity_kind r
         return tile_entity_status(error, MC_TILE_ENTITY_INVALID_ARGUMENT, NULL, SIZE_MAX);
     }
     if (resolved_kind != MC_TILE_ENTITY_CHEST && resolved_kind != MC_TILE_ENTITY_SPAWNER &&
-        resolved_kind != MC_TILE_ENTITY_PISTON) {
+        resolved_kind != MC_TILE_ENTITY_PISTON && resolved_kind != MC_TILE_ENTITY_FURNACE) {
         return tile_entity_status(error, MC_TILE_ENTITY_INVALID_KIND, NULL, SIZE_MAX);
     }
     tile_entity_import_context context = {0};
@@ -1628,6 +1682,16 @@ static mc_tile_entity_status tile_entity_build_fields(const mc_tile_entity *tile
         fields[4].name = (mc_nbt_string){tile_entity_items_name, 5};
         fields[4].value.list.element_type = MC_NBT_COMPOUND;
         *field_count = 5;
+    } else if (tile_entity->kind == MC_TILE_ENTITY_FURNACE) {
+        fields[4].type = fields[5].type = MC_NBT_SHORT;
+        fields[4].name = (mc_nbt_string){tile_entity_burn_name, 8};
+        fields[5].name = (mc_nbt_string){tile_entity_cook_name, 8};
+        fields[4].value.short_value = mc_java_i16_narrow(tile_entity->state.furnace.burn_remaining);
+        fields[5].value.short_value = mc_java_i16_narrow(tile_entity->state.furnace.cook_progress);
+        fields[6].type = MC_NBT_LIST;
+        fields[6].name = (mc_nbt_string){tile_entity_items_name, 5};
+        fields[6].value.list.element_type = MC_NBT_END;
+        *field_count = 7;
     } else if (tile_entity->kind == MC_TILE_ENTITY_SPAWNER) {
         /* The original String construction rejects null before reaching Delay.
          * This independent result has no caller-visible mutable base prefix. */
@@ -1713,9 +1777,9 @@ mc_tile_entity_status mc_tile_entity_build(const mc_tile_entity *tile_entity,
     size_t child_counts[36];
     size_t occupied = 0;
     size_t pointer_count = root_count;
-    if (tile_entity->kind == MC_TILE_ENTITY_CHEST) {
-        for (size_t i = 0; i < tile_entity->state.chest.capacity; ++i) {
-            const mc_item_stack *stack = tile_entity->state.chest.slots[i];
+    if (tile_entity_has_slots(tile_entity)) {
+        for (size_t i = 0; i < tile_entity_slot_capacity(tile_entity); ++i) {
+            const mc_item_stack *stack = tile_entity_slots(tile_entity)[i];
             if (stack == NULL) {
                 continue;
             }
@@ -1767,9 +1831,13 @@ mc_tile_entity_status mc_tile_entity_build(const mc_tile_entity *tile_entity,
         scratch[root_count + i] = &records[i].root;
         child_offset += child_counts[i];
     }
-    if (tile_entity->kind == MC_TILE_ENTITY_CHEST) {
-        fields[4].value.list.items = occupied == 0 ? NULL : scratch + root_count;
-        fields[4].value.list.length = occupied;
+    if (tile_entity_has_slots(tile_entity)) {
+        fields[tile_entity_items_field(tile_entity)].value.list.items =
+            occupied == 0 ? NULL : scratch + root_count;
+        fields[tile_entity_items_field(tile_entity)].value.list.length = occupied;
+        if (tile_entity->kind == MC_TILE_ENTITY_FURNACE)
+            fields[tile_entity_items_field(tile_entity)].value.list.element_type =
+                occupied == 0 ? MC_NBT_END : MC_NBT_COMPOUND;
     }
     tile_entity_overlay(source, fields, field_count, scratch);
     mc_nbt_tag root = {0};
@@ -2008,6 +2076,9 @@ mc_tile_entity_status mc_tile_entity_get_class(const mc_tile_entity *tile_entity
             break;
         case MC_TILE_ENTITY_PISTON:
             kind = MC_TILE_ENTITY_CLASS_KIND_PISTON;
+            break;
+        case MC_TILE_ENTITY_FURNACE:
+            kind = MC_TILE_ENTITY_CLASS_KIND_FURNACE;
             break;
         default:
             return MC_TILE_ENTITY_INVALID_KIND;
@@ -2642,6 +2713,9 @@ static mc_tile_entity_name *live_class_name(mc_tile_entity_classes *classes,
             break;
         case MC_TILE_ENTITY_PISTON:
             selected = LIVE_PISTON;
+            break;
+        case MC_TILE_ENTITY_FURNACE:
+            selected = LIVE_FURNACE;
             break;
         default:
             return NULL;
@@ -3989,6 +4063,8 @@ static bool live_block_added_held(mc_world_runtime *world, const mc_block *block
         kind = MC_TILE_ENTITY_CHEST;
     else if (block->kind == MC_BLOCK_MOB_SPAWNER)
         kind = MC_TILE_ENTITY_SPAWNER;
+    else if (block->kind == MC_BLOCK_FURNACE)
+        kind = MC_TILE_ENTITY_FURNACE;
     else {
         live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "TileEntity concrete Block factory");
         return false;
@@ -4117,7 +4193,54 @@ static bool live_chunk_get_held(mc_world_chunk *chunk, int32_t x, int32_t y, int
             return live_query_close(query, &token, false, error);
             /* NULL passed checkcast59; callee base6 is NOT entered. */
         }
-        const bool called = live_block_added_held(world, block, wx, y, wz, error, query);
+        bool called = live_block_added_held(world, block, wx, y, wz, error, query);
+        if (called && block->kind == MC_BLOCK_FURNACE) {
+            if (query != NULL) {
+                /* The owned lazy caller has no retained mutation capsule yet.
+                 * Keep the real RW prefix and refuse at TC.c's private child;
+                 * never fall back to a legacy getter/setter or replay RW. */
+                error->bytecode = 15;
+                live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                          "Furnace lazy TC private orientation retained child");
+                called = false;
+            } else {
+                mc_world_mutation_error *child = calloc(1, sizeof(*child));
+                if (child == NULL) {
+                    error->bytecode = 15;
+                    live_fail(error, MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                              "Furnace lazy orientation diagnostic allocation");
+                    called = false;
+                } else {
+                    mc_world_mutation_error_init(child);
+                    called = mc_world_mutation_furnace_orient(world, block, wx, y, wz, child, NULL);
+                    if (!called) {
+                        error->status = child->status;
+                        error->operation = child->operation;
+                        error->cause = child->cause;
+                        error->registry = child->registry;
+                        error->entity = child->entity;
+                        error->publication = child->publication;
+                        error->batch = child->batch;
+                        error->tile_entity = child->tile_entity.tile_entity;
+                        error->load_entity = child->load_entity;
+                        error->activation_bytecode = child->activation_bytecode;
+                        error->activation_world_bytecode = child->activation_world_bytecode;
+                        error->load_bytecode = child->load_bytecode;
+                        error->load_builder_bytecode = child->load_builder_bytecode;
+                        error->provider_bytecode = child->provider_bytecode != 0
+                                                       ? child->provider_bytecode
+                                                       : child->query.provider_bytecode;
+                        error->world_access_failure = child->world_access_failure;
+                        error->world_access_bytecode = child->world_access_bytecode;
+                        error->caller_bytecode = 15;
+                        error->hook_bytecode = child->cause_hook_bytecode != 0
+                                                   ? child->cause_hook_bytecode
+                                                   : child->hook_bytecode;
+                    }
+                    free(child);
+                }
+            }
+        }
         if (!live_query_close(query, &token, called, error))
             return false;
         error->chunk_bytecode = 98;
@@ -4928,15 +5051,16 @@ static mc_world_storage_status live_tile_entities_factory_scoped(
                     }
                 }
             } else if (entry->kind != LIVE_CHEST && entry->kind != LIVE_SPAWNER &&
-                       entry->kind != LIVE_PISTON) {
+                       entry->kind != LIVE_FURNACE && entry->kind != LIVE_PISTON) {
                 frame.bytecode = 25;
                 live_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "TileEntity registered concrete constructor");
             } else {
-                const mc_tile_entity_kind kind = entry->kind == LIVE_CHEST ? MC_TILE_ENTITY_CHEST
-                                                 : entry->kind == LIVE_SPAWNER
-                                                     ? MC_TILE_ENTITY_SPAWNER
-                                                     : MC_TILE_ENTITY_PISTON;
+                const mc_tile_entity_kind kind =
+                    entry->kind == LIVE_FURNACE   ? MC_TILE_ENTITY_FURNACE
+                    : entry->kind == LIVE_CHEST   ? MC_TILE_ENTITY_CHEST
+                    : entry->kind == LIVE_SPAWNER ? MC_TILE_ENTITY_SPAWNER
+                                                  : MC_TILE_ENTITY_PISTON;
                 mc_tile_entity *tile_entity = NULL;
                 mc_tile_entity_error detail;
                 mc_tile_entity_error_init(&detail);
@@ -5179,6 +5303,8 @@ static bool live_chest_drops_held(mc_world_runtime *world, const mc_block *block
     return completed;
 }
 
+#include "furnace_drops.inc"
+
 mc_world_storage_status mc_live_tile_entities_block_removed(mc_world_runtime *world,
                                                             const mc_block *block, int32_t x,
                                                             int32_t y, int32_t z,
@@ -5197,6 +5323,12 @@ mc_world_storage_status mc_live_tile_entities_block_removed(mc_world_runtime *wo
             frame.bytecode = 268;
             base = true;
         }
+    } else if (block->kind == MC_BLOCK_FURNACE) {
+        frame.bytecode = 0;
+        if (block->classes->tc_c || live_furnace_drops_held(world, block, x, y, z, &frame)) {
+            frame.bytecode = 274;
+            base = true;
+        }
     } else
         live_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                   "TileEntity concrete removed override");
@@ -5211,7 +5343,9 @@ mc_world_storage_status mc_live_tile_entities_block_removed(mc_world_runtime *wo
              * Entity/publication data, plus the two actual enclosing calls. */
             frame = nested;
             frame.caller_bytecode = 14; /* rw/lb removed -> World remove */
-            frame.hook_bytecode = block->kind == MC_BLOCK_CHEST ? 268u : 0u;
+            frame.hook_bytecode = block->kind == MC_BLOCK_CHEST     ? 268u
+                                  : block->kind == MC_BLOCK_FURNACE ? 274u
+                                                                    : 0u;
         }
     }
     mc_world_runtime_call_leave(world);
@@ -5436,9 +5570,9 @@ static mc_tile_entity_status live_record_plan(mc_tile_entity *tile_entity, live_
     if (status != MC_TILE_ENTITY_OK || view->root_count > limits->max_elements)
         return tile_entity_status(error, MC_TILE_ENTITY_LIMIT, NULL, SIZE_MAX);
     view->pointer_count = view->root_count;
-    if (tile_entity->kind == MC_TILE_ENTITY_CHEST) {
-        for (size_t slot = 0; slot < tile_entity->state.chest.capacity; ++slot) {
-            mc_item_stack *stack = tile_entity->state.chest.slots[slot];
+    if (tile_entity_has_slots(tile_entity)) {
+        for (size_t slot = 0; slot < tile_entity_slot_capacity(tile_entity); ++slot) {
+            mc_item_stack *stack = tile_entity_slots(tile_entity)[slot];
             if (stack == NULL)
                 continue;
             const size_t n = view->occupied;
@@ -5485,9 +5619,13 @@ static mc_tile_entity_status live_record_prepare(live_record_view *view, const m
         scratch[view->root_count + i] = &view->items[i].root;
         offset += view->counts[i];
     }
-    if (view->tile_entity->kind == MC_TILE_ENTITY_CHEST) {
-        view->fields[4].value.list.items = view->occupied == 0 ? NULL : scratch + view->root_count;
-        view->fields[4].value.list.length = view->occupied;
+    if (tile_entity_has_slots(view->tile_entity)) {
+        view->fields[tile_entity_items_field(view->tile_entity)].value.list.items =
+            view->occupied == 0 ? NULL : scratch + view->root_count;
+        view->fields[tile_entity_items_field(view->tile_entity)].value.list.length = view->occupied;
+        if (view->tile_entity->kind == MC_TILE_ENTITY_FURNACE)
+            view->fields[tile_entity_items_field(view->tile_entity)].value.list.element_type =
+                view->occupied == 0 ? MC_NBT_END : MC_NBT_COMPOUND;
     }
     tile_entity_overlay(mc_tile_entity_source(view->tile_entity), view->fields, view->field_count,
                         scratch);
@@ -5628,9 +5766,9 @@ mc_world_storage_status mc_live_tile_entities_build_records(const mc_world_chunk
                 live_fail(&frame, MC_WORLD_STORAGE_LIMIT, "TileEntity records owner graph");
                 break;
             }
-            if (tile_entity->kind == MC_TILE_ENTITY_CHEST) {
-                for (size_t slot = 0; slot < tile_entity->state.chest.capacity; ++slot) {
-                    mc_item_stack *stack = tile_entity->state.chest.slots[slot];
+            if (tile_entity_has_slots(tile_entity)) {
+                for (size_t slot = 0; slot < tile_entity_slot_capacity(tile_entity); ++slot) {
+                    mc_item_stack *stack = tile_entity_slots(tile_entity)[slot];
                     if (live_seen_insert(seen, seen_capacity, stack)) {
                         size_t bytes;
                         mc_item_stack_status item = mc_item_stack_native_bytes(stack, &bytes);
@@ -5780,9 +5918,9 @@ static bool live_graph_measure(const mc_world_chunk *chunk, mc_tile_entity *extr
             live_fail(error, MC_WORLD_STORAGE_LIMIT, "TileEntity graph owner bytes");
             break;
         }
-        if (tile_entity->kind == MC_TILE_ENTITY_CHEST) {
-            for (size_t slot = 0; slot < tile_entity->state.chest.capacity; ++slot) {
-                mc_item_stack *stack = tile_entity->state.chest.slots[slot];
+        if (tile_entity_has_slots(tile_entity)) {
+            for (size_t slot = 0; slot < tile_entity_slot_capacity(tile_entity); ++slot) {
+                mc_item_stack *stack = tile_entity_slots(tile_entity)[slot];
                 bool seen_stack = stack == NULL;
                 for (size_t j = 0; j <= i && !seen_stack; ++j) {
                     mc_tile_entity *previous = tile_entity;
@@ -5792,11 +5930,11 @@ static bool live_graph_measure(const mc_world_chunk *chunk, mc_tile_entity *extr
                                   "TileEntity graph Stack Map iteration");
                         return false;
                     }
-                    if (previous->kind != MC_TILE_ENTITY_CHEST)
+                    if (!tile_entity_has_slots(previous))
                         continue;
-                    const size_t end = j == i ? slot : previous->state.chest.capacity;
+                    const size_t end = j == i ? slot : tile_entity_slot_capacity(previous);
                     for (size_t k = 0; k < end; ++k)
-                        if (previous->state.chest.slots[k] == stack) {
+                        if (tile_entity_slots(previous)[k] == stack) {
                             seen_stack = true;
                             break;
                         }

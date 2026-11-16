@@ -23,6 +23,12 @@ struct mc_tile_entity {
         } chest;
 
         struct {
+            mc_item_stack **slots;
+            size_t capacity;
+            int32_t burn_remaining, fuel_duration, cook_progress;
+        } furnace;
+
+        struct {
             int32_t delay;
             double rotation, previous_rotation;
             mc_tile_entity_name *name;

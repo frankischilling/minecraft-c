@@ -15,6 +15,7 @@
 #include "mc/world/runtime/construction.h"
 #include "source_chest_screen_internal.h"
 #include "source_create_world_internal.h"
+#include "source_furnace_screen_internal.h"
 #include "source_inventory_screen_internal.h"
 #include "source_pause_screen_internal.h"
 #include "source_screen_transition_receipts_internal.h"
@@ -36,6 +37,7 @@ typedef struct screen_node {
     mc_client_source_ue *inventory;
     mc_client_source_oo *workbench;
     mc_client_source_hp *chest;
+    mc_client_source_ov *furnace;
     mc_entity *constructor_player; /* Native occurrence of actual DC invocation receiver. */
     mc_world_info_name *create_folder, *create_name;
     mc_client_display_screen_call *display;
@@ -624,6 +626,64 @@ mc_client_screen_status mc_client_screen_transitions_chest(mc_client_screen_tran
     return leave(r, e);
 }
 
+mc_client_screen_status mc_client_screen_transitions_furnace(mc_client_screen_transitions *r,
+                                                             mc_entity *player,
+                                                             mc_inventory_furnace *furnace,
+                                                             mc_client_screen_error *e) {
+    if (!enter(r, e))
+        return r == NULL || e == NULL ? MC_CLIENT_SCREEN_INVALID_ARGUMENT : e->status;
+    if (player == NULL) {
+        fail(r, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE, "DC.a null actual receiver", "dc", "a",
+             "(Lsk;)V", 1);
+        r->failure.native_policy = false;
+        r->failure.source_exception = true;
+        r->failure.exception_class = "java/lang/NullPointerException";
+    } else if (!mc_entity_is_kind(player, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) ||
+               player->local_player == NULL)
+        fail(r, MC_CLIENT_SCREEN_INVALID_ARGUMENT, "DC.a actual LocalPlayer source storage", "dc",
+             "a", "(Lsk;)V", 1);
+    else {
+        screen_node *n = node(r);
+        if (n != NULL) {
+            if (mc_entity_retain(player) != MC_ENTITY_OK)
+                fail(r, MC_CLIENT_SCREEN_BUSY, "DC.a native invocation Player occurrence", NULL,
+                     NULL, NULL, 0);
+            else {
+                n->constructor_player = player;
+                /* The actual receiver at1 is captured before NEW OV4. Its
+                 * NULL is dereferenced only by the final display invoke16. */
+                client_application *actual = player->local_player->fields.minecraft;
+                if (mc_client_screen_furnace_allocate(r->classes, r->app->render_classes, NULL,
+                                                      &n->furnace,
+                                                      &r->failure) != MC_CLIENT_SCREEN_OK)
+                    r->failure.parent_site = (mc_client_screen_site){"dc", "a", "(Lsk;)V", 4};
+                else {
+                    ++r->screens;
+                    mc_inventory_player *inventory = player->local_player->fields.player.c;
+                    if (mc_client_screen_furnace_construct(n->furnace, inventory, furnace,
+                                                           &r->failure) != MC_CLIENT_SCREEN_OK)
+                        r->failure.parent_site = (mc_client_screen_site){"dc", "a", "(Lsk;)V", 13};
+                    else if (actual == NULL) {
+                        fail(r, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE,
+                             "DC.a null captured Minecraft display receiver", "dc", "a", "(Lsk;)V",
+                             16);
+                        r->failure.native_policy = false;
+                        r->failure.source_exception = true;
+                        r->failure.exception_class = "java/lang/NullPointerException";
+                    } else if (actual != r->app)
+                        fail(r, MC_CLIENT_SCREEN_INVALID_ARGUMENT,
+                             "DC.a actual captured Minecraft router identity", "dc", "a", "(Lsk;)V",
+                             16);
+                    else
+                        (void)display(r, mc_client_screen_furnace_base(n->furnace), "dc", "a",
+                                      "(Lsk;)V", 16);
+                }
+            }
+        }
+    }
+    return leave(r, e);
+}
+
 mc_client_screen_status mc_client_screen_transitions_player_close(mc_client_screen_transitions *r,
                                                                   mc_entity *player,
                                                                   mc_client_screen_error *e) {
@@ -1107,7 +1167,8 @@ static bool inventory_terminal_prefix(mc_client_screen_transitions *r, mc_client
     for (screen_node *n = r->nodes; n != NULL; n = n->next) {
         if ((n->inventory != NULL && !prepare_inventory_screen(r, &n->inventory->container, e)) ||
             (n->workbench != NULL && !prepare_inventory_screen(r, &n->workbench->container, e)) ||
-            (n->chest != NULL && !prepare_inventory_screen(r, &n->chest->container, e))) {
+            (n->chest != NULL && !prepare_inventory_screen(r, &n->chest->container, e)) ||
+            (n->furnace != NULL && !prepare_inventory_screen(r, &n->furnace->container, e))) {
             ready = false;
             break;
         }
@@ -1155,13 +1216,16 @@ static bool root_epoch_ledger(mc_client_screen_transitions *r, mc_client_screen_
 static mc_client_source_id *owned_container_screen(const screen_node *node) {
     if (node->workbench != NULL)
         return &node->workbench->container;
-    return node->chest == NULL ? NULL : &node->chest->container;
+    if (node->chest != NULL)
+        return &node->chest->container;
+    return node->furnace == NULL ? NULL : &node->furnace->container;
 }
 
 static bool root_screen_epoch(mc_client_screen_transitions *r, const screen_node *owner,
                               mc_client_world_load_state *out, mc_client_screen_error *e) {
     const mc_client_source_id *screen = owned_container_screen(owner);
-    if (screen == NULL || (owner->workbench != NULL && owner->chest != NULL))
+    if (screen == NULL ||
+        ((owner->workbench != NULL) + (owner->chest != NULL) + (owner->furnace != NULL)) != 1)
         return root_failure(e, "Container terminal unique concrete Screen owner");
     if (owner->constructor_player == NULL ||
         owner->constructor_player != screen->constructor_player ||
@@ -1633,6 +1697,17 @@ mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_tra
                 &r->receipts, n->chest == NULL ? NULL : &n->chest->container.detail);
         if (chest != MC_CLIENT_SCREEN_OK)
             return chest;
+        if (base != NULL && r->app->r == base)
+            r->app->r = NULL;
+        base = mc_client_screen_furnace_base(n->furnace);
+        const bool copied_furnace = mc_screen_transition_inventory_capture(
+            &r->receipts, &r->failure, n->furnace == NULL ? NULL : &n->furnace->container.detail);
+        const mc_client_screen_status furnace = mc_client_screen_furnace_retire(&n->furnace, e);
+        if (copied_furnace)
+            mc_screen_transition_inventory_after(
+                &r->receipts, n->furnace == NULL ? NULL : &n->furnace->container.detail);
+        if (furnace != MC_CLIENT_SCREEN_OK)
+            return furnace;
         if (base != NULL && r->app->r == base)
             r->app->r = NULL;
         base = mc_client_screen_inventory_base(n->inventory);

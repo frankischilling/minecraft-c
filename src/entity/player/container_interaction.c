@@ -178,10 +178,12 @@ static bool stack_field(mc_player_container_call *c, mc_item_stack *stack, bool 
            fail(c, MC_ENTITY_STATE_ERROR, "Crafting actual Stack source field storage");
 }
 
-static mc_inventory_status crafted(void *context, mc_entity *player, mc_item_stack *stack,
-                                   mc_container_interaction_error *e) {
+/* Both YV and VQ enter the same actual IZ.b body before their own awards. */
+static mc_inventory_status crafted_prefix(void *context, mc_entity *player, mc_item_stack *stack,
+                                          const char *slot_class,
+                                          mc_container_interaction_error *e) {
     mc_player_container_call *c = context;
-    c->error.child = (mc_player_site){"yv", "a", "(Liz;)V", 5};
+    c->error.child = (mc_player_site){slot_class, "a", "(Liz;)V", 5};
     if (player == NULL) {
         (void)null_reference(c, "Crafting pickup null stored Player World receiver");
         return host_failure(c, e);
@@ -259,6 +261,17 @@ static mc_inventory_status crafted(void *context, mc_entity *player, mc_item_sta
     }
 
     /* Other37 actual represented classes inherit GM.b's literal return0. */
+    return MC_INVENTORY_OK;
+}
+
+static mc_inventory_status crafted(void *context, mc_entity *player, mc_item_stack *stack,
+                                   mc_container_interaction_error *e) {
+    const mc_inventory_status prefix = crafted_prefix(context, player, stack, "yv", e);
+    if (prefix != MC_INVENTORY_OK)
+        return prefix;
+    mc_player_container_call *c = context;
+    int32_t id;
+
     static const struct {
         bool block;
         const char *name;
@@ -320,6 +333,55 @@ static mc_inventory_status crafted(void *context, mc_entity *player, mc_item_sta
     return MC_INVENTORY_OK;
 }
 
+static mc_inventory_status furnace_crafted(void *context, mc_entity *player, mc_item_stack *stack,
+                                           mc_container_interaction_error *e) {
+    const mc_inventory_status prefix = crafted_prefix(context, player, stack, "vq", e);
+    if (prefix != MC_INVENTORY_OK)
+        return prefix;
+    mc_player_container_call *c = context;
+
+    static const struct {
+        const char *item;
+        unsigned int stack_pc, static_pc, field_pc, achievement_pc, statistic_pc;
+        size_t achievement;
+    } checks[] = {{"m", 16, 19, 22, 32, 36, 5}, {"aT", 40, 43, 46, 56, 60, 10}};
+
+    /* These are two independent IF bodies. Reaching iron does not skip the
+     * fresh Stack ID and gm.aT reads belonging to the second comparison. */
+    for (size_t i = 0; i < sizeof(checks) / sizeof(*checks); ++i) {
+        int32_t id;
+        c->error.child = (mc_player_site){"vq", "a", "(Liz;)V", checks[i].stack_pc};
+        if (!stack_field(c, stack, false, &id))
+            return host_failure(c, e);
+        const mc_item *item = NULL;
+        c->error.child.pc = checks[i].static_pc;
+        if (mc_registry_item_static_get(c->registry, checks[i].item, &item, &c->error.registry) !=
+            MC_REGISTRY_OK) {
+            (void)registry_failure(c);
+            return host_failure(c, e);
+        }
+        c->error.child.pc = checks[i].field_pc;
+        if (item == NULL) {
+            (void)null_reference(c, "Furnace null compared static Item id receiver");
+            return host_failure(c, e);
+        }
+        if (id == item->fields.bf) {
+            c->error.child.pc = checks[i].achievement_pc;
+            if (mc_registry_classes_initialize_achievements(c->registry, &c->error.registry) !=
+                MC_REGISTRY_OK) {
+                (void)registry_failure(c);
+                return host_failure(c, e);
+            }
+            const mc_statistic *achievement =
+                c->registry->achievements.named[checks[i].achievement];
+            c->error.child.pc = checks[i].statistic_pc;
+            if (!statistic(c, player, achievement, 1))
+                return host_failure(c, e);
+        }
+    }
+    return MC_INVENTORY_OK;
+}
+
 static mc_inventory_status drop(void *context, mc_entity *player, mc_item_stack *stack,
                                 mc_container_interaction_error *e) {
     mc_player_container_call *c = context;
@@ -366,6 +428,7 @@ static void entered(mc_player_container_call *c, int32_t slot, int32_t button, b
                                                 .cursor_changed = cursor_changed,
                                                 .drop = drop,
                                                 .crafted = crafted,
+                                                .furnace_crafted = furnace_crafted,
                                                 .world_remote = world_remote};
     const mc_inventory_status s =
         close ? mc_container_close_begin(c->state.container, player, &host, &c->interaction,

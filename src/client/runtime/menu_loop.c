@@ -2,6 +2,7 @@
 #include "../gui/achievement_notice_draw.h"
 #include "../gui/loading_internal.h"
 #include "../gui/source_chest_drawing.h"
+#include "../gui/source_furnace_drawing.h"
 #include "../gui/source_inventory_drawing.h"
 #include "../gui/source_screen_initialize.h"
 #include "../gui/source_workbench_drawing.h"
@@ -635,7 +636,7 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
             loop->state.font_measurements += loop->create_world_draw.font_measurements;
         } else if (drawn.kind == MC_CLIENT_SCREEN_INVENTORY ||
                    drawn.kind == MC_CLIENT_SCREEN_WORKBENCH ||
-                   drawn.kind == MC_CLIENT_SCREEN_CHEST) {
+                   drawn.kind == MC_CLIENT_SCREEN_CHEST || drawn.kind == MC_CLIENT_SCREEN_FURNACE) {
             const mc_client_manager_draw_services services = {.math = loop->math,
                                                               .graphics = loop->graphics,
                                                               .display = app->display,
@@ -650,9 +651,13 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
                     ? mc_client_source_workbench_draw_begin(
                           (mc_client_source_oo *)app->r, mouse, partial, &services,
                           &loop->inventory_draw, &loop->inventory_error)
-                    : mc_client_source_chest_draw_begin((mc_client_source_hp *)app->r, mouse,
+                : drawn.kind == MC_CLIENT_SCREEN_CHEST
+                    ? mc_client_source_chest_draw_begin((mc_client_source_hp *)app->r, mouse,
                                                         partial, &services, &loop->inventory_draw,
-                                                        &loop->inventory_error);
+                                                        &loop->inventory_error)
+                    : mc_client_source_furnace_draw_begin((mc_client_source_ov *)app->r, mouse,
+                                                          partial, &services, &loop->inventory_draw,
+                                                          &loop->inventory_error);
             if (loop->inventory_draw != NULL) {
                 (void)mc_client_source_inventory_draw_inspect(loop->inventory_draw,
                                                               &loop->inventory_state);
@@ -782,6 +787,10 @@ static void expire_inventory_draw_chest_views(mc_client_menu_loop *loop) {
     loop->inventory_error.slot.inventory.chest = NULL;
     loop->inventory_cleanup.inventory.chest = NULL;
     loop->inventory_cleanup.slot.inventory.chest = NULL;
+    loop->inventory_error.inventory.furnace = NULL;
+    loop->inventory_error.slot.inventory.furnace = NULL;
+    loop->inventory_cleanup.inventory.furnace = NULL;
+    loop->inventory_cleanup.slot.inventory.furnace = NULL;
 }
 
 static bool retire_completed_draws(mc_client_menu_loop *loop) {

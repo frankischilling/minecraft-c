@@ -37,6 +37,9 @@ static bool get(inv_slot *slot, const mc_item_stack **out, mc_container_interact
     } else if (slot->state.inventory_kind == MC_SLOT_INVENTORY_CHEST)
         status = mc_inventory_chest_borrow((mc_inventory_chest *)slot->state.inventory, index, out,
                                            &e->inventory);
+    else if (slot->state.inventory_kind == MC_SLOT_INVENTORY_FURNACE)
+        status = mc_inventory_furnace_borrow((mc_inventory_furnace *)slot->state.inventory, index,
+                                             out, &e->inventory);
     else
         return inv_interaction_fail(e, MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,
                                     "Slot actual Inventory getter type");
@@ -143,6 +146,9 @@ bool inv_interaction_slot_changed(mc_container_interaction_call *c, inv_slot *sl
     else if (slot->state.inventory_kind == MC_SLOT_INVENTORY_CHEST)
         status =
             mc_inventory_chest_changed((mc_inventory_chest *)slot->state.inventory, &e->inventory);
+    else if (slot->state.inventory_kind == MC_SLOT_INVENTORY_FURNACE)
+        status = mc_inventory_furnace_changed((mc_inventory_furnace *)slot->state.inventory,
+                                              &e->inventory);
     else
         return inv_interaction_fail(e, MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,
                                     "Slot actual changed Inventory type");
@@ -175,6 +181,9 @@ bool inv_interaction_slot_put(mc_container_interaction_call *c, inv_slot *slot,
     } else if (slot->state.inventory_kind == MC_SLOT_INVENTORY_CHEST)
         status = mc_inventory_chest_set((mc_inventory_chest *)slot->state.inventory, index, value,
                                         &e->inventory);
+    else if (slot->state.inventory_kind == MC_SLOT_INVENTORY_FURNACE)
+        status = mc_inventory_furnace_set((mc_inventory_furnace *)slot->state.inventory, index,
+                                          value, &e->inventory);
     else
         return inv_interaction_fail(e, MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,
                                     "Slot actual setter Inventory type");
@@ -200,6 +209,10 @@ bool inv_interaction_slot_limit(mc_container_interaction_call *c, inv_slot *slot
         return inv_interaction_inventory(
             e, mc_inventory_chest_limit((mc_inventory_chest *)slot->state.inventory, out,
                                         &e->inventory));
+    if (slot->state.inventory_kind == MC_SLOT_INVENTORY_FURNACE)
+        return inv_interaction_inventory(
+            e, mc_inventory_furnace_limit((mc_inventory_furnace *)slot->state.inventory, out,
+                                          &e->inventory));
     *out = 64; /* IX, MQ and WL all literal64; no constructor/field access. */
     return true;
 }
@@ -210,9 +223,11 @@ bool inv_interaction_slot_valid(mc_container_interaction_call *c, inv_slot *slot
     if (slot == NULL)
         return inv_interaction_null(e, "Slot null validity invocation receiver");
     if (slot->state.kind != MC_SLOT_ARMOR) {
-        e->child = (mc_inventory_site){slot->state.kind == MC_SLOT_CRAFTING ? "yv" : "gp", "b",
-                                       "(Liz;)Z", 1};
-        *out = slot->state.kind != MC_SLOT_CRAFTING;
+        e->child = (mc_inventory_site){slot->state.kind == MC_SLOT_FURNACE    ? "vq"
+                                       : slot->state.kind == MC_SLOT_CRAFTING ? "yv"
+                                                                              : "gp",
+                                       "b", "(Liz;)Z", 1};
+        *out = slot->state.kind != MC_SLOT_CRAFTING && slot->state.kind != MC_SLOT_FURNACE;
         return true;
     }
     e->child = (mc_inventory_site){"pv", "b", "(Liz;)Z", 1};
@@ -261,12 +276,17 @@ static bool split_inventory(mc_container_interaction_call *c, inv_slot *slot, in
         e->child = (mc_inventory_site){"gp", "a", "(I)Liz;", 9};
     if (slot == NULL || slot->state.inventory == NULL)
         return inv_interaction_null(e, "Slot null Inventory split invocation receiver");
-    if (slot->state.inventory_kind == MC_SLOT_INVENTORY_CHEST) {
+    if (slot->state.inventory_kind == MC_SLOT_INVENTORY_CHEST ||
+        slot->state.inventory_kind == MC_SLOT_INVENTORY_FURNACE) {
         mc_item_stack *removed = NULL;
         if (!inv_interaction_inventory(
-                e, mc_inventory_chest_split((mc_inventory_chest *)slot->state.inventory,
-                                            slot->state.inventory_index, amount, &removed,
-                                            &e->inventory)))
+                e, slot->state.inventory_kind == MC_SLOT_INVENTORY_FURNACE
+                       ? mc_inventory_furnace_split((mc_inventory_furnace *)slot->state.inventory,
+                                                    slot->state.inventory_index, amount, &removed,
+                                                    &e->inventory)
+                       : mc_inventory_chest_split((mc_inventory_chest *)slot->state.inventory,
+                                                  slot->state.inventory_index, amount, &removed,
+                                                  &e->inventory)))
             return false;
         if (!inv_interaction_adopt(c, removed)) {
             mc_item_stack_release(removed);
@@ -366,6 +386,21 @@ bool inv_interaction_slot_pickup(mc_container_interaction_call *c, inv_slot *slo
     mc_container_interaction_error *e = &c->error;
     if (slot == NULL)
         return inv_interaction_null(e, "Slot null pickup invocation receiver");
+    if (slot->state.kind == MC_SLOT_FURNACE) {
+        e->child = (mc_inventory_site){"vq", "a", "(Liz;)V", 5};
+        if (slot->state.player == NULL)
+            return inv_interaction_null(e,
+                                        "Furnace output null stored Player World field receiver");
+        e->child.pc = 12;
+        if (c->host.furnace_crafted == NULL)
+            return inv_interaction_fail(e, MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,
+                                        "Furnace output actual IZ/Player statistic child");
+        if (c->host.furnace_crafted(c->host.context, slot->state.player, stack, e) !=
+            MC_INVENTORY_OK)
+            return false;
+        e->child.pc = 65;
+        return inv_interaction_slot_changed(c, slot);
+    }
     if (slot->state.kind != MC_SLOT_CRAFTING) {
         e->child = (mc_inventory_site){"gp", "a", "(Liz;)V", 1};
         return inv_interaction_slot_changed(c, slot);

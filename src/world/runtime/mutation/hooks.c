@@ -1,4 +1,5 @@
 #include "fire/fire_internal.h"
+#include "furnace/furnace_internal.h"
 #include "mutation_internal.h"
 #include "plants/plants_internal.h"
 #include "portal_internal.h"
@@ -73,8 +74,13 @@ static bool tile_entity_hook(mc_world_runtime *world, const mc_block *block, int
     if (status == MC_WORLD_STORAGE_OK)
         return hook_return(error);
     /* Keep the reached concrete hook frame beside its whole typed child. */
-    hook_stage(block, block->kind == MC_BLOCK_CHEST && !added ? "e" : "rw",
-               block->kind == MC_BLOCK_CHEST && !added ? "e" : "lb",
+    hook_stage(block,
+               !added && block->kind == MC_BLOCK_FURNACE ? "tc"
+               : !added && block->kind == MC_BLOCK_CHEST ? "e"
+                                                         : "rw",
+               !added && block->kind == MC_BLOCK_FURNACE ? "lz"
+               : !added && block->kind == MC_BLOCK_CHEST ? "e"
+                                                         : "lb",
                detail.hook_bytecode != 0 ? detail.hook_bytecode : detail.bytecode, error);
     error->tile_entity = detail;
     error->registry = detail.registry;
@@ -257,8 +263,10 @@ static bool block_removed(mc_world_runtime *world, const mc_block *block, int32_
             return owned == NULL ? mc_world_mutation_redstone_removed(world, block, x, y, z, error)
                                  : unjoined(owned, "Redstone removal requires owned execution");
         case MC_BLOCK_FURNACE:
-            return unavailable(world, block, "tc", "lz", "Block furnace removal hook", error,
-                               owned);
+            return owned == NULL && block->classes->options.side == MC_REGISTRY_CLIENT
+                       ? tile_entity_hook(world, block, x, y, z, false, error)
+                       : unavailable(world, block, "tc", "lz", "Block Furnace removal hook", error,
+                                     owned);
         case MC_BLOCK_LEVER:
             if (block->classes->options.side == MC_REGISTRY_CLIENT)
                 return owned == NULL ? mc_world_mutation_lever_removed(world, block, x, y, z, error)
@@ -365,7 +373,7 @@ static bool block_added(mc_world_runtime *world, const mc_block *block, int32_t 
         case MC_BLOCK_CHEST:
             return owned == NULL ? tile_entity_hook(world, block, x, y, z, true, error)
                    : call != NULL && block->classes->options.side == MC_REGISTRY_CLIENT
-                       ? mc_world_mutation_execution_chest_added(call, world, block, x, y, z, error)
+                       ? mc_world_mutation_execution_tile_added(call, world, block, x, y, z, error)
                        : unjoined(owned, "Chest addition requires retained client caller");
         case MC_BLOCK_RAIL:
         case MC_BLOCK_DETECTOR_RAIL:
@@ -401,8 +409,22 @@ static bool block_added(mc_world_runtime *world, const mc_block *block, int32_t 
             return owned == NULL ? mc_world_mutation_redstone_added(world, block, x, y, z, error)
                                  : unjoined(owned, "Redstone addition requires owned execution");
         case MC_BLOCK_FURNACE:
-            return unavailable(world, block, "tc", "lz", "Block furnace addition hook", error,
-                               owned);
+            if (block->classes->options.side != MC_REGISTRY_CLIENT)
+                return unavailable(world, block, "tc", "lz", "Block Furnace addition hook", error,
+                                   owned);
+            if (!(owned == NULL ? tile_entity_hook(world, block, x, y, z, true, error)
+                  : call != NULL
+                      ? mc_world_mutation_execution_tile_added(call, world, block, x, y, z, error)
+                      : unjoined(owned, "Furnace addition requires retained client caller"))) {
+                error->cause_hook_class = error->hook_class;
+                error->cause_hook_method = error->hook_method;
+                error->cause_hook_bytecode = error->hook_bytecode;
+                error->hook_class = "tc";
+                error->hook_method = "c(Lfd;III)V";
+                error->hook_bytecode = 6;
+                return false;
+            }
+            return mc_world_mutation_furnace_orient(world, block, x, y, z, error, call);
         case MC_BLOCK_PRESSURE_PLATE:
             return hook_return(error); /* bv/bc.c is itself return0. */
         case MC_BLOCK_REDSTONE_TORCH:

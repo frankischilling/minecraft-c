@@ -20,6 +20,7 @@ typedef struct mc_entity mc_entity;
 typedef struct mc_container mc_container;
 typedef struct mc_inventory_player mc_inventory_player;
 typedef struct mc_inventory_chest mc_inventory_chest;
+typedef struct mc_inventory_furnace mc_inventory_furnace;
 
 typedef enum mc_client_screen_status {
     MC_CLIENT_SCREEN_OK,
@@ -64,7 +65,8 @@ typedef enum mc_client_screen_kind {
     MC_CLIENT_SCREEN_INVENTORY,
     MC_CLIENT_SCREEN_WORKBENCH,
     MC_CLIENT_SCREEN_DEATH,
-    MC_CLIENT_SCREEN_CHEST
+    MC_CLIENT_SCREEN_CHEST,
+    MC_CLIENT_SCREEN_FURNACE
 } mc_client_screen_kind;
 
 typedef enum mc_client_screen_class_phase {
@@ -172,6 +174,10 @@ typedef struct mc_client_screen_hp_fields {
     int32_t n;
 } mc_client_screen_hp_fields;
 
+typedef struct mc_client_screen_ov_fields {
+    mc_inventory_furnace *l; /* Typed retained actual SK occurrence. */
+} mc_client_screen_ov_fields;
+
 typedef struct mc_client_screen_state {
     mc_client_screen_phase phase;
     size_t holds, arena_bytes, allocations, allocation_attempts;
@@ -182,6 +188,7 @@ typedef struct mc_client_screen_state {
     mc_client_screen_id_fields id;
     mc_client_screen_ue_fields ue;
     mc_client_screen_hp_fields hp;
+    mc_client_screen_ov_fields ov;
     unsigned int last_pc, store_count;
     mc_client_screen_site stores[16];
     mc_client_screen_exception caught_exception;

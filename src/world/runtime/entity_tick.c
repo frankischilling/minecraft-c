@@ -26,6 +26,9 @@ bool mc_world_entity_tick_error_retire(mc_world_entity_tick_error *e) {
         if (cleanup != MC_ARROW_TICK_OK)
             return false; /* First World failure remains; actual child is still owned. */
     }
+    if (e->child == MC_WORLD_ENTITY_TICK_CHILD_FURNACE &&
+        !mc_tile_entity_furnace_tick_retire(&e->child_error.furnace))
+        return false;
     mc_world_entity_tick_error_init(e);
     return true;
 }

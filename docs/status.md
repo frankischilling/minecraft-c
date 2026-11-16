@@ -7,6 +7,17 @@ the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining w
 
 ## Current client work
 
+[Furnace storage and smelting](client/furnaces.md) now use actual TileEntity,
+World, container and screen owners. Nine selected Windows tests pass, including
+173 original core projections, 27 original container profiles, seven original
+World post-step projections and real Player output statistics. The same nine
+Clang sanitizer controls and eight GCC sanitizer controls pass. The full
+Windows Release build and all 1,335 tests pass in 531.50 seconds, with every
+configured case accounted for and all 1,326 preceding names retained. An authored monitor-2 SDK cycle passes 9,242
+checks through two smelts, save/reselection and open-screen native shutdown.
+Owned lazy orientation remains an explicit dependency. Hosted qualification
+retains its separate tested revision.
+
 Existing [Chest access](client/chests.md) now connects right-click activation,
 single/double inventory views, container transfers, drawing, close and saved
 World reselection. All five authored Windows monitor-2 scenarios pass, including

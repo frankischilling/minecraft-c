@@ -6,7 +6,7 @@
 
 static inline bool mc_screen_container_kind(mc_client_screen_kind kind) {
     return kind == MC_CLIENT_SCREEN_INVENTORY || kind == MC_CLIENT_SCREEN_WORKBENCH ||
-           kind == MC_CLIENT_SCREEN_CHEST;
+           kind == MC_CLIENT_SCREEN_CHEST || kind == MC_CLIENT_SCREEN_FURNACE;
 }
 
 typedef struct mc_screen_block {
