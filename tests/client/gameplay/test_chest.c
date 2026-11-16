@@ -8,6 +8,9 @@ int mc_chest_included_inventory_main(int, char **);
 #include "world/runtime/tile_entities/tile_entities_internal.h"
 
 static const char *chest_profile;
+static int32_t chest_placement_rows = 3;
+static int32_t chest_placement_ready_x;
+static int32_t chest_placement_ready_y = 63;
 
 typedef struct chest_terminal_snapshot {
     mc_client_source_da *screen;
@@ -143,7 +146,9 @@ static int chest_slot(mc_client_source_hp *screen, int32_t index, int32_t id, in
 
 static int chest_ui(fixture *f, mc_client_source_hp *screen, bool cursor) {
     const mc_client_inventory_draw_state *draw = f->state.inventory;
-    const int32_t rows = strcmp(chest_profile, "single") == 0 ? 3 : 6;
+    const int32_t rows = strcmp(chest_profile, "single") == 0      ? 3
+                         : strcmp(chest_profile, "placement") == 0 ? chest_placement_rows
+                                                                   : 6;
     CHECK(f->app->r == &screen->container.base && !f->app->N && draw != NULL && draw->returned &&
           draw->chest && !draw->workbench && draw->id_returned && draw->background_returned &&
           draw->foreground_returned && !draw->preview_returned && !draw->mouse_stored &&
@@ -289,7 +294,11 @@ static int chest_ready(fixture *f) {
         mc_entity_hit_result_view hit;
         if (f->app->y != NULL &&
             mc_entity_hit_result_inspect(f->app->y, &hit) == MC_ENTITY_HIT_OK &&
-            hit.fields.b == 0 && hit.fields.c == 64 && hit.fields.d == 2)
+            hit.fields.b ==
+                (strcmp(chest_profile, "placement") == 0 ? chest_placement_ready_x : 0) &&
+            hit.fields.c ==
+                (strcmp(chest_profile, "placement") == 0 ? chest_placement_ready_y : 64) &&
+            hit.fields.d == 2)
             return 0;
     } while (SDL_GetTicks() < deadline);
     fputs("Chest saved pose did not reach genuine focused picking\n", stderr);
@@ -328,12 +337,189 @@ static int chest_choose(fixture *f, const reload_epoch *previous, reload_epoch *
     return 0;
 }
 
+static bool chest_placement_hit(const fixture *f, int32_t x, int32_t y) {
+    mc_entity_hit_result_view hit;
+    mc_entity_hit_kind_class_view kinds;
+    return f->app->r == NULL && f->app->y != NULL &&
+           mc_entity_hit_result_inspect(f->app->y, &hit) == MC_ENTITY_HIT_OK &&
+           mc_entity_hit_kind_class_inspect(f->app->entities, &kinds) == MC_ENTITY_HIT_OK &&
+           hit.fields.a == kinds.a && hit.fields.b == x && hit.fields.c == y && hit.fields.d == 2 &&
+           (y != 63 || hit.fields.e == 1);
+}
+
+static int chest_placement_cell(fixture *f, int32_t x, int32_t expected) {
+    int32_t id, metadata;
+    CHECK(mc_world_runtime_block_get(f->app->active_world, x, 64, 2, &id, NULL) ==
+              MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_metadata_get(f->app->active_world, x, 64, 2, &metadata, NULL) ==
+              MC_WORLD_STORAGE_OK &&
+          id == expected && metadata == 0);
+    return 0;
+}
+
+static int chest_placement_target(fixture *f, int32_t x, int32_t y) {
+    const uint64_t deadline = SDL_GetTicks() + 15000;
+    do {
+        CHECK(inventory_frame(f) == 0);
+        if (chest_placement_hit(f, x, y))
+            return 0;
+    } while (SDL_GetTicks() < deadline);
+    fprintf(stderr, "Chest placement target not reached x=%d y=%d actor=%.17g,%.17g,%.17g\n", x, y,
+            f->app->h->base.x, f->app->h->base.y, f->app->h->base.z);
+    return 1;
+}
+
+static int chest_placement_tap(fixture *f, int32_t x, int32_t y, bool placed) {
+    CHECK(chest_placement_hit(f, x, y));
+    const uint64_t clicks = f->state.gameplay_right_clicks;
+    const uint64_t blocks = f->state.gameplay_block_uses;
+    const uint64_t admitted = f->state.gameplay_placements_admitted;
+    const uint64_t setters = f->state.gameplay_placed_blocks;
+    const uint64_t sounds = f->state.gameplay_placement_sounds;
+    const uint64_t counts = f->state.gameplay_stack_count_stores;
+    const uint64_t deadline = SDL_GetTicks() + 60000;
+    size_t frames = 0;
+    for (size_t attempt = 0; attempt < 12 && frames < 96 && SDL_GetTicks() < deadline; ++attempt) {
+        CHECK(chest_placement_hit(f, x, y));
+        const size_t events = f->state.mouse_events;
+        for (unsigned int edge = 0; edge < 2; ++edge) {
+            SDL_Event event = {0};
+            event.type = edge == 0 ? SDL_EVENT_MOUSE_BUTTON_DOWN : SDL_EVENT_MOUSE_BUTTON_UP;
+            event.button.windowID = SDL_GetWindowID(mc_client_display_window(f->app->display));
+            event.button.button = SDL_BUTTON_RIGHT;
+            event.button.down = edge == 0;
+            CHECK(SDL_PushEvent(&event));
+        }
+        CHECK(transfer(f) == 0);
+        bool drained = false;
+        do {
+            CHECK(inventory_frame(f) == 0);
+            ++frames;
+            mc_client_sdk_input_state input;
+            mc_client_sdk_bytes_state read, buttons, queue;
+            CHECK(mc_client_sdk_input_inspect(mc_client_display_inputs(f->app->display), &input) &&
+                  mc_client_sdk_bytes_inspect(input.mouse_read, &read) &&
+                  mc_client_sdk_queue_inspect(input.mouse_events, &queue) &&
+                  mc_client_sdk_bytes_inspect(input.buttons, &buttons) && buttons.limit > 1 &&
+                  buttons.data[1] == 0);
+            drained = f->state.mouse_events > events && read.position == read.limit &&
+                      queue.position == 0 && input.pending_native_event == NULL;
+        } while (!drained && frames < 96 && SDL_GetTicks() < deadline);
+        CHECK(drained);
+        if (f->state.gameplay_right_clicks > clicks) {
+            const uint64_t delta = placed ? 1u : 0u;
+            printf("CHEST_PLACE_TAP target=%d,%d,2 placed=%d attempts=%zu clicks=%" PRIu64
+                   " block-use=%" PRIu64 " admitted=%" PRIu64 " setters=%" PRIu64 " sounds=%" PRIu64
+                   " count-stores=%" PRIu64 "\n",
+                   x, y, (int)placed, attempt + 1, f->state.gameplay_right_clicks - clicks,
+                   f->state.gameplay_block_uses - blocks,
+                   f->state.gameplay_placements_admitted - admitted,
+                   f->state.gameplay_placed_blocks - setters,
+                   f->state.gameplay_placement_sounds - sounds,
+                   f->state.gameplay_stack_count_stores - counts);
+            CHECK(fflush(stdout) == 0);
+            CHECK(f->state.gameplay_right_clicks == clicks + 1 &&
+                  f->state.gameplay_block_uses == blocks + 1 &&
+                  f->state.gameplay_placements_admitted == admitted + delta &&
+                  f->state.gameplay_placed_blocks == setters + delta &&
+                  f->state.gameplay_placement_sounds == sounds + delta &&
+                  f->state.gameplay_stack_count_stores == counts + delta);
+            return 0;
+        }
+        CHECK(f->state.gameplay_block_uses == blocks &&
+              f->state.gameplay_placements_admitted == admitted &&
+              f->state.gameplay_placed_blocks == setters &&
+              f->state.gameplay_stack_count_stores == counts);
+    }
+    fputs("Chest placement tap not consumed within bounded SDK attempts\n", stderr);
+    return 1;
+}
+
+static int chest_placement_strafe(fixture *f, int32_t x, int32_t y) {
+    const uint64_t deadline = SDL_GetTicks() + 120000;
+    for (size_t attempt = 0; attempt < 20 && SDL_GetTicks() < deadline; ++attempt) {
+        const double position = f->app->h->base.x;
+        if (position > x + .1 && position < x + .9 && chest_placement_hit(f, x, y))
+            return 0;
+        /* With the authored yaw0, A moves toward +X and D toward -X. Only
+         * genuine SDK movement changes the pose; picking supplies the target. */
+        const SDL_Scancode key = position < x + .5 ? SDL_SCANCODE_A : SDL_SCANCODE_D;
+        const size_t events = f->state.keyboard_events;
+        CHECK(f->app->r == NULL && gameplay_key(f, key, true) == 0 && transfer(f) == 0 &&
+              inventory_frame(f) == 0);
+        SDL_Delay(60);
+        CHECK(gameplay_key(f, key, false) == 0 && transfer(f) == 0);
+        while (f->state.keyboard_events < events + 2 && SDL_GetTicks() < deadline)
+            CHECK(inventory_frame(f) == 0);
+        mc_client_sdk_input_state input;
+        mc_client_sdk_bytes_state keys;
+        CHECK(f->state.keyboard_events >= events + 2 &&
+              mc_client_sdk_input_inspect(mc_client_display_inputs(f->app->display), &input) &&
+              mc_client_sdk_bytes_inspect(input.key_down, &keys) && keys.limit > 32 &&
+              keys.data[30] == 0 && keys.data[32] == 0 && inventory_frame(f) == 0 &&
+              inventory_frame(f) == 0 && f->app->h->base.yaw == 0 && f->app->h->base.aT == 30);
+        printf("CHEST_STRAFE attempt=%zu target=%d,%d,2 key=%s x=%.17g\n", attempt + 1, x, y,
+               key == SDL_SCANCODE_A ? "A" : "D", f->app->h->base.x);
+        CHECK(fflush(stdout) == 0);
+    }
+    fputs("Chest placement SDK strafe did not reach the picked cell\n", stderr);
+    return 1;
+}
+
+static int chest_placement_run(fixture *f, mining_work *work, uint32_t *frame_id,
+                               uint32_t *canvas_id) {
+    CHECK(inventory_field(f, 0, 54, 3) == 0 && inventory_field(f, 9, 264, 5) == 0 &&
+          f->app->h->base.yaw == 0 && f->app->h->base.aT == 30 &&
+          chest_placement_cell(f, 0, 0) == 0 && chest_placement_cell(f, 1, 0) == 0 &&
+          chest_placement_cell(f, 2, 0) == 0 && chest_placement_tap(f, 0, 63, true) == 0 &&
+          chest_placement_cell(f, 0, 54) == 0 && inventory_field(f, 0, 54, 2) == 0 &&
+          chest_placement_target(f, 0, 64) == 0 &&
+          mining_capture(f, work, "chest-placed-single.png") == 0 &&
+          chest_placement_tap(f, 0, 64, false) == 0);
+    mc_client_source_hp *screen = NULL;
+    CHECK(chest_wait(f, &screen) == 0 && chest_slot(screen, 0, 0, 0) == 0 &&
+          chest_click(f, screen, 27, false, false, true) == 0 &&
+          chest_click(f, screen, 0, false, false, false) == 0 &&
+          chest_slot(screen, 0, 264, 5) == 0 && inventory_field(f, 9, 0, 0) == 0 &&
+          mining_capture(f, work, "chest-open.png") == 0 && chest_close(f, screen) == 0 &&
+          chest_placement_strafe(f, 1, 63) == 0 && chest_placement_tap(f, 1, 63, true) == 0 &&
+          chest_placement_cell(f, 1, 54) == 0 && inventory_field(f, 0, 54, 1) == 0 &&
+          chest_placement_strafe(f, 2, 63) == 0 && chest_placement_tap(f, 2, 63, false) == 0 &&
+          chest_placement_cell(f, 2, 0) == 0 && inventory_field(f, 0, 54, 1) == 0 &&
+          mining_capture(f, work, "chest-third-rejected.png") == 0 &&
+          chest_placement_strafe(f, 1, 64) == 0 && chest_placement_tap(f, 1, 64, false) == 0);
+    chest_placement_rows = 6;
+    CHECK(chest_wait(f, &screen) == 0 && chest_slot(screen, 0, 264, 5) == 0 &&
+          chest_slot(screen, 27, 0, 0) == 0 &&
+          mining_capture(f, work, "chest-placement-double.png") == 0 &&
+          chest_close(f, screen) == 0);
+    char path[8192];
+    CHECK(mining_path(work, "chest-title.png", path) == 0 &&
+          save_title_run(f, NULL, path, false, 1, 0) == 0 && reload_snapshot("chest-saved") == 0);
+    chest_placement_ready_x = 1;
+    chest_placement_ready_y = 64;
+    CHECK(chest_choose(f, &work->epochs[0], &work->epochs[1]) == 0 &&
+          inventory_field(f, 0, 54, 1) == 0 && inventory_field(f, 9, 0, 0) == 0 &&
+          chest_placement_cell(f, 0, 54) == 0 && chest_placement_cell(f, 1, 54) == 0 &&
+          chest_placement_cell(f, 2, 0) == 0 && chest_placement_tap(f, 1, 64, false) == 0 &&
+          chest_wait(f, &screen) == 0 && chest_slot(screen, 0, 264, 5) == 0 &&
+          chest_slot(screen, 27, 0, 0) == 0 && mining_capture(f, work, "chest-reloaded.png") == 0 &&
+          chest_close(f, screen) == 0 &&
+          save_title_host(f, "after-chest-reload", false, frame_id, canvas_id) == 0);
+    puts("CHEST_PLACEMENT placed=2 rejected=1 transferred=5 held=1 sdk-strafe=1 "
+         "source-field-repair=0");
+    puts("CHEST_SDK profile=placement ordinary-save-reload=1 epochs=2 source-field-repair=0");
+    return 0;
+}
+
 static int chest_run(fixture *f, mining_work *work, uint32_t *frame_id, uint32_t *canvas_id) {
     CHECK(save_title_host(f, "open", true, frame_id, canvas_id) == 0 &&
           mc_client_menu_loop_create(f->bootstrap, &f->loop) &&
           mc_client_menu_loop_inspect(f->loop, &f->state) &&
           repeat_statistics_controls(f, true) == 0 && ticks(f, 2) == 0 &&
           chest_choose(f, NULL, &work->epochs[0]) == 0);
+    if (strcmp(chest_profile, "placement") == 0)
+        return chest_placement_run(f, work, frame_id, canvas_id);
     const bool blocked = strcmp(chest_profile, "blocked") == 0;
     const bool dense = strcmp(chest_profile, "dense") == 0;
     const bool shutdown = strcmp(chest_profile, "shutdown") == 0;
@@ -388,7 +574,7 @@ static int chest_run(fixture *f, mining_work *work, uint32_t *frame_id, uint32_t
 int main(int argc, char **argv) {
     CHECK(argc == 4 && (strcmp(argv[3], "single") == 0 || strcmp(argv[3], "double") == 0 ||
                         strcmp(argv[3], "dense") == 0 || strcmp(argv[3], "blocked") == 0 ||
-                        strcmp(argv[3], "shutdown") == 0));
+                        strcmp(argv[3], "shutdown") == 0 || strcmp(argv[3], "placement") == 0));
     chest_profile = argv[3];
     fixture *f = calloc(1, sizeof(*f));
     CHECK(f != NULL);

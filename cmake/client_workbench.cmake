@@ -47,7 +47,7 @@ if(BUILD_TESTING)
         target_include_directories(mc_test_player_terminal_inventory PRIVATE
             src src/core/java src/platform/time)
         target_link_libraries(mc_test_player_terminal_inventory PRIVATE
-            mc_client_source_screens mc_client_source_screen_events mc_client_application_owner
+            mc_client_source_screens mc_client_application_owner
             mc_simulation mc_resources mc_persistence mc_c_atomics mc_math_classes mc_build_options)
         if(CMAKE_CXX_COMPILER_LOADED)
             set_property(TARGET mc_test_player_terminal_inventory PROPERTY LINKER_LANGUAGE CXX)
@@ -59,10 +59,14 @@ if(BUILD_TESTING)
         set_tests_properties(entity.player_terminal_inventory PROPERTIES
             LABELS "public;integration;entity;client;inventory;ownership" TIMEOUT 90)
         add_executable(mc_test_source_workbench tests/client/gui/test_source_workbench.c)
-        target_include_directories(mc_test_source_workbench PRIVATE src)
+        target_include_directories(mc_test_source_workbench PRIVATE src src/platform/time)
         target_link_libraries(mc_test_source_workbench PRIVATE mc_client_source_screens
-            mc_client_source_screen_events mc_client_application_owner mc_resources
+            mc_client_application_owner mc_resources
             mc_math_classes mc_simulation mc_build_options)
+        if(TARGET mc_client_source_screen_events)
+            target_link_libraries(mc_test_source_workbench PRIVATE mc_client_source_screen_events)
+            target_compile_definitions(mc_test_source_workbench PRIVATE MC_TEST_SCREEN_EVENT_CONTROLS=1)
+        endif()
         if(CMAKE_CXX_COMPILER_LOADED)
             set_property(TARGET mc_test_source_workbench PROPERTY LINKER_LANGUAGE CXX)
         endif()
@@ -74,7 +78,7 @@ if(BUILD_TESTING)
         target_include_directories(mc_test_workbench_interaction_original PRIVATE
             src src/core/java src/platform/time)
         target_link_libraries(mc_test_workbench_interaction_original PRIVATE
-            mc_client_source_screens mc_client_source_screen_events mc_client_application_owner
+            mc_client_source_screens mc_client_application_owner
             mc_simulation mc_resources mc_persistence mc_c_atomics mc_math_classes mc_build_options)
         if(CMAKE_CXX_COMPILER_LOADED)
             set_property(TARGET mc_test_workbench_interaction_original PROPERTY LINKER_LANGUAGE CXX)

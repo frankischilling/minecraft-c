@@ -32,12 +32,18 @@
 
 enum { PLACEMENT_RECEIPTS = 16, PLACEMENT_SOURCES = 4, PLACEMENT_QUERIES = 8 };
 
+typedef struct chest_placement_work {
+    mc_world_chest_placement_detail detail;
+    mc_world_runtime_acquisition_error *queries[24];
+} chest_placement_work;
+
 struct mc_world_placement_work {
     mc_world_runtime *world;
     mc_registry_classes *registry;
     mc_entity_classes *box_owner;
     mc_entity_bounds *box;
     mc_world_runtime_acquisition_error *queries[PLACEMENT_QUERIES];
+    chest_placement_work *chest_placement;
     mc_world_solid_support_detail *supports[5];
     mc_world_mutation_error *mutation;
     mc_world_step_error *step;
@@ -265,6 +271,13 @@ static bool capture(mc_world_placement_error *e) {
             (!copy_source(e, &w->queries[i]->source_chunk) ||
              !publication_receipts(e, &w->queries[i]->batch, &w->queries[i]->tile_entity)))
             return false;
+    if (w->chest_placement != NULL)
+        for (size_t i = 0; i < w->chest_placement->detail.query_count; ++i) {
+            mc_world_runtime_acquisition_error *query = w->chest_placement->queries[i];
+            if (!copy_source(e, &query->source_chunk) ||
+                !publication_receipts(e, &query->batch, &query->tile_entity))
+                return false;
+        }
     for (size_t i = 0; i < e->chest_tile_count; ++i)
         if (!publication_receipts(e, &w->chest_tiles[i]->batch, w->chest_tiles[i]))
             return false;
@@ -298,6 +311,28 @@ static void classify_receipts(mc_world_placement_error *e) {
         }
 }
 
+static bool query_value(mc_world_placement_error *e, mc_world_runtime *world,
+                        mc_world_runtime_acquisition_error *query, int32_t x, int32_t y, int32_t z,
+                        bool metadata, int32_t *out) {
+    e->acquisition = query;
+    mc_world_storage_error cause = {0};
+    const mc_world_storage_status status =
+        metadata ? mc_world_runtime_metadata_get_detailed(world, x, y, z, out, &cause, query)
+                 : mc_world_runtime_block_get_detailed(world, x, y, z, out, &cause, query);
+    if (status != MC_WORLD_STORAGE_OK) {
+        fail(e, status, cause.operation, true);
+        e->cause = cause;
+    }
+    if (!capture(e)) {
+        if (status == MC_WORLD_STORAGE_OK)
+            fail(e, e->cleanup.status, e->cleanup.operation, true);
+        return false;
+    }
+    if (status != MC_WORLD_STORAGE_OK)
+        classify_receipts(e);
+    return status == MC_WORLD_STORAGE_OK;
+}
+
 static bool value_get(mc_world_placement_error *e, mc_world_runtime *world, size_t index, int32_t x,
                       int32_t y, int32_t z, bool metadata, int32_t *out) {
     if (!hold_world(e, world))
@@ -313,26 +348,9 @@ static bool value_get(mc_world_placement_error *e, mc_world_runtime *world, size
              true);
         return false;
     }
-    e->acquisition = w->queries[index];
     e->queries[index] = w->queries[index];
     ++e->query_count;
-    mc_world_storage_error cause = {0};
-    const mc_world_storage_status status =
-        metadata
-            ? mc_world_runtime_metadata_get_detailed(world, x, y, z, out, &cause, w->queries[index])
-            : mc_world_runtime_block_get_detailed(world, x, y, z, out, &cause, w->queries[index]);
-    if (status != MC_WORLD_STORAGE_OK) {
-        fail(e, status, cause.operation, true);
-        e->cause = cause;
-    }
-    if (!capture(e)) {
-        if (status == MC_WORLD_STORAGE_OK)
-            fail(e, e->cleanup.status, e->cleanup.operation, true);
-        return false;
-    }
-    if (status != MC_WORLD_STORAGE_OK)
-        classify_receipts(e);
-    return status == MC_WORLD_STORAGE_OK;
+    return query_value(e, world, w->queries[index], x, y, z, metadata, out);
 }
 
 static bool block_get(mc_world_placement_error *e, mc_world_runtime *world, size_t index, int32_t x,
@@ -449,6 +467,7 @@ static bool torch_predicate(mc_world_placement_error *e, mc_world_runtime *world
 
 #include "placement/bed.inc"
 #include "placement/chest.inc"
+#include "placement/chest_predicate.inc"
 #include "placement/lever.inc"
 
 static const char *activation_class(mc_block_kind kind) {
@@ -679,6 +698,8 @@ static bool base_predicate(mc_world_placement_error *e, const mc_block *block,
     e->site = site(declaring, "a", "(Lfd;III)Z", 0);
     e->base = e->site;
     e->predicate_entered = e->base_entered = true;
+    if (block->kind == MC_BLOCK_CHEST)
+        return chest_predicate(e, block, world, x, y, z, out);
     if (block->kind == MC_BLOCK_FIRE) {
         if (!hold_world(e, world))
             return false;
@@ -1382,6 +1403,11 @@ bool mc_world_placement_error_retire(mc_world_placement_error *e) {
         free(w->sources[i]);
     for (size_t i = 0; i < PLACEMENT_QUERIES; ++i)
         free(w->queries[i]);
+    if (w->chest_placement != NULL) {
+        for (size_t i = 0; i < w->chest_placement->detail.query_count; ++i)
+            free(w->chest_placement->queries[i]);
+        free(w->chest_placement);
+    }
     for (size_t i = 0; i < e->support_query_count; ++i)
         free(w->supports[i]);
     for (size_t i = w->chest_view_count; i != 0; --i)

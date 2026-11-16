@@ -4,6 +4,7 @@ import gzip
 import hashlib
 import importlib.util
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -15,7 +16,9 @@ import zlib
 
 ROOT = Path(__file__).resolve().parents[3]
 sys.dont_write_bytecode = True
-PROFILES = frozenset(('single', 'double', 'dense', 'blocked', 'shutdown'))
+PROFILES = frozenset(('single', 'double', 'dense', 'blocked', 'shutdown', 'placement'))
+PLACEMENT = ('CHEST_PLACEMENT placed=2 rejected=1 transferred=5 held=1 '
+             'sdk-strafe=1 source-field-repair=0')
 OPEN_PREPARE = ('CHEST_OPEN_PREPARE source-unchanged=1 world-time-unchanged=1 '
                 'ticks-unchanged=1 stacks-unchanged=1 native-prefix-only=1')
 
@@ -81,13 +84,134 @@ def compound(value, message):
     return result
 
 
-def native_receipts(stdout, profile, monitor, stderr=''):
+def placement_receipts(lines, open_host, reload_frame, process_interval=None, evidence=None):
+    """Validate the authored placement branch, including its actual save transport."""
+    prefixes = ('CHEST_PLACE_TAP', 'CHEST_STRAFE', 'WORLD_SAVE_TITLE', 'WORLD_RELOAD_SNAPSHOT')
+    events = [(position, line) for position, line in enumerate(lines)
+              if line.startswith(prefixes) and not line.startswith('WORLD_SAVE_TITLE_HOST')]
+    require(events and all(open_host < position < reload_frame for position, _ in events),
+            'Placement actions and save precede the reloaded host')
+    at = 0
+
+    def take(pattern, message):
+        nonlocal at
+        require(at < len(events), message)
+        found = re.fullmatch(pattern, events[at][1])
+        require(found is not None, message)
+        at += 1
+        return found
+
+    def tap(x, y, placed):
+        row = take(r'CHEST_PLACE_TAP target=([0-9]+),([0-9]+),2 placed=([01]) '
+                   r'attempts=([1-9][0-9]?) clicks=1 block-use=1 admitted=([01]) '
+                   r'setters=([01]) sounds=([01]) count-stores=([01])',
+                   'Exact ordered placement/activation tap and counter deltas')
+        require(tuple(map(int, row.group(1, 2, 3))) == (x, y, placed) and
+                1 <= int(row[4]) <= 12 and all(int(row[i]) == placed for i in range(5, 9)),
+                'Declared tap target, outcome, bounded attempts and exact mutations')
+
+    def strafe(x, y):
+        count, position = 0, None
+        while at < len(events) and events[at][1].startswith('CHEST_STRAFE'):
+            row = take(r'CHEST_STRAFE attempt=([1-9][0-9]?) target=([12]),(63|64),2 '
+                       r'key=([AD]) x=([+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)'
+                       r'(?:[eE][+-]?[0-9]+)?)', 'Exact finite SDK strafe receipt')
+            count += 1
+            position = float(row[5])
+            require(count <= 20 and int(row[1]) == count and
+                    tuple(map(int, row.group(2, 3))) == (x, y) and math.isfinite(position),
+                    'Ordered nonempty bounded strafe group with contiguous attempts')
+        require(count > 0 and x + .1 < position < x + .9,
+                'SDK strafe finishes inside the next picked cell')
+
+    tap(0, 63, 1)
+    tap(0, 64, 0)
+    for x, y, placed in ((1, 63, 1), (2, 63, 0), (1, 64, 0)):
+        strafe(x, y)
+        tap(x, y, placed)
+
+    unsigned = r'(0|[1-9][0-9]{0,19})'
+    signed = r'(0|-?[1-9][0-9]{0,18})'
+
+    def numbers(pattern, message):
+        row = take(pattern, message)
+        values = tuple(map(int, row.groups()))
+        require(all(-(1 << 63) <= value < 1 << 64 for value in values), message)
+        return values
+
+    recovery = numbers(r'WORLD_SAVE_TITLE_RECOVERY focus-pauses=' + unsigned +
+                       r' keyboard-before-escape=' + unsigned + r' resumed=1',
+                       'Actual save/title recovery boundary')
+    require(recovery[0] <= 4, 'Bounded focus recovery count')
+    retries = 0
+    while at < len(events) and events[at][1].startswith('WORLD_SAVE_TITLE_AUTOPAUSE'):
+        pause = numbers(r'WORLD_SAVE_TITLE_AUTOPAUSE attempt=' + unsigned + r' focus-pauses=' +
+                        unsigned + r' old-oz-keys=2 real-id4=1 resumed=1 frames=' + unsigned,
+                        'Exact source automatic-pause recovery')
+        retries += 1
+        require(pause[0] == retries <= 3 and pause[1] == recovery[0] + 1 <= 4 and
+                1 <= pause[2] < 64, 'Bounded ordered source recovery attempts')
+        following = numbers(r'WORLD_SAVE_TITLE_RECOVERY focus-pauses=' + unsigned +
+                            r' keyboard-before-escape=' + unsigned + r' resumed=1',
+                            'Recovery precedes each retried Escape pair')
+        require(following == (pause[1], recovery[1] + 2), 'Recovery keyboard/count continuity')
+        recovery = following
+    escape = numbers(r'WORLD_SAVE_TITLE_ESCAPE keyboard-before=' + unsigned +
+                     r' keyboard-after=' + unsigned + r' fresh-pause=1 distinct-recovered=1',
+                     'Actual SDK Escape opens a fresh source Pause')
+    require(escape[0] == recovery[1] and escape[1] >= escape[0] + 2,
+            'Escape follows the final recovery keyboard boundary')
+    entry = numbers(r'WORLD_SAVE_TITLE_ENTRY mode=save-title frame=' + unsigned +
+                    r' eligible=' + unsigned + r' time=' + signed + r' size-before=' + signed +
+                    r' size-after=' + signed + r' entered=1 bytes=' + unsigned +
+                    r' copied-before-frame=1', 'Exact actual source save entry')
+    saved = numbers(r'WORLD_SAVE_TITLE mode=save-title escape-sdk=1 button-id=1 leave-pc=366 '
+                    r'i=1 f=1 h=1 new-title=1 old-renderer-world=1 old-effects-world=1 '
+                    r'original-load-returned=1 eligible=' + unsigned + r' time=' + signed +
+                    r' size-before=' + signed + r' size-after=' + signed + r' first=' + signed +
+                    r' last=' + signed + r' entry-frame=' + unsigned + r' entry-bytes=' + unsigned,
+                    'Exact actual successful source save/title continuation')
+    frame, eligible, world_time, before, after, entry_bytes = entry
+    require(0 <= frame < 64 and eligible > 0 and 0 <= world_time < 1 << 63 and
+            0 <= before <= after < 1 << 63 and 0 < entry_bytes <= 16 * 1048576 and
+            saved[:4] == (eligible, world_time, before, after) and saved[6:] == (frame, entry_bytes),
+            'Save entry and successful continuation share all observed fields')
+    first, last = saved[4:6]
+    require(0 < first <= last < 1 << 63, 'Ordered actual save timestamps')
+    if process_interval is not None:
+        require(type(process_interval) in (tuple, list) and len(process_interval) == 2 and
+                all(type(value) is int for value in process_interval) and
+                0 < process_interval[0] <= first <= last <= process_interval[1],
+                'Save timestamps fall inside this native process interval')
+    snapshot = numbers(r'WORLD_RELOAD_SNAPSHOT phase=chest-saved files=' + unsigned +
+                       r' bytes=' + unsigned + r' actual-file-copy=1',
+                       'Unique actual Chest save snapshot precedes reselection')
+    require(0 < snapshot[0] <= 1024 and 0 < snapshot[1] <= 16 * 1048576,
+            'Bounded actual source save snapshot receipt')
+    tap(1, 64, 0)
+    require(at == len(events), 'No duplicate, extra or moved placement/save records')
+    if evidence is not None:
+        entries = evidence / 'entries'
+        require(entries.is_dir() and not entries.is_symlink() and
+                {path.name for path in entries.iterdir()} == {f'frame-{i}' for i in range(frame + 1)},
+                'Exact native pre-save entry candidate inventory')
+        for index in range(frame + 1):
+            inventory = snapshot_files(entries / f'frame-{index}')
+            if index == frame:
+                require(sum(item['bytes'] for item in inventory.values()) == entry_bytes,
+                        'Selected actual entry bytes match source receipt')
+        inventory = snapshot_files(evidence / 'snapshots/chest-saved')
+        require((len(inventory), sum(item['bytes'] for item in inventory.values())) == snapshot,
+                'Retained actual snapshot files and bytes match native receipt')
+
+
+def native_receipts(stdout, profile, monitor, stderr='', *, process_interval=None, evidence=None):
     """Decode this process's exact protocol; synthetic inputs prove only the decoder."""
     require(profile in PROFILES and type(stdout) is str and stderr == '', 'Clean successful native transport')
     lines = stdout.splitlines()
     finish = [line for line in lines if line.startswith('CHEST_FINISH')]
     require(len(finish) == 1, 'Unique native Chest cleanup receipt')
-    row = re.fullmatch(r'CHEST_FINISH profile=(single|double|dense|blocked|shutdown) '
+    row = re.fullmatch(r'CHEST_FINISH profile=(single|double|dense|blocked|shutdown|placement) '
                        r'cleanup=1 windows-absent=1 checks=([1-9][0-9]{0,9})', finish[0])
     require(row is not None and row[1] == profile and int(row[2]) <= 4294967295,
             'Complete positive uint32 Chest cleanup receipt')
@@ -95,6 +219,9 @@ def native_receipts(stdout, profile, monitor, stderr=''):
     sdk = [line for line in lines if line.startswith('CHEST_SDK')]
     shutdown = [line for line in lines if line.startswith('CHEST_OPEN_SHUTDOWN')]
     prepared = [line for line in lines if line.startswith('CHEST_OPEN_PREPARE')]
+    placement = [line for line in lines if line.startswith('CHEST_PLACEMENT')]
+    require(placement == ([PLACEMENT] if profile == 'placement' else []),
+            'Declared SDK placement, transfer, neighbor and rejection receipt')
     if profile == 'shutdown':
         require(not sdk and shutdown == ['CHEST_OPEN_SHUTDOWN actual-open-hp=1 source-close=0'] and
                 prepared == [OPEN_PREPARE], 'Actual open Chest and passive terminal prefix receipts')
@@ -144,6 +271,12 @@ def native_receipts(stdout, profile, monitor, stderr=''):
             'Ordered native geometry and source-host lifecycle witnesses')
     require(host_positions[stages[1]] < lines.index(prepared[0] if profile == 'shutdown' else sdk[0]),
             'Continuation receipt follows the final live source-host witness')
+    if profile == 'placement':
+        require(host_positions[stages[1]] < lines.index(placement[0]) < lines.index(sdk[0]),
+                'Placement receipt follows actual reload host and precedes continuation')
+        placement_receipts(lines, host_positions['open'],
+                           monitor_positions[('after-chest-reload', 'frame')],
+                           process_interval, evidence)
     return {'checks': int(row[2]), 'window_ids': list(hosts[0][1]), 'monitor_witnesses': observations}
 
 
@@ -194,6 +327,8 @@ def image_gate(evidence, profile, first_millis):
         names.update(('chest-title.png', 'chest-reloaded.png'))
     if profile == 'dense':
         names.add('chest-dense-cursor.png')
+    if profile == 'placement':
+        names.update(('chest-placed-single.png', 'chest-placement-double.png', 'chest-third-rejected.png'))
     require({path.name for path in evidence.glob('chest-*.png')} == names, 'Exact fresh Chest image inventory')
     return {name: png_gate(evidence / name, first_millis) for name in sorted(names)}
 
@@ -253,7 +388,7 @@ def regions(world, directory, profile):
                     blocks[at + 1:at + 64] = bytes([3] * 63)
                     light[(at + 64) // 2:(at + 128) // 2] = bytes([255] * 32)
             tiles = []
-            if (x, z) == (0, 0):
+            if (x, z) == (0, 0) and profile != 'placement':
                 for bx in range(1 if profile == 'single' else 2):
                     at = (bx << 11) | (2 << 7) | 64
                     blocks[at] = 54
@@ -308,11 +443,27 @@ def saved_gate(decoder, directory, profile):
     require('Player' in data, 'Saved actual Player')
     player = compound(data['Player'], 'Saved actual Player Compound')
     dense, blocked, shutdown = profile == 'dense', profile == 'blocked', profile == 'shutdown'
+    placement = profile == 'placement'
     expected_player = [(slot, 264, 2, 0) for slot in range(36)] if dense else (
-        [] if blocked or shutdown else [(8, 266, 3, 0)])
+        [(0, 54, 1, 0)] if placement else [] if blocked or shutdown else [(8, 266, 3, 0)])
     require('Inventory' in player and typed(player.get('Dimension'), 3, 'Saved Player Dimension width') == 0,
             'Saved Overworld Player Inventory')
     require(slot_rows(player['Inventory']) == expected_player, 'Saved actual Player Inventory')
+    if placement:
+        position = typed(player.get('Pos'), 9, 'Saved placement Player Pos List')
+        rotation = typed(player.get('Rotation'), 9, 'Saved placement Player Rotation List')
+        require(type(position) is list and len(position) == 2 and position[0] == 6 and
+                type(position[1]) is list and len(position[1]) == 3 and
+                all(type(value) is int and 0 <= value < 1 << 64 for value in position[1]),
+                'Exact saved placement position widths')
+        pose = [struct.unpack('>d', struct.pack('>Q', value))[0] for value in position[1]]
+        require(1 < pose[0] < 2 and 64 < pose[1] < 66 and pose[2] == -.5,
+                'Saved SDK strafe position remains at the observed second Chest')
+        require(type(rotation) is list and len(rotation) == 2 and rotation[0] == 5 and
+                type(rotation[1]) is list and len(rotation[1]) == 2 and
+                all(type(value) is int and 0 <= value < 1 << 32 for value in rotation[1]) and
+                [struct.unpack('>f', struct.pack('>I', value))[0] for value in rotation[1]] == [0., 30.],
+                'Saved authored look remains unchanged through genuine strafe')
     path = directory / 'region/r.0.0.mcr'
     require(path.is_file() and not path.is_symlink(), 'Regular actual region file')
     file_size = path.stat().st_size
@@ -358,6 +509,11 @@ def saved_gate(decoder, directory, profile):
                 ((nibbles[at // 2] >> ((at & 1) * 4)) & 15) == 0,
                 'Actual saved Chest block and metadata')
         require(blocks[at + 1] == (1 if blocked and x == 1 else 0), 'Authored Chest obstruction state')
+    if placement:
+        at = (2 << 11) | (2 << 7) | 64
+        require(blocks[at] == 0 and ((nibbles[at // 2] >> ((at & 1) * 4)) & 15) == 0 and
+                blocks[at - 1] == 3 and blocks[at + 1] == 0,
+                'Rejected third Chest left actual air, support and metadata unchanged')
     entities = typed(level.get('Entities'), 9, 'Saved actual Entity list')
     require(type(entities) is list and len(entities) == 2 and type(entities[0]) is int and
             0 <= entities[0] <= 10 and type(entities[1]) is list and not entities[1],
@@ -377,7 +533,7 @@ def saved_gate(decoder, directory, profile):
     if not dense and not blocked and not shutdown:
         expected[(0, 64, 2)] = [(0, 264, 5, 0)]
     if profile != 'single':
-        expected[(1, 64, 2)] = authored_slots(dense, True)
+        expected[(1, 64, 2)] = [] if placement else authored_slots(dense, True)
     require(observed == expected, 'Saved actual Chest slots after source transfers')
     return {'player': expected_player, 'chests': [{'position': list(key), 'slots': value}
                                                 for key, value in sorted(observed.items())]}
@@ -398,7 +554,7 @@ def main():
     parser.add_argument('--executable', type=Path, required=True)
     parser.add_argument('--assets', type=Path, required=True)
     parser.add_argument('--artifacts', type=Path, required=True)
-    parser.add_argument('--profile', choices=('single', 'double', 'dense', 'blocked', 'shutdown'), required=True)
+    parser.add_argument('--profile', choices=sorted(PROFILES), required=True)
     args = parser.parse_args()
     require(os.name == 'nt', 'Native Windows Chest SDK fixture')
     world = module('chest_world', ROOT / 'tests/tools/client/test_world_selection_loop.py')
@@ -434,10 +590,12 @@ def main():
                 directory = saves / folder
                 directory.mkdir(parents=True)
                 wire = mining.mining_metadata(selected, world, name) if folder == 'alpha' else world.metadata(name, played, 19132)
-                if folder == 'alpha' and args.profile == 'dense':
+                if folder == 'alpha' and args.profile in ('dense', 'placement'):
                     old = world.tag(9, 'Inventory', b'\x0a' + bytes(4))
-                    new = world.tag(9, 'Inventory', b'\x0a' + struct.pack('>i', 36) +
-                                    b''.join(stack(world, slot, 264, 2) for slot in range(36)))
+                    rows = ([(slot, 264, 2) for slot in range(36)] if args.profile == 'dense'
+                            else [(0, 54, 3), (9, 264, 5)])
+                    new = world.tag(9, 'Inventory', b'\x0a' + struct.pack('>i', len(rows)) +
+                                    b''.join(stack(world, *row) for row in rows))
                     require(wire.count(old) == 1, 'One authored Player Inventory')
                     wire = wire.replace(old, new)
                 (directory / ('level.dat_old' if folder == 'bravo' else 'level.dat')).write_bytes(gzip.compress(wire, mtime=0))
@@ -460,7 +618,8 @@ def main():
             print(result.stdout, end='')
             print(result.stderr, end='', file=sys.stderr)
             require(result.returncode == 0, 'Native Chest SDK source loop returned')
-            report['native'] = native_receipts(result.stdout, args.profile, monitor, result.stderr)
+            report['native'] = native_receipts(result.stdout, args.profile, monitor, result.stderr,
+                process_interval=(first_millis, time.time_ns() // 1000000), evidence=evidence)
             report['images'] = image_gate(evidence, args.profile, first_millis)
             if args.profile != 'shutdown':
                 report['save'] = saved_gate(decoder, evidence / 'snapshots/chest-saved/alpha', args.profile)

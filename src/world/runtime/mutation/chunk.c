@@ -301,7 +301,8 @@ static bool hook(mc_world_chunk *chunk, int32_t id, int32_t x, int32_t y, int32_
             mc_world_mutation_chunk_null(execution, execution->setter_body, invoke_pc);
         bool completed;
         if (added && block != NULL &&
-            (block->kind == MC_BLOCK_FLOWING_FLUID || block->kind == MC_BLOCK_STILL_FLUID)) {
+            (block->kind == MC_BLOCK_FLOWING_FLUID || block->kind == MC_BLOCK_STILL_FLUID ||
+             block->kind == MC_BLOCK_CHEST)) {
             const mc_world_mutation_execution_context context = {.execution = execution->execution,
                                                                  .code_classes =
                                                                      execution->code_classes,

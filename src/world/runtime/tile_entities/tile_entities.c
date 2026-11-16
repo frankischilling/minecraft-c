@@ -3806,6 +3806,7 @@ typedef struct live_query_execution {
     mc_world_runtime_classes *factory_classes;
     mc_entity_tick_execution_site receiver_site;
     mc_world_runtime_execution_result *owned;
+    bool *addition_source_null;
 } live_query_execution;
 
 static bool live_query_close(const live_query_execution *query,
@@ -4013,6 +4014,16 @@ static bool live_block_added_held(mc_world_runtime *world, const mc_block *block
         return false;
     }
     error->bytecode = 18;
+    if (world == NULL) {
+        /* RW evaluates its World argument before virtual factory15, but it
+         * dereferences that captured value only at invocation18. */
+        if (query != NULL && query->addition_source_null != NULL)
+            *query->addition_source_null = true;
+        live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                  "TileEntity Block addition null World invocation receiver");
+        mc_tile_entity_release(tile_entity);
+        return false;
+    }
     bool completed;
     if (query == NULL)
         completed = live_world_set_held(world, x, y, z, tile_entity, error, NULL);
@@ -4234,8 +4245,8 @@ mc_world_storage_status mc_live_tile_entities_get_in_execution(
                                                receiver_site);
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     }
-    const live_query_execution query = {execution,       world,         code, defining_registry,
-                                        factory_classes, receiver_site, owned};
+    const live_query_execution query = {execution,       world,         code,  defining_registry,
+                                        factory_classes, receiver_site, owned, NULL};
     return live_world_get_run(world, x, y, z, out, error, &query);
 }
 
@@ -4301,6 +4312,36 @@ mc_world_storage_status mc_live_tile_entities_block_added(mc_world_runtime *worl
         return live_finish(NULL, frame, error);
     (void)live_block_added_held(world, block, x, y, z, &frame, NULL);
     mc_world_runtime_call_leave(world);
+    return live_finish(world, frame, error);
+}
+
+mc_world_storage_status mc_live_tile_entities_block_added_in_execution(
+    mc_entity_tick_execution *execution, mc_world_runtime *world,
+    mc_world_runtime_execution_code code, mc_registry_classes *defining_registry,
+    mc_world_runtime_classes *factory_classes, mc_entity_tick_execution_site receiver_site,
+    const mc_block *block, int32_t x, int32_t y, int32_t z, mc_live_tile_entity_error *error,
+    mc_world_runtime_execution_result *owned, bool *source_null) {
+    mc_live_tile_entity_error frame;
+    mc_live_tile_entities_error_init(&frame);
+    if (source_null != NULL)
+        *source_null = false;
+    if (execution == NULL || owned == NULL || source_null == NULL) {
+        live_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                  "TileEntity Block addition execution/result required");
+        mc_world_runtime_execution_result_note(owned, frame.status, frame.operation, receiver_site);
+        return live_finish(NULL, frame, error);
+    }
+    mc_world_access_failure_lease *unused = NULL;
+    const mc_world_storage_status admitted =
+        mc_world_execution_child_lease(execution, world, &unused);
+    if (admitted != MC_WORLD_STORAGE_OK) {
+        live_fail(&frame, admitted, "TileEntity Block addition evaluated World ownership");
+        mc_world_runtime_execution_result_note(owned, admitted, frame.operation, receiver_site);
+        return live_finish(NULL, frame, error);
+    }
+    const live_query_execution query = {execution,       world,         code,  defining_registry,
+                                        factory_classes, receiver_site, owned, source_null};
+    (void)live_block_added_held(world, block, x, y, z, &frame, &query);
     return live_finish(world, frame, error);
 }
 

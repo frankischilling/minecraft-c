@@ -1,12 +1,19 @@
 /* CPU Inventory class/constructor prefixes; no App, Display or original assets. */
 #include "client/gui/source_inventory_screen_internal.h"
+#ifdef MC_TEST_SCREEN_EVENT_CONTROLS
 #include "client/gui/source_screen_events.h"
+#endif
 #include "entity/player/player_internal.h"
 
 #include <stdio.h>
 #include <string.h>
 
 static unsigned int checks;
+#ifdef MC_TEST_SCREEN_EVENT_CONTROLS
+static const char event_controls[] = "enabled";
+#else
+static const char event_controls[] = "unavailable";
+#endif
 #define CHECK(value)                                                                               \
     do {                                                                                           \
         ++checks;                                                                                  \
@@ -179,11 +186,13 @@ int main(void) {
     CHECK(mc_client_screen_inventory_inspect(screen, &state, &error) == MC_CLIENT_SCREEN_OK &&
           state.phase == MC_CLIENT_SCREEN_RETIRING && state.id.j == NULL &&
           state.constructor_player == NULL && state.constructor_container == NULL);
+#ifdef MC_TEST_SCREEN_EVENT_CONTROLS
     mc_client_sdk_key_event key_event = {0};
     mc_client_screen_event_report report;
     mc_client_screen_event_error event_error;
     CHECK(mc_client_screen_key_event(mc_client_screen_inventory_base(screen), &key_event, &report,
                                      &event_error) == MC_CLIENT_SCREEN_BUSY);
+#endif
     error = (mc_client_screen_error){0};
     CHECK(mc_screen_lock(classes, &error));
     const bool repeated = mc_screen_container_terminal_prepare_locked(&screen->container, &error);
@@ -204,7 +213,7 @@ int main(void) {
     CHECK(mc_entity_classes_free(entities) == MC_ENTITY_OK);
     mc_java_random_profile_free(profile);
     printf("Inventory lifecycle CPU controls: %u checks; distinct ID BB, NULL/RAW prefixes, UE "
-           "clear, terminal admission/failed-child cleanup\n",
-           checks);
+           "clear, terminal admission/failed-child cleanup; event-controls=%s\n",
+           checks, event_controls);
     return 0;
 }

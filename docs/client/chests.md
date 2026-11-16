@@ -78,11 +78,13 @@ and compares
 source aliases, Stack identities/fields, time, ticks and disk snapshots across
 native preparation.
 
-The final Windows MSVC Release cohort passes all five profiles: single (1,135
-native checks), double (1,061), dense (981), blocked (814) and shutdown (1,142).
+The final Windows MSVC Release cohort passes six profiles: single (1,098
+native checks), double (1,075), dense (999), blocked (882), shutdown (1,171)
+and [placement](../world/chest-placement.md) (1,846).
 Each process checks its Frame and Canvas on physical monitor 2 and finishes with
 both windows absent. Twelve selected Windows CTests pass, including the eleven
-original-packet controls and fifteen GUI-observer controls. Five core inventory,
+original-packet controls. The current GUI-observer suite has 24 controls,
+including the placement protocol. Five core inventory,
 activation and terminal ownership tests also pass on GCC Debug with ASan, UBSan
 and leak detection. The texture control passes 3,034 checks, including Java
 integer overflow and callback-mutated field reads; its two native adapters do
@@ -110,8 +112,10 @@ CTest cases, enable `MC_ENABLE_CLIENT_CHEST_TESTS`,
 these controls, so they do not qualify audible output. The CTest cases share
 the desktop focus resource lock.
 
-Chest placement and its neighbor-placement rules, unrestricted generated Worlds,
-original-created save round trips, Linux visible input, sustained play, complete
-original pixels and FPS remain separate requirements. The later special-renderer
+[Chest placement](../world/chest-placement.md) now has separate original predicate
+observations and bounded Item/SDK controls. Unrestricted generated Worlds,
+all neighbor mutations, original-created save round trips, Linux visible input,
+sustained play, complete original pixels and FPS remain separate requirements.
+The later special-renderer
 TileEntity list/HashSet continuation also remains unfinished; passing Chest's
 no-special-renderer branch does not complete that route.

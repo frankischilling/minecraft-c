@@ -55,6 +55,21 @@ typedef struct mc_world_placement_site {
     unsigned int pc;
 } mc_world_placement_site;
 
+/* Retained E.a / private E.h child. Common placement queries remain in the
+ * enclosing frame. Each reached Chest getter has its own diagnostic and site;
+ * these are borrowed until checked retirement of the enclosing invocation. */
+typedef struct mc_world_chest_placement_detail {
+    mc_world_placement_site site, caller;
+    bool returned, value, helper_returned, helper_value;
+    int32_t neighbor_count;
+    size_t helper_count, query_count;
+    mc_world_placement_site query_sites[24];
+    unsigned int query_parent_pc[24]; /* Enclosing E.a invokespecial for E.h queries; otherwise0. */
+    int32_t query_x[24], query_y[24], query_z[24], query_values[24];
+    bool query_returned[24];
+    const mc_world_runtime_acquisition_error *queries[24];
+} mc_world_chest_placement_detail;
+
 /* Noncopyable, initially zero, caller-owned diagnostic. A reached call owns its
  * private child frames, exact World/Registry occurrences, pooled collision box
  * and failed callback producers until checked retirement. No source work is
@@ -88,12 +103,14 @@ struct mc_world_placement_error {
     mc_registry_error registry;
     mc_entity_status bounds_status;
     const mc_world_runtime_acquisition_error *acquisition;
-    /* Each placement-predicate ID/metadata query retains its frame in source order.
-     * acquisition remains the last reached query; no later read overwrites an
+    /* Common ID/metadata queries retain their frames in source order; E's
+     * predicate has the separate Chest child below. acquisition remains the
+     * last reached query across both frames. No later read overwrites an
      * earlier query's source or publication cause. The shared Ore step child
      * has its separate current/deepest query projection. Borrow until retirement. */
     const mc_world_runtime_acquisition_error *queries[8];
     size_t query_count;
+    const mc_world_chest_placement_detail *chest_placement;
     const mc_world_solid_support_detail *support_queries[5];
     size_t support_query_count;
     const mc_world_mutation_error *mutation;

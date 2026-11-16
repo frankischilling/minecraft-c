@@ -259,12 +259,12 @@
       "sha256": "7ad9fb3f900dc93e9f0be3bddb07cf8a0dbe8d034370f9ce6d7edd7ff4860fc3"
     },
     "src/world/runtime/tile_entities/execution_internal.h": {
-      "bytes": 4017,
-      "sha256": "87113a203ce7c02a51683061839f96e80d318d4dbea8e2c2c7077e94c4466b9e"
+      "bytes": 5137,
+      "sha256": "7ed00a398aa780d9df7db9bac1542dc4465babc10fac489ba0148573b901a286"
     },
     "src/world/runtime/tile_entities/tile_entities.c": {
-      "bytes": 282762,
-      "sha256": "93d3f50d1d7e84781a0dae3e8973c285e65d1147f6775dc69271bfe1efac4747"
+      "bytes": 285032,
+      "sha256": "d70a3eaba9e390a851eddbe2db84be790bca39ca6f4f526e48bcc30c56788a65"
     },
     "tests/world/runtime/world_access/test_kernel_execution.c": {
       "bytes": 25462,

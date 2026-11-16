@@ -357,12 +357,16 @@ static bool block_added(mc_world_runtime *world, const mc_block *block, int32_t 
                        : unjoined(owned, "Falling Block addition requires owned execution");
         case MC_BLOCK_NOTE_BLOCK:
         case MC_BLOCK_MOB_SPAWNER:
-        case MC_BLOCK_CHEST:
         case MC_BLOCK_SIGN:
         case MC_BLOCK_JUKEBOX:
             return owned == NULL
                        ? tile_entity_hook(world, block, x, y, z, true, error)
                        : unjoined(owned, "Block TileEntity hook requires owned execution");
+        case MC_BLOCK_CHEST:
+            return owned == NULL ? tile_entity_hook(world, block, x, y, z, true, error)
+                   : call != NULL && block->classes->options.side == MC_REGISTRY_CLIENT
+                       ? mc_world_mutation_execution_chest_added(call, world, block, x, y, z, error)
+                       : unjoined(owned, "Chest addition requires retained client caller");
         case MC_BLOCK_RAIL:
         case MC_BLOCK_DETECTOR_RAIL:
             return owned == NULL ? mc_world_mutation_rail_added_hook(world, block, x, y, z, error)

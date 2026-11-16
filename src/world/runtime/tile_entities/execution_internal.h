@@ -57,4 +57,19 @@ mc_world_storage_status mc_live_tile_entities_get_in_execution(
     mc_entity_tick_execution_site lazy_receiver_site, int32_t, int32_t, int32_t, mc_tile_entity **,
     mc_live_tile_entity_error *, mc_world_runtime_execution_result *);
 
+/* Actual RW.c World argument is already owned by the caller's exact current B.
+ * Reuse the SAME base6 / virtual factory15 / World install18 body. Defining
+ * Registry, factory classes and kernel code remain caller values; none comes
+ * from mutable Chunk.d. The stable fresh child error and initialized canonical
+ * result belong to that caller through checked native unwind. Do not reset the
+ * result, retry Source, close B or fall back to the legacy route here. NULL B
+ * still reaches the actual factory15 before its invocation failure18. The
+ * required source_null output is true only for that reached NULL receiver,
+ * never for native admission, factory or acquisition failure. */
+mc_world_storage_status mc_live_tile_entities_block_added_in_execution(
+    mc_entity_tick_execution *, mc_world_runtime *, mc_world_runtime_execution_code,
+    mc_registry_classes *defining_registry, mc_world_runtime_classes *factory_classes,
+    mc_entity_tick_execution_site receiver_site, const mc_block *, int32_t, int32_t, int32_t,
+    mc_live_tile_entity_error *, mc_world_runtime_execution_result *, bool *source_null);
+
 #endif

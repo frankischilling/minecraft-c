@@ -725,6 +725,7 @@ static bool placement_real_n_control(fixture *f, mc_chunk_state *chunk, mc_entit
 }
 #endif
 
+#include "chest_placement_controls.inc"
 #include "dye_controls.inc"
 #include "farming_controls.inc"
 #include "food_controls.inc"
@@ -764,14 +765,19 @@ static bool use_controls(fixture *f) {
 }
 
 int main(int argc, char **argv) {
-    if (argc != 3) {
-        fputs("usage: item-use-controls RESOURCES EMPTY_WORLD_DIRECTORY\n", stderr);
+    const bool chest = argc == 4 && strcmp(argv[3], "--chest-placement") == 0;
+    if (argc != 3 && !chest) {
+        fputs("usage: item-use-controls RESOURCES EMPTY_WORLD_DIRECTORY [--chest-placement]\n",
+              stderr);
         return 2;
     }
     mc_math_trig_init(&trig);
     fixture f = {0};
-    if (!setup(&f, argv[1], argv[2]) || !use_controls(&f) || !teardown(&f))
+    if (!setup(&f, argv[1], argv[2]) ||
+        !(chest ? chest_placement_controls(&f) : use_controls(&f)) || !teardown(&f))
         return 1;
-    printf("PASS: %u Item use source-order/ownership checks\n", checks);
+    printf("PASS: %u %s checks\n", checks,
+           chest ? "Chest Item placement/source-order/ownership"
+                 : "Item use source-order/ownership");
     return 0;
 }

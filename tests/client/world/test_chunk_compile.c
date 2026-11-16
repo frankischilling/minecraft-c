@@ -51,7 +51,8 @@ static bool bound_dispatch_controls(picking_fixture *f) {
         for (int32_t metadata = 0; metadata < 16; ++metadata) {
             CHECK(mc_chunk_nibbles_set(f->chunks[0]->data->metadata, MC_CHUNK_NIBBLE_BYTES, 8, 64,
                                        8, metadata));
-            mc_client_render_blocks fields;
+            mc_client_render_blocks fields = {
+                0}; /* Java NEW defaults precede constructor stores. */
             mc_client_render_blocks_construct_fields(&fields, cache, true);
             mc_cv_context c = {.fields = &fields, .cache = cache, .registry = f->base.registry};
             bool out = true;
@@ -96,7 +97,7 @@ static bool bound_dispatch_controls(picking_fixture *f) {
         if (ids[i] != 26) {
             CHECK(mc_block_render_bounds((mc_block *)block, .25f, .25f, .25f, .75f, .75f, .75f) ==
                   MC_REGISTRY_OK);
-            mc_client_render_blocks fields;
+            mc_client_render_blocks fields = {0};
             mc_client_render_blocks_construct_fields(&fields, NULL, true);
             mc_cv_context c = {.fields = &fields, .cache = cache, .registry = f->base.registry};
             bool out = true;
@@ -124,7 +125,7 @@ static bool bound_dispatch_controls(picking_fixture *f) {
         CHECK(mc_registry_block_get(f->base.registry, chest_ids[i], &block, NULL) ==
                   MC_REGISTRY_OK &&
               block != NULL);
-        mc_client_render_blocks fields;
+        mc_client_render_blocks fields = {0};
         mc_client_render_blocks_construct_fields(&fields, cache, true);
         mc_cv_context c = {.fields = &fields, .cache = cache, .registry = f->base.registry};
         int32_t out = 123;

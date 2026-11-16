@@ -3,6 +3,10 @@ if(BUILD_TESTING)
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/inventory/chest_container/test_packet.py")
     set_tests_properties(tools.chest_container_packet PROPERTIES
         LABELS "public;unit;tools;inventory;reference" TIMEOUT 60)
+    add_test(NAME tools.chest_placement_packet COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/chest_placement/test_packet.py")
+    set_tests_properties(tools.chest_placement_packet PROPERTIES
+        LABELS "public;unit;tools;world;reference" TIMEOUT 60)
     add_test(NAME tools.chest_gui_controls COMMAND Python3::Interpreter -B
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_chest_controls.py")
     set_tests_properties(tools.chest_gui_controls PROPERTIES
@@ -72,7 +76,7 @@ if(BUILD_TESTING AND TARGET mc_test_world_selection_loop)
     endif()
     if(WIN32 AND MC_ENABLE_CLIENT_CHEST_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS
        AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
-        foreach(_chest IN ITEMS single double dense blocked shutdown)
+        foreach(_chest IN ITEMS single double dense blocked shutdown placement)
             add_test(NAME "client.chest_${_chest}" COMMAND Python3::Interpreter -B
                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_chest_loop.py"
                 --executable "$<TARGET_FILE:mc_test_chest_loop>"

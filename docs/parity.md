@@ -23,8 +23,10 @@ transfers, drawing, save/reselection and open-screen terminal ownership controls
 Five authored Windows monitor-2 profiles, twelve selected Windows tests and
 five GCC sanitizer tests pass. The separate 111-call original component packet
 covers controlled inventory receivers and screen construction, without concrete
-original Chest/World or pixel qualification. Placement, unrestricted play and
-full Chest parity remain incomplete.
+original Chest/World or pixel qualification. Separate
+[placement evidence](world/chest-placement.md) now records 64 original predicate
+calls and actual query traces, with native Item and prepared SDK controls.
+Unrestricted play and full Chest parity remain incomplete.
 
 The ordinary setter [success-diagnostic optimization](performance/quiet-setter-acquisition.md)
 retains the same acquisition coordinator and complete failure path. Ten fresh

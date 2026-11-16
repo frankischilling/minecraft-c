@@ -11,6 +11,7 @@
 #include "../registry_execution_internal.h"
 #include "../scheduling_execution_internal.h"
 #include "../solid_support_execution_internal.h"
+#include "../tile_entities/execution_internal.h"
 #include "chunk_execution_internal.h"
 #include "drops/execution_internal.h"
 #include "mc/core/java/java.h"
@@ -43,12 +44,15 @@ struct mc_world_mutation_execution_call {
     mc_world_plant_execution *plant;
     mc_world_schedule_execution *schedule;
     mc_world_material_execution *material;
+    mc_live_tile_entity_error *tile_added;
     mutation_presentation *presentation;
     mc_world_storage_status support_status;
     mc_world_storage_status plant_status;
     mc_world_storage_status schedule_status;
     mc_world_storage_status material_status;
-    bool active, close_done, support_returned, plant_returned;
+    mc_world_storage_status tile_added_status;
+    bool active, close_done, support_returned, plant_returned, tile_added_completed;
+    bool tile_added_source_null;
 };
 
 static const mc_entity_tick_execution_site metadata_site = {"fd", "d", "(IIII)V", 0};
@@ -933,6 +937,25 @@ static bool admit_owned(const mc_world_mutation_execution_context *context, mc_w
     return status == MC_WORLD_STORAGE_OK;
 }
 
+/* A Block hook receives World as an ordinary nullable argument. Only this
+ * Chest RW body may evaluate factory15 before invoking that value at18;
+ * nullable World method receivers retain admit_owned's earlier refusal. */
+static bool admit_nullable_chest_added(const mc_world_mutation_execution_context *context,
+                                       mc_world_mutation_execution_call **slot,
+                                       const mc_world_mutation_error *out,
+                                       mc_world_access_failure_lease **lease,
+                                       mc_entity_tick_execution_site site) {
+    if (context == NULL || context->result == NULL)
+        return false;
+    if (context->execution == NULL || context->execution->identity != context->execution ||
+        context->code_classes == NULL || slot == NULL || *slot != NULL || out == NULL) {
+        mc_world_runtime_execution_result_note(context->result, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "Chest hook execution and fresh outputs", site);
+        return false;
+    }
+    return current(context, NULL, lease, site);
+}
+
 static mc_world_mutation_execution_call *
 start_owned(const mc_world_mutation_execution_context *context,
             mc_world_mutation_execution_call **slot, mc_world_access_failure_lease *lease,
@@ -1086,7 +1109,10 @@ bool mc_world_mutation_execution_added(const mc_world_mutation_execution_context
                                        mc_entity_tick_execution_site site) {
     mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
     mc_world_access_failure_lease *lease = NULL;
-    if (!admit_owned(context, world, true, slot, &raw, error, &lease, site))
+    const bool nullable_chest = world == NULL && block != NULL && block->kind == MC_BLOCK_CHEST &&
+                                block->classes->options.side == MC_REGISTRY_CLIENT;
+    if (!(nullable_chest ? admit_nullable_chest_added(context, slot, error, &lease, site)
+                         : admit_owned(context, world, true, slot, &raw, error, &lease, site)))
         return false;
     mc_world_mutation_execution_call *call = start_owned(context, slot, lease, site);
     if (call == NULL)
@@ -1188,10 +1214,19 @@ bool mc_world_mutation_execution_source_null(const mc_world_mutation_execution_c
         return false;
     if (mc_world_mutation_execution_source_null(call->child, site))
         return true;
-    if (call->chunk == NULL || !call->chunk->source_null)
-        return false;
-    *site = call->chunk->source_null_site;
-    return true;
+    if (call->chunk != NULL) {
+        if (mc_world_mutation_execution_source_null(call->chunk->hook, site))
+            return true;
+        if (call->chunk->source_null) {
+            *site = call->chunk->source_null_site;
+            return true;
+        }
+    }
+    if (call->tile_added_source_null) {
+        *site = (mc_entity_tick_execution_site){"rw", "c", "(Lfd;III)V", 18};
+        return true;
+    }
+    return false;
 }
 
 const mc_world_notification_execution *
@@ -1249,6 +1284,75 @@ mc_world_mutation_execution_failed_material(const mc_world_mutation_execution_ca
     return call->material;
 }
 
+bool mc_world_mutation_execution_chest_added(mc_world_mutation_execution_call *call,
+                                             mc_world_runtime *world, const mc_block *block,
+                                             int32_t x, int32_t y, int32_t z,
+                                             mc_world_mutation_error *error) {
+    const mc_entity_tick_execution_site site = {"rw", "c", "(Lfd;III)V", 18};
+    if (!mc_world_mutation_execution_current(call, world, site))
+        return false;
+    if (call->tile_added != NULL || error == NULL || block == NULL ||
+        block->kind != MC_BLOCK_CHEST) {
+        mc_world_runtime_execution_result_note(call->context.result, MC_WORLD_STORAGE_BUSY,
+                                               "Chest addition requires fresh retained child",
+                                               site);
+        return false;
+    }
+    call->tile_added = calloc(1, sizeof(*call->tile_added));
+    if (call->tile_added == NULL) {
+        mc_world_runtime_execution_result_note(call->context.result,
+                                               MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                                               "World retained Chest addition child", site);
+        return false;
+    }
+    call->tile_added_status = mc_live_tile_entities_block_added_in_execution(
+        call->context.execution, world, call->context.code,
+        mc_world_mutation_execution_registry(call), call->context.code_classes, site, block, x, y,
+        z, call->tile_added, call->context.result, &call->tile_added_source_null);
+    call->tile_added_completed = call->tile_added_status == MC_WORLD_STORAGE_OK &&
+                                 call->context.result->ownership_status == MC_WORLD_STORAGE_OK;
+    if (call->tile_added_completed) {
+        error->hook_class = NULL;
+        error->hook_bytecode = 0;
+        return true;
+    }
+    /* Copy the actual returned child before any caller error projection. Its
+     * source status is independent of the canonical native ownership result. */
+    error->tile_entity = *call->tile_added;
+    error->registry = call->tile_added->registry;
+    error->entity = call->tile_added->entity;
+    error->publication = call->tile_added->publication;
+    error->status = call->tile_added_status;
+    error->operation = call->tile_added->operation;
+    error->cause = call->tile_added->cause;
+    error->hook_class = "rw";
+    error->hook_method = "c";
+    error->hook_bytecode = call->tile_added->caller_bytecode != 0
+                               ? call->tile_added->caller_bytecode
+                               : call->tile_added->bytecode;
+    return false;
+}
+
+const mc_live_tile_entity_error *
+mc_world_mutation_execution_failed_tile_added(const mc_world_mutation_execution_call *call,
+                                              mc_world_storage_status *raw) {
+    if (call == NULL || call->active || raw == NULL)
+        return NULL;
+    const mc_live_tile_entity_error *child =
+        mc_world_mutation_execution_failed_tile_added(call->child, raw);
+    if (child != NULL)
+        return child;
+    if (call->chunk != NULL) {
+        child = mc_world_mutation_execution_failed_tile_added(call->chunk->hook, raw);
+        if (child != NULL)
+            return child;
+    }
+    if (call->tile_added == NULL || call->tile_added_completed)
+        return NULL;
+    *raw = call->tile_added_status;
+    return call->tile_added;
+}
+
 mc_world_storage_status
 mc_world_mutation_execution_native_close(mc_world_mutation_execution_call *call) {
     if (call == NULL || call->close_done)
@@ -1291,6 +1395,7 @@ mc_world_mutation_execution_retire(mc_world_mutation_execution_call **slot) {
     free(call->support);
     free(call->plant);
     free(call->material);
+    free(call->tile_added);
     free(call->presentation);
     free(call);
     *slot = NULL;

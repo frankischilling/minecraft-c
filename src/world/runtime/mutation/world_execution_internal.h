@@ -76,6 +76,17 @@ typedef struct mc_world_material_execution mc_world_material_execution;
 const mc_world_material_execution *
 mc_world_mutation_execution_failed_material(const mc_world_mutation_execution_call *,
                                             mc_world_storage_status *);
+/* Only the reached Chest RW addition is joined. Its nullable World argument
+ * reaches factory15 first and reports a successful factory's NULL invocation
+ * through execution_source_null at RW18. Its complete live Tile child
+ * remains in this mutation call while the one canonical result retains any
+ * selected loader/pending/native-close work. Borrow expires at call retire. */
+bool mc_world_mutation_execution_chest_added(mc_world_mutation_execution_call *, mc_world_runtime *,
+                                             const mc_block *, int32_t, int32_t, int32_t,
+                                             mc_world_mutation_error *);
+const mc_live_tile_entity_error *
+mc_world_mutation_execution_failed_tile_added(const mc_world_mutation_execution_call *,
+                                              mc_world_storage_status *);
 bool mc_world_mutation_execution_set(mc_world_mutation_execution_call *, mc_world_runtime *,
                                      int32_t, int32_t, int32_t, int32_t, bool *,
                                      mc_world_mutation_error *, mc_entity_tick_execution_site);

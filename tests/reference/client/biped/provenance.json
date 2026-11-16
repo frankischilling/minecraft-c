@@ -326,8 +326,8 @@
       "sha256": "0792285188cb96e23f2b0d815bb2cfb5c3b3161791a92ead79ef7ca6273ed063"
     },
     "src/client/render/model_graph_internal.h": {
-      "bytes": 3509,
-      "sha256": "602dcae266d86f197c5d42801fc796de10e6e8d03df76a041f718a39155ce7fb"
+      "bytes": 3668,
+      "sha256": "6b4835db638ceb5ef0c00df14fca632b9846ae3678e8747b2b0ea9cf556481f8"
     },
     "src/client/render/model_graph_trace.inc": {
       "bytes": 2643,

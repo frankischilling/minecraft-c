@@ -1,0 +1,1109 @@
+{
+  "schema": 1,
+  "scope": "Predeclared direct E.a(FD,III)Z and private h inputs; results are captured, never generated.",
+  "canonical_chunks": [
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      1,
+      0
+    ],
+    [
+      1,
+      1
+    ]
+  ],
+  "cases": [
+    {
+      "name": "neighbors-0",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [],
+      "null_world": false
+    },
+    {
+      "name": "neighbors-1",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          7,
+          64,
+          8
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "neighbors-2",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          9,
+          64,
+          8
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "neighbors-3",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          7,
+          64,
+          8
+        ],
+        [
+          9,
+          64,
+          8
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "neighbors-4",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          8,
+          64,
+          7
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "neighbors-5",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          7,
+          64,
+          8
+        ],
+        [
+          8,
+          64,
+          7
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "neighbors-6",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          9,
+          64,
+          8
+        ],
+        [
+          8,
+          64,
+          7
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "neighbors-7",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          7,
+          64,
+          8
+        ],
+        [
+          9,
+          64,
+          8
+        ],
+        [
+          8,
+          64,
+          7
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "neighbors-8",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          8,
+          64,
+          9
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "neighbors-9",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          7,
+          64,
+          8
+        ],
+        [
+          8,
+          64,
+          9
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "neighbors-10",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          9,
+          64,
+          8
+        ],
+        [
+          8,
+          64,
+          9
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "neighbors-11",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          7,
+          64,
+          8
+        ],
+        [
+          9,
+          64,
+          8
+        ],
+        [
+          8,
+          64,
+          9
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "neighbors-12",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          8,
+          64,
+          7
+        ],
+        [
+          8,
+          64,
+          9
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "neighbors-13",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          7,
+          64,
+          8
+        ],
+        [
+          8,
+          64,
+          7
+        ],
+        [
+          8,
+          64,
+          9
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "neighbors-14",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          9,
+          64,
+          8
+        ],
+        [
+          8,
+          64,
+          7
+        ],
+        [
+          8,
+          64,
+          9
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "neighbors-15",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          7,
+          64,
+          8
+        ],
+        [
+          9,
+          64,
+          8
+        ],
+        [
+          8,
+          64,
+          7
+        ],
+        [
+          8,
+          64,
+          9
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "extend-west-west",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          7,
+          64,
+          8
+        ],
+        [
+          6,
+          64,
+          8
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "extend-west-north",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          7,
+          64,
+          8
+        ],
+        [
+          7,
+          64,
+          7
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "extend-west-south",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          7,
+          64,
+          8
+        ],
+        [
+          7,
+          64,
+          9
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "extend-east-east",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          9,
+          64,
+          8
+        ],
+        [
+          10,
+          64,
+          8
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "extend-east-north",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          9,
+          64,
+          8
+        ],
+        [
+          9,
+          64,
+          7
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "extend-east-south",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          9,
+          64,
+          8
+        ],
+        [
+          9,
+          64,
+          9
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "extend-north-west",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          8,
+          64,
+          7
+        ],
+        [
+          7,
+          64,
+          7
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "extend-north-east",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          8,
+          64,
+          7
+        ],
+        [
+          9,
+          64,
+          7
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "extend-north-north",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          8,
+          64,
+          7
+        ],
+        [
+          8,
+          64,
+          6
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "extend-south-west",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          8,
+          64,
+          9
+        ],
+        [
+          7,
+          64,
+          9
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "extend-south-east",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          8,
+          64,
+          9
+        ],
+        [
+          9,
+          64,
+          9
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "extend-south-south",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [
+        [
+          8,
+          64,
+          9
+        ],
+        [
+          8,
+          64,
+          10
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "occupied-1",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 1,
+      "chests": [],
+      "null_world": false
+    },
+    {
+      "name": "occupied-1-west",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 1,
+      "chests": [
+        [
+          7,
+          64,
+          8
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "occupied-7",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 7,
+      "chests": [],
+      "null_world": false
+    },
+    {
+      "name": "occupied-7-west",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 7,
+      "chests": [
+        [
+          7,
+          64,
+          8
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "occupied-8",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 8,
+      "chests": [],
+      "null_world": false
+    },
+    {
+      "name": "occupied-8-west",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 8,
+      "chests": [
+        [
+          7,
+          64,
+          8
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "occupied-54",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 54,
+      "chests": [],
+      "null_world": false
+    },
+    {
+      "name": "occupied-54-west",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 54,
+      "chests": [
+        [
+          7,
+          64,
+          8
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "chunk-edge-15-empty",
+      "operation": 0,
+      "x": 15,
+      "y": 64,
+      "z": 15,
+      "target_id": 0,
+      "chests": [],
+      "null_world": false
+    },
+    {
+      "name": "chunk-edge-15-west",
+      "operation": 0,
+      "x": 15,
+      "y": 64,
+      "z": 15,
+      "target_id": 0,
+      "chests": [
+        [
+          14,
+          64,
+          15
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "chunk-edge-15-east",
+      "operation": 0,
+      "x": 15,
+      "y": 64,
+      "z": 15,
+      "target_id": 0,
+      "chests": [
+        [
+          16,
+          64,
+          15
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "chunk-edge-15-north",
+      "operation": 0,
+      "x": 15,
+      "y": 64,
+      "z": 15,
+      "target_id": 0,
+      "chests": [
+        [
+          15,
+          64,
+          14
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "chunk-edge-15-south",
+      "operation": 0,
+      "x": 15,
+      "y": 64,
+      "z": 15,
+      "target_id": 0,
+      "chests": [
+        [
+          15,
+          64,
+          16
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "chunk-edge-16-empty",
+      "operation": 0,
+      "x": 16,
+      "y": 64,
+      "z": 16,
+      "target_id": 0,
+      "chests": [],
+      "null_world": false
+    },
+    {
+      "name": "chunk-edge-16-west",
+      "operation": 0,
+      "x": 16,
+      "y": 64,
+      "z": 16,
+      "target_id": 0,
+      "chests": [
+        [
+          15,
+          64,
+          16
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "chunk-edge-16-east",
+      "operation": 0,
+      "x": 16,
+      "y": 64,
+      "z": 16,
+      "target_id": 0,
+      "chests": [
+        [
+          17,
+          64,
+          16
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "chunk-edge-16-north",
+      "operation": 0,
+      "x": 16,
+      "y": 64,
+      "z": 16,
+      "target_id": 0,
+      "chests": [
+        [
+          16,
+          64,
+          15
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "chunk-edge-16-south",
+      "operation": 0,
+      "x": 16,
+      "y": 64,
+      "z": 16,
+      "target_id": 0,
+      "chests": [
+        [
+          16,
+          64,
+          17
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "height--2147483648",
+      "operation": 0,
+      "x": 8,
+      "y": -2147483648,
+      "z": 8,
+      "target_id": 1,
+      "chests": [],
+      "null_world": false
+    },
+    {
+      "name": "height--1",
+      "operation": 0,
+      "x": 8,
+      "y": -1,
+      "z": 8,
+      "target_id": 1,
+      "chests": [],
+      "null_world": false
+    },
+    {
+      "name": "height-0",
+      "operation": 0,
+      "x": 8,
+      "y": 0,
+      "z": 8,
+      "target_id": 1,
+      "chests": [],
+      "null_world": false
+    },
+    {
+      "name": "height-127",
+      "operation": 0,
+      "x": 8,
+      "y": 127,
+      "z": 8,
+      "target_id": 1,
+      "chests": [],
+      "null_world": false
+    },
+    {
+      "name": "height-128",
+      "operation": 0,
+      "x": 8,
+      "y": 128,
+      "z": 8,
+      "target_id": 1,
+      "chests": [],
+      "null_world": false
+    },
+    {
+      "name": "height-2147483647",
+      "operation": 0,
+      "x": 8,
+      "y": 2147483647,
+      "z": 8,
+      "target_id": 1,
+      "chests": [],
+      "null_world": false
+    },
+    {
+      "name": "x--2147483648",
+      "operation": 0,
+      "x": -2147483648,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [],
+      "null_world": false
+    },
+    {
+      "name": "x-2147483647",
+      "operation": 0,
+      "x": 2147483647,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [],
+      "null_world": false
+    },
+    {
+      "name": "null-world",
+      "operation": 0,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [],
+      "null_world": true
+    },
+    {
+      "name": "helper-empty",
+      "operation": 1,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [],
+      "null_world": false
+    },
+    {
+      "name": "helper-isolated",
+      "operation": 1,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 54,
+      "chests": [],
+      "null_world": false
+    },
+    {
+      "name": "helper-west",
+      "operation": 1,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 54,
+      "chests": [
+        [
+          7,
+          64,
+          8
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "helper-east",
+      "operation": 1,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 54,
+      "chests": [
+        [
+          9,
+          64,
+          8
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "helper-north",
+      "operation": 1,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 54,
+      "chests": [
+        [
+          8,
+          64,
+          7
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "helper-south",
+      "operation": 1,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 54,
+      "chests": [
+        [
+          8,
+          64,
+          9
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "helper-multiple",
+      "operation": 1,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 54,
+      "chests": [
+        [
+          7,
+          64,
+          8
+        ],
+        [
+          9,
+          64,
+          8
+        ],
+        [
+          8,
+          64,
+          7
+        ],
+        [
+          8,
+          64,
+          9
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "helper-nonchest",
+      "operation": 1,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 1,
+      "chests": [
+        [
+          7,
+          64,
+          8
+        ],
+        [
+          9,
+          64,
+          8
+        ],
+        [
+          8,
+          64,
+          7
+        ],
+        [
+          8,
+          64,
+          9
+        ]
+      ],
+      "null_world": false
+    },
+    {
+      "name": "helper-null-world",
+      "operation": 1,
+      "x": 8,
+      "y": 64,
+      "z": 8,
+      "target_id": 0,
+      "chests": [],
+      "null_world": true
+    }
+  ]
+}

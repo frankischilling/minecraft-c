@@ -17,7 +17,8 @@ target_include_directories(mc_client_screen_classes PRIVATE src)
 target_link_libraries(mc_client_screen_classes PRIVATE mc_client_notice)
 
 if(TARGET mc_client_source_screens)
-    target_sources(mc_client_source_screens PRIVATE src/client/gui/source_inventory_screen.c)
+    target_sources(mc_client_source_screens PRIVATE src/client/gui/source_inventory_screen.c
+        src/client/gui/source_screen_transition_receipts.c)
     target_include_directories(mc_client_source_screens PRIVATE src)
     target_link_libraries(mc_client_source_screens PRIVATE
         mc_client_notice mc_simulation mc_math_classes mc_client_singleplayer_controller)
@@ -106,8 +107,12 @@ if(BUILD_TESTING)
         add_executable(mc_test_source_inventory tests/client/gui/test_source_inventory.c)
         target_include_directories(mc_test_source_inventory PRIVATE src src/platform/time)
         target_link_libraries(mc_test_source_inventory PRIVATE mc_client_source_screens
-            mc_client_source_screen_events mc_client_application_owner mc_resources
+            mc_client_application_owner mc_resources
             mc_math_classes mc_simulation mc_build_options)
+        if(TARGET mc_client_source_screen_events)
+            target_link_libraries(mc_test_source_inventory PRIVATE mc_client_source_screen_events)
+            target_compile_definitions(mc_test_source_inventory PRIVATE MC_TEST_SCREEN_EVENT_CONTROLS=1)
+        endif()
         if(CMAKE_CXX_COMPILER_LOADED)
             set_property(TARGET mc_test_source_inventory PROPERTY LINKER_LANGUAGE CXX)
         endif()

@@ -19,7 +19,7 @@ def digest(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--executable", type=Path, required=True)
-    parser.add_argument("--mode", choices=("world", "chest", "chest_terminal", "callbacks", "item", "controller"), required=True)
+    parser.add_argument("--mode", choices=("world", "chest", "chest_terminal", "chest_predicate", "callbacks", "item", "chest_item", "controller"), required=True)
     parser.add_argument("--work-dir", type=Path, required=True)
     args = parser.parse_args()
     executable = args.executable.resolve(strict=True)
@@ -46,6 +46,9 @@ def main():
     elif args.mode == "chest_terminal":
         arguments = ["world-chest-terminal", str(world).encode("utf-8").hex()]
         marker = r"PASS: ([1-9][0-9]*) native World Chest terminal ownership checks"
+    elif args.mode == "chest_predicate":
+        arguments = ["world-chest-placement", str(world).encode("utf-8").hex()]
+        marker = r"PASS: ([1-9][0-9]*) World Chest placement predicate/source-order/ownership checks"
     elif args.mode == "callbacks":
         source = Path(__file__).resolve().parents[1] / "world/test_source_saving.py"
         spec = importlib.util.spec_from_file_location("placement_authored_save", source)
@@ -61,6 +64,9 @@ def main():
     elif args.mode == "item":
         arguments = [str(resources), str(world)]
         marker = r"PASS: ([1-9][0-9]*) Item use source-order/ownership checks"
+    elif args.mode == "chest_item":
+        arguments = [str(resources), str(world), "--chest-placement"]
+        marker = r"PASS: ([1-9][0-9]*) Chest Item placement/source-order/ownership checks"
     else:
         arguments = [str(resources), str(world)]
         marker = r"PASS: ([1-9][0-9]*) controller-use/RA-reset checks"

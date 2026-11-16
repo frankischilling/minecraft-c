@@ -1,0 +1,3598 @@
+{
+  "schema": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "streams": {
+    "interpreter": [
+      {
+        "index": 0,
+        "name": "neighbors-0",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 1,
+        "name": "neighbors-1",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 2,
+        "name": "neighbors-2",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 3,
+        "name": "neighbors-3",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 4,
+        "name": "neighbors-4",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 5,
+        "name": "neighbors-5",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 6,
+        "name": "neighbors-6",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 7,
+        "name": "neighbors-7",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 8,
+        "name": "neighbors-8",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 9,
+        "name": "neighbors-9",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 10,
+        "name": "neighbors-10",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 11,
+        "name": "neighbors-11",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 12,
+        "name": "neighbors-12",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 13,
+        "name": "neighbors-13",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 14,
+        "name": "neighbors-14",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 15,
+        "name": "neighbors-15",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 16,
+        "name": "extend-west-west",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 17,
+        "name": "extend-west-north",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 18,
+        "name": "extend-west-south",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 19,
+        "name": "extend-east-east",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 20,
+        "name": "extend-east-north",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 21,
+        "name": "extend-east-south",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 22,
+        "name": "extend-north-west",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 23,
+        "name": "extend-north-east",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 24,
+        "name": "extend-north-north",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 25,
+        "name": "extend-south-west",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 26,
+        "name": "extend-south-east",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 27,
+        "name": "extend-south-south",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 28,
+        "name": "occupied-1",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 29,
+        "name": "occupied-1-west",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 30,
+        "name": "occupied-7",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 31,
+        "name": "occupied-7-west",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 32,
+        "name": "occupied-8",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 33,
+        "name": "occupied-8-west",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 34,
+        "name": "occupied-54",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 35,
+        "name": "occupied-54-west",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 36,
+        "name": "chunk-edge-15-empty",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 37,
+        "name": "chunk-edge-15-west",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 38,
+        "name": "chunk-edge-15-east",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 39,
+        "name": "chunk-edge-15-north",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 40,
+        "name": "chunk-edge-15-south",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 41,
+        "name": "chunk-edge-16-empty",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 42,
+        "name": "chunk-edge-16-west",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 43,
+        "name": "chunk-edge-16-east",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 44,
+        "name": "chunk-edge-16-north",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 45,
+        "name": "chunk-edge-16-south",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 46,
+        "name": "height--2147483648",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 47,
+        "name": "height--1",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 48,
+        "name": "height-0",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 49,
+        "name": "height-127",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 50,
+        "name": "height-128",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 51,
+        "name": "height-2147483647",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 52,
+        "name": "x--2147483648",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 53,
+        "name": "x-2147483647",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 54,
+        "name": "null-world",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 55,
+        "name": "helper-empty",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 56,
+        "name": "helper-isolated",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 57,
+        "name": "helper-west",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 58,
+        "name": "helper-east",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 59,
+        "name": "helper-north",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 60,
+        "name": "helper-south",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 61,
+        "name": "helper-multiple",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 62,
+        "name": "helper-nonchest",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 63,
+        "name": "helper-null-world",
+        "before": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "03b0a9a8d568",
+          false,
+          "0000000000000000"
+        ]
+      }
+    ],
+    "default": [
+      {
+        "index": 0,
+        "name": "neighbors-0",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 1,
+        "name": "neighbors-1",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 2,
+        "name": "neighbors-2",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 3,
+        "name": "neighbors-3",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 4,
+        "name": "neighbors-4",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 5,
+        "name": "neighbors-5",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 6,
+        "name": "neighbors-6",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 7,
+        "name": "neighbors-7",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 8,
+        "name": "neighbors-8",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 9,
+        "name": "neighbors-9",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 10,
+        "name": "neighbors-10",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 11,
+        "name": "neighbors-11",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 12,
+        "name": "neighbors-12",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 13,
+        "name": "neighbors-13",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 14,
+        "name": "neighbors-14",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 15,
+        "name": "neighbors-15",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 16,
+        "name": "extend-west-west",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 17,
+        "name": "extend-west-north",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 18,
+        "name": "extend-west-south",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 19,
+        "name": "extend-east-east",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 20,
+        "name": "extend-east-north",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 21,
+        "name": "extend-east-south",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 22,
+        "name": "extend-north-west",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 23,
+        "name": "extend-north-east",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 24,
+        "name": "extend-north-north",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 25,
+        "name": "extend-south-west",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 26,
+        "name": "extend-south-east",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 27,
+        "name": "extend-south-south",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 28,
+        "name": "occupied-1",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 29,
+        "name": "occupied-1-west",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 30,
+        "name": "occupied-7",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 31,
+        "name": "occupied-7-west",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 32,
+        "name": "occupied-8",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 33,
+        "name": "occupied-8-west",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 34,
+        "name": "occupied-54",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 35,
+        "name": "occupied-54-west",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 36,
+        "name": "chunk-edge-15-empty",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 37,
+        "name": "chunk-edge-15-west",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 38,
+        "name": "chunk-edge-15-east",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 39,
+        "name": "chunk-edge-15-north",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 40,
+        "name": "chunk-edge-15-south",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 41,
+        "name": "chunk-edge-16-empty",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 42,
+        "name": "chunk-edge-16-west",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 43,
+        "name": "chunk-edge-16-east",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 44,
+        "name": "chunk-edge-16-north",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 45,
+        "name": "chunk-edge-16-south",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 46,
+        "name": "height--2147483648",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 47,
+        "name": "height--1",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 48,
+        "name": "height-0",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 49,
+        "name": "height-127",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 50,
+        "name": "height-128",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 51,
+        "name": "height-2147483647",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 52,
+        "name": "x--2147483648",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 53,
+        "name": "x-2147483647",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 54,
+        "name": "null-world",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 55,
+        "name": "helper-empty",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 56,
+        "name": "helper-isolated",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 57,
+        "name": "helper-west",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 58,
+        "name": "helper-east",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 59,
+        "name": "helper-north",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 60,
+        "name": "helper-south",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 61,
+        "name": "helper-multiple",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 62,
+        "name": "helper-nonchest",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 63,
+        "name": "helper-null-world",
+        "before": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "4198d590b89c",
+          false,
+          "0000000000000000"
+        ]
+      }
+    ],
+    "trace-interpreter": [
+      {
+        "index": 0,
+        "name": "neighbors-0",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 1,
+        "name": "neighbors-1",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 2,
+        "name": "neighbors-2",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 3,
+        "name": "neighbors-3",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 4,
+        "name": "neighbors-4",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 5,
+        "name": "neighbors-5",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 6,
+        "name": "neighbors-6",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 7,
+        "name": "neighbors-7",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 8,
+        "name": "neighbors-8",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 9,
+        "name": "neighbors-9",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 10,
+        "name": "neighbors-10",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 11,
+        "name": "neighbors-11",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 12,
+        "name": "neighbors-12",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 13,
+        "name": "neighbors-13",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 14,
+        "name": "neighbors-14",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 15,
+        "name": "neighbors-15",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 16,
+        "name": "extend-west-west",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 17,
+        "name": "extend-west-north",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 18,
+        "name": "extend-west-south",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 19,
+        "name": "extend-east-east",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 20,
+        "name": "extend-east-north",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 21,
+        "name": "extend-east-south",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 22,
+        "name": "extend-north-west",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 23,
+        "name": "extend-north-east",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 24,
+        "name": "extend-north-north",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 25,
+        "name": "extend-south-west",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 26,
+        "name": "extend-south-east",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 27,
+        "name": "extend-south-south",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 28,
+        "name": "occupied-1",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 29,
+        "name": "occupied-1-west",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 30,
+        "name": "occupied-7",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 31,
+        "name": "occupied-7-west",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 32,
+        "name": "occupied-8",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 33,
+        "name": "occupied-8-west",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 34,
+        "name": "occupied-54",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 35,
+        "name": "occupied-54-west",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 36,
+        "name": "chunk-edge-15-empty",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 37,
+        "name": "chunk-edge-15-west",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 38,
+        "name": "chunk-edge-15-east",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 39,
+        "name": "chunk-edge-15-north",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 40,
+        "name": "chunk-edge-15-south",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 41,
+        "name": "chunk-edge-16-empty",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 42,
+        "name": "chunk-edge-16-west",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 43,
+        "name": "chunk-edge-16-east",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 44,
+        "name": "chunk-edge-16-north",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 45,
+        "name": "chunk-edge-16-south",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 46,
+        "name": "height--2147483648",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 47,
+        "name": "height--1",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 48,
+        "name": "height-0",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 49,
+        "name": "height-127",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 50,
+        "name": "height-128",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 51,
+        "name": "height-2147483647",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 52,
+        "name": "x--2147483648",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 53,
+        "name": "x-2147483647",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 54,
+        "name": "null-world",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 55,
+        "name": "helper-empty",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 56,
+        "name": "helper-isolated",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 57,
+        "name": "helper-west",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 58,
+        "name": "helper-east",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 59,
+        "name": "helper-north",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 60,
+        "name": "helper-south",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 61,
+        "name": "helper-multiple",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 62,
+        "name": "helper-nonchest",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 63,
+        "name": "helper-null-world",
+        "before": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "f1cd071593b0",
+          false,
+          "0000000000000000"
+        ]
+      }
+    ],
+    "trace-default": [
+      {
+        "index": 0,
+        "name": "neighbors-0",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 1,
+        "name": "neighbors-1",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 2,
+        "name": "neighbors-2",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 3,
+        "name": "neighbors-3",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 4,
+        "name": "neighbors-4",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 5,
+        "name": "neighbors-5",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 6,
+        "name": "neighbors-6",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 7,
+        "name": "neighbors-7",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 8,
+        "name": "neighbors-8",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 9,
+        "name": "neighbors-9",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 10,
+        "name": "neighbors-10",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 11,
+        "name": "neighbors-11",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 12,
+        "name": "neighbors-12",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 13,
+        "name": "neighbors-13",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 14,
+        "name": "neighbors-14",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 15,
+        "name": "neighbors-15",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 16,
+        "name": "extend-west-west",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 17,
+        "name": "extend-west-north",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 18,
+        "name": "extend-west-south",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 19,
+        "name": "extend-east-east",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 20,
+        "name": "extend-east-north",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 21,
+        "name": "extend-east-south",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 22,
+        "name": "extend-north-west",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 23,
+        "name": "extend-north-east",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 24,
+        "name": "extend-north-north",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 25,
+        "name": "extend-south-west",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 26,
+        "name": "extend-south-east",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 27,
+        "name": "extend-south-south",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 28,
+        "name": "occupied-1",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 29,
+        "name": "occupied-1-west",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 30,
+        "name": "occupied-7",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 31,
+        "name": "occupied-7-west",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 32,
+        "name": "occupied-8",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 33,
+        "name": "occupied-8-west",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 34,
+        "name": "occupied-54",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 35,
+        "name": "occupied-54-west",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 36,
+        "name": "chunk-edge-15-empty",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 37,
+        "name": "chunk-edge-15-west",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 38,
+        "name": "chunk-edge-15-east",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 39,
+        "name": "chunk-edge-15-north",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 40,
+        "name": "chunk-edge-15-south",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 41,
+        "name": "chunk-edge-16-empty",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 42,
+        "name": "chunk-edge-16-west",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 43,
+        "name": "chunk-edge-16-east",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 44,
+        "name": "chunk-edge-16-north",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 45,
+        "name": "chunk-edge-16-south",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 46,
+        "name": "height--2147483648",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 47,
+        "name": "height--1",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 48,
+        "name": "height-0",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 49,
+        "name": "height-127",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 50,
+        "name": "height-128",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 51,
+        "name": "height-2147483647",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 52,
+        "name": "x--2147483648",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 53,
+        "name": "x-2147483647",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 54,
+        "name": "null-world",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 55,
+        "name": "helper-empty",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 56,
+        "name": "helper-isolated",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 57,
+        "name": "helper-west",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 58,
+        "name": "helper-east",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 59,
+        "name": "helper-north",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 60,
+        "name": "helper-south",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 61,
+        "name": "helper-multiple",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 62,
+        "name": "helper-nonchest",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      },
+      {
+        "index": 63,
+        "name": "helper-null-world",
+        "before": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ],
+        "after": [
+          "a47be1a1d8c8",
+          false,
+          "0000000000000000"
+        ]
+      }
+    ]
+  }
+}

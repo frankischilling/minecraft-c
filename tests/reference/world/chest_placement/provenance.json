@@ -1,0 +1,417 @@
+{
+  "schema": 1,
+  "client_jar_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "capture": {
+    "id": "capture-04",
+    "sha256": "98fb2a94b44240d47ae5f3e2fc9248a2f472760f113fac0bff30acb0a1a8e310",
+    "status": "PASS",
+    "ordinary_targets": 2,
+    "traced_targets": 2,
+    "cases_per_target": 64
+  },
+  "execution_helpers": {
+    "ChestPlacementObservation.java": "83f7ea09beb78b4b4488389caeba5b780ac4b89cccd7261a5868b91d5e9787e5",
+    "ChestPlacementJdi.java": "e1e748e5ad147a948ea651aba78726578352b2d60e7636250a8e935ce5a50098",
+    "capture_reference.py": "4233e5e011e9ffa099de6a2876e9b38796cd22f8d37cc2e8cc3ae33621beb47f",
+    "cases.json": "47fb61230d3421df960c973ef5c722e18cc79a0a7a2f5c183ebb15224adf5d9d"
+  },
+  "publication_helpers": {
+    "packet.py": "a2de3561bf02c697e1ebbf66b8f8796ca16d219e2e90260f48a2d7635caaa471",
+    "publish.py": "316809da6f5b77ec7af6cfcf40fcfae5278fe580dd3b25f6244eab1e9f426497",
+    "projection.py": "981fb27f2222918f6e1365dad87e399ccb34ebf2a9dc734a53a7816faf913133",
+    "test_packet.py": "ccdaee6669133194bcc433df9fa85b6f5885b348b4f72da420f6affbecd57b84",
+    "README.md": "870ed9b0bbb8574d46c64a750a84207bb7f4366fb46f9d760fb9a6742cb492e9"
+  },
+  "outputs": {
+    "finite.json": "db50c5c7efb3be95ea4b629d4942fcc2cc8fb5aafb0099e37a69d70c62323942",
+    "traces.json": "cfb0bdfc943d20ef88d4b7ec0c463e49f6abfabaf81d5d58baae87550922ebbf",
+    "random.json": "0f63effa44ee86723b8bfbfb687144706271a8fe88cb1e77d26f066a3dfd2d72",
+    "source-pins.json": "275f0d8617f18364e45e7ad54f058dbe5566b173ab1749835146c7412a17304c",
+    "native-observations.h": "5807344f7fa799eab6da445700c7fc118995e8392e2796a9c77b729a813208fd",
+    "query-observations.h": "68bd009657e6fdcbafde5c4df47b652715c77bc4ebf23962ff6bc39409d4ba97"
+  },
+  "captured_input_fingerprints": {
+    "C:\\Users\\admin\\minecraft\\b1.7.3.jar": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018",
+    "C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javac.exe": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\server\\jvm.dll": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce",
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\lib\\modules": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\world\\chest_placement\\ChestPlacementObservation.java": "83f7ea09beb78b4b4488389caeba5b780ac4b89cccd7261a5868b91d5e9787e5",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\world\\chest_placement\\ChestPlacementJdi.java": "e1e748e5ad147a948ea651aba78726578352b2d60e7636250a8e935ce5a50098",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\world\\chest_placement\\cases.json": "47fb61230d3421df960c973ef5c722e18cc79a0a7a2f5c183ebb15224adf5d9d",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\world\\chest_placement\\capture_reference.py": "4233e5e011e9ffa099de6a2876e9b38796cd22f8d37cc2e8cc3ae33621beb47f",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\client\\controller\\capture.py": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\client\\controller\\classfile.py": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b",
+    "C:\\Users\\admin\\minecraft\\tests\\reference\\client\\picking\\observe.py": "7dc92c800767da251a33c2da082e77f95d75d39544d12ec2207029c7dacb8c23",
+    "C:\\Users\\admin\\minecraft\\tests\\tools\\client\\test_picking.py": "d79b65d5740cd1e2846e4398a517604f20bb5b02696f052126ecf1c64eaad854",
+    "C:\\Users\\admin\\minecraft\\.local\\chest-placement-reference\\capture-04\\profiles.tsv": "be76d03733dc369d2c7b46d556e25635d3e25f55c6661c2165e5bc8fe96dc18b"
+  },
+  "compiled_helpers": {
+    "classes\\ChestPlacementJdi$Drain.class": "2cfe86d4003ab47bb9c27788d1a0ecfbd68ce78bdd2de47da79b55f482a64b89",
+    "classes\\ChestPlacementJdi.class": "5a3b6b2052d3a8dc9497d79a9d46cfefc9362660788dbf6ee494be9f7e0db3d1",
+    "classes\\ChestPlacementObservation$1.class": "3191a731d514cf606796a7530bc1fead2c0e67b8eee4deb0a256fee70b4394af",
+    "classes\\ChestPlacementObservation$Observer.class": "88df20a3fde492233fe1cee49b403851bd41485323379d8f1bcc85ca01c87a71",
+    "classes\\ChestPlacementObservation$Snapshot.class": "8b609a0e56e5d2a2272eda5ab17310c678ed51746ce0a7f87140268522975e50",
+    "classes\\ChestPlacementObservation.class": "63c15315df6b9cb639c168997280d9b4f456db87e93ba82d7d85829f77385b86"
+  },
+  "world_inputs": [
+    {
+      "level.dat": {
+        "bytes": 162,
+        "sha256": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283"
+      },
+      "region/r.0.0.mcr": {
+        "bytes": 24576,
+        "sha256": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a"
+      },
+      "session.lock": {
+        "bytes": 8,
+        "sha256": "1f68b90274f1bb075fd342378aba11ea80a68c3ae18d1c2a7472964dd616254b"
+      }
+    },
+    {
+      "level.dat": {
+        "bytes": 162,
+        "sha256": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283"
+      },
+      "region/r.0.0.mcr": {
+        "bytes": 24576,
+        "sha256": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a"
+      },
+      "session.lock": {
+        "bytes": 8,
+        "sha256": "1f68b90274f1bb075fd342378aba11ea80a68c3ae18d1c2a7472964dd616254b"
+      }
+    },
+    {
+      "level.dat": {
+        "bytes": 162,
+        "sha256": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283"
+      },
+      "region/r.0.0.mcr": {
+        "bytes": 24576,
+        "sha256": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a"
+      },
+      "session.lock": {
+        "bytes": 8,
+        "sha256": "1f68b90274f1bb075fd342378aba11ea80a68c3ae18d1c2a7472964dd616254b"
+      }
+    },
+    {
+      "level.dat": {
+        "bytes": 162,
+        "sha256": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283"
+      },
+      "region/r.0.0.mcr": {
+        "bytes": 24576,
+        "sha256": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a"
+      },
+      "session.lock": {
+        "bytes": 8,
+        "sha256": "1f68b90274f1bb075fd342378aba11ea80a68c3ae18d1c2a7472964dd616254b"
+      }
+    }
+  ],
+  "world_outputs": [
+    {
+      "level.dat": {
+        "bytes": 162,
+        "sha256": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283"
+      },
+      "region/r.0.0.mcr": {
+        "bytes": 24576,
+        "sha256": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a"
+      },
+      "session.lock": {
+        "bytes": 8,
+        "sha256": "b72d187181f1b0bd8b9a6a4acd63de472e5a0e9a030d049309bc469cbc19356c"
+      }
+    },
+    {
+      "level.dat": {
+        "bytes": 162,
+        "sha256": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283"
+      },
+      "region/r.0.0.mcr": {
+        "bytes": 24576,
+        "sha256": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a"
+      },
+      "session.lock": {
+        "bytes": 8,
+        "sha256": "0c91d0e6a6dce9655bdddd8a2913d30db32fb89ee28605475b937bd3026fc6d2"
+      }
+    },
+    {
+      "level.dat": {
+        "bytes": 162,
+        "sha256": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283"
+      },
+      "region/r.0.0.mcr": {
+        "bytes": 24576,
+        "sha256": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a"
+      },
+      "session.lock": {
+        "bytes": 8,
+        "sha256": "9022a7220c00d6ac0e90dd17687fe1babbe36b96116d55b5e0b91b7b07bbad02"
+      }
+    },
+    {
+      "level.dat": {
+        "bytes": 162,
+        "sha256": "1c1b669fe6b8f058b7f55eedefbfbcba789a712a2487d2bfba0c53a143f3a283"
+      },
+      "region/r.0.0.mcr": {
+        "bytes": 24576,
+        "sha256": "b75d9548381231609a3806569c64e9d0dc9f73d98ad45b5c02dcd5043cbd092a"
+      },
+      "session.lock": {
+        "bytes": 8,
+        "sha256": "fdd981ed286bc1b7118f0c46ee89ef116ed9f7d119eefbc0b425aaf674eaea4f"
+      }
+    }
+  ],
+  "transport": {
+    "compile": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javac.exe",
+        "-encoding",
+        "UTF-8",
+        "-implicit:none",
+        "-classpath",
+        "C:\\Users\\admin\\minecraft\\.local\\chest-placement-reference\\capture-04\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+        "-d",
+        "C:\\Users\\admin\\minecraft\\.local\\chest-placement-reference\\capture-04\\classes",
+        "C:\\Users\\admin\\minecraft\\tests\\reference\\world\\chest_placement\\ChestPlacementObservation.java",
+        "C:\\Users\\admin\\minecraft\\tests\\reference\\world\\chest_placement\\ChestPlacementJdi.java"
+      ],
+      "exit": 0,
+      "timeout_seconds": 60,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "compile.stdout",
+      "stderr_file": "compile.stderr",
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    "java_version": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+        "-version"
+      ],
+      "exit": 0,
+      "timeout_seconds": 20,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "java-version.stdout",
+      "stderr_file": "java-version.stderr",
+      "stdout_bytes": 0,
+      "stderr_bytes": 190,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "60aba3fe0d7bf59797df0e8cb7af289d0843e978623fafea7e3ae5ef925b6622",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    "javac_version": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\javac.exe",
+        "-version"
+      ],
+      "exit": 0,
+      "timeout_seconds": 20,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "javac-version.stdout",
+      "stderr_file": "javac-version.stderr",
+      "stdout_bytes": 15,
+      "stderr_bytes": 0,
+      "stdout_sha256": "825ce50fb46a3e8bd8d38f6da5bf8449d442a9f210d9d38c83709234bfa8ee9c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    "interpreter": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+        "-Xint",
+        "-Xverify:all",
+        "-Xmx256m",
+        "-Djava.awt.headless=true",
+        "-Djava.security.manager=allow",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "-classpath",
+        "C:\\Users\\admin\\minecraft\\.local\\chest-placement-reference\\capture-04\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+        "ChestPlacementObservation",
+        "C:\\Users\\admin\\minecraft\\b1.7.3.jar",
+        "C:\\Users\\admin\\minecraft\\.local\\chest-placement-reference\\capture-04\\interpreter\\world",
+        "C:\\Users\\admin\\minecraft\\.local\\chest-placement-reference\\capture-04\\profiles.tsv"
+      ],
+      "exit": 0,
+      "timeout_seconds": 120,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "interpreter.stdout",
+      "stderr_file": "interpreter.stderr",
+      "stdout_bytes": 33165,
+      "stderr_bytes": 403,
+      "stdout_sha256": "9a43579f4b37d3da2d96f782a267fd84816bfff4d40e3aaf1dd5b13d4250649e",
+      "stderr_sha256": "dd3fb158be0e316dd7f57ad6a86d5bf70e1a5e696cc7e4efc8d9f0eef8e4a83d",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    "default": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+        "-Xverify:all",
+        "-Xmx256m",
+        "-Djava.awt.headless=true",
+        "-Djava.security.manager=allow",
+        "--add-opens=java.base/java.util=ALL-UNNAMED",
+        "-classpath",
+        "C:\\Users\\admin\\minecraft\\.local\\chest-placement-reference\\capture-04\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+        "ChestPlacementObservation",
+        "C:\\Users\\admin\\minecraft\\b1.7.3.jar",
+        "C:\\Users\\admin\\minecraft\\.local\\chest-placement-reference\\capture-04\\default\\world",
+        "C:\\Users\\admin\\minecraft\\.local\\chest-placement-reference\\capture-04\\profiles.tsv"
+      ],
+      "exit": 0,
+      "timeout_seconds": 120,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "default.stdout",
+      "stderr_file": "default.stderr",
+      "stdout_bytes": 33165,
+      "stderr_bytes": 403,
+      "stdout_sha256": "7b74f905674c6a57b1e491ca4f6a9fd738853e2c02b6b3dc3f60d7dae455ace9",
+      "stderr_sha256": "dd3fb158be0e316dd7f57ad6a86d5bf70e1a5e696cc7e4efc8d9f0eef8e4a83d",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    "trace-interpreter": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+        "-classpath",
+        "C:\\Users\\admin\\minecraft\\.local\\chest-placement-reference\\capture-04\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+        "ChestPlacementJdi",
+        "C:\\Users\\admin\\minecraft\\.local\\chest-placement-reference\\capture-04\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+        "C:\\Users\\admin\\minecraft\\b1.7.3.jar",
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot",
+        "C:\\Users\\admin\\minecraft\\.local\\chest-placement-reference\\capture-04\\trace-interpreter-jdi",
+        "C:\\Users\\admin\\minecraft\\.local\\chest-placement-reference\\capture-04\\trace-interpreter\\world",
+        "C:\\Users\\admin\\minecraft\\.local\\chest-placement-reference\\capture-04\\profiles.tsv",
+        "interpreter"
+      ],
+      "exit": 0,
+      "timeout_seconds": 180,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "trace-interpreter.stdout",
+      "stderr_file": "trace-interpreter.stderr",
+      "stdout_bytes": 54,
+      "stderr_bytes": 0,
+      "stdout_sha256": "c6d333434c661bc9b07fb07bff06fb89d4fd3ea49845ef6c87c0b021b663e00d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    },
+    "trace-default": {
+      "command": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
+        "-classpath",
+        "C:\\Users\\admin\\minecraft\\.local\\chest-placement-reference\\capture-04\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+        "ChestPlacementJdi",
+        "C:\\Users\\admin\\minecraft\\.local\\chest-placement-reference\\capture-04\\classes;C:\\Users\\admin\\minecraft\\b1.7.3.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;C:\\Users\\admin\\AppData\\Roaming\\.minecraft\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar",
+        "C:\\Users\\admin\\minecraft\\b1.7.3.jar",
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot",
+        "C:\\Users\\admin\\minecraft\\.local\\chest-placement-reference\\capture-04\\trace-default-jdi",
+        "C:\\Users\\admin\\minecraft\\.local\\chest-placement-reference\\capture-04\\trace-default\\world",
+        "C:\\Users\\admin\\minecraft\\.local\\chest-placement-reference\\capture-04\\profiles.tsv",
+        "default"
+      ],
+      "exit": 0,
+      "timeout_seconds": 180,
+      "timed_out": false,
+      "pipe_capture_complete": true,
+      "reader_errors": {},
+      "output_overflow": false,
+      "stdout_file": "trace-default.stdout",
+      "stderr_file": "trace-default.stderr",
+      "stdout_bytes": 54,
+      "stderr_bytes": 0,
+      "stdout_sha256": "c6d333434c661bc9b07fb07bff06fb89d4fd3ea49845ef6c87c0b021b663e00d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_limit": 4194304,
+      "stderr_limit": 1048576
+    }
+  },
+  "trace_artifacts": {
+    "trace-interpreter": {
+      "target.stdout": {
+        "bytes": 33165,
+        "sha256": "e7e7284cc950001c30dae02495c9b706ce5dedd3ac601b0c86da891101b0f6a6"
+      },
+      "target.stderr": {
+        "bytes": 403,
+        "sha256": "dd3fb158be0e316dd7f57ad6a86d5bf70e1a5e696cc7e4efc8d9f0eef8e4a83d"
+      },
+      "queries.ndjson": {
+        "bytes": 64138,
+        "sha256": "e40031fdca12f970a46d2ba7f07ed96e6473b16fc590cae8c98b32c661c63611"
+      },
+      "live-Code.json": {
+        "bytes": 345,
+        "sha256": "3e4b5796b8b7593ae9c8d0f7a93be759d8e43889dd9ad2ddc14d58b5496e0016"
+      }
+    },
+    "trace-default": {
+      "target.stdout": {
+        "bytes": 33165,
+        "sha256": "b6768537e3f65012806ffaca0004fe2b63a7dea662172cf809dd7c706d50c5f4"
+      },
+      "target.stderr": {
+        "bytes": 403,
+        "sha256": "dd3fb158be0e316dd7f57ad6a86d5bf70e1a5e696cc7e4efc8d9f0eef8e4a83d"
+      },
+      "queries.ndjson": {
+        "bytes": 64138,
+        "sha256": "e40031fdca12f970a46d2ba7f07ed96e6473b16fc590cae8c98b32c661c63611"
+      },
+      "live-Code.json": {
+        "bytes": 345,
+        "sha256": "3e4b5796b8b7593ae9c8d0f7a93be759d8e43889dd9ad2ddc14d58b5496e0016"
+      }
+    }
+  },
+  "removed_environment_names": [],
+  "failed_preparations": [
+    {
+      "id": "capture-01",
+      "sha256": "8ebf7be87d37474b66e713870e87305ed6b2ec17aaab86bb9ed6ca46abb83869",
+      "status": "FAIL"
+    }
+  ],
+  "scope": "Registered original E54, genuine FD/MX and four saved canonical LM Chunks. Directly declared arrays and Chunk i/n author inputs; no World setter or replacement body. Both ordinary and JDI modes agree.",
+  "trace_scope": "Read-only JDI on a separate loopback debugger transport; helper-only breakpoints, no original breakpoint, target method invocation or field store. FD.a entries/returns and E entries are observed, not inferred. NULL World has zero FD entries because dereference fails before callee entry.",
+  "random_scope": "All four actual seed/Gaussian streams retained; only within-process unchanged-state and sequential joins asserted. No cross-process constructor-entropy equality claim.",
+  "publication_scope": "Post-execution helpers verify process completion/bytes/hashes, reparse both ordinary streams and both target/journal streams, rederive archive pins and check saved-world inventories before any public write. No game code executes during publication.",
+  "remaining": "Actual Chest placement, Item use/consumption, TileEntity creation, audio, saved-world gameplay, GUI, native callback refusals and complete parity/FPS remain separate controls."
+}

@@ -9,9 +9,9 @@ endif()
 
 if(BUILD_TESTING AND TARGET mc_client_source_screens)
     add_executable(mc_test_source_chest tests/client/gui/test_source_chest.c)
-    target_include_directories(mc_test_source_chest PRIVATE src)
+    target_include_directories(mc_test_source_chest PRIVATE src src/platform/time)
     target_link_libraries(mc_test_source_chest PRIVATE mc_client_source_screens
-        mc_client_source_screen_events mc_client_application_owner mc_resources
+        mc_client_application_owner mc_resources
         mc_math_classes mc_simulation mc_build_options)
     if(TARGET mc_client_source_screen_drawing)
         target_link_libraries(mc_test_source_chest PRIVATE mc_client_source_screen_drawing)

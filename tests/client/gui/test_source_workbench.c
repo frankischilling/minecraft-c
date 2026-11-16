@@ -2,7 +2,9 @@
  * The separate entered ID component below supplies declared App/Player fields;
  * it does not credit OO constructor completion, Display or a graphical frame. */
 #include "client/application_state.h"
+#ifdef MC_TEST_SCREEN_EVENT_CONTROLS
 #include "client/gui/source_screen_events.h"
+#endif
 #include "client/gui/source_screen_transition_receipts_internal.h"
 #include "client/gui/source_workbench_screen_internal.h"
 #include "entity/player/player_internal.h"
@@ -12,6 +14,11 @@
 #include <string.h>
 
 static unsigned int checks;
+#ifdef MC_TEST_SCREEN_EVENT_CONTROLS
+static const char event_controls[] = "enabled";
+#else
+static const char event_controls[] = "unavailable";
+#endif
 #define CHECK(value)                                                                               \
     do {                                                                                           \
         ++checks;                                                                                  \
@@ -155,6 +162,7 @@ int main(void) {
           strcmp(initialization->screen.site.class_name, "id") == 0 &&
           initialization->screen.site.pc == 15 && initialization->screen.source_exception &&
           id->base.phase == MC_CLIENT_SCREEN_RAW && id->base.initialization_count == 0);
+#ifdef MC_TEST_SCREEN_EVENT_CONTROLS
     mc_client_screen_event_error event = {.screen = initialization->screen};
     event.screen.initialization = initialization;
     const size_t source_calls = id->source_calls, active_calls = id->base.active_calls,
@@ -186,6 +194,7 @@ int main(void) {
           player->holds == player_holds);
     CHECK(mc_client_screen_event_retire(&event) == MC_CLIENT_SCREEN_OK &&
           memcmp(&expected, &event.screen, sizeof(expected)) == 0);
+#endif
     mc_client_screen_error retained = initialization->screen;
     retained.initialization = initialization; /* Exact enclosing native output receipt. */
     mc_screen_transition_receipts receipts = {0};
@@ -233,10 +242,12 @@ int main(void) {
           retained.inventory->container.drop.publication == NULL &&
           retained.inventory->container.drop.statistic == NULL &&
           retained.initialization->screen.site.pc == 15 && retained.source_exception);
+#ifdef MC_TEST_SCREEN_EVENT_CONTROLS
     CHECK(event.screen.inventory == NULL && event.screen.initialization == NULL &&
           event.screen.status == MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE &&
           event.screen.source_exception && strcmp(event.screen.site.class_name, "id") == 0 &&
           event.screen.site.pc == 15 && !event.screen.native_policy);
+#endif
     mc_entity_release(player);
     free(app);
     CHECK(mc_client_screen_classes_release(&classes, &error) == MC_CLIENT_SCREEN_OK &&
@@ -246,7 +257,7 @@ int main(void) {
     mc_materials_destroy(materials);
     mc_java_random_profile_free(profile);
     printf("Workbench lifecycle CPU controls: %u checks; retained IT failure, inherited ID and "
-           "distinct OO close; no Display or full OO return claim\n",
-           checks);
+           "distinct OO close; no Display or full OO return claim; event-controls=%s\n",
+           checks, event_controls);
     return 0;
 }

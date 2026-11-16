@@ -63,6 +63,9 @@ and Linux saved-World SDK coverage. Ordinary Overworld
 [Workbench](client/workbench.md) now have connected returning controls on that
 same loop. Remaining work includes environmental death qualification, dimension
 respawn, other containers and target overrides.
+[Chest access](client/chests.md) and [placement](world/chest-placement.md) now have
+bounded single/double storage and held-Item/save controls. Extend those prepared
+cases to unrestricted Worlds and remaining mutation/ownership routes.
 The loader has no fixed session count limit, and a retained Windows Tiny
 scenario covers ten saves/reloads plus a successor conversion failure before
 storage acquisition. Reclaim superseded Worlds during play and qualify later
