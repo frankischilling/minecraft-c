@@ -642,6 +642,7 @@ add_library(mc_simulation STATIC
     src/client/statistics/writer.c
     src/server/runtime/construction.c
     src/entity/living/travel.c
+    src/entity/living/spawn_effect.c
     src/entity/tick/common.c
     src/entity/tick/environment.c
     src/entity/tick/execution.c

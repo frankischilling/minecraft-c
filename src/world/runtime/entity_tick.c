@@ -29,6 +29,8 @@ bool mc_world_entity_tick_error_retire(mc_world_entity_tick_error *e) {
     if (e->child == MC_WORLD_ENTITY_TICK_CHILD_FURNACE &&
         !mc_tile_entity_furnace_tick_retire(&e->child_error.furnace))
         return false;
+    if (e->child == MC_WORLD_ENTITY_TICK_CHILD_SPAWNER)
+        mc_world_spawner_tick_error_retire(&e->child_error.spawner);
     mc_world_entity_tick_error_init(e);
     return true;
 }
@@ -238,6 +240,7 @@ static mc_world_storage_status run(mc_world_runtime *world, mc_entity *entity, b
              * retaining only copied observations from this actual call. */
             mc_world_entity_tick_error_init(out);
             out->mob_hurt = s->error.mob_hurt;
+            out->spawner = s->error.spawner;
         } else {
             /* Transfer the exact failed child and its retained work. The
              * private scratch is freed below; it is never reused or retired. */

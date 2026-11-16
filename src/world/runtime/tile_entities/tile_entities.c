@@ -6184,4 +6184,8 @@ mc_registry_classes *mc_live_tile_tick_code_registry(const mc_tile_entity *tile)
     return tile == NULL || tile->classes == NULL ? NULL : tile->classes->registry;
 }
 
+mc_world_runtime_classes *mc_live_tile_tick_code_classes(const mc_tile_entity *tile) {
+    return tile == NULL || tile->classes == NULL ? NULL : tile->classes->parent;
+}
+
 #include "source_save.inc"

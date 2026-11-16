@@ -390,6 +390,36 @@ static bool tick(mc_client_menu_loop *loop) {
     if (app->active_world != NULL) {
         const bool returned = mc_client_world_tick_run(app, loop->math, &loop->world_tick);
         loop->state.world_tick = &loop->world_tick;
+        if (!loop->world_tick.spawner_observed) {
+            const mc_world_spawner_tick_observation *observed = &loop->world_tick.entities.spawner;
+            mc_world_spawner_tick_observation *total = &loop->state.spawner;
+            const size_t increments[] = {
+                observed->attempts,        observed->factory_calls,   observed->queries,
+                observed->predicate_calls, observed->accepted,        observed->insertion_calls,
+                observed->insertion_true,  observed->insertion_false, observed->smoke_calls,
+                observed->flame_calls,     observed->explode_calls,   observed->delay_resets,
+                observed->cap_returns,     observed->null_returns,    observed->completed};
+            size_t *counts[] = {
+                &total->attempts,        &total->factory_calls,   &total->queries,
+                &total->predicate_calls, &total->accepted,        &total->insertion_calls,
+                &total->insertion_true,  &total->insertion_false, &total->smoke_calls,
+                &total->flame_calls,     &total->explode_calls,   &total->delay_resets,
+                &total->cap_returns,     &total->null_returns,    &total->completed};
+            for (size_t i = 0; i < sizeof(increments) / sizeof(*increments); ++i) {
+                if (increments[i] > SIZE_MAX - *counts[i]) {
+                    *counts[i] = SIZE_MAX;
+                    loop->state.spawner_saturated = true;
+                } else
+                    *counts[i] += increments[i];
+            }
+            if (loop->world_tick.entities_entered) {
+                if (loop->state.entity_tick_calls == UINT64_MAX)
+                    loop->state.spawner_saturated = true;
+                else
+                    ++loop->state.entity_tick_calls;
+            }
+            loop->world_tick.spawner_observed = true;
+        }
         if (!loop->world_tick.mob_hurt_observed) {
             const mc_world_mob_hurt_observation *observed = &loop->world_tick.entities.mob_hurt;
             mc_world_mob_hurt_observation *total = &loop->state.mob_hurt;

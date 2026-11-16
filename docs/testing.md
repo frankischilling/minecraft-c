@@ -1,5 +1,37 @@
 # Test scope and reproduction
 
+## MobSpawner ticks
+
+The [Spawner contract](world/spawner-tick.md) separates the original direct
+Tile tick observations, seeded native World-loop controls and monitor-2 SDK
+processes. Each compiler passes 518 Spawner and 277 Living-effect checks.
+The original packet has 69 corruption controls; the native transport has
+sixteen negative controls, both exercised with ordinary and optimized Python.
+
+The complete MSVC Release build and all 1,352 Windows tests pass in 448.92
+seconds with unique complete inventory/log/JUnit joins and no skipped or
+unrun tests. Every preceding name remains plus exactly seven additions.
+The eight-test affected selection passes on sanitized GCC and Clang in
+9.11 and 9.07 seconds; these are not full local Linux suite results.
+
+Portable native tests are `world.spawner_tick` and
+`entity.living_spawn_effect`. The SDK target is `mc_test_spawner_tick_frame`:
+
+```text
+python -B tests/client/test_spawner_tick.py --executable PATH_TO_EXE --assets ASSETS --artifacts NEW_DIRECTORY --profile countdown
+python -B tests/client/test_spawner_tick.py --executable PATH_TO_EXE --assets ASSETS --artifacts NEW_DIRECTORY --profile success
+python -B tests/client/test_spawner_tick.py --executable PATH_TO_EXE --assets ASSETS --artifacts NEW_DIRECTORY --profile failure
+```
+
+Run desktop profiles serially on physical monitor2. Success independently
+decodes saved regions and matches imported records only in witnessed-loaded
+Chunks, preserving the complete disk inventory separately. The failure profile
+requires one exact expected diagnostic and checks that App cleanup ends the
+retained child without restoring source fields or removing the published Pig.
+The [sanitized record](../tests/benchmarks/spawner_tick_windows.json) retains
+the finite input, product, image and receipt bindings. It supplies no original
+graphics, full-game or performance qualification.
+
 ## Native focus capture
 
 The [Windows focus trace](testing/native-focus-trace.md) observes real native

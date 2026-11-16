@@ -108,4 +108,7 @@ bytes remain unchanged. Hosted results must name their exact commit separately.
 The original named-factory observations have their own finite evidence packet.
 They do not qualify composed AG graphics, original pixels or full-frame parity.
 Sign and MovingPiston drawing, larger new-identity Sets, unsupported named
-constructors, Spawner spawning, sustained play and FPS measurements remain open.
+constructors, sustained play and FPS measurements remain open. The separate
+[Spawner tick path](../world/spawner-tick.md) now joins the actual expired-delay
+factory, predicate, publication and particle methods; its evidence does not
+extend the original graphics claims above.

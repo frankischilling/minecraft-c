@@ -8,12 +8,12 @@
       "sha256": "b8e36bd83ca8869a407abcd283d05fd300a80664bee7ed2c9acbce9f697b3a40"
     },
     "include/mc/world/runtime/entity_tick.h": {
-      "bytes": 8150,
-      "sha256": "1cdf1082c07ad16e5ac032d557324951bc27ac0f8811a1f8ac91d27d07f77841"
+      "bytes": 8437,
+      "sha256": "9c3f505d2c44c1583b8126e6dd703b125df5dc511caecaceef41d8768ada3cb3"
     },
     "src/client/runtime/world_tick.c": {
-      "bytes": 20662,
-      "sha256": "1676b11a93bd588b03bf6c8ca7a441df1cbe02409007c052a9c31c6ee6a5dc28"
+      "bytes": 20843,
+      "sha256": "a41bf2a1ea33311699a0e658e6004dc1f528647248a5801c99ef748ee965cdfd"
     },
     "src/entity/arrow/internal.h": {
       "bytes": 2085,
@@ -40,8 +40,8 @@
       "sha256": "3dd073c658a9e63f86a87588461c67803730f5bc145f544bacabd4f29db61c83"
     },
     "src/world/runtime/entity_tick.c": {
-      "bytes": 12630,
-      "sha256": "ba76ad21b589526e50f13bd591d8c7d05f47123794b1233b45f56cb9aa46728a"
+      "bytes": 12800,
+      "sha256": "c10e00b4952941c743f870acea11e5e9654fcf10148fe27444433ba539f9bb95"
     },
     "src/world/runtime/entity_tick_dispatch.c": {
       "bytes": 16532,

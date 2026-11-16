@@ -23,4 +23,5 @@ bool mc_live_tile_iterator_remove_held(mc_world_runtime *, mc_live_tile_iterator
 bool mc_live_tile_chunk_remove_held(mc_world_chunk *, int32_t, int32_t, int32_t,
                                     mc_live_tile_entity_error *);
 mc_registry_classes *mc_live_tile_tick_code_registry(const mc_tile_entity *);
+mc_world_runtime_classes *mc_live_tile_tick_code_classes(const mc_tile_entity *);
 #endif

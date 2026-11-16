@@ -14,12 +14,12 @@
       "sha256": "b8e36bd83ca8869a407abcd283d05fd300a80664bee7ed2c9acbce9f697b3a40"
     },
     "include/mc/world/runtime/entity_tick.h": {
-      "bytes": 8150,
-      "sha256": "1cdf1082c07ad16e5ac032d557324951bc27ac0f8811a1f8ac91d27d07f77841"
+      "bytes": 8437,
+      "sha256": "9c3f505d2c44c1583b8126e6dd703b125df5dc511caecaceef41d8768ada3cb3"
     },
     "src/client/runtime/world_tick.c": {
-      "bytes": 20662,
-      "sha256": "1676b11a93bd588b03bf6c8ca7a441df1cbe02409007c052a9c31c6ee6a5dc28"
+      "bytes": 20843,
+      "sha256": "a41bf2a1ea33311699a0e658e6004dc1f528647248a5801c99ef748ee965cdfd"
     },
     "src/entity/arrow/internal.h": {
       "bytes": 2085,
@@ -46,8 +46,8 @@
       "sha256": "3dd073c658a9e63f86a87588461c67803730f5bc145f544bacabd4f29db61c83"
     },
     "src/world/runtime/entity_tick.c": {
-      "bytes": 12630,
-      "sha256": "ba76ad21b589526e50f13bd591d8c7d05f47123794b1233b45f56cb9aa46728a"
+      "bytes": 12800,
+      "sha256": "c10e00b4952941c743f870acea11e5e9654fcf10148fe27444433ba539f9bb95"
     },
     "src/world/runtime/entity_tick_dispatch.c": {
       "bytes": 16532,
@@ -66,8 +66,8 @@
       "sha256": "80d866a4df85af27011535b381728a1cae45bfbd24da103b2b453d5ed5056042"
     },
     "CMakeLists.txt": {
-      "bytes": 352523,
-      "sha256": "eb8099e234ea05a72876b4e7f43b2014d37e000b9d3e25767628452ddd1f8e88"
+      "bytes": 352560,
+      "sha256": "aa8bfe62cdf61d9a7fc0b29598a7a0a6251b5bf7c11792cd3240317fec5aebb8"
     },
     "cmake/tests/arrow_world_tick_cleanup.cmake": {
       "bytes": 2831,
@@ -177,7 +177,7 @@
   "helpers": {
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76652,
-      "sha256": "5a70cdf47137979e96a6c742d0eb692d14348a9aa832d25b45f4effa44119bb2"
+      "sha256": "342eb4df1690a8478ad3a99982f86fb9f22245ddad6af9b8d3c858b59db2ad0c"
     },
     "tests/tools/world/test_execution_ownership.py": {
       "bytes": 8350,

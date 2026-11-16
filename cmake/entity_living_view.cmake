@@ -2,6 +2,16 @@ if(TARGET mc_simulation)
     target_sources(mc_simulation PRIVATE src/entity/living/view.c)
     target_link_libraries(mc_simulation PRIVATE mc_math_classes)
     if(BUILD_TESTING)
+        add_executable(mc_test_living_spawn_effect tests/entity/living/test_spawn_effect.c)
+        target_include_directories(mc_test_living_spawn_effect PRIVATE src src/core/java)
+        target_link_libraries(mc_test_living_spawn_effect PRIVATE
+            mc_simulation mc_resources mc_math_classes mc_c_atomics mc_build_options)
+        add_test(NAME entity.living_spawn_effect COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_living_spawn_effect.py"
+            --executable "$<TARGET_FILE:mc_test_living_spawn_effect>"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/living-spawn-effect-controls")
+        set_tests_properties(entity.living_spawn_effect PROPERTIES
+            LABELS "public;unit;entity;world;ownership" TIMEOUT 240)
         add_executable(mc_test_living_view tests/entity/living/test_view.c)
         target_include_directories(mc_test_living_view PRIVATE src)
         if(MSVC)

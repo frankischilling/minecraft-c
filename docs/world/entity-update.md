@@ -27,8 +27,10 @@ inherits the bytecode-proved empty base tick. Piston uses the existing concrete
 tick. Spawner executes its real nearest-Player predicate, three Random floats,
 smoke/flame calls, float-division rotation and delay logic. A dead Player remains
 eligible for nearest selection; radius boundaries are strict and ties retain
-the first candidate. The named mob factory at `cy.n_` PC223 remains a reached
-dependency. No missing mob is replaced by a successful NULL result.
+the first candidate. Its [expired-delay continuation](spawner-tick.md) uses
+fresh named candidates, real population queries, pose and spawn eligibility,
+actual publication and the separate Living explode effect. Up to four attempts
+run; unsupported constructors remain explicit dependencies.
 
 Source failures keep their prefix. In particular, a failed active TileEntity
 iteration leaves `L=true`; only normal active completion stores false and enters

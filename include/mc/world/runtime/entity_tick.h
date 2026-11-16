@@ -11,6 +11,7 @@
 #include "mc/world/runtime/mob_hurt_observation.h"
 #include "mc/world/runtime/tile_entities/furnace_tick.h"
 #include "mc/world/runtime/tile_entities/piston.h"
+#include "mc/world/runtime/tile_entities/spawner_tick.h"
 #include "mc/world/runtime/world_access_error.h"
 
 typedef struct mc_world_entity_tick_context {
@@ -55,7 +56,8 @@ typedef enum mc_world_entity_tick_child {
     MC_WORLD_ENTITY_TICK_CHILD_MOB,
     MC_WORLD_ENTITY_TICK_CHILD_FALLING_SAND,
     MC_WORLD_ENTITY_TICK_CHILD_ARROW,
-    MC_WORLD_ENTITY_TICK_CHILD_FURNACE
+    MC_WORLD_ENTITY_TICK_CHILD_FURNACE,
+    MC_WORLD_ENTITY_TICK_CHILD_SPAWNER
 } mc_world_entity_tick_child;
 
 typedef struct mc_world_entity_tick_error {
@@ -89,6 +91,7 @@ typedef struct mc_world_entity_tick_error {
         mc_mob_tick_error mob;
         mc_falling_entity_tick_error falling;
         mc_furnace_tick_error furnace;
+        mc_world_spawner_tick_error spawner;
 
         struct {
             /* Owning call occurrence; copying this error is transfer only. */
@@ -102,10 +105,11 @@ typedef struct mc_world_entity_tick_error {
     /* Completed value observations survive successful child/whole-call
      * diagnostic clearing. They contain no owning or borrowed work views. */
     mc_world_mob_hurt_observation mob_hurt;
+    mc_world_spawner_tick_observation spawner;
 } mc_world_entity_tick_error;
 
 void mc_world_entity_tick_error_init(mc_world_entity_tick_error *);
-/* End owned Player, Mob, FallingSand and Arrow failure work before reusing this
+/* End owned Player, Mob, FallingSand, Arrow and Spawner failure work before reusing this
  * record or retiring its graph. An owning child transfers its occurrences
  * into the output; it must not be copied or cleared. Other child projections
  * are borrowed. False preserves remaining work and its cleanup cause.
@@ -128,7 +132,8 @@ bool mc_world_entity_tick_error_retire(mc_world_entity_tick_error *);
  * earlier World diagnostics; optional caller error is fresh for this attempt. */
 /* The reached FallingSand and Arrow children require a nonnull error output to own any
  * failed constructor/publication/placement prefix. A reached Player wake
- * invocation likewise requires an actual outer ownership destination.
+ * invocation likewise requires an actual outer ownership destination. An expired
+ * Spawner requires that destination before entering its factory/descendants.
  * With NULL output these stop before that child; earlier source effects
  * and ordinary Player bypass paths are preserved. */
 mc_world_storage_status mc_world_runtime_tick_entity(mc_world_runtime *, mc_entity *,

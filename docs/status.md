@@ -7,6 +7,25 @@ the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining w
 
 ## Current client work
 
+The [MobSpawner tick](world/spawner-tick.md) now completes expired-delay
+construction, population limits, real Pig eligibility and publication, both
+particle methods and four-attempt continuation. MSVC and sanitized GCC/Clang
+each pass 518 Spawner and 277 Living-effect checks. The original packet retains
+twenty direct ticks across two ordinary JVM modes, including their differing
+entropy and success counts. Four serial monitor-2 SDK processes pass countdown,
+two genuine save/reselection runs and post-publication failure cleanup.
+Published Pigs remain distinct from the renderer's cached preview. This does
+not establish full gameplay parity, sustained play or an FPS result.
+
+The full Windows Release build and all 1,352 tests pass in 448.92 seconds,
+retaining every prior name plus seven additions with no skips or unrun tests.
+The complete log/inventory/JUnit joins agree, and all 6,465 public worktree
+files stayed unchanged during the sweep. GCC and Clang pass the eight-test
+affected selection in 9.11 and 9.07 seconds with sanitizers and leak detection.
+These are selected Linux results. Validation annotations and current admission
+fingerprints were updated afterward; runtime and native harness bytes stayed
+unchanged.
+
 The [MobSpawner preview](client/spawner-rendering.md) now reaches actual LL/AG
 and the existing Pig renderer from a loaded Chunk. A Windows monitor-2 capture
 passes 1,236 checks and sixteen full World/HUD frames across ordinary save and
@@ -16,7 +35,7 @@ Entity list. The first draw compiles six model parts and later
 draws reuse them. Multi-addition HashSet order, Sign/Piston drawing, full original
 frame equality and sustained-play/FPS qualification remain open.
 
-The complete MSVC Release build and all 1,345 configured Windows tests pass in
+At `af9d031d`, the complete MSVC Release build and all 1,345 configured Windows tests pass in
 472.08 seconds, retaining all 1,341 preceding names with four additions and no
 skips or unrun tests. GCC 15.2 passes 29 selected sanitizer tests in 103.05
 seconds. Clang 21.1.8 passes 20 selected tests in 53.86 seconds and both corrected

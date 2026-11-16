@@ -823,7 +823,8 @@ static bool world_player_and_tiles(fixture *f, client_application *app, const ch
     CHECK(mc_tile_entity_set_invalid(chest, true) == MC_TILE_ENTITY_OK);
     CHECK(wt_tile_active(scope) && !w->fields.L);
     CHECK(w->fields.c->count == 2 && chest->invalid);
-    /* A reached real factory leaves L=true and all prior rotation/draws intact. */
+    /* An expired branch needs an actual output to retain failed descendants.
+     * This private scope has none; native admission preserves its prefix. */
     spawner->state.spawner.delay = 0;
     CHECK(!wt_tile_active(scope) && scope->error.spawner_bytecode == 223 && w->fields.L);
     scope->error.status = MC_WORLD_STORAGE_OK;

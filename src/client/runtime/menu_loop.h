@@ -3,6 +3,7 @@
 
 #include "bootstrap.h"
 #include "mc/world/runtime/mob_hurt_observation.h"
+#include "mc/world/runtime/spawner_observation.h"
 
 typedef struct mc_client_menu_loop mc_client_menu_loop;
 typedef struct mc_world_storage_error mc_world_storage_error;
@@ -38,6 +39,9 @@ typedef struct mc_client_menu_loop_state {
     uint64_t nightmare_calls, nightmare_returns, nightmare_true_returns, nightmare_wake_returns;
     uint64_t sleep_wake_calls, sleep_wake_returns;
     mc_world_mob_hurt_observation mob_hurt;
+    mc_world_spawner_tick_observation spawner;
+    uint64_t entity_tick_calls;
+    bool spawner_saturated;
     uint64_t random_display_calls, random_display_samples, random_display_random_calls;
     size_t last_random_chunk_count;
     bool render_clock_stored, render_returned;

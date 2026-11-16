@@ -1,0 +1,65 @@
+{
+  "meaning": "Postexecution publication-only fingerprints; not original execution inputs.",
+  "files": {
+    "README.md": {
+      "bytes": 4355,
+      "sha256": "d7dc1950fcaf00104549939c1070f5ac40415420356620ad28ceb9478dca9f0c"
+    },
+    "SpawnerTickObservation.java": {
+      "bytes": 12475,
+      "sha256": "df26512ee2e93a5c20eda9ed6f70c70a04e7fbf5130188918bf550f10cdd3bf9"
+    },
+    "capture.py": {
+      "bytes": 20178,
+      "sha256": "ec01e9c700f8a739dc80f88e6fa0ca47393486d1a74f7292900761c811426211"
+    },
+    "cases.json": {
+      "bytes": 4795,
+      "sha256": "0d6598d6077c0e00fa43d22aa019608d98a8d3bc03330783be5ee29c0254be40"
+    },
+    "finite.json": {
+      "bytes": 765690,
+      "sha256": "256e3ecba0046c2a190d08da7d29143839dd99694844f956c15712730ac13c33"
+    },
+    "input-manifest.json": {
+      "bytes": 10479,
+      "sha256": "78875bd89de470853c9bced09956b35331039f121c70216245fc5573d24a1730"
+    },
+    "native-invariants.h": {
+      "bytes": 1375,
+      "sha256": "b255f99ace891367f21646bad297b2768eeb758861a24fa2a41edc66fb130ab3"
+    },
+    "packet.py": {
+      "bytes": 19036,
+      "sha256": "83ab247b93f09dfba06c25f26671011b20879ad6ce86b08ce81abb9155b0a6e2"
+    },
+    "profiles.tsv": {
+      "bytes": 468,
+      "sha256": "9c5b032d27f0e35e39741db775525f03030c1be187f4d080e41f77d5e10a21e3"
+    },
+    "provenance.json": {
+      "bytes": 11125,
+      "sha256": "f71a2a43468eac0c7839c42683ae1891eb90dac59957be34ac838cc28f04489e"
+    },
+    "publish.py": {
+      "bytes": 13613,
+      "sha256": "9f080047d7fca69dba8187b5d948d86fef128f3db968347639d1ba07b9fdd431"
+    },
+    "receipts.json": {
+      "bytes": 4699,
+      "sha256": "e4e81575949f546b902070930659b8079a2ac99ac70e56b05541a5d26d16f4a4"
+    },
+    "source-manifests.json": {
+      "bytes": 40394,
+      "sha256": "192f853a581af04c549cd8578eadd82b89582bc90a7f2d8f5da9a7be79d7a0e5"
+    },
+    "source-pins.json": {
+      "bytes": 190666,
+      "sha256": "9aaf256e0d8192079e4182df493be97d35855776e0642fb4c0b47c6fbeb0da39"
+    },
+    "test_packet.py": {
+      "bytes": 10310,
+      "sha256": "7cef7aef2ea9c3659b5648d58e285df0743561d8e6bc4a7c03b2a04f0b824d47"
+    }
+  }
+}
