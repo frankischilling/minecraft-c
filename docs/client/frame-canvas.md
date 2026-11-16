@@ -181,6 +181,10 @@ monitor 2. Five selected owner, screen-event and Python control CTests pass;
 strict GCC syntax checking passes for the changed World-selection fixture.
 
 The earlier observation of native Canvas/foreground ownership with no SDL
-keyboard owner remains a distinct unresolved case. These bounded controls do
-not establish sustained interactive play, original AWT parity, Linux focus
-behavior or an FPS improvement.
+keyboard owner remains unresolved. The [native focus trace](../testing/native-focus-trace.md)
+records 35 instrumented and 20 untraced current-build save/title cycles on
+monitor 2. Every cycle passes; the selected traces contain no completed-step
+Canvas/native-foreground/SDL-null candidate. Instrumentation can alter timing,
+and the earlier failed binary lacks matching source/link proof. These finite
+observations do not establish a causal repair, sustained interactive play,
+original AWT parity, Linux focus behavior or an FPS improvement.

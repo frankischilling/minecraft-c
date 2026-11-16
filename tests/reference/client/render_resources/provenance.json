@@ -2154,8 +2154,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 398349,
-      "sha256": "50a6b1501c05bc9ddf23ca370e4659b5f5188285f63be599e598d257a7436b5e"
+      "bytes": 400159,
+      "sha256": "ef028354bdc1d1a6e2d7de777b8675b7fc4abb0386ffa269b1fcaef5dc47c861"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -7958,8 +7958,8 @@
       "sha256": "e0170ea87f2ac80048ebaec09ed5d9019807ab31022778f79733edeba39f5736"
     },
     "scripts/development/format_code.py": {
-      "bytes": 7838,
-      "sha256": "df6ad3670321a150f0211c5a1f60cf27481312da4693250325d1a8f06473e78d"
+      "bytes": 7895,
+      "sha256": "69084b05714c1c16624a28356b960b924f8d5924f1bb37e70851621600933394"
     },
     "src/client/gui/source_death_drawing.c": {
       "bytes": 9366,
@@ -8071,7 +8071,7 @@
     },
     "tests/tools/client/scene_inputs.py": {
       "bytes": 3861,
-      "sha256": "d2d5b45bfa73275f60c591dedb5bdab574a4b8f5987ed4b8bffb1e0111ce49dd"
+      "sha256": "d2cd1278056a839b96893d642de7d3279b869583b970fcb3abe46a7bb1d02af5"
     },
     "tests/tools/client/test_death_respawn.py": {
       "bytes": 4935,
@@ -11208,6 +11208,26 @@
     "tests/reference/world/furnace_save_readback/transport.py": {
       "bytes": 5281,
       "sha256": "174e08675a6e14859bab0cd29976d8d15a7af374f0043fd3d44566a42e0da66a"
+    },
+    "docs/testing/fire-reader-cost.md": {
+      "bytes": 5138,
+      "sha256": "2682fadde2ddf1574876204341868b2dd00ed57ac83a1ee52a796b9a6db8140c"
+    },
+    "docs/testing/native-focus-trace.md": {
+      "bytes": 7380,
+      "sha256": "455328b35f8944fa8c5a4fe54436c5eb9e5013e81d6cfdc460da8ab5f3d94cc8"
+    },
+    "tests/benchmarks/fire_reader_windows.json": {
+      "bytes": 55217,
+      "sha256": "f0cbb65553dbcad494d7edc054bb3f003756ac6d8031364a66de6906af740369"
+    },
+    "tests/benchmarks/native_focus_windows.json": {
+      "bytes": 145801,
+      "sha256": "77fa6c3127af3d313582583a98c2d11a8a01b0d01d2dcb98c37ae6b6828f9e7b"
+    },
+    "tests/client/startup/focus_trace.inc": {
+      "bytes": 20244,
+      "sha256": "87d8cf25126ef36456327552c88c65edcbd4bf1eddd63d13d8dcfe8d332d5423"
     }
   },
   "source_suppliers": {

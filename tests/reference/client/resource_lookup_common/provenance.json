@@ -782,8 +782,8 @@
       "sha256": "a4389546f3e2b303e8c1d32248089148eae7de6b6d6a8d8d3464b1907190473f"
     },
     "docs/roadmap.md": {
-      "bytes": 13789,
-      "sha256": "fa02995a76661b1ded0c4fc17247d3c95d9d054fb268ba9b6fe48e05558a277c"
+      "bytes": 14094,
+      "sha256": "a108c164235981b112a5449e0b30feeb25e0a2ef9821c8c968b3196c0e085f5d"
     },
     "docs/server/construction.md": {
       "bytes": 1908,
@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 7330,
-      "sha256": "2b695156063900d9e8c473b6ee7bcec3c7d421cae6f13850466da5002f22d487"
+      "bytes": 8293,
+      "sha256": "ce04ffa75f232164b26273dd4cd142f6bc4d42120f8414d5b3908d3940ed0222"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 692766,
-      "sha256": "c7bf70782cea62efaaa7ca34ddd280d9abc88b9d7417c388e87be2ff564e6d97"
+      "bytes": 693782,
+      "sha256": "396a88bc2892e2db4211386d0c194e67ed321ea55402ce30693404440262df23"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39322,
@@ -2006,8 +2006,8 @@
       "sha256": "fce091d46c9648c32fdd0580355ca3a255730f8b65ca8d87211668207cefd196"
     },
     "scripts/development/format_code.py": {
-      "bytes": 7838,
-      "sha256": "df6ad3670321a150f0211c5a1f60cf27481312da4693250325d1a8f06473e78d"
+      "bytes": 7895,
+      "sha256": "69084b05714c1c16624a28356b960b924f8d5924f1bb37e70851621600933394"
     },
     "scripts/reference/binaries/inspect_jars.py": {
       "bytes": 7826,
@@ -6410,8 +6410,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 880479,
-      "sha256": "73f0493744b1b84c313ef74663f03550ad8a79702dd16c860c18507294c73004"
+      "bytes": 881273,
+      "sha256": "da848311b48bb37744f57af66de591c69aaa38a8c7331722270387f69f2741a6"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6474,8 +6474,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 1004761,
-      "sha256": "cfe597168ee0c6b5bb1d0651c7b178a851922a1ceeb34095d19664113a497142"
+      "bytes": 1005555,
+      "sha256": "3028f45707ed37cc7e4379c24b1a4fa29d401b910ee35607a97cff49af5fab78"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6606,8 +6606,8 @@
       "sha256": "afbc32baafefcf2b4ac5067a3a26b9e39c8a029a8b9e39bc6428d3a010d17f73"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 877304,
-      "sha256": "ae9d809ff488e3e45c052574fbf8f9557f64fb260bb47f60a78da02af83604cb"
+      "bytes": 878098,
+      "sha256": "cb00fe2cef2dbfc4a8be72fb028d3c47a57446ddf0f922bb64301a65853778d5"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9930,8 +9930,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 398349,
-      "sha256": "50a6b1501c05bc9ddf23ca370e4659b5f5188285f63be599e598d257a7436b5e"
+      "bytes": 400159,
+      "sha256": "ef028354bdc1d1a6e2d7de777b8675b7fc4abb0386ffa269b1fcaef5dc47c861"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -15182,8 +15182,8 @@
       "sha256": "15ea218fe4cb6de9aa33b2a4d629f01ee3ad1e39a0377c091bfbe76a3b8304e3"
     },
     "docs/client/frame-canvas.md": {
-      "bytes": 11183,
-      "sha256": "27870fc1d47b0eb0d2cae26fe78ea3d5b0a57522c3868e017c99eb62899fbbde"
+      "bytes": 11541,
+      "sha256": "fa867f905b166448259cbf2d5656a3e227e6f0358a4399da3c67d98bf3445a14"
     },
     "docs/client/mining.md": {
       "bytes": 8268,
@@ -21311,7 +21311,7 @@
     },
     "tests/client/gameplay/current_scene_inputs.json": {
       "bytes": 3669,
-      "sha256": "a324c6f8396e174e320f2a444989d24bd69d019b7e612274c5e51123a6af4025"
+      "sha256": "e2acdf1a2786350123e476a087a5f29f4c15d89bd7aca0fb913abe704a9269c1"
     },
     "tests/client/gui/test_death_screen.c": {
       "bytes": 9609,
@@ -21363,7 +21363,7 @@
     },
     "tests/tools/client/scene_inputs.py": {
       "bytes": 3861,
-      "sha256": "d2d5b45bfa73275f60c591dedb5bdab574a4b8f5987ed4b8bffb1e0111ce49dd"
+      "sha256": "d2cd1278056a839b96893d642de7d3279b869583b970fcb3abe46a7bb1d02af5"
     },
     "tests/tools/client/test_death_respawn.py": {
       "bytes": 4935,
@@ -25024,6 +25024,26 @@
     "tests/reference/world/furnace_save_readback/transport.py": {
       "bytes": 5281,
       "sha256": "174e08675a6e14859bab0cd29976d8d15a7af374f0043fd3d44566a42e0da66a"
+    },
+    "docs/testing/fire-reader-cost.md": {
+      "bytes": 5138,
+      "sha256": "2682fadde2ddf1574876204341868b2dd00ed57ac83a1ee52a796b9a6db8140c"
+    },
+    "docs/testing/native-focus-trace.md": {
+      "bytes": 7380,
+      "sha256": "455328b35f8944fa8c5a4fe54436c5eb9e5013e81d6cfdc460da8ab5f3d94cc8"
+    },
+    "tests/benchmarks/fire_reader_windows.json": {
+      "bytes": 55217,
+      "sha256": "f0cbb65553dbcad494d7edc054bb3f003756ac6d8031364a66de6906af740369"
+    },
+    "tests/benchmarks/native_focus_windows.json": {
+      "bytes": 145801,
+      "sha256": "77fa6c3127af3d313582583a98c2d11a8a01b0d01d2dcb98c37ae6b6828f9e7b"
+    },
+    "tests/client/startup/focus_trace.inc": {
+      "bytes": 20244,
+      "sha256": "87d8cf25126ef36456327552c88c65edcbd4bf1eddd63d13d8dcfe8d332d5423"
     }
   },
   "self_metadata_excluded": true,

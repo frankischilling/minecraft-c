@@ -7,11 +7,27 @@ the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining w
 
 ## Current client work
 
+The [opt-in focus trace](testing/native-focus-trace.md) now records current-thread
+native focus delivery with checked hook lifetime and a bound compile/link
+receipt. Thirty-five instrumented and twenty untraced monitor-2 save/title
+cycles pass without reproducing the earlier mismatch; its cause remains
+unresolved. The [Fire reader change](testing/fire-reader-cost.md) reduces measured
+synthetic-reader elapsed time by about 85% on one Windows host while preserving
+the existing tests and validation. It provides no gameplay FPS result.
+
+The complete Windows Release build and all 1,341 tests pass in 454.53 seconds,
+with every configured name/ID, ordinal and Start/completion join audited and
+all preceding names retained. Four existing Fire reader/packet tests also pass
+under WSL. Final monitor-2 Furnace, Lever and Redstone Torch cycles pass with
+unchanged selected inputs/assets and checked window cleanup.
+
+
 [Furnace storage and smelting](client/furnaces.md) use actual TileEntity,
 World, container and screen owners. The [retained lazy addition](world/furnace-lazy-lookup.md)
 now completes client orientation with checked Arrow/Ray ownership, preserving
-source failures and native cleanup refusals separately. The full Windows
-Release build and all 1,341 tests pass in 618.75 seconds, with every configured
+source failures and native cleanup refusals separately. At the preceding
+Furnace checkpoint `82a0a89d`, the full Windows Release build and all 1,341
+tests pass in 618.75 seconds, with every configured
 case and all 1,335 preceding Furnace names accounted for. GCC passes 27 selected
 sanitizer tests and Clang passes 28, including the retained server prefix and
 shared lookup/Arrow/Ray regressions. The final monitor-2 Furnace,

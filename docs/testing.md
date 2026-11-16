@@ -1,5 +1,24 @@
 # Test scope and reproduction
 
+## Native focus capture
+
+The [Windows focus trace](testing/native-focus-trace.md) observes real native
+window delivery before and after the current-thread window procedures, plus
+actually reached save/title focus operations. It is opt-in and changes no
+production focus policy. A fresh compile/archive/link receipt binds the
+instrumented fixture and generated SDL correction to the tested executable.
+Thirty-five traced and twenty untraced monitor-2 cycles pass without reproducing
+the earlier Canvas/native-foreground/SDL-null symptom. Cause remains unresolved.
+
+## Fire reader cost
+
+The [Fire reader measurement](testing/fire-reader-cost.md) isolates repeated
+Python byte scanning in synthetic transport preparation. A stdlib regex keeps
+all ten tests, 143 subtests and 71 positive transport comparisons. Four paired
+Windows CLI comparisons show lower elapsed time in both normal and optimized
+Python. The record qualifies that tool workload; native replay and gameplay
+performance retain their own measurements.
+
 ## Provider cache scopes and owner rebinding
 
 The [scope contract and measurements](performance/provider-cache-scopes.md)

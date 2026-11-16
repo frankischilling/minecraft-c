@@ -82,6 +82,8 @@
 #include <windows.h>
 #endif
 
+#include "focus_trace.inc"
+
 static unsigned int checks;
 
 static bool world_dependency_reached(const mc_world_tick_state *state,
@@ -3664,11 +3666,41 @@ static int save_title_focus(fixture *f) {
     const uint64_t deadline = SDL_GetTicks() + 3000;
     do {
         mc_client_frame_error native = {0};
-        const bool requested =
-            SDL_RaiseWindow(host.frame_window) &&
-            mc_client_frame_native_focus(host.canvas_window, &native) &&
-            mc_client_sdk_display_process_messages(update, &error) == MC_CLIENT_SDK_UPDATE_OK &&
-            mc_client_sdk_display_active(update, &active, &error) == MC_CLIENT_SDK_UPDATE_OK;
+        bool requested;
+#ifdef _WIN32
+        if (focus_trace.enabled) {
+            focus_trace_mark("raise-before", &host, 0, false, NULL);
+            requested = SDL_RaiseWindow(host.frame_window);
+            focus_trace_mark("raise-after", &host, requested ? 1 : 0, true, NULL);
+            if (requested) {
+                focus_trace_mark("native-focus-before", &host, 0, false, NULL);
+                requested = mc_client_frame_native_focus(host.canvas_window, &native);
+                focus_trace_mark("native-focus-after", &host, requested ? 1 : 0, true, NULL);
+            }
+            if (requested) {
+                focus_trace_mark("messages-before", &host, 0, false, NULL);
+                const mc_client_sdk_update_status status =
+                    mc_client_sdk_display_process_messages(update, &error);
+                requested = status == MC_CLIENT_SDK_UPDATE_OK;
+                focus_trace_mark("messages-after", &host, (int)status, true, NULL);
+            }
+            if (requested) {
+                focus_trace_mark("active-before", &host, 0, false, NULL);
+                const mc_client_sdk_update_status status =
+                    mc_client_sdk_display_active(update, &active, &error);
+                requested = status == MC_CLIENT_SDK_UPDATE_OK;
+                focus_trace_mark("active-after", &host, (int)status, true,
+                                 requested ? &active : NULL);
+            }
+        } else
+#endif
+        {
+            requested =
+                SDL_RaiseWindow(host.frame_window) &&
+                mc_client_frame_native_focus(host.canvas_window, &native) &&
+                mc_client_sdk_display_process_messages(update, &error) == MC_CLIENT_SDK_UPDATE_OK &&
+                mc_client_sdk_display_active(update, &active, &error) == MC_CLIENT_SDK_UPDATE_OK;
+        }
         if (!requested)
             native_focus_receipt(f, "native-focus-request");
         CHECK(requested);
@@ -5859,9 +5891,17 @@ int main(int argc, char **argv) {
                                                    .width = 854,
                                                    .height = 480,
                                                    .hidden = !focused_load};
+#ifdef _WIN32
+    if (!focus_trace_start())
+        return 1;
+    focus_trace_mark("bootstrap-before", NULL, 0, false, NULL);
+#endif
     CHECK((complete_host
                ? mc_client_bootstrap_open_standalone(&options, &f.bootstrap)
                : mc_client_bootstrap_open(&options, &f.bootstrap)) == MC_CLIENT_BOOTSTRAP_OK);
+#ifdef _WIN32
+    focus_trace_mark("bootstrap-after", NULL, 1, true, NULL);
+#endif
     f.app = mc_client_bootstrap_app(f.bootstrap);
     if (save_title) {
         mc_game_settings_state parsed;
@@ -6658,6 +6698,10 @@ close_bootstrap:
         f.save_title_session_authored = false;
         printf("WORLD_SAVE_TITLE_SESSION_RESTORE after-bootstrap=1 exact-bytes=8 verified=1\n");
     }
+#ifdef _WIN32
+    if (!focus_trace_finish(true))
+        return 1;
+#endif
     printf("WORLD_SELECTION mode=%s cleanup=1 checks=%u\n", argv[2], checks);
     return 0;
 }

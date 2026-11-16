@@ -2,22 +2,18 @@
 import copy
 import hashlib
 import json
+import re
 import unittest
 
 import run_native as N
 
 W, P = N.W, N.P
+NONZERO_RUNS = re.compile(rb'([\x01-\xff])\1*')
 
 
 def runs(data):
-    result = []
-    start = 0
-    while start < len(data):
-        end = start + 1
-        while end < len(data) and data[end] == data[start]: end += 1
-        if data[start]: result.append([start, end - start, data[start]])
-        start = end
-    return result
+    return [[match.start(), match.end() - match.start(), match[1][0]]
+            for match in NONZERO_RUNS.finditer(data)]
 
 
 def raw_state(profile, source, phase, after):
