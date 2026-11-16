@@ -1,0 +1,314 @@
+{
+  "interpreter": {
+    "row": {
+      "world_class": "fd",
+      "remote": false,
+      "provider_class": "rh",
+      "provider_fields": [
+        false,
+        false,
+        false,
+        0
+      ],
+      "chunk_provider_class": "ok",
+      "chunk": [
+        0,
+        0
+      ],
+      "chunk_loaded": true,
+      "metadata": {
+        "seed": 123,
+        "spawn": [
+          0,
+          64,
+          0
+        ],
+        "time": 211,
+        "last_played": 1794813891269,
+        "size_on_disk": 3178496,
+        "dimension": 0,
+        "version": 19132,
+        "name": "Furnace world"
+      },
+      "block": 62,
+      "block_metadata": 2,
+      "map_before_lookup": [
+        {
+          "class": "sk",
+          "xyz": [
+            0,
+            64,
+            2
+          ]
+        }
+      ],
+      "lookup_same": true,
+      "furnace": {
+        "class": "sk",
+        "world_same": true,
+        "xyz": [
+          0,
+          64,
+          2
+        ],
+        "invalid": false,
+        "fields": [
+          1397,
+          1600,
+          4
+        ],
+        "slots": [
+          [
+            15,
+            1,
+            0,
+            0
+          ],
+          [
+            263,
+            1,
+            0,
+            0
+          ],
+          null
+        ]
+      },
+      "active": [
+        {
+          "class": "sk",
+          "same_saved_furnace": true,
+          "xyz": [
+            0,
+            64,
+            2
+          ]
+        }
+      ],
+      "pending": 0,
+      "player_inventory_owner_class": "ix",
+      "player_reference_null": true,
+      "player_main": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        [
+          265,
+          1,
+          0,
+          0
+        ],
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "player_armor": [
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    "footer": {
+      "rows": 1,
+      "network": 0,
+      "native": 0,
+      "execs": 0,
+      "denied_writes": 0,
+      "write_checks": [
+        {
+          "operation": "write",
+          "role": "owned-session-lock"
+        },
+        {
+          "operation": "write",
+          "role": "existing-copied-region-rw-open"
+        }
+      ]
+    }
+  },
+  "default": {
+    "row": {
+      "world_class": "fd",
+      "remote": false,
+      "provider_class": "rh",
+      "provider_fields": [
+        false,
+        false,
+        false,
+        0
+      ],
+      "chunk_provider_class": "ok",
+      "chunk": [
+        0,
+        0
+      ],
+      "chunk_loaded": true,
+      "metadata": {
+        "seed": 123,
+        "spawn": [
+          0,
+          64,
+          0
+        ],
+        "time": 211,
+        "last_played": 1794813891269,
+        "size_on_disk": 3178496,
+        "dimension": 0,
+        "version": 19132,
+        "name": "Furnace world"
+      },
+      "block": 62,
+      "block_metadata": 2,
+      "map_before_lookup": [
+        {
+          "class": "sk",
+          "xyz": [
+            0,
+            64,
+            2
+          ]
+        }
+      ],
+      "lookup_same": true,
+      "furnace": {
+        "class": "sk",
+        "world_same": true,
+        "xyz": [
+          0,
+          64,
+          2
+        ],
+        "invalid": false,
+        "fields": [
+          1397,
+          1600,
+          4
+        ],
+        "slots": [
+          [
+            15,
+            1,
+            0,
+            0
+          ],
+          [
+            263,
+            1,
+            0,
+            0
+          ],
+          null
+        ]
+      },
+      "active": [
+        {
+          "class": "sk",
+          "same_saved_furnace": true,
+          "xyz": [
+            0,
+            64,
+            2
+          ]
+        }
+      ],
+      "pending": 0,
+      "player_inventory_owner_class": "ix",
+      "player_reference_null": true,
+      "player_main": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        [
+          265,
+          1,
+          0,
+          0
+        ],
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "player_armor": [
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    "footer": {
+      "rows": 1,
+      "network": 0,
+      "native": 0,
+      "execs": 0,
+      "denied_writes": 0,
+      "write_checks": [
+        {
+          "operation": "write",
+          "role": "owned-session-lock"
+        },
+        {
+          "operation": "write",
+          "role": "existing-copied-region-rw-open"
+        }
+      ]
+    }
+  }
+}

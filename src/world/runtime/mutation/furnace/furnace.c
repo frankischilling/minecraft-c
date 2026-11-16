@@ -126,13 +126,20 @@ bool mc_world_mutation_furnace_orient(mc_world_runtime *world, const mc_block *b
     if (a && !b)
         metadata = 4;
     at(e, "h(Lfd;III)V", 150);
-    if (owned != NULL) {
-        if (!mc_world_mutation_execution_metadata(
-                owned, world, x, y, z, metadata, e,
-                (mc_entity_tick_execution_site){"tc", "h", "(Lfd;III)V", 150}))
-            return nested(e, "c(Lfd;III)V", 15);
-    } else if (mc_world_runtime_metadata_set(world, x, y, z, metadata, e) != MC_WORLD_STORAGE_OK)
+    const bool written =
+        owned != NULL
+            ? mc_world_mutation_execution_metadata(
+                  owned, world, x, y, z, metadata, e,
+                  (mc_entity_tick_execution_site){"tc", "h", "(Lfd;III)V", 150})
+            : mc_world_runtime_metadata_set(world, x, y, z, metadata, e) == MC_WORLD_STORAGE_OK;
+    if (!written) {
+        /* A fresh World child projection has no Block hook of its own. Keep
+         * this reached private caller beside TC.c15 without replacing an
+         * actual deeper Block-hook failure supplied by that child. */
+        if (e->hook_class == NULL && e->cause_hook_class == NULL)
+            at(e, "h(Lfd;III)V", 150);
         return nested(e, "c(Lfd;III)V", 15);
+    }
 done:
     e->hook_class = e->hook_method = NULL;
     e->hook_bytecode = 0;

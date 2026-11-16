@@ -67,6 +67,18 @@ counter reset or World tick.
 
 ## Evidence and remaining work
 
+The current retained-lookup checkpoint passes all 1,341 Windows tests in
+618.75 seconds, plus 27 selected GCC and 28 selected Clang sanitizer tests.
+The final monitor-2 Furnace cycle passes 9,113 native checks, Chest placement
+passes 1,723 and Workbench passes 2,052. All 2,344 selected inputs and assets
+remain unchanged during each process; source windows close at completion.
+Four Furnace images were inspected. Independent readback finds Player Iron in
+slot8 and the saved Furnace at Burn1396/Cook5. This save is distinct from the
+earlier Burn1397/Cook4 save used by the original-client packet below.
+
+The following component, lifecycle and earlier SDK results retain the preceding
+Furnace checkpoint `9c2fb78e45465ac6d1eda5f122df994e8ee8ffec`.
+
 The [component packet](../../tests/reference/inventory/furnace/README.md)
 contains 207 unchanged-client observations in two ordinary and two passive
 debugger VMs. The debugger journals agree on 2,754 entered calls and 74 live
@@ -98,7 +110,7 @@ lookup completed but its continuity guard rejected provenance metadata changed
 during execution. Its retained failure is separate from the frozen retry, which
 passes in 145.57 seconds without a code change.
 
-The final Windows monitor-2 SDK cycle passes 9,242 native checks. It places the held
+The preceding Windows monitor-2 SDK cycle passes 9,242 native checks. It places the held
 Furnace, manually inserts two ore and two coal, takes the first Iron, saves and
 reselects the World during the same burn, then takes the second Iron. The
 independent saved-state reader finds one Iron in Player slot8 and the remaining
@@ -129,10 +141,19 @@ corruption controls cover those joins, NBT and region bounds, PNG integrity,
 native host continuity and input enumeration. These are native controls,
 without an original pixel or audible-output comparison.
 
-The owned lazy Tile lookup still stops at `TC.c`'s orientation child after its
-real inherited factory/install prefix. That caller needs retained mutation
-work before it can complete orientation and checked native unwind. Ordinary
-placement and loaded inventory paths do not remove this remaining dependency.
+The [retained lazy lookup](../world/furnace-lazy-lookup.md) now joins the whole
+client Furnace addition through actual factory, installation and orientation.
+Arrow and Ray preserve failed child scopes and close them through checked
+native-only unwind. Four declared native profiles qualify both shape paths,
+source-field preservation and Source-exception/native-failure separation.
+
+A separate [original save readback packet](../../tests/reference/world/furnace_save_readback/README.md)
+loads copies of the earlier 9,242-check scene's actual saved files in two fresh
+original client VMs. Both recover Block62/metadata2, ore15x1, coal263x1,
+Burn1397/Cook4, recomputed duration1600 and serialized Player Iron in slot8.
+The saved SK exists before lazy lookup and retains the same identity. This is
+one C-to-original load/read boundary, with no original tick/save, concrete
+Player construction or bidirectional roundtrip qualification.
 Server ticking, multiplayer container synchronization, unrestricted save round
 trips, sustained play, original pixels, audible output and FPS remain separate
 qualification work.

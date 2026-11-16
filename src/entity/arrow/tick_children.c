@@ -407,6 +407,22 @@ static mc_arrow_tick_failure_kind query_classification(mc_arrow_tick_call *c,
     return MC_ARROW_TICK_FAILURE_UNRESOLVED;
 }
 
+static mc_arrow_tick_failure_kind shape_classification(mc_arrow_tick_call *c,
+                                                       const mc_world_collision_error *error,
+                                                       const char **exception) {
+    if (error->lazy_source_null) {
+        *exception = "java/lang/NullPointerException";
+        return MC_ARROW_TICK_FAILURE_SOURCE_EXCEPTION;
+    }
+    const mc_world_collision_lazy_callback_kind active =
+        mc_world_collision_lazy_callback_classify(&c->execution, error, exception);
+    if (active == MC_WORLD_COLLISION_LAZY_CALLBACK_SOURCE_EXCEPTION)
+        return named_kind(*exception);
+    if (active == MC_WORLD_COLLISION_LAZY_CALLBACK_NATIVE)
+        return MC_ARROW_TICK_FAILURE_NATIVE;
+    return query_classification(c, &error->nearby, exception);
+}
+
 bool mc_arrow_tick_block_value(mc_arrow_tick_call *c, mc_world_runtime *world, int32_t x, int32_t y,
                                int32_t z, bool metadata, unsigned int pc, int32_t *out) {
     mc_arrow_tick_select(c, MC_ARROW_TICK_CHILD_BLOCK, pc);
@@ -466,20 +482,20 @@ bool mc_arrow_tick_block_shape(mc_arrow_tick_call *c, mc_world_runtime *world,
     const mc_world_collision_block_execution_code code = {
         c->query_code, c->registry, c->code_classes, {"lm", "d", "(III)Low;", 67}};
     const bool completed =
-        collision_box ? mc_world_collision_block_box_in_classes_in_execution(
-                            &c->execution, c->code_classes, world, code, block, x, y, z,
-                            &c->block_box, &c->work.block, &c->query_status, &c->query_result)
-                      : mc_world_collision_block_state_shape_in_classes_in_execution(
-                            &c->execution, c->code_classes, world, code, block, x, y, z,
-                            &c->work.block, &c->query_status, &c->query_result);
+        collision_box
+            ? mc_world_collision_block_box_in_classes_in_execution(
+                  &c->execution, c->code_classes, world, code, block, x, y, z, &c->block_box,
+                  &c->work.block, &c->query_status, &c->query_result, &c->lazy_tile_entity)
+            : mc_world_collision_block_state_shape_in_classes_in_execution(
+                  &c->execution, c->code_classes, world, code, block, x, y, z, &c->work.block,
+                  &c->query_status, &c->query_result, &c->lazy_tile_entity);
     if (!completed) {
         c->error.block = &c->work.block;
         c->error.child_site = (mc_arrow_site){c->work.block.block_class, collision_box ? "e" : "a",
                                               collision_box ? "(Lfd;III)Leq;" : "(Lxp;III)V",
                                               (int32_t)c->work.block.block_bytecode};
         const char *exception = NULL;
-        const mc_arrow_tick_failure_kind kind =
-            query_classification(c, &c->work.block.nearby, &exception);
+        const mc_arrow_tick_failure_kind kind = shape_classification(c, &c->work.block, &exception);
         const mc_world_storage_status status = c->query_status != MC_WORLD_STORAGE_OK
                                                    ? c->query_status
                                                    : c->query_result.ownership_status;
@@ -620,7 +636,7 @@ bool mc_arrow_tick_ray(mc_arrow_tick_call *c, mc_world_runtime *world) {
         } else if (owned_view.query_failed && owned_view.collision != NULL) {
             /* Active scratch is Ray-owned, not the Arrow block union. Classify
              * the explicit selected loader/receipt before Ray retirement. */
-            kind = query_classification(c, &owned_view.collision->nearby, &exception);
+            kind = shape_classification(c, owned_view.collision, &exception);
         } else if (view.failure != NULL && view.failure->registry != NULL) {
             mc_item_render_throwable registry_kind = MC_ITEM_RENDER_NO_THROWABLE;
             /* Copy actual typed VALUE before the Ray frame expires. */

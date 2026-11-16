@@ -7,16 +7,22 @@ the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining w
 
 ## Current client work
 
-[Furnace storage and smelting](client/furnaces.md) now use actual TileEntity,
-World, container and screen owners. Nine selected Windows tests pass, including
-173 original core projections, 27 original container profiles, seven original
-World post-step projections and real Player output statistics. The same nine
-Clang sanitizer controls and eight GCC sanitizer controls pass. The full
-Windows Release build and all 1,335 tests pass in 531.50 seconds, with every
-configured case accounted for and all 1,326 preceding names retained. An authored monitor-2 SDK cycle passes 9,242
-checks through two smelts, save/reselection and open-screen native shutdown.
-Owned lazy orientation remains an explicit dependency. Hosted qualification
-retains its separate tested revision.
+[Furnace storage and smelting](client/furnaces.md) use actual TileEntity,
+World, container and screen owners. The [retained lazy addition](world/furnace-lazy-lookup.md)
+now completes client orientation with checked Arrow/Ray ownership, preserving
+source failures and native cleanup refusals separately. The full Windows
+Release build and all 1,341 tests pass in 618.75 seconds, with every configured
+case and all 1,335 preceding Furnace names accounted for. GCC passes 27 selected
+sanitizer tests and Clang passes 28, including the retained server prefix and
+shared lookup/Arrow/Ray regressions. The final monitor-2 Furnace,
+Chest-placement and Workbench cycles pass with unchanged selected inputs/assets
+and completed window cleanup. Earlier hosted results retain their tested revisions.
+
+Copies of the earlier native Furnace save also load through the unchanged
+original client in two fresh VMs. The finite readback recovers the real saved
+Furnace and serialized Player inventory. Original saves/ticks, concrete Player
+construction, unrestricted Worlds and bidirectional round trips remain outside
+that boundary.
 
 Existing [Chest access](client/chests.md) now connects right-click activation,
 single/double inventory views, container transfers, drawing, close and saved

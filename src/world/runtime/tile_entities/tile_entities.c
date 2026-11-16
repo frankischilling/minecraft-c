@@ -3881,15 +3881,22 @@ typedef struct live_query_execution {
     mc_entity_tick_execution_site receiver_site;
     mc_world_runtime_execution_result *owned;
     bool *addition_source_null;
+    mc_world_runtime_classes *code_classes;
+    mc_live_tile_entity_query_execution_call **lazy_call;
 } live_query_execution;
+
+#include "lazy_execution.inc"
 
 static bool live_query_close(const live_query_execution *query,
                              const mc_entity_tick_execution_world_token *token,
                              bool source_completed, mc_live_tile_entity_error *error) {
     if (query == NULL)
         return source_completed;
-    const mc_world_storage_status closed =
-        mc_entity_tick_execution_pop_world(query->execution, token, !source_completed);
+    mc_live_tile_entity_query_execution_call *call = *query->lazy_call;
+    call->source_completed = source_completed;
+    call->active = false;
+    const mc_world_storage_status closed = live_lazy_pop(call);
+    call->initial_close = closed;
     if (closed != MC_WORLD_STORAGE_OK) {
         mc_world_runtime_execution_result_note(query->owned, closed,
                                                "TileEntity lazy Block owned scope cleanup",
@@ -3898,7 +3905,19 @@ static bool live_query_close(const live_query_execution *query,
             live_fail(error, closed, "TileEntity lazy Block owned scope cleanup");
         return false;
     }
-    return source_completed;
+    if (!source_completed)
+        return false;
+    const mc_world_storage_status retired =
+        mc_live_tile_entity_query_execution_retire(query->lazy_call);
+    if (retired != MC_WORLD_STORAGE_OK) {
+        mc_world_runtime_execution_result_note(query->owned, retired,
+                                               "TileEntity completed lazy owner retirement",
+                                               query->receiver_site);
+        live_fail(error, retired, "TileEntity completed lazy owner retirement");
+        return false;
+    }
+    (void)token; /* The owner retains this exact original token, never a reread. */
+    return true;
 }
 
 static bool live_chunk_install_held(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z,
@@ -4173,17 +4192,8 @@ static bool live_chunk_get_held(mc_world_chunk *chunk, int32_t x, int32_t y, int
         error->chunk_bytecode = 67;
         mc_world_runtime *world = chunk->d;
         mc_entity_tick_execution_world_token token = {0};
-        if (query != NULL) {
-            const mc_world_storage_status pushed = mc_entity_tick_execution_push_world(
-                query->execution, world, query->receiver_site, &token);
-            if (pushed != MC_WORLD_STORAGE_OK) {
-                mc_world_runtime_execution_result_note(
-                    query->owned, pushed, "TileEntity lazy Block evaluated World ownership",
-                    query->receiver_site);
-                live_fail(error, pushed, "TileEntity lazy Block evaluated World ownership");
-                return false;
-            }
-        }
+        if (query != NULL && !live_lazy_begin(query, world, &token, error))
+            return false;
         error->chunk_bytecode = 89;
         const int32_t wx = mc_java_i32_add(mc_java_i32_mul(chunk->constructor_x, 16), x);
         const int32_t wz = mc_java_i32_add(mc_java_i32_mul(chunk->constructor_z, 16), z);
@@ -4193,52 +4203,56 @@ static bool live_chunk_get_held(mc_world_chunk *chunk, int32_t x, int32_t y, int
             return live_query_close(query, &token, false, error);
             /* NULL passed checkcast59; callee base6 is NOT entered. */
         }
-        bool called = live_block_added_held(world, block, wx, y, wz, error, query);
-        if (called && block->kind == MC_BLOCK_FURNACE) {
-            if (query != NULL) {
-                /* The owned lazy caller has no retained mutation capsule yet.
-                 * Keep the real RW prefix and refuse at TC.c's private child;
-                 * never fall back to a legacy getter/setter or replay RW. */
+        const bool furnace_client_join = query != NULL && block->kind == MC_BLOCK_FURNACE &&
+                                         block->classes->options.side == MC_REGISTRY_CLIENT;
+        bool called = furnace_client_join
+                          ? live_lazy_furnace(query, world, block, wx, y, wz, error)
+                          : live_block_added_held(world, block, wx, y, wz, error, query);
+        if (called && query != NULL && block->kind == MC_BLOCK_FURNACE && !furnace_client_join) {
+            /* Preserve the already supported server LB factory/install prefix.
+             * Its LZ private orientation continuation is still unjoined. The
+             * generic retained owner closes the same evaluated hi.d67 scope. */
+            error->chunk_bytecode = 89; /* The inherited install already returned. */
+            error->bytecode = 15;
+            live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "Furnace lazy server private orientation retained continuation");
+            called = false;
+        }
+        if (called && block->kind == MC_BLOCK_FURNACE && query == NULL) {
+            mc_world_mutation_error *child = calloc(1, sizeof(*child));
+            if (child == NULL) {
                 error->bytecode = 15;
-                live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                          "Furnace lazy TC private orientation retained child");
+                live_fail(error, MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                          "Furnace lazy orientation diagnostic allocation");
                 called = false;
             } else {
-                mc_world_mutation_error *child = calloc(1, sizeof(*child));
-                if (child == NULL) {
-                    error->bytecode = 15;
-                    live_fail(error, MC_WORLD_STORAGE_ALLOCATION_FAILED,
-                              "Furnace lazy orientation diagnostic allocation");
-                    called = false;
-                } else {
-                    mc_world_mutation_error_init(child);
-                    called = mc_world_mutation_furnace_orient(world, block, wx, y, wz, child, NULL);
-                    if (!called) {
-                        error->status = child->status;
-                        error->operation = child->operation;
-                        error->cause = child->cause;
-                        error->registry = child->registry;
-                        error->entity = child->entity;
-                        error->publication = child->publication;
-                        error->batch = child->batch;
-                        error->tile_entity = child->tile_entity.tile_entity;
-                        error->load_entity = child->load_entity;
-                        error->activation_bytecode = child->activation_bytecode;
-                        error->activation_world_bytecode = child->activation_world_bytecode;
-                        error->load_bytecode = child->load_bytecode;
-                        error->load_builder_bytecode = child->load_builder_bytecode;
-                        error->provider_bytecode = child->provider_bytecode != 0
-                                                       ? child->provider_bytecode
-                                                       : child->query.provider_bytecode;
-                        error->world_access_failure = child->world_access_failure;
-                        error->world_access_bytecode = child->world_access_bytecode;
-                        error->caller_bytecode = 15;
-                        error->hook_bytecode = child->cause_hook_bytecode != 0
-                                                   ? child->cause_hook_bytecode
-                                                   : child->hook_bytecode;
-                    }
-                    free(child);
+                mc_world_mutation_error_init(child);
+                called = mc_world_mutation_furnace_orient(world, block, wx, y, wz, child, NULL);
+                if (!called) {
+                    error->status = child->status;
+                    error->operation = child->operation;
+                    error->cause = child->cause;
+                    error->registry = child->registry;
+                    error->entity = child->entity;
+                    error->publication = child->publication;
+                    error->batch = child->batch;
+                    error->tile_entity = child->tile_entity.tile_entity;
+                    error->load_entity = child->load_entity;
+                    error->activation_bytecode = child->activation_bytecode;
+                    error->activation_world_bytecode = child->activation_world_bytecode;
+                    error->load_bytecode = child->load_bytecode;
+                    error->load_builder_bytecode = child->load_builder_bytecode;
+                    error->provider_bytecode = child->provider_bytecode != 0
+                                                   ? child->provider_bytecode
+                                                   : child->query.provider_bytecode;
+                    error->world_access_failure = child->world_access_failure;
+                    error->world_access_bytecode = child->world_access_bytecode;
+                    error->caller_bytecode = 15;
+                    error->hook_bytecode = child->cause_hook_bytecode != 0
+                                               ? child->cause_hook_bytecode
+                                               : child->hook_bytecode;
                 }
+                free(child);
             }
         }
         if (!live_query_close(query, &token, called, error))
@@ -4351,25 +4365,38 @@ mc_world_storage_status mc_live_tile_entities_get(mc_world_runtime *world, int32
 
 mc_world_storage_status mc_live_tile_entities_get_in_execution(
     mc_entity_tick_execution *execution, mc_world_runtime *world,
-    mc_world_runtime_execution_code code, mc_registry_classes *defining_registry,
-    mc_world_runtime_classes *factory_classes, mc_entity_tick_execution_site receiver_site,
-    int32_t x, int32_t y, int32_t z, mc_tile_entity **out, mc_live_tile_entity_error *error,
-    mc_world_runtime_execution_result *owned) {
+    mc_world_runtime_execution_code code, mc_world_runtime_classes *code_classes,
+    mc_registry_classes *defining_registry, mc_world_runtime_classes *factory_classes,
+    mc_entity_tick_execution_site receiver_site, int32_t x, int32_t y, int32_t z,
+    mc_tile_entity **out, mc_live_tile_entity_error *error,
+    mc_world_runtime_execution_result *owned,
+    mc_live_tile_entity_query_execution_call **lazy_call) {
+    /* Never erase a failed call's canonical result or outward error on reentry.
+     * Native retirement, rather than another getter, owns its remaining work. */
+    if (lazy_call != NULL && *lazy_call != NULL)
+        return MC_WORLD_STORAGE_BUSY;
     if (owned != NULL)
         mc_world_runtime_execution_result_init(owned);
-    if (execution == NULL || owned == NULL) {
+    if (execution == NULL || owned == NULL || lazy_call == NULL) {
         if (error != NULL) {
             mc_live_tile_entities_error_init(error);
             live_fail(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
-                      "TileEntity lookup execution/result required");
+                      "TileEntity lookup execution/result/owner slot required");
         }
-        mc_world_runtime_execution_result_note(owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
-                                               "TileEntity lookup execution/result required",
-                                               receiver_site);
+        mc_world_runtime_execution_result_note(
+            owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+            "TileEntity lookup execution/result/owner slot required", receiver_site);
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     }
-    const live_query_execution query = {execution,       world,         code,  defining_registry,
-                                        factory_classes, receiver_site, owned, NULL};
+    const live_query_execution query = {.execution = execution,
+                                        .caller_world = world,
+                                        .code = code,
+                                        .registry = defining_registry,
+                                        .factory_classes = factory_classes,
+                                        .receiver_site = receiver_site,
+                                        .owned = owned,
+                                        .code_classes = code_classes,
+                                        .lazy_call = lazy_call};
     return live_world_get_run(world, x, y, z, out, error, &query);
 }
 
@@ -4462,8 +4489,14 @@ mc_world_storage_status mc_live_tile_entities_block_added_in_execution(
         mc_world_runtime_execution_result_note(owned, admitted, frame.operation, receiver_site);
         return live_finish(NULL, frame, error);
     }
-    const live_query_execution query = {execution,       world,         code,  defining_registry,
-                                        factory_classes, receiver_site, owned, source_null};
+    const live_query_execution query = {.execution = execution,
+                                        .caller_world = world,
+                                        .code = code,
+                                        .registry = defining_registry,
+                                        .factory_classes = factory_classes,
+                                        .receiver_site = receiver_site,
+                                        .owned = owned,
+                                        .addition_source_null = source_null};
     (void)live_block_added_held(world, block, x, y, z, &frame, &query);
     return live_finish(world, frame, error);
 }

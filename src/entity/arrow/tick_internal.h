@@ -10,6 +10,7 @@
 #include "../../world/runtime/execution_children_internal.h"
 #include "../../world/runtime/mutation/mutation_internal.h"
 #include "../../world/runtime/runtime_internal.h"
+#include "../../world/runtime/tile_entities/execution_internal.h"
 #include "../../world/runtime/world_access_internal.h"
 #include "../drop/execution_internal.h"
 #include "../movement/damage_execution_internal.h"
@@ -73,6 +74,7 @@ struct mc_arrow_tick_call {
     mc_entity_tick_execution execution;
     /* Frame-only VALUE state. Never part of Entity or the reused work union. */
     mc_world_runtime_execution_result query_result;
+    mc_live_tile_entity_query_execution_call *lazy_tile_entity;
     mc_world_runtime_execution_code query_code;
     mc_tick_arrow_base_execution base_execution;
     mc_entity_tick_execution_world_token direct_world;

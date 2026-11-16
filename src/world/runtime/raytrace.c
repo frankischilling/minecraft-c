@@ -3,6 +3,7 @@
 #include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
 #include "raytrace_internal.h"
+#include "tile_entities/execution_internal.h"
 
 #include <emmintrin.h>
 #include <float.h>
@@ -87,13 +88,22 @@ mc_world_raytrace_status mc_world_raytrace_collision_failed(mc_world_raytrace_wo
         w->query_failed = true;
         w->failure.collision = &w->collision;
         w->failure.world = &w->collision.nearby.query.cause;
+        if (w->collision.lazy_source_null) {
+            w->failure.source_exception = true;
+            w->failure.exception_class = "java/lang/NullPointerException";
+        } else if (mc_world_collision_lazy_callback_classify(w->execution, &w->collision,
+                                                             &w->failure.exception_class) ==
+                   MC_WORLD_COLLISION_LAZY_CALLBACK_SOURCE_EXCEPTION) {
+            w->failure.source_exception = true;
+        }
         if (w->owned->selection_ready) {
             mc_entity_tick_execution_loader_view view = {0};
             if (mc_entity_tick_execution_loader_read(w->execution, &w->owned->selection, &view) &&
                 view.status != MC_CHUNK_ACQUIRE_OK && view.failure != NULL &&
                 view.failure == w->collision.nearby.query.source_chunk) {
                 w->failure.source_chunk = view.failure;
-                if (view.failure->source.source_exception && !view.failure->source.native_policy) {
+                if (!w->failure.source_exception && view.failure->source.source_exception &&
+                    !view.failure->source.native_policy) {
                     w->failure.source_exception = true;
                     w->failure.exception_class = view.failure->source.exception_class;
                 }
@@ -105,10 +115,10 @@ mc_world_raytrace_status mc_world_raytrace_collision_failed(mc_world_raytrace_wo
         if (child == MC_WORLD_STORAGE_OK)
             return MC_WORLD_RAYTRACE_OK; /* Native-only stop, not a Source-return witness. */
         const mc_world_raytrace_status mapped =
-            child == MC_WORLD_STORAGE_LIMIT               ? MC_WORLD_RAYTRACE_LIMIT
+            w->failure.source_exception                   ? MC_WORLD_RAYTRACE_SOURCE_EXCEPTION
+            : child == MC_WORLD_STORAGE_LIMIT             ? MC_WORLD_RAYTRACE_LIMIT
             : child == MC_WORLD_STORAGE_ALLOCATION_FAILED ? MC_WORLD_RAYTRACE_ALLOCATION
             : child == MC_WORLD_STORAGE_BUSY              ? MC_WORLD_RAYTRACE_BUSY
-            : w->failure.source_exception                 ? MC_WORLD_RAYTRACE_SOURCE_EXCEPTION
                                                           : MC_WORLD_RAYTRACE_CHILD_FAILED;
         if (w->collision.block_class != NULL)
             w->failure.child = (mc_world_raytrace_site){w->collision.block_class, "a", "(Lxp;III)V",
@@ -225,8 +235,9 @@ failed:
 bool mc_world_raytrace_owned_continuing(mc_world_raytrace_work *w) {
     if (w->execution == NULL)
         return true;
-    if (!w->native_stopped && w->owned->ownership_status == MC_WORLD_STORAGE_OK &&
-        !w->owned->selection_ready && !w->owned->root_pending) {
+    if (!w->native_stopped && w->lazy_tile_entity == NULL &&
+        w->owned->ownership_status == MC_WORLD_STORAGE_OK && !w->owned->selection_ready &&
+        !w->owned->root_pending) {
         bool empty = true;
         for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
             empty = empty && !w->owned->pending[i].used;
@@ -275,7 +286,7 @@ bool mc_world_raytrace_shape(mc_world_raytrace_work *w, const mc_block *block, i
         mc_world_storage_status status = MC_WORLD_STORAGE_OK;
         if (mc_world_collision_block_state_shape_in_classes_in_execution(
                 w->execution, w->classes, w->world, w->code, block, x, y, z, &w->collision, &status,
-                w->owned) &&
+                w->owned, &w->lazy_tile_entity) &&
             mc_world_raytrace_owned_continuing(w))
             return true;
     }
@@ -295,7 +306,7 @@ static bool movement_box(mc_world_raytrace_work *w, const mc_block *block) {
         mc_world_storage_status status = MC_WORLD_STORAGE_OK;
         if (mc_world_collision_block_box_in_classes_in_execution(
                 w->execution, w->classes, w->world, w->code, block, w->state.x, w->state.y,
-                w->state.z, &w->box, &w->collision, &status, w->owned) &&
+                w->state.z, &w->box, &w->collision, &status, w->owned, &w->lazy_tile_entity) &&
             mc_world_raytrace_owned_continuing(w))
             return true;
     }
@@ -624,6 +635,14 @@ begin(mc_world_runtime *world, mc_entity_vector *start, mc_entity_vector *end, b
     w->execution = execution;
     w->owned = owned;
     w->code = code;
+    if (execution != NULL &&
+        !mc_entity_tick_execution_current_world(execution, &w->initiating_world)) {
+        free(call);
+        mc_world_runtime_execution_result_note(
+            owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World ray exact initiating World scope",
+            (mc_entity_tick_execution_site){"fd", "a", "(Lbt;Lbt;ZZ)Lvf;", 0});
+        return MC_WORLD_RAYTRACE_STATE;
+    }
     w->classes = execution == NULL ? world->classes : code_classes;
     w->entities = w->classes->entities;
     w->state.world = world;
@@ -773,6 +792,122 @@ static mc_world_raytrace_status cleanup_failed(mc_world_raytrace_work *w, const 
     return w->cleanup.status;
 }
 
+static bool ray_same_world(const mc_entity_tick_execution_world_token *a,
+                           const mc_entity_tick_execution_world_token *b) {
+    return a->owner == b->owner && a->slot == b->slot && a->generation == b->generation;
+}
+
+static bool ray_records(const mc_world_runtime_execution_result *owned) {
+    if (owned->root_pending)
+        return true;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (owned->pending[i].used)
+            return true;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (owned->closes[i].used)
+            return true;
+    return false;
+}
+
+static mc_world_storage_status ray_unwind_refused(mc_world_raytrace_work *w,
+                                                  mc_world_storage_status status,
+                                                  const char *operation) {
+    (void)cleanup_failed(w, operation);
+    mc_world_runtime_execution_result_note(
+        w->owned, status, operation,
+        (mc_entity_tick_execution_site){"fd", "a", "(Lbt;Lbt;ZZ)Lvf;", (int)w->state.source_pc});
+    return status;
+}
+
+mc_world_storage_status mc_world_raytrace_native_unwind_step(mc_world_raytrace_call *call,
+                                                             bool *quiescent) {
+    if (call == NULL || quiescent == NULL)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    mc_world_raytrace_work *w = &call->work;
+    if (w->state.active)
+        return MC_WORLD_STORAGE_BUSY;
+    if (w->lazy_tile_entity == NULL) {
+        *quiescent = true;
+        return MC_WORLD_STORAGE_OK; /* Enclosing result/World remain caller-owned. */
+    }
+    if (w->execution == NULL || w->owned == NULL)
+        return ray_unwind_refused(w, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                  "World ray lazy child execution/result");
+    if (w->execution->world_open) {
+        mc_entity_tick_execution_world_token current;
+        if (!mc_entity_tick_execution_current_world(w->execution, &current))
+            return ray_unwind_refused(w, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                      "World ray lazy child checked current World");
+        mc_world_runtime_execution_close *close = &w->owned->closes[current.slot];
+        const bool published = close->used && ray_same_world(&current, &close->world);
+        const bool borrowed = ray_same_world(&current, &w->initiating_world);
+        if (!borrowed && !published &&
+            !mc_live_tile_entity_query_execution_owns_world(w->lazy_tile_entity, &current))
+            return ray_unwind_refused(w, MC_WORLD_STORAGE_BUSY,
+                                      "World ray current descendant lacks its recorded owner");
+        if (!ray_same_world(&w->captured_worlds[current.slot], &current)) {
+            const mc_world_access_failure *view = NULL;
+            mc_world_access_failure_lease *node = &w->execution->leases[current.slot];
+            const mc_world_storage_status status =
+                mc_world_access_failure_lease_inspect(node, &view)
+                    ? mc_entity_tick_execution_capture_receipt(w->execution, view)
+                    : mc_world_access_failure_lease_release(node, NULL);
+            if (status != MC_WORLD_STORAGE_OK)
+                return ray_unwind_refused(w, status,
+                                          "World ray exact lazy child protected receipt");
+            w->captured_worlds[current.slot] = current;
+            *quiescent = false;
+            return MC_WORLD_STORAGE_OK;
+        }
+        for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+            if (w->owned->pending[i].used &&
+                ray_same_world(&current, &w->owned->pending[i].attempt.world)) {
+                w->collision.nearby.query.source_chunk = NULL;
+                w->failure.source_chunk = NULL;
+                const mc_world_storage_status status =
+                    mc_world_runtime_execution_finish_pending(w->execution, w->owned);
+                if (status != MC_WORLD_STORAGE_OK)
+                    return ray_unwind_refused(w, status,
+                                              "World ray actual lazy child pending completion");
+                if (w->owned->selection_ready) {
+                    mc_entity_tick_execution_loader_view selected;
+                    if (!mc_entity_tick_execution_loader_read(w->execution, &w->owned->selection,
+                                                              &selected))
+                        return ray_unwind_refused(w, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                                  "World ray completed lazy child selection");
+                    w->collision.nearby.query.source_chunk = selected.failure;
+                    w->failure.source_chunk = selected.failure;
+                }
+                *quiescent = false;
+                return MC_WORLD_STORAGE_OK;
+            }
+        if (published) {
+            const mc_world_storage_status status =
+                mc_world_runtime_execution_retry_close(w->execution, w->owned, close);
+            if (status != MC_WORLD_STORAGE_OK)
+                return ray_unwind_refused(w, status, "World ray exact published lazy child close");
+            *quiescent = false;
+            return MC_WORLD_STORAGE_OK;
+        }
+    }
+    if (ray_records(w->owned))
+        return ray_unwind_refused(w, MC_WORLD_STORAGE_BUSY,
+                                  "World ray lazy child awaits actual canonical records");
+    const mc_world_storage_status closed =
+        mc_live_tile_entity_query_execution_native_close(w->lazy_tile_entity);
+    if (closed != MC_WORLD_STORAGE_OK)
+        return ray_unwind_refused(w, closed, "World ray exact retained lazy child close");
+    /* All outward copies refer to this same Ray-owned scratch. Expire its
+     * typed borrow before retirement can consume the actual mutation child. */
+    w->collision.lazy_addition = NULL;
+    const mc_world_storage_status retired =
+        mc_live_tile_entity_query_execution_retire(&w->lazy_tile_entity);
+    if (retired != MC_WORLD_STORAGE_OK)
+        return ray_unwind_refused(w, retired, "World ray retained lazy child retirement");
+    *quiescent = false;
+    return MC_WORLD_STORAGE_OK;
+}
+
 mc_world_raytrace_status mc_world_raytrace_retire(mc_world_raytrace_call **slot) {
     if (slot == NULL)
         return MC_WORLD_RAYTRACE_ARGUMENT;
@@ -781,6 +916,8 @@ mc_world_raytrace_status mc_world_raytrace_retire(mc_world_raytrace_call **slot)
     mc_world_raytrace_work *w = &(*slot)->work;
     if (w->state.active)
         return MC_WORLD_RAYTRACE_BUSY;
+    if (w->lazy_tile_entity != NULL)
+        return cleanup_failed(w, "World ray retained lazy Tile child awaits native unwind");
     w->state.retiring = true;
     w->state.phase = MC_WORLD_RAYTRACE_RETIRING;
     memset(&w->cleanup, 0, sizeof(w->cleanup));

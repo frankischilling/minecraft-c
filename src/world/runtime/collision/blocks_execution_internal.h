@@ -4,6 +4,22 @@
 #include "../runtime_execution_internal.h"
 #include "mc/world/runtime/collision/boxes.h"
 
+typedef struct mc_live_tile_entity_query_execution_call mc_live_tile_entity_query_execution_call;
+
+typedef enum mc_world_collision_lazy_callback_kind {
+    MC_WORLD_COLLISION_LAZY_CALLBACK_NONE,
+    MC_WORLD_COLLISION_LAZY_CALLBACK_NATIVE,
+    MC_WORLD_COLLISION_LAZY_CALLBACK_SOURCE_EXCEPTION
+} mc_world_collision_lazy_callback_kind;
+
+/* Inspect ONLY the actually retained lazy invocation's active callback arm.
+ * Its first cause must match this collision projection and the exact protected
+ * producer tuple/callback return. No raw status or unrelated receipt selects a
+ * Throwable. Returned exception text borrows that same protected producer. */
+mc_world_collision_lazy_callback_kind
+mc_world_collision_lazy_callback_classify(const mc_entity_tick_execution *,
+                                          const mc_world_collision_error *, const char **exception);
+
 /* ONE actual complete collision ID/metadata body, shared with the existing held
  * entry. Caller captured/owns this exact nullable World BEFORE later source
  * arguments, and keeps the real defining runtime/Registry/Entity code and
@@ -73,7 +89,12 @@ typedef struct mc_world_collision_block_execution_code {
  * code.chunk and code.lazy_receiver_site name actual defining Chunk activation
  * and lazy lm.d/hi.d receiver loads; these are caller-supplied VALUE provenance.
  *
- * Required owned is fresh/stable/disjoint caller-frame result storage; status
+ * Required owned is fresh/stable/disjoint caller-frame VALUE storage. Required
+ * lazy_call is a fresh stable owner slot in that enclosing frame, separate from
+ * owned and any reused diagnostic union. Success leaves it NULL. Failure may
+ * retain the actual lazy invocation there until checked native close/retire;
+ * expire error.lazy_addition before consuming that owner. A live slot refuses
+ * another Source entry without resetting its canonical result. status
  * is a separate required output. All outputs, scratch and owners are disjoint.
  * Initialized error scratch is optional and
  * preserves outer collision PCs as in the held entries. Native preflight
@@ -98,10 +119,11 @@ bool mc_world_collision_block_box_in_classes_in_execution(
     mc_entity_tick_execution *, mc_world_runtime_classes *, mc_world_runtime *,
     mc_world_collision_block_execution_code, const mc_block *, int32_t, int32_t, int32_t,
     mc_entity_bounds **, mc_world_collision_error *, mc_world_storage_status *,
-    mc_world_runtime_execution_result *);
+    mc_world_runtime_execution_result *, mc_live_tile_entity_query_execution_call **);
 bool mc_world_collision_block_state_shape_in_classes_in_execution(
     mc_entity_tick_execution *, mc_world_runtime_classes *, mc_world_runtime *,
     mc_world_collision_block_execution_code, const mc_block *, int32_t, int32_t, int32_t,
-    mc_world_collision_error *, mc_world_storage_status *, mc_world_runtime_execution_result *);
+    mc_world_collision_error *, mc_world_storage_status *, mc_world_runtime_execution_result *,
+    mc_live_tile_entity_query_execution_call **);
 
 #endif

@@ -275,15 +275,16 @@ static int aol_shape(aol_fixture *s, mc_world_runtime *world, int32_t id, int32_
     const mc_world_collision_block_execution_code code = {
         cq_code, f->registry[0], f->classes[0], {"lm", "d", "(III)Low;", 67}};
     mc_world_storage_status status = MC_WORLD_STORAGE_OK;
+    mc_live_tile_entity_query_execution_call *lazy = NULL;
     mc_world_collision_error_init(&s->cq.collision);
     ++s->calls;
     const bool completed = box ? mc_world_collision_block_box_in_classes_in_execution(
                                      &s->cq.execution, f->classes[0], world, code, block, x, y, z,
-                                     &s->box, &s->cq.collision, &status, &s->cq.result)
+                                     &s->box, &s->cq.collision, &status, &s->cq.result, &lazy)
                                : mc_world_collision_block_state_shape_in_classes_in_execution(
                                      &s->cq.execution, f->classes[0], world, code, block, x, y, z,
-                                     &s->cq.collision, &status, &s->cq.result);
-    VERIFY(completed && status == MC_WORLD_STORAGE_OK && aol_quiet(&s->cq.result) &&
+                                     &s->cq.collision, &status, &s->cq.result, &lazy);
+    VERIFY(completed && lazy == NULL && status == MC_WORLD_STORAGE_OK && aol_quiet(&s->cq.result) &&
            s->cq.execution.first.status == MC_WORLD_STORAGE_OK && !s->cq.execution.capture_pending);
     if (box)
         VERIFY((id == 90) == (s->box == NULL));
@@ -344,7 +345,10 @@ static int aol_collision_mode(aol_fixture *s) {
     return 0;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_ARROW_OWNED_LEAVES_MAIN
+#define MC_ARROW_OWNED_LEAVES_MAIN main
+#endif
+int MC_ARROW_OWNED_LEAVES_MAIN(int argc, char **argv) {
     VERIFY(argc == 3 &&
            (strcmp(argv[1], "base-air") == 0 || strcmp(argv[1], "base-water") == 0 ||
             strcmp(argv[1], "base-lava") == 0 || strcmp(argv[1], "base-splash") == 0 ||

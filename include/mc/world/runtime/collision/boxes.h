@@ -3,6 +3,8 @@
 
 #include "mc/world/runtime/collision/entities.h"
 
+struct mc_world_mutation_error;
+
 /* One lease on the actual mutable K List, not a coordinate snapshot. Each
  * occurrence keeps its actual pooled box or owning Entity alive. A later
  * query may clear/refill the same List and pooled boxes may be overwritten
@@ -22,6 +24,10 @@ typedef struct mc_world_collision_error {
      * independent enclosing frames on carried Block, TileEntity or Direction failure. */
     unsigned int piston_bytecode, shifted_bytecode;
     int32_t x, y, z;
+    /* Actual retained lazy Block.c child, when reached. Borrow expires before
+     * its explicit lookup owner is retired; this error VALUE owns no child. */
+    const struct mc_world_mutation_error *lazy_addition;
+    bool lazy_source_null; /* Actual returned child proof, copied before retirement. */
 } mc_world_collision_error;
 
 /* Actual fd/dj.a(Entity,AABB): clear current K, gather Block contributions,

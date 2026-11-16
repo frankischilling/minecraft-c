@@ -86,6 +86,8 @@ def main():
                  "src/world/runtime/tile_entities/furnace_core.inc",
                  "src/world/runtime/tile_entities/furnace_drops.inc",
                  "src/world/runtime/tile_entities/furnace_nbt.inc",
+                 "src/world/runtime/tile_entities/lazy_execution.inc",
+                 "tests/world/runtime/world_access/furnace_lazy_controls.inc",
                  "src/client/render/blocks/chest_texture.inc",
                  "tests/world/runtime/placement/torch_callbacks.inc",
                  "tests/block/registry/static_index_values.inc",

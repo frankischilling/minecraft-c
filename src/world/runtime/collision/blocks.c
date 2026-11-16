@@ -11,7 +11,9 @@
 #include "../chunk_provider_internal.h"
 #include "../construction_internal.h"
 #include "../tile_entities/piston_math_internal.h"
+#include "../world_access_internal.h"
 #include "mc/core/java/java.h"
+#include "mc/world/runtime/mutations.h"
 
 #include <float.h>
 #include <stdint.h>
@@ -37,7 +39,48 @@ typedef struct block_shape_execution {
     mc_entity_tick_execution *execution;
     mc_world_collision_block_execution_code code;
     mc_world_runtime_execution_result *owned;
+    mc_live_tile_entity_query_execution_call **lazy_call;
 } block_shape_execution;
+
+static bool lazy_same_cause(const mc_world_storage_error *a, const mc_world_storage_error *b) {
+    return a->status == b->status && a->operation == b->operation &&
+           a->system_error == b->system_error;
+}
+
+mc_world_collision_lazy_callback_kind
+mc_world_collision_lazy_callback_classify(const mc_entity_tick_execution *execution,
+                                          const mc_world_collision_error *error,
+                                          const char **exception) {
+    if (execution == NULL || execution->identity != execution || error == NULL ||
+        error->lazy_addition == NULL)
+        return MC_WORLD_COLLISION_LAZY_CALLBACK_NONE;
+    const mc_world_mutation_error *child = error->lazy_addition;
+    const mc_world_access_failure *active = &child->world_access_failure;
+    if (child->status == MC_WORLD_STORAGE_OK || child->world_access_bytecode == 0 ||
+        active->receipt == NULL || active->source_null_receiver ||
+        !lazy_same_cause(&child->cause, &error->nearby.query.cause))
+        return MC_WORLD_COLLISION_LAZY_CALLBACK_NONE;
+    /* The active typed child was selected above. This loop proves physical
+     * protection only; it never chooses a different failure from owner history. */
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_RECEIPTS; ++i) {
+        const mc_world_access_failure *held = NULL;
+        const mc_world_access_failure_lease *node = &execution->leases[i];
+        if (!execution->lease_used[i] || !mc_world_access_failure_lease_inspect(node, &held) ||
+            held->receiver != active->receiver || held->receipt != active->receipt ||
+            held->render_global != active->render_global ||
+            held->source_null_receiver != active->source_null_receiver ||
+            node->callback_status == MC_WORLD_STORAGE_OK)
+            continue;
+        const mc_world_storage_error callback =
+            mc_world_access_callback_error(node->callback_status, node->callback_error);
+        if (!lazy_same_cause(&callback, &child->cause))
+            continue;
+        return mc_world_access_failure_source_exception(held, exception)
+                   ? MC_WORLD_COLLISION_LAZY_CALLBACK_SOURCE_EXCEPTION
+                   : MC_WORLD_COLLISION_LAZY_CALLBACK_NATIVE;
+    }
+    return MC_WORLD_COLLISION_LAZY_CALLBACK_NONE;
+}
 
 typedef struct block_context {
     mc_world_runtime_classes *code_classes;
@@ -444,7 +487,7 @@ static bool block_shape_continuing(const block_context *context, mc_world_storag
     const block_shape_execution *query = context->query;
     if (query->owned->ownership_status != MC_WORLD_STORAGE_OK)
         return false;
-    if (!block_shape_result_empty(query->owned)) {
+    if (*query->lazy_call != NULL || !block_shape_result_empty(query->owned)) {
         mc_world_runtime_execution_result_note(
             query->owned, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
             "Block shape successful query has outstanding ownership", query->execution->site);
@@ -573,12 +616,17 @@ static mc_world_storage_status moving_piston_tile_entity(const block_context *co
         return MC_WORLD_STORAGE_OK; /* Native result alone forbids continuation. */
     const block_shape_execution *query = context->query;
     const mc_world_storage_status status =
-        query == NULL
-            ? mc_live_tile_entities_get(context->world, x, y, z, &tile_entity, &child)
-            : mc_live_tile_entities_get_in_execution(
-                  query->execution, context->world, query->code.chunk, query->code.tile_registry,
-                  query->code.tile_factory_classes, query->code.lazy_receiver_site, x, y, z,
-                  &tile_entity, &child, query->owned);
+        query == NULL ? mc_live_tile_entities_get(context->world, x, y, z, &tile_entity, &child)
+                      : mc_live_tile_entities_get_in_execution(
+                            query->execution, context->world, query->code.chunk,
+                            context->code_classes, query->code.tile_registry,
+                            query->code.tile_factory_classes, query->code.lazy_receiver_site, x, y,
+                            z, &tile_entity, &child, query->owned, query->lazy_call);
+    error->lazy_addition =
+        query == NULL ? NULL : mc_live_tile_entity_query_execution_failure(*query->lazy_call);
+    mc_entity_tick_execution_site null_site;
+    error->lazy_source_null = query != NULL && mc_live_tile_entity_query_execution_source_null(
+                                                   *query->lazy_call, &null_site);
     if (!block_shape_continuing(context, status)) {
         /* Only the actual lookup's ordinary result hold can be released here.
          * The caller's selected/pending World and loader rights remain live. */
@@ -931,6 +979,8 @@ block_box_core(mc_world_runtime_classes *code_classes, mc_world_runtime *world, 
         frame = *error;
     mc_world_nearby_error_init(&frame.nearby);
     frame.bounds = (mc_entity_bounds_error){0};
+    frame.lazy_addition = NULL;
+    frame.lazy_source_null = false;
     frame.block_class = NULL;
     frame.block_bytecode = 0;
     frame.x = x;
@@ -1480,6 +1530,8 @@ static mc_world_storage_status state_shape_core(mc_world_runtime_classes *code_c
         frame = *error;
     mc_world_nearby_error_init(&frame.nearby);
     frame.bounds = (mc_entity_bounds_error){0};
+    frame.lazy_addition = NULL;
+    frame.lazy_source_null = false;
     frame.block_class = NULL;
     frame.block_bytecode = 0;
     frame.x = x;
@@ -1512,13 +1564,23 @@ mc_world_storage_status mc_world_collision_block_state_shape_in_classes_held(
 static bool block_shape_execution_admit(mc_entity_tick_execution *execution,
                                         mc_world_runtime_classes *code_classes,
                                         mc_world_runtime *world, mc_world_storage_status *status,
-                                        mc_world_runtime_execution_result *owned) {
-    if (owned != NULL)
-        mc_world_runtime_execution_result_init(owned);
+                                        mc_world_runtime_execution_result *owned,
+                                        mc_live_tile_entity_query_execution_call **lazy_call) {
     const mc_entity_tick_execution_site site =
         execution != NULL && execution->identity == execution
             ? execution->site
             : (mc_entity_tick_execution_site){NULL, NULL, NULL, -1};
+    /* A live failed invocation owns this canonical result. Never erase it to
+     * begin another Source body, including a body that would not query Tiles. */
+    if (lazy_call != NULL && *lazy_call != NULL)
+        return false;
+    if (lazy_call == NULL) {
+        mc_world_runtime_execution_result_note(owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                               "Block shape fresh retained Tile lookup slot", site);
+        return false;
+    }
+    if (owned != NULL)
+        mc_world_runtime_execution_result_init(owned);
     if (execution == NULL || code_classes == NULL || status == NULL || owned == NULL) {
         mc_world_runtime_execution_result_note(owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
                                                "Block shape execution/code/status/result required",
@@ -1540,10 +1602,11 @@ bool mc_world_collision_block_box_in_classes_in_execution(
     mc_entity_tick_execution *execution, mc_world_runtime_classes *code_classes,
     mc_world_runtime *world, mc_world_collision_block_execution_code code, const mc_block *block,
     int32_t x, int32_t y, int32_t z, mc_entity_bounds **out, mc_world_collision_error *error,
-    mc_world_storage_status *status, mc_world_runtime_execution_result *owned) {
-    if (!block_shape_execution_admit(execution, code_classes, world, status, owned))
+    mc_world_storage_status *status, mc_world_runtime_execution_result *owned,
+    mc_live_tile_entity_query_execution_call **lazy_call) {
+    if (!block_shape_execution_admit(execution, code_classes, world, status, owned, lazy_call))
         return false;
-    const block_shape_execution query = {execution, code, owned};
+    const block_shape_execution query = {execution, code, owned, lazy_call};
     *status = block_box_core(code_classes, world, false, block, x, y, z, out, error, &query);
     const block_context context = {code_classes, world, false, &query};
     return block_shape_continuing(&context, *status);
@@ -1553,10 +1616,11 @@ bool mc_world_collision_block_state_shape_in_classes_in_execution(
     mc_entity_tick_execution *execution, mc_world_runtime_classes *code_classes,
     mc_world_runtime *world, mc_world_collision_block_execution_code code, const mc_block *block,
     int32_t x, int32_t y, int32_t z, mc_world_collision_error *error,
-    mc_world_storage_status *status, mc_world_runtime_execution_result *owned) {
-    if (!block_shape_execution_admit(execution, code_classes, world, status, owned))
+    mc_world_storage_status *status, mc_world_runtime_execution_result *owned,
+    mc_live_tile_entity_query_execution_call **lazy_call) {
+    if (!block_shape_execution_admit(execution, code_classes, world, status, owned, lazy_call))
         return false;
-    const block_shape_execution query = {execution, code, owned};
+    const block_shape_execution query = {execution, code, owned, lazy_call};
     *status = state_shape_core(code_classes, world, false, block, x, y, z, error, &query);
     const block_context context = {code_classes, world, false, &query};
     return block_shape_continuing(&context, *status);

@@ -481,16 +481,64 @@ static bool unwind_selected_loader(mc_arrow_tick_call *c) {
     return true;
 }
 
+static mc_arrow_tick_status lazy_tile_entity_retire(mc_arrow_tick_call *c) {
+    const mc_world_storage_status closed =
+        mc_live_tile_entity_query_execution_native_close(c->lazy_tile_entity);
+    if (closed != MC_WORLD_STORAGE_OK)
+        return unwind_refused(c, closed, "Arrow exact retained lazy Tile child close");
+    /* The failed collision scratch stays in this frame, but its new typed
+     * child borrow must end before the corresponding owner can be consumed. */
+    if (c->work_tag == MC_ARROW_TICK_CHILD_BLOCK)
+        c->work.block.lazy_addition = NULL;
+    const mc_world_storage_status retired =
+        mc_live_tile_entity_query_execution_retire(&c->lazy_tile_entity);
+    if (retired != MC_WORLD_STORAGE_OK)
+        return unwind_refused(c, retired, "Arrow retained lazy Tile child retirement");
+    c->query_unwind = MC_ARROW_TICK_UNWIND_CHILD_CLOSE;
+    return MC_ARROW_TICK_OK;
+}
+
+static mc_arrow_tick_status ray_unwind_step(mc_arrow_tick_call *c, bool *quiescent) {
+    bool drained = false;
+    if (c->error.loader != NULL && c->error.registry == &c->error.loader->registry) {
+        c->registry_error = *c->error.registry;
+        c->error.registry = &c->registry_error;
+    }
+    c->error.loader = NULL; /* A delegated finish can replace the actual loader view. */
+    const mc_world_storage_status status = mc_world_raytrace_native_unwind_step(c->ray, &drained);
+    if (status != MC_WORLD_STORAGE_OK)
+        return unwind_refused(c, status, "Arrow actual Ray retained child native unwind");
+    if (!unwind_selected_loader(c))
+        return MC_ARROW_TICK_CLEANUP_FAILED;
+    *quiescent = false;
+    c->query_unwind = MC_ARROW_TICK_UNWIND_CHILD_CLOSE;
+    if (!drained)
+        return MC_ARROW_TICK_OK;
+    /* The first scalar/exception snapshot already ran. No outward pointer may
+     * outlive the real Ray scratch, even when a later pool release refuses. */
+    c->error.ray = NULL;
+    c->cleanup.ray = NULL;
+    if (mc_world_raytrace_retire(&c->ray) != MC_WORLD_RAYTRACE_OK) {
+        mc_world_raytrace_state state = {0};
+        if (mc_world_raytrace_inspect(c->ray, &state))
+            c->cleanup.ray = state.cleanup;
+        return unwind_refused(c, MC_WORLD_STORAGE_BUSY, "Arrow World ray checked retirement");
+    }
+    return MC_ARROW_TICK_OK;
+}
+
 static mc_arrow_tick_status native_unwind_step(mc_arrow_tick_call *c, bool *quiescent) {
-    if (c->state.active || c->ray != NULL || c->intercept != NULL)
+    if (c->state.active || c->intercept != NULL)
         return unwind_refused(c, MC_WORLD_STORAGE_BUSY,
                               "Arrow entered child must drain before explicit World unwind");
+    if (c->ray != NULL)
+        return ray_unwind_step(c, quiescent);
     if (c->hurt != NULL && !c->hurt->cleanup_done)
         return hurt_unwind_step(c, quiescent);
     if (c->effect_cleanup_owned)
         return unwind_refused(c, MC_WORLD_STORAGE_BUSY,
                               "Arrow prior effect child must drain before World unwind");
-    if (!c->direct_world_open && !unwind_has_records(c)) {
+    if (!c->direct_world_open && !unwind_has_records(c) && c->lazy_tile_entity == NULL) {
         if (c->execution.world_open)
             return unwind_refused(c, MC_WORLD_STORAGE_BUSY,
                                   "Arrow unrecorded descendant World remains open");
@@ -498,17 +546,24 @@ static mc_arrow_tick_status native_unwind_step(mc_arrow_tick_call *c, bool *quie
         *quiescent = true; /* Scope/attempt quiescence, not producer retirement. */
         return MC_ARROW_TICK_OK;
     }
+    if (!c->execution.world_open && c->lazy_tile_entity != NULL && !unwind_has_records(c)) {
+        const mc_arrow_tick_status status = lazy_tile_entity_retire(c);
+        if (status == MC_ARROW_TICK_OK)
+            *quiescent = false;
+        return status;
+    }
     mc_entity_tick_execution_world_token current = {0};
     if (!mc_entity_tick_execution_current_world(&c->execution, &current))
         return unwind_refused(
             c, c->execution.world_open ? MC_WORLD_STORAGE_UNSUPPORTED_STATE : MC_WORLD_STORAGE_BUSY,
             "Arrow explicit unwind checked current World");
     const bool own = c->direct_world_open && unwind_same_token(&current, &c->direct_world);
+    const bool lazy = mc_live_tile_entity_query_execution_owns_world(c->lazy_tile_entity, &current);
     /* Direct sparse lookup by the CURRENT checked token, not an owner/error
      * history scan. Only the callee's actual returned matching capsule acts. */
     mc_world_runtime_execution_close *close = &c->query_result.closes[current.slot];
     const bool published = close->used && unwind_same_token(&current, &close->world);
-    if ((!own && !published) || (own && close->used))
+    if ((!own && !published && !lazy) || (own && close->used))
         return unwind_refused(c, MC_WORLD_STORAGE_BUSY,
                               "Arrow current descendant lacks its exact published close");
     if (!unwind_same_token(&c->captured_worlds[current.slot], &current)) {
@@ -555,6 +610,15 @@ static mc_arrow_tick_status native_unwind_step(mc_arrow_tick_call *c, bool *quie
         c->query_unwind = MC_ARROW_TICK_UNWIND_CHILD_CLOSE;
         *quiescent = false;
         return MC_ARROW_TICK_OK;
+    }
+    if (c->lazy_tile_entity != NULL) {
+        if (unwind_has_records(c))
+            return unwind_refused(c, MC_WORLD_STORAGE_BUSY,
+                                  "Arrow lazy Tile close awaits actual canonical records");
+        const mc_arrow_tick_status status = lazy_tile_entity_retire(c);
+        if (status == MC_ARROW_TICK_OK)
+            *quiescent = false;
+        return status;
     }
     if (!own || unwind_has_records(c))
         return unwind_refused(c, MC_WORLD_STORAGE_BUSY,
@@ -653,12 +717,16 @@ mc_arrow_tick_status mc_arrow_tick_retire(mc_arrow_tick_call **slot) {
         !cleanup_bounds(c, &c->candidate_bounds, c->state.receiver->classes))
         goto done;
     if (c->ray != NULL) {
-        c->error.ray = NULL;
-        if (mc_world_raytrace_retire(&c->ray) != MC_WORLD_RAYTRACE_OK) {
-            mc_world_raytrace_state state = {0};
-            if (mc_world_raytrace_inspect(c->ray, &state))
-                c->cleanup.ray = state.cleanup;
-            (void)cleanup_fail(c, MC_ARROW_TICK_CHILD_RAY, "Arrow World ray checked retirement");
+        bool ray_quiet = false;
+        for (size_t i = 0;
+             i < 2u * MC_ENTITY_TICK_EXECUTION_WORLDS + MC_ENTITY_TICK_EXECUTION_LOADERS + 4u &&
+             c->ray != NULL;
+             ++i)
+            if (ray_unwind_step(c, &ray_quiet) != MC_ARROW_TICK_OK)
+                goto done;
+        if (c->ray != NULL) {
+            (void)unwind_refused(c, MC_WORLD_STORAGE_BUSY,
+                                 "Arrow bounded Ray lazy child unwind did not drain");
             goto done;
         }
     }

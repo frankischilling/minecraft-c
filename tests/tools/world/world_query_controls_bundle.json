@@ -59,8 +59,8 @@
       },
       "source": "tests/world/runtime/world_access/test_tile_lookup_execution.c",
       "source_pin": {
-        "bytes": 34102,
-        "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
+        "bytes": 44638,
+        "sha256": "ad9a310f09884ae4ee9c2d9c32e33f0b2cf69579ad2f5add33e378436376cbd5"
       }
     },
     "collision": {
@@ -155,8 +155,8 @@
       },
       "source": "tests/world/runtime/world_access/test_arrow_owned_leaves.c",
       "source_pin": {
-        "bytes": 20355,
-        "sha256": "2580d9bb2cae09d9f4e85aa44a55eb06d0ab88b0280a1802df26bd465637f14c"
+        "bytes": 20548,
+        "sha256": "0756460ff994d8bf570e2118b8a0f95d8ab4d72524c57b03464f38a2eca5ce78"
       }
     },
     "insert": {
@@ -259,12 +259,12 @@
       "sha256": "7ad9fb3f900dc93e9f0be3bddb07cf8a0dbe8d034370f9ce6d7edd7ff4860fc3"
     },
     "src/world/runtime/tile_entities/execution_internal.h": {
-      "bytes": 5137,
-      "sha256": "7ed00a398aa780d9df7db9bac1542dc4465babc10fac489ba0148573b901a286"
+      "bytes": 6941,
+      "sha256": "3d7f49889692b45b101d42b5b853e6c185f100269e9f7064ddf5ed549b0fd682"
     },
     "src/world/runtime/tile_entities/tile_entities.c": {
-      "bytes": 292390,
-      "sha256": "025eed19065b269f3760bdd53ec33e4c181cf6b3d6de59228f214994719d7bd4"
+      "bytes": 294175,
+      "sha256": "f8fc763ebaadb63c0a01e977c59232841a414056339a93ade679bb3cf95df920"
     },
     "tests/world/runtime/world_access/test_kernel_execution.c": {
       "bytes": 25462,
@@ -323,8 +323,8 @@
       "sha256": "d823bdbbbcc5011aa3f97e3d5e90f48d79363b5bddfe05e697e7869390311ffa"
     },
     "tests/world/runtime/tile_entities/test_tile_entities.c": {
-      "bytes": 59083,
-      "sha256": "55ae023dce901cab8a5cb805f878383060e57a7b22b5f9fe1df91aae1548afe6"
+      "bytes": 68584,
+      "sha256": "3781b232025c8cfc1ddb247dc6775c4526f0206ef17fc66323b9d075ecc8df0f"
     },
     "tests/tools/world/test_source_world_construction.py": {
       "bytes": 4807,
@@ -335,20 +335,20 @@
       "sha256": "bfb1d1eba0a87b715c155901479d9eef80fb2f0990706342b7dea6ff3685c06e"
     },
     "tests/world/runtime/world_access/test_tile_lookup_execution.c": {
-      "bytes": 34102,
-      "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
+      "bytes": 44638,
+      "sha256": "ad9a310f09884ae4ee9c2d9c32e33f0b2cf69579ad2f5add33e378436376cbd5"
     },
     "cmake/tests/world_query_controls.cmake": {
       "bytes": 9329,
       "sha256": "fe49c20bad99406c6e2c589d011c4e9a2b666a17f589abaeb9e2daf839614ca3"
     },
     "src/world/runtime/collision/blocks.c": {
-      "bytes": 93945,
-      "sha256": "c6f27bbc394d81255664e998645f2c4099ecc904a713cc4c55eaec8fe69c21af"
+      "bytes": 97728,
+      "sha256": "caccf2bb33c3dd487df2cf156d8d410293d79202a447cc940dfcae55d37df274"
     },
     "src/world/runtime/collision/blocks_execution_internal.h": {
-      "bytes": 6979,
-      "sha256": "20cacb129b2b508962b84cadfef79c42b93638d085d5cb7cc293ff64632fa048"
+      "bytes": 8329,
+      "sha256": "6347c8f2e90fa672e8145daac1d419957ae957cac4f067d1eaecd231b6497ca7"
     },
     "tests/world/runtime/world_access/test_collision_query_execution.c": {
       "bytes": 65064,
@@ -431,8 +431,8 @@
       "sha256": "40e0de12f41785f72b6b144dedefb4ba9eb686e6cd8161e9c50638cd4b1ea594"
     },
     "tests/world/runtime/world_access/test_arrow_owned_leaves.c": {
-      "bytes": 20355,
-      "sha256": "2580d9bb2cae09d9f4e85aa44a55eb06d0ab88b0280a1802df26bd465637f14c"
+      "bytes": 20548,
+      "sha256": "0756460ff994d8bf570e2118b8a0f95d8ab4d72524c57b03464f38a2eca5ce78"
     },
     "src/entity/mob/damage.c": {
       "bytes": 50991,
@@ -491,20 +491,20 @@
       "sha256": "83dcab52704f6387fdb89785cad96bf527672aa5eb62be5b5e489136f3596413"
     },
     "src/world/runtime/raytrace.c": {
-      "bytes": 38793,
-      "sha256": "b6dc20bc0800e6d1b155ed5cbc3b68b1d66d1940e964fb2aec08fe22a89ee4dc"
+      "bytes": 46236,
+      "sha256": "69b43e639be8f6115f523df66b92b144e14a7deddc5ec23f642408949e2166d9"
     },
     "src/world/runtime/raytrace_blocks.c": {
       "bytes": 9482,
       "sha256": "e4260c0f6b31cfd14192b56f8b0ca63e8860054213c401973e5450ce8f7d2758"
     },
     "src/world/runtime/raytrace_execution_internal.h": {
-      "bytes": 3121,
-      "sha256": "f29f58b49775095e44f9a48f976d124d047195f5992a2dd5d0cd4ef9f2bef809"
+      "bytes": 3749,
+      "sha256": "2ee4e9bf01f4b65c091b363314881900b74d0c45fa264c680c004dd8b512862f"
     },
     "src/world/runtime/raytrace_internal.h": {
-      "bytes": 3781,
-      "sha256": "a9832292fdbd7476e8cbe1db6edca5374c69828f83613baee1f957eda8478d1a"
+      "bytes": 3995,
+      "sha256": "449f54bf39cef6e32b36bab76c038dcf6a80f5f7a621579b36e174bb68f0d262"
     },
     "tests/world/runtime/world_access/test_entity_insert_execution.c": {
       "bytes": 16716,
@@ -533,6 +533,38 @@
     "src/world/runtime/presentation_execution_internal.h": {
       "bytes": 4143,
       "sha256": "35bbebf0bc4d1f85552d40bc7b98f5eac5f436044fe0758bd5394ae46da8f951"
+    },
+    "src/world/runtime/tile_entities/lazy_execution.inc": {
+      "bytes": 8532,
+      "sha256": "d2f73d188574e7bf15cf6dbdbf6d91b2f9bf1dbeba96e74b9bcde92801cace59"
+    },
+    "src/world/runtime/mutation/world.c": {
+      "bytes": 77779,
+      "sha256": "d389027dac7dab21b7fcd09da88eb7aa1a5617a5004ba606384680ebe83e44a7"
+    },
+    "src/world/runtime/mutation/world_execution_internal.h": {
+      "bytes": 16725,
+      "sha256": "d4c1c01e0f871890f75a5a122bea7c762d0e597a1e36fc56439aaaec6cd0158c"
+    },
+    "src/world/runtime/mutation/furnace/furnace.c": {
+      "bytes": 10101,
+      "sha256": "3fb42ccafe08713fbb7752213cf3da0ed04cd38883d52c23e1b8d6792068f4df"
+    },
+    "src/world/runtime/mutation/furnace/furnace_internal.h": {
+      "bytes": 970,
+      "sha256": "c6a801ffff6f83f35d7f889699cd7bd8e619c6d81a52fdb08de465e441ffa4d7"
+    },
+    "src/world/runtime/mutation/hooks.c": {
+      "bytes": 35582,
+      "sha256": "8788eb6ecd50619dd09b7044935ad11c4c0fdf7202713257ae9d050307d27e1d"
+    },
+    "src/world/runtime/mutation/mutation_internal.h": {
+      "bytes": 19643,
+      "sha256": "61d64f928d2b61b48235522036376ac27baa50d8b96b6289062b12118d256fe9"
+    },
+    "src/world/runtime/mutation/notifications_execution_internal.h": {
+      "bytes": 3786,
+      "sha256": "a31cecafa5297a33eade66dbf589958c68ab490caa085c818fe0cdb2be754475"
     }
   },
   "helpers": {
@@ -1511,5 +1543,44 @@
         }
       }
     }
-  ]
+  ],
+  "fixture_source_successors": {
+    "lookup": [
+      {
+        "previous_source_pin": {
+          "bytes": 34102,
+          "sha256": "9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48"
+        },
+        "current_source_pin": {
+          "bytes": 44308,
+          "sha256": "e36341425d256048b4f9494f44b3374b83d501aaf01dc8d266ac1f3a36e54a8e"
+        },
+        "scope": "Current retained lazy TileEntity owner fixture; prior input binding retained without inheriting native qualification."
+      },
+      {
+        "previous_source_pin": {
+          "bytes": 44308,
+          "sha256": "e36341425d256048b4f9494f44b3374b83d501aaf01dc8d266ac1f3a36e54a8e"
+        },
+        "current_source_pin": {
+          "bytes": 44638,
+          "sha256": "ad9a310f09884ae4ee9c2d9c32e33f0b2cf69579ad2f5add33e378436376cbd5"
+        },
+        "scope": "Current retained lazy TileEntity owner fixture; prior input binding retained without inheriting native qualification."
+      }
+    ],
+    "arrow-leaves": [
+      {
+        "previous_source_pin": {
+          "bytes": 20355,
+          "sha256": "2580d9bb2cae09d9f4e85aa44a55eb06d0ab88b0280a1802df26bd465637f14c"
+        },
+        "current_source_pin": {
+          "bytes": 20548,
+          "sha256": "0756460ff994d8bf570e2118b8a0f95d8ab4d72524c57b03464f38a2eca5ce78"
+        },
+        "scope": "Current retained lazy TileEntity owner fixture; prior input binding retained without inheriting native qualification."
+      }
+    ]
+  }
 }

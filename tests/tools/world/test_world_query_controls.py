@@ -76,7 +76,7 @@ FOOTER_SCOPES = {'loader': b'kernel direct-loader',
  'insert': b'owned single-Entity insertion',
  'ray': b'owned Ray',
  'presentation-capture': b'detailed presentation native capture'}
-BUNDLE_SHA = '7eb779ad880926b8c98f56232842fe9257eb9137372201a004ace96cdfc8c83c'
+BUNDLE_SHA = '5e6510bfab9132be753fac40debf6bef456fc5b1aceb4152b2f43e689637947a'
 MODES = {'loader': ('error', 'null-error'),
  'lookup': ('map', 'lazy', 'armed', 'held', 'nested'),
  'collision': ('id-first',
@@ -122,8 +122,7 @@ SUPPLIERS = {'loader': {'manifest': '01e30de5a0245269259815a878ffd059768858b79b1
  'lookup': {'manifest': '1662e2b260efd3cc5bff67768cbe5ed5c4f197abde7853147f7fc3a9251df0dc',
             'protocol': '4ee2be5a82fee5e27e7301cee3aff67a4d3583323b55d4fa42d296ea6c98a395',
             'source': 'tests/world/runtime/world_access/test_tile_lookup_execution.c',
-            'source_pin': {'bytes': 34102,
-                           'sha256': '9b44acdf52f8756d856e86016a8c9f6f8788134a1c329272598cdae1024fed48'}},
+            'source_pin': {'bytes': 44638, 'sha256': 'ad9a310f09884ae4ee9c2d9c32e33f0b2cf69579ad2f5add33e378436376cbd5'}},
  'collision': {'manifest': '8881737d8b31805c0f43fd25e99ef274509125bda65fa1e4b3cc583261bccc9c',
                'protocol': '6fd0849ab48f9b3741756f160f022c003e24bdcdbe94fec36996fb7980acad0f',
                'source': 'tests/world/runtime/world_access/test_collision_query_execution.c',
@@ -147,8 +146,7 @@ SUPPLIERS = {'loader': {'manifest': '01e30de5a0245269259815a878ffd059768858b79b1
  'arrow-leaves': {'manifest': 'bffd4c14a2b7db9434e98aa50051bec0138af47e0a3269e3e7a25ba95ba6e5be',
                   'protocol': 'e1904b4f3f49498a7e9240ac3092a6b9c37b870cd3be8357a49454785d49d32e',
                   'source': 'tests/world/runtime/world_access/test_arrow_owned_leaves.c',
-                  'source_pin': {'bytes': 20355,
-                                 'sha256': '2580d9bb2cae09d9f4e85aa44a55eb06d0ab88b0280a1802df26bd465637f14c'}},
+                  'source_pin': {'bytes': 20548, 'sha256': '0756460ff994d8bf570e2118b8a0f95d8ab4d72524c57b03464f38a2eca5ce78'}},
  'insert': {'manifest': '2bd13e3e8d056434514aaa2660695bce8a2304fe241b81176c0a47591425e2c0',
             'protocol': '0fd4209eb31c3d737cd36b3b518250256706c532637e640531cfef87359cfa3d',
             'source': 'tests/world/runtime/world_access/test_entity_insert_execution.c',

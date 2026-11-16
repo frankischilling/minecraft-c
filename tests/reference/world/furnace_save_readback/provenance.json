@@ -1,0 +1,295 @@
+{
+  "scope": "One finite C SDK saved-World -> unchanged original client load/read boundary.",
+  "processes": 2,
+  "archive_class_count": 24,
+  "archive_method_count": 595,
+  "archive_Code_method_count": 591,
+  "modes": {
+    "interpreter": [
+      "-Xint",
+      "-Xverify:all",
+      "-Xmx256m",
+      "-XX:-UsePerfData",
+      "-Djava.awt.headless=true",
+      "-Djava.security.manager=allow"
+    ],
+    "default": [
+      "-Xverify:all",
+      "-Xmx256m",
+      "-XX:-UsePerfData",
+      "-Djava.awt.headless=true",
+      "-Djava.security.manager=allow"
+    ]
+  },
+  "runtime": "Eclipse Temurin OpenJDK 17.0.17+10; Windows x64",
+  "executed_helpers": "FurnaceReadback.java is byte-identical to the executed source. Portable capture/decoder/publisher/auditor/control packaging was authored after execution and was not used to run these two VMs.",
+  "constructor_name": "Decoded from the copied native Data.LevelName and supplied as the original FD constructor name argument; no postconstruction field repair.",
+  "player_scope": "Actual WorldInfo.Player NBT Compound and genuine IX(null).b(SP) inventory reader; no concrete GS entity or Player World binding.",
+  "factory_scope": "Actual saved Chunk Map was inspected before lazy World Tile lookup; the same original SK remained after lookup.",
+  "duration_scope": "SK fuel duration1600 is recomputed from saved coal263 by original SK reader; the NBT stores BurnTime1397/CookTime4, not duration.",
+  "write_scope": "Original region loading opens an existing copied .mcr with RandomAccessFile rw; all thirteen copied file bytes remain unchanged except the owned alpha/session.lock.",
+  "excluded": [
+    "original tick",
+    "original save",
+    "original gameplay",
+    "rendering or pixel parity",
+    "concrete original Player entity",
+    "JDI/live-Code trace",
+    "bidirectional roundtrip",
+    "current native source qualification"
+  ],
+  "retained_capture_json_sha256": "338b337a395ea66a1b360b1c06f62bd5ca1559ecd9e2daf118c16011e343905e",
+  "archive_pins_sha256": "7e7d1efac6c2cb0d555521cb5acc1d2b781bf729fa89882233dc2e83fad718dd",
+  "executed_inputs": {
+    "original-client.jar": {
+      "before": {
+        "bytes": 1465375,
+        "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+      },
+      "after": {
+        "bytes": 1465375,
+        "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+      }
+    },
+    "library-lwjgl.jar": {
+      "before": {
+        "bytes": 994633,
+        "sha256": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a"
+      },
+      "after": {
+        "bytes": 994633,
+        "sha256": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a"
+      }
+    },
+    "library-lwjgl_util.jar": {
+      "before": {
+        "bytes": 173360,
+        "sha256": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad"
+      },
+      "after": {
+        "bytes": 173360,
+        "sha256": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad"
+      }
+    },
+    "library-jinput.jar": {
+      "before": {
+        "bytes": 208338,
+        "sha256": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018"
+      },
+      "after": {
+        "bytes": 208338,
+        "sha256": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018"
+      }
+    },
+    "library-jutils.jar": {
+      "before": {
+        "bytes": 7508,
+        "sha256": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5"
+      },
+      "after": {
+        "bytes": 7508,
+        "sha256": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5"
+      }
+    },
+    "jdk-java.exe": {
+      "before": {
+        "bytes": 50344,
+        "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+      },
+      "after": {
+        "bytes": 50344,
+        "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+      }
+    },
+    "jdk-javac.exe": {
+      "before": {
+        "bytes": 24232,
+        "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+      },
+      "after": {
+        "bytes": 24232,
+        "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+      }
+    },
+    "jdk-jvm.dll": {
+      "before": {
+        "bytes": 12681896,
+        "sha256": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+      },
+      "after": {
+        "bytes": 12681896,
+        "sha256": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+      }
+    },
+    "jdk-lib-modules": {
+      "before": {
+        "bytes": 128648619,
+        "sha256": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+      },
+      "after": {
+        "bytes": 128648619,
+        "sha256": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+      }
+    },
+    "executed-private-driver.py": {
+      "before": {
+        "bytes": 17084,
+        "sha256": "cf278e32e9ee3e99b7257dfe24f120b83a675d251cb694c62ea433a3873f08fb"
+      },
+      "after": {
+        "bytes": 17084,
+        "sha256": "cf278e32e9ee3e99b7257dfe24f120b83a675d251cb694c62ea433a3873f08fb"
+      }
+    },
+    "FurnaceReadback.java": {
+      "before": {
+        "bytes": 8025,
+        "sha256": "d08f1fc33d2b409b106c9ea5e4a07206d0011fa8c2bb006f19d6bebc5f0ac1a1"
+      },
+      "after": {
+        "bytes": 8025,
+        "sha256": "d08f1fc33d2b409b106c9ea5e4a07206d0011fa8c2bb006f19d6bebc5f0ac1a1"
+      }
+    },
+    "executed-bounded-transport.py": {
+      "before": {
+        "bytes": 8065,
+        "sha256": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e"
+      },
+      "after": {
+        "bytes": 8065,
+        "sha256": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e"
+      }
+    },
+    "executed-classfile-reader.py": {
+      "before": {
+        "bytes": 2578,
+        "sha256": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+      },
+      "after": {
+        "bytes": 2578,
+        "sha256": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+      }
+    },
+    "executed-independent-NBT-reader.py": {
+      "before": {
+        "bytes": 24895,
+        "sha256": "1fc2f69d04e2ab6e5c48f9d2ebef1d9dd7de0c50a5a7278a81735b0a63edcff9"
+      },
+      "after": {
+        "bytes": 24895,
+        "sha256": "1fc2f69d04e2ab6e5c48f9d2ebef1d9dd7de0c50a5a7278a81735b0a63edcff9"
+      }
+    },
+    "executed-component-support.py": {
+      "before": {
+        "bytes": 13556,
+        "sha256": "d56b0aa8462c6d012e7b02a08cc0ac9397681ad8a91111ee66489d9def1b31ae"
+      },
+      "after": {
+        "bytes": 13556,
+        "sha256": "d56b0aa8462c6d012e7b02a08cc0ac9397681ad8a91111ee66489d9def1b31ae"
+      }
+    },
+    "native-run.json": {
+      "before": {
+        "bytes": 689968,
+        "sha256": "69282b607e037358ad5b93d280b2fe0634fce4c7822fa8412d1eda69a563219a"
+      },
+      "after": {
+        "bytes": 689968,
+        "sha256": "69282b607e037358ad5b93d280b2fe0634fce4c7822fa8412d1eda69a563219a"
+      }
+    },
+    "native-execution.json": {
+      "before": {
+        "bytes": 6069,
+        "sha256": "4080d632f57a6e662fce7f8826748cea3e742c243d07cb6fa20ae10ff9ad3374"
+      },
+      "after": {
+        "bytes": 6069,
+        "sha256": "4080d632f57a6e662fce7f8826748cea3e742c243d07cb6fa20ae10ff9ad3374"
+      }
+    },
+    "native-stdout.txt": {
+      "before": {
+        "bytes": 3215,
+        "sha256": "c4298633fba532987cbe7e4c0e756631f8078401dbb6cac6d484ec98b9a4e7e2"
+      },
+      "after": {
+        "bytes": 3215,
+        "sha256": "c4298633fba532987cbe7e4c0e756631f8078401dbb6cac6d484ec98b9a4e7e2"
+      }
+    },
+    "native-stderr.txt": {
+      "before": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "after": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "compiled_products": {
+    "FurnaceReadback$1.class": {
+      "before_sha256": "9a8d7e08cd0229e4faaf119b4dff286148b3e026ab507462f1d15d7284039ce0",
+      "after_sha256": "9a8d7e08cd0229e4faaf119b4dff286148b3e026ab507462f1d15d7284039ce0"
+    },
+    "FurnaceReadback.class": {
+      "before_sha256": "aad3bb9f9a5742b454d22ea29a05557b8f2f8b783ad1a284eb2481daf53429f8",
+      "after_sha256": "aad3bb9f9a5742b454d22ea29a05557b8f2f8b783ad1a284eb2481daf53429f8"
+    }
+  },
+  "native_save_receipt": {
+    "status": "PASS",
+    "checks": 9242,
+    "world_time": 211,
+    "semantic": {
+      "burn_remaining": 1397,
+      "cook_progress": 4,
+      "player": [
+        [
+          8,
+          265,
+          1,
+          0
+        ]
+      ],
+      "furnace": [
+        [
+          0,
+          15,
+          1,
+          0
+        ],
+        [
+          1,
+          263,
+          1,
+          0
+        ]
+      ],
+      "metadata": 2
+    },
+    "snapshot_files": 13,
+    "snapshot_bytes": 1750184
+  },
+  "failed_preparations": [
+    {
+      "scope": "Preparation: SessionLock-only permission guard rejected original RandomAccessFile rw-open of an existing copied region; saved Tile lookup did not complete.",
+      "capture_json_sha256": "d0b10abfcb62f51a3cf0337058457b95d0ea8aa09443b9a70ad7c707eb77947b",
+      "stdout_sha256": "09de7cda213869a26dc6a042e9fee46249034d3a5c0dec6d3907c91c0dd2487f",
+      "stderr_sha256": "665fb15e57ac93c0cd500552df6a6d1904d661ddf43dc8ff657125bf925e72c5",
+      "excluded_from_final_two_process_cohort": true
+    },
+    {
+      "scope": "Preparation: loaded fields/items matched, but an empty constructor name replaced serialized LevelName; rejected before the second VM.",
+      "capture_json_sha256": "826d4869138e6cd47dd9a5b291befc2b04c1b855e3e1ca77acd63075240d503a",
+      "stdout_sha256": "327235238ead3f19d70ced2eb3505c498a700b1bcee10d17f431801de076b02c",
+      "stderr_sha256": "ea3974f2ac0e91c0ec121e005f307b48100d6f9115db4649f6f791eb1d99ce1a",
+      "excluded_from_final_two_process_cohort": true
+    }
+  ]
+}

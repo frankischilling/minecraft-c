@@ -133,6 +133,14 @@ bool mc_world_mutation_execution_added(const mc_world_mutation_execution_context
                                        mc_world_runtime *, const mc_block *, int32_t, int32_t,
                                        int32_t, mc_world_mutation_execution_call **,
                                        mc_world_mutation_error *, mc_entity_tick_execution_site);
+/* Lazy Chunk lookup supplies its independently held defining Registry and RW
+ * factory classes. NULL remains an actual borrow until its reached use. These
+ * bindings belong only to this virtual addition, never a mutable World/Block
+ * inference or a change to the shared acquisition-code VALUE bundle. */
+bool mc_world_mutation_execution_added_with_tile_bindings(
+    const mc_world_mutation_execution_context *, mc_registry_classes *, mc_world_runtime_classes *,
+    mc_world_runtime *, const mc_block *, int32_t, int32_t, int32_t,
+    mc_world_mutation_execution_call **, mc_world_mutation_error *, mc_entity_tick_execution_site);
 bool mc_world_mutation_block_added_with_call(mc_world_mutation_execution_call *, mc_world_runtime *,
                                              const mc_block *, int32_t, int32_t, int32_t,
                                              mc_world_mutation_error *);

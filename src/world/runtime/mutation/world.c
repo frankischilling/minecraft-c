@@ -45,6 +45,8 @@ struct mc_world_mutation_execution_call {
     mc_world_schedule_execution *schedule;
     mc_world_material_execution *material;
     mc_live_tile_entity_error *tile_added;
+    mc_registry_classes *tile_registry;
+    mc_world_runtime_classes *tile_factory_classes;
     mutation_presentation *presentation;
     mc_world_storage_status support_status;
     mc_world_storage_status plant_status;
@@ -53,6 +55,7 @@ struct mc_world_mutation_execution_call {
     mc_world_storage_status tile_added_status;
     bool active, close_done, support_returned, plant_returned, tile_added_completed;
     bool tile_added_source_null;
+    bool explicit_tile_bindings;
 };
 
 static const mc_entity_tick_execution_site metadata_site = {"fd", "d", "(IIII)V", 0};
@@ -115,7 +118,8 @@ static bool current(const mc_world_mutation_execution_context *context, mc_world
 
 mc_registry_classes *
 mc_world_mutation_execution_registry(const mc_world_mutation_execution_call *call) {
-    return call->context.code_classes->registry;
+    return call->explicit_tile_bindings ? call->tile_registry
+                                        : call->context.code_classes->registry;
 }
 
 mc_world_runtime_execution_result *
@@ -1112,12 +1116,11 @@ bool mc_world_mutation_execution_set_quiet(mc_world_mutation_execution_call *cal
     return true;
 }
 
-bool mc_world_mutation_execution_added(const mc_world_mutation_execution_context *context,
-                                       mc_world_runtime *world, const mc_block *block, int32_t x,
-                                       int32_t y, int32_t z,
-                                       mc_world_mutation_execution_call **slot,
-                                       mc_world_mutation_error *error,
-                                       mc_entity_tick_execution_site site) {
+bool mc_world_mutation_execution_added_with_tile_bindings(
+    const mc_world_mutation_execution_context *context, mc_registry_classes *registry,
+    mc_world_runtime_classes *factory_classes, mc_world_runtime *world, const mc_block *block,
+    int32_t x, int32_t y, int32_t z, mc_world_mutation_execution_call **slot,
+    mc_world_mutation_error *error, mc_entity_tick_execution_site site) {
     mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
     mc_world_access_failure_lease *lease = NULL;
     const bool nullable_tile = world == NULL && block != NULL &&
@@ -1129,9 +1132,24 @@ bool mc_world_mutation_execution_added(const mc_world_mutation_execution_context
     mc_world_mutation_execution_call *call = start_owned(context, slot, lease, site);
     if (call == NULL)
         return false;
+    call->explicit_tile_bindings = true;
+    call->tile_registry = registry;
+    call->tile_factory_classes = factory_classes;
     const bool completed =
         mc_world_mutation_block_added_with_call(call, world, block, x, y, z, &call->error);
     return finish_owned(slot, completed, &raw, error, site, true);
+}
+
+bool mc_world_mutation_execution_added(const mc_world_mutation_execution_context *context,
+                                       mc_world_runtime *world, const mc_block *block, int32_t x,
+                                       int32_t y, int32_t z,
+                                       mc_world_mutation_execution_call **slot,
+                                       mc_world_mutation_error *error,
+                                       mc_entity_tick_execution_site site) {
+    mc_world_runtime_classes *classes = context == NULL ? NULL : context->code_classes;
+    return mc_world_mutation_execution_added_with_tile_bindings(
+        context, classes == NULL ? NULL : classes->registry, classes, world, block, x, y, z, slot,
+        error, site);
 }
 
 bool mc_world_mutation_execution_observe_range(mc_world_mutation_execution_call *call,
@@ -1319,8 +1337,10 @@ bool mc_world_mutation_execution_tile_added(mc_world_mutation_execution_call *ca
     }
     call->tile_added_status = mc_live_tile_entities_block_added_in_execution(
         call->context.execution, world, call->context.code,
-        mc_world_mutation_execution_registry(call), call->context.code_classes, site, block, x, y,
-        z, call->tile_added, call->context.result, &call->tile_added_source_null);
+        mc_world_mutation_execution_registry(call),
+        call->explicit_tile_bindings ? call->tile_factory_classes : call->context.code_classes,
+        site, block, x, y, z, call->tile_added, call->context.result,
+        &call->tile_added_source_null);
     call->tile_added_completed = call->tile_added_status == MC_WORLD_STORAGE_OK &&
                                  call->context.result->ownership_status == MC_WORLD_STORAGE_OK;
     if (call->tile_added_completed) {

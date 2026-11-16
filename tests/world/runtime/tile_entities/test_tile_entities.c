@@ -7,6 +7,7 @@
 #include "../../../../src/world/runtime/construction_internal.h"
 #include "../../../../src/world/runtime/loading/loading_internal.h"
 #include "../../../../src/world/runtime/runtime_internal.h"
+#include "../../../../src/world/runtime/tile_entities/execution_internal.h"
 #include "../../../../src/world/storage/files.h"
 #include "../../../../src/world/storage/objects_internal.h"
 #include "mc/block/registry/runtime.h"
@@ -15,6 +16,7 @@
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/entities.h"
 #include "mc/world/runtime/mutations.h"
+#include "mc/world/runtime/tile_entities/furnace.h"
 #include "mc/world/runtime/tile_entities/tile_entities.h"
 
 #include <limits.h>
@@ -968,6 +970,156 @@ cleanup:
     return ok;
 }
 
+static bool server_lazy_quiet(const mc_world_runtime_execution_result *result) {
+    if (result->ownership_status != MC_WORLD_STORAGE_OK || result->selection_ready ||
+        result->root_pending || result->math_failed)
+        return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_LOADERS; ++i)
+        if (result->pending[i].used)
+            return false;
+    for (size_t i = 0; i < MC_ENTITY_TICK_EXECUTION_WORLDS; ++i)
+        if (result->closes[i].used)
+            return false;
+    return true;
+}
+
+/* Actual SERVER hi.d lazy getter. The new client complete TC join must not
+ * replace the previously admitted server RW factory/install prefix with an
+ * early LZ dispatch refusal. This authored cell is an explicit native input;
+ * no original trace or implemented private server orientation is claimed. */
+static bool server_lazy_furnace_prefix(fixture *f) {
+    bool ok = false, root_open = false;
+    mc_world_runtime *world = f->worlds[1];
+    mc_world_chunk *chunk = f->chunks[1];
+    mc_tile_entity *marker = NULL, *out = NULL, *installed = NULL, *installed_hold = NULL;
+    mc_tile_entity_classes *tile_classes = NULL;
+    mc_live_tile_entity_query_execution_call *owner = NULL;
+    mc_entity_tick_execution execution;
+    mc_entity_tick_execution_world_token root = {0};
+    mc_world_runtime_execution_result result;
+    mc_live_tile_entity_error error = {0};
+    mc_tile_entity_snapshot tile = {0};
+    mc_furnace_fields fields = {0};
+    mc_tile_entity_piston_class_snapshot before = {0}, after = {0};
+    mc_chunk_provider_cache_observation provider_before = {0}, provider_after = {0};
+    mc_item_stack *slot = NULL;
+    const mc_block *furnace = NULL;
+    const mc_tile_entity_class_literal *literal = NULL;
+    mc_tile_entity_class_literal_view literal_view = {0};
+    const size_t target = cell(12, 64, 8);
+    const uint8_t saved = chunk->data->blocks[target];
+    uint8_t metadata = 0, metadata_after = 0;
+    const size_t maps = chunk->l->count, active = world->fields.c->count;
+    const size_t bindings = world->persistent_bindings;
+    int32_t size = 0;
+    mc_entity_tick_execution_init(&execution, NULL);
+    mc_world_runtime_execution_result_init(&result);
+    CHECK(f->registry[1]->options.side == MC_REGISTRY_SERVER &&
+          f->classes[1]->side == MC_WORLD_INFO_SERVER && chunk->d == world &&
+          chunk->state->active && maps == 0 && saved == 0 &&
+          mc_registry_block_static_get(f->registry[1], "aC", &furnace, NULL) == MC_REGISTRY_OK &&
+          furnace != NULL && furnace->kind == MC_BLOCK_FURNACE && furnace->fields.bn == 61 &&
+          mc_tile_entity_piston_class_get_snapshot(f->classes[1], &before) == MC_TILE_ENTITY_OK &&
+          mc_chunk_provider_cache_observe(world->fields.v, &provider_before) &&
+          mc_chunk_nibbles_get(chunk->e->a, chunk->e->length, 12, 64, 8, &metadata));
+    CHECK(mc_tile_entity_classes_borrow(f->classes[1], &tile_classes) == MC_TILE_ENTITY_OK);
+    CHECK(mc_tile_entity_retain(f->aliases[1]) == MC_TILE_ENTITY_OK);
+    marker = f->aliases[1];
+    out = marker; /* A genuine independently held nonnull output occurrence. */
+    CHECK(mc_tile_entity_get_snapshot(marker, &tile) == MC_TILE_ENTITY_OK &&
+          tile.phase == MC_TILE_ENTITY_READY &&
+          mc_entity_tick_execution_push_world(
+              &execution, world,
+              (mc_entity_tick_execution_site){"native.server.lazy", "lookup", "()V", 0},
+              &root) == MC_WORLD_STORAGE_OK);
+    root_open = true;
+    const mc_world_runtime_execution_code code = {{"hi", "d", "()V", 6}, {"hi", "d", "()V", 33}};
+    chunk->data->blocks[target] = (uint8_t)furnace->fields.bn;
+    const mc_world_storage_status status = mc_live_tile_entities_get_in_execution(
+        &execution, world, code, f->classes[1], f->registry[1], f->classes[1],
+        (mc_entity_tick_execution_site){"hi", "d", "(III)Ljh;", 67}, 12, 64, 8, &out, &error,
+        &result, &owner);
+    CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && out == marker && error.status == status &&
+          error.chunk_bytecode == 89 && error.bytecode == 15 && owner != NULL &&
+          mc_live_tile_entity_query_execution_failure(owner) == NULL &&
+          server_lazy_quiet(&result) && chunk->l->count == maps + 1 &&
+          world->fields.c->count == active + 1 &&
+          mc_live_tile_entities_map_at(chunk, 0, &installed) == MC_WORLD_STORAGE_OK &&
+          installed != NULL && installed != marker);
+    CHECK(mc_tile_entity_retain(installed) == MC_TILE_ENTITY_OK);
+    installed_hold = installed;
+    CHECK(mc_tile_entity_get_snapshot(installed, &tile) == MC_TILE_ENTITY_OK &&
+          tile.kind == MC_TILE_ENTITY_FURNACE && tile.phase == MC_TILE_ENTITY_READY &&
+          tile.world == world && tile.x == 12 && tile.y == 64 && tile.z == 8 && !tile.invalid &&
+          world->fields.c->items[active] == installed &&
+          mc_tile_entity_get_class(installed, &literal) == MC_TILE_ENTITY_OK &&
+          mc_tile_entity_class_literal_inspect(literal, &literal_view) == MC_TILE_ENTITY_OK &&
+          literal_view.world_classes == f->classes[1] &&
+          literal_view.side == MC_WORLD_INFO_SERVER &&
+          literal_view.kind == MC_TILE_ENTITY_CLASS_KIND_FURNACE &&
+          mc_tile_entity_furnace_size(installed, &size) == MC_TILE_ENTITY_OK && size == 3 &&
+          mc_tile_entity_furnace_fields_get(installed, &fields) == MC_TILE_ENTITY_OK &&
+          fields.burn_remaining == 0 && fields.fuel_duration == 0 && fields.cook_progress == 0 &&
+          mc_tile_entity_piston_class_get_snapshot(f->classes[1], &after) == MC_TILE_ENTITY_OK &&
+          after.live_tile_entities == before.live_tile_entities + 1 &&
+          mc_chunk_provider_cache_observe(world->fields.v, &provider_after) &&
+          provider_after.hits + provider_after.generic_gets ==
+              provider_before.hits + provider_before.generic_gets + 2);
+    for (int32_t i = 0; i < 3; ++i)
+        CHECK(mc_tile_entity_furnace_get(installed, i, &slot) == MC_TILE_ENTITY_OK && slot == NULL);
+    const size_t installed_bindings = world->persistent_bindings;
+    const char *operation = error.operation;
+    CHECK(mc_live_tile_entity_query_execution_native_close(owner) == MC_WORLD_STORAGE_OK &&
+          mc_live_tile_entity_query_execution_native_close(owner) == MC_WORLD_STORAGE_OK &&
+          mc_live_tile_entity_query_execution_failure(owner) == NULL &&
+          mc_live_tile_entity_query_execution_retire(&owner) == MC_WORLD_STORAGE_OK &&
+          owner == NULL &&
+          mc_live_tile_entity_query_execution_retire(&owner) == MC_WORLD_STORAGE_OK &&
+          world->persistent_bindings == installed_bindings && server_lazy_quiet(&result) &&
+          out == marker && error.operation == operation && error.status == status &&
+          error.chunk_bytecode == 89 && error.bytecode == 15 && chunk->data->blocks[target] == 61 &&
+          mc_chunk_nibbles_get(chunk->e->a, chunk->e->length, 12, 64, 8, &metadata_after) &&
+          metadata_after == metadata && chunk->l->count == maps + 1 &&
+          world->fields.c->count == active + 1 && world->fields.c->items[active] == installed &&
+          mc_chunk_provider_cache_observe(world->fields.v, &provider_before) &&
+          provider_before.hits == provider_after.hits &&
+          provider_before.generic_gets == provider_after.generic_gets);
+    CHECK(mc_entity_tick_execution_pop_world(&execution, &root, true) == MC_WORLD_STORAGE_OK);
+    root_open = false;
+    CHECK(mc_entity_tick_execution_retire(&execution) == MC_WORLD_STORAGE_OK &&
+          mc_entity_tick_execution_retire(&execution) == MC_WORLD_STORAGE_OK &&
+          world->persistent_bindings == bindings + 1 && world->active_calls == 0 &&
+          server_lazy_quiet(&result) &&
+          mc_tile_entity_furnace_fields_get(installed, &fields) == MC_TILE_ENTITY_OK &&
+          fields.burn_remaining == 0 && fields.fuel_duration == 0 && fields.cook_progress == 0);
+    /* Actual dj.o/FD.p with L=false removes the first active List occurrence
+     * at40, then invalidates/removes the Chunk Map occurrence at74/42. The
+     * independently held installed_hold keeps this same Tile alive for inspection. */
+    CHECK(!world->fields.L);
+    CHECK(mc_live_tile_entities_remove(world, 12, 64, 8, &error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_tile_entity_get_snapshot(installed, &tile) == MC_TILE_ENTITY_OK && tile.invalid);
+    CHECK(chunk->l->count == maps && world->fields.c->count == active &&
+          mc_live_tile_entities_map_valid(chunk) && mc_live_tile_entities_lists_valid(world));
+    for (size_t i = 0; i < world->fields.c->count; ++i)
+        CHECK(world->fields.c->items[i] != installed);
+    chunk->data->blocks[target] = saved; /* Only after the genuine removal. */
+    ok = true;
+cleanup:
+    if (mc_live_tile_entity_query_execution_retire(&owner) != MC_WORLD_STORAGE_OK)
+        return false;
+    if (root_open &&
+        mc_entity_tick_execution_pop_world(&execution, &root, true) != MC_WORLD_STORAGE_OK)
+        return false;
+    if (mc_entity_tick_execution_retire(&execution) != MC_WORLD_STORAGE_OK)
+        return false;
+    mc_item_stack_release(slot);
+    mc_tile_entity_release(installed_hold);
+    mc_tile_entity_release(marker);
+    if (mc_tile_entity_classes_release(&tile_classes) != MC_TILE_ENTITY_OK)
+        return false;
+    return ok;
+}
+
 static bool retire_descriptors(fixture *f, size_t slot) {
     if (!f->bound[slot] || f->descriptors_retired[slot])
         return true;
@@ -1144,6 +1296,7 @@ int main(int argc, char **argv) {
         CHECK(containers_and_records(f, slot));
     for (size_t side = 0; side < 2; ++side)
         CHECK(drops_and_empty(f, side));
+    CHECK(server_lazy_furnace_prefix(f));
     for (size_t slot = 0; slot < 2; ++slot)
         CHECK(retirement(f, slot));
     /* Full mode genuinely requires the owned nonempty GAME import route.

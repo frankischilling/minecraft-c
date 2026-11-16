@@ -25,6 +25,9 @@ typedef struct mc_world_raytrace_work {
     mc_entity_tick_execution *execution;
     mc_world_runtime_execution_result *owned;
     mc_world_collision_block_execution_code code;
+    mc_live_tile_entity_query_execution_call *lazy_tile_entity;
+    mc_entity_tick_execution_world_token initiating_world;
+    mc_entity_tick_execution_world_token captured_worlds[MC_ENTITY_TICK_EXECUTION_WORLDS];
     bool query_failed, native_stopped;
     bool math_failed;
     mc_math_class_error math_error;

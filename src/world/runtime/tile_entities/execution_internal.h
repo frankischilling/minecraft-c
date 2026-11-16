@@ -4,6 +4,27 @@
 #include "../runtime_execution_internal.h"
 #include "mc/world/runtime/tile_entities/tile_entities.h"
 
+typedef struct mc_live_tile_entity_query_execution_call mc_live_tile_entity_query_execution_call;
+struct mc_world_mutation_error;
+
+/* Actual lazy Chunk.d67 receiver and reached virtual Block.c child. This is
+ * stable caller-owned work, separate from copyable canonical result VALUES.
+ * The caller captures the exact current producer and drains actual pending
+ * outcomes before native close. Close/retire never resumes a Source body.
+ * Failed close retains its exact scope and typed child for an idempotent retry.
+ * A successful lookup retires this owner before its Map reread98. A failed
+ * lookup leaves it until checked parent retirement, even if its scope closed. */
+bool mc_live_tile_entity_query_execution_owns_world(
+    const mc_live_tile_entity_query_execution_call *, const mc_entity_tick_execution_world_token *);
+mc_world_storage_status
+mc_live_tile_entity_query_execution_native_close(mc_live_tile_entity_query_execution_call *);
+mc_world_storage_status
+mc_live_tile_entity_query_execution_retire(mc_live_tile_entity_query_execution_call **);
+const struct mc_world_mutation_error *
+mc_live_tile_entity_query_execution_failure(const mc_live_tile_entity_query_execution_call *);
+bool mc_live_tile_entity_query_execution_source_null(
+    const mc_live_tile_entity_query_execution_call *, mc_entity_tick_execution_site *);
+
 /* Caller already captured nullable B at the actual Chunk.d receiver load and
  * holds its entered World call. Run the SAME complete Map registration body
  * under that exact receiver/Store identity, never a reread of mutable Chunk.d
@@ -48,14 +69,20 @@ mc_tile_entity_dirty_in_execution(mc_entity_tick_execution *, mc_tile_entity *,
  * lazy_receiver_site names that defining lm.d/hi.d code, never mutable d.
  * The same kernel code bundle and complete result ledger pass unchanged into
  * each actually reached acquisition; no extra get or Source retry is run.
+ * code_classes supplies the explicit retained mutation/World code graph;
+ * it is independent of the lookup Registry and virtual factory graph. The
+ * required lazy_call slot starts NULL. A loaded result allocates no owner.
+ * Reentry with a live owner refuses without changing out/error/owned; only
+ * checked native close/retire can consume that preceding failed invocation.
  * Unsupported concrete factory/Block behavior keeps its existing real refusal.
  * Returned Tile owns the actual ordinary result hold; failure preserves out.
  * Other public set/Block/deferred callers still use their separate legacy route. */
 mc_world_storage_status mc_live_tile_entities_get_in_execution(
     mc_entity_tick_execution *, mc_world_runtime *, mc_world_runtime_execution_code,
-    mc_registry_classes *defining_registry, mc_world_runtime_classes *factory_classes,
-    mc_entity_tick_execution_site lazy_receiver_site, int32_t, int32_t, int32_t, mc_tile_entity **,
-    mc_live_tile_entity_error *, mc_world_runtime_execution_result *);
+    mc_world_runtime_classes *code_classes, mc_registry_classes *defining_registry,
+    mc_world_runtime_classes *factory_classes, mc_entity_tick_execution_site lazy_receiver_site,
+    int32_t, int32_t, int32_t, mc_tile_entity **, mc_live_tile_entity_error *,
+    mc_world_runtime_execution_result *, mc_live_tile_entity_query_execution_call **);
 
 /* Actual RW.c World argument is already owned by the caller's exact current B.
  * Reuse the SAME base6 / virtual factory15 / World install18 body. Defining

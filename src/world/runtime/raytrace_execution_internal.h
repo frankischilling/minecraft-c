@@ -29,8 +29,9 @@
  * must be retained independently before retirement exactly as in legacy API.
  *
  * Existing unjoined import/generation/population/provider/foreign Store graph
- * obligations remain external. The Tile lazy close without its own published
- * capsule is OPEN; a refusal never invents a capsule/pop or replays a getter.
+ * obligations remain external. Reached lazy Tile additions retain their exact
+ * typed owner separately from owned; native unwind below drains only that
+ * owner's recorded scopes and explicit canonical activation capsules.
  */
 bool mc_world_raytrace_flags_begin_in_execution(
     mc_entity_tick_execution *, mc_world_runtime_classes *, mc_world_runtime *,
@@ -50,5 +51,13 @@ typedef struct mc_world_raytrace_execution_state {
 
 bool mc_world_raytrace_execution_inspect(const mc_world_raytrace_call *,
                                          mc_world_raytrace_execution_state *);
+
+/* One native-only capture/finish/recorded-close/owner-retire action. The Ray's
+ * actual initiating token is borrowed and is never popped here. Unknown
+ * descendants refuse. quiescent means this Ray's lazy child has drained, not
+ * that the enclosing execution/World/receipts/Math may be retired. On refusal
+ * the first Source diagnostic, canonical result and remaining owner stay live. */
+mc_world_storage_status mc_world_raytrace_native_unwind_step(mc_world_raytrace_call *,
+                                                             bool *quiescent);
 
 #endif

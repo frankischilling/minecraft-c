@@ -13,6 +13,24 @@ if(TARGET mc_client_source_screen_drawing)
 endif()
 
 if(BUILD_TESTING)
+    add_executable(mc_test_furnace_owned_lazy
+        tests/world/runtime/world_access/test_furnace_owned_lazy.c)
+    target_include_directories(mc_test_furnace_owned_lazy PRIVATE src src/platform/time)
+    target_link_libraries(mc_test_furnace_owned_lazy PRIVATE
+        mc_simulation mc_resources mc_c_atomics mc_build_options)
+    foreach(_furnace_lazy_mode IN ITEMS direct-success direct-failure ray-success ray-failure)
+        add_test(NAME world.furnace_owned_lazy_${_furnace_lazy_mode} COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_furnace_owned_lazy.py"
+            --executable "$<TARGET_FILE:mc_test_furnace_owned_lazy>" --mode "${_furnace_lazy_mode}"
+            --work-dir "${CMAKE_CURRENT_BINARY_DIR}/furnace-owned-lazy-controls")
+        set_tests_properties(world.furnace_owned_lazy_${_furnace_lazy_mode} PROPERTIES
+            LABELS "public;integration;world;inventory;ownership" TIMEOUT 240)
+    endforeach()
+    unset(_furnace_lazy_mode)
+    add_test(NAME tools.furnace_owned_lazy_controls COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_furnace_owned_lazy.py" --controls)
+    set_tests_properties(tools.furnace_owned_lazy_controls PROPERTIES
+        LABELS "public;unit;tools;inventory;ownership" TIMEOUT 90)
     add_executable(mc_test_furnace_core tests/world/furnace/test_core.c)
     add_executable(mc_test_furnace_inventory tests/inventory/furnace.c)
     add_executable(mc_test_furnace_tick tests/world/runtime/tile_entities/test_furnace_tick.c)
@@ -44,9 +62,12 @@ if(BUILD_TESTING)
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/inventory/furnace/test_packet.py")
     add_test(NAME tools.furnace_lifecycle_packet COMMAND Python3::Interpreter -B
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/furnace_lifecycle/test_packet.py")
+    add_test(NAME tools.furnace_save_readback_packet COMMAND Python3::Interpreter -B
+        "${CMAKE_CURRENT_SOURCE_DIR}/tests/reference/world/furnace_save_readback/test_packet.py")
     add_test(NAME tools.furnace_gui_controls COMMAND Python3::Interpreter -B
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/client/test_furnace_gui.py" --controls)
-    set_tests_properties(tools.furnace_packet tools.furnace_lifecycle_packet tools.furnace_gui_controls PROPERTIES
+    set_tests_properties(tools.furnace_packet tools.furnace_lifecycle_packet
+        tools.furnace_save_readback_packet tools.furnace_gui_controls PROPERTIES
         LABELS "public;unit;tools;inventory;reference" TIMEOUT 90)
 endif()
 

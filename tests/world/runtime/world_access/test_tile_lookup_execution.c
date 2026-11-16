@@ -169,6 +169,7 @@ typedef struct tl_fixture {
     mc_entity_tick_execution execution;
     mc_world_runtime_execution_result result, probe_result;
     mc_live_tile_entity_error error, probe_error;
+    mc_live_tile_entity_query_execution_call *lazy_call;
     mc_tile_entity *tile;
     mc_world_access *receiver;
     mc_world_access_receipt *receipt;
@@ -263,8 +264,9 @@ static mc_world_storage_status tl_get(tl_fixture *s, mc_tile_entity **out,
                                       mc_world_runtime_execution_result *result, bool defining) {
     fixture *f = &s->source.game;
     return mc_live_tile_entities_get_in_execution(
-        &s->execution, f->worlds[0], tl_code, defining ? f->registry[0] : NULL,
-        defining ? f->classes[0] : NULL, tl_lazy_site, 8, 64, 8, out, error, result);
+        &s->execution, f->worlds[0], tl_code, defining ? f->classes[0] : NULL,
+        defining ? f->registry[0] : NULL, defining ? f->classes[0] : NULL, tl_lazy_site, 8, 64, 8,
+        out, error, result, &s->lazy_call);
 }
 
 typedef struct tl_scope {
@@ -275,6 +277,7 @@ typedef struct tl_scope {
     mc_world_access_failure_lease_phase node_phase;
     mc_world_access *node_receiver;
     mc_world_access_receipt *node_receipt;
+    mc_live_tile_entity_query_execution_call *lazy_call;
     size_t bindings, active_calls, world_count, lease_count, receipt_count, loader_count;
     size_t cache_count, insertion_count, tile_holds, receiver_holds;
     bool open, held, child_failed, capture_pending;
@@ -293,12 +296,17 @@ static bool tl_scope_take(tl_fixture *s, tl_scope *out) {
     out->first = s->execution.first;
     out->capture = s->execution.capture;
     out->cleanup = s->execution.cleanup;
-    out->node = mc_entity_tick_execution_world_lease(&s->execution);
-    if (out->node == NULL)
+    /* Snapshot the validated current token without re-entering lease admission:
+     * a failed child keeps this genuine outer scope while execution is FAILED. */
+    const size_t slot = out->current.slot;
+    if (out->current.owner != &s->execution || slot >= MC_ENTITY_TICK_EXECUTION_WORLDS ||
+        slot >= MC_ENTITY_TICK_EXECUTION_RECEIPTS || !s->execution.lease_used[slot])
         return false;
+    out->node = &s->execution.leases[slot];
     out->node_phase = out->node->phase;
     out->node_receiver = out->node->receiver;
     out->node_receipt = out->node->receipt;
+    out->lazy_call = s->lazy_call;
     out->bindings = world->persistent_bindings;
     out->active_calls = world->active_calls;
     out->world_count = s->execution.world_count;
@@ -307,8 +315,8 @@ static bool tl_scope_take(tl_fixture *s, tl_scope *out) {
     out->loader_count = s->execution.loader_count;
     out->cache_count = f->providers[0].cache->count;
     out->insertion_count = f->providers[0].cache->insertion_count;
-    out->tile_holds = s->tile->holds;
-    out->receiver_holds = s->receiver->active_holds;
+    out->tile_holds = s->tile == NULL ? 0 : s->tile->holds;
+    out->receiver_holds = s->receiver == NULL ? 0 : s->receiver->active_holds;
     out->open = s->execution.world_open;
     out->held = s->execution.world_held;
     out->child_failed = s->execution.child_failed;
@@ -324,8 +332,8 @@ static bool tl_scope_same(tl_fixture *s, const tl_scope *before) {
            tl_owner_error_same(after.cleanup, before->cleanup) && after.node == before->node &&
            after.node_phase == before->node_phase && after.node_receiver == before->node_receiver &&
            after.node_receipt == before->node_receipt && after.bindings == before->bindings &&
-           after.active_calls == before->active_calls && after.world_count == before->world_count &&
-           after.lease_count == before->lease_count &&
+           after.lazy_call == before->lazy_call && after.active_calls == before->active_calls &&
+           after.world_count == before->world_count && after.lease_count == before->lease_count &&
            after.receipt_count == before->receipt_count &&
            after.loader_count == before->loader_count && after.cache_count == before->cache_count &&
            after.insertion_count == before->insertion_count &&
@@ -338,6 +346,149 @@ static bool tl_scope_same(tl_fixture *s, const tl_scope *before) {
            after.loader.document == before->loader.document &&
            after.loader.record == before->loader.record &&
            after.loader.last_pc == before->loader.last_pc;
+}
+
+/* Required owner-output admission must not acquire or initialize even a cold
+ * Chunk. The probe's VALUE diagnostics are disjoint from every actual lookup. */
+static int tl_missing_owner(tl_fixture *s) {
+    fixture *f = &s->source.game;
+    mc_world_runtime *world = f->worlds[0];
+    mc_entity_tick_execution_world_token outer;
+    VERIFY(mc_entity_tick_execution_push_world(&s->execution, world, tl_entry_site, &outer) ==
+           MC_WORLD_STORAGE_OK);
+    tl_scope before = {0};
+    VERIFY(tl_scope_take(s, &before));
+    mc_tile_entity *actual = s->tile;
+    const mc_world_storage_status status = mc_live_tile_entities_get_in_execution(
+        &s->execution, world, tl_code, f->classes[0], f->registry[0], f->classes[0], tl_lazy_site,
+        8, 64, 8, &actual, &s->probe_error, &s->probe_result, NULL);
+    if (status == MC_WORLD_STORAGE_OK)
+        mc_tile_entity_release(actual);
+    VERIFY(status == MC_WORLD_STORAGE_INVALID_ARGUMENT && actual == s->tile &&
+           s->lazy_call == NULL && s->probe_error.status == status &&
+           s->probe_result.ownership_status == status && !s->probe_result.selection_ready &&
+           !tl_pending(&s->probe_result) && tl_scope_same(s, &before));
+    VERIFY(mc_live_tile_entity_query_execution_native_close(NULL) == MC_WORLD_STORAGE_OK &&
+           mc_live_tile_entity_query_execution_retire(&s->lazy_call) == MC_WORLD_STORAGE_OK &&
+           tl_scope_same(s, &before) &&
+           mc_entity_tick_execution_pop_world(&s->execution, &outer, false) == MC_WORLD_STORAGE_OK);
+    s->probe_result = (mc_world_runtime_execution_result){0};
+    return 0;
+}
+
+/* Separately declared lazy Source invocation: the defining Registry is real,
+ * while its factory namespace is an explicit missing native operand at RW15.
+ * Cleanup below never calls another getter to finish that failed prefix. The
+ * later tl_positive call is a new ordinary Source invocation, not a retry of
+ * this owner. No source field or failed status is repaired. */
+static int tl_missing_factory(tl_fixture *s) {
+    fixture *f = &s->source.game;
+    mc_world_runtime *world = f->worlds[0];
+    mc_entity_tick_execution_world_token outer, current;
+    VERIFY(s->lazy_call == NULL && s->tile == NULL &&
+           mc_entity_tick_execution_push_world(&s->execution, world, tl_entry_site, &outer) ==
+               MC_WORLD_STORAGE_OK);
+    const size_t entered_bindings = world->persistent_bindings;
+    mc_tile_entity *actual = NULL;
+    const mc_world_storage_status status = mc_live_tile_entities_get_in_execution(
+        &s->execution, world, tl_code, f->classes[0], f->registry[0], NULL, tl_lazy_site, 8, 64, 8,
+        &actual, &s->error, &s->result, &s->lazy_call);
+    if (status == MC_WORLD_STORAGE_OK)
+        mc_tile_entity_release(actual);
+    VERIFY(status == MC_WORLD_STORAGE_INVALID_ARGUMENT && actual == NULL && s->lazy_call != NULL &&
+           s->error.status == status && s->error.chunk_bytecode == 89 && s->error.bytecode == 15 &&
+           s->error.tile_entity.status == MC_TILE_ENTITY_INVALID_ARGUMENT &&
+           s->result.ownership_status == MC_WORLD_STORAGE_OK && !s->result.selection_ready &&
+           !tl_pending(&s->result) &&
+           mc_entity_tick_execution_current_world(&s->execution, &current) &&
+           tl_token_same(current, outer) &&
+           !mc_live_tile_entity_query_execution_owns_world(s->lazy_call, &outer) &&
+           mc_live_tile_entity_query_execution_failure(s->lazy_call) == NULL &&
+           tl_remember(s) == 0);
+    mc_world_chunk_fields fields;
+    size_t count = SIZE_MAX;
+    const size_t bindings = world->persistent_bindings;
+    VERIFY(bindings >= entered_bindings + 1 && s->execution.world_count == 2 &&
+           s->execution.phase == MC_ENTITY_TICK_EXECUTION_FAILED && s->execution.lease_count == 1 &&
+           s->execution.loader_count == 0 &&
+           mc_world_chunk_fields_get(f->chunks[0], &fields) == MC_WORLD_STORAGE_OK &&
+           mc_world_chunk_tile_entity_count(fields.l, &count) == MC_WORLD_STORAGE_OK &&
+           count == 0 && world->fields.c->count == 0 && world->persistent_bindings == bindings);
+    mc_live_tile_entity_query_execution_call *failed_owner = s->lazy_call;
+    mc_live_tile_entity_error *first_error = malloc(sizeof(*first_error));
+    mc_world_runtime_execution_result *first_result = malloc(sizeof(*first_result));
+    VERIFY(first_error != NULL && first_result != NULL);
+    memcpy(first_error, &s->error, sizeof(*first_error));
+    memcpy(first_result, &s->result, sizeof(*first_result));
+    tl_scope before = {0};
+    VERIFY(tl_scope_take(s, &before));
+    /* A valid replacement factory argument cannot turn reentry into replay.
+     * Even a NULL outward error must preserve the first canonical receipt. */
+    VERIFY(
+        tl_get(s, &actual, &s->error, &s->result, true) == MC_WORLD_STORAGE_BUSY &&
+        tl_get(s, &actual, NULL, &s->result, true) == MC_WORLD_STORAGE_BUSY && actual == NULL &&
+        s->lazy_call == failed_owner && memcmp(first_error, &s->error, sizeof(*first_error)) == 0 &&
+        memcmp(first_result, &s->result, sizeof(*first_result)) == 0 && tl_scope_same(s, &before));
+    /* A distinct genuine execution/binding/fresh owner slot may read an air
+     * cell in this loaded Chunk without reopening the failed execution. */
+    mc_entity_tick_execution *independent_execution = calloc(1, sizeof(*independent_execution));
+    mc_world_runtime_execution_result *independent_result = calloc(1, sizeof(*independent_result));
+    VERIFY(independent_execution != NULL && independent_result != NULL);
+    mc_entity_tick_execution_init(independent_execution, NULL);
+    mc_entity_tick_execution_world_token independent;
+    mc_live_tile_entity_query_execution_call *independent_owner = NULL;
+    VERIFY(mc_entity_tick_execution_push_world(
+               independent_execution, world,
+               (mc_entity_tick_execution_site){"native.tile.control", "independent", "()V", 0},
+               &independent) == MC_WORLD_STORAGE_OK &&
+           independent.owner != outer.owner && world->persistent_bindings == bindings + 1 &&
+           !mc_live_tile_entity_query_execution_owns_world(failed_owner, &independent));
+    VERIFY(mc_live_tile_entities_get_in_execution(independent_execution, world, tl_code, NULL,
+                                                  f->registry[0], NULL, tl_lazy_site, 9, 64, 8,
+                                                  &actual, &s->probe_error, independent_result,
+                                                  &independent_owner) == MC_WORLD_STORAGE_OK &&
+           actual == NULL && independent_owner == NULL && !independent_result->selection_ready &&
+           !tl_pending(independent_result) &&
+           independent_result->ownership_status == MC_WORLD_STORAGE_OK &&
+           mc_entity_tick_execution_pop_world(independent_execution, &independent, false) ==
+               MC_WORLD_STORAGE_OK &&
+           world->persistent_bindings == bindings && s->lazy_call == failed_owner &&
+           memcmp(first_error, &s->error, sizeof(*first_error)) == 0 &&
+           memcmp(first_result, &s->result, sizeof(*first_result)) == 0);
+    VERIFY(mc_entity_tick_execution_retire(independent_execution) == MC_WORLD_STORAGE_OK);
+    free(independent_result);
+    free(independent_execution);
+    /* Capture/inspect the real current producer and pending VALUES first.
+     * Only checked native close/retire follows; no Source body is called. */
+    tl_scope before_cleanup = {0};
+    VERIFY(tl_scope_take(s, &before_cleanup));
+    VERIFY(mc_entity_tick_execution_current_world(&s->execution, &current) &&
+           tl_token_same(current, outer) && !tl_pending(&s->result) &&
+           mc_live_tile_entity_query_execution_native_close(s->lazy_call) == MC_WORLD_STORAGE_OK &&
+           mc_live_tile_entity_query_execution_native_close(s->lazy_call) == MC_WORLD_STORAGE_OK &&
+           s->lazy_call == failed_owner &&
+           mc_live_tile_entity_query_execution_failure(s->lazy_call) == NULL &&
+           memcmp(first_error, &s->error, sizeof(*first_error)) == 0 &&
+           tl_scope_same(s, &before_cleanup));
+    VERIFY(mc_live_tile_entity_query_execution_retire(&s->lazy_call) == MC_WORLD_STORAGE_OK &&
+           s->lazy_call == NULL &&
+           mc_live_tile_entity_query_execution_retire(&s->lazy_call) == MC_WORLD_STORAGE_OK &&
+           world->persistent_bindings == bindings && f->providers[0].cache->count == 1 &&
+           f->providers[0].cache->insertion_count == 1 && world->fields.c->count == 0 &&
+           mc_world_chunk_tile_entity_count(fields.l, &count) == MC_WORLD_STORAGE_OK &&
+           count == 0 && memcmp(first_error, &s->error, sizeof(*first_error)) == 0);
+    before_cleanup.lazy_call = NULL; /* Expected native owner-slot consumption only. */
+    VERIFY(tl_scope_same(s, &before_cleanup));
+    free(first_result);
+    free(first_error);
+    VERIFY(mc_entity_tick_execution_pop_world(&s->execution, &outer, true) == MC_WORLD_STORAGE_OK &&
+           mc_entity_tick_execution_retire(&s->execution) == MC_WORLD_STORAGE_OK &&
+           s->execution.world_count == 0 && s->execution.lease_count == 0 &&
+           world->persistent_bindings + 2 == bindings);
+    mc_entity_tick_execution_init(
+        &s->execution, NULL); /* Fresh native invocation ledger after checked retirement. */
+    s->result = s->probe_result = (mc_world_runtime_execution_result){0};
+    return 0;
 }
 
 /* Called only under a genuine same-node ARMED callback or transferred HELD
@@ -355,7 +506,7 @@ static void tl_probe_same_node(tl_fixture *s, bool public_error) {
         mc_tile_entity_release(actual);
     ++s->probes;
     s->probe_valid &=
-        snapped && status == MC_WORLD_STORAGE_BUSY && output_same &&
+        snapped && status == MC_WORLD_STORAGE_BUSY && output_same && s->lazy_call == NULL &&
         s->probe_result.ownership_status == status &&
         s->probe_result.ownership_error.status == status &&
         s->probe_result.ownership_error.operation != NULL &&
@@ -415,6 +566,7 @@ static mc_world_storage_status tl_dirty_callback(void *context, mc_world_runtime
         mc_tile_entity *actual = NULL;
         s->nested_status = tl_get(s, &actual, &s->probe_error, &s->probe_result, true);
         s->callback_valid &= s->nested_status == MC_WORLD_STORAGE_OK && actual == s->tile &&
+                             s->lazy_call == NULL &&
                              s->probe_result.ownership_status == MC_WORLD_STORAGE_OK &&
                              !s->probe_result.selection_ready && !tl_pending(&s->probe_result);
         if (s->nested_status == MC_WORLD_STORAGE_OK)
@@ -463,7 +615,7 @@ static int tl_positive(tl_fixture *s, int pass, const char *label) {
     mc_tile_entity *actual = NULL;
     const mc_world_storage_status status =
         tl_get(s, &actual, pass == 1 ? NULL : &s->error, &s->result, pass != 2);
-    VERIFY(status == MC_WORLD_STORAGE_OK && actual != NULL &&
+    VERIFY(status == MC_WORLD_STORAGE_OK && actual != NULL && s->lazy_call == NULL &&
            s->result.ownership_status == MC_WORLD_STORAGE_OK && !s->result.selection_ready &&
            !tl_pending(&s->result) && s->execution.loader_count == 0 &&
            s->execution.receipt_count == 0 && s->execution.current_lease == outer.slot);
@@ -614,7 +766,11 @@ int main(int argc, char **argv) {
            ss_open(&s->source) == 0 && s->source.game.providers[0].cache->count == 0 &&
            s->source.game.providers[0].cache->insertion_count == 0);
     mc_entity_tick_execution_init(&s->execution, NULL);
+    VERIFY(tl_missing_owner(s) == 0);
+    if (strcmp(s->mode, "lazy") == 0)
+        VERIFY(tl_missing_factory(s) == 0);
     VERIFY(tl_positive(s, 0, "cold BEGIN") == 0);
+    VERIFY(tl_missing_owner(s) == 0);
     tl_marker("cold END");
     if (strcmp(s->mode, "map") == 0 || strcmp(s->mode, "lazy") == 0) {
         VERIFY(tl_positive(s, 1, "cache BEGIN") == 0);
@@ -623,7 +779,10 @@ int main(int argc, char **argv) {
         tl_marker("unused-defining END");
     } else
         VERIFY(tl_callback_case(s) == 0);
-    VERIFY(mc_entity_tick_execution_retire(&s->execution) == MC_WORLD_STORAGE_OK);
+    VERIFY(s->lazy_call == NULL &&
+           mc_live_tile_entity_query_execution_native_close(s->lazy_call) == MC_WORLD_STORAGE_OK &&
+           mc_live_tile_entity_query_execution_retire(&s->lazy_call) == MC_WORLD_STORAGE_OK &&
+           mc_entity_tick_execution_retire(&s->execution) == MC_WORLD_STORAGE_OK);
     mc_tile_entity_release(s->tile);
     s->tile = NULL;
     /* Real stop closes cached region handles BEFORE independent disk readback. */

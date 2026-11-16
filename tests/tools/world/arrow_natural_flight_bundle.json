@@ -20,24 +20,24 @@
       "sha256": "ba74e695188cdf04de5cf52e12f59e82cc6439c6d9153c95580443eb52b1e9e2"
     },
     "src/entity/arrow/tick.c": {
-      "bytes": 36465,
-      "sha256": "22d92c3db9685c6dd47ba7c6c7aa0643dcf4f24126191e9918d78048ede5bec1"
+      "bytes": 39737,
+      "sha256": "2e178048581e4d1ae8d3e764c1458973a205f67f9abf54b53a14b2860d24a76e"
     },
     "src/entity/arrow/tick_body.c": {
       "bytes": 29442,
       "sha256": "f1827a6f4becd64bf634363c7fd4442c1a77bf5b71a7e66731a277136c6f92ee"
     },
     "src/entity/arrow/tick_children.c": {
-      "bytes": 53285,
-      "sha256": "137ef45ce8e853e8959e65712fd122a3dfa2f192ff52772aca5ac3c924b1823b"
+      "bytes": 54086,
+      "sha256": "64266b48569458217ee79e6cd5d997c0ae3164e16011873511777cdafefd725f"
     },
     "src/entity/arrow/tick_execution_dependencies.h": {
       "bytes": 1697,
       "sha256": "1e132b99f21904a46835465d3d4de043b802a927a0f12cf6a17021330053b239"
     },
     "src/entity/arrow/tick_internal.h": {
-      "bytes": 8740,
-      "sha256": "ecc11ed7cecd1a973fe31d62b3b4abd13c37b2b8a617840213024d33e0373101"
+      "bytes": 8870,
+      "sha256": "3dd073c658a9e63f86a87588461c67803730f5bc145f544bacabd4f29db61c83"
     },
     "src/world/runtime/entity_tick.c": {
       "bytes": 12630,
