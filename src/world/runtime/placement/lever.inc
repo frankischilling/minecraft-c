@@ -83,8 +83,8 @@ static bool lever_child_call(mc_world_placement_error *e, const mc_block *block,
     bool completed = false, ignored;
     switch (child) {
         case LEVER_METADATA:
-            completed = mc_world_runtime_metadata_set(world, x, y, z, argument, lower) ==
-                        MC_WORLD_STORAGE_OK;
+            completed = mc_world_runtime_piston_metadata(e->work->block_code_classes, world, x, y,
+                                                         z, argument, lower) == MC_WORLD_STORAGE_OK;
             break;
         case LEVER_RANGE:
             completed = mc_world_mutation_observe_range(world, x, y, z, x, y, z, lower);
@@ -104,14 +104,16 @@ static bool lever_child_call(mc_world_placement_error *e, const mc_block *block,
             break;
         }
         case LEVER_NEIGHBORS:
-            completed = mc_world_mutation_neighbors(world, x, y, z, block->fields.bn, lower);
+            completed = mc_world_mutation_neighbors_with_code(e->work->block_code_classes, world, x,
+                                                              y, z, block->fields.bn, lower);
             break;
         case LEVER_DROP:
             completed = mc_world_mutation_drop(world, block, x, y, z, argument, lower);
             break;
         case LEVER_REMOVE:
-            completed = mc_world_runtime_block_set(world, x, y, z, 0, &ignored, lower) ==
-                        MC_WORLD_STORAGE_OK;
+            completed =
+                mc_world_runtime_piston_set(e->work->block_code_classes, world, x, y, z, 0, false,
+                                            0, true, &ignored, lower) == MC_WORLD_STORAGE_OK;
             break;
     }
     mc_world_runtime_call_leave(world);

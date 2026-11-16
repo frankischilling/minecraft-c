@@ -19,5 +19,10 @@
 mc_registry_status mc_block_render_texture_metadata_detail(const mc_block *, int32_t side,
                                                            int32_t metadata, int32_t *,
                                                            mc_item_render_error *);
+/* Actual static JQ.d/H.c, in the caller's defining namespace. Active use
+ * precedes the pure metadata&7 body; nullable output is native admission. */
+mc_registry_status mc_block_render_piston_direction(mc_registry_classes *, bool head,
+                                                    int32_t metadata, int32_t *,
+                                                    mc_registry_error *);
 
 #endif

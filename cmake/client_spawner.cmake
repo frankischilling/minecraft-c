@@ -3,12 +3,14 @@ include_guard(GLOBAL)
 if(TARGET mc_client_tile_renderer_cpu AND TARGET mc_client_entity_renderer)
     add_library(mc_client_tile_renderer_draw STATIC
         src/client/render/tile_entity_renderer/draw.c
-        src/client/render/tile_entity_renderer/spawner.c)
+        src/client/render/tile_entity_renderer/spawner.c
+        src/client/render/tile_entity_renderer/piston.c)
     target_include_directories(mc_client_tile_renderer_draw PUBLIC include src src/platform/time)
     target_link_libraries(mc_client_tile_renderer_draw PUBLIC mc_client_tile_renderer_cpu
         mc_client_entity_renderer mc_math_classes PRIVATE mc_build_options)
     if(TARGET mc_client_render_global)
         target_link_libraries(mc_client_render_global PUBLIC mc_client_tile_renderer_draw)
+        target_link_libraries(mc_client_tile_renderer_draw PRIVATE mc_client_render_global)
     endif()
     if(BUILD_TESTING)
         add_executable(mc_test_tile_entity_draw

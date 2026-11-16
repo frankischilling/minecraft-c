@@ -7,6 +7,8 @@
 #include "mc/entity/factory/factory.h"
 #include "mc/world/storage/source_chunk_loader.h"
 
+typedef struct tile_draw_piston_call tile_draw_piston_call;
+
 struct mc_client_tile_renderer_draw_call {
     mc_client_tile_renderer_draw_state state;
     mc_client_tile_renderer_draw_error error, cleanup;
@@ -17,6 +19,7 @@ struct mc_client_tile_renderer_draw_call {
     mc_tile_entity *tile_entity;
     mc_world_runtime *brightness_world;
     mc_client_render_engine_classes *graphics;
+    tile_draw_piston_call *piston;
     mc_entity *preview, *factory_result, *map_value_pending;
     mc_tile_entity_name *names[3];
     mc_world_brightness_error brightness;
@@ -39,6 +42,10 @@ bool tile_draw_graphics(mc_client_tile_renderer_draw_call *);
 bool tile_draw_display(mc_client_tile_renderer_draw_call *, bool returned);
 bool tile_draw_fp(mc_client_tile_renderer_draw_call *, int32_t);
 bool tile_draw_spawner(mc_client_tile_renderer_draw_call *);
+bool tile_draw_piston(mc_client_tile_renderer_draw_call *);
+bool tile_draw_piston_retire(mc_client_tile_renderer_draw_call *,
+                             mc_client_tile_renderer_draw_error *);
+void tile_draw_piston_free(mc_client_tile_renderer_draw_call *);
 /* Actual AG25..63 cache/factory subbody, entered on the held AG/Tile graph.
  * CPU controls exercise this prefix independently, never credit a GL draw. */
 bool tile_draw_spawner_cache(mc_client_tile_renderer_draw_call *);

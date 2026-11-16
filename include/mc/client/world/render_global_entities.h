@@ -77,6 +77,14 @@ typedef struct mc_client_render_global_tile_receipt {
     uintptr_t tile_identity, renderer_identity, preview_identity, preview_world_identity;
     int32_t preview_kind;
     const char *renderer_class;
+    bool piston_skipped, tessellator_begun, tessellator_drawn;
+    bool piston_head_returned, piston_base_returned, piston_block_returned;
+    bool piston_snapshot_valid, piston_extending, piston_render_head;
+    uint32_t piston_progress_bits, piston_current_progress_bits, piston_previous_progress_bits;
+    int32_t piston_block_id, piston_metadata, piston_facing;
+    size_t piston_vertices;
+    uintptr_t piston_cv_identity;
+    double piston_translation[3];
 } mc_client_render_global_tile_receipt;
 
 typedef struct mc_client_render_global_entities_state {
@@ -110,6 +118,7 @@ typedef struct mc_client_render_global_entities_state {
      * traversed first. Same scalar-only lifetime as the other draw receipts. */
     mc_client_render_global_draw_receipt first_item_draw;
     size_t tile_draws_attempted, tile_draws_returned, tile_draws_retired;
+    size_t piston_draws_returned, piston_heads_returned, piston_bases_returned, piston_vertices;
     const mc_client_tile_renderer_draw_call *tile_draw;
     mc_client_render_global_tile_receipt last_tile_draw;
 } mc_client_render_global_entities_state;

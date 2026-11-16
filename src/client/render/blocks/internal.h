@@ -1,6 +1,7 @@
 #ifndef MC_CLIENT_RENDER_BLOCKS_INTERNAL_H
 #define MC_CLIENT_RENDER_BLOCKS_INTERNAL_H
 
+#include "../../../block/registry/rendering_internal.h"
 #include "../../render_engine/colorizer.h"
 #include "../../startup/application_queries.h"
 #include "../../world/render_global_internal.h"
@@ -10,6 +11,7 @@
 #include "mc/world/dimension/world_chunk_manager.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/brightness.h"
+#include "mc/world/runtime/tile_entities/tile_entities.h"
 
 typedef struct client_application client_application;
 
@@ -28,7 +30,8 @@ typedef enum mc_cv_world_child_kind {
     MC_CV_WORLD_MIN_BRIGHTNESS,
     MC_CV_WORLD_OPAQUE,
     MC_CV_WORLD_MANAGER,
-    MC_CV_WORLD_SOLID
+    MC_CV_WORLD_SOLID,
+    MC_CV_WORLD_TILE
 } mc_cv_world_child_kind;
 
 typedef struct mc_cv_world_error {
@@ -46,6 +49,7 @@ typedef struct mc_cv_world_error {
         mc_world_opaque_error opaque;
         mc_world_manager_error manager;
         mc_world_solid_support_error solid;
+        mc_live_tile_entity_error tile;
     } value;
 } mc_cv_world_error;
 
@@ -66,6 +70,9 @@ typedef struct mc_cv_context {
     mc_client_render_engine_classes *graphics;
     mc_client_display *display; /* Actual inventory-call Display; World paths need none here. */
     client_application *application;
+    mc_client_application_classes *application_classes; /* Explicit defining static namespace. */
+    mc_world_runtime_classes
+        *code_classes; /* Held defining namespace, independent of XP/Tile.World. */
     mc_client_tessellator *tessellator;
     mc_cv_frame frames[16];
     size_t depth;
@@ -79,7 +86,24 @@ typedef struct mc_cv_context {
     mc_client_application_query_error application_query_error;
     mc_entity_vector_error fluid_vector_error;
     mc_cv_world_error world_error;
+    mc_tile_entity_classes *tile_classes; /* One reached native namespace borrow. */
+    mc_tile_entity *piston_tiles[16]; /* Reached locals on the same bounded Source frame chain. */
+    size_t piston_tile_count;
+    mc_tile_entity_error piston_error;
+    mc_item_render_error texture_error;
+    bool capture_attempted;
+    mc_world_storage_status capture_status;
+    mc_world_access_failure captured_failure;
+    const char *exception_class; /* Exact reached source exception, when proven. */
 } mc_cv_context;
+
+/* Native-only checked retirement. Failure leaves the first Source error and
+ * every source field unchanged. A BUSY captured receipt stays owned for retry;
+ * successful consumption is idempotent. cleanup_error is a separate value. */
+bool mc_cv_retire(mc_cv_context *, mc_client_render_global_error *cleanup_error);
+bool mc_cv_tile(mc_cv_context *, int32_t, int32_t, int32_t, unsigned int, mc_tile_entity **);
+bool mc_cv_tile_bound(mc_cv_context *, const void *, int32_t, int32_t, int32_t, unsigned int,
+                      mc_tile_entity **);
 
 bool mc_cv_fail(mc_cv_context *, mc_client_render_global_status, const char *, unsigned int,
                 bool native_policy);
@@ -125,6 +149,8 @@ bool mc_cv_texture(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t,
 bool mc_cv_side_texture(mc_cv_context *, const mc_block *, int32_t, unsigned int, int32_t *);
 bool mc_cv_update_bounds(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t,
                          unsigned int);
+bool mc_cv_update_bounds_bound(mc_cv_context *, const mc_block *, const void *, int32_t, int32_t,
+                               int32_t, unsigned int);
 bool mc_cv_grass(mc_cv_context *, unsigned int, const mc_block **);
 bool mc_cv_ao_flag(mc_cv_context *, int32_t, int32_t, int32_t, unsigned int static_pc,
                    unsigned int query_pc, unsigned int index_pc, bool *);
@@ -142,6 +168,13 @@ bool mc_source_cv_ambient_occlusion(mc_cv_context *, const mc_block *, int32_t, 
                                     float, float, float, bool *);
 bool mc_cv_render(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
 bool mc_cv_standard(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
+/* Exact Piston bodies own their CV source frame, but neither begin nor draw NW.
+ * Void wrappers return native success only; f is cleared solely on normal return. */
+bool mc_cv_piston_base(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool, bool *);
+bool mc_cv_piston_head(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool, bool *);
+bool mc_cv_render_all(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t);
+bool mc_cv_piston_base_all(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t);
+bool mc_cv_piston_head_all(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool);
 bool mc_cv_lever(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
 bool mc_cv_bed(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
 bool mc_cv_bed_texture_metadata(mc_cv_context *, const mc_block *, int32_t side, int32_t metadata,

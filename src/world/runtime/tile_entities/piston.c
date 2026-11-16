@@ -3,7 +3,9 @@
 #include "../../../block/registry/registry_internal.h"
 #include "../collision/blocks_internal.h"
 #include "../mutation/mutation_internal.h"
+#include "../mutation/piston_internal.h"
 #include "mc/block/registry/runtime.h"
+#include "piston_list_internal.h"
 #include "tile_entities_internal.h"
 
 /* Exact binary32 fcmpg(previous,1)<0. NaNs select +1, including signaling
@@ -178,8 +180,9 @@ static bool finalize_held(mc_tile_entity *tile_entity, mc_world_mutation_error *
     bool ordinary = false;
     mc_world_mutation_error lower;
     mc_world_mutation_error_init(&lower);
-    if (mc_world_runtime_block_metadata_set(world, x, y, z, carried_id, carried_data, &ordinary,
-                                            &lower) != MC_WORLD_STORAGE_OK) {
+    if (mc_world_runtime_piston_set(mc_tile_entity_piston_code_classes_held(tile_entity), world, x,
+                                    y, z, carried_id, true, carried_data, true, &ordinary,
+                                    &lower) != MC_WORLD_STORAGE_OK) {
         finalize_nested(error, &lower, 94);
         return false;
     }

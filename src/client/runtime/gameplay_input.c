@@ -343,6 +343,7 @@ static bool use(client_application *app, mc_client_gameplay_input *call, bool on
         return click_fail(call, "actual click null use controller invocation", pc);
     const mc_world_block_activation_context activation = {.context = call,
                                                           .player_code_registry = app->registry,
+                                                          .block_code_classes = app->world_classes,
                                                           .workbench = workbench,
                                                           .chest = chest,
                                                           .furnace = furnace,

@@ -214,11 +214,15 @@ static bool coordinates(mc_client_tile_renderer_draw_call *c) {
         c->state.renderer_class = renderer->source_class;
         tile_draw_at(c, "ll", coordinates_descriptor, 22);
         c->error.parent = c->error.site;
-        if (strcmp(renderer->source_class, "ag") != 0)
+        if (strcmp(renderer->source_class, "ag") == 0) {
+            if (!tile_draw_spawner(c))
+                return false;
+        } else if (strcmp(renderer->source_class, "hy") == 0) {
+            if (!tile_draw_piston(c))
+                return false;
+        } else
             return tile_draw_fail(c, MC_CLIENT_TILE_RENDERER_UNIMPLEMENTED_DEPENDENCY,
-                                  "reached Sign/Piston TileEntity renderer draw descendant", true);
-        if (!tile_draw_spawner(c))
-            return false;
+                                  "reached Sign TileEntity renderer draw descendant", true);
         c->state.renderer_returned = true;
     }
     c->error.parent = (mc_client_graphics_site){0};
@@ -387,6 +391,8 @@ mc_client_tile_renderer_draw_retire(mc_client_tile_renderer_draw_call **slot,
             e.native_policy = true;
         } else {
             c->state.retiring = true;
+            if (!tile_draw_piston_retire(c, &e))
+                goto retained;
             /* Fallible graphics release precedes child diagnostic expiry. */
             if (c->graphics != NULL) {
                 if (mc_client_render_engine_classes_release(c->graphics) !=
@@ -430,6 +436,7 @@ mc_client_tile_renderer_draw_retire(mc_client_tile_renderer_draw_call **slot,
             if (c->brightness_world != NULL)
                 mc_world_runtime_binding_release(c->brightness_world);
             mc_tile_entity_release(c->tile_entity);
+            tile_draw_piston_free(c);
             --m->holds;
             m->draw_call = NULL;
             free(c);

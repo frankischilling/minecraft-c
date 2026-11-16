@@ -312,6 +312,25 @@ bool mc_cv_texture(mc_cv_context *c, const mc_block *b, int32_t x, int32_t y, in
                 !mc_cv_bed_texture_metadata(c, b, side, metadata, &value))
                 return false;
             mc_cv_pop(c);
+        } else if (b->kind == MC_BLOCK_PISTON_HEAD) {
+            mc_cv_pc(c, 12);
+            if (!mc_cv_push_source(c, "h", "a", "(II)I"))
+                return false;
+            const mc_registry_status status = mc_block_render_texture_metadata_detail(
+                b, side, metadata, &value, &c->texture_error);
+            if (status != MC_REGISTRY_OK) {
+                const mc_item_render_error *e = &c->texture_error;
+                c->failure.registry = e->registry;
+                c->failure.child = (mc_client_graphics_site){e->child.class_name, e->child.method,
+                                                             e->child.descriptor, e->child.pc};
+                c->exception_class = e->exception_class;
+                return mc_cv_fail(c,
+                                  status == MC_REGISTRY_NULL_REFERENCE && e->source_exception
+                                      ? MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE
+                                      : MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
+                                  e->operation, (unsigned int)e->site.pc, e->native_policy);
+            }
+            mc_cv_pop(c);
         } else if (!registry_result(c, mc_block_render_texture_metadata(b, side, metadata, &value),
                                     12))
             return false;

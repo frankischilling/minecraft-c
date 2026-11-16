@@ -253,6 +253,63 @@ mc_client_tile_renderer_change_world(mc_client_tile_renderer_dispatcher *m, mc_w
     return e.status;
 }
 
+bool tile_renderer_cv_capture_entered(mc_client_tile_renderer *r, mc_client_tile_renderer_cv **out,
+                                      mc_client_tile_renderer_error *e) {
+    if (r == NULL || out == NULL || *out != NULL || strcmp(r->source_class, "hy") != 0 ||
+        !r->parent->active || !r->parent->classes->active) {
+        tile_renderer_fail(e, MC_CLIENT_TILE_RENDERER_INVALID_ARGUMENT,
+                           "HY entered exact CV occurrence", NULL, NULL, NULL, -1, true);
+        return false;
+    }
+    if (!cv_ledger_valid(r))
+        return ledger_failure(e);
+    if (!world_ledger_admit(r->parent, e))
+        return false;
+    if (r->current_cv == NULL)
+        return true;
+    if (r->current_cv->external_holds == SIZE_MAX || r->retained_cv_holds == SIZE_MAX) {
+        tile_renderer_fail(e, MC_CLIENT_TILE_RENDERER_LIMIT, "HY draw CV occurrence bound", NULL,
+                           NULL, NULL, -1, true);
+        return false;
+    }
+    ++r->current_cv->external_holds;
+    ++r->retained_cv_holds;
+    *out = r->current_cv;
+    return true;
+}
+
+bool tile_renderer_cv_release_draw(mc_client_tile_renderer_cv **slot,
+                                   const struct mc_client_tile_renderer_draw_call *draw,
+                                   mc_client_tile_renderer_error *e) {
+    if (slot == NULL || draw == NULL) {
+        tile_renderer_fail(e, MC_CLIENT_TILE_RENDERER_INVALID_ARGUMENT,
+                           "HY draw CV retirement occurrence", NULL, NULL, NULL, -1, true);
+        return false;
+    }
+    if (*slot == NULL)
+        return true;
+    mc_client_tile_renderer_cv *cv = *slot;
+    mc_client_tile_renderer *r = cv->owner;
+    mc_client_tile_renderer_dispatcher *m = r->parent;
+    if (r->active || m->active || m->classes->active || m->draw_call != draw ||
+        m->classes->phase == MC_CLIENT_TILE_RENDERER_RETIRING || cv->external_holds == 0 ||
+        r->retained_cv_holds == 0) {
+        tile_renderer_fail(e, MC_CLIENT_TILE_RENDERER_BUSY, "HY exact retained draw CV retirement",
+                           NULL, NULL, NULL, -1, true);
+        return false;
+    }
+    if (!cv_ledger_valid(r))
+        return ledger_failure(e);
+    if (!world_ledger_admit(m, e))
+        return false;
+    --cv->external_holds;
+    --r->retained_cv_holds;
+    *slot = NULL;
+    if (!cv->current && cv->external_holds == 0)
+        cv_destroy(cv);
+    return true;
+}
+
 mc_client_tile_renderer_status
 mc_client_tile_renderer_cv_retain_current(mc_client_tile_renderer *r,
                                           mc_client_tile_renderer_cv **out,

@@ -197,6 +197,11 @@ bool mc_client_nw_color(mc_client_tessellator *o, int32_t r, int32_t g, int32_t 
     return leave(o, true, e);
 }
 
+bool mc_client_nw_color_rgb(mc_client_tessellator *o, int32_t r, int32_t g, int32_t b,
+                            mc_client_graphics_error *e) {
+    return mc_client_nw_color(o, r, g, b, 255, e);
+}
+
 bool mc_client_nw_color_float(mc_client_tessellator *o, float r, float g, float b,
                               mc_client_graphics_error *e) {
     if (!enter(o, e))

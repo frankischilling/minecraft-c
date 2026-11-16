@@ -225,6 +225,13 @@ mc_tile_entity_status mc_tile_entity_allocate(mc_world_runtime *world, mc_tile_e
 mc_tile_entity_status mc_tile_entity_allocate_in_classes(mc_world_runtime_classes *classes,
                                                          mc_tile_entity_kind kind,
                                                          mc_tile_entity **out);
+/* Same allocation/active-use attempt, with its actual defining namespace's
+ * complete cached base Registry/Piston initializer cause. No retry or World
+ * inference is performed. Ordinary out is unchanged on failure. */
+mc_tile_entity_status mc_tile_entity_allocate_in_classes_detailed(mc_world_runtime_classes *classes,
+                                                                  mc_tile_entity_kind kind,
+                                                                  mc_tile_entity **out,
+                                                                  mc_tile_entity_error *error);
 mc_tile_entity_status mc_tile_entity_construct(mc_tile_entity *raw);
 mc_tile_entity_status mc_tile_entity_construct_detailed(mc_tile_entity *raw,
                                                         mc_tile_entity_error *error);

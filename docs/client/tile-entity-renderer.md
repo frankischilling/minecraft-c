@@ -102,5 +102,8 @@ at TH80, with distinct N-owned consumer records. Its real I2 delay, live World
 Lists and visibility predicates execute. The component fixtures keep their
 separate comparison scope; they do not establish composed original N parity.
 The [Spawner preview path](spawner-rendering.md) adds typed published-row
-ownership, LL drawing and the actual AG/TH coordinates call. Sign/Piston drawing,
-deferred old Worlds and general interactive play remain unfinished or unqualified.
+ownership, LL drawing and the actual AG/TH coordinates call. The
+[Piston renderer](piston-rendering.md) now enters the actual HY/CV bodies and
+has a separate finite original/native comparison. Sign drawing, multiple new
+Tile Set order, deferred old Worlds and general interactive play remain
+unfinished or unqualified.

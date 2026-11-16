@@ -3,6 +3,7 @@
 #include "registry_internal.h"
 #include "rendering_internal.h"
 #include "runtime_internal.h"
+#include <limits.h>
 
 _Static_assert(MC_BLOCK_KIND_COUNT == 69, "audit new Block rendering descendants");
 
@@ -11,6 +12,58 @@ _Static_assert(MC_BLOCK_KIND_COUNT == 69, "audit new Block rendering descendants
 static bool valid(const mc_block *block) {
     return block != NULL && block->classes != NULL &&
            (unsigned int)block->kind < (unsigned int)MC_BLOCK_KIND_COUNT;
+}
+
+mc_registry_status mc_block_render_piston_direction(mc_registry_classes *classes, bool head,
+                                                    int32_t metadata, int32_t *out,
+                                                    mc_registry_error *error) {
+    mc_item_render_error empty;
+    mc_item_render_error_init(&empty);
+    mc_registry_status status = MC_REGISTRY_OK;
+    if (classes == NULL || out == NULL) {
+        status = MC_REGISTRY_INVALID_ARGUMENT;
+        empty.registry.message = "Piston direction class/output";
+    } else if (classes->entered == UINT_MAX) {
+        status = MC_REGISTRY_LIMIT;
+        empty.registry.message = "Piston direction initializer flow count";
+    } else {
+        ++classes->entered;
+        status = mc_registry_block_class_initialize(classes, head ? MC_BLOCK_PISTON_HEAD
+                                                                  : MC_BLOCK_PISTON_BASE);
+        --classes->entered;
+        if (status != MC_REGISTRY_OK)
+            empty.registry = classes->last_error;
+        else
+            *out = (int32_t)((uint32_t)metadata & 7u);
+    }
+    empty.registry.status = status;
+    if (error != NULL)
+        *error = empty.registry;
+    return status;
+}
+
+mc_registry_status mc_block_render_piston_base_texture(const mc_block *block, int32_t *out) {
+    if (out == NULL)
+        return MC_REGISTRY_INVALID_ARGUMENT;
+    if (block == NULL)
+        return MC_REGISTRY_NULL_REFERENCE;
+    if (!valid(block) || block->kind != MC_BLOCK_PISTON_BASE)
+        return MC_REGISTRY_INVALID_ARGUMENT;
+    *out = block->subtype.jq.a ? 106 : 107;
+    return MC_REGISTRY_OK;
+}
+
+mc_registry_status mc_block_render_piston_head_texture_set(mc_block *block, int32_t texture) {
+    if (block == NULL)
+        return MC_REGISTRY_NULL_REFERENCE;
+    if (!valid(block) || block->kind != MC_BLOCK_PISTON_HEAD)
+        return MC_REGISTRY_INVALID_ARGUMENT;
+    block->subtype.h.a = texture;
+    return MC_REGISTRY_OK;
+}
+
+mc_registry_status mc_block_render_piston_head_texture_reset(mc_block *block) {
+    return mc_block_render_piston_head_texture_set(block, -1);
 }
 
 /* Complete declaring-method resolution for the 69 represented kinds. The
@@ -464,7 +517,6 @@ static mc_registry_status texture_metadata_plain(const mc_block *block, int32_t 
         case MC_BLOCK_DOOR:
         case MC_BLOCK_RAIL:
         case MC_BLOCK_DETECTOR_RAIL:
-        case MC_BLOCK_PISTON_HEAD:
             return MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
         default:
             return mc_registry_block_texture_side(block->classes, block, side, out);
@@ -492,6 +544,59 @@ static mc_registry_status texture_metadata_body(const mc_block *block, int32_t s
     if (!valid(block) || out == NULL)
         return texture_fail(error, MC_REGISTRY_INVALID_ARGUMENT,
                             "Block metadata texture arguments");
+    if (block->kind == MC_BLOCK_PISTON_HEAD) {
+        const int32_t direction = (int32_t)((uint32_t)m & 7u); /* Actual H.c at1. */
+        if (side == direction) {
+            if (block->subtype.h.a >= 0) {
+                if (error != NULL)
+                    error->site = texture_site("h", 21);
+                *out = block->subtype.h.a;
+            } else if (((uint32_t)m & 8u) != 0) {
+                if (error != NULL)
+                    error->site = texture_site("h", 35);
+                *out = mc_java_i32_sub(block->fields.bm, 1);
+            } else {
+                if (error != NULL)
+                    error->site = texture_site("h", 40);
+                *out = block->fields.bm;
+            }
+            return MC_REGISTRY_OK;
+        }
+        mc_registry_error local = {0};
+        mc_registry_error *registry = error == NULL ? &local : &error->registry;
+        if (error != NULL)
+            error->site = texture_site("h", 42);
+        mc_registry_direction_view opposite;
+        mc_registry_status status =
+            mc_registry_direction_get(block->classes, MC_REGISTRY_DIRECTION_A, &opposite, registry);
+        if (status != MC_REGISTRY_OK) {
+            if (error != NULL) {
+                mc_item_render_registry_classification(block->classes, registry, &error->throwable,
+                                                       &error->exception_class);
+                error->source_exception = error->throwable == MC_ITEM_RENDER_SOURCE_EXCEPTION;
+            }
+            return texture_fail(error, status, registry->message);
+        }
+        if (error != NULL)
+            error->site = texture_site("h", 46);
+        int32_t other;
+        status = mc_registry_direction_at(&opposite, direction, &other, registry);
+        if (status != MC_REGISTRY_OK) {
+            if (error != NULL && (status == MC_REGISTRY_NULL_REFERENCE ||
+                                  status == MC_REGISTRY_INDEX_OUT_OF_RANGE)) {
+                error->throwable = MC_ITEM_RENDER_SOURCE_EXCEPTION;
+                error->source_exception = true;
+                error->exception_class = status == MC_REGISTRY_NULL_REFERENCE
+                                             ? "java/lang/NullPointerException"
+                                             : "java/lang/ArrayIndexOutOfBoundsException";
+            }
+            return texture_fail(error, status, registry->message);
+        }
+        if (error != NULL)
+            error->site = texture_site("h", side == other ? 52 : 55);
+        *out = side == other ? 107 : 108;
+        return MC_REGISTRY_OK;
+    }
     if (block->kind == MC_BLOCK_REDSTONE) {
         /* SM.a(II)I5 is its own direct getfield bm1/ireturn4 body. It
          * does not delegate through UU's virtual side-texture call. */

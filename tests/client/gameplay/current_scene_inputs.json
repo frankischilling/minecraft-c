@@ -18,7 +18,7 @@
       "source_input_sha256": {
         "tests/client/gameplay/redstone/test_placement.c": "47813c47f9c8ea85484bac84c1ee5857e56b88cc07b665ada7ac3f7e0b214e23",
         "tests/client/gameplay/test_torch_placement.c": "d3a73c0ecf37131ca1171a587570a691425c33388c801790bd5fd8a51c12a12c",
-        "tests/client/startup/test_world_selection_loop.c": "ef028354bdc1d1a6e2d7de777b8675b7fc4abb0386ffa269b1fcaef5dc47c861",
+        "tests/client/startup/test_world_selection_loop.c": "7d680bf395f7cdd80b170d13bf2b7285df89a352a49cbd8ffff6ae8d26fda8fd",
         "tests/tools/client/test_farming_loop.py": "5d97de151dac6e1ce79759d5a6eac552dab37792ba53bb36d2465751185f4b9e",
         "tests/tools/client/test_torch_placement_loop.py": "875b711691f95768053bb12493fcf85c7376e79d78eafc4481a4470b437159ee",
         "tests/tools/client/test_world_selection_loop.py": "c04a33996bfb1f5c73047c992005794097a4eb502f93166c6dee833998a6e958"
@@ -38,7 +38,7 @@
         }
       },
       "source_input_sha256": {
-        "tests/client/startup/test_world_selection_loop.c": "ef028354bdc1d1a6e2d7de777b8675b7fc4abb0386ffa269b1fcaef5dc47c861",
+        "tests/client/startup/test_world_selection_loop.c": "7d680bf395f7cdd80b170d13bf2b7285df89a352a49cbd8ffff6ae8d26fda8fd",
         "tests/tools/client/test_world_selection_loop.py": "c04a33996bfb1f5c73047c992005794097a4eb502f93166c6dee833998a6e958",
         "tests/tools/client/test_farming_loop.py": "5d97de151dac6e1ce79759d5a6eac552dab37792ba53bb36d2465751185f4b9e",
         "tests/tools/client/test_torch_placement_loop.py": "875b711691f95768053bb12493fcf85c7376e79d78eafc4481a4470b437159ee",

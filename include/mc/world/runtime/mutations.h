@@ -44,6 +44,13 @@ typedef struct mc_world_fire_sites {
     unsigned int dimension_bytecode, biome_bytecode;
 } mc_world_fire_sites;
 
+/* Distinct actual JQ/H/FD/UT callers. This is a finite diagnostic projection,
+ * not a recursion/work limit or an owning Source stack. */
+typedef struct mc_world_piston_sites {
+    unsigned int added, neighbor, update, power, can_push, scan, move, event;
+    unsigned int world_event, factory, head_removed, head_neighbor;
+} mc_world_piston_sites;
+
 typedef struct mc_world_mutation_error {
     mc_world_storage_status status;
     const char *operation;
@@ -103,6 +110,8 @@ typedef struct mc_world_mutation_error {
      * setter reenters removal/finalization; this is not a recursive stack. */
     unsigned int piston_finalize_bytecode, piston_removed_bytecode;
     unsigned int cause_piston_finalize_bytecode, cause_piston_removed_bytecode;
+    mc_world_piston_sites piston;
+    bool piston_source_null, piston_class_cast;
     mc_world_material_error material;
     mc_world_query_error query;
     mc_world_plant_error plant;

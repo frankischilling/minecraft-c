@@ -145,6 +145,16 @@ bool tile_renderer_world_terminal_admit(mc_client_tile_renderer_dispatcher *,
                                         mc_client_tile_renderer_error *);
 bool tile_renderer_world_retire(mc_client_tile_renderer_dispatcher *,
                                 mc_client_tile_renderer_error *);
+/* Capture the already evaluated actual HY.b while its LL draw is entered.
+ * No public reentry or CV rebinding; the occurrence keeps that exact World
+ * implementation and its error producers live through draw retirement. */
+bool tile_renderer_cv_capture_entered(mc_client_tile_renderer *, mc_client_tile_renderer_cv **,
+                                      mc_client_tile_renderer_error *);
+/* Only this exact inactive retained parent may discharge its own occurrence.
+ * Public CV operations continue refusing while any LL draw is pending. */
+bool tile_renderer_cv_release_draw(mc_client_tile_renderer_cv **,
+                                   const struct mc_client_tile_renderer_draw_call *,
+                                   mc_client_tile_renderer_error *);
 
 /* One reached N putstatic into the SAME already-active LL class. No FP check,
  * interpolation, class initialization or frame rebind; caller owns the graph

@@ -131,9 +131,12 @@ static bool distance_and_dispatch(void) {
     CHECK(end_draw(&call));
     CHECK(mc_client_tile_renderer_coordinates_draw_begin(f.manager, piston, 1, 2, 3, 0.5f,
                                                          &services, NULL, &call, &error) ==
-          MC_CLIENT_TILE_RENDERER_UNIMPLEMENTED_DEPENDENCY);
+          MC_CLIENT_TILE_RENDERER_BLOCKS_FAILED);
     CHECK(mc_client_tile_renderer_draw_inspect(call, &state) && !state.returned &&
-          state.lookup_returned && strcmp(state.renderer_class, "hy") == 0 && state.gl_calls == 0);
+          state.lookup_returned && state.bridge_cast_returned &&
+          strcmp(state.renderer_class, "hy") == 0 && state.gl_calls == 0 &&
+          strcmp(error.site.class_name, "hy") == 0 && error.site.pc == 0 &&
+          error.registry.status != MC_REGISTRY_OK);
     CHECK(end_draw(&call));
     const mc_client_tile_renderer_draw_limits zero = {0};
     CHECK(mc_client_tile_renderer_draw_begin(f.manager, chest, 0.5f, &services, &zero, &call,

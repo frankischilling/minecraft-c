@@ -25,12 +25,15 @@ bool mc_cv_standard(mc_cv_context *c, const mc_block *b, int32_t x, int32_t y, i
         green = g;
         blue = v;
     }
-    if (c->application == NULL)
+    mc_client_application_classes *application =
+        c->application_classes != NULL ? c->application_classes
+        : c->application != NULL       ? c->application->source_namespace
+                                       : NULL;
+    if (application == NULL)
         return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
                           "actual Minecraft defining class namespace", 128, true);
     bool ao;
-    if (mc_client_application_ambient_occlusion(c->application->source_namespace, &ao,
-                                                &c->application_query_error) !=
+    if (mc_client_application_ambient_occlusion(application, &ao, &c->application_query_error) !=
         MC_CLIENT_APPLICATION_QUERY_OK) {
         const mc_client_application_query_error *e = &c->application_query_error;
         c->failure.child = (mc_client_graphics_site){e->site.class_name, e->site.method,
@@ -130,6 +133,16 @@ static bool render_block(mc_cv_context *c, const mc_block *block, int32_t x, int
             return false;
         mc_cv_pop(c);
         return_pc = 65;
+    } else if (type == 16) {
+        mc_cv_pc(c, 300);
+        if (!mc_cv_piston_base(c, block, x, y, z, false, &rendered))
+            return false;
+        return_pc = 303;
+    } else if (type == 17) {
+        mc_cv_pc(c, 318);
+        if (!mc_cv_piston_head(c, block, x, y, z, true, &rendered))
+            return false;
+        return_pc = 321;
     } else {
         static const unsigned int pc[] = {29,  78,  111, 127, 45, 143, 95,  177, 160,
                                           197, 214, 231, 248, 62, 265, 282, 300, 318};
@@ -159,6 +172,23 @@ bool mc_cv_render(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y,
     c->returned = false;
     c->depth = 0;
     return render_block(c, block, x, y, z, out);
+}
+
+bool mc_cv_render_all(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y, int32_t z) {
+    if (!mc_cv_push(c, "a", "(Luu;III)V"))
+        return false;
+    c->fields->f = true;
+    mc_cv_store(c, 2);
+    mc_cv_pc(c, 11);
+    bool ignored;
+    if (!render_block(c, block, x, y, z, &ignored))
+        return false;
+    c->fields->f = false;
+    mc_cv_store(c, 17);
+    mc_cv_pc(c, 20);
+    c->returned = true;
+    mc_cv_pop(c);
+    return true;
 }
 
 bool mc_cv_texture_override(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y,

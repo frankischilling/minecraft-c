@@ -263,8 +263,8 @@
       "sha256": "3d7f49889692b45b101d42b5b853e6c185f100269e9f7064ddf5ed549b0fd682"
     },
     "src/world/runtime/tile_entities/tile_entities.c": {
-      "bytes": 294346,
-      "sha256": "f18c682760b6e04402cb9914d12aaa1f0950fbe6be391859c04eecedf268bf37"
+      "bytes": 295508,
+      "sha256": "df6b6f7338b78f45d12b201470dcbfbd5cf7375290592bf0e5f3efeebfd875c5"
     },
     "tests/world/runtime/world_access/test_kernel_execution.c": {
       "bytes": 25462,
@@ -539,8 +539,8 @@
       "sha256": "d2f73d188574e7bf15cf6dbdbf6d91b2f9bf1dbeba96e74b9bcde92801cace59"
     },
     "src/world/runtime/mutation/world.c": {
-      "bytes": 77779,
-      "sha256": "d389027dac7dab21b7fcd09da88eb7aa1a5617a5004ba606384680ebe83e44a7"
+      "bytes": 79155,
+      "sha256": "550f22bc65f5c518c78f401bd7953085be9264eba5b8c405f72312da623764e7"
     },
     "src/world/runtime/mutation/world_execution_internal.h": {
       "bytes": 16725,
@@ -555,8 +555,8 @@
       "sha256": "c6a801ffff6f83f35d7f889699cd7bd8e619c6d81a52fdb08de465e441ffa4d7"
     },
     "src/world/runtime/mutation/hooks.c": {
-      "bytes": 35582,
-      "sha256": "8788eb6ecd50619dd09b7044935ad11c4c0fdf7202713257ae9d050307d27e1d"
+      "bytes": 37940,
+      "sha256": "16a32e1c0c1440da0f24db223ec75df7d0ea50669a51ac32af44f77705d6e977"
     },
     "src/world/runtime/mutation/mutation_internal.h": {
       "bytes": 19643,

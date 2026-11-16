@@ -42,6 +42,12 @@ mc_registry_status mc_block_render_finish_fluid(mc_block *block);
 /* Actual uu.a(FFFFFF)V bound mutation used by composite render families. */
 mc_registry_status mc_block_render_bounds(mc_block *block, float x0, float y0, float z0, float x1,
                                           float y1, float z1);
+/* Entered JQ.i()I and H.a_(I)V/H.a()V on the actual captured typed Block.
+ * These read/store only their declared fields, with no active use, World,
+ * phase or FP gate. NULL receiver differs from an invalid native kind. */
+mc_registry_status mc_block_render_piston_base_texture(const mc_block *, int32_t *out);
+mc_registry_status mc_block_render_piston_head_texture_set(mc_block *, int32_t texture);
+mc_registry_status mc_block_render_piston_head_texture_reset(mc_block *);
 bool mc_block_render_opaque(const mc_block *block);
 mc_registry_status mc_block_render_texture(const mc_block *block,
                                            const mc_block_render_access *access, int32_t x,

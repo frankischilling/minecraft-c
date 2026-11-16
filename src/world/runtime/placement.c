@@ -23,6 +23,7 @@
 #include "mc/world/storage/source_chunk_loader.h"
 #include "mutation/fire/fire_internal.h"
 #include "mutation/mutation_internal.h"
+#include "mutation/piston_internal.h"
 #include "plant_substrate_internal.h"
 #include "runtime_internal.h"
 #include "step_internal.h"
@@ -50,6 +51,7 @@ typedef struct furnace_activation_work {
 struct mc_world_placement_work {
     mc_world_runtime *world;
     mc_registry_classes *registry;
+    mc_world_runtime_classes *block_code_classes;
     mc_entity_classes *box_owner;
     mc_entity_bounds *box;
     mc_world_runtime_acquisition_error *queries[PLACEMENT_QUERIES];
@@ -255,6 +257,13 @@ static bool publication_receipts(mc_world_placement_error *e, mc_world_entity_ba
 static bool mutation_receipts(mc_world_placement_error *e, mc_world_mutation_error *m) {
     if (m == NULL)
         return true;
+    if (e->status != MC_WORLD_STORAGE_OK && (m->piston_source_null || m->piston_class_cast)) {
+        e->exception_class = m->piston_source_null ? "java/lang/NullPointerException"
+                                                   : "java/lang/ClassCastException";
+        e->source_exception = true;
+        e->source_error = false;
+        e->native_policy = false;
+    }
     if (e->status != MC_WORLD_STORAGE_OK &&
         m->world_access_source_fault != MC_WORLD_ACCESS_SOURCE_FAULT_NONE) {
         e->exception_class = "java/lang/NullPointerException";
@@ -1199,6 +1208,7 @@ mc_world_storage_status mc_world_block_activate_with_context(
         return finish(e, returned, false, out);
     }
     if (block->kind == MC_BLOCK_LEVER) {
+        e->work->block_code_classes = context == NULL ? NULL : context->block_code_classes;
         const bool returned = lever_activate(e, block, world, x, y, z);
         return finish(e, returned, returned, out);
     }

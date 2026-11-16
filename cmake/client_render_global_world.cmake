@@ -16,6 +16,7 @@ if(TARGET mc_client_render_global)
         src/client/render/blocks/block.c
         src/client/render/blocks/bounds.c
         src/client/render/blocks/render.c
+        src/client/render/blocks/piston.c
         src/client/render/blocks/crossed_plant.c
         src/client/render/blocks/fluid.c
         src/client/render/blocks/ladder.c

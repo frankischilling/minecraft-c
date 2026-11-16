@@ -123,8 +123,14 @@ static bool manager_failure(mc_client_render_global_entities_call *c, unsigned i
 static bool retire_tile_draw(mc_client_render_global_entities_call *c,
                              mc_client_render_global_error *failure) {
     if (c->tile_draw != NULL) {
-        if (mc_client_tile_renderer_draw_retire(&c->tile_draw, &c->tile_draw_cleanup) !=
-            MC_CLIENT_TILE_RENDERER_OK) {
+        const mc_client_tile_renderer_status status =
+            mc_client_tile_renderer_draw_retire(&c->tile_draw, &c->tile_draw_cleanup);
+        if (c->tile_draw != NULL) {
+            mc_client_tile_renderer_draw_state state;
+            if (mc_client_tile_renderer_draw_inspect(c->tile_draw, &state) && state.failure != NULL)
+                c->tile_draw_failure = *state.failure;
+        }
+        if (status != MC_CLIENT_TILE_RENDERER_OK) {
             mc_render_global_source_fail(failure, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED,
                                          c->tile_draw_cleanup.operation, "n", "a",
                                          entities_descriptor, 560, true);
@@ -146,6 +152,12 @@ static bool retire_tile_draw(mc_client_render_global_entities_call *c,
     c->tile_draw_failure.pose = c->tile_draw_cleanup.pose = NULL;
     c->tile_draw_failure.manager_owner = c->tile_draw_cleanup.manager_owner = NULL;
     c->tile_draw_failure.manager = c->tile_draw_cleanup.manager = NULL;
+    c->tile_draw_failure.blocks = c->tile_draw_cleanup.blocks = NULL;
+    c->tile_draw_failure.blocks_world = c->tile_draw_cleanup.blocks_world = NULL;
+    c->tile_draw_failure.texture = c->tile_draw_cleanup.texture = NULL;
+    c->tile_draw_failure.lighting = c->tile_draw_cleanup.lighting = NULL;
+    c->tile_draw_failure.application_query = c->tile_draw_cleanup.application_query = NULL;
+    c->tile_draw_failure.exception_class = c->tile_draw_cleanup.exception_class = NULL;
     mc_tile_entity_release(c->current_tile);
     c->current_tile = NULL;
     if (c->draw_ll != NULL && mc_client_tile_renderer_dispatcher_release(

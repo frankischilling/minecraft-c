@@ -113,6 +113,8 @@ static mc_tile_entity_status live_classes_owner_in(mc_world_runtime_classes *par
 static mc_tile_entity_status live_classes_initialize(mc_tile_entity_classes *classes,
                                                      mc_tile_entity_classes **out);
 static mc_tile_entity_status live_piston_classes_get(mc_tile_entity_classes *classes);
+static void tile_entity_allocation_class_error(const mc_tile_entity_classes *, mc_tile_entity_kind,
+                                               mc_tile_entity_status, mc_tile_entity_error *);
 static void tile_entity_allocation_error(mc_world_runtime *world, mc_tile_entity_kind kind,
                                          mc_tile_entity_status status, mc_tile_entity_error *error);
 static mc_tile_entity_status live_literal(mc_tile_entity_classes *classes, const char *ascii,
@@ -421,16 +423,26 @@ mc_tile_entity_status mc_tile_entity_allocate(mc_world_runtime *world, mc_tile_e
 mc_tile_entity_status mc_tile_entity_allocate_in_classes(mc_world_runtime_classes *parent,
                                                          mc_tile_entity_kind kind,
                                                          mc_tile_entity **out) {
+    return mc_tile_entity_allocate_in_classes_detailed(parent, kind, out, NULL);
+}
+
+mc_tile_entity_status mc_tile_entity_allocate_in_classes_detailed(mc_world_runtime_classes *parent,
+                                                                  mc_tile_entity_kind kind,
+                                                                  mc_tile_entity **out,
+                                                                  mc_tile_entity_error *error) {
     if (out == NULL)
-        return MC_TILE_ENTITY_INVALID_ARGUMENT;
+        return tile_entity_status(error, MC_TILE_ENTITY_INVALID_ARGUMENT, NULL, SIZE_MAX);
     if (kind != MC_TILE_ENTITY_CHEST && kind != MC_TILE_ENTITY_SPAWNER &&
         kind != MC_TILE_ENTITY_PISTON && kind != MC_TILE_ENTITY_FURNACE)
-        return MC_TILE_ENTITY_INVALID_KIND;
+        return tile_entity_status(error, MC_TILE_ENTITY_INVALID_KIND, NULL, SIZE_MAX);
     mc_tile_entity_classes *classes = NULL;
     mc_tile_entity_status active = live_classes_owner_in(parent, &classes);
     if (active == MC_TILE_ENTITY_OK)
         active = live_classes_initialize(classes, &classes);
-    return active == MC_TILE_ENTITY_OK ? tile_entity_allocate_in_owner(classes, kind, out) : active;
+    if (active == MC_TILE_ENTITY_OK)
+        active = tile_entity_allocate_in_owner(classes, kind, out);
+    tile_entity_allocation_class_error(classes, kind, active, error);
+    return active;
 }
 
 static mc_tile_entity_status tile_entity_construct(mc_tile_entity *raw,
@@ -2597,14 +2609,13 @@ mc_tile_entity_piston_class_discard_entities(mc_world_runtime_classes *parent,
     return frame.status;
 }
 
-static void tile_entity_allocation_error(mc_world_runtime *world, mc_tile_entity_kind kind,
-                                         mc_tile_entity_status status,
-                                         mc_tile_entity_error *error) {
+static void tile_entity_allocation_class_error(const mc_tile_entity_classes *classes,
+                                               mc_tile_entity_kind kind,
+                                               mc_tile_entity_status status,
+                                               mc_tile_entity_error *error) {
     tile_entity_status(error, status, NULL, SIZE_MAX);
-    if (error == NULL || world == NULL || world->classes == NULL ||
-        world->classes->tile_entities == NULL)
+    if (error == NULL || classes == NULL)
         return;
-    const mc_tile_entity_classes *classes = world->classes->tile_entities;
     if (classes->phase == MC_TILE_ENTITY_CLASS_FAILED) {
         error->registry = classes->first_registry_failure;
         error->initializer_bytecode = classes->initializer_pc;
@@ -2613,6 +2624,14 @@ static void tile_entity_allocation_error(mc_world_runtime *world, mc_tile_entity
         error->operation = "Piston class initializer";
         error->piston_initializer_bytecode = classes->piston_initializer_pc;
     }
+}
+
+static void tile_entity_allocation_error(mc_world_runtime *world, mc_tile_entity_kind kind,
+                                         mc_tile_entity_status status,
+                                         mc_tile_entity_error *error) {
+    tile_entity_allocation_class_error(
+        world == NULL || world->classes == NULL ? NULL : world->classes->tile_entities, kind,
+        status, error);
 }
 
 static mc_tile_entity_status live_classes_get(mc_world_runtime *world,

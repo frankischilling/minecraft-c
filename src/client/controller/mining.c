@@ -169,9 +169,14 @@ static bool initial_hook(mc_singleplayer_mining_call *call, const mc_block *bloc
                 call->error.activation = &call->activation;
                 call->error.initial_hook = (mc_player_site){"xr", "b", "(Lfd;IIILgs;)V", 8};
                 bool ignored;
-                if (mc_world_block_activate(block->classes, block, target, call->state.x,
-                                            call->state.y, call->state.z, player, &ignored,
-                                            &call->activation) != MC_WORLD_STORAGE_OK)
+                /* Native defining-code dependency only. Do not infer it from
+                 * the freshly evaluated World argument or a global binding. */
+                const client_application *owner = call->state.controller->fields.a;
+                const mc_world_block_activation_context context = {
+                    .block_code_classes = owner == NULL ? NULL : owner->world_classes};
+                if (mc_world_block_activate_with_context(
+                        block->classes, block, target, call->state.x, call->state.y, call->state.z,
+                        player, &context, &ignored, &call->activation) != MC_WORLD_STORAGE_OK)
                     return failed(call, MC_SINGLEPLAYER_MINING_WORLD, call->activation.operation,
                                   "os", "a", 74, call->activation.native_policy);
                 return true; /* XR.b discards the activation result, then returns12. */

@@ -724,6 +724,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/mutation/height.c
     src/world/runtime/mutation/notifications.c
     src/world/runtime/mutation/hooks.c
+    src/world/runtime/mutation/piston.c
     src/world/runtime/mutation/redstone/queries.c
     src/world/runtime/mutation/redstone/update.c
     src/world/runtime/mutation/redstone/lifecycle.c
@@ -5731,6 +5732,7 @@ include(cmake/client_workbench.cmake)
 include(cmake/client_chest.cmake)
 include(cmake/client_furnace.cmake)
 include(cmake/client_spawner.cmake)
+include(cmake/client_piston.cmake)
 include(cmake/entity_named_factory.cmake)
 include(cmake/tests/client_chest_loop.cmake)
 include(cmake/client_world_frame.cmake)

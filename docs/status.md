@@ -7,6 +7,38 @@ the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining w
 
 ## Current client work
 
+[Piston activation](world/pistons.md) now reaches real Lever notifications,
+synchronous block events, push/retract bodies and Piston ticks. Nine native
+gameplay cases pass 273 checks. The [moving renderer](client/piston-rendering.md)
+matches all 27 finite original direct-draw cases, including active vertex words
+and declared retained state. A separate late lighting NULL-buffer control
+checks the drawn prefix and native cleanup. The ordinary monitor-2 empty-front
+scene passes 951 checks through extension, retraction, save and reselection.
+The pushed-Stone scene still fails at the independent multiple-new-Tile
+identity-hash Set-order dependency; it is not credited as passing gameplay.
+
+The original/native activation replay matches six scenarios, 48 phases,
+94 ordered callbacks and 315 independently hashed array planes. Piston pitch
+and World Random remain separate unsaved-entropy observations. Both raw Map
+orders are retained; general Map iteration equivalence is excluded.
+
+The final affected sanitizer selection passes nineteen tests on GCC and
+twenty-two on Clang in 85.07 and 90.77 seconds. GCC's local profile has the
+client disabled; Clang also exercises CPU block/draw controls. Both enable
+ASan, UBSan and leak detection. These are selected results, not full local
+Linux sweeps or an FPS measurement. A selective preceding notification object
+fails the unchanged new acquisition-detail assertion after the actual producer
+and getter controls pass.
+
+The complete Windows Release build and all 1,369 CTests pass in 462.59 seconds.
+All 1,352 preceding names remain plus exactly seventeen additions, with unique
+inventory/log/JUnit and Start/completion joins and no skips or unrun tests.
+All 6,528 public files and 682 executables/DLLs stayed unchanged during the
+sweep. Formatting checks 2,503 C/header/fragment files. Current admission
+bindings cover 16,062 entries and 6,385 files, with five live bundles and 232
+source/helper entries. Validation annotations and admission fingerprints were
+updated afterward; runtime and native harness bytes stayed unchanged.
+
 The [MobSpawner tick](world/spawner-tick.md) now completes expired-delay
 construction, population limits, real Pig eligibility and publication, both
 particle methods and four-attempt continuation. MSVC and sanitized GCC/Clang
@@ -17,7 +49,7 @@ two genuine save/reselection runs and post-publication failure cleanup.
 Published Pigs remain distinct from the renderer's cached preview. This does
 not establish full gameplay parity, sustained play or an FPS result.
 
-The full Windows Release build and all 1,352 tests pass in 448.92 seconds,
+At `c1edfca2`, the full Windows Release build and all 1,352 tests pass in 448.92 seconds,
 retaining every prior name plus seven additions with no skips or unrun tests.
 The complete log/inventory/JUnit joins agree, and all 6,465 public worktree
 files stayed unchanged during the sweep. GCC and Clang pass the eight-test
@@ -32,7 +64,7 @@ passes 1,236 checks and sixteen full World/HUD frames across ordinary save and
 reselection. One cached Pig is rebound to the new World. The fixture checks its
 absence from the live World Entity list and the selected saved Chunk's empty
 Entity list. The first draw compiles six model parts and later
-draws reuse them. Multi-addition HashSet order, Sign/Piston drawing, full original
+draws reuse them. Multi-addition HashSet order, Sign drawing, full original
 frame equality and sustained-play/FPS qualification remain open.
 
 At `af9d031d`, the complete MSVC Release build and all 1,345 configured Windows tests pass in

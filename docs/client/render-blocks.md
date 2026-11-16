@@ -1,5 +1,12 @@
 # RenderBlocks source geometry
 
+[Piston base/head geometry](piston-rendering.md) now supplies World types 16/17
+and all three HY void wrappers, including rod quads, UV stores, Head texture
+overrides and actual World/ChunkCache bounds queries. These methods append to
+the entered parent's real Tessellator batch. Their native retirement preserves
+source stores and retains reached query/Tile ownership separately from the
+parent's begin/draw.
+
 The actual ChunkRenderer compiler now calls RenderBlocks through
 `dk.a()V:464`. Standard blocks execute the `cv.b -> cv.l` path, sample the
 same ChunkCache, and append geometry to the real NW Tessellator. A native

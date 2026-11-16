@@ -1,5 +1,57 @@
 # Test scope and reproduction
 
+## Piston activation and drawing
+
+The [activation contract](world/pistons.md) and
+[renderer contract](client/piston-rendering.md) separate native gameplay,
+original direct-body comparisons and actual monitor-2 SDK frames. CPU tests
+are `world.piston_gameplay`, `world.piston_reference`, `world.piston_mobility`,
+`client.piston_blocks` and `client.piston_draw_gates`. The three original packets have independent normal
+and optimized Python controls; they require no original JAR or assets in CI.
+
+`world.piston_reference` compares six real native activation sequences with
+the two-mode original packet. It hashes raw native array planes independently,
+checks callback/list/Tile state, retains differing entropy, and reports raw
+Chunk Map orders separately from the keyed-membership comparison.
+
+The direct GL comparison runs all 27 original profiles against native active
+vertex words and retained state. Its lighting-buffer NULL control is a
+separate authored native failure, not an original observation:
+
+```text
+python -B tests/tools/client/test_piston_geometry.py --executable PATH_TO_mc_test_piston_draw_geometry --assets IMPORTED_ASSETS --artifacts NEW_DIRECTORY
+```
+
+The ordinary SDK fixture uses only saved stable Blocks before bootstrap:
+
+```text
+python -B tests/client/test_piston_sdk.py --profile empty-front --executable PATH_TO_mc_test_piston_sdk --assets IMPORTED_ASSETS --artifacts NEW_DIRECTORY
+python -B tests/client/test_piston_sdk.py --profile pushed-stone --executable PATH_TO_mc_test_piston_sdk --assets IMPORTED_ASSETS --artifacts NEW_DIRECTORY
+```
+
+Run these processes serially on physical monitor2. Empty-front requires real
+transient HY draws, settled extension/retraction, normal save/reselection,
+six fresh images including the inherited held-Dirt capture, and closed
+windows. Pushed-Stone currently retains a real failed DK Set-order prefix
+with two World-created moving Tiles; that profile is not a passing result.
+The runners retain raw streams and failed attempts, guard source/products/
+assets, and never seed the Timer or repair a source outcome to obtain a frame.
+The [sanitized capture record](../tests/benchmarks/piston_windows.json) binds
+the final 27-case geometry comparison, six-scenario activation replay, 951-check
+empty-front SDK pass and separate pushed-Stone failure. All six successful SDK
+images were visually inspected; that review remains separate from PNG checks
+and supplies no original pixel comparison.
+
+The full MSVC Release build and all 1,369 Windows CTests pass in 462.59 seconds.
+The exact seventeen additions retain all 1,352 preceding names, with complete
+unique inventory/log/JUnit and Start/completion joins and no skips or unrun
+tests. All 6,528 public files and 682 executables/DLLs stay unchanged through
+the sweep. GCC 15.2 and Clang 21.1.8 pass nineteen and twenty-two selected
+Debug tests in 85.07 and 90.77 seconds with ASan, UBSan and leak detection.
+These are selected local Linux results. Formatting checks 2,503 files.
+Later validation annotations and current admission fingerprints do not
+requalify historical scene captures or change runtime/native harness bytes.
+
 ## MobSpawner ticks
 
 The [Spawner contract](world/spawner-tick.md) separates the original direct
@@ -8,7 +60,7 @@ processes. Each compiler passes 518 Spawner and 277 Living-effect checks.
 The original packet has 69 corruption controls; the native transport has
 sixteen negative controls, both exercised with ordinary and optimized Python.
 
-The complete MSVC Release build and all 1,352 Windows tests pass in 448.92
+At `c1edfca2`, the complete MSVC Release build and all 1,352 Windows tests pass in 448.92
 seconds with unique complete inventory/log/JUnit joins and no skipped or
 unrun tests. Every preceding name remains plus exactly seven additions.
 The eight-test affected selection passes on sanitized GCC and Clang in

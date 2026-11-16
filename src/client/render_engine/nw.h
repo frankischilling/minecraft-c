@@ -70,6 +70,9 @@ bool mc_client_nw_translation_add(mc_client_tessellator *, float x, float y, flo
                                   mc_client_graphics_error *);
 bool mc_client_nw_color(mc_client_tessellator *, int32_t red, int32_t green, int32_t blue,
                         int32_t alpha, mc_client_graphics_error *);
+/* Actual a(III)V supplies literal alpha255 to a(IIII)V at7. */
+bool mc_client_nw_color_rgb(mc_client_tessellator *, int32_t red, int32_t green, int32_t blue,
+                            mc_client_graphics_error *);
 /* Actual nw.a(FFF)V -> a(III)V -> a(IIII)V, with binary32 *255 and Java f2i
  * before the integer color guard/stores. It does not require an open batch. */
 bool mc_client_nw_color_float(mc_client_tessellator *, float red, float green, float blue,

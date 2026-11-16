@@ -1,0 +1,66 @@
+{
+  "schema": "PISTON_DRAW_PUBLICATION_V1",
+  "kind": "postexecution-finite-projection",
+  "files": {
+    "ConstructorJson.java": {
+      "bytes": 1571,
+      "sha256": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3"
+    },
+    "PistonDrawJdi.java": {
+      "bytes": 10349,
+      "sha256": "945ccfaa48985d1ddacda1f32f056e779e2578f16d30ff64a0089ff864ef527a"
+    },
+    "PistonDrawObservation.java": {
+      "bytes": 11283,
+      "sha256": "70db3ea83e4ce1c7b0b5ee5218368bd7cb7b02be30c22f7d58bd48159a32600d"
+    },
+    "README.md": {
+      "bytes": 4458,
+      "sha256": "151cb1a5d20b542284a9c46c09af6d5e419be57afe0e609c2dc9ac68f79b474a"
+    },
+    "authored-worlds.json": {
+      "bytes": 33786,
+      "sha256": "55dfbe570968fd26e8f54b324a59e0bd4721005510d3b4f237b900ff3e1e856b"
+    },
+    "cases.json": {
+      "bytes": 10480,
+      "sha256": "377f0ef8a761992f782cda98b957cf0f445a76b152e5fe7cc47568964f8dcc6d"
+    },
+    "geometry.json": {
+      "bytes": 1354578,
+      "sha256": "74379eb57db124b7473fbf01b4e270234214c6e7600a88e0fe96464b5e99670a"
+    },
+    "native-observations.json": {
+      "bytes": 365387,
+      "sha256": "547985bc35a676268a0084ac75d6b37f2c49707dcac5cecb79108a0572889ac9"
+    },
+    "observations.json": {
+      "bytes": 1303509,
+      "sha256": "dbbc3a2b94942ed38a345d88c9826f8717e48f3f988e7777cfdb2ffb89364fd0"
+    },
+    "packet.py": {
+      "bytes": 14351,
+      "sha256": "c2c484ae03df45e47329a05b6f8ad636ee9c980e0bbe69cf7da95e912607a724"
+    },
+    "profiles.tsv": {
+      "bytes": 1978,
+      "sha256": "66ce291d90343fc1a7904f8fa4592d35c52ab9c74c28f40d1158402300f517a2"
+    },
+    "provenance.json": {
+      "bytes": 29417,
+      "sha256": "d0dd7635ce542ea6425ea11cdce46cbe9092fad65504a799e6eb812ff4470e1c"
+    },
+    "source-pins.json": {
+      "bytes": 203771,
+      "sha256": "eff43c09c95c685bc2531ac5316aacb43bb5591a078a07b74203edb315d51e06"
+    },
+    "test_packet.py": {
+      "bytes": 13632,
+      "sha256": "75967d74070a6f8f267f679a3381d000b28b81583cb3fa6f5ca21ad9aa751ed7"
+    },
+    "write_world.py": {
+      "bytes": 6495,
+      "sha256": "15adc51f91c27f2a0fe1e04fbcd46655d65d1397b79ba565dfee4978866bd834"
+    }
+  }
+}

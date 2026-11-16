@@ -5593,9 +5593,9 @@ static int standing_loaded_frame(fixture *f, mc_world_runtime *world,
                                  const standing_block_profile *profile) {
     CHECK(geometry_loaded_frame(f, world, profile->mode) == 0);
     const mc_client_world_frame_state *draw = f->state.world_frame;
-    mc_entity_snapshot player;
-    mc_entity_hit_result_view hit;
-    mc_entity_hit_kind_class_view kinds;
+    mc_entity_snapshot player = {0};
+    mc_entity_hit_result_view hit = {0};
+    mc_entity_hit_kind_class_view kinds = {0};
     const double saved_y = 65.0 + (double)1.62f;
     CHECK(
         STANDING_TERM(0, f->app->i == f->app->h) && STANDING_TERM(1, draw->camera == f->app->h) &&

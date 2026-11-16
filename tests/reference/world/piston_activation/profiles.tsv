@@ -1,0 +1,6 @@
+0	case00	normal-push	33	1	1	false
+1	case01	sticky-pull	29	1	1	false
+2	case02	twelve-push	33	12	1	false
+3	case03	thirteen-cap	33	13	1	true
+4	case04	obsidian	33	1	49	true
+5	case05	bedrock	33	1	7	true

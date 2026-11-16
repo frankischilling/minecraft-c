@@ -1,4 +1,5 @@
 #include "mutation_internal.h"
+#include "piston_internal.h"
 #include "world_execution_internal.h"
 
 #include "../../../block/registry/registry_internal.h"
@@ -588,7 +589,7 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk_stat
  * leased across all synchronous descendants of that one concrete invocation. */
 static bool quiet(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int32_t id,
                   bool with_metadata, int32_t metadata, bool *out, mc_world_mutation_error *frame,
-                  mc_world_mutation_execution_call *owned) {
+                  mc_world_mutation_execution_call *owned, mc_world_runtime_classes *code) {
     mc_chunk_state *state = NULL;
     if (!acquire(world, x, z, &state, frame, with_metadata, owned))
         return false;
@@ -652,10 +653,8 @@ static bool quiet(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int3
         mc_world_runtime_call_leave(fields.d);
         return storage_fail(world, frame, cause);
     }
-    const bool completed =
-        with_metadata ? mc_world_mutation_chunk_block_metadata(chunk, local_x, y, local_z, id,
-                                                               metadata, out, frame)
-                      : mc_world_mutation_chunk_block(chunk, local_x, y, local_z, id, out, frame);
+    const bool completed = mc_world_mutation_chunk_piston_set(code, chunk, local_x, y, local_z, id,
+                                                              with_metadata, metadata, out, frame);
     (void)mc_world_store_release_chunk(store, state, NULL);
     mc_world_runtime_call_leave(fields.d);
     if (!completed)
@@ -698,23 +697,27 @@ static bool notify_cell(mc_world_runtime *world, int32_t x, int32_t y, int32_t z
 }
 
 static bool neighbors(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int32_t id,
-                      mc_world_mutation_error *frame, mc_world_mutation_execution_call *owned) {
+                      mc_world_mutation_error *frame, mc_world_mutation_execution_call *owned,
+                      mc_world_runtime_classes *code) {
     return owned == NULL
-               ? mc_world_mutation_neighbors(world, x, y, z, id, frame)
+               ? mc_world_mutation_neighbors_with_code(code, world, x, y, z, id, frame)
                : mc_world_mutation_neighbors_in_execution(owned, world, x, y, z, id, frame);
 }
 
 /* fd.g invokes the cell observer at 4, then ordered neighbors at 13. */
 static bool notify_and_neighbors(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
                                  int32_t id, mc_world_mutation_error *frame,
-                                 mc_world_mutation_execution_call *owned) {
-    return notify_cell(world, x, y, z, frame, owned) && neighbors(world, x, y, z, id, frame, owned);
+                                 mc_world_mutation_execution_call *owned,
+                                 mc_world_runtime_classes *code) {
+    return notify_cell(world, x, y, z, frame, owned) &&
+           neighbors(world, x, y, z, id, frame, owned, code);
 }
 
 static bool set_body(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int32_t id,
                      bool with_metadata, int32_t metadata, bool notify, bool *out,
                      mc_world_mutation_error *frame, mc_world_mutation_execution_call *owned,
-                     mutation_success_diagnostic success_diagnostic) {
+                     mutation_success_diagnostic success_diagnostic,
+                     mc_world_runtime_classes *code) {
     const mc_entity_tick_execution_site site = {
         "fd", with_metadata ? (notify ? "b" : "a") : (notify ? "f" : "c"),
         with_metadata ? "(IIIII)Z" : "(IIII)Z", 0};
@@ -723,10 +726,11 @@ static bool set_body(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, i
     bool changed = false;
     if (notify)
         frame->wrapper_bytecode = with_metadata ? 8u : 6u;
-    bool completed = quiet(world, x, y, z, id, with_metadata, metadata, &changed, frame, owned);
+    bool completed =
+        quiet(world, x, y, z, id, with_metadata, metadata, &changed, frame, owned, code);
     if (completed && changed && notify) {
         frame->wrapper_bytecode = with_metadata ? 20u : 18u;
-        completed = notify_and_neighbors(world, x, y, z, id, frame, owned);
+        completed = notify_and_neighbors(world, x, y, z, id, frame, owned, code);
     }
     if (completed) {
         *out = changed;
@@ -739,7 +743,8 @@ static bool set_body(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, i
 
 static mc_world_storage_status set(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
                                    int32_t id, bool with_metadata, int32_t metadata, bool notify,
-                                   bool *out, mc_world_mutation_error *error) {
+                                   bool *out, mc_world_mutation_error *error,
+                                   mc_world_runtime_classes *code) {
     const mc_world_storage_status admission = admit(world, out != NULL, error);
     if (admission != MC_WORLD_STORAGE_OK)
         return admission;
@@ -752,7 +757,7 @@ static mc_world_storage_status set(mc_world_runtime *world, int32_t x, int32_t y
     if (frame == NULL)
         return MC_WORLD_STORAGE_ALLOCATION_FAILED;
     const bool completed = set_body(world, x, y, z, id, with_metadata, metadata, notify, out, frame,
-                                    NULL, MUTATION_SUCCESS_PROJECT_CALLER);
+                                    NULL, MUTATION_SUCCESS_PROJECT_CALLER, code);
     return result(error, frame, completed);
 }
 
@@ -760,7 +765,7 @@ mc_world_storage_status mc_world_runtime_block_set_quiet(mc_world_runtime *world
                                                          int32_t y, int32_t z, int32_t id,
                                                          bool *out,
                                                          mc_world_mutation_error *error) {
-    return set(world, x, y, z, id, false, 0, false, out, error);
+    return set(world, x, y, z, id, false, 0, false, out, error, NULL);
 }
 
 mc_world_storage_status mc_world_runtime_block_metadata_set_quiet(mc_world_runtime *world,
@@ -768,20 +773,20 @@ mc_world_storage_status mc_world_runtime_block_metadata_set_quiet(mc_world_runti
                                                                   int32_t id, int32_t metadata,
                                                                   bool *out,
                                                                   mc_world_mutation_error *error) {
-    return set(world, x, y, z, id, true, metadata, false, out, error);
+    return set(world, x, y, z, id, true, metadata, false, out, error, NULL);
 }
 
 mc_world_storage_status mc_world_runtime_block_set(mc_world_runtime *world, int32_t x, int32_t y,
                                                    int32_t z, int32_t id, bool *out,
                                                    mc_world_mutation_error *error) {
-    return set(world, x, y, z, id, false, 0, true, out, error);
+    return set(world, x, y, z, id, false, 0, true, out, error, NULL);
 }
 
 mc_world_storage_status mc_world_runtime_block_metadata_set(mc_world_runtime *world, int32_t x,
                                                             int32_t y, int32_t z, int32_t id,
                                                             int32_t metadata, bool *out,
                                                             mc_world_mutation_error *error) {
-    return set(world, x, y, z, id, true, metadata, true, out, error);
+    return set(world, x, y, z, id, true, metadata, true, out, error, NULL);
 }
 
 static bool scalar_result(mc_world_mutation_execution_call *owned, mc_world_runtime *world,
@@ -843,7 +848,8 @@ static bool metadata_quiet(mc_world_runtime *world, int32_t x, int32_t y, int32_
 static bool metadata_body(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
                           int32_t metadata, mc_world_mutation_error *frame,
                           mc_world_mutation_execution_call *owned,
-                          mutation_success_diagnostic success_diagnostic) {
+                          mutation_success_diagnostic success_diagnostic,
+                          mc_world_runtime_classes *code) {
     if (!enter(world, frame, owned, metadata_site))
         return false;
     bool completed = false;
@@ -890,8 +896,8 @@ static bool metadata_body(mc_world_runtime *world, int32_t x, int32_t y, int32_t
             goto leave;
         }
         frame->wrapper_bytecode = observe ? 40u : 52u;
-        if (!(observe ? notify_and_neighbors(world, x, y, z, id, frame, owned)
-                      : neighbors(world, x, y, z, id, frame, owned)))
+        if (!(observe ? notify_and_neighbors(world, x, y, z, id, frame, owned, code)
+                      : neighbors(world, x, y, z, id, frame, owned, code)))
             goto leave;
     }
     completed = true;
@@ -902,9 +908,10 @@ leave:
     return completed;
 }
 
-mc_world_storage_status mc_world_runtime_metadata_set(mc_world_runtime *world, int32_t x, int32_t y,
-                                                      int32_t z, int32_t metadata,
-                                                      mc_world_mutation_error *error) {
+mc_world_storage_status mc_world_runtime_piston_metadata(mc_world_runtime_classes *code,
+                                                         mc_world_runtime *world, int32_t x,
+                                                         int32_t y, int32_t z, int32_t metadata,
+                                                         mc_world_mutation_error *error) {
     const mc_world_storage_status admission = admit(world, true, error);
     if (admission != MC_WORLD_STORAGE_OK)
         return admission;
@@ -916,7 +923,7 @@ mc_world_storage_status mc_world_runtime_metadata_set(mc_world_runtime *world, i
     if (frame == NULL)
         return MC_WORLD_STORAGE_ALLOCATION_FAILED;
     const bool completed =
-        metadata_body(world, x, y, z, metadata, frame, NULL, MUTATION_SUCCESS_PROJECT_CALLER);
+        metadata_body(world, x, y, z, metadata, frame, NULL, MUTATION_SUCCESS_PROJECT_CALLER, code);
     return result(error, frame, completed);
 }
 
@@ -1013,7 +1020,7 @@ bool mc_world_runtime_metadata_set_in_execution(const mc_world_mutation_executio
     if (call == NULL)
         return false;
     const bool completed = metadata_body(world, x, y, z, metadata, &call->error, call,
-                                         MUTATION_SUCCESS_RESET_RETAINED);
+                                         MUTATION_SUCCESS_RESET_RETAINED, NULL);
     return finish_owned(slot, completed, raw, out, metadata_site, true);
 }
 
@@ -1048,7 +1055,7 @@ static bool block_set_owned(const mc_world_mutation_execution_context *context,
         return false;
     bool changed = false;
     const bool completed = set_body(world, x, y, z, id, false, 0, true, &changed, &call->error,
-                                    call, MUTATION_SUCCESS_RESET_RETAINED);
+                                    call, MUTATION_SUCCESS_RESET_RETAINED, NULL);
     if (!finish_owned(slot, completed, raw, error, block_site, project_success))
         return false;
     *out = changed;
@@ -1109,7 +1116,7 @@ bool mc_world_mutation_execution_set_quiet(mc_world_mutation_execution_call *cal
         return false;
     bool changed = false;
     const bool completed = set_body(world, x, y, z, id, true, metadata, false, &changed,
-                                    &child->error, child, MUTATION_SUCCESS_RESET_RETAINED);
+                                    &child->error, child, MUTATION_SUCCESS_RESET_RETAINED, NULL);
     if (!finish_owned(&call->child, completed, &raw, error, site, true))
         return false;
     *out = changed;
@@ -1564,4 +1571,18 @@ mc_world_mutation_execution_failed_drop(const mc_world_mutation_execution_call *
     const mc_world_mutation_drop_execution *child =
         mc_world_mutation_execution_failed_drop(call->child);
     return child != NULL ? child : call->drop;
+}
+
+mc_world_storage_status mc_world_runtime_piston_set(mc_world_runtime_classes *code,
+                                                    mc_world_runtime *world, int32_t x, int32_t y,
+                                                    int32_t z, int32_t id, bool with_metadata,
+                                                    int32_t metadata, bool notify, bool *out,
+                                                    mc_world_mutation_error *error) {
+    return set(world, x, y, z, id, with_metadata, metadata, notify, out, error, code);
+}
+
+mc_world_storage_status mc_world_runtime_metadata_set(mc_world_runtime *world, int32_t x, int32_t y,
+                                                      int32_t z, int32_t metadata,
+                                                      mc_world_mutation_error *error) {
+    return mc_world_runtime_piston_metadata(NULL, world, x, y, z, metadata, error);
 }

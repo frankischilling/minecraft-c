@@ -117,19 +117,109 @@ bool mc_cv_fields(mc_cv_context *c, const mc_block *block, unsigned int pc,
                                       "actual native Block storage", pc, true);
 }
 
+static const mc_world_access_failure *tile_receipt(const mc_live_tile_entity_error *e) {
+    if (e->world_access_failure.receipt != NULL || e->world_access_failure.source_null_receiver)
+        return &e->world_access_failure;
+    if (e->publication.world_access_failure.receipt != NULL ||
+        e->publication.world_access_failure.source_null_receiver)
+        return &e->publication.world_access_failure;
+    if (e->batch.publication.world_access_failure.receipt != NULL ||
+        e->batch.publication.world_access_failure.source_null_receiver)
+        return &e->batch.publication.world_access_failure;
+    return NULL;
+}
+
+static const mc_world_access_failure *
+acquisition_receipt(const mc_world_runtime_acquisition_error *e) {
+    const mc_world_access_failure *f = tile_receipt(&e->tile_entity);
+    if (f != NULL)
+        return f;
+    if (e->batch.publication.world_access_failure.receipt != NULL ||
+        e->batch.publication.world_access_failure.source_null_receiver)
+        return &e->batch.publication.world_access_failure;
+    return NULL;
+}
+
+static void capture_receipt(mc_cv_context *c, const mc_world_access_failure *f) {
+    if (f == NULL || c->capture_attempted)
+        return;
+    c->capture_attempted = true;
+    c->capture_status = mc_world_access_failure_retain(f, &c->captured_failure);
+    /* Classification uses this invocation's receipt even if an independent
+     * native capture could not be acquired. The supplying parent stays held. */
+    (void)mc_world_access_failure_source_exception(f, &c->exception_class);
+}
+
+static void clear_tile_receipts(mc_live_tile_entity_error *e) {
+    e->world_access_failure = (mc_world_access_failure){0};
+    e->publication.world_access_failure = (mc_world_access_failure){0};
+    e->batch.publication.world_access_failure = (mc_world_access_failure){0};
+}
+
+static void clear_acquisition_receipts(mc_world_runtime_acquisition_error *e) {
+    clear_tile_receipts(&e->tile_entity);
+    e->batch.publication.world_access_failure = (mc_world_access_failure){0};
+}
+
+bool mc_cv_retire(mc_cv_context *c, mc_client_render_global_error *cleanup) {
+    if (c == NULL) {
+        mc_render_global_source_fail(cleanup, MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT,
+                                     "CV native retirement context", "cv", NULL, NULL, 0, true);
+        return false;
+    }
+    mc_world_access_failure_release(&c->captured_failure);
+    if (c->captured_failure.receipt != NULL) {
+        mc_render_global_source_fail(cleanup, MC_CLIENT_RENDER_GLOBAL_BUSY,
+                                     "CV captured WorldAccess receipt retirement", "cv", NULL, NULL,
+                                     0, true);
+        return false;
+    }
+    clear_tile_receipts(&c->cache_error.tile_entity);
+    clear_acquisition_receipts(&c->cache_error.acquisition);
+    if (c->world_error.kind == MC_CV_WORLD_TILE)
+        clear_tile_receipts(&c->world_error.value.tile);
+    else if (c->world_error.kind == MC_CV_WORLD_BLOCK ||
+             c->world_error.kind == MC_CV_WORLD_METADATA)
+        clear_acquisition_receipts(&c->world_error.value.query.acquisition);
+    if (c->capture_attempted)
+        c->exception_class = NULL; /* The producer's Throwable name borrow expires here. */
+    while (c->piston_tile_count != 0) {
+        mc_tile_entity_release(c->piston_tiles[--c->piston_tile_count]);
+        c->piston_tiles[c->piston_tile_count] = NULL;
+    }
+    if (c->tile_classes != NULL &&
+        mc_tile_entity_classes_release(&c->tile_classes) != MC_TILE_ENTITY_OK) {
+        mc_render_global_source_fail(cleanup, MC_CLIENT_RENDER_GLOBAL_BUSY,
+                                     "CV Tile Class namespace retirement", "cv", NULL, NULL, 0,
+                                     true);
+        return false;
+    }
+    if (cleanup != NULL)
+        *cleanup = (mc_client_render_global_error){0};
+    return true;
+}
+
 static bool cache_result(mc_cv_context *c, mc_client_chunk_cache_status status, unsigned int pc) {
     if (status == MC_CLIENT_CHUNK_CACHE_OK)
         return true;
+    const mc_world_access_failure *f = tile_receipt(&c->cache_error.tile_entity);
+    capture_receipt(c, f != NULL ? f : acquisition_receipt(&c->cache_error.acquisition));
+    if (status == MC_CLIENT_CHUNK_CACHE_SOURCE_NULL)
+        c->exception_class = "java/lang/NullPointerException";
+    else if (status == MC_CLIENT_CHUNK_CACHE_SOURCE_INDEX)
+        c->exception_class = "java/lang/ArrayIndexOutOfBoundsException";
+    else if (status == MC_CLIENT_CHUNK_CACHE_SOURCE_NEGATIVE_ARRAY)
+        c->exception_class = "java/lang/NegativeArraySizeException";
     c->failure.child = (mc_client_graphics_site){
         "ew", c->cache_error.method, c->cache_error.descriptor, (int32_t)c->cache_error.bytecode};
-    return mc_cv_fail(c,
-                      status == MC_CLIENT_CHUNK_CACHE_SOURCE_NULL
-                          ? MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE
-                      : status == MC_CLIENT_CHUNK_CACHE_LIMIT ? MC_CLIENT_RENDER_GLOBAL_LIMIT
-                      : status == MC_CLIENT_CHUNK_CACHE_ALLOCATION_FAILED
-                          ? MC_CLIENT_RENDER_GLOBAL_ALLOCATION_FAILED
-                          : MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
-                      c->cache_error.operation, pc, c->cache_error.native_policy);
+    return mc_cv_fail(
+        c,
+        status == MC_CLIENT_CHUNK_CACHE_SOURCE_NULL ? MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE
+        : status == MC_CLIENT_CHUNK_CACHE_LIMIT     ? MC_CLIENT_RENDER_GLOBAL_LIMIT
+        : status == MC_CLIENT_CHUNK_CACHE_ALLOCATION_FAILED
+            ? MC_CLIENT_RENDER_GLOBAL_ALLOCATION_FAILED
+            : MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
+        c->cache_error.operation, pc, c->exception_class == NULL && c->cache_error.native_policy);
 }
 
 /* A captured source XP reference keeps its exact EW or World identity across
@@ -163,6 +253,10 @@ static bool world_result(mc_cv_context *c, mc_world_storage_status status, const
     if (status == MC_WORLD_STORAGE_OK)
         return true;
     c->world_error.failed = true;
+    if (c->world_error.kind == MC_CV_WORLD_BLOCK || c->world_error.kind == MC_CV_WORLD_METADATA)
+        capture_receipt(c, acquisition_receipt(&c->world_error.value.query.acquisition));
+    else if (c->world_error.kind == MC_CV_WORLD_TILE)
+        capture_receipt(c, tile_receipt(&c->world_error.value.tile));
     c->failure.world = cause;
     c->failure.child = (mc_client_graphics_site){"fd", method, descriptor, (int32_t)child_pc};
     bool source_null = false;
@@ -198,7 +292,28 @@ static bool world_result(mc_cv_context *c, mc_world_storage_status status, const
                       : status == MC_WORLD_STORAGE_BUSY ? MC_CLIENT_RENDER_GLOBAL_BUSY
                       : source_null                     ? MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE
                                                         : MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
-                      operation, pc, native);
+                      operation, pc, c->exception_class == NULL && native);
+}
+
+bool mc_cv_tile(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned int pc,
+                mc_tile_entity **out) {
+    return mc_cv_tile_bound(c, c->fields->c, x, y, z, pc, out);
+}
+
+bool mc_cv_tile_bound(mc_cv_context *c, const void *receiver, int32_t x, int32_t y, int32_t z,
+                      unsigned int pc, mc_tile_entity **out) {
+    mc_cv_pc(c, pc);
+    if (!xp_bound(c, receiver, pc))
+        return false;
+    if (c->world != NULL && receiver == c->world) {
+        world_child(c, MC_CV_WORLD_TILE);
+        mc_live_tile_entity_error *e = &c->world_error.value.tile;
+        const mc_world_storage_status status = mc_live_tile_entities_get(c->world, x, y, z, out, e);
+        return world_result(c, status, e->operation, "b", "(III)Low;", e->bytecode, pc, true,
+                            e->cause);
+    }
+    return cache_result(
+        c, mc_client_chunk_cache_tile_entity(c->cache, x, y, z, out, &c->cache_error), pc);
 }
 
 bool mc_cv_block(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned int pc, int32_t *out) {

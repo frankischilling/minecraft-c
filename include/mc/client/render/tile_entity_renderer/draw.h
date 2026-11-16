@@ -9,6 +9,11 @@
 typedef struct mc_client_tile_renderer_draw_call mc_client_tile_renderer_draw_call;
 typedef struct mc_entity_factory_error mc_entity_factory_error;
 typedef struct mc_entity_position_rotation_error mc_entity_position_rotation_error;
+typedef struct mc_client_render_global_error mc_client_render_global_error;
+typedef struct mc_cv_world_error mc_cv_world_error;
+typedef struct mc_client_texture_lookup_error mc_client_texture_lookup_error;
+typedef struct mc_client_lighting_error mc_client_lighting_error;
+typedef struct mc_client_application_query_error mc_client_application_query_error;
 
 typedef struct mc_client_tile_renderer_draw_limits {
     size_t max_bytes;
@@ -18,17 +23,27 @@ typedef struct mc_client_tile_renderer_draw_limits {
 typedef struct mc_client_tile_renderer_draw_error {
     mc_client_tile_renderer_status status;
     const char *operation, *exception_class;
-    mc_client_graphics_site site, parent, child;
+    mc_client_graphics_site site, parent, child, helper;
     bool native_policy, source_exception;
     mc_client_tile_renderer_error owner;
     mc_client_display_error display;
-    /* Borrow the same retained call until checked retirement succeeds. */
+    mc_client_graphics_error graphics;
+    mc_registry_error registry;
+    mc_tile_entity_error piston;
+    /* Borrow the same retained call until checked retirement succeeds.
+     * A consumed nested receipt's views/name are cleared during partial native
+     * retirement; source status, sites and completed-effect scalars remain. */
     const mc_world_brightness_error *brightness;
     const mc_entity_factory_error *factory;
     const mc_entity_error *entity;
     const mc_entity_position_rotation_error *pose;
     const mc_client_manager_error *manager_owner;
     const mc_client_manager_draw_error *manager;
+    const mc_client_render_global_error *blocks;
+    const mc_cv_world_error *blocks_world;
+    const mc_client_texture_lookup_error *texture;
+    const mc_client_lighting_error *lighting;
+    const mc_client_application_query_error *application_query;
 } mc_client_tile_renderer_draw_error;
 
 typedef struct mc_client_tile_renderer_draw_state {
@@ -38,6 +53,15 @@ typedef struct mc_client_tile_renderer_draw_state {
     bool matrix_pushed, matrix_popped, cache_hit, cache_miss;
     bool factory_returned, cache_put_returned, world_rebound, pose_returned;
     bool manager_returned, manager_retired;
+    bool piston_progress_returned, piston_skipped, texture_returned, texture_bound;
+    bool tessellator_begun, tessellator_drawn, piston_head_returned, piston_base_returned;
+    bool piston_block_returned, piston_override_set, piston_override_reset;
+    bool blocks_capture_attempted;
+    mc_world_storage_status blocks_capture_status;
+    float piston_progress;
+    double piston_translation[3];
+    uintptr_t piston_cv_identity;
+    size_t piston_vertices;
     unsigned int source_pc, gl_calls, factory_calls;
     double distance, x, y, z;
     float partial, brightness, rotation;

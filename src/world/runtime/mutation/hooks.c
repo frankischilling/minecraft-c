@@ -1,6 +1,7 @@
 #include "fire/fire_internal.h"
 #include "furnace/furnace_internal.h"
 #include "mutation_internal.h"
+#include "piston_internal.h"
 #include "plants/plants_internal.h"
 #include "portal_internal.h"
 #include "redstone_torch/redstone_torch_internal.h"
@@ -168,7 +169,8 @@ static bool mark_leaves(mc_world_runtime *world, const mc_block *block, int32_t 
 }
 
 static bool block_removed(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
-                          int32_t z, mc_world_mutation_error *error, const hook_execution *owned) {
+                          int32_t z, mc_world_mutation_error *error, const hook_execution *owned,
+                          mc_world_runtime_classes *code) {
     if (!receiver(world, block, error))
         return false;
     switch (block->kind) {
@@ -246,7 +248,9 @@ static bool block_removed(mc_world_runtime *world, const mc_block *block, int32_
             return unavailable(world, block, "xq", "pa", "Block dispenser removal hook", error,
                                owned);
         case MC_BLOCK_PISTON_HEAD:
-            return unavailable(world, block, "h", "g", "Block removal hook", error, owned);
+            return owned == NULL && block->classes->options.side == MC_REGISTRY_CLIENT
+                       ? mc_world_mutation_piston_head_removed(code, world, block, x, y, z, error)
+                       : unavailable(world, block, "h", "g", "Block removal hook", error, owned);
         case MC_BLOCK_MOVING_PISTON:
             return owned == NULL
                        ? mc_world_mutation_piston_removed(world, block, x, y, z, error)
@@ -294,7 +298,7 @@ static bool block_removed(mc_world_runtime *world, const mc_block *block, int32_
 
 static bool block_added(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
                         int32_t z, mc_world_mutation_error *error, const hook_execution *owned,
-                        mc_world_mutation_execution_call *call) {
+                        mc_world_mutation_execution_call *call, mc_world_runtime_classes *code) {
     (void)x;
     (void)y;
     (void)z;
@@ -386,7 +390,9 @@ static bool block_added(mc_world_runtime *world, const mc_block *block, int32_t 
             return unavailable(world, block, "xq", "pa", "Block dispenser addition hook", error,
                                owned);
         case MC_BLOCK_PISTON_BASE:
-            return unavailable(world, block, "jq", "gi", "Block addition hook", error, owned);
+            return owned == NULL && block->classes->options.side == MC_REGISTRY_CLIENT
+                       ? mc_world_mutation_piston_base_added(code, world, block, x, y, z, error)
+                       : unavailable(world, block, "jq", "gi", "Block addition hook", error, owned);
         case MC_BLOCK_SLAB:
             return unavailable(world, block, "ys", "pw", "Block slab addition hook", error, owned);
         case MC_BLOCK_TNT:
@@ -443,7 +449,7 @@ static bool block_added(mc_world_runtime *world, const mc_block *block, int32_t 
 
 static bool block_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
                            int32_t z, int32_t source_id, mc_world_mutation_error *error,
-                           mc_world_mutation_execution_call *call) {
+                           mc_world_mutation_execution_call *call, mc_world_runtime_classes *code) {
     const hook_execution context = {mc_world_mutation_execution_result_of(call),
                                     {"fd", "l", "(IIII)V", 41}};
     const hook_execution *owned = call == NULL ? NULL : &context;
@@ -535,9 +541,15 @@ static bool block_neighbor(mc_world_runtime *world, const mc_block *block, int32
                                                                          z, source_id, error);
             return unavailable(world, block, "ve", "nj", "Block neighbor hook", error, owned);
         case MC_BLOCK_PISTON_BASE:
-            return unavailable(world, block, "jq", "gi", "Block neighbor hook", error, owned);
+            return call == NULL && block->classes->options.side == MC_REGISTRY_CLIENT
+                       ? mc_world_mutation_piston_base_neighbor(code, world, block, x, y, z,
+                                                                source_id, error)
+                       : unavailable(world, block, "jq", "gi", "Block neighbor hook", error, owned);
         case MC_BLOCK_PISTON_HEAD:
-            return unavailable(world, block, "h", "g", "Block neighbor hook", error, owned);
+            return call == NULL && block->classes->options.side == MC_REGISTRY_CLIENT
+                       ? mc_world_mutation_piston_head_neighbor(code, world, block, x, y, z,
+                                                                source_id, error)
+                       : unavailable(world, block, "h", "g", "Block neighbor hook", error, owned);
         case MC_BLOCK_MOVING_PISTON:
             return owned == NULL
                        ? mc_world_mutation_piston_neighbor(world, block, x, y, z, source_id, error)
@@ -622,7 +634,7 @@ static bool block_neighbor(mc_world_runtime *world, const mc_block *block, int32
 
 bool mc_world_mutation_block_removed(mc_world_runtime *world, const mc_block *block, int32_t x,
                                      int32_t y, int32_t z, mc_world_mutation_error *error) {
-    return block_removed(world, block, x, y, z, error, NULL);
+    return block_removed(world, block, x, y, z, error, NULL, NULL);
 }
 
 bool mc_world_mutation_block_removed_in_execution(mc_world_runtime *world, const mc_block *block,
@@ -631,12 +643,12 @@ bool mc_world_mutation_block_removed_in_execution(mc_world_runtime *world, const
                                                   mc_world_runtime_execution_result *result,
                                                   mc_entity_tick_execution_site site) {
     const hook_execution owned = {result, site};
-    return result != NULL && block_removed(world, block, x, y, z, error, &owned);
+    return result != NULL && block_removed(world, block, x, y, z, error, &owned, NULL);
 }
 
 bool mc_world_mutation_block_added(mc_world_runtime *world, const mc_block *block, int32_t x,
                                    int32_t y, int32_t z, mc_world_mutation_error *error) {
-    return block_added(world, block, x, y, z, error, NULL, NULL);
+    return block_added(world, block, x, y, z, error, NULL, NULL, NULL);
 }
 
 bool mc_world_mutation_block_added_in_execution(mc_world_runtime *world, const mc_block *block,
@@ -645,7 +657,7 @@ bool mc_world_mutation_block_added_in_execution(mc_world_runtime *world, const m
                                                 mc_world_runtime_execution_result *result,
                                                 mc_entity_tick_execution_site site) {
     const hook_execution owned = {result, site};
-    return result != NULL && block_added(world, block, x, y, z, error, &owned, NULL);
+    return result != NULL && block_added(world, block, x, y, z, error, &owned, NULL, NULL);
 }
 
 bool mc_world_mutation_block_added_with_call(mc_world_mutation_execution_call *call,
@@ -654,13 +666,13 @@ bool mc_world_mutation_block_added_with_call(mc_world_mutation_execution_call *c
                                              mc_world_mutation_error *error) {
     const hook_execution owned = {mc_world_mutation_execution_result_of(call),
                                   {"uu", "c", "(Lfd;III)V", 0}};
-    return call != NULL && block_added(world, block, x, y, z, error, &owned, call);
+    return call != NULL && block_added(world, block, x, y, z, error, &owned, call, NULL);
 }
 
 bool mc_world_mutation_block_neighbor(mc_world_runtime *world, const mc_block *block, int32_t x,
                                       int32_t y, int32_t z, int32_t source_id,
                                       mc_world_mutation_error *error) {
-    return block_neighbor(world, block, x, y, z, source_id, error, NULL);
+    return block_neighbor(world, block, x, y, z, source_id, error, NULL, NULL);
 }
 
 bool mc_world_mutation_block_neighbor_in_execution(mc_world_mutation_execution_call *call,
@@ -668,5 +680,26 @@ bool mc_world_mutation_block_neighbor_in_execution(mc_world_mutation_execution_c
                                                    int32_t x, int32_t y, int32_t z,
                                                    int32_t source_id,
                                                    mc_world_mutation_error *error) {
-    return call != NULL && block_neighbor(world, block, x, y, z, source_id, error, call);
+    return call != NULL && block_neighbor(world, block, x, y, z, source_id, error, call, NULL);
+}
+
+bool mc_world_mutation_block_added_with_code(mc_world_runtime_classes *code,
+                                             mc_world_runtime *world, const mc_block *block,
+                                             int32_t x, int32_t y, int32_t z,
+                                             mc_world_mutation_error *error) {
+    return block_added(world, block, x, y, z, error, NULL, NULL, code);
+}
+
+bool mc_world_mutation_block_removed_with_code(mc_world_runtime_classes *code,
+                                               mc_world_runtime *world, const mc_block *block,
+                                               int32_t x, int32_t y, int32_t z,
+                                               mc_world_mutation_error *error) {
+    return block_removed(world, block, x, y, z, error, NULL, code);
+}
+
+bool mc_world_mutation_block_neighbor_with_code(mc_world_runtime_classes *code,
+                                                mc_world_runtime *world, const mc_block *block,
+                                                int32_t x, int32_t y, int32_t z, int32_t source_id,
+                                                mc_world_mutation_error *error) {
+    return block_neighbor(world, block, x, y, z, source_id, error, NULL, code);
 }

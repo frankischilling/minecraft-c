@@ -1,8 +1,10 @@
 #include "mutation_internal.h"
 #include "notifications_execution_internal.h"
+#include "piston_internal.h"
 #include "world_execution_internal.h"
 
 #include "../../../block/registry/runtime_internal.h"
+#include "../acquisition_internal.h"
 #include "../construction_internal.h"
 #include "../execution_children_internal.h"
 #include "../world_access_internal.h"
@@ -259,9 +261,54 @@ static bool neighbor_success(mc_world_mutation_error *error) {
     return true;
 }
 
+#if defined(_MSC_VER)
+#define MC_NEIGHBOR_GET_NOINLINE __declspec(noinline)
+#elif defined(__GNUC__) || defined(__clang__)
+#define MC_NEIGHBOR_GET_NOINLINE __attribute__((noinline))
+#else
+#define MC_NEIGHBOR_GET_NOINLINE
+#endif
+
+/* Release the large per-GET diagnostic frame before a Block hook can recurse.
+ * Failure-only storage keeps successful GETs free of diagnostic reset work. */
+static MC_NEIGHBOR_GET_NOINLINE bool neighbor_value(mc_world_runtime *world, int32_t x, int32_t y,
+                                                    int32_t z, int32_t *out,
+                                                    mc_world_mutation_error *error) {
+    mc_world_storage_error cause = {0};
+    mc_world_runtime_acquisition_error child;
+    const mc_world_storage_status status =
+        mc_world_runtime_block_get_failure(world, x, y, z, out, &cause, &child);
+    if (status == MC_WORLD_STORAGE_OK)
+        return true;
+    /* This exact single GET supplies the actual failed producer; do not
+     * reconstruct it from current World fields or an ambient diagnostic. */
+    error->query.status = status;
+    error->query.operation = cause.operation;
+    error->query.cause = cause;
+    error->query.acquisition = child.status;
+    error->query.registry = child.registry;
+    error->query.population = child.population;
+    error->query.source_chunk = child.source_chunk;
+    error->registry = child.registry;
+    error->population = child.population;
+    error->tile_entity = child.tile_entity;
+    error->batch = child.batch;
+    error->load_entity = child.load_entity;
+    error->activation_bytecode = child.activation_bytecode;
+    error->activation_world_bytecode = child.activation_world_bytecode;
+    error->load_bytecode = child.load_bytecode;
+    error->load_builder_bytecode = child.load_builder_bytecode;
+    mc_world_mutation_fail(world, error, status, cause.operation);
+    error->cause = cause;
+    world->last_error = cause;
+    return false;
+}
+
+#undef MC_NEIGHBOR_GET_NOINLINE
+
 static bool neighbor(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int32_t source_id,
                      unsigned int call_pc, mc_world_mutation_error *error,
-                     mc_world_mutation_execution_call *owned) {
+                     mc_world_mutation_execution_call *owned, mc_world_runtime_classes *code) {
     error->neighbor_call_bytecode = call_pc;
     error->neighbor_bytecode = 1;
     if (owned != NULL &&
@@ -294,16 +341,8 @@ static bool neighbor(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, i
     error->neighbor_bytecode = 22;
     int32_t id;
     if (owned == NULL) {
-        mc_world_storage_error cause = {0};
-        const mc_world_storage_status status =
-            mc_world_runtime_block_get(world, x, y, z, &id, &cause);
-        if (status != MC_WORLD_STORAGE_OK) {
-            mc_world_mutation_fail(world, error, status, cause.operation);
-            /* Preserve the actual returned acquisition cause and system error. */
-            error->cause = cause;
-            world->last_error = cause;
+        if (!neighbor_value(world, x, y, z, &id, error))
             return false;
-        }
     } else {
         const mc_entity_tick_execution_site site = {"fd", "l", "(IIII)V", 22};
         if (!mc_world_mutation_execution_get(owned, world, x, y, z, false, &id, error, site))
@@ -320,35 +359,42 @@ static bool neighbor(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, i
         return neighbor_success(error);
 
     error->neighbor_bytecode = 41;
-    const bool completed =
-        owned == NULL ? mc_world_mutation_block_neighbor(world, block, x, y, z, source_id, error)
-                      : mc_world_mutation_block_neighbor_in_execution(owned, world, block, x, y, z,
-                                                                      source_id, error);
+    const bool completed = owned == NULL ? mc_world_mutation_block_neighbor_with_code(
+                                               code, world, block, x, y, z, source_id, error)
+                                         : mc_world_mutation_block_neighbor_in_execution(
+                                               owned, world, block, x, y, z, source_id, error);
     if (!completed)
         return false;
     return neighbor_success(error);
 }
 
 static bool neighbors(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int32_t id,
-                      mc_world_mutation_error *error, mc_world_mutation_execution_call *owned) {
+                      mc_world_mutation_error *error, mc_world_mutation_execution_call *owned,
+                      mc_world_runtime_classes *code) {
     /* The source invokes each private operation synchronously. Each later
      * call rereads flags/registry/World and observes completed earlier effects. */
-    return neighbor(world, mc_java_i32_sub(x, 1), y, z, id, 8, error, owned) &&
-           neighbor(world, mc_java_i32_add(x, 1), y, z, id, 19, error, owned) &&
-           neighbor(world, x, mc_java_i32_sub(y, 1), z, id, 30, error, owned) &&
-           neighbor(world, x, mc_java_i32_add(y, 1), z, id, 41, error, owned) &&
-           neighbor(world, x, y, mc_java_i32_sub(z, 1), id, 52, error, owned) &&
-           neighbor(world, x, y, mc_java_i32_add(z, 1), id, 63, error, owned);
+    return neighbor(world, mc_java_i32_sub(x, 1), y, z, id, 8, error, owned, code) &&
+           neighbor(world, mc_java_i32_add(x, 1), y, z, id, 19, error, owned, code) &&
+           neighbor(world, x, mc_java_i32_sub(y, 1), z, id, 30, error, owned, code) &&
+           neighbor(world, x, mc_java_i32_add(y, 1), z, id, 41, error, owned, code) &&
+           neighbor(world, x, y, mc_java_i32_sub(z, 1), id, 52, error, owned, code) &&
+           neighbor(world, x, y, mc_java_i32_add(z, 1), id, 63, error, owned, code);
 }
 
 bool mc_world_mutation_neighbors(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
                                  int32_t id, mc_world_mutation_error *error) {
-    return neighbors(world, x, y, z, id, error, NULL);
+    return neighbors(world, x, y, z, id, error, NULL, NULL);
 }
 
 bool mc_world_mutation_neighbors_in_execution(mc_world_mutation_execution_call *owned,
                                               mc_world_runtime *world, int32_t x, int32_t y,
                                               int32_t z, int32_t id,
                                               mc_world_mutation_error *error) {
-    return owned != NULL && neighbors(world, x, y, z, id, error, owned);
+    return owned != NULL && neighbors(world, x, y, z, id, error, owned, NULL);
+}
+
+bool mc_world_mutation_neighbors_with_code(mc_world_runtime_classes *code, mc_world_runtime *world,
+                                           int32_t x, int32_t y, int32_t z, int32_t id,
+                                           mc_world_mutation_error *error) {
+    return neighbors(world, x, y, z, id, error, NULL, code);
 }

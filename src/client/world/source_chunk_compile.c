@@ -27,6 +27,7 @@ struct mc_source_dk_compile {
     mc_client_chunk_cache_error cache_error, cache_cleanup;
     mc_world_runtime_classes *world_classes;
     mc_cv_context render_blocks;
+    mc_client_render_global_error render_blocks_cleanup;
     mc_tile_entity **old_tiles;
     size_t old_count;
     mc_tile_entity **new_tiles;
@@ -594,6 +595,7 @@ static bool body(mc_source_dk_compile *c) {
     mc_client_render_blocks_construct_fields(&c->state.renderer, c->cache, true);
     c->render_blocks = (mc_cv_context){.fields = &c->state.renderer,
                                        .cache = c->cache,
+                                       .code_classes = app->world_classes,
                                        .registry = c->world_classes->registry,
                                        .models = app->render_classes,
                                        .graphics = dk->owner->classes,
@@ -775,6 +777,10 @@ mc_client_render_global_status mc_source_dk_compile_retire(mc_source_dk_compile 
         return mc_render_global_source_fail(error, MC_CLIENT_RENDER_GLOBAL_BUSY,
                                             "DK compile active native retirement", NULL, NULL, NULL,
                                             0, true);
+    if (!mc_cv_retire(&c->render_blocks, &c->render_blocks_cleanup)) {
+        *error = c->render_blocks_cleanup;
+        return error->status;
+    }
     if (mc_client_tile_renderer_dispatcher_release(&c->ll, &c->tiles_cleanup) !=
         MC_CLIENT_TILE_RENDERER_OK) {
         error->tile_renderer = &c->tiles_cleanup;

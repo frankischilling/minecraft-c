@@ -5,6 +5,7 @@
 #include "../collision/blocks_internal.h"
 #include "../construction_internal.h"
 #include "../mutation/mutation_internal.h"
+#include "../mutation/piston_internal.h"
 #include "../runtime_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "piston_list_internal.h"
@@ -290,8 +291,8 @@ static bool tick_held(mc_tile_entity *tile_entity, mc_world_runtime_classes *cod
         bool ordinary;
         error->tick_bytecode = 99;
         const mc_world_storage_status restored =
-            mc_world_runtime_block_metadata_set(world, restore_x, restore_y, restore_z, carried_id,
-                                                carried_data, &ordinary, &error->mutation);
+            mc_world_runtime_piston_set(code, world, restore_x, restore_y, restore_z, carried_id,
+                                        true, carried_data, true, &ordinary, &error->mutation);
         return restored == MC_WORLD_STORAGE_OK ||
                fail(error, restored, error->mutation.operation); /* Discard pop102. */
     }

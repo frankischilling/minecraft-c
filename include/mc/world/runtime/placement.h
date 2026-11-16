@@ -35,6 +35,10 @@ typedef struct mc_world_block_activation_context {
     /* Actual GS defining Registry. Independent of VE and Player.World;
      * consulted lazily by the reached sleep child, never a World substitute. */
     mc_registry_classes *player_code_registry;
+    /* Explicit defining Block/UK code namespace, borrowed through checked
+     * retirement. It is independent of the evaluated World and is consulted
+     * only by reached Block descendants that allocate a Piston TileEntity. */
+    mc_world_runtime_classes *block_code_classes;
     mc_world_storage_status (*workbench)(void *, mc_entity *, int32_t, int32_t, int32_t,
                                          mc_world_placement_error *);
     /* Actual GS.a(LW) virtual. The nullable receiver argument is the same

@@ -479,6 +479,42 @@ static bool tiles(mc_client_render_global_entities_call *c) {
             .preview_world_identity = state.preview_world_identity,
             .preview_kind = (int32_t)preview.kind,
             .renderer_class = state.renderer_class};
+        mc_client_render_global_tile_receipt *receipt = &c->state.last_tile_draw;
+        receipt->piston_skipped = state.piston_skipped;
+        receipt->tessellator_begun = state.tessellator_begun;
+        receipt->tessellator_drawn = state.tessellator_drawn;
+        receipt->piston_head_returned = state.piston_head_returned;
+        receipt->piston_base_returned = state.piston_base_returned;
+        receipt->piston_block_returned = state.piston_block_returned;
+        memcpy(&receipt->piston_progress_bits, &state.piston_progress,
+               sizeof(receipt->piston_progress_bits));
+        receipt->piston_vertices = state.piston_vertices;
+        receipt->piston_cv_identity = state.piston_cv_identity;
+        memcpy(receipt->piston_translation, state.piston_translation,
+               sizeof(receipt->piston_translation));
+        if (state.renderer_class != NULL && strcmp(state.renderer_class, "hy") == 0) {
+            mc_tile_entity_snapshot tile;
+            if (mc_tile_entity_get_snapshot(c->current_tile, &tile) == MC_TILE_ENTITY_OK &&
+                tile.kind == MC_TILE_ENTITY_PISTON) {
+                receipt->piston_snapshot_valid = true;
+                receipt->piston_block_id = tile.piston_block_id;
+                receipt->piston_metadata = tile.piston_block_data;
+                receipt->piston_facing = tile.piston_facing;
+                receipt->piston_extending = tile.piston_extending;
+                receipt->piston_render_head = tile.piston_render_head;
+                receipt->piston_current_progress_bits = tile.piston_progress_bits;
+                receipt->piston_previous_progress_bits = tile.piston_previous_progress_bits;
+            }
+            if (c->state.piston_draws_returned != SIZE_MAX)
+                ++c->state.piston_draws_returned;
+            if (state.piston_head_returned && c->state.piston_heads_returned != SIZE_MAX)
+                ++c->state.piston_heads_returned;
+            if (state.piston_base_returned && c->state.piston_bases_returned != SIZE_MAX)
+                ++c->state.piston_bases_returned;
+            c->state.piston_vertices = state.piston_vertices > SIZE_MAX - c->state.piston_vertices
+                                           ? SIZE_MAX
+                                           : c->state.piston_vertices + state.piston_vertices;
+        }
         ++c->state.tile_draws_returned;
         if (!retire_tile_draw(c, &c->failure))
             return false;
