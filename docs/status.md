@@ -14,8 +14,11 @@ collision ownership and fresh-cache reopen. Four focused storage tests pass on
 MSVC Release and GCC Debug with ASan/UBSan and leak detection. The Source File
 provider now shares that transport and passes long Unicode attribute,
 enumeration, rename and input-stream controls. A separate 400-unit region-output
-scenario exercises actual RAF saves and independent NBT readback. Full-client
-save and network-share qualification remain open.
+scenario exercises actual RAF saves and independent NBT readback. The real
+Windows client also passes authored save/title and ten reload epochs with a
+300-unit game directory on monitor 2, plus short-path controls. Earlier native
+focus/input failures remain unresolved. These finite cases do not qualify
+general long-path play, original save round trips or network shares.
 
 Ordinary World setters now avoid initializing an unused successful acquisition
 diagnostic. The [quiet-setter record](performance/quiet-setter-acquisition.md)

@@ -2478,8 +2478,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 393147,
-      "sha256": "d3be65356e0efc8c07d31328f8691d2cad8e49a3e62873d4e7d94fd05393e6fb"
+      "bytes": 396914,
+      "sha256": "0a05809c185ba5f18b21f424aece971adb878510e2649ed759e1a6aaa58a742c"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -2494,8 +2494,8 @@
       "sha256": "5337d15e53e776798d0a4f394e74432da7a578951b72f5c761439accb811786b"
     },
     "tests/tools/client/test_world_selection_loop.py": {
-      "bytes": 98934,
-      "sha256": "baa5ad2013f3e44160b37faa95e457b7b33dae98d7a14b2f2ecf3a5c06f29a1f"
+      "bytes": 102478,
+      "sha256": "c04a33996bfb1f5c73047c992005794097a4eb502f93166c6dee833998a6e958"
     },
     "tests/tools/platform/test_date_format_reference.py": {
       "bytes": 4341,
@@ -5942,8 +5942,8 @@
       "sha256": "a741e54a8ee496d0520750956716b08580299b43a2c9bdff47da1202ae01fabb"
     },
     "tests/client/startup/test_world_reload.inc": {
-      "bytes": 21165,
-      "sha256": "79393de86756be6050aac11da8587006bd7ea42e293579491d57040baf6bcfd3"
+      "bytes": 19773,
+      "sha256": "42d05cc4a5c34a152dbf8b713f052d2e90d8e7ff488f48bc62062b7083012597"
     },
     "src/world/cache/acquire_internal.h": {
       "bytes": 362,

@@ -61,6 +61,11 @@ cleanup retries that monitor without replaying input or drawing.
 
 ## Verification scope
 
+The [storage-path record](../world/native-storage-paths.md#visible-client-save-and-reload)
+adds visible Windows save/title and ten-epoch reload observations for short and
+300-unit game directories. Both source windows are witnessed on monitor 2.
+The record includes remaining focus instability and the exact authored scope.
+
 The genuine Windows native loop passes isolated empty, populated, sixteen-save
 scrolling and double-click profiles. They check sorted real metadata, held-button entry, selection during
 drawing, same-parent Cancel, original-receiver trailing input, the actual

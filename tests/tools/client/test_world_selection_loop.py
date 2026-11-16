@@ -1143,9 +1143,22 @@ def main():
                                  "remaining-wolf", "remaining-zombie", "remaining-skeleton",
                                  "save-title", "save-title-session", "reload-cycle"))
     parser.add_argument("--timeout", type=float)
+    parser.add_argument("--monitor-two", action="store_true",
+                        help="Require physical monitor 2 and verify both source windows there")
+    parser.add_argument("--game-path-units", type=int, default=0,
+                        help="Author the isolated game directory at this UTF-16 length")
     args = parser.parse_args()
     if os.name != "nt":
         raise RuntimeError("This native APPDATA isolation profile requires Windows")
+    if args.game_path_units and not 200 <= args.game_path_units <= 1000:
+        raise RuntimeError("Game path test length must be 200..1000 UTF-16 units")
+    monitor = None
+    if args.monitor_two:
+        helper = Path(__file__).with_name('test_bed_sleep.py')
+        spec = importlib.util.spec_from_file_location('selection_monitor', helper)
+        monitor_helper = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(monitor_helper)
+        monitor = monitor_helper.second_monitor()
     executable = args.executable.resolve(strict=True)
     assets = args.assets.resolve(strict=True)
     artifacts = args.artifacts.resolve()
@@ -1153,6 +1166,9 @@ def main():
     resources_before = snapshot(assets)
     requested = args.mode or ("empty", "populated", "large", "double", "load", "load-terminal",
                               "load-partial", "repeat", "load-light")
+    if args.monitor_two and any(mode not in ('save-title', 'save-title-session', 'reload-cycle')
+                                for mode in requested):
+        raise RuntimeError("Monitor witness currently requires a save-title or reload-cycle profile")
     modes = [expanded for mode in requested
              for expanded in (ANIMAL_PROFILES if mode == "animals" else
                               CREATURE_PROFILES if mode == "creatures" else
@@ -1171,7 +1187,21 @@ def main():
         evidence = Path(tempfile.mkdtemp(prefix=mode + "-", dir=artifacts))
         with tempfile.TemporaryDirectory(prefix="mc-rq-loop-") as work:
             appdata = Path(work)
+            if args.game_path_units:
+                units = lambda path: len(str(path).encode('utf-16-le')) // 2
+                if units(appdata / '.minecraft') + 2 > args.game_path_units:
+                    raise RuntimeError("Temporary root leaves no room for requested game path")
+                while units(appdata / '.minecraft') < args.game_path_units:
+                    path_units_left = args.game_path_units - units(appdata / '.minecraft')
+                    count = min(60, path_units_left - 1)
+                    if path_units_left - count - 1 == 1:
+                        count -= 1
+                    appdata /= 'a' * count
             game = appdata / ".minecraft"
+            (evidence / 'path-input.json').write_text(json.dumps({
+                'game': str(game), 'utf16_units': len(str(game).encode('utf-16-le')) // 2,
+                'requested_units': args.game_path_units, 'monitor': monitor,
+            }, indent=2) + '\n', encoding='utf-8')
             if mode == "repeat" or cactus or torch or fluid_id or ladder or crops or animal or creature or remaining or save_title:
                 repeat_statistics(game, assets)
             if save_title:
@@ -1276,6 +1306,10 @@ def main():
                                                        marker='CROPS_LOADED_V1')
             environment = os.environ.copy()
             environment["APPDATA"] = str(appdata)
+            if monitor is not None:
+                bounds = ','.join(map(str, monitor['selected']['work']))
+                environment.update(SDL_DISPLAY_USABLE_BOUNDS=bounds,
+                                   MC_WORLD_SELECTION_MONITOR_BOUNDS=bounds)
             if fluid_id:
                 environment['MC_WORLD_SELECTION_FLUID_REFERENCE'] = str(original_path)
             if ladder:
@@ -1283,6 +1317,7 @@ def main():
             if crops:
                 environment['MC_WORLD_SELECTION_CROPS_REFERENCE'] = str(original_path)
             if save_title:
+                (evidence / 'entries').mkdir()
                 environment["MC_WORLD_SAVE_TITLE_SESSION"] = str(saves / "alpha/session.lock")
                 environment["MC_WORLD_SAVE_TITLE_SAVES"] = str(saves)
                 environment["MC_WORLD_SAVE_TITLE_ENTRIES"] = str(evidence / "entries")
@@ -1304,6 +1339,26 @@ def main():
                 print(f"World-selection native {mode} exited {result.returncode} "
                       f"(0x{result.returncode & 0xffffffff:08x})", file=sys.stderr)
                 return result.returncode
+            if monitor is not None:
+                observations = [line for line in result.stdout.splitlines()
+                                if line.startswith('WORLD_SELECTION_MONITOR ')]
+                if len(observations) < 2:
+                    raise RuntimeError('Native monitor witnesses are missing')
+                seen = set()
+                x, y, width, height = monitor['selected']['work']
+                for line in observations:
+                    row = re.fullmatch(r'WORLD_SELECTION_MONITOR stage=(\S+) window=(frame|canvas) '
+                                       r'x=(-?\d+) y=(-?\d+) width=(\d+) height=(\d+) target=(\S+)', line)
+                    if row is None or row[7] != ','.join(map(str, (x, y, width, height))):
+                        raise RuntimeError('Malformed native monitor witness')
+                    wx, wy, ww, wh = map(int, row.group(3, 4, 5, 6))
+                    if not (ww > 0 and wh > 0 and wx >= x and wy >= y and
+                            wx + ww <= x + width and wy + wh <= y + height):
+                        raise RuntimeError('Source window outside physical monitor 2')
+                    if row[1] == 'open':
+                        seen.add(row[2])
+                if seen != {'frame', 'canvas'}:
+                    raise RuntimeError('Both initial source window witnesses are required')
             if mode in ("load", "generate", "load-terminal"):
                 fixture = Path(__file__).resolve().parents[2] / "reference/client/renderer_focus/finite.json"
                 expected = json.loads(fixture.read_text(encoding="utf-8"))["rows"]
@@ -1484,9 +1539,8 @@ def main():
               "metadata/region readback, fresh title, session allocation frontier and retained-load "
               "terminal cleanup passed; no original whole-frame or source reload claim")
     else:
-        print("World-selection loop: original-receiver input, held entry, rows, Cancel, "
-              "large-list scrollbar drag, real-clock double-click failure order, "
-              "World-load frontier, captures, save preservation and cleanup passed")
+        print("World-selection loop completed profiles: " + ', '.join(modes) +
+              "; retained artifacts: " + str(artifacts))
     return 0
 
 

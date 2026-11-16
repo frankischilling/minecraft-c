@@ -14,46 +14,16 @@ typedef struct reload_snapshot_budget {
     size_t files, entries, bytes;
 } reload_snapshot_budget;
 
-typedef struct reload_snapshot_walk {
-    const char *destination;
-    unsigned int depth;
-    reload_snapshot_budget *budget;
-} reload_snapshot_walk;
-
-static bool reload_snapshot_tree(const char *, const char *, unsigned int,
-                                 reload_snapshot_budget *);
-
-static SDL_EnumerationResult SDLCALL reload_snapshot_entry(void *context, const char *directory,
-                                                           const char *name) {
-    reload_snapshot_walk *walk = context;
-    char source[8192], target[8192];
-    if (++walk->budget->entries > 1024 || strchr(name, '/') != NULL || strchr(name, '\\') != NULL)
-        return SDL_ENUM_FAILURE;
-    const int a = snprintf(source, sizeof(source), "%s%s", directory, name);
-    const int b = snprintf(target, sizeof(target), "%s/%s", walk->destination, name);
-    if (a <= 0 || (size_t)a >= sizeof(source) || b <= 0 || (size_t)b >= sizeof(target))
-        return SDL_ENUM_FAILURE;
-    SDL_PathInfo info;
-    if (!SDL_GetPathInfo(source, &info))
-        return SDL_ENUM_FAILURE;
-    if (info.type == SDL_PATHTYPE_DIRECTORY)
-        return walk->depth < 3 &&
-                       reload_snapshot_tree(source, target, walk->depth + 1, walk->budget)
-                   ? SDL_ENUM_CONTINUE
-                   : SDL_ENUM_FAILURE;
-    if (info.type != SDL_PATHTYPE_FILE || info.size > 1048576 || walk->budget->files >= 1024 ||
-        info.size > 16u * 1048576u - walk->budget->bytes || !SDL_CopyFile(source, target))
-        return SDL_ENUM_FAILURE;
-    ++walk->budget->files;
-    walk->budget->bytes += (size_t)info.size;
-    return SDL_ENUM_CONTINUE;
-}
-
+/* Both UI scenarios use one independent, bounded disk snapshot transport. */
 static bool reload_snapshot_tree(const char *source, const char *target, unsigned int depth,
                                  reload_snapshot_budget *budget) {
-    reload_snapshot_walk walk = {target, depth, budget};
-    return SDL_CreateDirectory(target) &&
-           SDL_EnumerateDirectory(source, reload_snapshot_entry, &walk);
+    save_title_entry_budget observed = {
+        .entries = budget->entries, .files = budget->files, .bytes = budget->bytes};
+    bool copied = save_title_entry_tree(source, target, depth, &observed);
+    budget->entries = observed.entries;
+    budget->files = observed.files;
+    budget->bytes = observed.bytes;
+    return copied;
 }
 
 static int reload_snapshot(const char *phase) {

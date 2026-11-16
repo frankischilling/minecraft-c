@@ -107,7 +107,50 @@ Linux qualification remains the eleven focused GCC Debug tests with ASan,
 UBSan and leak detection. Full graphical-client and final hosted checks are
 separate gates.
 
-The provider change does not qualify full-client saves, save selection UI,
-extended play, UNC network behavior, or every Windows name alias. Long
+## Visible client save and reload
+
+The actual Windows client now has bounded save/title and ten-epoch reload
+observations with a 300-unit game directory. The final native fixture also
+passes save/title and ten reload epochs with its ordinary 64-unit directory.
+These are authored Overworld inputs, not personal saves. The checks use real
+SDK Escape and Pause button1 input, independent metadata/region/player readback,
+same/different World replacement, a failed successor and terminal owner cleanup.
+The existing scene remains 854 by 480 with source `viewDistance:3`; OpenAL uses
+its null driver, so these runs do not qualify audible output.
+
+Both Frame and Canvas are checked against the physical second monitor before
+selection and at lifecycle checkpoints. The tested work rectangle is
+`-1920,0,1920,1040`; both SDL window rectangles are `-1387,280,854,480`.
+The returned title capture was inspected. No original image comparison or FPS
+comparison is attached to these runs; actual work totals differ between runs.
+The changed C fixture and reload fragment also pass strict GCC syntax checking;
+that compile check does not qualify Linux graphical runtime behavior.
+
+Reproduce after importing the supplied resources, including SDK icons:
+
+```powershell
+cmake --build BUILD --config Release --target mc_test_world_selection_loop
+$env:ALSOFT_DRIVERS = 'null'
+python -B tests/tools/client/test_world_selection_loop.py --executable BUILD/Release/mc_test_world_selection_loop.exe --assets ASSETS --artifacts .local/reload-long --mode reload-cycle --monitor-two --game-path-units 300
+```
+
+The path option authors the game directory before bootstrap and records its
+exact UTF-16 length in `path-input.json`. Imported assets remain outside that
+directory. Monitor witnessing is opt-in and currently requires a save/title or
+reload-cycle profile; it refuses to launch without a physical second monitor.
+
+The old snapshot observer failed on long paths. Its independent transport now
+passes extended names to SDL enumeration, stat and copy, and uses direct native
+directory creation because SDL's recursive mkdir splits the namespace prefix.
+Save/title and reload share this bounded transport. The observer creates only
+evidence directories; it never calls the production File provider or saves to
+obtain a snapshot. Entry/file/byte/depth budgets remain in force.
+
+Earlier failures remain retained locally: a short selection reported SDK
+coordinates `0,0`, another had real Canvas focus but no SDL keyboard focus,
+and long-path observer/reader preparations failed before full acceptance.
+The successful final scenarios do not resolve that focus instability. General
+interactive play, extended sessions, original-game save round trips, UNC
+network behavior and every Windows name alias remain unqualified. Long
 trailing-dot/space component aliases remain an explicit unsupported boundary.
 No gameplay FPS or sustained-play claim is made.

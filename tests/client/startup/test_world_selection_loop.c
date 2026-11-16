@@ -3702,6 +3702,26 @@ static int save_title_host(fixture *f, const char *stage, bool focus, uint32_t *
         *canvas_id = actual_canvas;
     }
     CHECK(*frame_id == actual_frame && *canvas_id == actual_canvas);
+    const char *bounds = SDL_getenv("MC_WORLD_SELECTION_MONITOR_BOUNDS");
+    if (bounds != NULL) {
+        int x, y, width, height;
+        CHECK(sscanf(bounds, "%d,%d,%d,%d", &x, &y, &width, &height) == 4 && width > 0 &&
+              height > 0);
+        SDL_Window *windows[] = {host.frame_window, host.canvas_window};
+        for (size_t i = 0; i < 2; ++i) {
+            int wx, wy, ww, wh;
+            SDL_Rect physical;
+            CHECK(SDL_GetWindowPosition(windows[i], &wx, &wy) &&
+                  SDL_GetWindowSize(windows[i], &ww, &wh) &&
+                  SDL_GetDisplayBounds(SDL_GetDisplayForWindow(windows[i]), &physical) && wx >= x &&
+                  wy >= y && wx + ww <= x + width && wy + wh <= y + height && wx >= physical.x &&
+                  wy >= physical.y && wx + ww <= physical.x + physical.w &&
+                  wy + wh <= physical.y + physical.h);
+            printf("WORLD_SELECTION_MONITOR stage=%s window=%s x=%d y=%d width=%d height=%d "
+                   "target=%s\n",
+                   stage, i == 0 ? "frame" : "canvas", wx, wy, ww, wh, bounds);
+        }
+    }
     if (focus)
         CHECK(save_title_focus(f) == 0);
     printf("WORLD_SAVE_TITLE_HOST stage=%s frame-id=%" PRIu32 " canvas-id=%" PRIu32
@@ -3902,6 +3922,29 @@ typedef struct save_title_entry_walk {
 static bool save_title_entry_tree(const char *, const char *, unsigned int,
                                   save_title_entry_budget *);
 
+/* Independent observer transport, not the production File provider. Fixture
+ * paths are absolute drive paths; preserve their exact ordinary components. */
+static bool save_title_snapshot_path(char *path, size_t capacity) {
+#ifdef _WIN32
+    size_t length = strlen(path);
+    if (strncmp(path, "\\\\?\\", 4) != 0) {
+        if (length < 3 || path[1] != ':' || (path[2] != '/' && path[2] != '\\') ||
+            length > capacity - 5u)
+            return false;
+        memmove(path + 4, path, length + 1u);
+        memcpy(path, "\\\\?\\", 4);
+        length += 4u;
+    }
+    for (size_t i = 4; i < length; ++i)
+        if (path[i] == '/')
+            path[i] = '\\';
+#else
+    (void)path;
+    (void)capacity;
+#endif
+    return true;
+}
+
 static SDL_EnumerationResult SDLCALL save_title_entry_file(void *context, const char *directory,
                                                            const char *name) {
     save_title_entry_walk *walk = context;
@@ -3912,6 +3955,9 @@ static SDL_EnumerationResult SDLCALL save_title_entry_file(void *context, const 
     const int a = snprintf(source, sizeof(source), "%s%s", directory, name);
     const int b = snprintf(target, sizeof(target), "%s/%s", walk->destination, name);
     if (a <= 0 || (size_t)a >= sizeof(source) || b <= 0 || (size_t)b >= sizeof(target))
+        return SDL_ENUM_FAILURE;
+    if (!save_title_snapshot_path(source, sizeof(source)) ||
+        !save_title_snapshot_path(target, sizeof(target)))
         return SDL_ENUM_FAILURE;
     SDL_PathInfo info;
     if (!SDL_GetPathInfo(source, &info))
@@ -3931,9 +3977,45 @@ static SDL_EnumerationResult SDLCALL save_title_entry_file(void *context, const 
 
 static bool save_title_entry_tree(const char *source, const char *target, unsigned int depth,
                                   save_title_entry_budget *budget) {
-    save_title_entry_walk walk = {target, depth, budget};
-    return SDL_CreateDirectory(target) &&
-           SDL_EnumerateDirectory(source, save_title_entry_file, &walk);
+    char native_source[8192], native_target[8192];
+    int a = snprintf(native_source, sizeof(native_source), "%s", source);
+    int b = snprintf(native_target, sizeof(native_target), "%s", target);
+    if (a <= 0 || (size_t)a >= sizeof(native_source) || b <= 0 ||
+        (size_t)b >= sizeof(native_target) ||
+        !save_title_snapshot_path(native_source, sizeof(native_source)) ||
+        !save_title_snapshot_path(native_target, sizeof(native_target)))
+        return false;
+    save_title_entry_walk walk = {native_target, depth, budget};
+#ifdef _WIN32
+    /* SDL's recursive mkdir splits the extended namespace prefix. Preserve
+     * recursive observer creation using direct OS operations, independently of
+     * the production File provider. Never attempt to create the drive root. */
+    wchar_t wide[8192];
+    if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, native_target, -1, wide, 8192) == 0 ||
+        wcslen(wide) < 7u || wide[5] != L':' || wide[6] != L'\\')
+        return SDL_SetError("Snapshot absolute drive path conversion failed");
+    for (size_t i = 7u;; ++i) {
+        wchar_t saved = wide[i];
+        if (saved != L'\\' && saved != 0)
+            continue;
+        wide[i] = 0;
+        bool created = CreateDirectoryW(wide, NULL) != 0;
+        if (!created) {
+            DWORD attributes = GetFileAttributesW(wide);
+            created = attributes != INVALID_FILE_ATTRIBUTES &&
+                      (attributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+        }
+        wide[i] = saved;
+        if (!created)
+            return SDL_SetError("Snapshot native directory creation failed");
+        if (saved == 0)
+            break;
+    }
+#else
+    if (!SDL_CreateDirectory(native_target))
+        return false;
+#endif
+    return SDL_EnumerateDirectory(native_source, save_title_entry_file, &walk);
 }
 
 /* Preserve the actual pre-frame bytes, never run a save/flush to make them.
@@ -3949,8 +4031,10 @@ static int save_title_entry_snapshot(size_t frame_index, size_t *aggregate, size
     const int n = snprintf(target, sizeof(target), "%s/frame-%zu", root, frame_index);
     CHECK(n > 0 && (size_t)n < sizeof(target));
     save_title_entry_budget budget = {0};
-    CHECK(save_title_entry_tree(source, target, 0, &budget) && budget.files != 0 &&
-          budget.bytes <= 64u * 16u * 1048576u - *aggregate);
+    const bool copied = save_title_entry_tree(source, target, 0, &budget);
+    if (!copied)
+        fprintf(stderr, "Save/title snapshot failed: %s\n", SDL_GetError());
+    CHECK(copied && budget.files != 0 && budget.bytes <= 64u * 16u * 1048576u - *aggregate);
     *aggregate += budget.bytes;
     *bytes = budget.bytes;
     return 0;
