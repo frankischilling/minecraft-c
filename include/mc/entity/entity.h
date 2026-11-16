@@ -177,6 +177,15 @@ size_t mc_entity_native_bytes(const mc_entity *entity);
 mc_entity_status mc_entity_set_velocity(mc_entity *entity, unsigned int axis, double value);
 mc_entity_status mc_entity_set_position(mc_entity *entity, double x, double y, double z);
 mc_entity_status mc_entity_set_size(mc_entity *entity, float width, float height);
+/* Actual SN.a(World)/LQ.a(World) field store2, return5, on a held READY Entity.
+ * Native World binding acquisition precedes publication and old binding release;
+ * failure preserves the source field and its existing occurrence. Same World
+ * needs no extra binding. Nullable World is ordinary. No profile/Registry/list,
+ * position, Random or callback operation is implied by this simple source body.
+ * A sealed native LocalPlayer terminal graph refuses mutation. Inputs/error
+ * must be live, exclusive and disjoint; World source fields must retain their
+ * actual native binding occurrence rather than an authored borrowed pointer. */
+mc_entity_status mc_entity_set_world(mc_entity *, mc_world_runtime *, mc_entity_error *);
 bool mc_entity_equals(const mc_entity *left, const mc_entity *right);
 int32_t mc_entity_hash_code(const mc_entity *entity);
 

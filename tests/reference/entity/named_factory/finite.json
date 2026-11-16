@@ -1,0 +1,2898 @@
+{
+  "schema": "ORIGINAL_CLIENT_NAMED_FACTORY_V1",
+  "observations": {
+    "interpreter": {
+      "rows": [
+        {
+          "index": 0,
+          "name_utf16": [
+            95,
+            95,
+            98,
+            111,
+            117,
+            110,
+            100,
+            101,
+            100,
+            95,
+            117,
+            110,
+            107,
+            110,
+            111,
+            119,
+            110,
+            95,
+            95
+          ],
+          "world_argument": null,
+          "distinct_string": false,
+          "name_same_as_first_pig": false,
+          "name_equals_first_pig": false,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": null,
+          "entity_id_delta": null,
+          "world_before": null,
+          "world_after": null
+        },
+        {
+          "index": 1,
+          "name_utf16": null,
+          "world_argument": null,
+          "distinct_string": false,
+          "name_same_as_first_pig": false,
+          "name_equals_first_pig": false,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": null,
+          "entity_id_delta": null,
+          "world_before": null,
+          "world_after": null
+        },
+        {
+          "index": 2,
+          "name_utf16": [],
+          "world_argument": null,
+          "distinct_string": false,
+          "name_same_as_first_pig": false,
+          "name_equals_first_pig": false,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": null,
+          "entity_id_delta": null,
+          "world_before": null,
+          "world_after": null
+        },
+        {
+          "index": 3,
+          "name_utf16": [
+            112,
+            105,
+            103
+          ],
+          "world_argument": null,
+          "distinct_string": false,
+          "name_same_as_first_pig": false,
+          "name_equals_first_pig": false,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": null,
+          "entity_id_delta": null,
+          "world_before": null,
+          "world_after": null
+        },
+        {
+          "index": 4,
+          "name_utf16": [
+            77,
+            111,
+            98
+          ],
+          "world_argument": null,
+          "distinct_string": false,
+          "name_same_as_first_pig": false,
+          "name_equals_first_pig": false,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": null,
+          "entity_id_delta": null,
+          "world_before": null,
+          "world_after": null
+        },
+        {
+          "index": 5,
+          "name_utf16": [
+            80,
+            105,
+            103
+          ],
+          "world_argument": null,
+          "distinct_string": false,
+          "name_same_as_first_pig": true,
+          "name_equals_first_pig": true,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": {
+            "stable": {
+              "label": "E0",
+              "class": "wh",
+              "id": 0,
+              "removed": false,
+              "world": null,
+              "world_class": null,
+              "width": "3f666666",
+              "height": "3f666666",
+              "offset": "00000000",
+              "position": [
+                "0000000000000000",
+                "0000000000000000",
+                "0000000000000000"
+              ],
+              "health": 10,
+              "texture": "/mob/pig.png",
+              "watcher": {
+                "0": {
+                  "class": "java.lang.Byte",
+                  "value": 0
+                },
+                "16": {
+                  "class": "java.lang.Byte",
+                  "value": 0
+                }
+              }
+            },
+            "nondeterministic": {
+              "ls.aj": "3f6bf2bc",
+              "ls.G": "3c7410b5",
+              "ls.F": "4632a2e9",
+              "sn.aS": "4076b66e",
+              "sn.bs.seed": 133628222105037
+            }
+          },
+          "entity_id_delta": null,
+          "world_before": null,
+          "world_after": null
+        },
+        {
+          "index": 6,
+          "name_utf16": [
+            80,
+            105,
+            103
+          ],
+          "world_argument": null,
+          "distinct_string": true,
+          "name_same_as_first_pig": false,
+          "name_equals_first_pig": true,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": {
+            "stable": {
+              "label": "E1",
+              "class": "wh",
+              "id": 1,
+              "removed": false,
+              "world": null,
+              "world_class": null,
+              "width": "3f666666",
+              "height": "3f666666",
+              "offset": "00000000",
+              "position": [
+                "0000000000000000",
+                "0000000000000000",
+                "0000000000000000"
+              ],
+              "health": 10,
+              "texture": "/mob/pig.png",
+              "watcher": {
+                "0": {
+                  "class": "java.lang.Byte",
+                  "value": 0
+                },
+                "16": {
+                  "class": "java.lang.Byte",
+                  "value": 0
+                }
+              }
+            },
+            "nondeterministic": {
+              "ls.aj": "3f0b6259",
+              "ls.G": "3c4ac4a2",
+              "ls.F": "43644920",
+              "sn.aS": "3fc529c3",
+              "sn.bs.seed": 117191973156857
+            }
+          },
+          "entity_id_delta": 1,
+          "world_before": null,
+          "world_after": null
+        },
+        {
+          "index": 7,
+          "name_utf16": [
+            80,
+            105,
+            103
+          ],
+          "world_argument": "W0",
+          "distinct_string": false,
+          "name_same_as_first_pig": false,
+          "name_equals_first_pig": true,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": {
+            "stable": {
+              "label": "E2",
+              "class": "wh",
+              "id": 2,
+              "removed": false,
+              "world": "W0",
+              "world_class": "fd",
+              "width": "3f666666",
+              "height": "3f666666",
+              "offset": "00000000",
+              "position": [
+                "0000000000000000",
+                "0000000000000000",
+                "0000000000000000"
+              ],
+              "health": 10,
+              "texture": "/mob/pig.png",
+              "watcher": {
+                "0": {
+                  "class": "java.lang.Byte",
+                  "value": 0
+                },
+                "16": {
+                  "class": "java.lang.Byte",
+                  "value": 0
+                }
+              }
+            },
+            "nondeterministic": {
+              "ls.aj": "3f260c15",
+              "ls.G": "3c923957",
+              "ls.F": "464012f5",
+              "sn.aS": "40c8572e",
+              "sn.bs.seed": 118742530777781
+            }
+          },
+          "entity_id_delta": 1,
+          "world_before": {
+            "class": "fd",
+            "remote": false,
+            "time": 211,
+            "name": "Furnace world",
+            "provider_class": "rh",
+            "provider_fields": [
+              false,
+              false,
+              false,
+              0
+            ],
+            "chunk_provider_class": "ok",
+            "chunk": [
+              0,
+              0
+            ],
+            "chunk_loaded": true,
+            "block": 62,
+            "metadata": 2,
+            "entities": [],
+            "players": [],
+            "tiles": [
+              {
+                "class": "sk",
+                "xyz": [
+                  0,
+                  64,
+                  2
+                ]
+              }
+            ],
+            "pending_tiles": 0
+          },
+          "world_after": {
+            "class": "fd",
+            "remote": false,
+            "time": 211,
+            "name": "Furnace world",
+            "provider_class": "rh",
+            "provider_fields": [
+              false,
+              false,
+              false,
+              0
+            ],
+            "chunk_provider_class": "ok",
+            "chunk": [
+              0,
+              0
+            ],
+            "chunk_loaded": true,
+            "block": 62,
+            "metadata": 2,
+            "entities": [],
+            "players": [],
+            "tiles": [
+              {
+                "class": "sk",
+                "xyz": [
+                  0,
+                  64,
+                  2
+                ]
+              }
+            ],
+            "pending_tiles": 0
+          }
+        },
+        {
+          "index": 8,
+          "name_utf16": [
+            77,
+            111,
+            98
+          ],
+          "world_argument": "W0",
+          "distinct_string": false,
+          "name_same_as_first_pig": false,
+          "name_equals_first_pig": false,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": null,
+          "entity_id_delta": null,
+          "world_before": {
+            "class": "fd",
+            "remote": false,
+            "time": 211,
+            "name": "Furnace world",
+            "provider_class": "rh",
+            "provider_fields": [
+              false,
+              false,
+              false,
+              0
+            ],
+            "chunk_provider_class": "ok",
+            "chunk": [
+              0,
+              0
+            ],
+            "chunk_loaded": true,
+            "block": 62,
+            "metadata": 2,
+            "entities": [],
+            "players": [],
+            "tiles": [
+              {
+                "class": "sk",
+                "xyz": [
+                  0,
+                  64,
+                  2
+                ]
+              }
+            ],
+            "pending_tiles": 0
+          },
+          "world_after": {
+            "class": "fd",
+            "remote": false,
+            "time": 211,
+            "name": "Furnace world",
+            "provider_class": "rh",
+            "provider_fields": [
+              false,
+              false,
+              false,
+              0
+            ],
+            "chunk_provider_class": "ok",
+            "chunk": [
+              0,
+              0
+            ],
+            "chunk_loaded": true,
+            "block": 62,
+            "metadata": 2,
+            "entities": [],
+            "players": [],
+            "tiles": [
+              {
+                "class": "sk",
+                "xyz": [
+                  0,
+                  64,
+                  2
+                ]
+              }
+            ],
+            "pending_tiles": 0
+          }
+        },
+        {
+          "index": 9,
+          "name_utf16": [
+            95,
+            95,
+            98,
+            111,
+            117,
+            110,
+            100,
+            101,
+            100,
+            95,
+            117,
+            110,
+            107,
+            110,
+            111,
+            119,
+            110,
+            95,
+            95
+          ],
+          "world_argument": "W0",
+          "distinct_string": false,
+          "name_same_as_first_pig": false,
+          "name_equals_first_pig": false,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": null,
+          "entity_id_delta": null,
+          "world_before": {
+            "class": "fd",
+            "remote": false,
+            "time": 211,
+            "name": "Furnace world",
+            "provider_class": "rh",
+            "provider_fields": [
+              false,
+              false,
+              false,
+              0
+            ],
+            "chunk_provider_class": "ok",
+            "chunk": [
+              0,
+              0
+            ],
+            "chunk_loaded": true,
+            "block": 62,
+            "metadata": 2,
+            "entities": [],
+            "players": [],
+            "tiles": [
+              {
+                "class": "sk",
+                "xyz": [
+                  0,
+                  64,
+                  2
+                ]
+              }
+            ],
+            "pending_tiles": 0
+          },
+          "world_after": {
+            "class": "fd",
+            "remote": false,
+            "time": 211,
+            "name": "Furnace world",
+            "provider_class": "rh",
+            "provider_fields": [
+              false,
+              false,
+              false,
+              0
+            ],
+            "chunk_provider_class": "ok",
+            "chunk": [
+              0,
+              0
+            ],
+            "chunk_loaded": true,
+            "block": 62,
+            "metadata": 2,
+            "entities": [],
+            "players": [],
+            "tiles": [
+              {
+                "class": "sk",
+                "xyz": [
+                  0,
+                  64,
+                  2
+                ]
+              }
+            ],
+            "pending_tiles": 0
+          }
+        }
+      ],
+      "world": {
+        "class": "fd",
+        "remote": false,
+        "time": 211,
+        "name": "Furnace world",
+        "provider_class": "rh",
+        "provider_fields": [
+          false,
+          false,
+          false,
+          0
+        ],
+        "chunk_provider_class": "ok",
+        "chunk": [
+          0,
+          0
+        ],
+        "chunk_loaded": true,
+        "block": 62,
+        "metadata": 2,
+        "entities": [],
+        "players": [],
+        "tiles": [
+          {
+            "class": "sk",
+            "xyz": [
+              0,
+              64,
+              2
+            ]
+          }
+        ],
+        "pending_tiles": 0
+      },
+      "rebind": {
+        "operation": "sn.a(Lfd;)V",
+        "before": {
+          "stable": {
+            "label": "E0",
+            "class": "wh",
+            "id": 0,
+            "removed": false,
+            "world": null,
+            "world_class": null,
+            "width": "3f666666",
+            "height": "3f666666",
+            "offset": "00000000",
+            "position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "health": 10,
+            "texture": "/mob/pig.png",
+            "watcher": {
+              "0": {
+                "class": "java.lang.Byte",
+                "value": 0
+              },
+              "16": {
+                "class": "java.lang.Byte",
+                "value": 0
+              }
+            }
+          },
+          "nondeterministic": {
+            "ls.aj": "3f6bf2bc",
+            "ls.G": "3c7410b5",
+            "ls.F": "4632a2e9",
+            "sn.aS": "4076b66e",
+            "sn.bs.seed": 133628222105037
+          }
+        },
+        "after": {
+          "stable": {
+            "label": "E0",
+            "class": "wh",
+            "id": 0,
+            "removed": false,
+            "world": "W0",
+            "world_class": "fd",
+            "width": "3f666666",
+            "height": "3f666666",
+            "offset": "00000000",
+            "position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "health": 10,
+            "texture": "/mob/pig.png",
+            "watcher": {
+              "0": {
+                "class": "java.lang.Byte",
+                "value": 0
+              },
+              "16": {
+                "class": "java.lang.Byte",
+                "value": 0
+              }
+            }
+          },
+          "nondeterministic": {
+            "ls.aj": "3f6bf2bc",
+            "ls.G": "3c7410b5",
+            "ls.F": "4632a2e9",
+            "sn.aS": "4076b66e",
+            "sn.bs.seed": 133628222105037
+          }
+        },
+        "world_before": {
+          "class": "fd",
+          "remote": false,
+          "time": 211,
+          "name": "Furnace world",
+          "provider_class": "rh",
+          "provider_fields": [
+            false,
+            false,
+            false,
+            0
+          ],
+          "chunk_provider_class": "ok",
+          "chunk": [
+            0,
+            0
+          ],
+          "chunk_loaded": true,
+          "block": 62,
+          "metadata": 2,
+          "entities": [],
+          "players": [],
+          "tiles": [
+            {
+              "class": "sk",
+              "xyz": [
+                0,
+                64,
+                2
+              ]
+            }
+          ],
+          "pending_tiles": 0
+        },
+        "world_after": {
+          "class": "fd",
+          "remote": false,
+          "time": 211,
+          "name": "Furnace world",
+          "provider_class": "rh",
+          "provider_fields": [
+            false,
+            false,
+            false,
+            0
+          ],
+          "chunk_provider_class": "ok",
+          "chunk": [
+            0,
+            0
+          ],
+          "chunk_loaded": true,
+          "block": 62,
+          "metadata": 2,
+          "entities": [],
+          "players": [],
+          "tiles": [
+            {
+              "class": "sk",
+              "xyz": [
+                0,
+                64,
+                2
+              ]
+            }
+          ],
+          "pending_tiles": 0
+        }
+      },
+      "registry": {
+        "after_first_call": [
+          {
+            "field": "a",
+            "class": "java.util.HashMap",
+            "size": 24,
+            "entries": {
+              "Arrow": "sl",
+              "Boat": "fz",
+              "Chicken": "ww",
+              "Cow": "bx",
+              "Creeper": "gb",
+              "FallingSand": "ju",
+              "Ghast": "bp",
+              "Giant": "nt",
+              "Item": "hl",
+              "Minecart": "yl",
+              "Mob": "ls",
+              "Monster": "gz",
+              "Painting": "qv",
+              "Pig": "wh",
+              "PigZombie": "ya",
+              "PrimedTnt": "qw",
+              "Sheep": "dl",
+              "Skeleton": "fr",
+              "Slime": "uw",
+              "Snowball": "by",
+              "Spider": "cn",
+              "Squid": "xt",
+              "Wolf": "gi",
+              "Zombie": "uz"
+            }
+          },
+          {
+            "field": "b",
+            "class": "java.util.HashMap",
+            "size": 24,
+            "entries": {
+              "bp": "Ghast",
+              "bx": "Cow",
+              "by": "Snowball",
+              "cn": "Spider",
+              "dl": "Sheep",
+              "fr": "Skeleton",
+              "fz": "Boat",
+              "gb": "Creeper",
+              "gi": "Wolf",
+              "gz": "Monster",
+              "hl": "Item",
+              "ju": "FallingSand",
+              "ls": "Mob",
+              "nt": "Giant",
+              "qv": "Painting",
+              "qw": "PrimedTnt",
+              "sl": "Arrow",
+              "uw": "Slime",
+              "uz": "Zombie",
+              "wh": "Pig",
+              "ww": "Chicken",
+              "xt": "Squid",
+              "ya": "PigZombie",
+              "yl": "Minecart"
+            }
+          },
+          {
+            "field": "c",
+            "class": "java.util.HashMap",
+            "size": 24,
+            "entries": {
+              "1": "hl",
+              "10": "sl",
+              "11": "by",
+              "20": "qw",
+              "21": "ju",
+              "40": "yl",
+              "41": "fz",
+              "48": "ls",
+              "49": "gz",
+              "50": "gb",
+              "51": "fr",
+              "52": "cn",
+              "53": "nt",
+              "54": "uz",
+              "55": "uw",
+              "56": "bp",
+              "57": "ya",
+              "9": "qv",
+              "90": "wh",
+              "91": "dl",
+              "92": "bx",
+              "93": "ww",
+              "94": "xt",
+              "95": "gi"
+            }
+          },
+          {
+            "field": "d",
+            "class": "java.util.HashMap",
+            "size": 24,
+            "entries": {
+              "bp": 56,
+              "bx": 92,
+              "by": 11,
+              "cn": 52,
+              "dl": 91,
+              "fr": 51,
+              "fz": 41,
+              "gb": 50,
+              "gi": 95,
+              "gz": 49,
+              "hl": 1,
+              "ju": 21,
+              "ls": 48,
+              "nt": 53,
+              "qv": 9,
+              "qw": 20,
+              "sl": 10,
+              "uw": 55,
+              "uz": 54,
+              "wh": 90,
+              "ww": 93,
+              "xt": 94,
+              "ya": 57,
+              "yl": 40
+            }
+          }
+        ],
+        "after_all_calls": [
+          {
+            "field": "a",
+            "class": "java.util.HashMap",
+            "size": 24,
+            "entries": {
+              "Arrow": "sl",
+              "Boat": "fz",
+              "Chicken": "ww",
+              "Cow": "bx",
+              "Creeper": "gb",
+              "FallingSand": "ju",
+              "Ghast": "bp",
+              "Giant": "nt",
+              "Item": "hl",
+              "Minecart": "yl",
+              "Mob": "ls",
+              "Monster": "gz",
+              "Painting": "qv",
+              "Pig": "wh",
+              "PigZombie": "ya",
+              "PrimedTnt": "qw",
+              "Sheep": "dl",
+              "Skeleton": "fr",
+              "Slime": "uw",
+              "Snowball": "by",
+              "Spider": "cn",
+              "Squid": "xt",
+              "Wolf": "gi",
+              "Zombie": "uz"
+            }
+          },
+          {
+            "field": "b",
+            "class": "java.util.HashMap",
+            "size": 24,
+            "entries": {
+              "bp": "Ghast",
+              "bx": "Cow",
+              "by": "Snowball",
+              "cn": "Spider",
+              "dl": "Sheep",
+              "fr": "Skeleton",
+              "fz": "Boat",
+              "gb": "Creeper",
+              "gi": "Wolf",
+              "gz": "Monster",
+              "hl": "Item",
+              "ju": "FallingSand",
+              "ls": "Mob",
+              "nt": "Giant",
+              "qv": "Painting",
+              "qw": "PrimedTnt",
+              "sl": "Arrow",
+              "uw": "Slime",
+              "uz": "Zombie",
+              "wh": "Pig",
+              "ww": "Chicken",
+              "xt": "Squid",
+              "ya": "PigZombie",
+              "yl": "Minecart"
+            }
+          },
+          {
+            "field": "c",
+            "class": "java.util.HashMap",
+            "size": 24,
+            "entries": {
+              "1": "hl",
+              "10": "sl",
+              "11": "by",
+              "20": "qw",
+              "21": "ju",
+              "40": "yl",
+              "41": "fz",
+              "48": "ls",
+              "49": "gz",
+              "50": "gb",
+              "51": "fr",
+              "52": "cn",
+              "53": "nt",
+              "54": "uz",
+              "55": "uw",
+              "56": "bp",
+              "57": "ya",
+              "9": "qv",
+              "90": "wh",
+              "91": "dl",
+              "92": "bx",
+              "93": "ww",
+              "94": "xt",
+              "95": "gi"
+            }
+          },
+          {
+            "field": "d",
+            "class": "java.util.HashMap",
+            "size": 24,
+            "entries": {
+              "bp": 56,
+              "bx": 92,
+              "by": 11,
+              "cn": 52,
+              "dl": 91,
+              "fr": 51,
+              "fz": 41,
+              "gb": 50,
+              "gi": 95,
+              "gz": 49,
+              "hl": 1,
+              "ju": 21,
+              "ls": 48,
+              "nt": 53,
+              "qv": 9,
+              "qw": 20,
+              "sl": 10,
+              "uw": 55,
+              "uz": 54,
+              "wh": 90,
+              "ww": 93,
+              "xt": 94,
+              "ya": 57,
+              "yl": 40
+            }
+          }
+        ]
+      },
+      "completion": {
+        "rows": 10,
+        "rebinds": 1,
+        "retained_entities": 3,
+        "network": 0,
+        "native": 0,
+        "execs": 0,
+        "denied_writes": 0,
+        "write_checks": [
+          {
+            "operation": "write",
+            "role": "owned-session-lock"
+          },
+          {
+            "operation": "write",
+            "role": "existing-copied-region-rw-open"
+          }
+        ]
+      }
+    },
+    "default": {
+      "rows": [
+        {
+          "index": 0,
+          "name_utf16": [
+            95,
+            95,
+            98,
+            111,
+            117,
+            110,
+            100,
+            101,
+            100,
+            95,
+            117,
+            110,
+            107,
+            110,
+            111,
+            119,
+            110,
+            95,
+            95
+          ],
+          "world_argument": null,
+          "distinct_string": false,
+          "name_same_as_first_pig": false,
+          "name_equals_first_pig": false,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": null,
+          "entity_id_delta": null,
+          "world_before": null,
+          "world_after": null
+        },
+        {
+          "index": 1,
+          "name_utf16": null,
+          "world_argument": null,
+          "distinct_string": false,
+          "name_same_as_first_pig": false,
+          "name_equals_first_pig": false,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": null,
+          "entity_id_delta": null,
+          "world_before": null,
+          "world_after": null
+        },
+        {
+          "index": 2,
+          "name_utf16": [],
+          "world_argument": null,
+          "distinct_string": false,
+          "name_same_as_first_pig": false,
+          "name_equals_first_pig": false,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": null,
+          "entity_id_delta": null,
+          "world_before": null,
+          "world_after": null
+        },
+        {
+          "index": 3,
+          "name_utf16": [
+            112,
+            105,
+            103
+          ],
+          "world_argument": null,
+          "distinct_string": false,
+          "name_same_as_first_pig": false,
+          "name_equals_first_pig": false,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": null,
+          "entity_id_delta": null,
+          "world_before": null,
+          "world_after": null
+        },
+        {
+          "index": 4,
+          "name_utf16": [
+            77,
+            111,
+            98
+          ],
+          "world_argument": null,
+          "distinct_string": false,
+          "name_same_as_first_pig": false,
+          "name_equals_first_pig": false,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": null,
+          "entity_id_delta": null,
+          "world_before": null,
+          "world_after": null
+        },
+        {
+          "index": 5,
+          "name_utf16": [
+            80,
+            105,
+            103
+          ],
+          "world_argument": null,
+          "distinct_string": false,
+          "name_same_as_first_pig": true,
+          "name_equals_first_pig": true,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": {
+            "stable": {
+              "label": "E0",
+              "class": "wh",
+              "id": 0,
+              "removed": false,
+              "world": null,
+              "world_class": null,
+              "width": "3f666666",
+              "height": "3f666666",
+              "offset": "00000000",
+              "position": [
+                "0000000000000000",
+                "0000000000000000",
+                "0000000000000000"
+              ],
+              "health": 10,
+              "texture": "/mob/pig.png",
+              "watcher": {
+                "0": {
+                  "class": "java.lang.Byte",
+                  "value": 0
+                },
+                "16": {
+                  "class": "java.lang.Byte",
+                  "value": 0
+                }
+              }
+            },
+            "nondeterministic": {
+              "ls.aj": "3efb3348",
+              "ls.G": "3c62135d",
+              "ls.F": "45cd78a4",
+              "sn.aS": "3ebb3c0a",
+              "sn.bs.seed": 133627458971197
+            }
+          },
+          "entity_id_delta": null,
+          "world_before": null,
+          "world_after": null
+        },
+        {
+          "index": 6,
+          "name_utf16": [
+            80,
+            105,
+            103
+          ],
+          "world_argument": null,
+          "distinct_string": true,
+          "name_same_as_first_pig": false,
+          "name_equals_first_pig": true,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": {
+            "stable": {
+              "label": "E1",
+              "class": "wh",
+              "id": 1,
+              "removed": false,
+              "world": null,
+              "world_class": null,
+              "width": "3f666666",
+              "height": "3f666666",
+              "offset": "00000000",
+              "position": [
+                "0000000000000000",
+                "0000000000000000",
+                "0000000000000000"
+              ],
+              "health": 10,
+              "texture": "/mob/pig.png",
+              "watcher": {
+                "0": {
+                  "class": "java.lang.Byte",
+                  "value": 0
+                },
+                "16": {
+                  "class": "java.lang.Byte",
+                  "value": 0
+                }
+              }
+            },
+            "nondeterministic": {
+              "ls.aj": "3f358936",
+              "ls.G": "3ca273c5",
+              "ls.F": "46303214",
+              "sn.aS": "3f0c1a63",
+              "sn.bs.seed": 117191425510377
+            }
+          },
+          "entity_id_delta": 1,
+          "world_before": null,
+          "world_after": null
+        },
+        {
+          "index": 7,
+          "name_utf16": [
+            80,
+            105,
+            103
+          ],
+          "world_argument": "W0",
+          "distinct_string": false,
+          "name_same_as_first_pig": false,
+          "name_equals_first_pig": true,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": {
+            "stable": {
+              "label": "E2",
+              "class": "wh",
+              "id": 2,
+              "removed": false,
+              "world": "W0",
+              "world_class": "fd",
+              "width": "3f666666",
+              "height": "3f666666",
+              "offset": "00000000",
+              "position": [
+                "0000000000000000",
+                "0000000000000000",
+                "0000000000000000"
+              ],
+              "health": 10,
+              "texture": "/mob/pig.png",
+              "watcher": {
+                "0": {
+                  "class": "java.lang.Byte",
+                  "value": 0
+                },
+                "16": {
+                  "class": "java.lang.Byte",
+                  "value": 0
+                }
+              }
+            },
+            "nondeterministic": {
+              "ls.aj": "3f1d901d",
+              "ls.G": "3c9ccfd0",
+              "ls.F": "46127dbd",
+              "sn.aS": "401ce3b9",
+              "sn.bs.seed": 118741919639721
+            }
+          },
+          "entity_id_delta": 1,
+          "world_before": {
+            "class": "fd",
+            "remote": false,
+            "time": 211,
+            "name": "Furnace world",
+            "provider_class": "rh",
+            "provider_fields": [
+              false,
+              false,
+              false,
+              0
+            ],
+            "chunk_provider_class": "ok",
+            "chunk": [
+              0,
+              0
+            ],
+            "chunk_loaded": true,
+            "block": 62,
+            "metadata": 2,
+            "entities": [],
+            "players": [],
+            "tiles": [
+              {
+                "class": "sk",
+                "xyz": [
+                  0,
+                  64,
+                  2
+                ]
+              }
+            ],
+            "pending_tiles": 0
+          },
+          "world_after": {
+            "class": "fd",
+            "remote": false,
+            "time": 211,
+            "name": "Furnace world",
+            "provider_class": "rh",
+            "provider_fields": [
+              false,
+              false,
+              false,
+              0
+            ],
+            "chunk_provider_class": "ok",
+            "chunk": [
+              0,
+              0
+            ],
+            "chunk_loaded": true,
+            "block": 62,
+            "metadata": 2,
+            "entities": [],
+            "players": [],
+            "tiles": [
+              {
+                "class": "sk",
+                "xyz": [
+                  0,
+                  64,
+                  2
+                ]
+              }
+            ],
+            "pending_tiles": 0
+          }
+        },
+        {
+          "index": 8,
+          "name_utf16": [
+            77,
+            111,
+            98
+          ],
+          "world_argument": "W0",
+          "distinct_string": false,
+          "name_same_as_first_pig": false,
+          "name_equals_first_pig": false,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": null,
+          "entity_id_delta": null,
+          "world_before": {
+            "class": "fd",
+            "remote": false,
+            "time": 211,
+            "name": "Furnace world",
+            "provider_class": "rh",
+            "provider_fields": [
+              false,
+              false,
+              false,
+              0
+            ],
+            "chunk_provider_class": "ok",
+            "chunk": [
+              0,
+              0
+            ],
+            "chunk_loaded": true,
+            "block": 62,
+            "metadata": 2,
+            "entities": [],
+            "players": [],
+            "tiles": [
+              {
+                "class": "sk",
+                "xyz": [
+                  0,
+                  64,
+                  2
+                ]
+              }
+            ],
+            "pending_tiles": 0
+          },
+          "world_after": {
+            "class": "fd",
+            "remote": false,
+            "time": 211,
+            "name": "Furnace world",
+            "provider_class": "rh",
+            "provider_fields": [
+              false,
+              false,
+              false,
+              0
+            ],
+            "chunk_provider_class": "ok",
+            "chunk": [
+              0,
+              0
+            ],
+            "chunk_loaded": true,
+            "block": 62,
+            "metadata": 2,
+            "entities": [],
+            "players": [],
+            "tiles": [
+              {
+                "class": "sk",
+                "xyz": [
+                  0,
+                  64,
+                  2
+                ]
+              }
+            ],
+            "pending_tiles": 0
+          }
+        },
+        {
+          "index": 9,
+          "name_utf16": [
+            95,
+            95,
+            98,
+            111,
+            117,
+            110,
+            100,
+            101,
+            100,
+            95,
+            117,
+            110,
+            107,
+            110,
+            111,
+            119,
+            110,
+            95,
+            95
+          ],
+          "world_argument": "W0",
+          "distinct_string": false,
+          "name_same_as_first_pig": false,
+          "name_equals_first_pig": false,
+          "returned": true,
+          "escaped_class": null,
+          "escaped_message": null,
+          "result": null,
+          "entity_id_delta": null,
+          "world_before": {
+            "class": "fd",
+            "remote": false,
+            "time": 211,
+            "name": "Furnace world",
+            "provider_class": "rh",
+            "provider_fields": [
+              false,
+              false,
+              false,
+              0
+            ],
+            "chunk_provider_class": "ok",
+            "chunk": [
+              0,
+              0
+            ],
+            "chunk_loaded": true,
+            "block": 62,
+            "metadata": 2,
+            "entities": [],
+            "players": [],
+            "tiles": [
+              {
+                "class": "sk",
+                "xyz": [
+                  0,
+                  64,
+                  2
+                ]
+              }
+            ],
+            "pending_tiles": 0
+          },
+          "world_after": {
+            "class": "fd",
+            "remote": false,
+            "time": 211,
+            "name": "Furnace world",
+            "provider_class": "rh",
+            "provider_fields": [
+              false,
+              false,
+              false,
+              0
+            ],
+            "chunk_provider_class": "ok",
+            "chunk": [
+              0,
+              0
+            ],
+            "chunk_loaded": true,
+            "block": 62,
+            "metadata": 2,
+            "entities": [],
+            "players": [],
+            "tiles": [
+              {
+                "class": "sk",
+                "xyz": [
+                  0,
+                  64,
+                  2
+                ]
+              }
+            ],
+            "pending_tiles": 0
+          }
+        }
+      ],
+      "world": {
+        "class": "fd",
+        "remote": false,
+        "time": 211,
+        "name": "Furnace world",
+        "provider_class": "rh",
+        "provider_fields": [
+          false,
+          false,
+          false,
+          0
+        ],
+        "chunk_provider_class": "ok",
+        "chunk": [
+          0,
+          0
+        ],
+        "chunk_loaded": true,
+        "block": 62,
+        "metadata": 2,
+        "entities": [],
+        "players": [],
+        "tiles": [
+          {
+            "class": "sk",
+            "xyz": [
+              0,
+              64,
+              2
+            ]
+          }
+        ],
+        "pending_tiles": 0
+      },
+      "rebind": {
+        "operation": "sn.a(Lfd;)V",
+        "before": {
+          "stable": {
+            "label": "E0",
+            "class": "wh",
+            "id": 0,
+            "removed": false,
+            "world": null,
+            "world_class": null,
+            "width": "3f666666",
+            "height": "3f666666",
+            "offset": "00000000",
+            "position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "health": 10,
+            "texture": "/mob/pig.png",
+            "watcher": {
+              "0": {
+                "class": "java.lang.Byte",
+                "value": 0
+              },
+              "16": {
+                "class": "java.lang.Byte",
+                "value": 0
+              }
+            }
+          },
+          "nondeterministic": {
+            "ls.aj": "3efb3348",
+            "ls.G": "3c62135d",
+            "ls.F": "45cd78a4",
+            "sn.aS": "3ebb3c0a",
+            "sn.bs.seed": 133627458971197
+          }
+        },
+        "after": {
+          "stable": {
+            "label": "E0",
+            "class": "wh",
+            "id": 0,
+            "removed": false,
+            "world": "W0",
+            "world_class": "fd",
+            "width": "3f666666",
+            "height": "3f666666",
+            "offset": "00000000",
+            "position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "health": 10,
+            "texture": "/mob/pig.png",
+            "watcher": {
+              "0": {
+                "class": "java.lang.Byte",
+                "value": 0
+              },
+              "16": {
+                "class": "java.lang.Byte",
+                "value": 0
+              }
+            }
+          },
+          "nondeterministic": {
+            "ls.aj": "3efb3348",
+            "ls.G": "3c62135d",
+            "ls.F": "45cd78a4",
+            "sn.aS": "3ebb3c0a",
+            "sn.bs.seed": 133627458971197
+          }
+        },
+        "world_before": {
+          "class": "fd",
+          "remote": false,
+          "time": 211,
+          "name": "Furnace world",
+          "provider_class": "rh",
+          "provider_fields": [
+            false,
+            false,
+            false,
+            0
+          ],
+          "chunk_provider_class": "ok",
+          "chunk": [
+            0,
+            0
+          ],
+          "chunk_loaded": true,
+          "block": 62,
+          "metadata": 2,
+          "entities": [],
+          "players": [],
+          "tiles": [
+            {
+              "class": "sk",
+              "xyz": [
+                0,
+                64,
+                2
+              ]
+            }
+          ],
+          "pending_tiles": 0
+        },
+        "world_after": {
+          "class": "fd",
+          "remote": false,
+          "time": 211,
+          "name": "Furnace world",
+          "provider_class": "rh",
+          "provider_fields": [
+            false,
+            false,
+            false,
+            0
+          ],
+          "chunk_provider_class": "ok",
+          "chunk": [
+            0,
+            0
+          ],
+          "chunk_loaded": true,
+          "block": 62,
+          "metadata": 2,
+          "entities": [],
+          "players": [],
+          "tiles": [
+            {
+              "class": "sk",
+              "xyz": [
+                0,
+                64,
+                2
+              ]
+            }
+          ],
+          "pending_tiles": 0
+        }
+      },
+      "registry": {
+        "after_first_call": [
+          {
+            "field": "a",
+            "class": "java.util.HashMap",
+            "size": 24,
+            "entries": {
+              "Arrow": "sl",
+              "Boat": "fz",
+              "Chicken": "ww",
+              "Cow": "bx",
+              "Creeper": "gb",
+              "FallingSand": "ju",
+              "Ghast": "bp",
+              "Giant": "nt",
+              "Item": "hl",
+              "Minecart": "yl",
+              "Mob": "ls",
+              "Monster": "gz",
+              "Painting": "qv",
+              "Pig": "wh",
+              "PigZombie": "ya",
+              "PrimedTnt": "qw",
+              "Sheep": "dl",
+              "Skeleton": "fr",
+              "Slime": "uw",
+              "Snowball": "by",
+              "Spider": "cn",
+              "Squid": "xt",
+              "Wolf": "gi",
+              "Zombie": "uz"
+            }
+          },
+          {
+            "field": "b",
+            "class": "java.util.HashMap",
+            "size": 24,
+            "entries": {
+              "bp": "Ghast",
+              "bx": "Cow",
+              "by": "Snowball",
+              "cn": "Spider",
+              "dl": "Sheep",
+              "fr": "Skeleton",
+              "fz": "Boat",
+              "gb": "Creeper",
+              "gi": "Wolf",
+              "gz": "Monster",
+              "hl": "Item",
+              "ju": "FallingSand",
+              "ls": "Mob",
+              "nt": "Giant",
+              "qv": "Painting",
+              "qw": "PrimedTnt",
+              "sl": "Arrow",
+              "uw": "Slime",
+              "uz": "Zombie",
+              "wh": "Pig",
+              "ww": "Chicken",
+              "xt": "Squid",
+              "ya": "PigZombie",
+              "yl": "Minecart"
+            }
+          },
+          {
+            "field": "c",
+            "class": "java.util.HashMap",
+            "size": 24,
+            "entries": {
+              "1": "hl",
+              "10": "sl",
+              "11": "by",
+              "20": "qw",
+              "21": "ju",
+              "40": "yl",
+              "41": "fz",
+              "48": "ls",
+              "49": "gz",
+              "50": "gb",
+              "51": "fr",
+              "52": "cn",
+              "53": "nt",
+              "54": "uz",
+              "55": "uw",
+              "56": "bp",
+              "57": "ya",
+              "9": "qv",
+              "90": "wh",
+              "91": "dl",
+              "92": "bx",
+              "93": "ww",
+              "94": "xt",
+              "95": "gi"
+            }
+          },
+          {
+            "field": "d",
+            "class": "java.util.HashMap",
+            "size": 24,
+            "entries": {
+              "bp": 56,
+              "bx": 92,
+              "by": 11,
+              "cn": 52,
+              "dl": 91,
+              "fr": 51,
+              "fz": 41,
+              "gb": 50,
+              "gi": 95,
+              "gz": 49,
+              "hl": 1,
+              "ju": 21,
+              "ls": 48,
+              "nt": 53,
+              "qv": 9,
+              "qw": 20,
+              "sl": 10,
+              "uw": 55,
+              "uz": 54,
+              "wh": 90,
+              "ww": 93,
+              "xt": 94,
+              "ya": 57,
+              "yl": 40
+            }
+          }
+        ],
+        "after_all_calls": [
+          {
+            "field": "a",
+            "class": "java.util.HashMap",
+            "size": 24,
+            "entries": {
+              "Arrow": "sl",
+              "Boat": "fz",
+              "Chicken": "ww",
+              "Cow": "bx",
+              "Creeper": "gb",
+              "FallingSand": "ju",
+              "Ghast": "bp",
+              "Giant": "nt",
+              "Item": "hl",
+              "Minecart": "yl",
+              "Mob": "ls",
+              "Monster": "gz",
+              "Painting": "qv",
+              "Pig": "wh",
+              "PigZombie": "ya",
+              "PrimedTnt": "qw",
+              "Sheep": "dl",
+              "Skeleton": "fr",
+              "Slime": "uw",
+              "Snowball": "by",
+              "Spider": "cn",
+              "Squid": "xt",
+              "Wolf": "gi",
+              "Zombie": "uz"
+            }
+          },
+          {
+            "field": "b",
+            "class": "java.util.HashMap",
+            "size": 24,
+            "entries": {
+              "bp": "Ghast",
+              "bx": "Cow",
+              "by": "Snowball",
+              "cn": "Spider",
+              "dl": "Sheep",
+              "fr": "Skeleton",
+              "fz": "Boat",
+              "gb": "Creeper",
+              "gi": "Wolf",
+              "gz": "Monster",
+              "hl": "Item",
+              "ju": "FallingSand",
+              "ls": "Mob",
+              "nt": "Giant",
+              "qv": "Painting",
+              "qw": "PrimedTnt",
+              "sl": "Arrow",
+              "uw": "Slime",
+              "uz": "Zombie",
+              "wh": "Pig",
+              "ww": "Chicken",
+              "xt": "Squid",
+              "ya": "PigZombie",
+              "yl": "Minecart"
+            }
+          },
+          {
+            "field": "c",
+            "class": "java.util.HashMap",
+            "size": 24,
+            "entries": {
+              "1": "hl",
+              "10": "sl",
+              "11": "by",
+              "20": "qw",
+              "21": "ju",
+              "40": "yl",
+              "41": "fz",
+              "48": "ls",
+              "49": "gz",
+              "50": "gb",
+              "51": "fr",
+              "52": "cn",
+              "53": "nt",
+              "54": "uz",
+              "55": "uw",
+              "56": "bp",
+              "57": "ya",
+              "9": "qv",
+              "90": "wh",
+              "91": "dl",
+              "92": "bx",
+              "93": "ww",
+              "94": "xt",
+              "95": "gi"
+            }
+          },
+          {
+            "field": "d",
+            "class": "java.util.HashMap",
+            "size": 24,
+            "entries": {
+              "bp": 56,
+              "bx": 92,
+              "by": 11,
+              "cn": 52,
+              "dl": 91,
+              "fr": 51,
+              "fz": 41,
+              "gb": 50,
+              "gi": 95,
+              "gz": 49,
+              "hl": 1,
+              "ju": 21,
+              "ls": 48,
+              "nt": 53,
+              "qv": 9,
+              "qw": 20,
+              "sl": 10,
+              "uw": 55,
+              "uz": 54,
+              "wh": 90,
+              "ww": 93,
+              "xt": 94,
+              "ya": 57,
+              "yl": 40
+            }
+          }
+        ]
+      },
+      "completion": {
+        "rows": 10,
+        "rebinds": 1,
+        "retained_entities": 3,
+        "network": 0,
+        "native": 0,
+        "execs": 0,
+        "denied_writes": 0,
+        "write_checks": [
+          {
+            "operation": "write",
+            "role": "owned-session-lock"
+          },
+          {
+            "operation": "write",
+            "role": "existing-copied-region-rw-open"
+          }
+        ]
+      }
+    }
+  },
+  "stable_projection": {
+    "rows": [
+      {
+        "index": 0,
+        "name_utf16": [
+          95,
+          95,
+          98,
+          111,
+          117,
+          110,
+          100,
+          101,
+          100,
+          95,
+          117,
+          110,
+          107,
+          110,
+          111,
+          119,
+          110,
+          95,
+          95
+        ],
+        "world_argument": null,
+        "distinct_string": false,
+        "name_same_as_first_pig": false,
+        "name_equals_first_pig": false,
+        "returned": true,
+        "escaped_class": null,
+        "escaped_message": null,
+        "result": null,
+        "entity_id_delta": null,
+        "world_before": null,
+        "world_after": null
+      },
+      {
+        "index": 1,
+        "name_utf16": null,
+        "world_argument": null,
+        "distinct_string": false,
+        "name_same_as_first_pig": false,
+        "name_equals_first_pig": false,
+        "returned": true,
+        "escaped_class": null,
+        "escaped_message": null,
+        "result": null,
+        "entity_id_delta": null,
+        "world_before": null,
+        "world_after": null
+      },
+      {
+        "index": 2,
+        "name_utf16": [],
+        "world_argument": null,
+        "distinct_string": false,
+        "name_same_as_first_pig": false,
+        "name_equals_first_pig": false,
+        "returned": true,
+        "escaped_class": null,
+        "escaped_message": null,
+        "result": null,
+        "entity_id_delta": null,
+        "world_before": null,
+        "world_after": null
+      },
+      {
+        "index": 3,
+        "name_utf16": [
+          112,
+          105,
+          103
+        ],
+        "world_argument": null,
+        "distinct_string": false,
+        "name_same_as_first_pig": false,
+        "name_equals_first_pig": false,
+        "returned": true,
+        "escaped_class": null,
+        "escaped_message": null,
+        "result": null,
+        "entity_id_delta": null,
+        "world_before": null,
+        "world_after": null
+      },
+      {
+        "index": 4,
+        "name_utf16": [
+          77,
+          111,
+          98
+        ],
+        "world_argument": null,
+        "distinct_string": false,
+        "name_same_as_first_pig": false,
+        "name_equals_first_pig": false,
+        "returned": true,
+        "escaped_class": null,
+        "escaped_message": null,
+        "result": null,
+        "entity_id_delta": null,
+        "world_before": null,
+        "world_after": null
+      },
+      {
+        "index": 5,
+        "name_utf16": [
+          80,
+          105,
+          103
+        ],
+        "world_argument": null,
+        "distinct_string": false,
+        "name_same_as_first_pig": true,
+        "name_equals_first_pig": true,
+        "returned": true,
+        "escaped_class": null,
+        "escaped_message": null,
+        "result": {
+          "stable": {
+            "label": "E0",
+            "class": "wh",
+            "id": 0,
+            "removed": false,
+            "world": null,
+            "world_class": null,
+            "width": "3f666666",
+            "height": "3f666666",
+            "offset": "00000000",
+            "position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "health": 10,
+            "texture": "/mob/pig.png",
+            "watcher": {
+              "0": {
+                "class": "java.lang.Byte",
+                "value": 0
+              },
+              "16": {
+                "class": "java.lang.Byte",
+                "value": 0
+              }
+            }
+          }
+        },
+        "entity_id_delta": null,
+        "world_before": null,
+        "world_after": null
+      },
+      {
+        "index": 6,
+        "name_utf16": [
+          80,
+          105,
+          103
+        ],
+        "world_argument": null,
+        "distinct_string": true,
+        "name_same_as_first_pig": false,
+        "name_equals_first_pig": true,
+        "returned": true,
+        "escaped_class": null,
+        "escaped_message": null,
+        "result": {
+          "stable": {
+            "label": "E1",
+            "class": "wh",
+            "id": 1,
+            "removed": false,
+            "world": null,
+            "world_class": null,
+            "width": "3f666666",
+            "height": "3f666666",
+            "offset": "00000000",
+            "position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "health": 10,
+            "texture": "/mob/pig.png",
+            "watcher": {
+              "0": {
+                "class": "java.lang.Byte",
+                "value": 0
+              },
+              "16": {
+                "class": "java.lang.Byte",
+                "value": 0
+              }
+            }
+          }
+        },
+        "entity_id_delta": 1,
+        "world_before": null,
+        "world_after": null
+      },
+      {
+        "index": 7,
+        "name_utf16": [
+          80,
+          105,
+          103
+        ],
+        "world_argument": "W0",
+        "distinct_string": false,
+        "name_same_as_first_pig": false,
+        "name_equals_first_pig": true,
+        "returned": true,
+        "escaped_class": null,
+        "escaped_message": null,
+        "result": {
+          "stable": {
+            "label": "E2",
+            "class": "wh",
+            "id": 2,
+            "removed": false,
+            "world": "W0",
+            "world_class": "fd",
+            "width": "3f666666",
+            "height": "3f666666",
+            "offset": "00000000",
+            "position": [
+              "0000000000000000",
+              "0000000000000000",
+              "0000000000000000"
+            ],
+            "health": 10,
+            "texture": "/mob/pig.png",
+            "watcher": {
+              "0": {
+                "class": "java.lang.Byte",
+                "value": 0
+              },
+              "16": {
+                "class": "java.lang.Byte",
+                "value": 0
+              }
+            }
+          }
+        },
+        "entity_id_delta": 1,
+        "world_before": {
+          "class": "fd",
+          "remote": false,
+          "time": 211,
+          "name": "Furnace world",
+          "provider_class": "rh",
+          "provider_fields": [
+            false,
+            false,
+            false,
+            0
+          ],
+          "chunk_provider_class": "ok",
+          "chunk": [
+            0,
+            0
+          ],
+          "chunk_loaded": true,
+          "block": 62,
+          "metadata": 2,
+          "entities": [],
+          "players": [],
+          "tiles": [
+            {
+              "class": "sk",
+              "xyz": [
+                0,
+                64,
+                2
+              ]
+            }
+          ],
+          "pending_tiles": 0
+        },
+        "world_after": {
+          "class": "fd",
+          "remote": false,
+          "time": 211,
+          "name": "Furnace world",
+          "provider_class": "rh",
+          "provider_fields": [
+            false,
+            false,
+            false,
+            0
+          ],
+          "chunk_provider_class": "ok",
+          "chunk": [
+            0,
+            0
+          ],
+          "chunk_loaded": true,
+          "block": 62,
+          "metadata": 2,
+          "entities": [],
+          "players": [],
+          "tiles": [
+            {
+              "class": "sk",
+              "xyz": [
+                0,
+                64,
+                2
+              ]
+            }
+          ],
+          "pending_tiles": 0
+        }
+      },
+      {
+        "index": 8,
+        "name_utf16": [
+          77,
+          111,
+          98
+        ],
+        "world_argument": "W0",
+        "distinct_string": false,
+        "name_same_as_first_pig": false,
+        "name_equals_first_pig": false,
+        "returned": true,
+        "escaped_class": null,
+        "escaped_message": null,
+        "result": null,
+        "entity_id_delta": null,
+        "world_before": {
+          "class": "fd",
+          "remote": false,
+          "time": 211,
+          "name": "Furnace world",
+          "provider_class": "rh",
+          "provider_fields": [
+            false,
+            false,
+            false,
+            0
+          ],
+          "chunk_provider_class": "ok",
+          "chunk": [
+            0,
+            0
+          ],
+          "chunk_loaded": true,
+          "block": 62,
+          "metadata": 2,
+          "entities": [],
+          "players": [],
+          "tiles": [
+            {
+              "class": "sk",
+              "xyz": [
+                0,
+                64,
+                2
+              ]
+            }
+          ],
+          "pending_tiles": 0
+        },
+        "world_after": {
+          "class": "fd",
+          "remote": false,
+          "time": 211,
+          "name": "Furnace world",
+          "provider_class": "rh",
+          "provider_fields": [
+            false,
+            false,
+            false,
+            0
+          ],
+          "chunk_provider_class": "ok",
+          "chunk": [
+            0,
+            0
+          ],
+          "chunk_loaded": true,
+          "block": 62,
+          "metadata": 2,
+          "entities": [],
+          "players": [],
+          "tiles": [
+            {
+              "class": "sk",
+              "xyz": [
+                0,
+                64,
+                2
+              ]
+            }
+          ],
+          "pending_tiles": 0
+        }
+      },
+      {
+        "index": 9,
+        "name_utf16": [
+          95,
+          95,
+          98,
+          111,
+          117,
+          110,
+          100,
+          101,
+          100,
+          95,
+          117,
+          110,
+          107,
+          110,
+          111,
+          119,
+          110,
+          95,
+          95
+        ],
+        "world_argument": "W0",
+        "distinct_string": false,
+        "name_same_as_first_pig": false,
+        "name_equals_first_pig": false,
+        "returned": true,
+        "escaped_class": null,
+        "escaped_message": null,
+        "result": null,
+        "entity_id_delta": null,
+        "world_before": {
+          "class": "fd",
+          "remote": false,
+          "time": 211,
+          "name": "Furnace world",
+          "provider_class": "rh",
+          "provider_fields": [
+            false,
+            false,
+            false,
+            0
+          ],
+          "chunk_provider_class": "ok",
+          "chunk": [
+            0,
+            0
+          ],
+          "chunk_loaded": true,
+          "block": 62,
+          "metadata": 2,
+          "entities": [],
+          "players": [],
+          "tiles": [
+            {
+              "class": "sk",
+              "xyz": [
+                0,
+                64,
+                2
+              ]
+            }
+          ],
+          "pending_tiles": 0
+        },
+        "world_after": {
+          "class": "fd",
+          "remote": false,
+          "time": 211,
+          "name": "Furnace world",
+          "provider_class": "rh",
+          "provider_fields": [
+            false,
+            false,
+            false,
+            0
+          ],
+          "chunk_provider_class": "ok",
+          "chunk": [
+            0,
+            0
+          ],
+          "chunk_loaded": true,
+          "block": 62,
+          "metadata": 2,
+          "entities": [],
+          "players": [],
+          "tiles": [
+            {
+              "class": "sk",
+              "xyz": [
+                0,
+                64,
+                2
+              ]
+            }
+          ],
+          "pending_tiles": 0
+        }
+      }
+    ],
+    "world": {
+      "class": "fd",
+      "remote": false,
+      "time": 211,
+      "name": "Furnace world",
+      "provider_class": "rh",
+      "provider_fields": [
+        false,
+        false,
+        false,
+        0
+      ],
+      "chunk_provider_class": "ok",
+      "chunk": [
+        0,
+        0
+      ],
+      "chunk_loaded": true,
+      "block": 62,
+      "metadata": 2,
+      "entities": [],
+      "players": [],
+      "tiles": [
+        {
+          "class": "sk",
+          "xyz": [
+            0,
+            64,
+            2
+          ]
+        }
+      ],
+      "pending_tiles": 0
+    },
+    "rebind": {
+      "operation": "sn.a(Lfd;)V",
+      "before": {
+        "stable": {
+          "label": "E0",
+          "class": "wh",
+          "id": 0,
+          "removed": false,
+          "world": null,
+          "world_class": null,
+          "width": "3f666666",
+          "height": "3f666666",
+          "offset": "00000000",
+          "position": [
+            "0000000000000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "health": 10,
+          "texture": "/mob/pig.png",
+          "watcher": {
+            "0": {
+              "class": "java.lang.Byte",
+              "value": 0
+            },
+            "16": {
+              "class": "java.lang.Byte",
+              "value": 0
+            }
+          }
+        }
+      },
+      "after": {
+        "stable": {
+          "label": "E0",
+          "class": "wh",
+          "id": 0,
+          "removed": false,
+          "world": "W0",
+          "world_class": "fd",
+          "width": "3f666666",
+          "height": "3f666666",
+          "offset": "00000000",
+          "position": [
+            "0000000000000000",
+            "0000000000000000",
+            "0000000000000000"
+          ],
+          "health": 10,
+          "texture": "/mob/pig.png",
+          "watcher": {
+            "0": {
+              "class": "java.lang.Byte",
+              "value": 0
+            },
+            "16": {
+              "class": "java.lang.Byte",
+              "value": 0
+            }
+          }
+        }
+      },
+      "world_before": {
+        "class": "fd",
+        "remote": false,
+        "time": 211,
+        "name": "Furnace world",
+        "provider_class": "rh",
+        "provider_fields": [
+          false,
+          false,
+          false,
+          0
+        ],
+        "chunk_provider_class": "ok",
+        "chunk": [
+          0,
+          0
+        ],
+        "chunk_loaded": true,
+        "block": 62,
+        "metadata": 2,
+        "entities": [],
+        "players": [],
+        "tiles": [
+          {
+            "class": "sk",
+            "xyz": [
+              0,
+              64,
+              2
+            ]
+          }
+        ],
+        "pending_tiles": 0
+      },
+      "world_after": {
+        "class": "fd",
+        "remote": false,
+        "time": 211,
+        "name": "Furnace world",
+        "provider_class": "rh",
+        "provider_fields": [
+          false,
+          false,
+          false,
+          0
+        ],
+        "chunk_provider_class": "ok",
+        "chunk": [
+          0,
+          0
+        ],
+        "chunk_loaded": true,
+        "block": 62,
+        "metadata": 2,
+        "entities": [],
+        "players": [],
+        "tiles": [
+          {
+            "class": "sk",
+            "xyz": [
+              0,
+              64,
+              2
+            ]
+          }
+        ],
+        "pending_tiles": 0
+      }
+    },
+    "registry": {
+      "after_first_call": [
+        {
+          "field": "a",
+          "class": "java.util.HashMap",
+          "size": 24,
+          "entries": {
+            "Arrow": "sl",
+            "Boat": "fz",
+            "Chicken": "ww",
+            "Cow": "bx",
+            "Creeper": "gb",
+            "FallingSand": "ju",
+            "Ghast": "bp",
+            "Giant": "nt",
+            "Item": "hl",
+            "Minecart": "yl",
+            "Mob": "ls",
+            "Monster": "gz",
+            "Painting": "qv",
+            "Pig": "wh",
+            "PigZombie": "ya",
+            "PrimedTnt": "qw",
+            "Sheep": "dl",
+            "Skeleton": "fr",
+            "Slime": "uw",
+            "Snowball": "by",
+            "Spider": "cn",
+            "Squid": "xt",
+            "Wolf": "gi",
+            "Zombie": "uz"
+          }
+        },
+        {
+          "field": "b",
+          "class": "java.util.HashMap",
+          "size": 24,
+          "entries": {
+            "bp": "Ghast",
+            "bx": "Cow",
+            "by": "Snowball",
+            "cn": "Spider",
+            "dl": "Sheep",
+            "fr": "Skeleton",
+            "fz": "Boat",
+            "gb": "Creeper",
+            "gi": "Wolf",
+            "gz": "Monster",
+            "hl": "Item",
+            "ju": "FallingSand",
+            "ls": "Mob",
+            "nt": "Giant",
+            "qv": "Painting",
+            "qw": "PrimedTnt",
+            "sl": "Arrow",
+            "uw": "Slime",
+            "uz": "Zombie",
+            "wh": "Pig",
+            "ww": "Chicken",
+            "xt": "Squid",
+            "ya": "PigZombie",
+            "yl": "Minecart"
+          }
+        },
+        {
+          "field": "c",
+          "class": "java.util.HashMap",
+          "size": 24,
+          "entries": {
+            "1": "hl",
+            "10": "sl",
+            "11": "by",
+            "20": "qw",
+            "21": "ju",
+            "40": "yl",
+            "41": "fz",
+            "48": "ls",
+            "49": "gz",
+            "50": "gb",
+            "51": "fr",
+            "52": "cn",
+            "53": "nt",
+            "54": "uz",
+            "55": "uw",
+            "56": "bp",
+            "57": "ya",
+            "9": "qv",
+            "90": "wh",
+            "91": "dl",
+            "92": "bx",
+            "93": "ww",
+            "94": "xt",
+            "95": "gi"
+          }
+        },
+        {
+          "field": "d",
+          "class": "java.util.HashMap",
+          "size": 24,
+          "entries": {
+            "bp": 56,
+            "bx": 92,
+            "by": 11,
+            "cn": 52,
+            "dl": 91,
+            "fr": 51,
+            "fz": 41,
+            "gb": 50,
+            "gi": 95,
+            "gz": 49,
+            "hl": 1,
+            "ju": 21,
+            "ls": 48,
+            "nt": 53,
+            "qv": 9,
+            "qw": 20,
+            "sl": 10,
+            "uw": 55,
+            "uz": 54,
+            "wh": 90,
+            "ww": 93,
+            "xt": 94,
+            "ya": 57,
+            "yl": 40
+          }
+        }
+      ],
+      "after_all_calls": [
+        {
+          "field": "a",
+          "class": "java.util.HashMap",
+          "size": 24,
+          "entries": {
+            "Arrow": "sl",
+            "Boat": "fz",
+            "Chicken": "ww",
+            "Cow": "bx",
+            "Creeper": "gb",
+            "FallingSand": "ju",
+            "Ghast": "bp",
+            "Giant": "nt",
+            "Item": "hl",
+            "Minecart": "yl",
+            "Mob": "ls",
+            "Monster": "gz",
+            "Painting": "qv",
+            "Pig": "wh",
+            "PigZombie": "ya",
+            "PrimedTnt": "qw",
+            "Sheep": "dl",
+            "Skeleton": "fr",
+            "Slime": "uw",
+            "Snowball": "by",
+            "Spider": "cn",
+            "Squid": "xt",
+            "Wolf": "gi",
+            "Zombie": "uz"
+          }
+        },
+        {
+          "field": "b",
+          "class": "java.util.HashMap",
+          "size": 24,
+          "entries": {
+            "bp": "Ghast",
+            "bx": "Cow",
+            "by": "Snowball",
+            "cn": "Spider",
+            "dl": "Sheep",
+            "fr": "Skeleton",
+            "fz": "Boat",
+            "gb": "Creeper",
+            "gi": "Wolf",
+            "gz": "Monster",
+            "hl": "Item",
+            "ju": "FallingSand",
+            "ls": "Mob",
+            "nt": "Giant",
+            "qv": "Painting",
+            "qw": "PrimedTnt",
+            "sl": "Arrow",
+            "uw": "Slime",
+            "uz": "Zombie",
+            "wh": "Pig",
+            "ww": "Chicken",
+            "xt": "Squid",
+            "ya": "PigZombie",
+            "yl": "Minecart"
+          }
+        },
+        {
+          "field": "c",
+          "class": "java.util.HashMap",
+          "size": 24,
+          "entries": {
+            "1": "hl",
+            "10": "sl",
+            "11": "by",
+            "20": "qw",
+            "21": "ju",
+            "40": "yl",
+            "41": "fz",
+            "48": "ls",
+            "49": "gz",
+            "50": "gb",
+            "51": "fr",
+            "52": "cn",
+            "53": "nt",
+            "54": "uz",
+            "55": "uw",
+            "56": "bp",
+            "57": "ya",
+            "9": "qv",
+            "90": "wh",
+            "91": "dl",
+            "92": "bx",
+            "93": "ww",
+            "94": "xt",
+            "95": "gi"
+          }
+        },
+        {
+          "field": "d",
+          "class": "java.util.HashMap",
+          "size": 24,
+          "entries": {
+            "bp": 56,
+            "bx": 92,
+            "by": 11,
+            "cn": 52,
+            "dl": 91,
+            "fr": 51,
+            "fz": 41,
+            "gb": 50,
+            "gi": 95,
+            "gz": 49,
+            "hl": 1,
+            "ju": 21,
+            "ls": 48,
+            "nt": 53,
+            "qv": 9,
+            "qw": 20,
+            "sl": 10,
+            "uw": 55,
+            "uz": 54,
+            "wh": 90,
+            "ww": 93,
+            "xt": 94,
+            "ya": 57,
+            "yl": 40
+          }
+        }
+      ]
+    },
+    "completion": {
+      "rows": 10,
+      "rebinds": 1,
+      "retained_entities": 3,
+      "network": 0,
+      "native": 0,
+      "execs": 0,
+      "denied_writes": 0,
+      "write_checks": [
+        {
+          "operation": "write",
+          "role": "owned-session-lock"
+        },
+        {
+          "operation": "write",
+          "role": "existing-copied-region-rw-open"
+        }
+      ]
+    }
+  }
+}

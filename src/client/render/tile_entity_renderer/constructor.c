@@ -178,6 +178,17 @@ bool tile_renderer_object_retire(mc_client_tile_renderer **slot, mc_client_tile_
         return false;
     }
     mc_client_model_graph g = tile_renderer_graph(r);
+    /* Native terminal ownership only. Actual AG.b source nodes remain until
+     * their graph retires; no gameplay Map.clear or Entity World reset runs. */
+    if (r->spawner_map != NULL)
+        for (size_t i = 0; i < r->spawner_map->capacity; ++i)
+            for (tile_renderer_spawner_node *p = r->spawner_map->buckets[i]; p != NULL;
+                 p = p->next) {
+                mc_entity_release(p->value);
+                p->value = NULL;
+                mc_tile_entity_name_release(p->key);
+                p->key = NULL;
+            }
     if (mc_client_model_graph_retire(&g, &e->model) != MC_CLIENT_MODEL_OK)
         goto busy;
     if (r->models_held) {

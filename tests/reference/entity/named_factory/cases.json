@@ -1,0 +1,21 @@
+{
+  "schema": "PRIVATE_NAMED_ENTITY_FACTORY_INPUTS_V1",
+  "scope": "Direct unchanged JC named factory; same NULL World argument as AG48. AG draw and CY tick are not entered.",
+  "startup": ["Class.forName uu", "Class.forName gm"],
+  "cases": [
+    {"index": 0, "name": "__bounded_unknown__", "world": null, "distinct_string": false},
+    {"index": 1, "name": null, "world": null, "distinct_string": false},
+    {"index": 2, "name": "", "world": null, "distinct_string": false},
+    {"index": 3, "name": "pig", "world": null, "distinct_string": false},
+    {"index": 4, "name": "Mob", "world": null, "distinct_string": false},
+    {"index": 5, "name": "Pig", "world": null, "distinct_string": false},
+    {"index": 6, "name": "Pig", "world": null, "distinct_string": true},
+    {"index": 7, "name": "Pig", "world": "W0", "distinct_string": false},
+    {"index": 8, "name": "Mob", "world": "W0", "distinct_string": false},
+    {"index": 9, "name": "__bounded_unknown__", "world": "W0", "distinct_string": false}
+  ],
+  "world_preparation": "After case6, load owned copy of earlier Furnace SDK saves root through genuine FD/MX and Chunk(0,0); use serialized LevelName constructor input.",
+  "after_cases": "On the actual case5 Pig invoke original SN.a(FD), then inspect World alias and list membership.",
+  "nondeterministic_fields_excluded_only_from_cross_vm_equality": ["ls.aj", "ls.G", "ls.F", "sn.aS", "sn.bs.seed"],
+  "forbidden": ["Map mutation", "field writes", "Random writes", "tick", "save", "AG draw", "CY tick", "JDI or live-Code claim"]
+}

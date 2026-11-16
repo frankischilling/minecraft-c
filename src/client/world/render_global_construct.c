@@ -67,6 +67,7 @@ static bool construct(mc_client_render_global *o, client_application *app,
         return false;
     o->last_constructor_pc = 9; /* Same concrete empty List representation. */
     o->fields.a = list;
+    o->tile_list_origin = list;
     o->last_store_pc = 12;
     list = allocate(o, sizeof(*o->fields.m), 16);
     if (list == NULL)

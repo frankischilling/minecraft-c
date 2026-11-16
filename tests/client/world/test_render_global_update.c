@@ -1011,6 +1011,7 @@ static bool one_case(fixture *f, size_t index) {
         dk->fields.p = mc_render_global_allocate(n, 2 * sizeof(bool), prepared, f->error);
         dk->fields.B = mc_render_global_allocate(n, sizeof(*dk->fields.B), prepared, f->error);
         CHECK(dk->fields.p != NULL && dk->fields.B != NULL);
+        dk->tile_list_origin = dk->fields.B;
         const unsigned int mask = (unsigned int)(i + 1) % 4u;
         dk->fields.p[0] = (mask & 1u) != 0;
         dk->fields.p[1] = (mask & 2u) != 0;

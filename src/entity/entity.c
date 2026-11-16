@@ -874,6 +874,27 @@ mc_entity_status mc_entity_set_size(mc_entity *entity, float width, float height
     return MC_ENTITY_OK;
 }
 
+mc_entity_status mc_entity_set_world(mc_entity *entity, mc_world_runtime *world,
+                                     mc_entity_error *error) {
+    if (entity == NULL)
+        return mc_entity_error_set(error, MC_ENTITY_INVALID_ARGUMENT, "Entity World setter", 0);
+    if (entity->phase != MC_ENTITY_READY)
+        return mc_entity_error_set(error, MC_ENTITY_INVALID_PHASE, "Entity World setter", 0);
+    if (entity->local_player != NULL && entity->local_player->terminal_inventory.sealed)
+        return mc_entity_error_set(error, MC_ENTITY_BUSY, "Entity sealed World setter", 0);
+    mc_world_runtime *previous = entity->base.world;
+    if (world != previous && world != NULL && !mc_world_runtime_binding_retain(world)) {
+        mc_entity_error_set(error, MC_ENTITY_WORLD_FAILED, "Entity World setter binding", 2);
+        if (error != NULL)
+            error->world = mc_world_runtime_last_error(world)->status;
+        return MC_ENTITY_WORLD_FAILED;
+    }
+    entity->base.world = world; /* Source putfield2, including same/null values. */
+    if (world != previous && previous != NULL)
+        mc_world_runtime_binding_release(previous);
+    return mc_entity_error_set(error, MC_ENTITY_OK, NULL, 5);
+}
+
 bool mc_entity_equals(const mc_entity *left, const mc_entity *right) {
     return right != NULL && left->classes == right->classes && left->base.id == right->base.id;
 }

@@ -274,8 +274,11 @@ now constructs the real Sign, MobSpawner and Piston renderers. It shares
 canonical TileEntity Class identities and model geometry, preserves nullable
 lookup caching, and creates a fresh RenderBlocks object for each reached Piston
 World callback. Frame binding retains the actual owners and preserves ordered
-interpolation and failure prefixes. Other Entity renderer families and nonempty
-TileEntity draws remain unfinished.
+interpolation and failure prefixes. The
+[Spawner preview](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/spawner-rendering.md)
+adds actual Chunk publication, typed traversal, LL drawing and AG's cached Pig.
+Larger new-identity Sets, Sign/Piston drawing and whole-frame original equality
+remain unfinished or unqualified.
 
 The canonical Display program now supplies [source vertex lighting](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/client/lighting-raster.md).
 It uses the existing matrix/light ledger, front/back materials and ColorMaterial

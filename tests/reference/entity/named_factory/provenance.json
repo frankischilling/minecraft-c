@@ -1,0 +1,269 @@
+{
+  "scope": "Direct original client JC named factory and original SN World setter; same NULL World operand used at AG48, without entering AG.",
+  "excluded": [
+    "AG draw",
+    "CY tick",
+    "server runtime",
+    "native parity",
+    "JDI/live-Code or call-order proof",
+    "original tick or save",
+    "whole-game or pixel parity"
+  ],
+  "original_processes": 2,
+  "original_modes": [
+    "interpreter",
+    "default"
+  ],
+  "calls_per_mode": 10,
+  "rebinds_per_mode": 1,
+  "native_parity_claimed": false,
+  "public_java_is_executed_source": true,
+  "packaging_scope": "Portable runner, publication validator, controls, header and prose were authored after execution; they were not used to run the retained two VMs.",
+  "observation_projection_sha256": "aef2cedbce41aa9e6a601ba2ac21797d952924c6e4bf6a8b813ff60f8f6c2452",
+  "archive_pins_sha256": "e02d2b6898b2ca7acd27130927011666ded60dd85baff3f4d043aa761ab9611a",
+  "transport_projection_sha256": "7a0ecc47d1c36e52af449eb29079543267f4409b5cb33391b03e1602a662482e",
+  "original_class_count": 23,
+  "declared_method_count": 654,
+  "code_method_count": 651,
+  "retained_capture_json": {
+    "bytes": 262133,
+    "sha256": "f3fa2116168e4a6dcca131136c46a7cf2bd75c03bf22f7a3f0be3b6b36d17589"
+  },
+  "executed_inputs": {
+    "client-jar": {
+      "before": {
+        "bytes": 1465375,
+        "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+      },
+      "after": {
+        "bytes": 1465375,
+        "sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c"
+      }
+    },
+    "dependency-0": {
+      "before": {
+        "bytes": 994633,
+        "sha256": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a"
+      },
+      "after": {
+        "bytes": 994633,
+        "sha256": "c5fb453896fb511a7f949090795c79773f6d6c92e4d13d1f3100f4b2e331471a"
+      }
+    },
+    "dependency-1": {
+      "before": {
+        "bytes": 173360,
+        "sha256": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad"
+      },
+      "after": {
+        "bytes": 173360,
+        "sha256": "474c2ca620f4147c72db9fa582993688d3c9bca5aed9d9e937ec4fa89b3c2fad"
+      }
+    },
+    "dependency-2": {
+      "before": {
+        "bytes": 208338,
+        "sha256": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018"
+      },
+      "after": {
+        "bytes": 208338,
+        "sha256": "79b5a4f5829e1a49a415711f7fb8eb5b9ad22defa72929fda2da96ec30d3f018"
+      }
+    },
+    "dependency-3": {
+      "before": {
+        "bytes": 7508,
+        "sha256": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5"
+      },
+      "after": {
+        "bytes": 7508,
+        "sha256": "c3334ff39cf0ab3b54925619101054c90098b7c733b1e7834c7b75e4c41e84a5"
+      }
+    },
+    "jdk-java": {
+      "before": {
+        "bytes": 50344,
+        "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+      },
+      "after": {
+        "bytes": 50344,
+        "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+      }
+    },
+    "jdk-javac": {
+      "before": {
+        "bytes": 24232,
+        "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+      },
+      "after": {
+        "bytes": 24232,
+        "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+      }
+    },
+    "jdk-jvm": {
+      "before": {
+        "bytes": 12681896,
+        "sha256": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+      },
+      "after": {
+        "bytes": 12681896,
+        "sha256": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+      }
+    },
+    "jdk-modules": {
+      "before": {
+        "bytes": 128648619,
+        "sha256": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+      },
+      "after": {
+        "bytes": 128648619,
+        "sha256": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+      }
+    },
+    "executed-capture-driver": {
+      "before": {
+        "bytes": 15645,
+        "sha256": "ae39b77aded23931bcefe46cd4a8f59ce468226e8aeae541d1c5ae2e503317e7"
+      },
+      "after": {
+        "bytes": 15645,
+        "sha256": "ae39b77aded23931bcefe46cd4a8f59ce468226e8aeae541d1c5ae2e503317e7"
+      }
+    },
+    "cases": {
+      "before": {
+        "bytes": 1549,
+        "sha256": "050565e068b330dad99cfbe105635791d50d31847f9c5ce98df9f13389d07914"
+      },
+      "after": {
+        "bytes": 1549,
+        "sha256": "050565e068b330dad99cfbe105635791d50d31847f9c5ce98df9f13389d07914"
+      }
+    },
+    "observer-java": {
+      "before": {
+        "bytes": 11378,
+        "sha256": "1d136a72fbc09989b650c8d6e867e09e3185282eab7fd5e8ec8402dd97d63a29"
+      },
+      "after": {
+        "bytes": 11378,
+        "sha256": "1d136a72fbc09989b650c8d6e867e09e3185282eab7fd5e8ec8402dd97d63a29"
+      }
+    },
+    "world-loader-support": {
+      "before": {
+        "bytes": 17203,
+        "sha256": "935a30a64752d047eba4f5237a51fe87d93a7b20b9ef98cb6b549bccc2e7558f"
+      },
+      "after": {
+        "bytes": 17203,
+        "sha256": "935a30a64752d047eba4f5237a51fe87d93a7b20b9ef98cb6b549bccc2e7558f"
+      }
+    },
+    "transport-support": {
+      "before": {
+        "bytes": 5281,
+        "sha256": "174e08675a6e14859bab0cd29976d8d15a7af374f0043fd3d44566a42e0da66a"
+      },
+      "after": {
+        "bytes": 5281,
+        "sha256": "174e08675a6e14859bab0cd29976d8d15a7af374f0043fd3d44566a42e0da66a"
+      }
+    },
+    "classfile-support": {
+      "before": {
+        "bytes": 2578,
+        "sha256": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+      },
+      "after": {
+        "bytes": 2578,
+        "sha256": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+      }
+    },
+    "nbt-support": {
+      "before": {
+        "bytes": 3147,
+        "sha256": "32c9a5901e7e3a5fae06042b875c80d68c4fb1b433d4df101b015a81d9ad6eaa"
+      },
+      "after": {
+        "bytes": 3147,
+        "sha256": "32c9a5901e7e3a5fae06042b875c80d68c4fb1b433d4df101b015a81d9ad6eaa"
+      }
+    },
+    "source-manifest-context": {
+      "before": {
+        "bytes": 176930,
+        "sha256": "338b337a395ea66a1b360b1c06f62bd5ca1559ecd9e2daf118c16011e343905e"
+      },
+      "after": {
+        "bytes": 176930,
+        "sha256": "338b337a395ea66a1b360b1c06f62bd5ca1559ecd9e2daf118c16011e343905e"
+      }
+    },
+    "declared-profiles": {
+      "before": {
+        "bytes": 201,
+        "sha256": "d5c07eae297cd03a6c79cfba8087104fb3828839751dad1dfb531d0e4ae2ec46"
+      },
+      "after": {
+        "bytes": 201,
+        "sha256": "d5c07eae297cd03a6c79cfba8087104fb3828839751dad1dfb531d0e4ae2ec46"
+      }
+    },
+    "captured-declaration": {
+      "before": {
+        "bytes": 2010,
+        "sha256": "dc7c7a30f1fbce41a739ba11400b184881af189bcc558ec65254d445807bd7ff"
+      },
+      "after": {
+        "bytes": 2010,
+        "sha256": "dc7c7a30f1fbce41a739ba11400b184881af189bcc558ec65254d445807bd7ff"
+      }
+    },
+    "decoded-source": {
+      "before": {
+        "bytes": 5805,
+        "sha256": "1b36b77f334ce78c51e63086a9ba0999a6c9aced44981c725cf14ef7f6a8824c"
+      },
+      "after": {
+        "bytes": 5805,
+        "sha256": "1b36b77f334ce78c51e63086a9ba0999a6c9aced44981c725cf14ef7f6a8824c"
+      }
+    }
+  },
+  "compiled_products": {
+    "NamedFactoryObservation$1.class": {
+      "before": {
+        "bytes": 2051,
+        "sha256": "799e791ba095c2be6db091b216a1dc98c945c065d37a03ca320807e8a2629127"
+      },
+      "after": {
+        "bytes": 2051,
+        "sha256": "799e791ba095c2be6db091b216a1dc98c945c065d37a03ca320807e8a2629127"
+      }
+    },
+    "NamedFactoryObservation.class": {
+      "before": {
+        "bytes": 17204,
+        "sha256": "23b77325d8b9791e0dda746684ff0f88ccbf825f938ae818ed548f516b3a8560"
+      },
+      "after": {
+        "bytes": 17204,
+        "sha256": "23b77325d8b9791e0dda746684ff0f88ccbf825f938ae818ed548f516b3a8560"
+      }
+    }
+  },
+  "stdout_line_ending": "\r\n",
+  "java_version_lines": [
+    "openjdk version \"17.0.17\" 2025-10-21",
+    "OpenJDK Runtime Environment Temurin-17.0.17+10 (build 17.0.17+10)",
+    "OpenJDK 64-Bit Server VM Temurin-17.0.17+10 (build 17.0.17+10, mixed mode, sharing)"
+  ],
+  "inherited_jvm_option_keys_removed_if_present": [
+    "JAVA_TOOL_OPTIONS",
+    "_JAVA_OPTIONS",
+    "JDK_JAVA_OPTIONS"
+  ],
+  "keys_present": [],
+  "stream_scope": "Raw stdout/stderr, process receipts with private paths, classes, archives and save bytes remain external/private. Published receipt/stream hashes and finite structured projections were checked against all retained bytes."
+}

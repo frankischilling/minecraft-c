@@ -7,6 +7,24 @@ the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining w
 
 ## Current client work
 
+The [MobSpawner preview](client/spawner-rendering.md) now reaches actual LL/AG
+and the existing Pig renderer from a loaded Chunk. A Windows monitor-2 capture
+passes 1,236 checks and sixteen full World/HUD frames across ordinary save and
+reselection. One cached Pig is rebound to the new World. The fixture checks its
+absence from the live World Entity list and the selected saved Chunk's empty
+Entity list. The first draw compiles six model parts and later
+draws reuse them. Multi-addition HashSet order, Sign/Piston drawing, full original
+frame equality and sustained-play/FPS qualification remain open.
+
+The complete MSVC Release build and all 1,345 configured Windows tests pass in
+472.08 seconds, retaining all 1,341 preceding names with four additions and no
+skips or unrun tests. GCC 15.2 passes 29 selected sanitizer tests in 103.05
+seconds. Clang 21.1.8 passes 20 selected tests in 53.86 seconds and both corrected
+selector/recenter regressions in 1.60 seconds. Both Linux runs enable ASan,
+UBSan and leak detection. Their full local builds exhausted the 31 GB WSL
+filesystem; generated products were cleaned and only the affected targets
+rebuilt. These are selected Linux results, not full local suite passes.
+
 The [opt-in focus trace](testing/native-focus-trace.md) now records current-thread
 native focus delivery with checked hook lifetime and a bound compile/link
 receipt. Thirty-five instrumented and twenty untraced monitor-2 save/title
@@ -15,7 +33,7 @@ unresolved. The [Fire reader change](testing/fire-reader-cost.md) reduces measur
 synthetic-reader elapsed time by about 85% on one Windows host while preserving
 the existing tests and validation. It provides no gameplay FPS result.
 
-The complete Windows Release build and all 1,341 tests pass in 454.53 seconds,
+At `bd1a164a`, the complete Windows Release build and all 1,341 tests pass in 454.53 seconds,
 with every configured name/ID, ordinal and Start/completion join audited and
 all preceding names retained. Four existing Fire reader/packet tests also pass
 under WSL. Final monitor-2 Furnace, Lever and Redstone Torch cycles pass with

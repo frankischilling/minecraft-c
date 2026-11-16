@@ -71,10 +71,11 @@ screen, save/reload and open-screen shutdown controls. The retained
 client lazy-orientation join now has native Arrow/Ray controls, and an earlier
 C save has finite original readback. Extend that boundary to original saves
 and both round trips, then qualify sustained play alongside the other containers.
-Complete nonempty special-Tile publication during Chunk compilation at DK584,
-then the separate N551 ownership traversal and LL drawing at560. A loaded
-MobSpawner reaches that path today; its preview also needs the genuine named
-Entity factory. Sign and MovingPiston have additional earlier dependencies.
+The [MobSpawner preview](client/spawner-rendering.md) now joins actual Chunk
+publication, typed N traversal, LL/AG and the named Entity factory through the
+existing Pig renderer. Extend the qualified zero/one-new-Tile publication to
+larger identity-hash Sets, implement Sign/MovingPiston's earlier dependencies
+and draw bodies, and continue the separate Spawner spawning path.
 The loader has no fixed session count limit, and a retained Windows Tiny
 scenario covers ten saves/reloads plus a successor conversion failure before
 storage acquisition. Reclaim superseded Worlds during play and qualify later

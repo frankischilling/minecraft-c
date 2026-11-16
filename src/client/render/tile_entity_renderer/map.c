@@ -169,8 +169,9 @@ static bool lookup_class(mc_client_tile_renderer_dispatcher *m,
     return true;
 }
 
-static bool lookup_tile(mc_client_tile_renderer_dispatcher *m, const mc_tile_entity *tile,
-                        mc_client_tile_renderer **out, mc_client_tile_renderer_error *e) {
+bool tile_renderer_lookup_tile_entered(mc_client_tile_renderer_dispatcher *m,
+                                       const mc_tile_entity *tile, mc_client_tile_renderer **out,
+                                       mc_client_tile_renderer_error *e) {
     if (tile == NULL) {
         *out = NULL; /* LL.b(OW) returns5 before Object.getClass8. */
         return true;
@@ -221,7 +222,7 @@ mc_client_tile_renderer_lookup_tile(mc_client_tile_renderer_dispatcher *m,
     else if (source_admit(m, &e)) {
         mc_client_tile_renderer *value = NULL;
         m->active = m->classes->active = true;
-        const bool ok = lookup_tile(m, tile, &value, &e);
+        const bool ok = tile_renderer_lookup_tile_entered(m, tile, &value, &e);
         m->active = m->classes->active = false;
         if (ok)
             *out = value;
@@ -243,7 +244,8 @@ mc_client_tile_renderer_has_renderer(mc_client_tile_renderer_dispatcher *m,
     else if (source_admit(m, &e)) {
         mc_client_tile_renderer *value = NULL;
         m->active = m->classes->active = true;
-        const bool ok = lookup_tile(m, tile, &value, &e); /* LL.a(OW) calls b2. */
+        const bool ok =
+            tile_renderer_lookup_tile_entered(m, tile, &value, &e); /* LL.a(OW) calls b2. */
         m->active = m->classes->active = false;
         if (ok)
             *out = value != NULL;

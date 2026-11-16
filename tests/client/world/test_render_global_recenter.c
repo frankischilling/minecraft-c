@@ -266,6 +266,9 @@ static bool device(picking_fixture *f) {
     n->display = display;
     n->fields.s = base;
     CHECK(list_new(n, &n->fields.a, &error) && list_new(n, &n->fields.m, &error));
+    /* This fixture authors the List allocation without crediting N's ctor.
+     * Record its native identity, keeping every Source field/input unchanged. */
+    n->tile_list_origin = n->fields.a;
     const size_t bindings = f->base.world->persistent_bindings;
     mc_client_render_global_world_state state = {0};
     n->active = true;

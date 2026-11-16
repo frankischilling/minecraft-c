@@ -131,8 +131,9 @@ retire before N resumes at332/519. Copied scalar identities, return PCs and
 model/shadow counts survive that cleanup; borrowed child pointers do not.
 The admitted path continues through both particle methods, translucent
 terrain, weather and clouds, the empty hand and the ordinary empty-slot HUD.
-Other renderer/model families, nonempty TileEntity rows, other particle
-classes and nonempty item routes remain separate dependencies.
+The [Spawner preview](spawner-rendering.md) supplies the first nonempty special
+TileEntity path. Other renderer/model families, Sign/Piston drawing and other
+particle/item routes retain their separate limits and qualification.
 
 The performance deadline uses the source 200/120/40 target and Java long
 wrapping. Retained frames preserve completed fields, matrices, GL state and

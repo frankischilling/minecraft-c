@@ -297,7 +297,7 @@ bool tile_renderer_passive_admit(mc_client_tile_renderer_dispatcher *m,
     if (m == NULL)
         tile_renderer_fail(e, MC_CLIENT_TILE_RENDERER_INVALID_ARGUMENT, "LL actual receiver", NULL,
                            NULL, NULL, -1, true);
-    else if (m->active || m->classes->active)
+    else if (m->active || m->classes->active || m->draw_call != NULL)
         tile_renderer_fail(e, MC_CLIENT_TILE_RENDERER_BUSY, "LL active receiver", NULL, NULL, NULL,
                            -1, true);
     else if (m->classes->phase == MC_CLIENT_TILE_RENDERER_RETIRING)

@@ -7,6 +7,8 @@
 #include "mc/world/runtime/runtime.h"
 #include "source_chunk_renderer_internal.h"
 
+#include <limits.h>
+
 static const char *const CTOR = "(Lfd;Ljava/util/List;IIIII)V";
 
 static bool fail(mc_client_source_dk *o, mc_client_render_global_error *e,
@@ -274,6 +276,7 @@ bool mc_source_dk_construct(mc_client_source_dk *o, mc_world_runtime *world,
                                             (mc_client_graphics_site){"dk", "<init>", CTOR, 32}, e);
     if (o->fields.B == NULL)
         goto failed;
+    o->tile_list_origin = o->fields.B;
     o->last_store_pc = 39;
     o->source_pc = 44;
     if (world != NULL && !mc_world_runtime_binding_retain(world)) {
@@ -346,7 +349,68 @@ void mc_source_dk_tile_occurrences_release(mc_client_source_dk *o, mc_client_ren
         if (h->tile != NULL && (list == NULL || h->list == list)) {
             mc_tile_entity_release(h->tile);
             h->tile = NULL;
+            h->list = NULL;
+            h->index = 0;
         }
+}
+
+void mc_render_global_tile_list_release(mc_client_render_global *o) {
+    if (o == NULL)
+        return;
+    for (mc_render_global_tile_occurrence *h = o->tile_occurrences; h != NULL; h = h->next)
+        if (h->active) {
+            mc_tile_entity_release(h->tile);
+            h->tile = NULL;
+            h->list = NULL;
+            h->index = 0;
+            h->active = false;
+        }
+}
+
+mc_client_render_global_status mc_render_global_tile_list_get(mc_client_render_global *o,
+                                                              mc_client_render_list *list,
+                                                              int32_t index, mc_tile_entity **out,
+                                                              mc_client_render_global_error *e) {
+    const char *descriptor = "(Lbt;Lyn;F)V";
+    if (e == NULL)
+        return MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT;
+    if (o == NULL || out == NULL || *out != NULL || !o->active)
+        return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT,
+                                            "N Tile List native capture arguments", "n", "a",
+                                            descriptor, 551, true);
+    if (list == NULL)
+        return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
+                                            "actual N Tile List.get receiver", "n", "a", descriptor,
+                                            551, false);
+    if (list != o->tile_list_origin)
+        return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
+                                            "N Tile List actual object ownership", "n", "a",
+                                            descriptor, 551, true);
+    if (list->count > list->capacity || list->capacity > INT32_MAX ||
+        (list->capacity != 0 && list->entries == NULL))
+        return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
+                                            "N Tile List native extent", "n", "a", descriptor, 551,
+                                            true);
+    if (index < 0 || (size_t)index >= list->count)
+        return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_SOURCE_INDEX,
+                                            "actual N Tile List.get index", "n", "a", descriptor,
+                                            551, false);
+    for (mc_render_global_tile_occurrence *h = o->tile_occurrences; h != NULL; h = h->next)
+        if (h->active && h->list == list && h->index == (size_t)index) {
+            if (h->tile != list->entries[index])
+                return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
+                                                    "N Tile List changed owned occurrence", "n",
+                                                    "a", descriptor, 551, true);
+            if (h->tile != NULL && mc_tile_entity_retain(h->tile) != MC_TILE_ENTITY_OK)
+                return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_BUSY,
+                                                    "N Tile List captured native occurrence", "n",
+                                                    "a", descriptor, 551, true);
+            *out = h->tile;
+            return MC_CLIENT_RENDER_GLOBAL_OK;
+        }
+    return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
+                                        "N Tile List missing owned occurrence", "n", "a",
+                                        descriptor, 551, true);
 }
 
 mc_client_render_global_status mc_source_dk_native_retire(mc_client_source_dk *o,

@@ -393,27 +393,95 @@ static bool entities(mc_client_render_global_entities_call *c) {
 }
 
 static bool tiles(mc_client_render_global_entities_call *c) {
-    c->state.index = 0;
-    mc_client_render_list *list = c->state.owner->fields.a;
-    if (list == NULL)
-        return fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE, "actual N Tile List.size", 534,
-                    false);
-    if (list->count > list->capacity || list->capacity > INT32_MAX ||
-        (list->capacity != 0 && list->entries == NULL))
-        return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE, "N Tile List native extent", 534,
-                    true);
-    if (list->count == 0)
-        return true;
-    mc_client_tile_renderer_dispatcher *receiver = NULL;
-    if (mc_client_tile_renderer_static_get(c->state.owner->tile_consumer.classes, &receiver,
-                                           &c->tiles) != MC_CLIENT_TILE_RENDERER_OK)
-        return tile_failure(c, 542);
-    if (receiver != NULL && mc_client_tile_renderer_dispatcher_retain(receiver, &c->tiles) !=
-                                MC_CLIENT_TILE_RENDERER_OK)
-        return tile_failure(c, 542);
-    c->draw_ll = receiver;
-    /* The first nonempty row needs the actual DK/JE ownership ledger before
-     * interpreting its void*. Its draw and later loop iterations are unreached. */
-    return fail(c, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
-                "N reached rendered Tile occurrence ownership", 551, true);
+    for (c->state.index = 0;; c->state.index = mc_java_i32_add(c->state.index, 1)) {
+        c->state.source_pc = 534;
+        mc_client_render_list *list = c->state.owner->fields.a;
+        if (list == NULL)
+            return fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE, "actual N Tile List.size", 534,
+                        false);
+        if (list != c->state.owner->tile_list_origin)
+            return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
+                        "N Tile List actual object ownership", 534, true);
+        if (list->count > list->capacity || list->capacity > INT32_MAX ||
+            (list->capacity != 0 && list->entries == NULL))
+            return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE, "N Tile List native extent", 534,
+                        true);
+        if ((size_t)c->state.index >= list->count)
+            return true;
+        c->state.source_pc = 542;
+        mc_client_tile_renderer_dispatcher *receiver = NULL;
+        if (mc_client_tile_renderer_static_get(c->state.owner->tile_consumer.classes, &receiver,
+                                               &c->tiles) != MC_CLIENT_TILE_RENDERER_OK)
+            return tile_failure(c, 542);
+        if (receiver != NULL && mc_client_tile_renderer_dispatcher_retain(receiver, &c->tiles) !=
+                                    MC_CLIENT_TILE_RENDERER_OK)
+            return tile_failure(c, 542);
+        c->draw_ll = receiver;
+        c->state.source_pc = 551;
+        if (mc_render_global_tile_list_get(c->state.owner, c->state.owner->fields.a, c->state.index,
+                                           &c->current_tile,
+                                           &c->failure) != MC_CLIENT_RENDER_GLOBAL_OK)
+            return false;
+        ++c->state.tiles_visited;
+        c->state.source_pc = 560;
+        if (receiver == NULL)
+            return fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE, "actual N LL draw receiver", 560,
+                        false);
+        const mc_client_manager_draw_services services = {.math = c->services.math,
+                                                          .graphics = c->state.owner->classes,
+                                                          .display = c->state.owner->display,
+                                                          .application_classes =
+                                                              c->services.application_classes};
+        ++c->state.tile_draws_attempted;
+        const mc_client_tile_renderer_status status = mc_client_tile_renderer_draw_begin(
+            receiver, c->current_tile, c->state.partial, &services, NULL, &c->tile_draw,
+            &c->tile_draw_failure);
+        c->state.tile_draw = c->tile_draw;
+        if (status != MC_CLIENT_TILE_RENDERER_OK) {
+            fail(c, tile_status(status), c->tile_draw_failure.operation, 560,
+                 c->tile_draw_failure.native_policy);
+            c->failure.tile_draw = &c->tile_draw_failure;
+            c->failure.child = c->tile_draw_failure.site;
+            return false;
+        }
+        mc_client_tile_renderer_draw_state state;
+        if (!mc_client_tile_renderer_draw_inspect(c->tile_draw, &state) || !state.returned)
+            return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
+                        "N actual LL draw did not return its source body", 560, true);
+        mc_entity_class_literal_view preview = {0};
+        if (state.preview_class != NULL &&
+            mc_entity_class_literal_inspect(state.preview_class, &preview) != MC_ENTITY_OK)
+            return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
+                        "N actual LL preview Class observation", 560, true);
+        c->state.last_tile_draw = (mc_client_render_global_tile_receipt){
+            .valid = true,
+            .returned = state.returned,
+            .distance_culled = state.distance_culled,
+            .renderer_returned = state.renderer_returned,
+            .cache_hit = state.cache_hit,
+            .cache_miss = state.cache_miss,
+            .factory_returned = state.factory_returned,
+            .world_rebound = state.world_rebound,
+            .pose_returned = state.pose_returned,
+            .manager_returned = state.manager_returned,
+            .manager_retired = state.manager_retired,
+            .attempt = c->state.tile_draws_attempted,
+            .cache_entries = state.cache_entries,
+            .source_pc = state.source_pc,
+            .factory_calls = state.factory_calls,
+            .model_parts = state.model_parts,
+            .model_compiled_parts = state.model_compiled_parts,
+            .model_faces = state.model_faces,
+            .model_vertices = state.model_vertices,
+            .tile_identity = state.tile_entity_identity,
+            .renderer_identity = state.renderer_identity,
+            .preview_identity = state.preview_identity,
+            .preview_world_identity = state.preview_world_identity,
+            .preview_kind = (int32_t)preview.kind,
+            .renderer_class = state.renderer_class};
+        ++c->state.tile_draws_returned;
+        if (!retire_tile_draw(c, &c->failure))
+            return false;
+        c->state.source_pc = 563;
+    }
 }

@@ -33,6 +33,8 @@ static void entities_views_expired(mc_client_world_frame_call *call) {
     call->entities_state.th = NULL;
     call->entities_state.entities_list = NULL;
     call->entities_state.current = NULL;
+    call->entities_state.draw = NULL;
+    call->entities_state.tile_draw = NULL;
     call->entities_state.failure = call->entities_state.cleanup = NULL;
 }
 
@@ -40,6 +42,8 @@ static void render_error_views_expired(mc_client_render_global_error *error) {
     error->image_download = NULL;
     error->image_buffer = NULL;
     error->tile_renderer = NULL;
+    error->manager_draw = NULL;
+    error->tile_draw = NULL;
     error->render_distance = NULL;
     error->entity_culling = NULL;
     error->manager.font = NULL;

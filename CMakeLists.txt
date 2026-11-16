@@ -655,6 +655,7 @@ add_library(mc_simulation STATIC
     src/entity/movement/material.c
     src/entity/movement/environment.c
     src/entity/nbt/factory.c
+    src/entity/factory/factory.c
     src/entity/nbt/nbt.c
     src/entity/nbt/storage.c
     src/world/runtime/tile_entities/tile_entities.c
@@ -5728,6 +5729,8 @@ include(cmake/client_inventory_screen.cmake)
 include(cmake/client_workbench.cmake)
 include(cmake/client_chest.cmake)
 include(cmake/client_furnace.cmake)
+include(cmake/client_spawner.cmake)
+include(cmake/entity_named_factory.cmake)
 include(cmake/tests/client_chest_loop.cmake)
 include(cmake/client_world_frame.cmake)
 include(cmake/world_tick.cmake)

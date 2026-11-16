@@ -1,5 +1,21 @@
 # Build and tests
 
+## Loaded MobSpawner preview
+
+The full MSVC Release build and all 1,345 configured Windows tests pass in
+472.08 seconds, retaining every earlier name with four additions and no skips.
+GCC 15.2 passes 29 selected sanitizer tests; Clang 21.1.8 passes 20 plus two
+selector/recenter regressions. Both use ASan, UBSan and leak detection. Local
+all-target Linux builds ran out of WSL space; only the affected targets were
+rebuilt after cleaning generated products. Full local Linux suites are not
+claimed.
+
+The monitor-2 scene passes 1,236 checks across sixteen full World/HUD frames,
+ordinary save/reselection, one cached Pig rebound to the new World, live Entity
+list exclusion and checked window cleanup. The named-factory fixture passes
+552 checks on all three native hosts, with a separate finite original-backed
+subset. [Implementation and limits](Spawner-rendering).
+
 ## Orphan Bed foot validation
 
 Two fresh unchanged-original JDK17 runs agree on the normal wake and an Item

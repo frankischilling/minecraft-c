@@ -90,8 +90,8 @@ lookup paths. The [World fixture](../../tests/reference/client/tile_entity_rende
 contains 251 rows from three real null-World callbacks and two null-Living
 failure contexts. The [frame fixture](../../tests/reference/client/tile_entity_renderer/FRAME_README.md)
 contains 24 arithmetic cases and a separate genuine original Pig-constructor
-prerequisite. Native replay uses a genuine RAW LocalPlayer and its common
-Living/Entity pose fields, because native Pig allocation is unavailable. It
+prerequisite. That earlier native replay uses a genuine RAW LocalPlayer and its
+common Living/Entity pose fields; its Class/constructor credit remains limited. It
 compares all 96 method rows literally, with separate credit limits for runtime
 Class, constructor and unconstructed Random/Watcher children. Those channels
 do not establish equivalence to the original Pig's constructed state.
@@ -101,5 +101,6 @@ LL44 followed by the [RenderManager CPU frame body](render-manager-frame.md)
 at TH80, with distinct N-owned consumer records. Its real I2 delay, live World
 Lists and visibility predicates execute. The component fixtures keep their
 separate comparison scope; they do not establish composed original N parity.
-Reached Entity draws, nonempty rendered-TileEntity row ownership, deferred old
-Worlds, later World-frame work and gameplay remain unfinished.
+The [Spawner preview path](spawner-rendering.md) adds typed published-row
+ownership, LL drawing and the actual AG/TH coordinates call. Sign/Piston drawing,
+deferred old Worlds and general interactive play remain unfinished or unqualified.

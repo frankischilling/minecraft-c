@@ -109,12 +109,13 @@ completes checked native retirement before N continues at 332
 or 519. A failed child stays retained under N; cleanup drains that same child
 before releasing its enclosing receivers. It never replays the failed draw.
 
-Nonempty rendered TileEntity traversal still stops at 551 because ownership of
-the actual DK/JE row has not been implemented. It does not cast an untyped row
-or substitute the World TileEntity list. Unsupported renderer/model families,
-nondefault draw children, malformed native extents and unsupported provenance
-also refuse at their reached operations. Those failures do not report return
-569.
+Nonempty rendered TileEntity traversal uses the actual published DK/F occurrence
+ledger before interpreting a row. It enters LL560 and checks retirement of that
+same child before the next fresh List-size read. The first concrete preview is
+the [loaded Pig Spawner](spawner-rendering.md). Unsupported renderer/model
+families, malformed native extents and unmatched row ownership refuse at their
+reached operations; those failures do not report return569. This traversal does
+not substitute the World's TileEntity list.
 
 ## Public API and lifetime
 

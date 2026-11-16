@@ -80,6 +80,7 @@ struct mc_client_tile_renderer_dispatcher {
     tile_renderer_font_occurrence *fonts;
     mc_entity *living_occurrence;
     size_t retained_engines, retained_fonts;
+    struct mc_client_tile_renderer_draw_call *draw_call;
     tile_renderer_map *map, *map_candidate;
     mc_client_tile_renderer *renderers[3]; /* Includes failed/unpublished children. */
     size_t allocated_renderers, put_calls, backpointers;
@@ -121,6 +122,8 @@ void *tile_renderer_allocate(mc_client_tile_renderer_classes *, size_t, const ch
 mc_client_model_graph tile_renderer_graph(mc_client_tile_renderer *);
 bool tile_renderer_construct(mc_client_tile_renderer_dispatcher *);
 bool tile_renderer_object_retire(mc_client_tile_renderer **, mc_client_tile_renderer_error *);
+bool tile_renderer_lookup_tile_entered(mc_client_tile_renderer_dispatcher *, const mc_tile_entity *,
+                                       mc_client_tile_renderer **, mc_client_tile_renderer_error *);
 
 tile_renderer_map_node *tile_renderer_map_node_find(const tile_renderer_map *,
                                                     const mc_tile_entity_class_literal *);

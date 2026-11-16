@@ -3,6 +3,7 @@
 
 #include "mc/client/render/manager/draw.h"
 #include "mc/client/render/manager/manager.h"
+#include "mc/client/render/tile_entity_renderer/draw.h"
 #include "mc/client/render/tile_entity_renderer/tile_entity_renderer.h"
 #include "mc/client/world/frustum_culling.h"
 #include "mc/core/math/classes.h"
@@ -65,6 +66,19 @@ typedef struct mc_client_render_global_draw_receipt {
     mc_client_render_global_held_receipt held;
 } mc_client_render_global_draw_receipt;
 
+/* Value-only observations copied before the same retained LL child retires. */
+typedef struct mc_client_render_global_tile_receipt {
+    bool valid, returned, retired, distance_culled;
+    bool renderer_returned, cache_hit, cache_miss, factory_returned;
+    bool world_rebound, pose_returned, manager_returned, manager_retired;
+    size_t attempt, cache_entries;
+    unsigned int source_pc, factory_calls, model_parts, model_compiled_parts, model_faces,
+        model_vertices;
+    uintptr_t tile_identity, renderer_identity, preview_identity, preview_world_identity;
+    int32_t preview_kind;
+    const char *renderer_class;
+} mc_client_render_global_tile_receipt;
+
 typedef struct mc_client_render_global_entities_state {
     bool active, returned, retiring, delayed, ll_returned, th_returned;
     unsigned int source_pc, last_store_pc;
@@ -95,6 +109,9 @@ typedef struct mc_client_render_global_entities_state {
     /* First returned actual Item-kind draw, even when another Entity was
      * traversed first. Same scalar-only lifetime as the other draw receipts. */
     mc_client_render_global_draw_receipt first_item_draw;
+    size_t tile_draws_attempted, tile_draws_returned, tile_draws_retired;
+    const mc_client_tile_renderer_draw_call *tile_draw;
+    mc_client_render_global_tile_receipt last_tile_draw;
 } mc_client_render_global_entities_state;
 
 /* Actual n.a(Lbt;Lyn;F)V on the same constructed N. Native admission allocates
@@ -115,8 +132,9 @@ typedef struct mc_client_render_global_entities_state {
  * most 16 distinct Worlds can be captured by one call. Entity draws at
  * N329/N516 invoke the real retained TH child. A returned child is checked-
  * retired before traversal continues at N332/N519. Nonempty N.a TileEntity
- * rows at N551 remain an explicit missing dependency. This API does not
- * complete the enclosing World frame.
+ * rows are admitted through the actual publication ledger, then enter LL560.
+ * Each returned LL child retires before the fresh size534 of the next row.
+ * Concrete Sign and MovingPiston draw descendants remain explicit frontiers.
  *
  * Out starts NULL. Once admitted, return the terminal call even on failure.
  * App and the complete argument/service graph stay live and exclusive on the

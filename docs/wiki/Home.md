@@ -5,6 +5,12 @@ Development focuses on the single-player client. Full parity and unrestricted
 playability remain incomplete; multiplayer and the dedicated server follow
 the client work. Account authentication is the only approved gameplay exception.
 
+[MobSpawner previews](Spawner-rendering) now draw a cached Pig through the actual
+Chunk, TileEntity and Entity renderer paths. A monitor-2 scene returns sixteen
+World/HUD frames across save/reselection and rebinds the same preview to the new
+World. Spawning, larger new-identity Sets, Sign/Piston drawing and original
+whole-frame equality remain unfinished or unqualified.
+
 [Player wake during damage](Combat-and-projectiles#recursive-bed-notification-during-wake)
 now reaches the original Bed update through the same wake body as direct Player
 damage. A nearby orphan head or foot removes itself through the recursive

@@ -1,0 +1,151 @@
+{
+  "compile": {
+    "exit": 0,
+    "timeout_seconds": 60,
+    "timed_out": false,
+    "pipe_capture_complete": true,
+    "reader_errors": {},
+    "output_overflow": false,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_limit": 4194304,
+    "stderr_limit": 1048576,
+    "command_representation": "role projection, not verbatim private command",
+    "command_roles": [
+      "JDK/bin/javac",
+      "-encoding",
+      "UTF-8",
+      "-implicit:none",
+      "-classpath",
+      "CLASSES;CLIENT_JAR;LIBRARIES",
+      "-d",
+      "CLASSES",
+      "OBSERVER_JAVA"
+    ],
+    "raw_receipt": {
+      "bytes": 1554,
+      "sha256": "d0d5e56e9bc6d5cb258b3e05c6d3a6f289a2ea979a90ecc44827d031e735464f"
+    }
+  },
+  "java-version": {
+    "exit": 0,
+    "timeout_seconds": 20,
+    "timed_out": false,
+    "pipe_capture_complete": true,
+    "reader_errors": {},
+    "output_overflow": false,
+    "stdout_bytes": 0,
+    "stderr_bytes": 190,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "60aba3fe0d7bf59797df0e8cb7af289d0843e978623fafea7e3ae5ef925b6622",
+    "stdout_limit": 4194304,
+    "stderr_limit": 1048576,
+    "command_representation": "role projection, not verbatim private command",
+    "command_roles": [
+      "JDK/bin/java",
+      "-version"
+    ],
+    "raw_receipt": {
+      "bytes": 636,
+      "sha256": "674cc2de3fb8c3a4fb54369c3194db81c2b11f11a1ce7522dae80e08b9a7922b"
+    }
+  },
+  "javac-version": {
+    "exit": 0,
+    "timeout_seconds": 20,
+    "timed_out": false,
+    "pipe_capture_complete": true,
+    "reader_errors": {},
+    "output_overflow": false,
+    "stdout_bytes": 15,
+    "stderr_bytes": 0,
+    "stdout_sha256": "825ce50fb46a3e8bd8d38f6da5bf8449d442a9f210d9d38c83709234bfa8ee9c",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_limit": 4194304,
+    "stderr_limit": 1048576,
+    "command_representation": "role projection, not verbatim private command",
+    "command_roles": [
+      "JDK/bin/javac",
+      "-version"
+    ],
+    "raw_receipt": {
+      "bytes": 638,
+      "sha256": "641c0f7e48b6a66aa7147b091e2cfeabb418e84044acc989ff0c0580b2f9bed9"
+    }
+  },
+  "interpreter": {
+    "exit": 0,
+    "timeout_seconds": 90,
+    "timed_out": false,
+    "pipe_capture_complete": true,
+    "reader_errors": {},
+    "output_overflow": false,
+    "stdout_bytes": 13064,
+    "stderr_bytes": 1313,
+    "stdout_sha256": "eca82900adf242c25e24e8f69a74690eabdf161a54b716abfa816eaaf9482036",
+    "stderr_sha256": "a41cee941ebc3d7488a6b06e4c8dd5adcad3deccd0fbf2ef915a0668b60c6193",
+    "stdout_limit": 4194304,
+    "stderr_limit": 1048576,
+    "command_representation": "role projection, not verbatim private command",
+    "command_roles": [
+      "JDK/bin/java",
+      "-Xint",
+      "-Xverify:all",
+      "-Xmx256m",
+      "-XX:-UsePerfData",
+      "-Djava.awt.headless=true",
+      "-Djava.security.manager=allow",
+      "--add-opens=java.base/java.util=ALL-UNNAMED",
+      "-classpath",
+      "CLASSES;CLIENT_JAR;LIBRARIES",
+      "NamedFactoryObservation",
+      "CLIENT_JAR",
+      "OWNED_COPY/interpreter/saves",
+      "DECLARED_PROFILES",
+      "Furnace world",
+      "123"
+    ],
+    "raw_receipt": {
+      "bytes": 1885,
+      "sha256": "4f92bf2a37c9a5aeea760688a0a52d6885537481cdcea088b228e80acc822476"
+    }
+  },
+  "default": {
+    "exit": 0,
+    "timeout_seconds": 90,
+    "timed_out": false,
+    "pipe_capture_complete": true,
+    "reader_errors": {},
+    "output_overflow": false,
+    "stdout_bytes": 13064,
+    "stderr_bytes": 1313,
+    "stdout_sha256": "51c5c70b1b63d10f0fcf2c03b196f7db25b0c46a9e54f61f377ab7eb232ac225",
+    "stderr_sha256": "a41cee941ebc3d7488a6b06e4c8dd5adcad3deccd0fbf2ef915a0668b60c6193",
+    "stdout_limit": 4194304,
+    "stderr_limit": 1048576,
+    "command_representation": "role projection, not verbatim private command",
+    "command_roles": [
+      "JDK/bin/java",
+      "-Xverify:all",
+      "-Xmx256m",
+      "-XX:-UsePerfData",
+      "-Djava.awt.headless=true",
+      "-Djava.security.manager=allow",
+      "--add-opens=java.base/java.util=ALL-UNNAMED",
+      "-classpath",
+      "CLASSES;CLIENT_JAR;LIBRARIES",
+      "NamedFactoryObservation",
+      "CLIENT_JAR",
+      "OWNED_COPY/default/saves",
+      "DECLARED_PROFILES",
+      "Furnace world",
+      "123"
+    ],
+    "raw_receipt": {
+      "bytes": 1859,
+      "sha256": "cb34cacf3f2fb126d6bb45ce2742c40c643b7f0a34bcac7e6afd01bdb69b578f"
+    }
+  }
+}

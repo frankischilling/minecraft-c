@@ -1,0 +1,92 @@
+{
+  "metadata": {
+    "seed": 123,
+    "spawn": [
+      0,
+      64,
+      0
+    ],
+    "time": 211,
+    "last_played": 1794813891269,
+    "size_on_disk": 3178496,
+    "dimension": 0,
+    "version": 19132,
+    "name": "Furnace world"
+  },
+  "block": 62,
+  "block_metadata": 2,
+  "furnace_xyz": [
+    0,
+    64,
+    2
+  ],
+  "furnace_fields": [
+    1397,
+    1600,
+    4
+  ],
+  "furnace_slots": [
+    [
+      15,
+      1,
+      0,
+      0
+    ],
+    [
+      263,
+      1,
+      0,
+      0
+    ],
+    null
+  ],
+  "player_main": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    [
+      265,
+      1,
+      0,
+      0
+    ],
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "player_armor": [
+    null,
+    null,
+    null,
+    null
+  ]
+}

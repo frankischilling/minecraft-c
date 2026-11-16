@@ -15,9 +15,18 @@
 
 typedef struct mc_render_global_access mc_render_global_access;
 typedef struct mc_render_global_cv mc_render_global_cv;
+
+typedef struct mc_render_global_tile_occurrence {
+    struct mc_render_global_tile_occurrence *next;
+    mc_client_render_list *list;
+    mc_tile_entity *tile;
+    size_t index;
+    bool active;
+} mc_render_global_tile_occurrence;
 typedef struct mc_client_image_download_error mc_client_image_download_error;
 typedef struct mc_client_image_buffer_error mc_client_image_buffer_error;
 typedef struct mc_client_manager_draw_error mc_client_manager_draw_error;
+typedef struct mc_client_tile_renderer_draw_error mc_client_tile_renderer_draw_error;
 
 struct mc_client_render_global_error {
     mc_client_render_global_status status;
@@ -44,6 +53,7 @@ struct mc_client_render_global_error {
     const struct mc_entity_render_distance_error *render_distance;
     const struct mc_client_culling_error *entity_culling;
     const mc_client_manager_draw_error *manager_draw;
+    const mc_client_tile_renderer_draw_error *tile_draw;
     const struct mc_particle_error *particle;
     const struct mc_effect_renderer_error *effects;
     const struct mc_world_mutation_error *auxiliary_world;
@@ -89,6 +99,8 @@ struct mc_client_render_global {
     mc_client_render_manager *world_manager;
     mc_render_global_cv *cv_owners;
     mc_client_source_dk *chunk_owners;
+    mc_client_render_list *tile_list_origin; /* Actual constructor-created N.a List. */
+    mc_render_global_tile_occurrence *tile_occurrences;
     size_t o_length, n_length, t_length;
     bool world_retiring;
     bool terminal_preserve_manager_world; /* Latched across every terminal retry. */
@@ -126,6 +138,15 @@ mc_render_global_world_collect_displaced(mc_client_render_global_world_call *,
                                          mc_client_render_global_error *);
 bool mc_render_global_stars(mc_client_render_global *);
 bool mc_render_global_sky(mc_client_render_global *);
+/* Native proof for the actual N List.get551 result. The caller owns entered N
+ * and a NULL output slot. No arbitrary source pointer is interpreted as a Tile;
+ * success supplies one independent nullable Tile occurrence to the caller. */
+mc_client_render_global_status
+mc_render_global_tile_list_get(mc_client_render_global *, mc_client_render_list *, int32_t index,
+                               mc_tile_entity **owned_tile, mc_client_render_global_error *);
+/* End only this N's native shared-list occurrences. Caller has completed source
+ * clear249, or has admitted terminal native cleanup; no source field is changed. */
+void mc_render_global_tile_list_release(mc_client_render_global *);
 /* Native-only capture of the existing CV occurrence's actual backing World.
  * Source fields are not read/repaired and no source method runs. The caller
  * already holds/enters this same N, supplies its actual captured CV, and owns

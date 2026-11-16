@@ -22,6 +22,7 @@ struct mc_client_chunk_compile_state {
     bool needs_later_pass, pass_rendered;
     bool tile_eligibility_returned, tile_eligible;
     size_t tile_eligibility_calls;
+    size_t old_tile_set_count, new_tile_set_count, shared_tiles_added, shared_tiles_removed;
     const mc_client_render_global_error *failure;
 };
 
@@ -36,6 +37,12 @@ bool mc_source_dk_compile_entered(mc_client_source_dk *, mc_source_dk_compile **
 bool mc_source_dk_tile_eligibility_entered(mc_client_source_dk *, mc_tile_entity *,
                                            mc_source_dk_compile **,
                                            mc_client_render_global_error *);
+/* Selected List/Set continuation control: old Set capture and B.clear, the same
+ * eligibility child for already evaluated Tile locals, then actual547..626.
+ * Native fixture supplies registered List origins and entered N. No World,
+ * ChunkCache, Block geometry, or source HashSet iteration order is fabricated. */
+bool mc_source_dk_tile_lists_entered(mc_client_source_dk *, mc_tile_entity *const *, size_t,
+                                     mc_source_dk_compile **, mc_client_render_global_error *);
 bool mc_source_dk_compile_inspect(const mc_source_dk_compile *,
                                   struct mc_client_chunk_compile_state *);
 mc_client_render_global_status mc_source_dk_compile_retire(mc_source_dk_compile **,

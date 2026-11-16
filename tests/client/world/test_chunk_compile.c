@@ -771,6 +771,7 @@ static bool compile_controls(picking_fixture *f, FILE *block_input) {
     n->fields.a = mc_render_global_allocate(
         n, sizeof(*n->fields.a), (mc_client_graphics_site){"n", "<init>", "()V", 4}, &error);
     CHECK(n->fields.m != NULL && n->fields.a != NULL);
+    n->tile_list_origin = n->fields.a; /* Declared native NEW-prefix fixture. */
     mc_client_source_dk *dk = mc_source_dk_allocate(n, &error);
     CHECK(dk != NULL);
     dk->fields.p = mc_render_global_allocate(
@@ -778,6 +779,7 @@ static bool compile_controls(picking_fixture *f, FILE *block_input) {
     dk->fields.B = mc_render_global_allocate(
         n, sizeof(*dk->fields.B), (mc_client_graphics_site){"dk", "<init>", "()V", 32}, &error);
     CHECK(dk->fields.p != NULL && dk->fields.B != NULL);
+    dk->tile_list_origin = dk->fields.B; /* Declared native NEW-prefix fixture. */
     CHECK(mc_world_runtime_binding_retain(f->base.world));
     dk->fields.a = f->base.world;
     dk->world_held = true;

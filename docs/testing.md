@@ -10486,3 +10486,18 @@ Result annotations and documentation/provenance fingerprints were updated
 after these completed opportunities; runtime and harness files retain their
 tested bytes. No gameplay FPS or new original-program parity result follows
 from the fixed-work no-op benchmark.
+
+## Loaded MobSpawner preview
+
+The [Spawner path](client/spawner-rendering.md) connects DK publication, typed N
+traversal, LL/AG and the existing coordinates Pig renderer. Native CPU controls
+cover publication/removal, multiple Chunks, bounded ledger reuse, retained
+partial failures, culling, lookup and cache prefixes. The
+[named factory packet](testing/named-entity-factory.md) separates original
+observations from native ownership/failure checks. On Windows, run
+`tests/client/test_spawner_frame.py --executable EXE --assets ASSETS --artifacts PRIVATE`
+for the monitor-2 saved-world scene. It requires sixteen full frames across
+ordinary save/reselection, one cached Pig rebound to the new World, positive
+initial model compilation, unchanged selected inputs/assets and checked cleanup.
+The captured PNGs and saves remain private. No original-pixel, sustained-play
+or FPS qualification follows from this fixture.

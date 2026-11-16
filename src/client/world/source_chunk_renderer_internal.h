@@ -7,6 +7,7 @@ typedef struct mc_source_dk_tile_hold {
     struct mc_source_dk_tile_hold *next;
     mc_client_render_list *list;
     mc_tile_entity *tile;
+    size_t index;
 } mc_source_dk_tile_hold;
 
 struct mc_client_source_dk {
@@ -19,7 +20,8 @@ struct mc_client_source_dk {
     mc_entity_bounds *pending_pooled_bounds;
     mc_entity_bounds *displaced_bounds;
     const mc_client_render_global_error *failure; /* Same owner's retained current failure. */
-    mc_source_dk_tile_hold *tile_holds; /* Actual B List owning occurrences, native ledger. */
+    mc_source_dk_tile_hold *tile_holds;      /* Actual B List owning occurrences, native ledger. */
+    mc_client_render_list *tile_list_origin; /* Actual constructor-created B List. */
 };
 
 mc_client_source_dk *mc_source_dk_allocate(mc_client_render_global *,

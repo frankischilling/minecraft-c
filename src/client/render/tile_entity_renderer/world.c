@@ -1,6 +1,7 @@
 #include "internal.h"
 
 #include "../../../world/runtime/runtime_internal.h"
+#include "mc/entity/entity.h"
 #include "mc/world/runtime/runtime.h"
 
 #include <stdlib.h>
@@ -31,6 +32,24 @@ static bool cv_ledger_valid(const mc_client_tile_renderer *r) {
            r->piston_blocks == (r->current_cv == NULL ? NULL : &r->current_cv->fields);
 }
 
+static bool preview_seen_before(const mc_client_tile_renderer_dispatcher *m,
+                                const tile_renderer_spawner_node *stop, const mc_entity *entity) {
+    for (size_t i = 0; i < m->allocated_renderers; ++i) {
+        const mc_client_tile_renderer *r = m->renderers[i];
+        if (r == NULL || r->spawner_map == NULL)
+            continue;
+        for (size_t bucket = 0; bucket < r->spawner_map->capacity; ++bucket)
+            for (const tile_renderer_spawner_node *p = r->spawner_map->buckets[bucket]; p != NULL;
+                 p = p->next) {
+                if (p == stop)
+                    return false;
+                if (p->value == entity)
+                    return true;
+            }
+    }
+    return false;
+}
+
 static size_t world_occurrences(const mc_client_tile_renderer_dispatcher *m,
                                 const mc_world_runtime *world) {
     size_t count = m->world_occurrence == world ? 1u : 0u;
@@ -40,6 +59,16 @@ static size_t world_occurrences(const mc_client_tile_renderer_dispatcher *m,
             for (const mc_client_tile_renderer_cv *cv = r->cvs; cv != NULL; cv = cv->next)
                 if (cv->world_occurrence == world)
                     ++count;
+        if (r != NULL && r->spawner_map != NULL)
+            for (size_t bucket = 0; bucket < r->spawner_map->capacity; ++bucket)
+                for (const tile_renderer_spawner_node *p = r->spawner_map->buckets[bucket];
+                     p != NULL; p = p->next) {
+                    mc_entity_snapshot entity;
+                    if (p->value != NULL && !preview_seen_before(m, p, p->value) &&
+                        mc_entity_get_snapshot(p->value, &entity) == MC_ENTITY_OK &&
+                        entity.base.world == world)
+                        ++count; /* One World edge per actual Entity, even with aliasing keys. */
+                }
     }
     return count;
 }
@@ -64,6 +93,18 @@ static bool world_ledger_admit(mc_client_tile_renderer_dispatcher *m,
                 if (cv->world_occurrence != NULL && cv->world_occurrence->persistent_bindings <
                                                         world_occurrences(m, cv->world_occurrence))
                     return ledger_failure(e);
+        if (r != NULL && r->spawner_map != NULL)
+            for (size_t bucket = 0; bucket < r->spawner_map->capacity; ++bucket)
+                for (const tile_renderer_spawner_node *p = r->spawner_map->buckets[bucket];
+                     p != NULL; p = p->next) {
+                    if (p->value == NULL)
+                        continue;
+                    mc_entity_snapshot entity;
+                    if (mc_entity_get_snapshot(p->value, &entity) != MC_ENTITY_OK ||
+                        (entity.base.world != NULL && entity.base.world->persistent_bindings <
+                                                          world_occurrences(m, entity.base.world)))
+                        return ledger_failure(e);
+                }
     }
     return true;
 }

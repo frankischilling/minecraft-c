@@ -38,6 +38,9 @@ struct mc_client_render_global_entities_call {
     mc_client_render_manager_draw_call *draw;
     mc_client_manager_draw_error draw_failure, draw_cleanup;
     unsigned int draw_invoke_pc;
+    mc_tile_entity *current_tile;
+    mc_client_tile_renderer_draw_call *tile_draw;
+    mc_client_tile_renderer_draw_error tile_draw_failure, tile_draw_cleanup;
 };
 
 static bool fail(mc_client_render_global_entities_call *c, mc_client_render_global_status status,
@@ -61,6 +64,19 @@ static mc_client_render_global_status tile_status(mc_client_tile_renderer_status
         case MC_CLIENT_TILE_RENDERER_UNSUPPORTED_FP:
         case MC_CLIENT_TILE_RENDERER_UNSUPPORTED_NUMERIC:
             return MC_CLIENT_RENDER_GLOBAL_UNSUPPORTED_FP;
+        case MC_CLIENT_TILE_RENDERER_UNIMPLEMENTED_DEPENDENCY:
+            return MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY;
+        case MC_CLIENT_TILE_RENDERER_MANAGER_FAILED:
+        case MC_CLIENT_TILE_RENDERER_FACTORY_FAILED:
+        case MC_CLIENT_TILE_RENDERER_DISPLAY_FAILED:
+        case MC_CLIENT_TILE_RENDERER_MODEL_FAILED:
+        case MC_CLIENT_TILE_RENDERER_WORLD_FAILED:
+        case MC_CLIENT_TILE_RENDERER_ENGINE_FAILED:
+        case MC_CLIENT_TILE_RENDERER_FONT_FAILED:
+        case MC_CLIENT_TILE_RENDERER_ENTITY_FAILED:
+        case MC_CLIENT_TILE_RENDERER_TILE_ENTITY_FAILED:
+        case MC_CLIENT_TILE_RENDERER_CLASS_ERRONEOUS:
+            return MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED;
         default:
             return MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE;
     }
@@ -102,6 +118,45 @@ static bool manager_failure(mc_client_render_global_entities_call *c, unsigned i
     c->failure.child = (mc_client_graphics_site){c->manager.source_class, c->manager.source_method,
                                                  c->manager.source_descriptor, c->manager.pc};
     return false;
+}
+
+static bool retire_tile_draw(mc_client_render_global_entities_call *c,
+                             mc_client_render_global_error *failure) {
+    if (c->tile_draw != NULL) {
+        if (mc_client_tile_renderer_draw_retire(&c->tile_draw, &c->tile_draw_cleanup) !=
+            MC_CLIENT_TILE_RENDERER_OK) {
+            mc_render_global_source_fail(failure, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED,
+                                         c->tile_draw_cleanup.operation, "n", "a",
+                                         entities_descriptor, 560, true);
+            failure->tile_draw = &c->tile_draw_cleanup;
+            failure->child = c->tile_draw_cleanup.site;
+            return false;
+        }
+        ++c->state.tile_draws_retired;
+        if (c->state.last_tile_draw.valid &&
+            c->state.last_tile_draw.attempt == c->state.tile_draws_attempted)
+            c->state.last_tile_draw.retired = true;
+    }
+    c->state.tile_draw = NULL;
+    c->failure.tile_draw = NULL;
+    c->cleanup.tile_draw = NULL;
+    c->tile_draw_failure.brightness = c->tile_draw_cleanup.brightness = NULL;
+    c->tile_draw_failure.factory = c->tile_draw_cleanup.factory = NULL;
+    c->tile_draw_failure.entity = c->tile_draw_cleanup.entity = NULL;
+    c->tile_draw_failure.pose = c->tile_draw_cleanup.pose = NULL;
+    c->tile_draw_failure.manager_owner = c->tile_draw_cleanup.manager_owner = NULL;
+    c->tile_draw_failure.manager = c->tile_draw_cleanup.manager = NULL;
+    mc_tile_entity_release(c->current_tile);
+    c->current_tile = NULL;
+    if (c->draw_ll != NULL && mc_client_tile_renderer_dispatcher_release(
+                                  &c->draw_ll, &c->tiles_cleanup) != MC_CLIENT_TILE_RENDERER_OK) {
+        mc_render_global_source_fail(failure, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED,
+                                     c->tiles_cleanup.operation, "n", "a", entities_descriptor, 560,
+                                     true);
+        failure->tile_renderer = &c->tiles_cleanup;
+        return false;
+    }
+    return true;
 }
 
 static void draw_views_expired(mc_client_render_global_entities_call *c) {
@@ -504,7 +559,7 @@ mc_client_render_global_entities_retire(mc_client_render_global_entities_call **
     c->state.retiring = true;
     /* A nested TH owner keeps its producers and pending native rights until
      * this exact child has drained. No parent occurrence is consumed first. */
-    if (!retire_draw(c, &c->cleanup)) {
+    if (!retire_tile_draw(c, &c->cleanup) || !retire_draw(c, &c->cleanup)) {
         *error = c->cleanup;
         return error->status;
     }
