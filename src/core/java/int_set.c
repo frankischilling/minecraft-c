@@ -305,10 +305,27 @@ mc_java_int_set_status mc_java_int_set_copy_order(const mc_java_int_set *set, in
         return MC_JAVA_INT_SET_INVALID_ARGUMENT;
     if (capacity < set->size)
         return MC_JAVA_INT_SET_LIMIT;
+    const size_t needed = set->size;
+    if (needed == 0) {
+        *count = 0;
+        return MC_JAVA_INT_SET_OK;
+    }
+    const uint32_t table_capacity = set->capacity;
+    mc_java_hash_node *const *cursor = set->buckets;
+    mc_java_hash_node *const *const end = cursor + table_capacity;
     size_t written = 0;
-    for (const mc_java_hash_node *node = mc_java_hash_first(set->buckets, set->capacity);
-         node != NULL; node = mc_java_hash_next(set->buckets, set->capacity, node))
-        output[written++] = int_set_key(node);
+    while (written < needed) {
+        const mc_java_hash_node *node = NULL;
+        while (cursor != end && (node = *cursor) == NULL)
+            ++cursor;
+        if (cursor == end)
+            break;
+        ++cursor;
+        do {
+            output[written++] = int_set_key(node);
+            node = node->next;
+        } while (node != NULL);
+    }
     *count = written;
     return MC_JAVA_INT_SET_OK;
 }

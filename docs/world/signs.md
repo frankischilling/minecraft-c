@@ -92,7 +92,17 @@ Production code is unchanged. Its monitor-2 Windows process passes 681 checks.
 Local Mesa 26 completes 678 assertions, then LeakSanitizer reports 320 bytes
 from Fontconfig 2.17.1; a separate Fontconfig-only match/destroy control reproduces
 those allocations. That local process is retained as failed, not a sanitizer
-pass. Hosted confirmation on the measured Mesa 25.2.8 profile is pending.
+pass. At `26e634d3`, the subsequent hosted run passes Windows 1,356 tests,
+GCC and Clang 1,415 each, and formatting of 2,528 files. Both Linux jobs
+exercise the corrected control on Mesa 25.2.8; all preceding names and exactly
+eight additions remain, without skips or unrun tests.
+
+A later local [Fontconfig change](../client/render-engine.md) supplies the
+existing owned configuration to default substitution on Fontconfig 2.17+.
+The local Mesa 26 control then passes all 678 checks with leak detection
+enabled, clean process exit and no sanitizer stderr. It does not finalize
+global Fontconfig state. These new production bytes await hosted validation;
+the earlier failed process remains separate evidence.
 
 After the Unicode Font change and reviewed null-World removal fix, seven GCC
 and eleven Clang tests pass in 35.11 and 40.38 seconds. Both enable ASan, UBSan

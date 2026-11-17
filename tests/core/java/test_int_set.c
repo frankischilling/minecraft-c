@@ -50,6 +50,13 @@ static int arguments(void) {
     CHECK(mc_java_int_set_contains(set, buffer[0]) && mc_java_int_set_contains(set, buffer[1]));
     mc_java_int_set_clear(set);
     CHECK(mc_java_int_set_size(set) == 0 && !mc_java_int_set_contains(set, INT32_MIN));
+    int32_t preserved[3];
+    memcpy(preserved, buffer, sizeof(buffer));
+    count = 45;
+    CHECK(mc_java_int_set_copy_order(set, buffer, 3, &count) == MC_JAVA_INT_SET_OK && count == 0);
+    CHECK(memcmp(buffer, preserved, sizeof(buffer)) == 0);
+    count = 45;
+    CHECK(mc_java_int_set_copy_order(set, NULL, 0, &count) == MC_JAVA_INT_SET_OK && count == 0);
     mc_java_int_set_free(set);
     mc_java_int_set_clear(NULL);
     mc_java_int_set_free(NULL);

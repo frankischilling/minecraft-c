@@ -47,7 +47,35 @@ each pass 1,414 of 1,415 tests. Their sole failure is the new SourceFont control
 it expected a committed color where the measured Mesa profile retains pending
 attributes. The corrected control snapshots and byte-checks both states through
 retirement. Its Windows control passes 681 checks; production code is unchanged.
-New hosted confirmation is pending.
+At `26e634d3`, [the subsequent hosted run](https://github.com/frankischilling/minecraft-c/actions/runs/44016329965)
+passes all four jobs: Windows 1,356 tests in 598.97 seconds, GCC 1,415 in
+550.24 seconds, Clang 1,415 in 546.52 seconds, and formatting of 2,528 files.
+Every preceding name remains plus exactly eight additions, with no skipped or
+unrun tests. The checked merge tree matches that head. Hosted jobs do not
+publish JUnit XML; their complete test logs provide this hosted census.
+
+A later local [Fontconfig fix](client/render-engine.md) uses the existing
+owned configuration for default substitution on version 2.17 and newer.
+It removes the local 320-byte shutdown leak without library-wide finalization.
+The real constructor and Mesa 26 SourceFont controls pass 8,372 and 678 checks
+with leak detection enabled. This new change has no hosted qualification yet.
+
+Integer-set copying now uses a bounded table cursor while preserving complete
+bucket/chain order and allocation history. Six selected native/order/allocator
+tests pass on each of MSVC, GCC and Clang; fresh JDK observed/control traces
+also match on all three compiler profiles. In the fixed Linux CPU cohort,
+dispersed and sparse medians decrease 5.95% and 8.47% versus the preceding
+shared-kernel version. Tree results are mixed, with a 0.35% median increase.
+The [complete measurements](performance/integer-sets.md) retain the rejected
+nested-loop trial and all raw rows. Broad integration and gameplay FPS remain
+separate gates; these new bytes have no hosted qualification yet.
+
+After both changes, the complete MSVC Release build and all 1,380 Windows tests
+pass. The four-worker sweep takes 571.01 seconds and retains every preceding
+name, with no skips or unrun tests. Complete inventory, Start/completion and
+JUnit joins agree. All 6,602 public files and 689 native products remain
+unchanged through the sweep. Later validation annotations and current admission
+fingerprints preserve its native runtime and test code.
 
 The Tile Set snapshot declaration now uses the existing scoped MSVC C4200
 guard for standard C17 flexible arrays. This addresses the hosted VS2022 build

@@ -21,6 +21,22 @@ records the archive, offline override and notices. The selected Windows Dialog/
 Arial and Linux sans profiles do not implement every logical-font/script
 fallback. No captured bitmap or bundled system font replaces the provider.
 
+Fontconfig 2.17 and newer apply defaults with `FcConfigSetDefaultSubstitute`
+on the same owned configuration used for substitution and matching. Older
+versions retain `FcDefaultSubstitute`. The newer API avoids the deprecated
+wrapper's implicit global configuration; discovery still destroys only its
+own patterns and configuration, without calling library-wide `FcFini`.
+The [Fontconfig API reference](https://fontconfig.pages.freedesktop.org/fontconfig/fontconfig-devel/)
+documents the replacement and its version boundary.
+
+On local Fontconfig 2.17.1, a standalone comparison produces equal complete
+default patterns and font matches. The earlier real constructor exits with a
+320-byte, three-allocation LeakSanitizer report. With explicit configuration,
+the constructor passes 8,372 checks and the Mesa 26.0.8 SourceFont control
+passes 678 checks, with leak detection enabled and empty sanitizer stderr.
+These are local controls; the old constructor's buffered image output is
+incomplete, so they do not establish a new full before/after pixel comparison.
+
 Generated driver resources and the source ge List are separate owners. The
 native descriptor/context hold is reserved before GL generation. Later null
 image, buffer, policy, map or driver failures retain completed source/device

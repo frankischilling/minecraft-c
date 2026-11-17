@@ -124,7 +124,12 @@ static bool discover(mc_client_default_font *font, long *index, mc_client_font_e
         fail(e, MC_CLIENT_FONT_DISCOVERY_FAILED, "default Dialog Fontconfig pattern");
         goto done;
     }
+#if FC_VERSION >= 21700
+    /* Keep defaults on the same owned config as substitution and matching. */
+    FcConfigSetDefaultSubstitute(config, pattern);
+#else
     FcDefaultSubstitute(pattern);
+#endif
     FcResult result;
     matched = FcFontMatch(config, pattern, &result);
     FcChar8 *path = NULL;
