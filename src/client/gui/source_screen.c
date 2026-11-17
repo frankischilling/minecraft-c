@@ -257,7 +257,7 @@ mc_client_screen_status mc_client_screen_closed(mc_client_source_da *o,
         else if (o->kind == MC_CLIENT_SCREEN_SIGN)
             (void)mc_screen_sign_closed_locked((mc_client_source_yc *)o, &e);
         else if (o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_CHEST ||
-                 o->kind == MC_CLIENT_SCREEN_FURNACE)
+                 o->kind == MC_CLIENT_SCREEN_FURNACE || o->kind == MC_CLIENT_SCREEN_DISPENSER)
             (void)mc_screen_container_closed_locked((mc_client_source_id *)o, &e);
         else if (o->kind == MC_CLIENT_SCREEN_WORKBENCH) {
             if (mc_screen_container_closed_locked((mc_client_source_id *)o, &e))
@@ -294,6 +294,7 @@ mc_client_screen_status mc_client_screen_pauses_game(mc_client_source_da *o, boo
             case MC_CLIENT_SCREEN_WORKBENCH:
             case MC_CLIENT_SCREEN_CHEST:
             case MC_CLIENT_SCREEN_FURNACE:
+            case MC_CLIENT_SCREEN_DISPENSER:
             case MC_CLIENT_SCREEN_SIGN:
                 *out = !mc_screen_container_kind(o->kind);
                 e.site = (mc_client_screen_site){mc_screen_container_kind(o->kind) ? "id" : "da",

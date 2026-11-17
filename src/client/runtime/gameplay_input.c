@@ -304,6 +304,15 @@ static mc_world_storage_status furnace(void *context, mc_entity *player,
     return screen_transition_result(call, status, error);
 }
 
+static mc_world_storage_status dispenser(void *context, mc_entity *player,
+                                         mc_inventory_dispenser *inventory,
+                                         mc_world_placement_error *error) {
+    mc_client_gameplay_input *call = context;
+    const mc_client_screen_status status = mc_client_screen_transitions_dispenser(
+        call->transitions, player, inventory, &call->screen.screen);
+    return screen_transition_result(call, status, error);
+}
+
 static mc_item_use_status sign_editor(void *context, mc_entity *player, mc_tile_entity *tile,
                                       mc_item_use_sign_error *error) {
     mc_client_gameplay_input *call = context;
@@ -367,6 +376,7 @@ static bool use(client_application *app, mc_client_gameplay_input *call, bool on
                                                           .workbench = workbench,
                                                           .chest = chest,
                                                           .furnace = furnace,
+                                                          .dispenser = dispenser,
                                                           .player_message = player_message};
     const mc_singleplayer_use_context sources = {.activation = &activation,
                                                  .math = app->source_math_classes,

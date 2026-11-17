@@ -62,6 +62,7 @@ struct mc_container {
     mc_inventory_result *result;
     mc_inventory_chest *chest;
     mc_inventory_furnace *furnace;
+    mc_inventory_dispenser *dispenser;
     int32_t furnace_cook, furnace_burn, furnace_fuel;
     int32_t chest_rows;
     mc_world_runtime *world;
@@ -104,6 +105,16 @@ mc_inventory_status inv_result_new(mc_registry_side side, inv_budget *budget,
                                    mc_inventory_result **out, mc_inventory_error *error);
 void inv_result_free(mc_inventory_result *result);
 mc_inventory_status inv_container_notify(mc_container *container, mc_inventory_error *error);
+/* Shared native allocation and actual DW/ordinary-GP constructor primitives.
+ * These perform no concrete constructor or LW dispatch on their own. The
+ * entered concrete owner supplies its actual NEW/add PCs and keeps every
+ * reached allocation/List prefix on failure. */
+mc_inventory_status inv_container_allocate_kind(mc_registry_side, mc_registry_classes *,
+                                                mc_container_kind, const mc_inventory_limits *,
+                                                mc_container **, mc_inventory_error *);
+bool inv_container_source_base_construct(mc_container *, mc_inventory_error *);
+bool inv_container_source_slot_add(mc_container *, mc_slot_inventory_kind, void *, int32_t, int32_t,
+                                   int32_t, int32_t, int32_t, mc_inventory_error *);
 mc_inventory_status inv_furnace_terminal_admit(const mc_inventory_furnace *, bool,
                                                mc_inventory_error *);
 void inv_furnace_terminal_seal(mc_inventory_furnace *);

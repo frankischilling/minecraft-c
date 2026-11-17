@@ -85,6 +85,8 @@ const char *mc_tile_entity_status_string(mc_tile_entity_status status) {
             return "native TileEntity state invariant failed";
         case MC_TILE_ENTITY_UNSUPPORTED_FP:
             return "unsupported floating environment";
+        case MC_TILE_ENTITY_RANDOM_FAILED:
+            return "Random constructor native profile failed";
     }
     return "unknown TileEntity status";
 }

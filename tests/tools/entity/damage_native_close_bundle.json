@@ -13,8 +13,8 @@
       "sha256": "54d9f163904767d003b962ccfe478992a31d255983a802df10cd653b035aadc9"
     },
     "CMakeLists.txt": {
-      "bytes": 354034,
-      "sha256": "36b246f370fe4647be9c820542144f0103e12428d81079bd54c973ea67e06c5a"
+      "bytes": 354125,
+      "sha256": "e757259d2a121ec0c33736c90f3221f18face9cc63e7a22fea4adf22b3d42bc3"
     },
     "tests/entity/player/test_ally_alert_ownership.c": {
       "bytes": 11240,
@@ -130,57 +130,27 @@
   },
   "prospective_source_successor": {
     "schema": "CURRENT_SOURCE_ADMISSION_SUCCESSOR_V1",
-    "from_commit": "07f946d6e1630a1b9b99b3cb2319e2b9d7819fd9",
+    "from_commit": "cf8cb269054eb1f908f6381f4ed5db7679a61f8e",
     "previous_metadata": {
-      "bytes": 4312,
-      "sha256": "907ca95f151414b1adc4c586bbca6a2c28f1b5cdba20ab87fc7968a0ef69f45c"
+      "bytes": 12979,
+      "sha256": "5420be85f8e0f22dcace32c5f97599590d19998b8100613132992f7979b7afaa"
     },
-    "role": "Current source admissions for execution-owned Player drops/death, coordinate sound and particle loops, actual Entity-sound continuation and typed NULL-List faults, exact failed-Math return proofs, the genuine Ladder neighbor body, and actual Arrow victim hurt entry with bounded native cleanup controls. Historical authority, supplier, source_projection, native_validation and capture records retain their exact prior identities. Current declarations do not qualify older compiled products or observations; fresh frozen build/execution evidence is separate. Full notifying mutation, sleeping Player wake, arbitrary cold/provider hooks and unrestricted play remain open.",
+    "role": "Prospective current-source admission for the loaded Dispenser inventory, activation, eligibility, fresh TileEntity save and native terminal joins. The exact preceding declaration is preserved at tests/reference/source_bindings/history/dispenser/damage_native_close_bundle.pre-dispenser.json. Historical fixture, supplier, projection and qualification fields remain literal; this revision does not assign their old observations to current code. Fresh native execution and strict current input checks remain required.",
     "groups": {
       "files": {
         "previous": {
           "CMakeLists.txt": {
-            "bytes": 344026,
-            "sha256": "73ef413625c0df604da48461b606d4fecba906106b4b0574f92e83e047e2dcdf"
-          },
-          "tests/world/runtime/world_access/test_damage_close_execution.c": {
-            "bytes": 28929,
-            "sha256": "2871f208485700afc6d6411cfe05a41fd00fedafa876d01c92a00a17f2ad8a4b"
-          },
-          "src/entity/mob/damage.c": {
-            "bytes": 43493,
-            "sha256": "77a3a6da09f6e42ce475486b45bc378c4c4a21ca26a538b32317cc0b11a09c33"
-          },
-          "src/world/runtime/world_access.c": {
-            "bytes": 58736,
-            "sha256": "a6b09f73fc699c76e3b837881c53fc24444860cfc7943884e24b766fa1c7a774"
-          },
-          "src/world/runtime/movement.c": {
-            "bytes": 25505,
-            "sha256": "78f3c32efeb46dfe1ef637d7356187477aa6c88261b6a34f72440dc88639500f"
-          },
-          "src/world/runtime/runtime_execution.c": {
-            "bytes": 17733,
-            "sha256": "1beb31d4f21902c8bd6a0eccbaf982629fe4d171d06ed133eff7b58dbcc535fa"
-          },
-          "src/world/runtime/collision/class_entities.c": {
-            "bytes": 25924,
-            "sha256": "ccfcae6c3116da0544c2a2f32d35e9803c3eef5d8b75848e947dc664429ec323"
+            "bytes": 354034,
+            "sha256": "36b246f370fe4647be9c820542144f0103e12428d81079bd54c973ea67e06c5a"
           }
         },
-        "added": [
-          "include/mc/world/runtime/movement.h",
-          "include/mc/world/runtime/world_access_error.h",
-          "src/core/math/execution_internal.h",
-          "src/world/runtime/runtime_execution_internal.h",
-          "src/world/runtime/world_access_internal.h"
-        ],
+        "added": [],
         "current_count": 25
       }
     },
     "current_semantics": {
-      "scope": "Current selected sources share exact typed Native/Math results and Source diagnostics. Existing finite fixture modes and historical dependency/supplier protocols remain unchanged.",
-      "qualification": "Source admission only. Historical captures, dependencies and native/original validation keep their original scope; no retrospective or inherited execution qualification."
+      "scope": "The existing declared scenario and supplier protocols remain unchanged. Current implementation adds client Dispenser ownership/dispatch and checked diagnostic lifetime joins; the affected ordinary World TileEntity and terminal suppliers therefore have new current bytes. This declaration is limited to its explicit current source/helper tables; broader current closure stays in the independently revised provenance maps.",
+      "qualification": "CURRENT_SOURCE_ADMISSION_ONLY_PENDING_FRESH_NATIVE_VALIDATION; parent commit identifies the unchanged base of the uncommitted source snapshot, not a claim that this new code executed at that parent."
     }
   },
   "current_binding_updates": [
@@ -263,6 +233,27 @@
           "current_count": 25
         }
       }
+    },
+    {
+      "from_commit": "cf8cb269054eb1f908f6381f4ed5db7679a61f8e",
+      "previous_metadata": {
+        "bytes": 12979,
+        "sha256": "5420be85f8e0f22dcace32c5f97599590d19998b8100613132992f7979b7afaa"
+      },
+      "role": "Prospective current-source admission for the loaded Dispenser inventory, activation, eligibility, fresh TileEntity save and native terminal joins. The exact preceding declaration is preserved at tests/reference/source_bindings/history/dispenser/damage_native_close_bundle.pre-dispenser.json. Historical fixture, supplier, projection and qualification fields remain literal; this revision does not assign their old observations to current code. Fresh native execution and strict current input checks remain required.",
+      "groups": {
+        "files": {
+          "previous": {
+            "CMakeLists.txt": {
+              "bytes": 354034,
+              "sha256": "36b246f370fe4647be9c820542144f0103e12428d81079bd54c973ea67e06c5a"
+            }
+          },
+          "added": [],
+          "current_count": 25
+        }
+      },
+      "qualification": "CURRENT_SOURCE_ADMISSION_ONLY_PENDING_FRESH_NATIVE_VALIDATION; parent commit identifies the unchanged base of the uncommitted source snapshot, not a claim that this new code executed at that parent."
     }
   ]
 }

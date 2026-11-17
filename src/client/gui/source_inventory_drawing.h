@@ -38,7 +38,7 @@ typedef struct mc_client_inventory_draw_state {
     unsigned int source_pc;
     mc_client_source_ue *receiver;
     mc_client_source_da *screen_receiver;
-    bool workbench, id_returned, chest, furnace;
+    bool workbench, id_returned, chest, furnace, dispenser;
     bool furnace_burning;
     int32_t furnace_burn_scale, furnace_cook_scale;
     const mc_client_manager_draw_state *preview;

@@ -2,6 +2,7 @@
 #define MC_WORLD_RUNTIME_TILE_ENTITIES_ERRORS_H
 
 #include "mc/block/registry/registry.h"
+#include "mc/core/java/random_profile.h"
 #include "mc/entity/errors.h"
 #include "mc/item/stack/stack.h"
 #include "mc/storage/nbt/nbt.h"
@@ -34,7 +35,8 @@ typedef enum mc_tile_entity_status {
     MC_TILE_ENTITY_ITEM_FAILED,
     MC_TILE_ENTITY_NBT_ERROR,
     MC_TILE_ENTITY_STATE_ERROR,
-    MC_TILE_ENTITY_UNSUPPORTED_FP
+    MC_TILE_ENTITY_UNSUPPORTED_FP,
+    MC_TILE_ENTITY_RANDOM_FAILED
 } mc_tile_entity_status;
 
 typedef struct mc_tile_entity_error {
@@ -62,6 +64,9 @@ typedef struct mc_tile_entity_error {
     /* uk/mu owns a separate initializer; base ow/jh registration of its Class
      * literal does not initialize this subclass. */
     unsigned int piston_initializer_bytecode;
+    /* Actual AZ default Random constructor's native profile result. This is
+     * independent of Registry/class initialization and is not a Java exception. */
+    mc_java_random_profile_status random_status;
 } mc_tile_entity_error;
 
 typedef struct mc_live_tile_entity_call_frame {

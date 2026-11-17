@@ -16,9 +16,10 @@ static mc_entity_status container_status(const mc_inventory_error *e) {
         case MC_INVENTORY_STACK_FAILED:
             return MC_ENTITY_ITEM_FAILED;
         default:
-            if (e->chest != NULL || e->furnace != NULL) {
-                const mc_world_storage_status child =
-                    e->chest != NULL ? e->chest->status : e->furnace->status;
+            if (e->chest != NULL || e->furnace != NULL || e->dispenser != NULL) {
+                const mc_world_storage_status child = e->chest != NULL     ? e->chest->status
+                                                      : e->furnace != NULL ? e->furnace->status
+                                                                           : e->dispenser->status;
                 switch (child) {
                     case MC_WORLD_STORAGE_LIMIT:
                         return MC_ENTITY_LIMIT;
@@ -75,6 +76,25 @@ bool mc_active_container(mc_active_scope *s, mc_container *container, bool *out,
         if (status != MC_INVENTORY_OK) {
             if (e->child_error.container.furnace != NULL)
                 e->world = e->child_error.container.furnace->cause;
+            return mc_active_fail(e, container_status(&e->child_error.container),
+                                  e->child_error.container.operation);
+        }
+        e->container_bytecode = 8;
+        e->child_error.container = (mc_inventory_error){0};
+        e->child = MC_PLAYER_TICK_CHILD_NONE;
+        return true;
+    }
+    if (state.kind == MC_CONTAINER_DISPENSER) {
+        e->source_class = "sh";
+        e->source_method = "b(Lgs;)Z";
+        e->container_bytecode = 5;
+        e->child = MC_PLAYER_TICK_CHILD_CONTAINER;
+        e->child_error.container = (mc_inventory_error){0};
+        const mc_inventory_status status =
+            mc_container_dispenser_usable(container, s->player, out, &e->child_error.container);
+        if (status != MC_INVENTORY_OK) {
+            if (e->child_error.container.dispenser != NULL)
+                e->world = e->child_error.container.dispenser->cause;
             return mc_active_fail(e, container_status(&e->child_error.container),
                                   e->child_error.container.operation);
         }

@@ -9,6 +9,8 @@ static const char *container_class(const mc_container *container) {
         return "cd";
     if (container->kind == MC_CONTAINER_FURNACE)
         return "bm";
+    if (container->kind == MC_CONTAINER_DISPENSER)
+        return "sh";
     return container->kind == MC_CONTAINER_PLAYER ? inv_class(container->side, "aa", "o")
                                                   : inv_class(container->side, "it", "fu");
 }
@@ -18,6 +20,8 @@ static const char *constructor_desc(const mc_container *container) {
         return "(Llw;Llw;)V";
     if (container->kind == MC_CONTAINER_FURNACE)
         return "(Lix;Lsk;)V";
+    if (container->kind == MC_CONTAINER_DISPENSER)
+        return "(Llw;Laz;)V";
     return container->kind == MC_CONTAINER_PLAYER
                ? inv_class(container->side, "(Lix;Z)V", "(Lfx;Z)V")
                : inv_class(container->side, "(Lix;Lfd;III)V", "(Lfx;Ldj;III)V");
@@ -153,6 +157,7 @@ void inv_container_free(mc_container *container) {
         --container->inventory->containers;
     mc_inventory_chest_release(container->chest);
     mc_inventory_furnace_release(container->furnace);
+    mc_inventory_dispenser_release(container->dispenser);
     inv_free(&container->budget, container);
 }
 
@@ -167,8 +172,9 @@ mc_inventory_status inv_container_notify(mc_container *container, mc_inventory_e
                                       .operation = "Container matching already active"};
         return error->status;
     }
-    if (container->kind == MC_CONTAINER_CHEST || container->kind == MC_CONTAINER_FURNACE)
-        return MC_INVENTORY_OK; /* CD inherits literal DW.a(LW) return. */
+    if (container->kind == MC_CONTAINER_CHEST || container->kind == MC_CONTAINER_FURNACE ||
+        container->kind == MC_CONTAINER_DISPENSER)
+        return MC_INVENTORY_OK; /* CD/BM/SH inherit literal DW.a(LW) return. */
     const bool prior_active = container->active;
     container->active = true;
     /* The result receiver is evaluated before class active-use and matching. */
@@ -365,6 +371,45 @@ static mc_inventory_status allocate(mc_registry_side side, mc_registry_classes *
         }
     }
     return inv_finish(result, &error);
+}
+
+mc_inventory_status inv_container_allocate_kind(mc_registry_side side, mc_registry_classes *classes,
+                                                mc_container_kind kind,
+                                                const mc_inventory_limits *limits,
+                                                mc_container **out, mc_inventory_error *error) {
+    return allocate(side, classes, kind, limits, out, error);
+}
+
+bool inv_container_source_base_construct(mc_container *c, mc_inventory_error *e) {
+    c->constructor_entered = c->constructing = c->active = true;
+    c->constructor_pc = 1;
+    c->snapshots = list_new(c, 5, e);
+    if (c->snapshots == NULL)
+        goto failed;
+    c->slots = list_new(c, 16, e);
+    if (c->slots == NULL)
+        goto failed;
+    c->window_id = 0;
+    c->transaction = 0;
+    c->listeners = list_new(c, 37, e);
+    if (c->listeners == NULL)
+        goto failed;
+    c->blocked_players = inv_alloc(&c->budget, sizeof(*c->blocked_players), e);
+    if (c->blocked_players == NULL) {
+        inv_frame(e, c->side, "dw", "cl", "<init>", "()V", 48);
+        goto failed;
+    }
+    return true;
+failed:
+    constructor_frame(e, c, 1);
+    return false;
+}
+
+bool inv_container_source_slot_add(mc_container *c, mc_slot_inventory_kind inventory_kind,
+                                   void *inventory, int32_t index, int32_t x, int32_t y,
+                                   int32_t source_new, int32_t source_add, mc_inventory_error *e) {
+    return slot_add(c, MC_SLOT_NORMAL, inventory_kind, inventory, index, x, y, -1, source_new,
+                    source_add, e);
 }
 
 static mc_inventory_status construct(mc_registry_side side, mc_registry_classes *classes,
@@ -757,7 +802,8 @@ bool mc_container_read_state(const mc_container *container, mc_container_state *
         .world = container->world,
         .x = container->x,
         .y = container->y,
-        .z = container->z};
+        .z = container->z,
+        .dispenser_inventory = container->dispenser};
     return true;
 }
 

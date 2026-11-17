@@ -35,6 +35,13 @@ struct mc_tile_entity {
         } furnace;
 
         struct {
+            mc_item_stack **slots;
+            size_t capacity;
+            mc_java_random *random; /* Actual AZ.b, stored only after its constructor returns. */
+            mc_java_random *constructor_random; /* Native owner of an unreturned NEW prefix. */
+        } dispenser;
+
+        struct {
             int32_t delay;
             double rotation, previous_rotation;
             mc_tile_entity_name *name;

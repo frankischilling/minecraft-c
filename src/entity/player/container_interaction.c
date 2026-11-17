@@ -35,6 +35,7 @@ static bool fail(mc_player_container_call *c, mc_entity_status status, const cha
 static bool null_reference(mc_player_container_call *c, const char *operation) {
     c->error.source_exception = true;
     c->error.exception_class = "java/lang/NullPointerException";
+    c->error.exception_class_dispenser_owner_id = 0;
     return fail(c, MC_ENTITY_STATE_ERROR, operation);
 }
 
@@ -47,6 +48,7 @@ static mc_inventory_status host_failure(mc_player_container_call *c,
     e->source_exception = c->error.source_exception;
     e->source_error = c->error.source_error;
     e->exception_class = c->error.exception_class;
+    e->exception_class_dispenser_owner_id = c->error.exception_class_dispenser_owner_id;
     e->dependency = (mc_inventory_site){c->error.child.class_name, c->error.child.method,
                                         c->error.child.descriptor, (int32_t)c->error.child.pc};
     return e->status;
@@ -125,6 +127,7 @@ static bool registry_failure(mc_player_container_call *c) {
     mc_item_render_throwable kind;
     mc_item_render_registry_classification(c->registry, &c->error.registry, &kind,
                                            &c->error.exception_class);
+    c->error.exception_class_dispenser_owner_id = 0;
     c->error.source_exception = kind == MC_ITEM_RENDER_SOURCE_EXCEPTION;
     c->error.source_error = kind == MC_ITEM_RENDER_SOURCE_ERROR;
     return fail(c, MC_ENTITY_STATE_ERROR, c->error.registry.message);
@@ -411,6 +414,7 @@ static mc_inventory_status drop(void *context, mc_entity *player, mc_item_stack 
     c->error.source_exception = c->error.drop.source_exception;
     c->error.source_error = c->error.drop.source_error;
     c->error.exception_class = c->error.drop.exception_class;
+    c->error.exception_class_dispenser_owner_id = 0;
     (void)fail(c,
                s == MC_PLAYER_DROP_BUSY         ? MC_ENTITY_BUSY
                : s == MC_PLAYER_DROP_LIMIT      ? MC_ENTITY_LIMIT
@@ -445,6 +449,7 @@ static void entered(mc_player_container_call *c, int32_t slot, int32_t button, b
         c->error.source_exception = e->source_exception;
         c->error.source_error = e->source_error;
         c->error.exception_class = e->exception_class;
+        c->error.exception_class_dispenser_owner_id = e->exception_class_dispenser_owner_id;
         c->error.child = (mc_player_site){e->site.class_name, e->site.method, e->site.descriptor,
                                           (unsigned int)e->site.pc};
         (void)fail(c,
@@ -638,4 +643,15 @@ mc_entity_status mc_player_container_retire(mc_player_container_call **out,
     if (error != NULL)
         *error = (mc_player_container_error){0};
     return MC_ENTITY_OK;
+}
+
+void mc_player_container_error_expire_dispenser(mc_player_container_error *e,
+                                                uintptr_t ended_owner_id) {
+    if (e == NULL || ended_owner_id == 0)
+        return;
+    mc_container_interaction_error_expire_dispenser(&e->interaction, ended_owner_id);
+    if (e->exception_class_dispenser_owner_id == ended_owner_id) {
+        e->exception_class = NULL;
+        e->exception_class_dispenser_owner_id = 0;
+    }
 }

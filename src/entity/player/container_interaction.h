@@ -10,6 +10,7 @@ typedef struct mc_player_container_call mc_player_container_call;
 typedef struct mc_player_container_error {
     mc_entity_status status;
     const char *operation, *exception_class;
+    uintptr_t exception_class_dispenser_owner_id;
     mc_player_site site, child;
     bool native_policy, source_exception, source_error;
     mc_container_interaction_error interaction;
@@ -17,6 +18,11 @@ typedef struct mc_player_container_error {
     mc_player_statistic_error statistic;
     mc_registry_error registry;
 } mc_player_container_error;
+
+/* Diagnostic expiry only, after the actual adapter occurrence/call ledger ends.
+ * Preserve scalar Source failures and unrelated producer-name borrows. */
+void mc_player_container_error_expire_dispenser(mc_player_container_error *,
+                                                uintptr_t ended_owner_id);
 
 typedef struct mc_player_container_state {
     mc_entity *player;

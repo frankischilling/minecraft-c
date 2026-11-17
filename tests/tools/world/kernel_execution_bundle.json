@@ -81,8 +81,8 @@
       "sha256": "10c102ea8b8b60768f2afd9881204d6a6ab311fce48a4d52d251a61ce5d722cd"
     },
     "src/world/runtime/tile_entities/tile_entities.c": {
-      "bytes": 310473,
-      "sha256": "b1861fce42ff7ffb685378523cb64406a43f2bb9cf4915eb9fafad512dec1bbf"
+      "bytes": 316177,
+      "sha256": "ecb05e208b8e5a08a27b061404e22f1336da8540ae7b122b7cd16479655b6a9c"
     },
     "tests/world/runtime/world_access/test_kernel_execution.c": {
       "bytes": 25462,
@@ -229,33 +229,21 @@
   },
   "prospective_source_successor": {
     "schema": "CURRENT_SOURCE_ADMISSION_SUCCESSOR_V1",
-    "from_commit": "07f946d6e1630a1b9b99b3cb2319e2b9d7819fd9",
+    "from_commit": "cf8cb269054eb1f908f6381f4ed5db7679a61f8e",
     "previous_metadata": {
-      "bytes": 8309,
-      "sha256": "34166db5537170ee69de19bd2005d5b9479e9b744772c7820a9b3754d961c553"
+      "bytes": 11148,
+      "sha256": "493b0d78f63158269a39ed05fee7a24c181040f47f8afb417925f7cb4d3bdfa7"
     },
-    "role": "Current source admissions for execution-owned Player drops/death, coordinate sound and particle loops, actual Entity-sound continuation and typed NULL-List faults, exact failed-Math return proofs, the genuine Ladder neighbor body, and actual Arrow victim hurt entry with bounded native cleanup controls. Historical authority, supplier, source_projection, native_validation and capture records retain their exact prior identities. Current declarations do not qualify older compiled products or observations; fresh frozen build/execution evidence is separate. Full notifying mutation, sleeping Player wake, arbitrary cold/provider hooks and unrestricted play remain open.",
+    "role": "Prospective current-source admission for the loaded Dispenser inventory, activation, eligibility, fresh TileEntity save and native terminal joins. The exact preceding declaration is preserved at tests/reference/source_bindings/history/dispenser/kernel_execution_bundle.pre-dispenser.json. Historical fixture, supplier, projection and qualification fields remain literal; this revision does not assign their old observations to current code. Fresh native execution and strict current input checks remain required.",
     "groups": {
       "sources": {
         "previous": {
-          "src/world/runtime/entity_publication.c": {
-            "bytes": 55691,
-            "sha256": "80d5feb0cdc06668ea97fe58dbde708a5525a506c9ed766802e9d9ca5e432c13"
-          },
-          "src/world/runtime/runtime_execution.c": {
-            "bytes": 17733,
-            "sha256": "1beb31d4f21902c8bd6a0eccbaf982629fe4d171d06ed133eff7b58dbcc535fa"
-          },
-          "src/world/runtime/runtime_execution_internal.h": {
-            "bytes": 10285,
-            "sha256": "3e0e5e44bb29a55373c0ed071d6425525a3421bd9affd0c429c05caa8f685084"
+          "src/world/runtime/tile_entities/tile_entities.c": {
+            "bytes": 310473,
+            "sha256": "b1861fce42ff7ffb685378523cb64406a43f2bb9cf4915eb9fafad512dec1bbf"
           }
         },
-        "added": [
-          "include/mc/world/runtime/movement.h",
-          "include/mc/world/runtime/world_access_error.h",
-          "src/core/math/execution_internal.h"
-        ],
+        "added": [],
         "current_count": 19
       },
       "helpers": {
@@ -265,8 +253,8 @@
       }
     },
     "current_semantics": {
-      "scope": "Current selected sources share exact typed Native/Math results and Source diagnostics. Existing finite fixture modes and historical dependency/supplier protocols remain unchanged.",
-      "qualification": "Source admission only. Historical captures, dependencies and native/original validation keep their original scope; no retrospective or inherited execution qualification."
+      "scope": "The existing declared scenario and supplier protocols remain unchanged. Current implementation adds client Dispenser ownership/dispatch and checked diagnostic lifetime joins; the affected ordinary World TileEntity and terminal suppliers therefore have new current bytes. This declaration is limited to its explicit current source/helper tables; broader current closure stays in the independently revised provenance maps.",
+      "qualification": "CURRENT_SOURCE_ADMISSION_ONLY_PENDING_FRESH_NATIVE_VALIDATION; parent commit identifies the unchanged base of the uncommitted source snapshot, not a claim that this new code executed at that parent."
     }
   }
 }

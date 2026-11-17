@@ -40,6 +40,9 @@ static bool get(inv_slot *slot, const mc_item_stack **out, mc_container_interact
     else if (slot->state.inventory_kind == MC_SLOT_INVENTORY_FURNACE)
         status = mc_inventory_furnace_borrow((mc_inventory_furnace *)slot->state.inventory, index,
                                              out, &e->inventory);
+    else if (slot->state.inventory_kind == MC_SLOT_INVENTORY_DISPENSER)
+        status = mc_inventory_dispenser_borrow((mc_inventory_dispenser *)slot->state.inventory,
+                                               index, out, &e->inventory);
     else
         return inv_interaction_fail(e, MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,
                                     "Slot actual Inventory getter type");
@@ -149,6 +152,9 @@ bool inv_interaction_slot_changed(mc_container_interaction_call *c, inv_slot *sl
     else if (slot->state.inventory_kind == MC_SLOT_INVENTORY_FURNACE)
         status = mc_inventory_furnace_changed((mc_inventory_furnace *)slot->state.inventory,
                                               &e->inventory);
+    else if (slot->state.inventory_kind == MC_SLOT_INVENTORY_DISPENSER)
+        status = mc_inventory_dispenser_changed((mc_inventory_dispenser *)slot->state.inventory,
+                                                &e->inventory);
     else
         return inv_interaction_fail(e, MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,
                                     "Slot actual changed Inventory type");
@@ -184,6 +190,9 @@ bool inv_interaction_slot_put(mc_container_interaction_call *c, inv_slot *slot,
     else if (slot->state.inventory_kind == MC_SLOT_INVENTORY_FURNACE)
         status = mc_inventory_furnace_set((mc_inventory_furnace *)slot->state.inventory, index,
                                           value, &e->inventory);
+    else if (slot->state.inventory_kind == MC_SLOT_INVENTORY_DISPENSER)
+        status = mc_inventory_dispenser_set((mc_inventory_dispenser *)slot->state.inventory, index,
+                                            value, &e->inventory);
     else
         return inv_interaction_fail(e, MC_INVENTORY_UNIMPLEMENTED_DEPENDENCY,
                                     "Slot actual setter Inventory type");
@@ -213,6 +222,10 @@ bool inv_interaction_slot_limit(mc_container_interaction_call *c, inv_slot *slot
         return inv_interaction_inventory(
             e, mc_inventory_furnace_limit((mc_inventory_furnace *)slot->state.inventory, out,
                                           &e->inventory));
+    if (slot->state.inventory_kind == MC_SLOT_INVENTORY_DISPENSER)
+        return inv_interaction_inventory(
+            e, mc_inventory_dispenser_limit((mc_inventory_dispenser *)slot->state.inventory, out,
+                                            &e->inventory));
     *out = 64; /* IX, MQ and WL all literal64; no constructor/field access. */
     return true;
 }
@@ -277,13 +290,18 @@ static bool split_inventory(mc_container_interaction_call *c, inv_slot *slot, in
     if (slot == NULL || slot->state.inventory == NULL)
         return inv_interaction_null(e, "Slot null Inventory split invocation receiver");
     if (slot->state.inventory_kind == MC_SLOT_INVENTORY_CHEST ||
-        slot->state.inventory_kind == MC_SLOT_INVENTORY_FURNACE) {
+        slot->state.inventory_kind == MC_SLOT_INVENTORY_FURNACE ||
+        slot->state.inventory_kind == MC_SLOT_INVENTORY_DISPENSER) {
         mc_item_stack *removed = NULL;
         if (!inv_interaction_inventory(
                 e, slot->state.inventory_kind == MC_SLOT_INVENTORY_FURNACE
                        ? mc_inventory_furnace_split((mc_inventory_furnace *)slot->state.inventory,
                                                     slot->state.inventory_index, amount, &removed,
                                                     &e->inventory)
+                   : slot->state.inventory_kind == MC_SLOT_INVENTORY_DISPENSER
+                       ? mc_inventory_dispenser_split(
+                             (mc_inventory_dispenser *)slot->state.inventory,
+                             slot->state.inventory_index, amount, &removed, &e->inventory)
                        : mc_inventory_chest_split((mc_inventory_chest *)slot->state.inventory,
                                                   slot->state.inventory_index, amount, &removed,
                                                   &e->inventory)))

@@ -7,6 +7,97 @@ the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining w
 
 ## Current client work
 
+### Loaded Dispensers
+
+[Loaded, unpowered Dispensers](client/dispensers.md) connect the nine-slot AZ
+TileEntity and SH container to the client DC/GQ screen, SDK input, menu saving
+and World reselection. The Windows monitor-2 cycle passes 1,081 checks across
+53 frames. It opens twice, moves five diamonds through the cursor into Player
+slot 9, leaves three gold ingots in Dispenser slot 8, closes twice and verifies
+both saved inventories after reloading distinct World and Player owners. The
+native process returns naturally and both windows close. Selected source inputs
+and all 413 supplied asset files remain unchanged. These are authored SDK
+records; physical input timing, original pixels, sustained play and FPS remain
+unqualified.
+
+Five selected Windows CPU tests cover storage, the container, loaded activation
+and retained dirty failures. Four core tests also pass on GCC and Clang with
+ASan, UBSan and leak detection. A regression checks the fresh NBT writer used by
+ordinary Chunk saves with nonempty and empty Items lists. Two fresh hidden SDK
+processes pass 50 and 44 checks for retained calls and diagnostic names across
+both Screen creation orders. A separate MSVC component comparison matches
+sixteen declared cases against two fresh original VMs. The two original
+null-Player Shift failures remain outside the native comparison.
+
+The complete Windows Release build and all 1,394 configured tests pass in
+516.09 seconds. Every preceding 1,387 name remains, with exactly seven
+additions and no failed, skipped or unrun tests. Source inputs and all 703 native
+products remain unchanged during the sweep. Final result annotations,
+current input pins and the optional cross-owner test timeout are checked
+separately; runtime and native test code retain the swept bytes.
+
+An earlier complete run remains recorded as 1,305 passes and 89 source-binding
+preflight failures. All 89 names then execute and pass within an audited
+115-test selection. The fresh complete pass above is a separate run.
+
+Historical Sign qualification below applies to its stated checkpoints.
+Dispenser placement, orientation, random slot selection, powered firing,
+removal drops and dedicated-server behavior remain unfinished.
+
+### Sign placement and editing, cf8cb269
+
+At `cf8cb269`, ordinary Sign Item use reaches VC placement, the client DC hook
+and the real YC editor. The [loaded-Sign contract](world/signs.md) and
+[placement and editor contract](client/sign-editor.md) cover the four UTF-16
+rows, navigation and 15-code-unit append limit, live preview, Done and native
+lifetime. Placement and editing are implemented for the qualified client path;
+their broader parity limits remain explicit.
+
+Two separate Windows monitor-2 runs each place two Signs with single SDK taps,
+edit all eight rows, press Done, save through the menu and reselect a distinct
+World and Player. The first passes 1,833 checks across 118 frames; the post-push
+run with unchanged native code and the current wrapper passes 2,013 checks
+across 134 frames. Each retains five fresh images and checks closure of both
+windows. The first capture's independent physical audit belongs to that capture;
+its parser-check count is not a post-push result or a coverage measure. These
+runs are not a timing or FPS comparison.
+
+The direct preview fixture uses five fresh native processes for 25 returned
+draws and four terminal failures. The original caller observations use eighteen
+fresh VMs across healthy, captured-screen-Font failure and manager-Font failure
+cohorts, six per cohort. Finite field, method-site, public GL and active
+Font-buffer observations retain their own scopes. Complete native caller
+payloads and original pixels are not paired. Queued Done calls, retained old
+receivers, dirty failure producers and partial retirement have separate native
+ownership regressions.
+
+The complete Windows Release build and all 1,387 configured tests pass in 654
+seconds. They retain every preceding 1,380 name plus exactly seven additions,
+with no skipped or unrun tests. All 695 native products remain unchanged during
+the sweep.
+
+[Hosted run 44052551098](https://github.com/frankischilling/minecraft-c/actions/runs/44052551098),
+attempt 1 for `cf8cb269054eb1f908f6381f4ed5db7679a61f8e`, passes all four jobs:
+Windows 1,363/1,363, GCC 1,422/1,422, Clang 1,422/1,422, and formatting of 2,546
+files. Each compiler retains every preceding test name and adds exactly seven,
+with no failed, skipped or unrun tests. These hosted configurations remain
+separate from the complete local Windows suite and local Linux selections.
+
+GCC and Clang client builds and seven selected tests pass; those selections take
+3.63 and 3.21 seconds with ASan, UBSan and leak detection. Component Linux passes
+do not establish ordinary editor gameplay. The local Mesa 26 full-startup path
+still stops before the editor at an explicit unmeasured graphics-attribute
+requirement. Unrestricted play, sustained save drift, networking, original pixel
+equality, gameplay FPS and complete parity remain unqualified.
+
+## Earlier checkpoints
+
+These results apply to their recorded source and scenario scopes. Earlier
+statements about unreached Sign callers do not describe the placement/editor
+increment above.
+
+### Loaded Signs, d572d6dc and 26e634d3
+
 [Loaded Signs](world/signs.md) now reach the ordinary World renderer with actual
 TileEntity text, board/pole models, texture lookup, Java text centering and
 state-dependent bounds. Client support and removal hooks preserve drop order,
@@ -31,8 +122,9 @@ formatting of 2,528 files pass. All eight final monitor-2 Sign profiles pass
 7,895 checks with ordinary save/reselection and checked closure. Independent
 readback covers 48 draws and 40 selected saved Chunk/metadata copies; complete
 413-file asset inventories agree across the sweep. Pushed-Stone, Furnace and
-dense-Chest regressions pass 961, 9,710 and 971 checks. Placement, editing,
-sustained play and gameplay FPS remain open.
+dense-Chest regressions pass 961, 9,710 and 971 checks. Placement and editing
+were outside that checkpoint. Sustained play and gameplay FPS remain
+unqualified.
 
 At `d572d6dc`, the complete serial MSVC Release sweep passes all 1,380 tests in 1804.48
 seconds. All 1,372 preceding names remain plus exactly eight additions, with
@@ -54,11 +146,14 @@ Every preceding name remains plus exactly eight additions, with no skipped or
 unrun tests. The checked merge tree matches that head. Hosted jobs do not
 publish JUnit XML; their complete test logs provide this hosted census.
 
-A later local [Fontconfig fix](client/render-engine.md) uses the existing
+### Fontconfig and Integer copy cursor at b30453b5
+
+At `b30453b5`, the [Fontconfig fix](client/render-engine.md) uses the existing
 owned configuration for default substitution on version 2.17 and newer.
 It removes the local 320-byte shutdown leak without library-wide finalization.
 The real constructor and Mesa 26 SourceFont controls pass 8,372 and 678 checks
-with leak detection enabled. This new change has no hosted qualification yet.
+with leak detection enabled. The local and hosted results below qualify
+that checkpoint separately from the later Sign increment.
 
 Integer-set copying now uses a bounded table cursor while preserving complete
 bucket/chain order and allocation history. Six selected native/order/allocator
@@ -67,15 +162,23 @@ also match on all three compiler profiles. In the fixed Linux CPU cohort,
 dispersed and sparse medians decrease 5.95% and 8.47% versus the preceding
 shared-kernel version. Tree results are mixed, with a 0.35% median increase.
 The [complete measurements](performance/integer-sets.md) retain the rejected
-nested-loop trial and all raw rows. Broad integration and gameplay FPS remain
-separate gates; these new bytes have no hosted qualification yet.
+nested-loop trial and all raw rows. These fixed CPU workloads establish no
+gameplay FPS gain. Integration and hosted results for that checkpoint follow.
 
-After both changes, the complete MSVC Release build and all 1,380 Windows tests
+At that `b30453b5` checkpoint, the complete MSVC Release build and all 1,380 Windows tests
 pass. The four-worker sweep takes 571.01 seconds and retains every preceding
 name, with no skips or unrun tests. Complete inventory, Start/completion and
 JUnit joins agree. All 6,602 public files and 689 native products remain
 unchanged through the sweep. Later validation annotations and current admission
 fingerprints preserve its native runtime and test code.
+
+[Hosted run 44025423327](https://github.com/frankischilling/minecraft-c/actions/runs/44025423327),
+attempt 1 for `b30453b5`, passes all four jobs: Windows 1,356 tests, GCC and
+Clang 1,415 each, and formatting of 2,528 files. Every preceding name remains,
+with no additions, removals, skips or unrun tests. This is the preceding
+runtime-cost checkpoint, not the later Sign test census.
+
+### Native object identity at 4a550e57 and 2543f72e
 
 The Tile Set snapshot declaration now uses the existing scoped MSVC C4200
 guard for standard C17 flexible arrays. This addresses the hosted VS2022 build
@@ -101,6 +204,8 @@ and current admission updates preserve runtime and native C harness bytes.
 The [Integer measurements](performance/integer-sets.md)
 show faster sparse copies and a remaining dispersed-operation cost; they
 establish no gameplay FPS result.
+
+### Piston activation and moving geometry
 
 [Piston activation](world/pistons.md) now reaches real Lever notifications,
 synchronous block events, push/retract bodies and Piston ticks. Nine native
@@ -139,6 +244,8 @@ bindings cover 16,062 entries and 6,385 files, with five live bundles and 232
 source/helper entries. Validation annotations and admission fingerprints were
 updated afterward; runtime and native harness bytes stayed unchanged.
 
+### Expired MobSpawner ticks at c1edfca2
+
 The [MobSpawner tick](world/spawner-tick.md) now completes expired-delay
 construction, population limits, real Pig eligibility and publication, both
 particle methods and four-attempt continuation. MSVC and sanitized GCC/Clang
@@ -158,14 +265,17 @@ These are selected Linux results. Validation annotations and current admission
 fingerprints were updated afterward; runtime and native harness bytes stayed
 unchanged.
 
+### Loaded MobSpawner preview at af9d031d
+
 The [MobSpawner preview](client/spawner-rendering.md) now reaches actual LL/AG
 and the existing Pig renderer from a loaded Chunk. A Windows monitor-2 capture
 passes 1,236 checks and sixteen full World/HUD frames across ordinary save and
 reselection. One cached Pig is rebound to the new World. The fixture checks its
 absence from the live World Entity list and the selected saved Chunk's empty
 Entity list. The first draw compiles six model parts and later
-draws reuse them. Multi-addition HashSet order, Sign drawing, full original
-frame equality and sustained-play/FPS qualification remain open.
+draws reuse them. That preview checkpoint did not qualify multi-addition
+HashSet order or Sign drawing. Full original frame equality and
+sustained-play/FPS qualification remain open.
 
 At `af9d031d`, the complete MSVC Release build and all 1,345 configured Windows tests pass in
 472.08 seconds, retaining all 1,341 preceding names with four additions and no
@@ -175,6 +285,8 @@ selector/recenter regressions in 1.60 seconds. Both Linux runs enable ASan,
 UBSan and leak detection. Their full local builds exhausted the 31 GB WSL
 filesystem; generated products were cleaned and only the affected targets
 rebuilt. These are selected Linux results, not full local suite passes.
+
+### Focus tracing and Fire reader at bd1a164a
 
 The [opt-in focus trace](testing/native-focus-trace.md) now records current-thread
 native focus delivery with checked hook lifetime and a bound compile/link
@@ -190,6 +302,8 @@ all preceding names retained. Four existing Fire reader/packet tests also pass
 under WSL. Final monitor-2 Furnace, Lever and Redstone Torch cycles pass with
 unchanged selected inputs/assets and checked window cleanup.
 
+
+### Retained Furnace lookup at 82a0a89d
 
 [Furnace storage and smelting](client/furnaces.md) use actual TileEntity,
 World, container and screen owners. The [retained lazy addition](world/furnace-lazy-lookup.md)
@@ -209,6 +323,8 @@ Furnace and serialized Player inventory. Original saves/ticks, concrete Player
 construction, unrestricted Worlds and bidirectional round trips remain outside
 that boundary.
 
+### Chest access and placement
+
 Existing [Chest access](client/chests.md) now connects right-click activation,
 single/double inventory views, container transfers, drawing, close and saved
 World reselection. All five authored Windows monitor-2 scenarios pass, including
@@ -219,6 +335,8 @@ it does not qualify concrete original Worlds or drawing.
 [Chest placement](world/chest-placement.md) has separate original predicate/query
 observations and native Item/SDK controls. Unrestricted play and sustained frame
 performance remain unfinished.
+
+### Storage paths and native focus
 
 The C region transport now handles long Windows target and temporary names.
 The [storage path record](world/native-storage-paths.md) covers the reproduced
@@ -236,6 +354,8 @@ now preserves peer focus when dispatching an old Frame gain; a native
 focus mismatch remains unresolved. These finite cases do not qualify
 general long-path play, original save round trips or network shares.
 
+### Quiet-setter acquisition
+
 Ordinary World setters now avoid initializing an unused successful acquisition
 diagnostic. The [quiet-setter record](performance/quiet-setter-acquisition.md)
 retains 64 measured processes and all 448 samples: the eight resident AIR no-op
@@ -249,6 +369,8 @@ Three focused Linux tests pass with ASan, UBSan and leak detection in 19.16
 seconds; the changed C unit also passes strict GCC13 compilation. Formatting
 passes all 2,410 C files and fragments. Changed-cell throughput,
 natural-population speedup and gameplay FPS remain unqualified by this result.
+
+### Provider cache scopes
 
 Source-owned [Chunk cache scopes](performance/provider-cache-scopes.md) now use
 bounded positive hints for resident reads during callbacks. Every hint checks

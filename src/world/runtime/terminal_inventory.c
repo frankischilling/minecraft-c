@@ -10,6 +10,7 @@
 #include "../../entity/player/player_internal.h"
 #include "../../entity/player/terminal_inventory.h"
 #include "../../inventory/chest_internal.h"
+#include "../../inventory/dispenser_internal.h"
 #include "construction_internal.h"
 #include "mc/entity/particles/particle.h"
 #include "mc/world/dimension/world_provider.h"
@@ -27,7 +28,8 @@ typedef enum terminal_record_kind {
     TERMINAL_PATH,
     TERMINAL_PATH_ARENA,
     TERMINAL_CHEST,
-    TERMINAL_FURNACE
+    TERMINAL_FURNACE,
+    TERMINAL_DISPENSER
 } terminal_record_kind;
 
 typedef struct terminal_record {
@@ -380,6 +382,8 @@ static mc_world_storage_status collect_chest_inventory(terminal_collector *, con
                                                        mc_world_storage_error *);
 static mc_world_storage_status collect_furnace_inventory(terminal_collector *, const mc_entity *,
                                                          mc_world_storage_error *);
+static mc_world_storage_status collect_dispenser_inventory(terminal_collector *, const mc_entity *,
+                                                           mc_world_storage_error *);
 
 static mc_world_storage_status collect_entity_references(terminal_collector *c,
                                                          mc_world_storage_error *error) {
@@ -392,6 +396,9 @@ static mc_world_storage_status collect_entity_references(terminal_collector *c,
         if (status != MC_WORLD_STORAGE_OK)
             return status;
         status = collect_furnace_inventory(c, entity, error);
+        if (status != MC_WORLD_STORAGE_OK)
+            return status;
+        status = collect_dispenser_inventory(c, entity, error);
         if (status != MC_WORLD_STORAGE_OK)
             return status;
         status = collect_entity(c, &entity->mount_hold, entity->mount_hold, error);
@@ -491,6 +498,7 @@ static mc_world_storage_status collect_tile(void *context, const void *slot, mc_
 }
 
 #include "terminal_chest.inc"
+#include "terminal_dispenser.inc"
 #include "terminal_furnace.inc"
 
 static mc_world_storage_status collect_chunk(void *context, const mc_world_chunk *chunk,
@@ -656,7 +664,8 @@ static mc_world_storage_status audit(terminal_collector *c,
         if (entry->identity == NULL ||
             (entry->kind != TERMINAL_ENTITY && entry->kind != TERMINAL_TILE &&
              entry->kind != TERMINAL_PATH && entry->kind != TERMINAL_PATH_ARENA &&
-             entry->kind != TERMINAL_CHEST && entry->kind != TERMINAL_FURNACE))
+             entry->kind != TERMINAL_CHEST && entry->kind != TERMINAL_FURNACE &&
+             entry->kind != TERMINAL_DISPENSER))
             continue;
         if (entry->holds < entry->occurrences)
             return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -666,9 +675,10 @@ static mc_world_storage_status audit(terminal_collector *c,
                 error, MC_WORLD_STORAGE_BUSY,
                 entry->kind == TERMINAL_PATH         ? "World terminal external Path hold"
                 : entry->kind == TERMINAL_PATH_ARENA ? "World terminal external Path arena hold"
-                : entry->kind == TERMINAL_CHEST ? "World terminal external Chest inventory hold"
-                : entry->kind == TERMINAL_FURNACE
-                    ? "World terminal external Furnace inventory hold"
+                : entry->kind == TERMINAL_CHEST   ? "World terminal external Chest inventory hold"
+                : entry->kind == TERMINAL_FURNACE ? "World terminal external Furnace inventory hold"
+                : entry->kind == TERMINAL_DISPENSER
+                    ? "World terminal external Dispenser inventory hold"
                     : "World terminal external Entity or TileEntity hold");
     }
     if (c->world->persistent_bindings < c->inventory.expected_world_bindings)

@@ -1,5 +1,7 @@
 #include "interaction_internal.h"
 
+#include <string.h>
+
 static void at(mc_container_interaction_call *c, int32_t pc) {
     c->error.site = (mc_inventory_site){"dw", "a", "(IIZLgs;)Liz;", pc};
     c->state.source_pc = pc;
@@ -45,12 +47,18 @@ static bool slot(mc_container_interaction_call *c, int32_t index, inv_slot **out
     c->error.source_exception = e.source_exception;
     c->error.source_error = e.source_error;
     c->error.exception_class = e.exception_class;
+    c->error.exception_class_dispenser_owner_id = e.exception_class_dispenser_owner_id;
     return inv_interaction_fail(&c->error, e.status, e.operation);
 }
 
 static void transfer_at(mc_container_interaction_call *c, int32_t pc) {
     if (c->state.container->kind == MC_CONTAINER_FURNACE)
         c->error.transfer = (mc_inventory_site){"bm", "a", "(I)Liz;", pc};
+    else if (c->state.container->kind == MC_CONTAINER_DISPENSER) {
+        c->error.transfer = (mc_inventory_site){"dw", "a", "(I)Liz;", pc};
+        if (c->error.site.descriptor != NULL && strcmp(c->error.site.descriptor, "(I)Liz;") == 0)
+            c->error.site.pc = pc; /* Direct entry; enclosing click keeps its own PC. */
+    }
 }
 
 bool inv_interaction_cursor_get(mc_container_interaction_call *c, mc_inventory_player *inventory,
@@ -176,6 +184,26 @@ static bool merge(mc_container_interaction_call *c, mc_item_stack *incoming, int
 bool inv_interaction_transfer_body(mc_container_interaction_call *c, int32_t index,
                                    mc_item_stack **out) {
     ++c->state.shift_calls;
+    if (c->state.container->kind == MC_CONTAINER_DISPENSER) {
+        /* SH declares no a(I). Actual inherited DW.a(I) performs one List.get
+         * at5 and one GP.a at19, returning the same Stack at22. In particular
+         * it does not clone, merge, dirty, pickup or move any Slot. */
+        c->error.child = (mc_inventory_site){"dw", "a", "(I)Liz;", 5};
+        transfer_at(c, 5);
+        inv_slot *s;
+        if (!slot(c, index, &s))
+            return false;
+        *out = NULL;
+        if (s == NULL) {
+            transfer_at(c, 24);
+            return true;
+        }
+        transfer_at(c, 19);
+        if (!inv_interaction_slot_get(c, s, out))
+            return false;
+        transfer_at(c, 22);
+        return true;
+    }
     const bool workbench = c->state.container->kind == MC_CONTAINER_WORKBENCH;
     const bool chest = c->state.container->kind == MC_CONTAINER_CHEST;
     const bool furnace = c->state.container->kind == MC_CONTAINER_FURNACE;
@@ -615,8 +643,9 @@ bool inv_interaction_close_body(mc_container_interaction_call *c) {
         c->state.cursor_cleared = true;
     }
     if (c->state.container->kind == MC_CONTAINER_CHEST ||
-        c->state.container->kind == MC_CONTAINER_FURNACE) {
-        c->error.site.pc = 25; /* CD inherits DW.a(GS), no storage close body. */
+        c->state.container->kind == MC_CONTAINER_FURNACE ||
+        c->state.container->kind == MC_CONTAINER_DISPENSER) {
+        c->error.site.pc = 25; /* CD/BM/SH inherit DW.a(GS), no storage close body. */
         return true;
     }
     if (c->state.container->kind == MC_CONTAINER_WORKBENCH) {

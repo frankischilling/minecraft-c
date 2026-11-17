@@ -4,6 +4,7 @@
 #include "../../world/runtime/construction_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "mc/inventory/chest.h"
+#include "mc/inventory/dispenser.h"
 #include "mc/inventory/furnace.h"
 #include "player_internal.h"
 
@@ -168,6 +169,9 @@ mc_entity_status mc_player_terminal_inventory_end_calls(mc_entity *player,
     if (container.kind == MC_CONTAINER_FURNACE)
         (void)inventory(
             &error, mc_inventory_furnace_end_calls(container.furnace_inventory, &error.inventory));
+    if (container.kind == MC_CONTAINER_DISPENSER)
+        (void)inventory(&error, mc_inventory_dispenser_end_calls(container.dispenser_inventory,
+                                                                 &error.inventory));
     return publish(out, &error);
 }
 

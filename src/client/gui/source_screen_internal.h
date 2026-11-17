@@ -7,7 +7,8 @@
 
 static inline bool mc_screen_container_kind(mc_client_screen_kind kind) {
     return kind == MC_CLIENT_SCREEN_INVENTORY || kind == MC_CLIENT_SCREEN_WORKBENCH ||
-           kind == MC_CLIENT_SCREEN_CHEST || kind == MC_CLIENT_SCREEN_FURNACE;
+           kind == MC_CLIENT_SCREEN_CHEST || kind == MC_CLIENT_SCREEN_FURNACE ||
+           kind == MC_CLIENT_SCREEN_DISPENSER;
 }
 
 typedef struct mc_screen_block {
@@ -88,6 +89,11 @@ struct mc_client_source_da {
     bool native_field_occurrences_retired;
     mc_client_source_ke *selected_cleanup; /* Retained replaced/released a occurrence. */
 };
+
+/* Native diagnostic copies only, under the defining class monitor. End a
+ * matching projected AZ name in this owner's base/initialization records;
+ * no Source fields, other producers or native occurrences are changed. */
+void mc_screen_expire_dispenser_diagnostics_locked(mc_client_source_da *, uintptr_t ended_owner_id);
 
 typedef struct mc_screen_string_hold {
     struct mc_screen_string_hold *next;

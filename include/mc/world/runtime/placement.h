@@ -22,6 +22,7 @@ typedef struct mc_player_sleep_cleanup mc_player_sleep_cleanup;
 typedef struct mc_world_provider_error mc_world_provider_error;
 typedef struct mc_inventory_chest mc_inventory_chest;
 typedef struct mc_inventory_furnace mc_inventory_furnace;
+typedef struct mc_inventory_dispenser mc_inventory_dispenser;
 typedef struct mc_inventory_error mc_inventory_error;
 typedef struct mc_live_tile_entity_error mc_live_tile_entity_error;
 struct mc_world_step_error;
@@ -37,7 +38,8 @@ typedef struct mc_world_block_activation_context {
     mc_registry_classes *player_code_registry;
     /* Explicit defining Block/UK code namespace, borrowed through checked
      * retirement. It is independent of the evaluated World and is consulted
-     * only by reached Block descendants that allocate a Piston TileEntity. */
+     * by reached Block descendants that allocate a Piston TileEntity, and by
+     * the Dispenser checkcast's passive target Class resolution. */
     mc_world_runtime_classes *block_code_classes;
     mc_world_storage_status (*workbench)(void *, mc_entity *, int32_t, int32_t, int32_t,
                                          mc_world_placement_error *);
@@ -49,6 +51,9 @@ typedef struct mc_world_block_activation_context {
     /* Actual GS.a(SK), with the same nullable SK receiver identity. */
     mc_world_storage_status (*furnace)(void *, mc_entity *, mc_inventory_furnace *,
                                        mc_world_placement_error *);
+    /* Actual client GS.a(AZ), preserving the same nullable Dispenser receiver. */
+    mc_world_storage_status (*dispenser)(void *, mc_entity *, mc_inventory_dispenser *,
+                                         mc_world_placement_error *);
     /* Actual reached Player.b(String) virtual. key is the same nullable
      * Registry String identity from key_owner's code literal pool. Preserve
      * this error's work/ownership fields; retain actual failed client children
@@ -102,6 +107,13 @@ struct mc_world_placement_error {
     mc_inventory_furnace *furnace_inventory;
     const mc_live_tile_entity_error *furnace_tile;
     const mc_inventory_error *furnace;
+    bool dispenser_tile_entered, dispenser_tile_returned, dispenser_cast_returned;
+    bool dispenser_provider_null, dispenser_entered, dispenser_returned;
+    mc_world_placement_site dispenser_getter_child;
+    mc_inventory_dispenser *dispenser_inventory;
+    const mc_live_tile_entity_error *dispenser_tile;
+    const mc_inventory_error *dispenser;
+    const mc_inventory_error *cleanup_dispenser;
     bool bed_entered, bed_head, bed_occupied, bed_partner_read, bed_occupancy_cleared;
     bool bed_sleep_returned, player_message_entered, player_message_returned;
     int32_t bed_metadata, bed_direction, bed_x, bed_y, bed_z;

@@ -1,4 +1,5 @@
 #include "active_internal.h"
+#include "mc/inventory/dispenser.h"
 #include "mc/world/runtime/placement.h"
 #include <stdlib.h>
 
@@ -146,6 +147,8 @@ bool mc_player_tick_error_retire(mc_player_tick_error *e) {
     if (e->child == MC_PLAYER_TICK_CHILD_CONTAINER) {
         e->child_error.container.chest = NULL;
         e->child_error.container.furnace = NULL;
+        mc_inventory_dispenser_error_expire(&e->child_error.container,
+                                            e->child_error.container.dispenser_diagnostic_owner_id);
     }
     if (e->retained_registry != NULL) {
         const mc_registry_status status =

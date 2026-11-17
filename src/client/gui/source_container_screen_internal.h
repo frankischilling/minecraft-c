@@ -3,6 +3,7 @@
 
 #include "mc/client/controller/singleplayer.h"
 #include "mc/inventory/chest.h"
+#include "mc/inventory/dispenser.h"
 #include "mc/inventory/furnace.h"
 #include "source_inventory_screen.h"
 #include "source_screen_internal.h"
@@ -20,7 +21,7 @@ typedef struct mc_screen_id_player_hold {
     mc_entity *player;
 } mc_screen_id_player_hold;
 
-/* The actual inherited ID subobject, shared physically by UE, OO, HP and OV. Only
+/* The actual inherited ID subobject, shared physically by UE, OO, HP, OV and GQ. Only
  * the concrete UE owns mouse-position fields/Player preview state. */
 typedef struct mc_client_source_id {
     mc_client_source_da base;
@@ -39,6 +40,9 @@ typedef struct mc_client_source_id {
     bool chest_held;
     mc_inventory_furnace *constructor_furnace;
     bool furnace_held;
+    mc_inventory_dispenser *constructor_dispenser;
+    bool dispenser_held;
+    uintptr_t ended_dispenser_diagnostic_owner_id; /* Actual constructor occurrence consumed. */
     mc_world_runtime *constructor_world;
     bool world_held;
     mc_client_inventory_screen_error detail;
@@ -55,9 +59,26 @@ bool mc_screen_container_construct_locked(mc_client_source_id *, mc_container *,
                                           mc_client_screen_error *);
 bool mc_screen_container_initialize_locked(mc_client_source_id *, mc_client_screen_error *);
 bool mc_screen_container_cleanup_locked(mc_client_source_id *, mc_client_screen_error *);
+/* Trusted owning-router terminal pass: end completed native Player/Container
+ * calls before any Screen's owned Container retires. Caller serializes the
+ * selected terminal graph. No Source call, Screen phase/field store or owner
+ * Container retirement occurs here; external/entered Screen rights refuse. */
+bool mc_screen_container_retire_calls_locked(mc_client_source_id *, mc_client_screen_error *);
 /* End only borrowed Chest/Furnace failure views after their native child occurrences
  * have retired. Source scalar receipts, exceptions and fields remain unchanged. */
 void mc_screen_container_expire_chest_views(mc_client_inventory_screen_error *);
+void mc_screen_container_expire_dispenser_views(mc_client_inventory_screen_error *,
+                                                uintptr_t ended_owner_id);
+/* All native copies owned by this Screen, including calls against a fresh
+ * Player.e from another constructor's adapter. Values match only the actual
+ * ended adapter id; unrelated still-live producer views remain. */
+void mc_screen_container_expire_dispenser_diagnostics(mc_client_source_id *,
+                                                      uintptr_t ended_owner_id);
+/* Project the actual returned Player child. This copies diagnostics only;
+ * ownership remains with that retained invocation and the actual AZ adapter. */
+bool mc_screen_container_player_failure(mc_client_source_id *, const mc_player_container_error *,
+                                        const char *, const char *, const char *, unsigned int,
+                                        mc_client_screen_error *);
 bool mc_screen_container_retirement_admit_locked(mc_client_source_id *, mc_client_screen_error *);
 bool mc_screen_container_terminal_prepare_locked(mc_client_source_id *, mc_client_screen_error *);
 struct mc_client_bootstrap_terminal_scope;

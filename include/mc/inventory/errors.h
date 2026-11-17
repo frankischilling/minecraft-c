@@ -44,6 +44,16 @@ typedef struct mc_inventory_error {
      * native release. Includes dirty/WorldAccess prefix ownership. */
     const mc_live_tile_entity_error *chest;
     const mc_live_tile_entity_error *furnace;
+    /* Actual AZ failure ledger borrow. Explicit end_calls or the end of the
+     * owning adapter occurrence requires typed expiry in diagnostic copies;
+     * receipt-derived exception_class has the same lifetime. */
+    const mc_live_tile_entity_error *dispenser;
+    /* Value witness for the actual adapter diagnostic ledger, never an object
+     * reference or ownership token. Copies acquire no producer occurrence. */
+    uintptr_t dispenser_diagnostic_owner_id;
+    /* True only when an actual WorldAccess receipt supplied exception_class.
+     * Static null/index names remain false and survive diagnostic expiry. */
+    bool exception_class_from_dispenser;
     bool source_exception;
     const char *exception_class;
 } mc_inventory_error;

@@ -3,6 +3,7 @@
 
 #include "mc/inventory/chest.h"
 #include "mc/inventory/crafting.h"
+#include "mc/inventory/dispenser.h"
 #include "mc/inventory/furnace.h"
 #include "mc/inventory/player.h"
 #include "mc/inventory/result.h"
@@ -13,7 +14,8 @@ typedef enum mc_container_kind {
     MC_CONTAINER_PLAYER,
     MC_CONTAINER_WORKBENCH,
     MC_CONTAINER_CHEST,
-    MC_CONTAINER_FURNACE
+    MC_CONTAINER_FURNACE,
+    MC_CONTAINER_DISPENSER
 } mc_container_kind;
 
 typedef enum mc_slot_kind {
@@ -28,7 +30,8 @@ typedef enum mc_slot_inventory_kind {
     MC_SLOT_INVENTORY_RESULT,
     MC_SLOT_INVENTORY_PLAYER,
     MC_SLOT_INVENTORY_CHEST,
-    MC_SLOT_INVENTORY_FURNACE
+    MC_SLOT_INVENTORY_FURNACE,
+    MC_SLOT_INVENTORY_DISPENSER
 } mc_slot_inventory_kind;
 
 typedef struct mc_container_slot_state {
@@ -60,6 +63,7 @@ typedef struct mc_container_state {
     int32_t chest_rows;
     mc_world_runtime *world;
     int32_t x, y, z;
+    mc_inventory_dispenser *dispenser_inventory;
 } mc_container_state;
 
 /* Actual base fields, distinct 2x2/3x3 grid/result owners, and45/46 Slots.
@@ -126,6 +130,24 @@ mc_inventory_status mc_container_furnace_usable(mc_container *, mc_entity *, boo
 mc_inventory_status mc_container_furnace_detect_changes(mc_container *, mc_inventory_error *);
 /* Direct actual BM.a(II) field stores; this does not simulate a packet/listener. */
 mc_inventory_status mc_container_furnace_progress(mc_container *, int32_t, int32_t,
+                                                  mc_inventory_error *);
+/* Actual client SH.<init>(LW,AZ): nullable arguments are stored in 45 ordinary
+ * GP Slots without dereference. Nine AZ Slots precede 27 Player main Slots and
+ * nine hotbar Slots. Allocate/construct retain failed prefixes and enter only
+ * once; create publishes only a completed owner. SH adds no transfer override:
+ * DW.a(I) remains the inherited Slot getter, including enclosing DW shift-click
+ * clone/no-move behavior. Source usability delegates the actual AZ at SH.b5. */
+mc_inventory_status mc_container_dispenser_allocate(mc_registry_side, mc_registry_classes *,
+                                                    const mc_inventory_limits *, mc_container **,
+                                                    mc_inventory_error *);
+mc_inventory_status mc_container_dispenser_construct(mc_container *, mc_inventory_player *,
+                                                     mc_inventory_dispenser *,
+                                                     mc_inventory_error *);
+mc_inventory_status mc_container_dispenser_create(mc_registry_side, mc_registry_classes *,
+                                                  mc_inventory_player *, mc_inventory_dispenser *,
+                                                  const mc_inventory_limits *, mc_container **,
+                                                  mc_inventory_error *);
+mc_inventory_status mc_container_dispenser_usable(mc_container *, mc_entity *, bool *,
                                                   mc_inventory_error *);
 mc_inventory_status mc_container_player_create_default(
     mc_registry_side side, mc_registry_classes *classes, mc_inventory_player *inventory,

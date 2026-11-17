@@ -97,6 +97,12 @@ mc_client_screen_status mc_client_screen_transitions_furnace(mc_client_screen_tr
                                                              mc_entity *actual_player,
                                                              mc_inventory_furnace *actual_inventory,
                                                              mc_client_screen_error *);
+/* Actual DC.a(AZ): capture App1 before NEW GQ4, read Inventory9, construct13,
+ * then invoke display16 through the captured, independently nullable App. */
+mc_client_screen_status mc_client_screen_transitions_dispenser(mc_client_screen_transitions *,
+                                                               mc_entity *actual_player,
+                                                               mc_inventory_dispenser *,
+                                                               mc_client_screen_error *);
 /* Actual DC.a(YK): capture DC.b1, active-use/NEW YC4, constructor9, then
  * invoke captured Minecraft12. Nullable tile and captured App are inspected
  * only by their reached concrete bodies. Every failed prefix stays owned. */

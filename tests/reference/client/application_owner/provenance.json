@@ -110,16 +110,16 @@
       "sha256": "697d339fe002bc378d6009e306dead4da591b822ffcb40cffd26152c499c162c"
     },
     "include/mc/inventory/container.h": {
-      "bytes": 8383,
-      "sha256": "8877962f6e72c310e258cf42749b7aed8d7765b3744141adfb4115d4d9458d79"
+      "bytes": 10042,
+      "sha256": "ff00f9de7ee1dcc9813e82b7de7fc6341d29e63647efa147e67335186218164e"
     },
     "include/mc/inventory/crafting.h": {
       "bytes": 3510,
       "sha256": "31fc7004d4bdaff99e3611be9b6b7aedba7c1278e262ee15e22d989e4bf278ef"
     },
     "include/mc/inventory/errors.h": {
-      "bytes": 1823,
-      "sha256": "0b1e985591b244580bb4a983c1d259ff8473bea1d6286d26eee7fb163788031f"
+      "bytes": 2490,
+      "sha256": "94ce8fce6540c151e84c0da50c99763ca6346b1311d17e9f939826dcf0f6102c"
     },
     "include/mc/inventory/player.h": {
       "bytes": 4669,
@@ -442,8 +442,8 @@
       "sha256": "b3f5135585c5f38e255cd37878b31807b04826b3f65510e1daf2e10321b50289"
     },
     "src/client/gui/source_screen.h": {
-      "bytes": 16577,
-      "sha256": "d6018a8d39ff19e7ec706bc565f4b05d8ebd961837e322eee698c723207e37eb"
+      "bytes": 17121,
+      "sha256": "cd99883dd8e1851f9861132f512d7ba56946160a03b7d5eccf438863247517b9"
     },
     "src/client/images/class_stream.h": {
       "bytes": 3513,
@@ -476,6 +476,18 @@
     "src/inventory/player/terminal_internal.h": {
       "bytes": 2248,
       "sha256": "22c887cecb6c4412c770736a0fb4cf1689b8588602112288f81ea2ae6d9162e2"
+    },
+    "include/mc/inventory/chest.h": {
+      "bytes": 4627,
+      "sha256": "c1897a7567f7fd1424e9ca3bb5cdf6cd0bfce450bfb6fb22d957e0267bf263fe"
+    },
+    "include/mc/inventory/dispenser.h": {
+      "bytes": 4415,
+      "sha256": "f01273abefe55feb8922e78d15bebca1f2caa9eb472a37a54e08040c299f8af6"
+    },
+    "include/mc/inventory/furnace.h": {
+      "bytes": 3532,
+      "sha256": "ceca68a012a2f877e6fcf237d226e7885c06263e79fc22395e5f5db59c8bd04f"
     }
   },
   "reference_files": {
@@ -1014,6 +1026,38 @@
           },
           "added": [],
           "current_count": 119
+        }
+      }
+    },
+    {
+      "from_commit": "cf8cb269054eb1f908f6381f4ed5db7679a61f8e",
+      "role": "Prospective current-source admission for the uncommitted content snapshot above parent cf8cb269054eb1f908f6381f4ed5db7679a61f8e. from_commit names only that parent, not the commit of a new native execution. This selected map changes shared Inventory/Screen layout and diagnostic witness headers and completes their actual quoted header dependencies. Current content pins include only the five explicitly supplied Root virtual BUNDLE_SHA helper overrides where already declared; actual worktree preimages remain unchanged. Fresh native compilation/product/execution validation is pending. Original observations, authorities, controllers/helpers, suppliers, historical roles, qualifications and all earlier binding updates retain their exact recorded identities; no old result is rebound or credited to this snapshot.",
+      "previous_metadata": {
+        "bytes": 42377,
+        "sha256": "66eb65dfe8fc35bd16f49e30c6999524786c6859db036da53c07f152b9f41761"
+      },
+      "groups": {
+        "native_sources": {
+          "previous": {
+            "include/mc/inventory/container.h": {
+              "bytes": 8383,
+              "sha256": "8877962f6e72c310e258cf42749b7aed8d7765b3744141adfb4115d4d9458d79"
+            },
+            "include/mc/inventory/errors.h": {
+              "bytes": 1823,
+              "sha256": "0b1e985591b244580bb4a983c1d259ff8473bea1d6286d26eee7fb163788031f"
+            },
+            "src/client/gui/source_screen.h": {
+              "bytes": 16577,
+              "sha256": "d6018a8d39ff19e7ec706bc565f4b05d8ebd961837e322eee698c723207e37eb"
+            }
+          },
+          "added": [
+            "include/mc/inventory/chest.h",
+            "include/mc/inventory/dispenser.h",
+            "include/mc/inventory/furnace.h"
+          ],
+          "current_count": 122
         }
       }
     }

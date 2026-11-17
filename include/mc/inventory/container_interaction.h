@@ -9,8 +9,9 @@ typedef struct mc_container_interaction_call mc_container_interaction_call;
 typedef struct mc_container_interaction_error {
     mc_inventory_status status;
     const char *operation, *exception_class;
+    uintptr_t exception_class_dispenser_owner_id; /* Receipt-derived name borrow only. */
     mc_inventory_site site, child, dependency;
-    mc_inventory_site transfer; /* Reached BM.a(I) caller, independent of GP/IZ children. */
+    mc_inventory_site transfer; /* Actual BM or inherited DW.a(I), separate from GP/IZ children. */
     bool native_policy, source_exception, source_error;
     mc_inventory_error inventory;
     mc_registry_error registry;
@@ -54,6 +55,8 @@ typedef struct mc_container_interaction_state {
 } mc_container_interaction_state;
 
 void mc_container_interaction_error_init(mc_container_interaction_error *);
+void mc_container_interaction_error_expire_dispenser(mc_container_interaction_error *,
+                                                     uintptr_t ended_owner_id);
 
 /* Native holds do not call a constructor, initialize classes, retain Player,
  * or execute source close. The owner/its source graph stays live/exclusive.
@@ -103,6 +106,12 @@ mc_inventory_status mc_container_furnace_transfer_begin(mc_container *, int32_t,
                                                         const mc_container_interaction_host *,
                                                         mc_container_interaction_call **,
                                                         mc_container_interaction_error *);
+/* SH has no transfer override: direct inherited DW.a(I) returns the actual
+ * Slot Stack alias (or null), independently held by this native call. It does
+ * not clone or mutate; the enclosing DW click's clone is a separate operation. */
+mc_inventory_status mc_container_dispenser_transfer_begin(mc_container *, int32_t,
+                                                          mc_container_interaction_call **,
+                                                          mc_container_interaction_error *);
 /* Transfer the actual successfully returned source clone, including NULL.
  * No second clone is made. A failed/active call preserves out. */
 mc_inventory_status mc_container_interaction_take_result(mc_container_interaction_call *,

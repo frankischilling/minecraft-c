@@ -14,6 +14,7 @@
 #include "mc/core/java/java.h"
 #include "mc/entity/player/sleep.h"
 #include "mc/inventory/chest.h"
+#include "mc/inventory/dispenser.h"
 #include "mc/inventory/furnace.h"
 #include "mc/world/runtime/bed_state.h"
 #include "mc/world/runtime/blocks.h"
@@ -27,6 +28,7 @@
 #include "plant_substrate_internal.h"
 #include "runtime_internal.h"
 #include "step_internal.h"
+#include "tile_entities/source_detailed_internal.h"
 #include "torch_support_internal.h"
 
 #include <emmintrin.h>
@@ -48,6 +50,15 @@ typedef struct furnace_activation_work {
     mc_inventory_error inventory_error;
 } furnace_activation_work;
 
+typedef struct dispenser_activation_work {
+    mc_live_tile_entity_error tile_error;
+    mc_tile_entity *tile;
+    mc_tile_entity_classes *classes;
+    mc_entity *player;
+    mc_inventory_dispenser *inventory;
+    mc_inventory_error inventory_error, cleanup;
+} dispenser_activation_work;
+
 struct mc_world_placement_work {
     mc_world_runtime *world;
     mc_registry_classes *registry;
@@ -57,6 +68,7 @@ struct mc_world_placement_work {
     mc_world_runtime_acquisition_error *queries[PLACEMENT_QUERIES];
     chest_placement_work *chest_placement;
     furnace_activation_work *furnace;
+    dispenser_activation_work *dispenser;
     mc_math_classes *math;
     mc_world_solid_support_detail *supports[5];
     mc_world_mutation_error *mutation;
@@ -305,6 +317,9 @@ static bool capture(mc_world_placement_error *e) {
     if (w->furnace != NULL &&
         !publication_receipts(e, &w->furnace->tile_error.batch, &w->furnace->tile_error))
         return false;
+    if (w->dispenser != NULL &&
+        !publication_receipts(e, &w->dispenser->tile_error.batch, &w->dispenser->tile_error))
+        return false;
     mc_world_nearby_error *nearby[] = {w->collision == NULL ? NULL : &w->collision->nearby,
                                        w->entities == NULL ? NULL : &w->entities->nearby,
                                        w->step == NULL ? NULL : &w->step->block_read.nearby};
@@ -492,6 +507,7 @@ static bool torch_predicate(mc_world_placement_error *e, mc_world_runtime *world
 #include "placement/bed.inc"
 #include "placement/chest.inc"
 #include "placement/chest_predicate.inc"
+#include "placement/dispenser.inc"
 #include "placement/furnace.inc"
 #include "placement/lever.inc"
 
@@ -1224,6 +1240,10 @@ mc_world_storage_status mc_world_block_activate_with_context(
         const bool returned = furnace_activate(e, world, x, y, z, player, context);
         return finish(e, returned, returned, out);
     }
+    if (block->kind == MC_BLOCK_DISPENSER && registry->options.side == MC_REGISTRY_CLIENT) {
+        const bool returned = dispenser_activate(e, world, x, y, z, player, context);
+        return finish(e, returned, returned, out);
+    }
     if (block->kind == MC_BLOCK_CRAFTING_TABLE) {
         e->site = site("fi", "a", "(Lfd;IIILgs;)Z", 1);
         if (!hold_world(e, world))
@@ -1435,6 +1455,24 @@ bool mc_world_placement_error_retire(mc_world_placement_error *e) {
         e->cleanup = (mc_world_storage_error){MC_WORLD_STORAGE_BUSY, e->cleanup_math.operation, 0};
         return false;
     }
+    if (w->dispenser != NULL) {
+        dispenser_activation_work *f = w->dispenser;
+        e->cleanup_dispenser = &f->cleanup;
+        const mc_inventory_status status =
+            mc_inventory_dispenser_retire(&f->inventory, &f->cleanup);
+        if (status != MC_INVENTORY_OK) {
+            e->cleanup = (mc_world_storage_error){
+                status == MC_INVENTORY_LIMIT ? MC_WORLD_STORAGE_LIMIT : MC_WORLD_STORAGE_BUSY,
+                f->cleanup.operation, 0};
+            return false;
+        }
+        e->dispenser_inventory = NULL;
+        if (mc_tile_entity_classes_release(&f->classes) != MC_TILE_ENTITY_OK) {
+            e->cleanup = (mc_world_storage_error){MC_WORLD_STORAGE_BUSY,
+                                                  "XQ target Class native retirement", 0};
+            return false;
+        }
+    }
     for (size_t i = 0; i < w->receipt_count; ++i)
         mc_world_access_failure_release(&w->receipts[i]);
     for (size_t i = 0; i < w->source_count; ++i)
@@ -1458,6 +1496,11 @@ bool mc_world_placement_error_retire(mc_world_placement_error *e) {
         mc_inventory_furnace_release(w->furnace->inventory);
         mc_tile_entity_release(w->furnace->tile);
         free(w->furnace);
+    }
+    if (w->dispenser != NULL) {
+        mc_entity_release(w->dispenser->player);
+        mc_tile_entity_release(w->dispenser->tile);
+        free(w->dispenser);
     }
     free(w->mutation);
     free(w->step);

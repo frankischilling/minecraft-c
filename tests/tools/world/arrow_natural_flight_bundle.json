@@ -48,8 +48,8 @@
       "sha256": "c2bc52972d5cabdf108f5694672a9814de129f9a002731cd146b6d066363666b"
     },
     "src/world/runtime/terminal_inventory.c": {
-      "bytes": 46595,
-      "sha256": "1d7a39986766016c8c02903d697d86be9804980753746f9d3b57cff87102544a"
+      "bytes": 47178,
+      "sha256": "739534ade603e51cc4c35690801beffd224ff89f25c8694e42a54211f825486a"
     },
     "tests/world/runtime/test_arrow_natural_flight.c": {
       "bytes": 19352,
@@ -158,26 +158,18 @@
   },
   "prospective_source_successor": {
     "schema": "CURRENT_SOURCE_ADMISSION_SUCCESSOR_V1",
-    "from_commit": "fc7b0418f24b5c302dab1a114a3bebb0a0f1670f",
-    "role": "Current source admission for the execution-owned Player wake, recursive Bed mutation and lighting paths, and their Arrow damage continuation. The declared inputs include the native controls, authored original recursive wake packet and current scope documents. Earlier authority, supplier, source projection, native validation, captures and qualification records retain their original identities and scopes.",
+    "from_commit": "cf8cb269054eb1f908f6381f4ed5db7679a61f8e",
     "previous_metadata": {
-      "bytes": 8409,
-      "sha256": "15ee45c488246563b8da41162b6928e8117997eabc8eb1ce59667e898049db78"
+      "bytes": 8534,
+      "sha256": "371d1f547eed1a4bdce294f90c32bd7019aee53441cf45131661f6017a28a428"
     },
+    "role": "Prospective current-source admission for the loaded Dispenser inventory, activation, eligibility, fresh TileEntity save and native terminal joins. The exact preceding declaration is preserved at tests/reference/source_bindings/history/dispenser/arrow_natural_flight_bundle.pre-dispenser.json. Historical fixture, supplier, projection and qualification fields remain literal; this revision does not assign their old observations to current code. Fresh native execution and strict current input checks remain required.",
     "groups": {
       "sources": {
         "previous": {
-          "src/entity/arrow/tick.c": {
-            "bytes": 36364,
-            "sha256": "cb503a7c838b0febd59d2e6ad0b2fd4b8daa2e098fb7e0a492ed9bdaded666a8"
-          },
-          "src/entity/movement/damage_execution_internal.h": {
-            "bytes": 7280,
-            "sha256": "10fee661579a6587e4f5fa4f9d9ecae478b630c6de9d38974db3931e5fcf4981"
-          },
-          "src/entity/movement/effects.c": {
-            "bytes": 84670,
-            "sha256": "c9f5e14fad32e881ae552374b9cc0775fd5d2d78538d266c2c5f11b780f7fd8c"
+          "src/world/runtime/terminal_inventory.c": {
+            "bytes": 46595,
+            "sha256": "1d7a39986766016c8c02903d697d86be9804980753746f9d3b57cff87102544a"
           }
         },
         "added": [],
@@ -185,8 +177,8 @@
       }
     },
     "current_semantics": {
-      "scope": "The current natural victim-frontier source now invokes the actual owned hurt child at Arrow victim741; the inherited victim Boolean is consumed only after that actual child continuation and its native cleanup. Failed children retain their actual typed diagnostics, Math-return proof and exact explicit cleanup records. This prospective source successor does not describe the behavior or qualification of the preserved historical supplier cohorts. Current pins also bind the declared Slime removal dispatch and terminal inventory changes. Slime removal admission for retiring actors leaves earlier removal work with its existing cleanup owner. The current declared sources include the Arrow continuation into the execution-owned Player wake path.",
-      "qualification": "Current source admission. Existing suppliers, captures and native or original results retain their recorded input identities and qualification."
+      "scope": "The existing declared scenario and supplier protocols remain unchanged. Current implementation adds client Dispenser ownership/dispatch and checked diagnostic lifetime joins; the affected ordinary World TileEntity and terminal suppliers therefore have new current bytes. This declaration is limited to its explicit current source/helper tables; broader current closure stays in the independently revised provenance maps.",
+      "qualification": "CURRENT_SOURCE_ADMISSION_ONLY_PENDING_FRESH_NATIVE_VALIDATION; parent commit identifies the unchanged base of the uncommitted source snapshot, not a claim that this new code executed at that parent."
     }
   }
 }

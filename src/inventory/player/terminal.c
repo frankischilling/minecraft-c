@@ -1,4 +1,5 @@
 #include "../chest_internal.h"
+#include "../dispenser_internal.h"
 #include "../internal.h"
 #include "terminal_internal.h"
 
@@ -85,6 +86,24 @@ static bool slot_shape(const mc_container *c, const inv_slot *slot, size_t index
             s.x = 8 + cell * 18;
             s.y = 142;
         }
+    } else if (c->kind == MC_CONTAINER_DISPENSER) {
+        if (index < 9u) {
+            s.inventory_kind = MC_SLOT_INVENTORY_DISPENSER;
+            s.inventory = c->dispenser;
+            s.inventory_index = (int32_t)index;
+            s.x = 62 + (int32_t)(index % 3u) * 18;
+            s.y = 17 + (int32_t)(index / 3u) * 18;
+        } else if (index < 36u) {
+            const int32_t cell = (int32_t)index - 9;
+            s.inventory_index = 9 + cell;
+            s.x = 8 + (cell % 9) * 18;
+            s.y = 84 + (cell / 9) * 18;
+        } else {
+            const int32_t cell = (int32_t)index - 36;
+            s.inventory_index = cell;
+            s.x = 8 + cell * 18;
+            s.y = 142;
+        }
     } else if (c->kind == MC_CONTAINER_CHEST) {
         const size_t storage = (size_t)c->chest_rows * 9u;
         const int32_t offset = (c->chest_rows - 4) * 18;
@@ -159,30 +178,38 @@ static bool container(terminal_proof *p, mc_container *c, mc_inventory_player *i
         return refuse(p, MC_INVENTORY_BUSY, "Inventory terminal Container seal state");
     const bool chest = !aa && c->kind == MC_CONTAINER_CHEST;
     const bool furnace = !aa && c->kind == MC_CONTAINER_FURNACE;
-    const size_t count = aa ? 45u : furnace ? 39u : chest ? (size_t)c->chest_rows * 9u + 36u : 46u;
+    const bool dispenser = !aa && c->kind == MC_CONTAINER_DISPENSER;
+    const size_t count = aa || dispenser ? 45u
+                         : furnace       ? 39u
+                         : chest         ? (size_t)c->chest_rows * 9u + 36u
+                                         : 46u;
     if (!budget_shape(&c->budget) || c->side != MC_REGISTRY_CLIENT ||
-        c->kind != (aa        ? MC_CONTAINER_PLAYER
-                    : furnace ? MC_CONTAINER_FURNACE
-                    : chest   ? MC_CONTAINER_CHEST
-                              : MC_CONTAINER_WORKBENCH) ||
+        c->kind != (aa          ? MC_CONTAINER_PLAYER
+                    : furnace   ? MC_CONTAINER_FURNACE
+                    : dispenser ? MC_CONTAINER_DISPENSER
+                    : chest     ? MC_CONTAINER_CHEST
+                                : MC_CONTAINER_WORKBENCH) ||
         c->classes != registry || c->inventory != ix || !c->inventory_bound ||
         !c->constructor_entered || !c->constructed || c->constructor_failed ||
-        c->constructor_pc != (aa        ? 290
-                              : furnace ? 182
-                              : chest   ? 217
-                                        : 266) ||
-        c->local != aa || c->world != (aa || chest || furnace ? NULL : world) ||
+        c->constructor_pc != (aa          ? 290
+                              : furnace   ? 182
+                              : dispenser ? 173
+                              : chest     ? 217
+                                          : 266) ||
+        c->local != aa || c->world != (aa || chest || furnace || dispenser ? NULL : world) ||
         (chest && (c->chest == NULL || (c->chest_rows != 3 && c->chest_rows != 6))) ||
         (!chest && (c->chest != NULL || c->chest_rows != 0)) ||
-        (furnace ? c->furnace == NULL : c->furnace != NULL))
+        (furnace ? c->furnace == NULL : c->furnace != NULL) ||
+        (dispenser ? c->dispenser == NULL : c->dispenser != NULL))
         return refuse(p, MC_INVENTORY_INVALID_ARGUMENT, "Inventory terminal Container identity");
     mc_inventory_crafting *g = c->crafting;
     mc_inventory_result *r = c->result;
-    if (chest || furnace) {
+    if (chest || furnace || dispenser) {
         if (g != NULL || r != NULL)
             return refuse(p, MC_INVENTORY_INVALID_ARGUMENT, "CD owns no Crafting or result child");
-        if ((furnace ? inv_furnace_terminal_admit(c->furnace, sealed, &p->error)
-                     : inv_chest_terminal_admit(c->chest, sealed, &p->error)) != MC_INVENTORY_OK)
+        if ((dispenser ? inv_dispenser_terminal_admit(c->dispenser, sealed, &p->error)
+             : furnace ? inv_furnace_terminal_admit(c->furnace, sealed, &p->error)
+                       : inv_chest_terminal_admit(c->chest, sealed, &p->error)) != MC_INVENTORY_OK)
             return false;
     } else {
         if (!allocation(p, g, sizeof(*g), &total) || !allocation(p, r, sizeof(*r), &total))
@@ -302,6 +329,8 @@ mc_inventory_status mc_inventory_player_terminal_prepare(mc_inventory_player *ix
                 inv_chest_terminal_seal(it->chest);
             if (it->furnace != NULL)
                 inv_furnace_terminal_seal(it->furnace);
+            if (it->dispenser != NULL)
+                inv_dispenser_terminal_seal(it->dispenser);
             *out = (mc_inventory_player_terminal){ix, aa, it, player, true};
         }
     }

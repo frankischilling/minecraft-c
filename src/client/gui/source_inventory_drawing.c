@@ -24,7 +24,7 @@ bool mc_inventory_draw_fail(mc_client_inventory_draw_call *c, mc_client_screen_s
 const char *mc_inventory_draw_descriptor(const mc_client_inventory_draw_call *c,
                                          const char *owner) {
     if (strcmp(owner, "ue") == 0 || strcmp(owner, "oo") == 0 || strcmp(owner, "hp") == 0 ||
-        strcmp(owner, "ov") == 0)
+        strcmp(owner, "ov") == 0 || strcmp(owner, "gq") == 0)
         return "(F)V";
     if (strcmp(owner, "ub") == 0)
         return "(IIIIII)V";
@@ -111,6 +111,8 @@ static bool slot_error(mc_client_inventory_draw_call *c, mc_inventory_status sta
     c->error.screen.source_exception = c->error.slot.source_exception;
     c->error.screen.source_error = c->error.slot.source_error;
     c->error.screen.exception_class = c->error.slot.exception_class;
+    c->error.screen.exception_class_dispenser_owner_id =
+        c->error.slot.exception_class_dispenser_owner_id;
     return false;
 }
 
@@ -272,6 +274,8 @@ static bool foreground(mc_client_inventory_draw_call *c) {
         return mc_chest_draw_foreground(c);
     if (c->owner->base.kind == MC_CLIENT_SCREEN_FURNACE)
         return mc_furnace_draw_foreground(c);
+    if (c->owner->base.kind == MC_CLIENT_SCREEN_DISPENSER)
+        return mc_dispenser_draw_foreground(c);
     mc_client_source_id *o = c->owner;
     mc_player_string *literal = NULL;
     if (!mc_screen_lock(o->base.classes, &c->error.screen))
@@ -376,6 +380,7 @@ static bool body(mc_client_inventory_draw_call *c) {
     if (!(o->base.kind == MC_CLIENT_SCREEN_INVENTORY   ? mc_inventory_draw_background(c)
           : o->base.kind == MC_CLIENT_SCREEN_WORKBENCH ? mc_workbench_draw_background(c)
           : o->base.kind == MC_CLIENT_SCREEN_CHEST     ? mc_chest_draw_background(c)
+          : o->base.kind == MC_CLIENT_SCREEN_DISPENSER ? mc_dispenser_draw_background(c)
                                                        : mc_furnace_draw_background(c)))
         return false;
     mc_client_display *d = c->services.display;
@@ -566,6 +571,8 @@ mc_client_screen_status mc_inventory_draw_begin_id(mc_client_source_id *o,
         c->state.chest = true;
     if (o->base.kind == MC_CLIENT_SCREEN_FURNACE)
         c->state.furnace = true;
+    if (o->base.kind == MC_CLIENT_SCREEN_DISPENSER)
+        c->state.dispenser = true;
     mtx_unlock(&o->base.classes->mutex);
     c->state.active = true;
     (void)body(c);

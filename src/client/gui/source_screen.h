@@ -22,6 +22,7 @@ typedef struct mc_container mc_container;
 typedef struct mc_inventory_player mc_inventory_player;
 typedef struct mc_inventory_chest mc_inventory_chest;
 typedef struct mc_inventory_furnace mc_inventory_furnace;
+typedef struct mc_inventory_dispenser mc_inventory_dispenser;
 
 typedef enum mc_client_screen_status {
     MC_CLIENT_SCREEN_OK,
@@ -68,7 +69,8 @@ typedef enum mc_client_screen_kind {
     MC_CLIENT_SCREEN_DEATH,
     MC_CLIENT_SCREEN_CHEST,
     MC_CLIENT_SCREEN_FURNACE,
-    MC_CLIENT_SCREEN_SIGN
+    MC_CLIENT_SCREEN_SIGN,
+    MC_CLIENT_SCREEN_DISPENSER
 } mc_client_screen_kind;
 
 typedef enum mc_client_screen_class_phase {
@@ -97,6 +99,9 @@ typedef struct mc_client_screen_error {
     bool native_policy, source_returned;
     bool source_exception, source_error;
     const char *exception_class;
+    /* A native value witness only for a projected actual AZ producer name.
+     * Copied envelopes do not acquire producer or adapter ownership. */
+    uintptr_t exception_class_dispenser_owner_id;
     mc_java_random_profile_status random;
     mc_player_status string;
     mc_registry_error registry;
@@ -112,6 +117,10 @@ typedef struct mc_client_screen_error {
     const mc_client_inventory_screen_error *inventory;
     const mc_client_sign_screen_error *sign;
 } mc_client_screen_error;
+
+/* End only this value envelope's projected AZ name borrow after its actual
+ * diagnostic occurrence ends. Nested owned copies have their own joins. */
+void mc_client_screen_error_expire_dispenser(mc_client_screen_error *, uintptr_t ended_owner_id);
 
 /* Actual virtual DA.h(): ordinary screens return; FJ disables keyboard repeat.
  * A synchronous enclosing input call may still hold this exact old receiver. */

@@ -3,6 +3,7 @@
 #include "../gui/display_screen.h"
 #include "../gui/loading_internal.h"
 #include "../gui/source_chest_drawing.h"
+#include "../gui/source_dispenser_drawing.h"
 #include "../gui/source_furnace_drawing.h"
 #include "../gui/source_inventory_drawing.h"
 #include "../gui/source_screen_initialize.h"
@@ -727,7 +728,8 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
             loop->state.font_measurements += loop->sign_state.font_measurements;
         } else if (drawn.kind == MC_CLIENT_SCREEN_INVENTORY ||
                    drawn.kind == MC_CLIENT_SCREEN_WORKBENCH ||
-                   drawn.kind == MC_CLIENT_SCREEN_CHEST || drawn.kind == MC_CLIENT_SCREEN_FURNACE) {
+                   drawn.kind == MC_CLIENT_SCREEN_CHEST || drawn.kind == MC_CLIENT_SCREEN_FURNACE ||
+                   drawn.kind == MC_CLIENT_SCREEN_DISPENSER) {
             const mc_client_manager_draw_services services = {.math = loop->math,
                                                               .graphics = loop->graphics,
                                                               .display = app->display,
@@ -746,6 +748,10 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
                     ? mc_client_source_chest_draw_begin((mc_client_source_hp *)app->r, mouse,
                                                         partial, &services, &loop->inventory_draw,
                                                         &loop->inventory_error)
+                : drawn.kind == MC_CLIENT_SCREEN_DISPENSER
+                    ? mc_client_source_dispenser_draw_begin(
+                          (mc_client_source_gq *)app->r, mouse, partial, &services,
+                          &loop->inventory_draw, &loop->inventory_error)
                     : mc_client_source_furnace_draw_begin((mc_client_source_ov *)app->r, mouse,
                                                           partial, &services, &loop->inventory_draw,
                                                           &loop->inventory_error);
@@ -884,6 +890,21 @@ static void expire_inventory_draw_chest_views(mc_client_menu_loop *loop) {
     loop->inventory_error.slot.inventory.furnace = NULL;
     loop->inventory_cleanup.inventory.furnace = NULL;
     loop->inventory_cleanup.slot.inventory.furnace = NULL;
+    /* The actual draw occurrence has ended. Copied AZ names and child views
+     * therefore end here even if another adapter occurrence keeps its actual
+     * producer alive. Clear by typed origin, never by the class-name text. */
+    mc_client_inventory_draw_error *draws[] = {&loop->inventory_error, &loop->inventory_cleanup};
+    for (size_t i = 0; i < sizeof(draws) / sizeof(draws[0]); ++i) {
+        mc_client_inventory_draw_error *e = draws[i];
+        mc_inventory_dispenser_error_expire(&e->inventory,
+                                            e->inventory.dispenser_diagnostic_owner_id);
+        mc_container_interaction_error_expire_dispenser(
+            &e->slot, e->slot.exception_class_dispenser_owner_id != 0
+                          ? e->slot.exception_class_dispenser_owner_id
+                          : e->slot.inventory.dispenser_diagnostic_owner_id);
+        mc_client_screen_error_expire_dispenser(&e->screen,
+                                                e->screen.exception_class_dispenser_owner_id);
+    }
 }
 
 static bool retire_completed_draws(mc_client_menu_loop *loop) {

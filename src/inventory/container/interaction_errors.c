@@ -1,4 +1,5 @@
 #include "interaction_internal.h"
+#include "mc/inventory/dispenser.h"
 
 #include <string.h>
 
@@ -23,6 +24,7 @@ bool inv_interaction_fail(mc_container_interaction_error *e, mc_inventory_status
 bool inv_interaction_null(mc_container_interaction_error *e, const char *operation) {
     e->source_exception = true;
     e->exception_class = "java/lang/NullPointerException";
+    e->exception_class_dispenser_owner_id = 0;
     return inv_interaction_fail(e, MC_INVENTORY_NULL_REFERENCE, operation);
 }
 
@@ -32,6 +34,9 @@ bool inv_interaction_inventory(mc_container_interaction_error *e, mc_inventory_s
     if (e->inventory.source_exception) {
         e->source_exception = true;
         e->exception_class = e->inventory.exception_class;
+        e->exception_class_dispenser_owner_id = e->inventory.exception_class_from_dispenser
+                                                    ? e->inventory.dispenser_diagnostic_owner_id
+                                                    : 0;
     }
     if (e->inventory.frame_count != 0) {
         e->dependency = e->inventory.frames[0];
@@ -40,9 +45,21 @@ bool inv_interaction_inventory(mc_container_interaction_error *e, mc_inventory_s
             e->exception_class = status == MC_INVENTORY_NULL_REFERENCE
                                      ? "java/lang/NullPointerException"
                                      : "java/lang/ArrayIndexOutOfBoundsException";
+            e->exception_class_dispenser_owner_id = 0;
         }
     }
     return inv_interaction_fail(e, status, e->inventory.operation);
+}
+
+void mc_container_interaction_error_expire_dispenser(mc_container_interaction_error *e,
+                                                     uintptr_t ended_owner_id) {
+    if (e == NULL || ended_owner_id == 0)
+        return;
+    mc_inventory_dispenser_error_expire(&e->inventory, ended_owner_id);
+    if (e->exception_class_dispenser_owner_id == ended_owner_id) {
+        e->exception_class = NULL;
+        e->exception_class_dispenser_owner_id = 0;
+    }
 }
 
 bool inv_interaction_stack(mc_container_interaction_error *e, mc_item_stack_status status,
@@ -268,6 +285,7 @@ bool inv_interaction_registry(mc_container_interaction_error *e, mc_registry_cla
         return true;
     interaction_throwable kind;
     classify_registry(classes, &e->registry, &kind, &e->exception_class);
+    e->exception_class_dispenser_owner_id = 0;
     e->source_exception = kind == INTERACTION_SOURCE_EXCEPTION;
     e->source_error = kind == INTERACTION_SOURCE_ERROR;
     if (e->registry.active_initializer_class != NULL)

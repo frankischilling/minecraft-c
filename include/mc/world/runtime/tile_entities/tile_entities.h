@@ -9,7 +9,7 @@
 
 #include <stdbool.h>
 
-/* Concrete Chest/Spawner/Piston/Furnace/Sign TileEntity owner. Caller-facing runtime and
+/* Concrete Chest/Spawner/Piston/Furnace/Sign/Dispenser TileEntity owner. Caller-facing runtime and
  * persistence joins require the coordinated actual owners; reached missing descendants remain
  * explicit failures. Full gameplay/tick qualification is separate. */
 typedef struct mc_world_runtime mc_world_runtime;
@@ -26,7 +26,8 @@ typedef enum mc_tile_entity_kind {
     MC_TILE_ENTITY_SPAWNER,
     MC_TILE_ENTITY_PISTON,
     MC_TILE_ENTITY_FURNACE,
-    MC_TILE_ENTITY_SIGN
+    MC_TILE_ENTITY_SIGN,
+    MC_TILE_ENTITY_DISPENSER
 } mc_tile_entity_kind;
 
 typedef enum mc_tile_entity_class_phase {
@@ -178,6 +179,8 @@ typedef struct mc_tile_entity_snapshot {
     int32_t x, y, z;
     bool invalid;
     size_t chest_capacity;
+    size_t dispenser_capacity;
+    bool dispenser_random_constructed;
     int32_t spawner_delay;
     uint64_t spawner_rotation_bits, spawner_previous_rotation_bits;
     mc_tile_entity_name *spawner_name;

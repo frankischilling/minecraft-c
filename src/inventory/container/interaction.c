@@ -58,7 +58,8 @@ static mc_inventory_status begin(mc_container *container, mc_entity *player, int
         else {
             c->state.active = container->interaction_active = true;
             if (direct_transfer)
-                c->error.site = (mc_inventory_site){"bm", "a", "(I)Liz;", 0};
+                c->error.site = (mc_inventory_site){
+                    container->kind == MC_CONTAINER_DISPENSER ? "dw" : "bm", "a", "(I)Liz;", 0};
             const bool returned =
                 direct_transfer ? inv_interaction_transfer_body(c, slot, &c->result)
                 : close         ? inv_interaction_close_body(c)
@@ -102,6 +103,20 @@ mc_inventory_status mc_container_furnace_transfer_begin(mc_container *container,
         return MC_INVENTORY_INVALID_ARGUMENT;
     }
     return begin(container, NULL, slot, 0, true, false, true, host, out, error);
+}
+
+mc_inventory_status mc_container_dispenser_transfer_begin(mc_container *container, int32_t slot,
+                                                          mc_container_interaction_call **out,
+                                                          mc_container_interaction_error *error) {
+    if (container != NULL && container->kind != MC_CONTAINER_DISPENSER) {
+        if (error != NULL) {
+            mc_container_interaction_error_init(error);
+            (void)inv_interaction_fail(error, MC_INVENTORY_INVALID_ARGUMENT,
+                                       "SH inherited DW getter native Container kind");
+        }
+        return MC_INVENTORY_INVALID_ARGUMENT;
+    }
+    return begin(container, NULL, slot, 0, true, false, true, NULL, out, error);
 }
 
 bool mc_container_interaction_inspect(const mc_container_interaction_call *c,

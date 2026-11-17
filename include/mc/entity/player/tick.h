@@ -95,9 +95,10 @@ void mc_player_tick_error_init(mc_player_tick_error *);
  * children before releasing the parent Registry. An EFFECT refusal identifies
  * its exact nested receipt through cleanup.effect and leaves its first source
  * cause intact. A CONTAINER failure borrows its full checked LW/Tile diagnostic
- * from the same live CD graph; retirement ends child_error.container.chest
- * before independent Registry cleanup can refuse. Drain Chest native call
- * records only after this borrowed view has ended. Source frames, exception
+ * from the same live Container graph; retirement ends Chest, Furnace and
+ * Dispenser child views, including borrowed Dispenser exception names, before
+ * independent Registry cleanup can refuse. Drain inventory native call
+ * records only after these borrowed views have ended. Source frames, exception
  * flags and value diagnostics survive retirement. Inspect the current cleanup
  * discriminator only. */
 bool mc_player_tick_error_retire(mc_player_tick_error *);

@@ -661,6 +661,8 @@ mc_client_screen_status mc_client_screen_event_retire(mc_client_screen_event_err
         e->screen.inventory = NULL;
         e->screen.initialization = NULL;
         e->screen.sign = NULL;
+        mc_client_screen_error_expire_dispenser(&e->screen,
+                                                e->screen.exception_class_dispenser_owner_id);
         return MC_CLIENT_SCREEN_OK;
     }
     if (!e->monitor_lost)
@@ -678,6 +680,8 @@ mc_client_screen_status mc_client_screen_event_retire(mc_client_screen_event_err
     e->screen.inventory = NULL;
     e->screen.initialization = NULL;
     e->screen.sign = NULL;
+    mc_client_screen_error_expire_dispenser(&e->screen,
+                                            e->screen.exception_class_dispenser_owner_id);
     return MC_CLIENT_SCREEN_OK;
 }
 

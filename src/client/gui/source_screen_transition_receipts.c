@@ -106,6 +106,16 @@ static void expire_container_receipt(mc_player_container_error *error) {
     error->drop.statistic = NULL;
 }
 
+void mc_screen_transition_inventory_expire_dispenser(mc_screen_transition_receipts *r,
+                                                     mc_client_screen_error *error,
+                                                     uintptr_t ended_owner_id) {
+    if (r == NULL || ended_owner_id == 0)
+        return;
+    mc_screen_container_expire_dispenser_views(&r->inventory, ended_owner_id);
+    mc_client_screen_error_expire_dispenser(&r->initialization.screen, ended_owner_id);
+    mc_client_screen_error_expire_dispenser(error, ended_owner_id);
+}
+
 void mc_screen_transition_inventory_after(mc_screen_transition_receipts *r,
                                           const mc_client_inventory_screen_error *owner) {
     if (owner != NULL)
@@ -117,6 +127,15 @@ void mc_screen_transition_inventory_after(mc_screen_transition_receipts *r,
         expire_container_receipt(&r->inventory.cleanup_container);
         expire_container_receipt(&r->inventory.inherited_close);
         expire_container_receipt(&r->inventory.direct_close);
+        const uintptr_t ids[] = {
+            r->inventory.ownership.dispenser_diagnostic_owner_id,
+            r->inventory.cleanup_ownership.dispenser_diagnostic_owner_id,
+            r->inventory.container.interaction.inventory.dispenser_diagnostic_owner_id,
+            r->inventory.cleanup_container.interaction.inventory.dispenser_diagnostic_owner_id,
+            r->inventory.inherited_close.interaction.inventory.dispenser_diagnostic_owner_id,
+            r->inventory.direct_close.interaction.inventory.dispenser_diagnostic_owner_id};
+        for (size_t i = 0; i < sizeof(ids) / sizeof(ids[0]); ++i)
+            mc_screen_transition_inventory_expire_dispenser(r, NULL, ids[i]);
         mc_screen_container_expire_chest_views(&r->inventory);
     }
     r->inventory_source = owner;

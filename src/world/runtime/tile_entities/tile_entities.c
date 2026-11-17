@@ -9,6 +9,7 @@
 #include "mc/item/recipes/recipes.h"
 #include "mc/item/registry/runtime.h"
 #include "mc/storage/nbt/tree.h"
+#include "mc/world/runtime/tile_entities/dispenser.h"
 #include "mc/world/runtime/tile_entities/furnace.h"
 
 #include "../../../block/registry/registry_internal.h"
@@ -200,7 +201,7 @@ static mc_tile_entity_status tile_entity_inventory_result(mc_live_tile_entity_er
                                                           unsigned int pc) {
     if (status != MC_TILE_ENTITY_OK && error != NULL) {
         if (error->status == MC_WORLD_STORAGE_OK)
-            live_tile_entity_error(error, status, "Chest native owner/slot/Stack operation");
+            live_tile_entity_error(error, status, "TileEntity native owner/slot/Stack operation");
         if (error->inventory_bytecode == 0)
             error->inventory_bytecode = pc;
     }
@@ -298,7 +299,8 @@ static mc_tile_entity_status tile_entity_kind_ready(const mc_tile_entity *tile_e
 }
 
 static bool tile_entity_has_slots(const mc_tile_entity *tile) {
-    return tile->kind == MC_TILE_ENTITY_CHEST || tile->kind == MC_TILE_ENTITY_FURNACE;
+    return tile->kind == MC_TILE_ENTITY_CHEST || tile->kind == MC_TILE_ENTITY_FURNACE ||
+           tile->kind == MC_TILE_ENTITY_DISPENSER;
 }
 
 /* Native String-owner accounting, including constructor-private array prefix.
@@ -327,28 +329,34 @@ static bool tile_entity_has_name(const mc_tile_entity *tile, const mc_tile_entit
 }
 
 static size_t tile_entity_slot_capacity(const mc_tile_entity *tile) {
-    return tile->kind == MC_TILE_ENTITY_FURNACE ? tile->state.furnace.capacity
-                                                : tile->state.chest.capacity;
+    return tile->kind == MC_TILE_ENTITY_FURNACE     ? tile->state.furnace.capacity
+           : tile->kind == MC_TILE_ENTITY_DISPENSER ? tile->state.dispenser.capacity
+                                                    : tile->state.chest.capacity;
 }
 
 static mc_item_stack **tile_entity_slots(const mc_tile_entity *tile) {
-    return tile->kind == MC_TILE_ENTITY_FURNACE ? tile->state.furnace.slots
-                                                : tile->state.chest.slots;
+    return tile->kind == MC_TILE_ENTITY_FURNACE     ? tile->state.furnace.slots
+           : tile->kind == MC_TILE_ENTITY_DISPENSER ? tile->state.dispenser.slots
+                                                    : tile->state.chest.slots;
 }
 
 static size_t tile_entity_items_field(const mc_tile_entity *tile) {
     return tile->kind == MC_TILE_ENTITY_FURNACE ? 6u : 4u;
 }
 
-static mc_tile_entity_status tile_entity_chest_slot(const mc_tile_entity *tile_entity,
-                                                    int32_t slot) {
-    const mc_tile_entity_status status = tile_entity_kind_ready(tile_entity, MC_TILE_ENTITY_CHEST);
-    if (status != MC_TILE_ENTITY_OK) {
+static mc_tile_entity_status tile_entity_inventory_slot(const mc_tile_entity *tile_entity,
+                                                        mc_tile_entity_kind kind, int32_t slot) {
+    const mc_tile_entity_status status = tile_entity_kind_ready(tile_entity, kind);
+    if (status != MC_TILE_ENTITY_OK)
         return status;
-    }
-    return slot < 0 || (uint32_t)slot >= tile_entity->state.chest.capacity
+    return slot < 0 || (uint32_t)slot >= tile_entity_slot_capacity(tile_entity)
                ? MC_TILE_ENTITY_INVALID_SLOT
                : MC_TILE_ENTITY_OK;
+}
+
+static mc_tile_entity_status tile_entity_chest_slot(const mc_tile_entity *tile_entity,
+                                                    int32_t slot) {
+    return tile_entity_inventory_slot(tile_entity, MC_TILE_ENTITY_CHEST, slot);
 }
 
 static mc_tile_entity_status tile_entity_item_status(mc_item_stack_status status) {
@@ -421,6 +429,10 @@ size_t mc_tile_entity_name_native_bytes(const mc_tile_entity_name *name) {
     return name == NULL ? 0 : name->allocation_bytes;
 }
 
+static mc_tile_entity_status tile_entity_dispenser_construct(mc_tile_entity *,
+                                                             const tile_entity_import_context *,
+                                                             mc_tile_entity_error *);
+
 static mc_tile_entity_status tile_entity_sign_construct(mc_tile_entity *,
                                                         const tile_entity_import_context *,
                                                         mc_tile_entity_error *);
@@ -428,6 +440,8 @@ static mc_tile_entity_status tile_entity_sign_construct(mc_tile_entity *,
 static mc_tile_entity_status tile_entity_allocate_in_owner(mc_tile_entity_classes *classes,
                                                            mc_tile_entity_kind kind,
                                                            mc_tile_entity **out) {
+    if (kind == MC_TILE_ENTITY_DISPENSER && classes->parent->side != MC_WORLD_INFO_CLIENT)
+        return MC_TILE_ENTITY_INVALID_KIND; /* AZ is qualified separately from server AK. */
     if (kind == MC_TILE_ENTITY_PISTON) {
         const mc_tile_entity_status active = live_piston_classes_get(classes);
         if (active != MC_TILE_ENTITY_OK)
@@ -454,7 +468,7 @@ mc_tile_entity_status mc_tile_entity_allocate(mc_world_runtime *world, mc_tile_e
         return MC_TILE_ENTITY_INVALID_ARGUMENT;
     if (kind != MC_TILE_ENTITY_CHEST && kind != MC_TILE_ENTITY_SPAWNER &&
         kind != MC_TILE_ENTITY_PISTON && kind != MC_TILE_ENTITY_FURNACE &&
-        kind != MC_TILE_ENTITY_SIGN)
+        kind != MC_TILE_ENTITY_SIGN && kind != MC_TILE_ENTITY_DISPENSER)
         return MC_TILE_ENTITY_INVALID_KIND;
     mc_tile_entity_classes *classes = NULL;
     const mc_tile_entity_status active = live_classes_get(world, &classes);
@@ -475,7 +489,7 @@ mc_tile_entity_status mc_tile_entity_allocate_in_classes_detailed(mc_world_runti
         return tile_entity_status(error, MC_TILE_ENTITY_INVALID_ARGUMENT, NULL, SIZE_MAX);
     if (kind != MC_TILE_ENTITY_CHEST && kind != MC_TILE_ENTITY_SPAWNER &&
         kind != MC_TILE_ENTITY_PISTON && kind != MC_TILE_ENTITY_FURNACE &&
-        kind != MC_TILE_ENTITY_SIGN)
+        kind != MC_TILE_ENTITY_SIGN && kind != MC_TILE_ENTITY_DISPENSER)
         return tile_entity_status(error, MC_TILE_ENTITY_INVALID_KIND, NULL, SIZE_MAX);
     mc_tile_entity_classes *classes = NULL;
     mc_tile_entity_status active = live_classes_owner_in(parent, &classes);
@@ -537,6 +551,11 @@ static mc_tile_entity_status tile_entity_construct(mc_tile_entity *raw,
             return named;
         }
         raw->state.spawner.delay = 20;
+    } else if (raw->kind == MC_TILE_ENTITY_DISPENSER) {
+        const mc_tile_entity_status dispenser =
+            tile_entity_dispenser_construct(raw, context, error);
+        if (dispenser != MC_TILE_ENTITY_OK)
+            return dispenser;
     } else if (raw->kind == MC_TILE_ENTITY_SIGN) {
         const mc_tile_entity_status sign = tile_entity_sign_construct(raw, context, error);
         if (sign != MC_TILE_ENTITY_OK)
@@ -651,6 +670,10 @@ void mc_tile_entity_release(mc_tile_entity *tile_entity) {
             mc_tile_entity_name_release(tile_entity->state.sign.lines[i]);
         free(tile_entity->state.sign.lines);
     }
+    if (tile_entity->kind == MC_TILE_ENTITY_DISPENSER) {
+        free(tile_entity->state.dispenser.random);
+        free(tile_entity->state.dispenser.constructor_random);
+    }
     mc_nbt_tree_free(tile_entity->source);
     if (tile_entity->world != NULL) {
         mc_world_runtime_binding_release(tile_entity->world);
@@ -674,6 +697,9 @@ mc_tile_entity_status mc_tile_entity_get_snapshot(const mc_tile_entity *tile_ent
     snapshot.invalid = tile_entity->invalid;
     if (tile_entity->kind == MC_TILE_ENTITY_CHEST) {
         snapshot.chest_capacity = tile_entity->state.chest.capacity;
+    } else if (tile_entity->kind == MC_TILE_ENTITY_DISPENSER) {
+        snapshot.dispenser_capacity = tile_entity->state.dispenser.capacity;
+        snapshot.dispenser_random_constructed = tile_entity->state.dispenser.random != NULL;
     } else if (tile_entity->kind == MC_TILE_ENTITY_SPAWNER) {
         snapshot.spawner_delay = tile_entity->state.spawner.delay;
         memcpy(&snapshot.spawner_rotation_bits, &tile_entity->state.spawner.rotation,
@@ -703,7 +729,13 @@ size_t mc_tile_entity_native_bytes(const mc_tile_entity *tile_entity) {
     if (tile_entity == NULL) {
         return 0;
     }
-    return sizeof(*tile_entity) +
+    const size_t random_bytes =
+        tile_entity->kind == MC_TILE_ENTITY_DISPENSER
+            ? ((tile_entity->state.dispenser.random != NULL ? sizeof(mc_java_random) : 0u) +
+               (tile_entity->state.dispenser.constructor_random != NULL ? sizeof(mc_java_random)
+                                                                        : 0u))
+            : 0u;
+    return sizeof(*tile_entity) + random_bytes +
            (tile_entity_has_slots(tile_entity)
                 ? tile_entity_slot_capacity(tile_entity) * sizeof(mc_item_stack *)
             : tile_entity->kind == MC_TILE_ENTITY_SIGN
@@ -740,13 +772,24 @@ mc_tile_entity_status mc_tile_entity_storage_bytes(const mc_tile_entity *tile_en
         return MC_TILE_ENTITY_INVALID_ARGUMENT;
     }
     size_t bytes = sizeof(*tile_entity);
+    if (tile_entity->kind == MC_TILE_ENTITY_DISPENSER) {
+        if ((tile_entity->state.dispenser.random != NULL &&
+             tile_entity->state.dispenser.constructor_random != NULL) ||
+            (tile_entity->phase == MC_TILE_ENTITY_READY &&
+             tile_entity->state.dispenser.random == NULL))
+            return MC_TILE_ENTITY_STATE_ERROR;
+        if (tile_entity->state.dispenser.random != NULL ||
+            tile_entity->state.dispenser.constructor_random != NULL)
+            bytes += sizeof(mc_java_random);
+    }
     if (!tile_entity_size_add(&bytes, mc_nbt_tree_allocation_bytes(tile_entity->source))) {
         return MC_TILE_ENTITY_LIMIT;
     }
     if (tile_entity_has_slots(tile_entity)) {
         const size_t capacity = tile_entity_slot_capacity(tile_entity);
-        if ((tile_entity->kind == MC_TILE_ENTITY_FURNACE
-                 ? (capacity != 0 && capacity != 3)
+        if ((tile_entity->kind == MC_TILE_ENTITY_FURNACE ? (capacity != 0 && capacity != 3)
+             : tile_entity->kind == MC_TILE_ENTITY_DISPENSER
+                 ? (capacity != 0 && capacity != 9)
                  : (capacity != 0 && capacity != 27 && capacity != 36)) ||
             (tile_entity_slots(tile_entity) == NULL) != (capacity == 0) ||
             (tile_entity->phase == MC_TILE_ENTITY_READY && capacity == 0)) {
@@ -1039,12 +1082,13 @@ static mc_tile_entity_status tile_entity_inventory_item_result(mc_live_tile_enti
     return tile_entity_inventory_result(error, tile_entity_item_status(item), 0);
 }
 
-mc_tile_entity_status mc_tile_entity_chest_set_detailed(mc_tile_entity *tile_entity, int32_t slot,
-                                                        mc_item_stack *stack,
-                                                        mc_live_tile_entity_error *error) {
+static mc_tile_entity_status tile_entity_inventory_set_detailed(mc_tile_entity *tile_entity,
+                                                                mc_tile_entity_kind kind,
+                                                                int32_t slot, mc_item_stack *stack,
+                                                                mc_live_tile_entity_error *error) {
     if (error != NULL)
         mc_live_tile_entities_error_init(error);
-    mc_tile_entity_status status = tile_entity_chest_slot(tile_entity, slot);
+    mc_tile_entity_status status = tile_entity_inventory_slot(tile_entity, kind, slot);
     if (status != MC_TILE_ENTITY_OK) {
         return tile_entity_inventory_result(error, status, 0);
     }
@@ -1061,8 +1105,8 @@ mc_tile_entity_status mc_tile_entity_chest_set_detailed(mc_tile_entity *tile_ent
     }
     if (error != NULL)
         error->inventory_bytecode = 6;
-    mc_item_stack *previous = tile_entity->state.chest.slots[(size_t)slot];
-    tile_entity->state.chest.slots[(size_t)slot] = stack;
+    mc_item_stack *previous = tile_entity_slots(tile_entity)[(size_t)slot];
+    tile_entity_slots(tile_entity)[(size_t)slot] = stack;
     mc_item_stack_release(previous);
     if (stack != NULL) {
         mc_item_stack_fields fields;
@@ -1075,14 +1119,16 @@ mc_tile_entity_status mc_tile_entity_chest_set_detailed(mc_tile_entity *tile_ent
         int32_t limit;
         if (error != NULL)
             error->inventory_bytecode = 16;
-        status = mc_tile_entity_chest_limit(tile_entity, &limit);
+        status = tile_entity_kind_ready(tile_entity, kind);
+        limit = 64;
         if (status != MC_TILE_ENTITY_OK) {
             return tile_entity_inventory_result(error, status, 0);
         }
         if (fields.count > limit) {
             if (error != NULL)
                 error->inventory_bytecode = 24;
-            status = mc_tile_entity_chest_limit(tile_entity, &limit);
+            status = tile_entity_kind_ready(tile_entity, kind);
+            limit = 64;
             if (status != MC_TILE_ENTITY_OK) {
                 return tile_entity_inventory_result(error, status, 0);
             }
@@ -1100,25 +1146,32 @@ mc_tile_entity_status mc_tile_entity_chest_set_detailed(mc_tile_entity *tile_ent
     return tile_entity_inventory_result(error, status, 0);
 }
 
+mc_tile_entity_status mc_tile_entity_chest_set_detailed(mc_tile_entity *tile_entity, int32_t slot,
+                                                        mc_item_stack *stack,
+                                                        mc_live_tile_entity_error *error) {
+    return tile_entity_inventory_set_detailed(tile_entity, MC_TILE_ENTITY_CHEST, slot, stack,
+                                              error);
+}
+
 mc_tile_entity_status mc_tile_entity_chest_set(mc_tile_entity *tile_entity, int32_t slot,
                                                mc_item_stack *stack) {
     return mc_tile_entity_chest_set_detailed(tile_entity, slot, stack, NULL);
 }
 
-mc_tile_entity_status mc_tile_entity_chest_remove_detailed(mc_tile_entity *tile_entity,
-                                                           int32_t slot, int32_t amount,
-                                                           mc_item_stack **out,
-                                                           mc_live_tile_entity_error *error) {
+static mc_tile_entity_status
+tile_entity_inventory_remove_detailed(mc_tile_entity *tile_entity, mc_tile_entity_kind kind,
+                                      int32_t slot, int32_t amount, mc_item_stack **out,
+                                      mc_live_tile_entity_error *error) {
     if (error != NULL)
         mc_live_tile_entities_error_init(error);
     if (out == NULL) {
         return tile_entity_inventory_result(error, MC_TILE_ENTITY_INVALID_ARGUMENT, 0);
     }
-    mc_tile_entity_status status = tile_entity_chest_slot(tile_entity, slot);
+    mc_tile_entity_status status = tile_entity_inventory_slot(tile_entity, kind, slot);
     if (status != MC_TILE_ENTITY_OK) {
         return tile_entity_inventory_result(error, status, 0);
     }
-    mc_item_stack *stack = tile_entity->state.chest.slots[(size_t)slot];
+    mc_item_stack *stack = tile_entity_slots(tile_entity)[(size_t)slot];
     if (stack == NULL) {
         *out = NULL;
         return MC_TILE_ENTITY_OK;
@@ -1135,7 +1188,7 @@ mc_tile_entity_status mc_tile_entity_chest_remove_detailed(mc_tile_entity *tile_
     if (fields.count <= amount) {
         removed = stack;
         /* Transfer this physical slot hold into the private return local. */
-        tile_entity->state.chest.slots[(size_t)slot] = NULL;
+        tile_entity_slots(tile_entity)[(size_t)slot] = NULL;
     } else {
         if (error != NULL)
             error->inventory_bytecode = 49;
@@ -1143,7 +1196,7 @@ mc_tile_entity_status mc_tile_entity_chest_remove_detailed(mc_tile_entity *tile_
         if (item != MC_ITEM_STACK_OK) {
             return tile_entity_inventory_item_result(error, item);
         }
-        mc_item_stack *remaining = tile_entity->state.chest.slots[(size_t)slot];
+        mc_item_stack *remaining = tile_entity_slots(tile_entity)[(size_t)slot];
         if (error != NULL)
             error->inventory_bytecode = 59;
         item = mc_item_stack_fields_get(remaining, &fields);
@@ -1152,7 +1205,7 @@ mc_tile_entity_status mc_tile_entity_chest_remove_detailed(mc_tile_entity *tile_
             return tile_entity_inventory_item_result(error, item);
         }
         if (fields.count == 0) {
-            tile_entity->state.chest.slots[(size_t)slot] = NULL;
+            tile_entity_slots(tile_entity)[(size_t)slot] = NULL;
             mc_item_stack_release(remaining);
         }
     }
@@ -1165,6 +1218,14 @@ mc_tile_entity_status mc_tile_entity_chest_remove_detailed(mc_tile_entity *tile_
     }
     *out = removed;
     return MC_TILE_ENTITY_OK;
+}
+
+mc_tile_entity_status mc_tile_entity_chest_remove_detailed(mc_tile_entity *tile_entity,
+                                                           int32_t slot, int32_t amount,
+                                                           mc_item_stack **out,
+                                                           mc_live_tile_entity_error *error) {
+    return tile_entity_inventory_remove_detailed(tile_entity, MC_TILE_ENTITY_CHEST, slot, amount,
+                                                 out, error);
 }
 
 mc_tile_entity_status mc_tile_entity_chest_remove(mc_tile_entity *tile_entity, int32_t slot,
@@ -1208,6 +1269,7 @@ mc_tile_entity_status mc_tile_entity_spawner_set_name(mc_tile_entity *tile_entit
     return MC_TILE_ENTITY_OK;
 }
 
+#include "dispenser_fields.inc"
 #include "sign_fields.inc"
 
 mc_tile_entity_status mc_tile_entity_piston_block_id(const mc_tile_entity *tile_entity,
@@ -1485,6 +1547,7 @@ static mc_tile_entity_status tile_entity_piston_read(mc_tile_entity *tile_entity
     return tile_entity_status(error, MC_TILE_ENTITY_OK, NULL, SIZE_MAX);
 }
 
+#include "dispenser_nbt.inc"
 #include "furnace_nbt.inc"
 #include "sign_nbt.inc"
 
@@ -1498,6 +1561,11 @@ static mc_tile_entity_status tile_entity_read_nbt(mc_tile_entity *tile_entity,
         tile_entity->state.sign.read_flag = false; /* YK.c2, before the parent invocation7. */
     const mc_tile_entity_status status = mc_tile_entity_read_base(tile_entity, compound, error);
     if (status != MC_TILE_ENTITY_OK) {
+        if (error != NULL && tile_entity != NULL && tile_entity->kind == MC_TILE_ENTITY_DISPENSER &&
+            compound == NULL) {
+            error->base_read_bytecode = 4;
+            error->read_bytecode = 2;
+        }
         if (sign && error != NULL) {
             error->read_bytecode = 7;
             if (compound == NULL)
@@ -1505,7 +1573,8 @@ static mc_tile_entity_status tile_entity_read_nbt(mc_tile_entity *tile_entity,
         }
         if (error != NULL && tile_entity != NULL &&
             (tile_entity->kind == MC_TILE_ENTITY_PISTON ||
-             tile_entity->kind == MC_TILE_ENTITY_FURNACE) &&
+             tile_entity->kind == MC_TILE_ENTITY_FURNACE ||
+             tile_entity->kind == MC_TILE_ENTITY_DISPENSER) &&
             error->base_read_bytecode != 0)
             error->read_bytecode = 2;
         return status;
@@ -1514,6 +1583,8 @@ static mc_tile_entity_status tile_entity_read_nbt(mc_tile_entity *tile_entity,
         return tile_entity_chest_read(tile_entity, compound, context, error);
     if (tile_entity->kind == MC_TILE_ENTITY_FURNACE)
         return tile_entity_furnace_read(tile_entity, compound, context, error);
+    if (tile_entity->kind == MC_TILE_ENTITY_DISPENSER)
+        return tile_entity_dispenser_read(tile_entity, compound, context, error);
     if (tile_entity->kind == MC_TILE_ENTITY_SPAWNER)
         return tile_entity_spawner_read(tile_entity, compound, context, error);
     if (tile_entity->kind == MC_TILE_ENTITY_PISTON)
@@ -1539,7 +1610,9 @@ tile_entity_attach_import_sources(mc_tile_entity *tile_entity, const mc_nbt_tag 
     }
     if (tile_entity_has_slots(tile_entity)) {
         if (tile_entity_slot_capacity(tile_entity) !=
-                (tile_entity->kind == MC_TILE_ENTITY_FURNACE ? 3u : 27u) ||
+                (tile_entity->kind == MC_TILE_ENTITY_FURNACE     ? 3u
+                 : tile_entity->kind == MC_TILE_ENTITY_DISPENSER ? 9u
+                                                                 : 27u) ||
             tile_entity_slots(tile_entity) == NULL) {
             return tile_entity_status(error, MC_TILE_ENTITY_STATE_ERROR, "Items", SIZE_MAX);
         }
@@ -1648,7 +1721,7 @@ tile_entity_import_storage_scoped(mc_world_runtime *world, mc_tile_entity_kind r
     }
     if (resolved_kind != MC_TILE_ENTITY_CHEST && resolved_kind != MC_TILE_ENTITY_SPAWNER &&
         resolved_kind != MC_TILE_ENTITY_PISTON && resolved_kind != MC_TILE_ENTITY_FURNACE &&
-        resolved_kind != MC_TILE_ENTITY_SIGN) {
+        resolved_kind != MC_TILE_ENTITY_SIGN && resolved_kind != MC_TILE_ENTITY_DISPENSER) {
         return tile_entity_status(error, MC_TILE_ENTITY_INVALID_KIND, NULL, SIZE_MAX);
     }
     tile_entity_import_context context = {0};
@@ -1783,10 +1856,12 @@ static mc_tile_entity_status tile_entity_build_fields(const mc_tile_entity *tile
     fields[1].value.int_value = tile_entity->x;
     fields[2].value.int_value = tile_entity->y;
     fields[3].value.int_value = tile_entity->z;
-    if (tile_entity->kind == MC_TILE_ENTITY_CHEST) {
+    if (tile_entity->kind == MC_TILE_ENTITY_CHEST ||
+        tile_entity->kind == MC_TILE_ENTITY_DISPENSER) {
         fields[4].type = MC_NBT_LIST;
         fields[4].name = (mc_nbt_string){tile_entity_items_name, 5};
-        fields[4].value.list.element_type = MC_NBT_COMPOUND;
+        fields[4].value.list.element_type =
+            tile_entity->kind == MC_TILE_ENTITY_DISPENSER ? MC_NBT_END : MC_NBT_COMPOUND;
         *field_count = 5;
     } else if (tile_entity->kind == MC_TILE_ENTITY_FURNACE) {
         fields[4].type = fields[5].type = MC_NBT_SHORT;
@@ -1947,7 +2022,8 @@ mc_tile_entity_status mc_tile_entity_build(const mc_tile_entity *tile_entity,
         fields[tile_entity_items_field(tile_entity)].value.list.items =
             occupied == 0 ? NULL : scratch + root_count;
         fields[tile_entity_items_field(tile_entity)].value.list.length = occupied;
-        if (tile_entity->kind == MC_TILE_ENTITY_FURNACE)
+        if (tile_entity->kind == MC_TILE_ENTITY_FURNACE ||
+            tile_entity->kind == MC_TILE_ENTITY_DISPENSER)
             fields[tile_entity_items_field(tile_entity)].value.list.element_type =
                 occupied == 0 ? MC_NBT_END : MC_NBT_COMPOUND;
     }
@@ -2234,6 +2310,9 @@ mc_tile_entity_status mc_tile_entity_get_class(const mc_tile_entity *tile_entity
             break;
         case MC_TILE_ENTITY_SIGN:
             kind = MC_TILE_ENTITY_CLASS_KIND_SIGN;
+            break;
+        case MC_TILE_ENTITY_DISPENSER:
+            kind = MC_TILE_ENTITY_CLASS_KIND_DISPENSER;
             break;
         default:
             return MC_TILE_ENTITY_INVALID_KIND;
@@ -2893,6 +2972,9 @@ static mc_tile_entity_status live_class_name(mc_tile_entity_classes *classes,
             break;
         case MC_TILE_ENTITY_SIGN:
             selected = LIVE_SIGN;
+            break;
+        case MC_TILE_ENTITY_DISPENSER:
+            selected = LIVE_DISPENSER;
             break;
         default:
             return MC_TILE_ENTITY_INVALID_KIND;
@@ -4280,6 +4362,8 @@ static bool live_block_added_held(mc_world_runtime *world, const mc_block *block
         kind = MC_TILE_ENTITY_SPAWNER;
     else if (block->kind == MC_BLOCK_FURNACE)
         kind = MC_TILE_ENTITY_FURNACE;
+    else if (block->kind == MC_BLOCK_DISPENSER)
+        kind = MC_TILE_ENTITY_DISPENSER;
     else if (block->kind == MC_BLOCK_SIGN) {
         mc_world_runtime_classes *defining =
             query == NULL ? (world == NULL ? NULL : world->classes) : query->factory_classes;
@@ -4415,6 +4499,17 @@ static bool live_chunk_get_held(mc_world_chunk *chunk, int32_t x, int32_t y, int
         bool called = retained_client_join
                           ? live_lazy_added(query, world, block, wx, y, wz, error)
                           : live_block_added_held(world, block, wx, y, wz, error, query);
+        if (called && block->kind == MC_BLOCK_DISPENSER) {
+            /* RW.c6 genuinely installed the actual AZ. Virtual XQ.c still
+             * reaches private h15 next; its orientation is not qualified by
+             * this inventory increment. Keep the completed install prefix. */
+            error->chunk_bytecode = 89;
+            error->bytecode = 15;
+            error->caller_bytecode = 15;
+            live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "Dispenser lazy private orientation continuation");
+            called = false;
+        }
         if (called && query != NULL && block->kind == MC_BLOCK_FURNACE && !retained_client_join) {
             /* Preserve the already supported server LB factory/install prefix.
              * Its LZ private orientation continuation is still unjoined. The
@@ -5323,17 +5418,18 @@ static mc_world_storage_status live_tile_entities_factory_scoped(
                 }
             } else if (entry->kind != LIVE_CHEST && entry->kind != LIVE_SPAWNER &&
                        entry->kind != LIVE_FURNACE && entry->kind != LIVE_PISTON &&
-                       entry->kind != LIVE_SIGN) {
+                       entry->kind != LIVE_SIGN && entry->kind != LIVE_DISPENSER) {
                 frame.bytecode = 25;
                 live_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "TileEntity registered concrete constructor");
             } else {
                 const mc_tile_entity_kind kind =
-                    entry->kind == LIVE_FURNACE   ? MC_TILE_ENTITY_FURNACE
-                    : entry->kind == LIVE_CHEST   ? MC_TILE_ENTITY_CHEST
-                    : entry->kind == LIVE_SPAWNER ? MC_TILE_ENTITY_SPAWNER
-                    : entry->kind == LIVE_SIGN    ? MC_TILE_ENTITY_SIGN
-                                                  : MC_TILE_ENTITY_PISTON;
+                    entry->kind == LIVE_FURNACE     ? MC_TILE_ENTITY_FURNACE
+                    : entry->kind == LIVE_CHEST     ? MC_TILE_ENTITY_CHEST
+                    : entry->kind == LIVE_SPAWNER   ? MC_TILE_ENTITY_SPAWNER
+                    : entry->kind == LIVE_SIGN      ? MC_TILE_ENTITY_SIGN
+                    : entry->kind == LIVE_DISPENSER ? MC_TILE_ENTITY_DISPENSER
+                                                    : MC_TILE_ENTITY_PISTON;
                 mc_tile_entity *tile_entity = NULL;
                 mc_tile_entity_error detail;
                 mc_tile_entity_error_init(&detail);
@@ -5946,7 +6042,8 @@ static mc_tile_entity_status live_record_prepare(live_record_view *view, const m
         view->fields[tile_entity_items_field(view->tile_entity)].value.list.items =
             view->occupied == 0 ? NULL : scratch + view->root_count;
         view->fields[tile_entity_items_field(view->tile_entity)].value.list.length = view->occupied;
-        if (view->tile_entity->kind == MC_TILE_ENTITY_FURNACE)
+        if (view->tile_entity->kind == MC_TILE_ENTITY_FURNACE ||
+            view->tile_entity->kind == MC_TILE_ENTITY_DISPENSER)
             view->fields[tile_entity_items_field(view->tile_entity)].value.list.element_type =
                 view->occupied == 0 ? MC_NBT_END : MC_NBT_COMPOUND;
     }

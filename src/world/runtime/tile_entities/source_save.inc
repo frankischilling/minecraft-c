@@ -70,7 +70,7 @@ mc_tile_entity_status mc_tile_entity_build_source_nbt(const mc_tile_entity *tile
         fields[tile_entity_items_field(tile)].value.list.items =
             occupied == 0 ? NULL : record_children;
         fields[tile_entity_items_field(tile)].value.list.length = occupied;
-        if (tile->kind == MC_TILE_ENTITY_FURNACE)
+        if (tile->kind == MC_TILE_ENTITY_FURNACE || tile->kind == MC_TILE_ENTITY_DISPENSER)
             fields[tile_entity_items_field(tile)].value.list.element_type =
                 occupied == 0 ? MC_NBT_END : MC_NBT_COMPOUND;
     }
