@@ -9,6 +9,7 @@
 #include "mc/world/runtime/entities.h"
 #include "mc/world/runtime/power/power.h"
 #include "mc/world/runtime/rails/errors.h"
+#include "mc/world/runtime/registry_failure.h"
 #include "mc/world/runtime/world_access_error.h"
 
 #include "mc/world/runtime/lighting.h"
@@ -95,6 +96,7 @@ typedef struct mc_world_mutation_error {
     bool bed_source_null;
     bool fire_source_null, fire_array_index, stairs_source_null;
     bool furnace_source_null;
+    bool dispenser_source_null;
     unsigned int redstone_ore_tick_bytecode;
     bool redstone_ore_source_null;
     mc_world_fire_sites fire;
@@ -123,6 +125,7 @@ typedef struct mc_world_mutation_error {
     mc_scheduled_ordered_status ordered;
     mc_world_storage_error cause;
     mc_registry_error registry;
+    mc_world_registry_failure registry_failure;
     mc_world_light_error light;
     mc_world_population_context population;
     /* Explicit selected bits distinguish neutral from selected-but-unentered

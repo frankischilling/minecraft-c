@@ -513,14 +513,36 @@ static bool world_failed(mc_item_use_call *c, mc_world_mutation_error *m, const 
     c->error.world = m->cause;
     c->error.child = site("fd", method, descriptor, m->wrapper_bytecode);
     bool native = true;
-    if (m->registry.status != MC_REGISTRY_OK) {
-        mc_item_render_throwable throwable;
+    if (m->query.source_null) {
+        /* This value comes from the actual reached World provider read, not
+         * a later World.v/operation lookup or a failed native admission. */
+        c->error.child = site("fd", "c", "(II)Llm;", m->query.provider_bytecode);
+        c->error.query_provider_null = true;
+        c->error.exception_class = "java/lang/NullPointerException";
+        c->error.source_exception = true;
+        c->error.source_error = false;
+        native = false;
+    } else if (m->registry.status != MC_REGISTRY_OK) {
         c->error.registry = m->registry;
-        mc_item_render_registry_classification(mc_world_runtime_registry(c->state.world),
-                                               &m->registry, &throwable, &c->error.exception_class);
-        c->error.source_exception = throwable == MC_ITEM_RENDER_SOURCE_EXCEPTION;
-        c->error.source_error = throwable == MC_ITEM_RENDER_SOURCE_ERROR;
-        native = throwable == MC_ITEM_RENDER_NO_THROWABLE;
+        if (mc_world_registry_failure_matches(&m->registry_failure, &m->registry)) {
+            c->error.exception_class = m->registry_failure.exception_class;
+            c->error.source_exception =
+                m->registry_failure.kind == MC_WORLD_REGISTRY_FAILURE_SOURCE_EXCEPTION;
+            c->error.source_error =
+                m->registry_failure.kind == MC_WORLD_REGISTRY_FAILURE_SOURCE_ERROR;
+            native = m->registry_failure.kind == MC_WORLD_REGISTRY_FAILURE_NATIVE;
+        } else {
+            /* Older World/query producers have no paired value yet. Preserve
+             * their actual World-namespace classification; never guess that
+             * every mutation failure belongs to CK's calling Block namespace. */
+            mc_item_render_throwable throwable;
+            mc_item_render_registry_classification(mc_world_runtime_registry(c->state.world),
+                                                   &m->registry, &throwable,
+                                                   &c->error.exception_class);
+            c->error.source_exception = throwable == MC_ITEM_RENDER_SOURCE_EXCEPTION;
+            c->error.source_error = throwable == MC_ITEM_RENDER_SOURCE_ERROR;
+            native = throwable == MC_ITEM_RENDER_NO_THROWABLE;
+        }
     }
     return fail(c, MC_ITEM_USE_WORLD, m->operation, native);
 }

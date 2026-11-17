@@ -4,6 +4,7 @@
 
 #include "../../../item/recipes/recipes_internal.h"
 #include "../../../item/registry/registry_internal.h"
+#include "../../../item/render/internal.h"
 #include "../../../item/stack/source_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/item/recipes/recipes.h"
@@ -21,6 +22,7 @@
 #include "../chunk_provider_internal.h"
 #include "../construction_internal.h"
 #include "../execution_children_internal.h"
+#include "../mutation/dispenser/dispenser_internal.h"
 #include "../mutation/furnace/furnace_internal.h"
 #include "../mutation/mutation_internal.h"
 #include "../runtime_internal.h"
@@ -3059,9 +3061,20 @@ static mc_world_storage_status live_cause(mc_live_tile_entity_error *error,
     return cause.status;
 }
 
-static bool live_registry_cause(mc_world_runtime *world, mc_live_tile_entity_error *error,
-                                const mc_registry_error *cause, const char *operation) {
+static bool live_registry_cause(mc_world_runtime *world, mc_registry_classes *registry,
+                                mc_live_tile_entity_error *error, const mc_registry_error *cause,
+                                const char *operation) {
     error->registry = *cause;
+    mc_item_render_throwable kind = MC_ITEM_RENDER_NO_THROWABLE;
+    const char *name = NULL;
+    if (registry != NULL)
+        mc_item_render_registry_classification(registry, &error->registry, &kind, &name);
+    error->registry_failure = (mc_world_registry_failure){
+        .kind = kind == MC_ITEM_RENDER_SOURCE_EXCEPTION ? MC_WORLD_REGISTRY_FAILURE_SOURCE_EXCEPTION
+                : kind == MC_ITEM_RENDER_SOURCE_ERROR   ? MC_WORLD_REGISTRY_FAILURE_SOURCE_ERROR
+                                                        : MC_WORLD_REGISTRY_FAILURE_NATIVE,
+        .exception_class = name,
+        .cause = error->registry};
     const mc_world_storage_status status =
         mc_world_runtime_registry_result(world, cause->status, cause, operation, &error->cause);
     error->status = status;
@@ -4230,11 +4243,11 @@ static bool live_chunk_install_held(mc_world_chunk *chunk, int32_t x, int32_t y,
         error->chunk_bytecode = 65;
         mc_registry_block_m_view array;
         mc_registry_error cause = live_empty_registry();
-        if (mc_registry_block_m_get(
-                (query == NULL ? mc_world_runtime_registry(chunk->d) : query->registry), &array,
-                &cause) != MC_REGISTRY_OK) {
-            return live_registry_cause(query == NULL ? chunk->d : query->caller_world, error,
-                                       &cause, "TileEntity install Block.m active use");
+        mc_registry_classes *registry =
+            query == NULL ? mc_world_runtime_registry(chunk->d) : query->registry;
+        if (mc_registry_block_m_get(registry, &array, &cause) != MC_REGISTRY_OK) {
+            return live_registry_cause(query == NULL ? chunk->d : query->caller_world, registry,
+                                       error, &cause, "TileEntity install Block.m active use");
         }
         error->chunk_bytecode = 72;
         if (!live_chunk_block(chunk, x, y, z, &block_id, error))
@@ -4242,8 +4255,9 @@ static bool live_chunk_install_held(mc_world_chunk *chunk, int32_t x, int32_t y,
         error->chunk_bytecode = 75;
         const mc_block *block = NULL;
         if (mc_registry_block_m_at(&array, block_id, &block, &cause) != MC_REGISTRY_OK) {
-            return live_registry_cause(query == NULL ? chunk->d : query->caller_world, error,
-                                       &cause, "TileEntity install captured Block.m element");
+            return live_registry_cause(query == NULL ? chunk->d : query->caller_world, registry,
+                                       error, &cause,
+                                       "TileEntity install captured Block.m element");
         }
         error->chunk_bytecode = 76;
         accepts = live_tile_entity_block_kind(block); /* instanceof accepts NULL. */
@@ -4443,17 +4457,17 @@ static bool live_chunk_get_held(mc_world_chunk *chunk, int32_t x, int32_t y, int
         error->chunk_bytecode = 42;
         mc_registry_block_p_view flags;
         mc_registry_error cause = live_empty_registry();
-        if (mc_registry_block_p_get(
-                (query == NULL ? mc_world_runtime_registry(chunk->d) : query->registry), &flags,
-                &cause) != MC_REGISTRY_OK) {
-            return live_registry_cause(query == NULL ? chunk->d : query->caller_world, error,
-                                       &cause, "TileEntity lookup Block.p active use");
+        mc_registry_classes *registry =
+            query == NULL ? mc_world_runtime_registry(chunk->d) : query->registry;
+        if (mc_registry_block_p_get(registry, &flags, &cause) != MC_REGISTRY_OK) {
+            return live_registry_cause(query == NULL ? chunk->d : query->caller_world, registry,
+                                       error, &cause, "TileEntity lookup Block.p active use");
         }
         error->chunk_bytecode = 47;
         bool has_tile_entity;
         if (mc_registry_block_p_at(&flags, id, &has_tile_entity, &cause) != MC_REGISTRY_OK) {
-            return live_registry_cause(query == NULL ? chunk->d : query->caller_world, error,
-                                       &cause, "TileEntity lookup captured Block.p element");
+            return live_registry_cause(query == NULL ? chunk->d : query->caller_world, registry,
+                                       error, &cause, "TileEntity lookup captured Block.p element");
         }
         if (!has_tile_entity) {
             *out = NULL;
@@ -4461,17 +4475,16 @@ static bool live_chunk_get_held(mc_world_chunk *chunk, int32_t x, int32_t y, int
         }
         error->chunk_bytecode = 53;
         mc_registry_block_m_view array;
-        if (mc_registry_block_m_get(
-                (query == NULL ? mc_world_runtime_registry(chunk->d) : query->registry), &array,
-                &cause) != MC_REGISTRY_OK) {
-            return live_registry_cause(query == NULL ? chunk->d : query->caller_world, error,
-                                       &cause, "TileEntity lookup Block.m active use");
+        registry = query == NULL ? mc_world_runtime_registry(chunk->d) : query->registry;
+        if (mc_registry_block_m_get(registry, &array, &cause) != MC_REGISTRY_OK) {
+            return live_registry_cause(query == NULL ? chunk->d : query->caller_world, registry,
+                                       error, &cause, "TileEntity lookup Block.m active use");
         }
         error->chunk_bytecode = 58;
         const mc_block *block = NULL;
         if (mc_registry_block_m_at(&array, id, &block, &cause) != MC_REGISTRY_OK) {
-            return live_registry_cause(query == NULL ? chunk->d : query->caller_world, error,
-                                       &cause, "TileEntity lookup captured Block.m element");
+            return live_registry_cause(query == NULL ? chunk->d : query->caller_world, registry,
+                                       error, &cause, "TileEntity lookup captured Block.m element");
         }
         error->chunk_bytecode = 59;
         if (block != NULL && !live_tile_entity_block_kind(block)) {
@@ -4494,20 +4507,22 @@ static bool live_chunk_get_held(mc_world_chunk *chunk, int32_t x, int32_t y, int
             /* NULL passed checkcast59; callee base6 is NOT entered. */
         }
         const bool retained_client_join =
-            query != NULL && (block->kind == MC_BLOCK_FURNACE || block->kind == MC_BLOCK_SIGN) &&
+            query != NULL &&
+            (block->kind == MC_BLOCK_FURNACE || block->kind == MC_BLOCK_DISPENSER ||
+             block->kind == MC_BLOCK_SIGN) &&
             block->classes->options.side == MC_REGISTRY_CLIENT;
         bool called = retained_client_join
                           ? live_lazy_added(query, world, block, wx, y, wz, error)
                           : live_block_added_held(world, block, wx, y, wz, error, query);
-        if (called && block->kind == MC_BLOCK_DISPENSER) {
-            /* RW.c6 genuinely installed the actual AZ. Virtual XQ.c still
-             * reaches private h15 next; its orientation is not qualified by
-             * this inventory increment. Keep the completed install prefix. */
+        if (called && block->kind == MC_BLOCK_DISPENSER &&
+            block->classes->options.side != MC_REGISTRY_CLIENT) {
+            /* Keep the actual inherited factory/install prefix. Dedicated-server
+             * PA orientation remains outside the client XQ implementation. */
             error->chunk_bytecode = 89;
             error->bytecode = 15;
             error->caller_bytecode = 15;
             live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                      "Dispenser lazy private orientation continuation");
+                      "Dispenser lazy server private orientation continuation");
             called = false;
         }
         if (called && query != NULL && block->kind == MC_BLOCK_FURNACE && !retained_client_join) {
@@ -4520,21 +4535,28 @@ static bool live_chunk_get_held(mc_world_chunk *chunk, int32_t x, int32_t y, int
                       "Furnace lazy server private orientation retained continuation");
             called = false;
         }
-        if (called && block->kind == MC_BLOCK_FURNACE && query == NULL) {
+        if (called && query == NULL &&
+            (block->kind == MC_BLOCK_FURNACE || block->kind == MC_BLOCK_DISPENSER)) {
             mc_world_mutation_error *child = calloc(1, sizeof(*child));
             if (child == NULL) {
                 error->bytecode = 15;
                 live_fail(error, MC_WORLD_STORAGE_ALLOCATION_FAILED,
-                          "Furnace lazy orientation diagnostic allocation");
+                          block->kind == MC_BLOCK_DISPENSER
+                              ? "Dispenser lazy orientation diagnostic allocation"
+                              : "Furnace lazy orientation diagnostic allocation");
                 called = false;
             } else {
                 mc_world_mutation_error_init(child);
-                called = mc_world_mutation_furnace_orient(world, block, wx, y, wz, child, NULL);
+                called =
+                    block->kind == MC_BLOCK_DISPENSER
+                        ? mc_world_mutation_dispenser_orient(world, block, wx, y, wz, child, NULL)
+                        : mc_world_mutation_furnace_orient(world, block, wx, y, wz, child, NULL);
                 if (!called) {
                     error->status = child->status;
                     error->operation = child->operation;
                     error->cause = child->cause;
                     error->registry = child->registry;
+                    error->registry_failure = child->registry_failure;
                     error->entity = child->entity;
                     error->publication = child->publication;
                     error->batch = child->batch;

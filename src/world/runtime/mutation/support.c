@@ -2,6 +2,7 @@
 #include "mutation_internal.h"
 
 #include "../../../block/registry/runtime_internal.h"
+#include "../../../item/render/internal.h"
 #include "../chunks_internal.h"
 #include "../power/power_internal.h"
 #include "mc/core/java/java.h"
@@ -53,10 +54,56 @@ bool mc_world_mutation_fail(mc_world_runtime *world, mc_world_mutation_error *er
 
 bool mc_world_mutation_registry_fail(mc_world_runtime *world, mc_world_mutation_error *error,
                                      const mc_registry_error *cause, const char *operation) {
-    error->registry = *cause;
+    const mc_registry_error reached = *cause;
+    error->registry_failure = (mc_world_registry_failure){0};
+    error->registry = reached;
     error->status =
-        mc_world_runtime_registry_result(world, cause->status, cause, operation, &error->cause);
+        mc_world_runtime_registry_result(world, reached.status, &reached, operation, &error->cause);
     error->operation = error->cause.operation;
+    return false;
+}
+
+bool mc_world_registry_failure_matches(const mc_world_registry_failure *view,
+                                       const mc_registry_error *cause) {
+    if (view == NULL || cause == NULL ||
+        (view->kind != MC_WORLD_REGISTRY_FAILURE_NATIVE &&
+         view->kind != MC_WORLD_REGISTRY_FAILURE_SOURCE_EXCEPTION &&
+         view->kind != MC_WORLD_REGISTRY_FAILURE_SOURCE_ERROR) ||
+        ((view->exception_class == NULL) != (view->kind == MC_WORLD_REGISTRY_FAILURE_NATIVE)))
+        return false;
+    const mc_registry_error *a = &view->cause;
+    const mc_registry_error *b = cause;
+    return a->status == b->status && a->message == b->message &&
+           a->initializer_pc == b->initializer_pc && a->block_id == b->block_id &&
+           a->constructor_class == b->constructor_class && a->constructor_pc == b->constructor_pc &&
+           a->profile_status == b->profile_status &&
+           a->active_initializer_class == b->active_initializer_class &&
+           a->active_initializer_pc == b->active_initializer_pc &&
+           a->item_argument == b->item_argument &&
+           a->format_error.status == b->format_error.status &&
+           a->format_error.offset == b->format_error.offset &&
+           a->format_error.length == b->format_error.length &&
+           a->format_error.value == b->format_error.value &&
+           a->format_error.flags == b->format_error.flags &&
+           a->format_error.conversion == b->format_error.conversion &&
+           a->format_error.date_time == b->format_error.date_time;
+}
+
+bool mc_world_mutation_registry_fail_in(mc_world_runtime *world,
+                                        mc_registry_classes *producer_registry,
+                                        mc_world_mutation_error *error,
+                                        const mc_registry_error *cause, const char *operation) {
+    (void)mc_world_mutation_registry_fail(world, error, cause, operation);
+    mc_item_render_throwable kind = MC_ITEM_RENDER_NO_THROWABLE;
+    const char *name = NULL;
+    if (producer_registry != NULL)
+        mc_item_render_registry_classification(producer_registry, &error->registry, &kind, &name);
+    error->registry_failure = (mc_world_registry_failure){
+        .kind = kind == MC_ITEM_RENDER_SOURCE_EXCEPTION ? MC_WORLD_REGISTRY_FAILURE_SOURCE_EXCEPTION
+                : kind == MC_ITEM_RENDER_SOURCE_ERROR   ? MC_WORLD_REGISTRY_FAILURE_SOURCE_ERROR
+                                                        : MC_WORLD_REGISTRY_FAILURE_NATIVE,
+        .exception_class = name,
+        .cause = error->registry};
     return false;
 }
 
@@ -210,6 +257,7 @@ static bool column_result(mc_world_mutation_error *error, const mc_world_chunk_e
     error->operation = frame->cause.operation;
     error->cause = frame->cause;
     error->registry = frame->registry;
+    error->registry_failure = (mc_world_registry_failure){0};
     error->light = frame->light;
     return false;
 }

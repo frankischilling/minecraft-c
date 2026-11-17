@@ -147,6 +147,7 @@ static void live_lazy_project(const mc_world_mutation_error *child,
     error->operation = child->operation;
     error->cause = child->cause;
     error->registry = child->registry;
+    error->registry_failure = child->registry_failure;
     error->entity = child->entity;
     error->publication = child->publication;
     error->batch = child->batch;

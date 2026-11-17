@@ -37,18 +37,18 @@ orientation and Arrow/Ray cleanup now have separate native controls. Two
 original VMs also read the earlier C save. These finite boundaries do not
 qualify complete Furnace parity.
 
-[Dispenser storage and loaded activation](client/dispensers.md) now have real
-nine-slot TileEntity, inventory, container and screen owners. Five selected
-Windows CPU tests and four GCC/Clang sanitizer core tests pass. An authored
-monitor-2 SDK transfer/save/reselection cycle and both cross-screen diagnostic
-lifetime orders also pass. A fresh complete Windows sweep passes all 1,394
-configured tests in 516.09 seconds, retaining all 1,387 preceding names plus
-seven additions without failures, skips or unrun tests. All 703 native products
-remain unchanged. Its final result annotations, input pins and optional
-cross-owner test timeout are checked separately, with unchanged runtime and
-native test code. Placement, orientation,
-random selection, powered firing, removal drops and dedicated-server behavior
-remain unfinished.
+[Dispenser gameplay](client/dispensers.md) covers storage, loaded activation,
+client placement and orientation. Nine selected Windows CPU tests and eight
+GCC/Clang sanitizer core tests pass. The new monitor-2 placement/save/reselection
+scene passes 1,870 checks over 52 frames, with one actual placement tap and
+complete readback of all 441 authored Blocks/Data planes. The loaded-inventory
+regression and both cross-screen diagnostic orders pass separately. A full
+Windows sweep passes all 1,404 tests in 514.46 seconds, with all 1,394 preceding
+names and ten additions. Independent original component validation covers 124
+direct XQ rows in two fresh JVM modes, without a paired native cohort. The earlier
+1,394-test full Windows checkpoint keeps its historical scope. Neighbor callbacks, random selection,
+powered firing, removal drops and dedicated-server behavior remain unfinished;
+these scenes do not qualify original pixels, sustained play or FPS.
 
 [Loaded Signs](world/signs.md) now have real text/NBT owners, client support and
 removal hooks, and ordinary model/Font drawing. A 36-case direct comparison and
@@ -482,7 +482,7 @@ Hosted qualification applies to its exact tested commit.
 | Achievement initialization | [Paired source and original observations](statistics/achievements.md) | Sixteen construction chains, real icon Stacks, typed fields, registration, retained failures and actual default ASCII stdout | 32,892 checks; current five-entry original graph/console comparisons match MSVC/GCC/Clang within 30 Windows/32 Linux selected cases and Linux sanitizers | Partially implemented; initialization verified for recorded entries, gameplay/UI and World startup unfinished |
 | Statistics construction, registration and arrays | [Native contract and original observations](statistics/registry.md) | Real formatter configuration, 23 General stats, C/D/E/F helpers, live recipe outputs, translated names, aliases, registration and retained failures | 14,566 statistics and 11,312,040 current array checks; recorded numeric graph replays pass MSVC/GCC/Clang, with earlier original/imported-resource and locale qualification recorded separately | Partially implemented; ordinary Stats/Block initialization returns; other entry failures, runtime number formatting and full World startup retain their documented limits |
 | Furnace inventory, smelting and screen | [Runtime and qualification](client/furnaces.md), [retained lookup](world/furnace-lazy-lookup.md), original component/lifecycle/readback packets | Three actual Slots, fuel/cook counters, same-Tile lit/unlit replacement, BM/VQ transfers, OV drawing, source saves and retained Arrow/Ray lazy addition | 173 core/27 BM/seven World projections compare; 1,374 Player output checks; four owned-lazy native profiles pass with Linux sanitizers; the 1,341-case Windows suite passes; two original VMs recover a historical native save | Verified for these finite scenarios; nonempty EC listeners, original save round trips, full outer Arrow at this lazy boundary, sustained play and multiplayer remain unfinished |
-| Dispenser storage, container and loaded activation | [Scope and controls](client/dispensers.md) | Actual AZ nine-slot/NBT owners, SH ordinary Slots and inherited getter, one XQ getter and canonical checkcast, DC/GQ display and trap texture path | Five selected Windows CPU tests and four GCC/Clang sanitizer core tests pass; the MSVC component comparison matches sixteen original cases; monitor-2 SDK transfer/save/reselection passes 1,081 checks over 53 frames; two cross-owner SDK orders pass 50 and 44 checks | Verified for these finite loaded/unpowered scenarios. Placement, orientation, random selection, firing, removal drops, original pixels, sustained play and dedicated-server behavior remain unfinished |
+| Dispenser placement, storage and activation | [Scope and controls](client/dispensers.md) | Actual RW/AZ addition, opaque-neighbor orientation, binary32 yaw/Math setter, SH container, XQ activation and DC/GQ display | Nine Windows CPU controls and eight GCC/Clang sanitizer core controls pass; monitor-2 placement/save/reload passes 1,870 checks over 52 frames with complete 441-Chunk Blocks/Data readback; loaded transfer and both cross-owner orders pass separately | Verified for the declared client scenarios. Neighbor callbacks, random selection, firing, removal drops, ordinary acquisition, original pixels, sustained play and dedicated-server behavior remain unfinished |
 | Recipe and smelting initialization | [Paired bytecode and actual catalogs](item/recipes.md) | Source-ordered 151 recipes/ten smelts, stable sort, real Stack ingredients/outputs, singleton publication and crafting statistics | 2,872 recipe and 556 registry-Stack checks; thirty original captures and all ten catalog/graph comparisons plus both Stack projections pass MSVC/GCC/Clang, with Linux sanitizers | Verified for recorded initialization scenarios; connected Workbench and Furnace gameplay retain their separate finite qualifications |
 | Whole-String lowercase hex projection | [Qualified domain and source/data hashes](../tests/reference/core/string_lower_hex/README.md), [Sign consumer](world/signs.md#formatted-unicode) | Allocation-free counted UTF-16 domain check, CCC partition and original-index hex projection shared by BitmapFont, CPU layout and commands; potential Locale insertion/removal remains unsupported | Two fresh JDK17 modes agree on all 1,114,112 codepoint values and 222 context rows each; complete special-case source review and independent audit support 138 admitted/84 refused rows per VM. Core/layout/command controls pass, including two native contexts for every codepoint value. A genuine monitor-2 SourceFont control passes 681 checks and preserves the unsafe-input failure prefix through native retirement | Qualified for this conservative invariant projection and selected failure-prefix control. Per-codepoint/context observations do not enumerate all Strings; general Locale lowercase and Java allocation/OOM timing remain separate |
 | Reached String/null formatting | [Actual JDK observations and reproduction](reference/string-format.md) | Complete parse/validation before printing, argument indices, flags, width/precision, String hashes, null conversions and English full uppercase | 613 native checks, 275 captured cases, 109 typed error operands and all 1,114,112 uppercase code-point values pass MSVC/GCC/Clang with Linux sanitizers | Verified for captured String/null and English scenarios; numeric/date values, arbitrary objects, other locales and Java Throwable identity remain outside this API |

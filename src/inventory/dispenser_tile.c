@@ -3,6 +3,7 @@
 
 #include "../entity/player/tick_math_internal.h"
 #include "mc/entity/entity.h"
+#include "mc/world/runtime/registry_failure.h"
 #include "mc/world/runtime/tile_entities/dispenser.h"
 
 #include <string.h>
@@ -119,11 +120,22 @@ static mc_inventory_status record(dispenser_tile *o, dispenser_failure *r,
     (void)tile_result(e, status, method, descriptor, pc);
     e->dispenser = &r->detail;
     e->dispenser_diagnostic_owner_id = o->diagnostic_owner_id;
+    e->registry = r->detail.registry;
+    e->registry_status = r->detail.registry.status;
     e->mutation_reached = r->detail.inventory_bytecode != 0;
     e->notification_reached = r->detail.tile_entity_bytecode != 0;
     capture(o, r, &r->detail.world_access_failure, e);
     capture(o, r, &r->detail.publication.world_access_failure, e);
     capture(o, r, &r->detail.batch.publication.world_access_failure, e);
+    const mc_world_registry_failure *registry = &r->detail.registry_failure;
+    if (mc_world_registry_failure_matches(registry, &r->detail.registry)) {
+        e->source_exception = registry->kind == MC_WORLD_REGISTRY_FAILURE_SOURCE_EXCEPTION;
+        e->source_error = registry->kind == MC_WORLD_REGISTRY_FAILURE_SOURCE_ERROR;
+        e->exception_class = registry->exception_class;
+        /* The matched Registry classifier supplies a static literal. The AZ
+         * ledger still owns its actual child receipts, not this class name. */
+        e->exception_class_from_dispenser = false;
+    }
     return e->status;
 }
 

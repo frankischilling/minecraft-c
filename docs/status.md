@@ -7,42 +7,34 @@ the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining w
 
 ## Current client work
 
-### Loaded Dispensers
+### Dispenser placement, storage and screens
 
-[Loaded, unpowered Dispensers](client/dispensers.md) connect the nine-slot AZ
-TileEntity and SH container to the client DC/GQ screen, SDK input, menu saving
-and World reselection. The Windows monitor-2 cycle passes 1,081 checks across
-53 frames. It opens twice, moves five diamonds through the cursor into Player
-slot 9, leaves three gold ingots in Dispenser slot 8, closes twice and verifies
-both saved inventories after reloading distinct World and Player owners. The
-native process returns naturally and both windows close. Selected source inputs
-and all 413 supplied asset files remain unchanged. These are authored SDK
-records; physical input timing, original pixels, sustained play and FPS remain
-unqualified.
+[Dispenser gameplay](client/dispensers.md) now includes client placement and
+orientation alongside the nine-slot AZ, SH container and DC/GQ screen. The
+Windows monitor-2 placement scene passes 1,870 checks over 52 frames with one
+placement tap, two opens/closes and save/reselection into distinct World and
+Player owners. Both saved views preserve all 441 authored Blocks/Data planes;
+the new Trap is empty, facing metadata 2, and the supplied count-one Stack is
+consumed. The process returns naturally and both windows close.
 
-Five selected Windows CPU tests cover storage, the container, loaded activation
-and retained dirty failures. Four core tests also pass on GCC and Clang with
-ASan, UBSan and leak detection. A regression checks the fresh NBT writer used by
-ordinary Chunk saves with nonempty and empty Items lists. Two fresh hidden SDK
-processes pass 50 and 44 checks for retained calls and diagnostic names across
-both Screen creation orders. A separate MSVC component comparison matches
-sixteen declared cases against two fresh original VMs. The two original
-null-Player Shift failures remain outside the native comparison.
+Nine selected Windows CPU tests pass. The four new controls cover 320
+orientation, 178 placed-by, 81 Registry namespace and 77 diagnostic-projection
+checks. Eight core tests also pass on GCC and Clang with ASan, UBSan and leak
+detection. A fresh loaded-inventory scene passes 1,059 checks over 52 frames;
+both hidden cross-owner orders pass 50 and 44 checks. These are finite authored
+scenarios, with no physical-input, original-pixel, sustained-play or FPS claim.
 
-The complete Windows Release build and all 1,394 configured tests pass in
-516.09 seconds. Every preceding 1,387 name remains, with exactly seven
-additions and no failed, skipped or unrun tests. Source inputs and all 703 native
-products remain unchanged during the sweep. Final result annotations,
-current input pins and the optional cross-owner test timeout are checked
-separately; runtime and native test code retain the swept bytes.
+The full MSVC Release build and all 1,404 Windows tests pass in 514.46 seconds,
+retaining all 1,394 preceding names plus ten additions. All 6,690 project files
+and 708 native products stay unchanged through the sweep. The independently
+audited original component has 124 direct XQ rows across two fresh JVM modes;
+it is separate from the native gameplay scenes and does not establish a paired
+whole-program comparison.
 
-An earlier complete run remains recorded as 1,305 passes and 89 source-binding
-preflight failures. All 89 names then execute and pass within an audited
-115-test selection. The fresh complete pass above is a separate run.
-
-Historical Sign qualification below applies to its stated checkpoints.
-Dispenser placement, orientation, random slot selection, powered firing,
-removal drops and dedicated-server behavior remain unfinished.
+The earlier loaded-activation checkpoint passed all 1,394 Windows tests. Its
+historical results and Sign qualification below keep their stated scopes.
+Neighbor callbacks, random slot selection, powered firing, removal drops and dedicated-server
+behavior remain unfinished.
 
 ### Sign placement and editing, cf8cb269
 

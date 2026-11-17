@@ -70,6 +70,7 @@ struct mc_world_placement_work {
     furnace_activation_work *furnace;
     dispenser_activation_work *dispenser;
     mc_math_classes *math;
+    mc_entity *placed_by_living;
     mc_world_solid_support_detail *supports[5];
     mc_world_mutation_error *mutation;
     mc_world_step_error *step;
@@ -129,6 +130,18 @@ static mc_world_storage_status registry_failed_in(mc_world_placement_error *e,
 
 static mc_world_storage_status registry_failed(mc_world_placement_error *e) {
     return registry_failed_in(e, e->work->registry);
+}
+
+static mc_world_storage_status registry_value_failed(mc_world_placement_error *e,
+                                                     const mc_world_registry_failure *view,
+                                                     mc_registry_classes *legacy_classes) {
+    if (!mc_world_registry_failure_matches(view, &e->registry))
+        return registry_failed_in(e, legacy_classes);
+    e->exception_class = view->exception_class;
+    e->source_exception = view->kind == MC_WORLD_REGISTRY_FAILURE_SOURCE_EXCEPTION;
+    e->source_error = view->kind == MC_WORLD_REGISTRY_FAILURE_SOURCE_ERROR;
+    return fail(e, mc_world_runtime_registry_status(e->registry.status), e->registry.message,
+                view->kind == MC_WORLD_REGISTRY_FAILURE_NATIVE);
 }
 
 static bool allocate(mc_world_placement_error *e, mc_world_placement_site entry) {
@@ -1369,6 +1382,8 @@ mc_world_storage_status mc_world_block_placed_by_with_math(
         return e->status;
     if (block->kind == MC_BLOCK_FURNACE)
         return finish(e, furnace_placed_by(e, world, x, y, z, living, math), false, NULL);
+    if (block->kind == MC_BLOCK_DISPENSER)
+        return finish(e, dispenser_placed_by(e, world, x, y, z, living, math), false, NULL);
     return finish(e, inherited(e, placed_by_class(block->kind)), false, NULL);
 }
 
@@ -1510,6 +1525,7 @@ bool mc_world_placement_error_retire(mc_world_placement_error *e) {
     free(w->bed_occupant);
     free(w->sleep_result);
     mc_entity_release(w->bed_player);
+    mc_entity_release(w->placed_by_living);
     if (w->world != NULL)
         mc_world_runtime_binding_release(w->world);
     free(w);

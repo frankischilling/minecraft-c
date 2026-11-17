@@ -1,0 +1,61 @@
+{
+  "schema": "dispenser_component_packet_v1",
+  "status": "POSTEXECUTION_PUBLIC_REPRODUCER_NOT_RUNTIME_QUALIFIED",
+  "files": {
+    "DispenserContainerObservation.java": {
+      "bytes": 13187,
+      "sha256": "59649870e7b73dbcb9c3908b81da5c59a3039593fcf17d69553166864862ee16"
+    },
+    "cases.tsv": {
+      "bytes": 517,
+      "sha256": "235f4dc408d26ac3dd5702c055ba9e7bb998dd816913ddc64872f5d1f2b64fe5"
+    },
+    "source-pins.json": {
+      "bytes": 67121,
+      "sha256": "e1476d2007f63fcc88c833d6e8722fa2fe0c43ca50502a093ff17b76e29e8bd4"
+    },
+    "finite.json": {
+      "bytes": 437654,
+      "sha256": "82e6f574488af2346a1dea04815c929df024a53c0091167d9e82a2db5a9e92f9"
+    },
+    "model.py": {
+      "bytes": 23241,
+      "sha256": "4bbe25bee332fa62ad90160394a27ff291905faa70f6156eaac46299af179545"
+    },
+    "capture.py": {
+      "bytes": 11984,
+      "sha256": "1f80812bdd5482f9024f00811527acba9989c3758ed21cadacff2359d2cfcbc6"
+    },
+    "publish.py": {
+      "bytes": 20028,
+      "sha256": "b97e1519c55e89a140df9ac775d6c2b6df9fbc29ec61a0628b19e6483f2478c0"
+    },
+    "audit.py": {
+      "bytes": 10078,
+      "sha256": "24d3ce51a700ae6eb77d5ce299dd6959e30f64e8d5c210ba7327408a9885b293"
+    },
+    "test_packet.py": {
+      "bytes": 32478,
+      "sha256": "6530685bd196c77159a86b6c311dbbfb2b4819c6d9e5d3310d4c0f9e8258fb95"
+    },
+    "README.md": {
+      "bytes": 6846,
+      "sha256": "e3f5fccca628a5cca2270e3a80983f8bccff88ab55875fb928335b13b47e86de"
+    }
+  },
+  "shared_inputs": {
+    "tests/reference/client/controller/capture.py": {
+      "bytes": 8065,
+      "sha256": "57897f22c1a1f9b6a9c9ee80f96168f782a80e1e5c7578c5d1281768f92f702e"
+    },
+    "tests/reference/client/controller/classfile.py": {
+      "bytes": 2578,
+      "sha256": "2ea1c387744a8c41b73173d0089229d576a6de1211bba9288ad31c136de74a8b"
+    },
+    "tests/reference/client/player_statistics/support.py": {
+      "bytes": 6492,
+      "sha256": "2db422833411feb3c3f6157305246a1894d33781309028832fbf3c41b929365e"
+    }
+  },
+  "scope": "Original18cases/twoVMs and selected nativeV2 16cases; public tools are postexecution authoring; no gameplay or complete parity claim."
+}

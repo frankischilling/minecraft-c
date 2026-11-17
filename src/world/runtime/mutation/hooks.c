@@ -1,3 +1,4 @@
+#include "dispenser/dispenser_internal.h"
 #include "fire/fire_internal.h"
 #include "furnace/furnace_internal.h"
 #include "mutation_internal.h"
@@ -86,6 +87,7 @@ static bool tile_entity_hook(mc_world_runtime *world, const mc_block *block, int
                detail.hook_bytecode != 0 ? detail.hook_bytecode : detail.bytecode, error);
     error->tile_entity = detail;
     error->registry = detail.registry;
+    error->registry_failure = detail.registry_failure;
     error->entity = detail.entity;
     error->publication = detail.publication;
     return storage_fail(world, error, detail.cause);
@@ -394,8 +396,22 @@ static bool block_added(mc_world_runtime *world, const mc_block *block, int32_t 
             return unavailable(world, block, "xf", "ov", "Block sponge addition hook", error,
                                owned);
         case MC_BLOCK_DISPENSER:
-            return unavailable(world, block, "xq", "pa", "Block dispenser addition hook", error,
-                               owned);
+            if (block->classes->options.side != MC_REGISTRY_CLIENT)
+                return unavailable(world, block, "xq", "pa", "Block Dispenser addition hook", error,
+                                   owned);
+            if (!(owned == NULL ? tile_entity_hook(world, block, x, y, z, true, error)
+                  : call != NULL
+                      ? mc_world_mutation_execution_tile_added(call, world, block, x, y, z, error)
+                      : unjoined(owned, "Dispenser addition requires retained client caller"))) {
+                error->cause_hook_class = error->hook_class;
+                error->cause_hook_method = error->hook_method;
+                error->cause_hook_bytecode = error->hook_bytecode;
+                error->hook_class = "xq";
+                error->hook_method = "c(Lfd;III)V";
+                error->hook_bytecode = 6;
+                return false;
+            }
+            return mc_world_mutation_dispenser_orient(world, block, x, y, z, error, call);
         case MC_BLOCK_PISTON_BASE:
             return owned == NULL && block->classes->options.side == MC_REGISTRY_CLIENT
                        ? mc_world_mutation_piston_base_added(code, world, block, x, y, z, error)

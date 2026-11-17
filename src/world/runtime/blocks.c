@@ -477,10 +477,29 @@ bool mc_world_runtime_block_get_in_execution(mc_world_block_execution *frame,
                                              mc_world_runtime *world, int32_t x, int32_t y,
                                              int32_t z, int32_t *out, mc_world_storage_error *error,
                                              mc_world_storage_status *status) {
+    bool provider_null;
+    return mc_world_runtime_block_get_source_in_execution(frame, world, x, y, z, out, error, status,
+                                                          &provider_null);
+}
+
+bool mc_world_runtime_block_get_source_in_execution(mc_world_block_execution *frame,
+                                                    mc_world_runtime *world, int32_t x, int32_t y,
+                                                    int32_t z, int32_t *out,
+                                                    mc_world_storage_error *error,
+                                                    mc_world_storage_status *status,
+                                                    bool *provider_null) {
+    if (provider_null == NULL) {
+        if (frame != NULL)
+            mc_world_runtime_execution_result_note(frame->owned, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                                   "World block source diagnostic output required",
+                                                   frame->receiver_site);
+        return false;
+    }
+    *provider_null = false;
     if (!scalar_enter(frame, world, out, error, status))
         return false;
     const mc_world_storage_status actual =
-        block_get(world, x, y, z, out, error, &frame->acquisition, NULL, frame, NULL);
+        block_get(world, x, y, z, out, error, &frame->acquisition, NULL, frame, provider_null);
     return scalar_finish(frame, actual, status);
 }
 

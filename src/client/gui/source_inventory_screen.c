@@ -845,12 +845,17 @@ static bool slot_failure(mc_client_source_id *o, const mc_container_interaction_
     o->detail.child =
         (mc_client_screen_site){child->site.class_name, child->site.method, child->site.descriptor,
                                 child->site.pc < 0 ? 0u : (unsigned int)child->site.pc};
-    return fail(o, e,
-                child->status == MC_INVENTORY_NULL_REFERENCE
-                    ? MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE
-                : child->status == MC_INVENTORY_INDEX_OUT_OF_BOUNDS ? MC_CLIENT_SCREEN_SOURCE_INDEX
-                                                                    : MC_CLIENT_SCREEN_APP_FAILED,
-                child->operation, "id", "a", descriptor, pc, child->native_policy);
+    (void)fail(o, e,
+               child->status == MC_INVENTORY_NULL_REFERENCE ? MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE
+               : child->status == MC_INVENTORY_INDEX_OUT_OF_BOUNDS ? MC_CLIENT_SCREEN_SOURCE_INDEX
+                                                                   : MC_CLIENT_SCREEN_APP_FAILED,
+               child->operation, "id", "a", descriptor, pc, child->native_policy);
+    e->source_exception = child->source_exception;
+    e->source_error = child->source_error;
+    e->exception_class = child->exception_class;
+    e->exception_class_dispenser_owner_id = child->exception_class_dispenser_owner_id;
+    o->base.failure = *e;
+    return false;
 }
 
 static bool slot_hit(mc_client_source_id *o, mc_inventory_slot *slot, int32_t x, int32_t y,

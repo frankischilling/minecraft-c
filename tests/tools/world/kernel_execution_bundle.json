@@ -65,8 +65,8 @@
       "sha256": "802d97c9a859698efe6d08404edfb1d177d7854631dfd36410a4f42634e8ddc2"
     },
     "src/world/runtime/runtime.c": {
-      "bytes": 73387,
-      "sha256": "8007bf13c12073f0b3481bb2063d5abf405d22df822039f4e7055f8c25bd7dd5"
+      "bytes": 73891,
+      "sha256": "18deadb22252e6b967ad7b1b46b754bc0652bb752704d954251ec55a362b6d87"
     },
     "src/world/runtime/runtime_execution.c": {
       "bytes": 20205,
@@ -81,8 +81,8 @@
       "sha256": "10c102ea8b8b60768f2afd9881204d6a6ab311fce48a4d52d251a61ce5d722cd"
     },
     "src/world/runtime/tile_entities/tile_entities.c": {
-      "bytes": 316177,
-      "sha256": "ecb05e208b8e5a08a27b061404e22f1336da8540ae7b122b7cd16479655b6a9c"
+      "bytes": 317626,
+      "sha256": "418bc108ba1aa9103f0b25894529f1d5df19acb7fea61ae47f0034d332de71c6"
     },
     "tests/world/runtime/world_access/test_kernel_execution.c": {
       "bytes": 25462,

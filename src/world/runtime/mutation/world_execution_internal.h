@@ -79,7 +79,7 @@ typedef struct mc_world_material_execution mc_world_material_execution;
 const mc_world_material_execution *
 mc_world_mutation_execution_failed_material(const mc_world_mutation_execution_call *,
                                             mc_world_storage_status *);
-/* The reached Chest/Furnace/Sign RW addition is joined. Its nullable World argument
+/* The reached Chest/Furnace/Dispenser/Sign RW addition is joined. Its nullable World argument
  * reaches factory15 first and reports a successful factory's NULL invocation
  * through execution_source_null at RW18. Its complete live Tile child
  * remains in this mutation call while the one canonical result retains any

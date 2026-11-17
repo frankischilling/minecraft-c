@@ -46,6 +46,14 @@ void mc_world_block_execution_init(mc_world_block_execution *, mc_entity_tick_ex
 bool mc_world_runtime_block_get_in_execution(mc_world_block_execution *, mc_world_runtime *,
                                              int32_t, int32_t, int32_t, int32_t *,
                                              mc_world_storage_error *, mc_world_storage_status *);
+/* Same single owned read, with a required disjoint VALUE witness. Clear it
+ * before native admission; set it only at the actual reached FD.c6 null
+ * provider receiver. Domain returns, native refusal and failed GETs do not
+ * infer this witness. The compatibility entry above discards only this VALUE. */
+bool mc_world_runtime_block_get_source_in_execution(mc_world_block_execution *, mc_world_runtime *,
+                                                    int32_t, int32_t, int32_t, int32_t *,
+                                                    mc_world_storage_error *,
+                                                    mc_world_storage_status *, bool *provider_null);
 bool mc_world_runtime_metadata_get_in_execution(mc_world_block_execution *, mc_world_runtime *,
                                                 int32_t, int32_t, int32_t, int32_t *,
                                                 mc_world_storage_error *,

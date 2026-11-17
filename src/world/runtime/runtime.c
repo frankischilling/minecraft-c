@@ -83,6 +83,7 @@ static void acquisition_activation(mc_world_runtime *runtime,
         runtime->acquisition_error->tile_entity = error->tile_entity;
         runtime->acquisition_error->batch = error->batch;
         runtime->acquisition_error->registry = error->tile_entity.registry;
+        runtime->acquisition_error->registry_failure = error->tile_entity.registry_failure;
         runtime->acquisition_error->activation_bytecode = error->bytecode;
         runtime->acquisition_error->activation_world_bytecode = error->world_bytecode;
     }
@@ -153,12 +154,15 @@ static mc_chunk_load_result load(void *owner, const mc_chunk_acquire_context *co
                 runtime->acquisition_error->tile_entity = error.tile_entity;
                 runtime->acquisition_error->load_entity = error.entity;
                 runtime->acquisition_error->registry = error.tile_entity.registry;
+                runtime->acquisition_error->registry_failure = error.tile_entity.registry_failure;
                 runtime->acquisition_error->load_bytecode = error.region_bytecode;
                 runtime->acquisition_error->load_builder_bytecode = error.builder_bytecode;
                 runtime->acquisition_error->source_chunk = error.source_chunk;
                 if (error.source_chunk != NULL &&
-                    error.source_chunk->registry.status != MC_REGISTRY_OK)
+                    error.source_chunk->registry.status != MC_REGISTRY_OK) {
                     runtime->acquisition_error->registry = error.source_chunk->registry;
+                    runtime->acquisition_error->registry_failure = (mc_world_registry_failure){0};
+                }
             }
         }
         return status == MC_WORLD_STORAGE_OK        ? MC_CHUNK_LOAD_LOADED
@@ -185,8 +189,10 @@ static bool generate_game(mc_world_runtime *runtime, mc_chunk_provider *provider
         acquisition_cause(runtime, error.cause);
         if (error.registry.status != MC_REGISTRY_OK)
             runtime->last_registry_error = error.registry;
-        if (runtime->acquisition_error != NULL)
+        if (runtime->acquisition_error != NULL) {
             runtime->acquisition_error->registry = error.registry;
+            runtime->acquisition_error->registry_failure = (mc_world_registry_failure){0};
+        }
     }
     return status == MC_WORLD_STORAGE_OK;
 }
@@ -332,6 +338,7 @@ static bool populate_game(mc_world_runtime *runtime, mc_chunk_provider *provider
         acquisition_cause(runtime, error.cause);
         if (runtime->acquisition_error != NULL) {
             runtime->acquisition_error->registry = error.registry;
+            runtime->acquisition_error->registry_failure = (mc_world_registry_failure){0};
             runtime->acquisition_error->population =
                 mc_world_overworld_population_context_get(&error);
         }

@@ -1,3 +1,86 @@
+/* Actual client XQ.a(World,III,Living), Code83. These float operations are
+ * deliberately separate; double yaw/90 would change the reached operands.
+ * There is no World.B guard in this override. */
+static bool dispenser_placed_by(mc_world_placement_error *e, mc_world_runtime *world, int32_t x,
+                                int32_t y, int32_t z, mc_entity *living, mc_math_classes *math) {
+    e->site = site("xq", "a", "(Lfd;IIILls;)V", 2);
+    if (living == NULL) {
+        null_reference(e, "XQ actual null Living yaw field receiver");
+        return false;
+    }
+    if (mc_entity_living_fields(living) == NULL) {
+        fail(e, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "XQ represented Living yaw storage", true);
+        return false;
+    }
+    const mc_entity_status held = mc_entity_retain(living);
+    if (held != MC_ENTITY_OK) {
+        fail(e, held == MC_ENTITY_LIMIT ? MC_WORLD_STORAGE_LIMIT : MC_WORLD_STORAGE_BUSY,
+             "XQ captured Living native occurrence", true);
+        return false;
+    }
+    e->work->placed_by_living = living;
+    const float yaw = living->base.yaw;
+    e->site.pc = 7;
+    if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
+        fail(e, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "XQ reached yaw floating environment", true);
+        return false;
+    }
+    const float multiplied = _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(yaw), _mm_set_ss(4.0f)));
+    const float divided = _mm_cvtss_f32(_mm_div_ss(_mm_set_ss(multiplied), _mm_set_ss(360.0f)));
+    const double argument = _mm_cvtsd_f64(_mm_add_sd(_mm_set_sd((double)divided), _mm_set_sd(.5)));
+    e->site.pc = 16;
+    if (math == NULL) {
+        fail(e, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "XQ reached defining Math namespace", true);
+        return false;
+    }
+    if (mc_math_classes_retain(math, &e->math) != MC_MATH_CLASS_OK) {
+        fail(e, MC_WORLD_STORAGE_UNSUPPORTED_STATE, e->math.operation, true);
+        return false;
+    }
+    e->work->math = math;
+    if (mc_math_classes_ensure(math, &e->math) != MC_MATH_CLASS_OK) {
+        e->caller = e->site;
+        e->site = site("in", "<clinit>", "()V",
+                       e->math.source_pc < 0 ? 0u : (unsigned int)e->math.source_pc);
+        fail(e, MC_WORLD_STORAGE_UNSUPPORTED_STATE, e->math.operation, true);
+        return false;
+    }
+    const uint32_t direction = (uint32_t)mc_math_floor_double(argument) & 3u;
+    static const int32_t metadata[] = {2, 5, 3, 4};
+    static const unsigned int pcs[] = {34, 49, 64, 79};
+    e->site.pc = pcs[direction];
+    if (!hold_world(e, world))
+        return false;
+    e->work->mutation = malloc(sizeof(*e->work->mutation));
+    if (e->work->mutation == NULL) {
+        fail(e, MC_WORLD_STORAGE_ALLOCATION_FAILED, "Dispenser placed-by metadata diagnostic",
+             true);
+        return false;
+    }
+    e->mutation = e->work->mutation;
+    const mc_world_storage_status changed =
+        mc_world_runtime_metadata_set(world, x, y, z, metadata[direction], e->work->mutation);
+    if (changed != MC_WORLD_STORAGE_OK) {
+        fail(e, changed, e->mutation->operation, true);
+        e->cause = e->mutation->cause;
+        e->registry = e->mutation->registry;
+        if (e->registry.status != MC_REGISTRY_OK)
+            registry_value_failed(e, &e->mutation->registry_failure,
+                                  mc_world_runtime_registry(world));
+    }
+    if (!capture(e)) {
+        if (changed == MC_WORLD_STORAGE_OK)
+            fail(e, e->cleanup.status, e->cleanup.operation, true);
+        return false;
+    }
+    if (changed != MC_WORLD_STORAGE_OK) {
+        classify_receipts(e);
+        return false;
+    }
+    e->site.pc = 82;
+    return true;
+}
+
 /* Actual client XQ.a(World,III,Player), Code31. The detailed facade performs
  * the same single ordinary getter and preserves its real acquisition cause. */
 static bool dispenser_activate(mc_world_placement_error *e, mc_world_runtime *world, int32_t x,
@@ -46,7 +129,8 @@ static bool dispenser_activate(mc_world_placement_error *e, mc_world_runtime *wo
             null_reference(e, f->tile_error.operation);
             e->dispenser_getter_child = site("fd", "c", "(II)Llm;", 6);
         } else if (e->registry.status != MC_REGISTRY_OK)
-            (void)registry_failed_in(e, mc_world_runtime_registry(world));
+            (void)registry_value_failed(e, &f->tile_error.registry_failure,
+                                        mc_world_runtime_registry(world));
     } else
         e->dispenser_tile_returned = true;
     if (!capture(e)) {

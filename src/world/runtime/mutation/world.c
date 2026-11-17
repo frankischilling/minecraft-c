@@ -61,6 +61,7 @@ struct mc_world_mutation_execution_call {
     bool tile_added_source_null;
     bool tile_removed_completed, tile_removed_source_null;
     bool explicit_tile_bindings;
+    bool scalar_provider_null; /* Actual same-read FD.c6 witness, never a World reread. */
 };
 
 static const mc_entity_tick_execution_site metadata_site = {"fd", "d", "(IIII)V", 0};
@@ -172,6 +173,7 @@ bool mc_world_mutation_execution_material(mc_world_mutation_execution_call *call
         return false;
     error->material = call->material->detail;
     error->registry = call->material->detail.registry;
+    error->registry_failure = (mc_world_registry_failure){0};
     error->status = call->material->detail.status;
     error->operation = call->material->detail.operation;
     error->cause = call->material->detail.cause;
@@ -290,6 +292,7 @@ bool mc_world_mutation_execution_literal(mc_world_mutation_execution_call *call,
                                                   "Fluid source literal resolution");
         else {
             error->registry = registry;
+            error->registry_failure = (mc_world_registry_failure){0};
             error->status = mc_world_runtime_registry_status(status);
             error->operation = "Fluid source literal resolution";
             error->cause = (mc_world_storage_error){error->status, error->operation, 0};
@@ -533,6 +536,7 @@ static bool acquisition_failure(mc_world_runtime *world, mc_chunk_acquire_status
                                 mc_world_mutation_error *frame) {
     frame->tile_entity = detail->tile_entity;
     frame->registry = detail->registry;
+    frame->registry_failure = detail->registry_failure;
     frame->batch = detail->batch;
     frame->activation_bytecode = detail->activation_bytecode;
     frame->activation_world_bytecode = detail->activation_world_bytecode;
@@ -798,6 +802,16 @@ static bool scalar_result(mc_world_mutation_execution_call *owned, mc_world_runt
                           mc_world_mutation_error *frame) {
     if (completed)
         return true;
+    if (owned->scalar_provider_null) {
+        frame->query.status = raw;
+        frame->query.operation = cause.operation;
+        frame->query.cause = cause;
+        frame->query.bytecode = 48; /* FD.a invokes its acquiring c(II) child. */
+        frame->query.provider_bytecode = 6;
+        frame->query.source_null = true;
+        frame->nearby.query = frame->query;
+        frame->provider_bytecode = 6;
+    }
     if (owned->scalar.get_returned && owned->scalar.get_status != MC_CHUNK_ACQUIRE_OK)
         return acquisition_failure(world, owned->scalar.get_status, &owned->scalar.acquisition,
                                    frame);
@@ -808,6 +822,7 @@ static bool scalar_result(mc_world_mutation_execution_call *owned, mc_world_runt
 
 static void prepare_scalar(mc_world_mutation_execution_call *owned,
                            mc_entity_tick_execution_site site) {
+    owned->scalar_provider_null = false;
     owned->scalar = (mc_world_block_execution){.execution = owned->context.execution,
                                                .code = owned->context.code,
                                                .receiver_site = site,
@@ -823,10 +838,12 @@ bool mc_world_mutation_execution_get(mc_world_mutation_execution_call *owned,
     prepare_scalar(owned, site);
     mc_world_storage_error cause = {0};
     mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
-    const bool completed = metadata ? mc_world_runtime_metadata_get_in_execution(
-                                          &owned->scalar, world, x, y, z, out, &cause, &raw)
-                                    : mc_world_runtime_block_get_in_execution(
-                                          &owned->scalar, world, x, y, z, out, &cause, &raw);
+    const bool completed =
+        metadata ? mc_world_runtime_metadata_get_in_execution(&owned->scalar, world, x, y, z, out,
+                                                              &cause, &raw)
+                 : mc_world_runtime_block_get_source_in_execution(&owned->scalar, world, x, y, z,
+                                                                  out, &cause, &raw,
+                                                                  &owned->scalar_provider_null);
     return scalar_result(owned, world, completed, raw, cause, frame);
 }
 
@@ -953,7 +970,7 @@ static bool admit_owned(const mc_world_mutation_execution_context *context, mc_w
 }
 
 /* A Block hook receives World as an ordinary nullable argument. Only this
- * Chest/Furnace/Sign RW bodies may evaluate factory15 before invoking that value at18;
+ * Chest/Furnace/Dispenser/Sign RW bodies may evaluate factory15 before invoking that value at18;
  * nullable World method receivers retain admit_owned's earlier refusal. */
 static bool admit_nullable_tile_added(const mc_world_mutation_execution_context *context,
                                       mc_world_mutation_execution_call **slot,
@@ -1134,10 +1151,11 @@ bool mc_world_mutation_execution_added_with_tile_bindings(
     mc_world_mutation_error *error, mc_entity_tick_execution_site site) {
     mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
     mc_world_access_failure_lease *lease = NULL;
-    const bool nullable_tile = world == NULL && block != NULL &&
-                               (block->kind == MC_BLOCK_CHEST || block->kind == MC_BLOCK_FURNACE ||
-                                block->kind == MC_BLOCK_SIGN) &&
-                               block->classes->options.side == MC_REGISTRY_CLIENT;
+    const bool nullable_tile =
+        world == NULL && block != NULL &&
+        (block->kind == MC_BLOCK_CHEST || block->kind == MC_BLOCK_FURNACE ||
+         block->kind == MC_BLOCK_DISPENSER || block->kind == MC_BLOCK_SIGN) &&
+        block->classes->options.side == MC_REGISTRY_CLIENT;
     if (!(nullable_tile ? admit_nullable_tile_added(context, slot, error, &lease, site)
                         : admit_owned(context, world, true, slot, &raw, error, &lease, site)))
         return false;
@@ -1246,6 +1264,7 @@ bool mc_world_mutation_execution_schedule(mc_world_mutation_execution_call *call
     error->operation = detail->operation;
     error->cause = detail->cause;
     error->registry = detail->registry;
+    error->registry_failure = (mc_world_registry_failure){0};
     error->schedule_bytecode = detail->bytecode;
     error->record = detail->record;
     error->membership = detail->membership;
@@ -1278,6 +1297,10 @@ bool mc_world_mutation_execution_source_null(const mc_world_mutation_execution_c
         return false;
     if (mc_world_mutation_execution_source_null(call->child, site))
         return true;
+    if (call->scalar_provider_null) {
+        *site = (mc_entity_tick_execution_site){"fd", "c", "(II)Llm;", 6};
+        return true;
+    }
     if (call->chunk != NULL) {
         if (mc_world_mutation_execution_source_null(call->chunk->hook, site))
             return true;
@@ -1292,6 +1315,10 @@ bool mc_world_mutation_execution_source_null(const mc_world_mutation_execution_c
     }
     if (call->tile_removed_source_null) {
         *site = (mc_entity_tick_execution_site){"rw", "b", "(Lfd;III)V", 14};
+        return true;
+    }
+    if (call->error.dispenser_source_null) {
+        *site = (mc_entity_tick_execution_site){"xq", "h", "(Lfd;III)V", 1};
         return true;
     }
     if (mc_live_tile_entity_query_execution_source_null(call->tile_removed_lookup, site))
@@ -1368,7 +1395,7 @@ bool mc_world_mutation_execution_tile_added(mc_world_mutation_execution_call *ca
         return false;
     if (call->tile_added != NULL || error == NULL || block == NULL ||
         (block->kind != MC_BLOCK_CHEST && block->kind != MC_BLOCK_FURNACE &&
-         block->kind != MC_BLOCK_SIGN)) {
+         block->kind != MC_BLOCK_DISPENSER && block->kind != MC_BLOCK_SIGN)) {
         mc_world_runtime_execution_result_note(call->context.result, MC_WORLD_STORAGE_BUSY,
                                                "TileEntity addition requires fresh retained child",
                                                site);
@@ -1398,6 +1425,7 @@ bool mc_world_mutation_execution_tile_added(mc_world_mutation_execution_call *ca
      * source status is independent of the canonical native ownership result. */
     error->tile_entity = *call->tile_added;
     error->registry = call->tile_added->registry;
+    error->registry_failure = call->tile_added->registry_failure;
     error->entity = call->tile_added->entity;
     error->publication = call->tile_added->publication;
     error->status = call->tile_added_status;
@@ -1443,6 +1471,7 @@ bool mc_world_mutation_execution_sign_removed(mc_world_mutation_execution_call *
     }
     error->tile_entity = *call->tile_removed;
     error->registry = call->tile_removed->registry;
+    error->registry_failure = call->tile_removed->registry_failure;
     error->entity = call->tile_removed->entity;
     error->publication = call->tile_removed->publication;
     error->status = call->tile_removed_status;

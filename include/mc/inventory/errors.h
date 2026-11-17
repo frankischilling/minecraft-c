@@ -52,9 +52,10 @@ typedef struct mc_inventory_error {
      * reference or ownership token. Copies acquire no producer occurrence. */
     uintptr_t dispenser_diagnostic_owner_id;
     /* True only when an actual WorldAccess receipt supplied exception_class.
-     * Static null/index names remain false and survive diagnostic expiry. */
+     * Static null/index and matched Registry names remain false and survive
+     * diagnostic expiry. Source Exception and Error remain distinct. */
     bool exception_class_from_dispenser;
-    bool source_exception;
+    bool source_exception, source_error;
     const char *exception_class;
 } mc_inventory_error;
 

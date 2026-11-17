@@ -31,8 +31,9 @@ bool inv_interaction_null(mc_container_interaction_error *e, const char *operati
 bool inv_interaction_inventory(mc_container_interaction_error *e, mc_inventory_status status) {
     if (status == MC_INVENTORY_OK)
         return true;
-    if (e->inventory.source_exception) {
-        e->source_exception = true;
+    if (e->inventory.source_exception || e->inventory.source_error) {
+        e->source_exception = e->inventory.source_exception;
+        e->source_error = e->inventory.source_error;
         e->exception_class = e->inventory.exception_class;
         e->exception_class_dispenser_owner_id = e->inventory.exception_class_from_dispenser
                                                     ? e->inventory.dispenser_diagnostic_owner_id
@@ -40,8 +41,10 @@ bool inv_interaction_inventory(mc_container_interaction_error *e, mc_inventory_s
     }
     if (e->inventory.frame_count != 0) {
         e->dependency = e->inventory.frames[0];
-        if (status == MC_INVENTORY_NULL_REFERENCE || status == MC_INVENTORY_INDEX_OUT_OF_BOUNDS) {
+        if (!e->inventory.source_exception && !e->inventory.source_error &&
+            (status == MC_INVENTORY_NULL_REFERENCE || status == MC_INVENTORY_INDEX_OUT_OF_BOUNDS)) {
             e->source_exception = true;
+            e->source_error = false;
             e->exception_class = status == MC_INVENTORY_NULL_REFERENCE
                                      ? "java/lang/NullPointerException"
                                      : "java/lang/ArrayIndexOutOfBoundsException";

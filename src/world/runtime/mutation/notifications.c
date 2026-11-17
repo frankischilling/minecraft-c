@@ -290,6 +290,7 @@ static MC_NEIGHBOR_GET_NOINLINE bool neighbor_value(mc_world_runtime *world, int
     error->query.population = child.population;
     error->query.source_chunk = child.source_chunk;
     error->registry = child.registry;
+    error->registry_failure = child.registry_failure;
     error->population = child.population;
     error->tile_entity = child.tile_entity;
     error->batch = child.batch;

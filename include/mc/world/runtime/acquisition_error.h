@@ -21,6 +21,7 @@ typedef struct mc_world_runtime_acquisition_error {
     mc_world_entity_load_error load_entity;
     mc_world_population_context population;
     const mc_world_source_chunk_error *source_chunk;
+    mc_world_registry_failure registry_failure;
 } mc_world_runtime_acquisition_error;
 
 #endif

@@ -41,6 +41,13 @@ bool mc_world_mutation_fail(mc_world_runtime *world, mc_world_mutation_error *er
                             mc_world_storage_status status, const char *operation);
 bool mc_world_mutation_registry_fail(mc_world_runtime *world, mc_world_mutation_error *error,
                                      const mc_registry_error *cause, const char *operation);
+/* Classify this same reached cause against its actual producer namespace
+ * before it can retire. The result is a paired VALUE with static class names;
+ * it never substitutes the evaluated World's Registry for the producer. */
+bool mc_world_mutation_registry_fail_in(mc_world_runtime *world,
+                                        mc_registry_classes *producer_registry,
+                                        mc_world_mutation_error *error,
+                                        const mc_registry_error *cause, const char *operation);
 
 /* Internal concrete bodies: enclosing caller holds actual Chunk.d and leases
  * its exact store state. No additional preflight, holds or owner copies here.

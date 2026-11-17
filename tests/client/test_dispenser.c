@@ -330,7 +330,10 @@ static int dispenser_run(fixture *f, mining_work *work, uint32_t *frame_id, uint
     return 0;
 }
 
-int main(int argc, char **argv) {
+#ifndef MC_DISPENSER_FIXTURE_MAIN
+#define MC_DISPENSER_FIXTURE_MAIN main
+#endif
+int MC_DISPENSER_FIXTURE_MAIN(int argc, char **argv) {
     CHECK(argc == 3);
     fixture *f = calloc(1, sizeof(*f));
     CHECK(f != NULL);
