@@ -85,6 +85,14 @@ typedef struct mc_client_render_global_tile_receipt {
     size_t piston_vertices;
     uintptr_t piston_cv_identity;
     double piston_translation[3];
+    bool sign_block_returned, sign_metadata_returned, sign_standing;
+    bool sign_model_returned, sign_model_popped, sign_font_returned;
+    bool sign_depth_disabled, sign_depth_restored, sign_color_restored;
+    bool sign_matrix_popped, sign_texture_returned, sign_texture_bound;
+    int32_t sign_metadata, sign_last_row, sign_last_width, sign_last_x, sign_last_y;
+    uint32_t sign_angle_bits, sign_text_scale_bits;
+    size_t sign_rows_measured, sign_rows_drawn, sign_text_units, sign_null_rows;
+    uint64_t sign_text_digest; /* Same byte definition as the LL draw state. */
 } mc_client_render_global_tile_receipt;
 
 typedef struct mc_client_render_global_entities_state {
@@ -119,8 +127,11 @@ typedef struct mc_client_render_global_entities_state {
     mc_client_render_global_draw_receipt first_item_draw;
     size_t tile_draws_attempted, tile_draws_returned, tile_draws_retired;
     size_t piston_draws_returned, piston_heads_returned, piston_bases_returned, piston_vertices;
+    size_t sign_draws_returned, sign_draws_retired, sign_rows_measured, sign_rows_drawn;
+    size_t sign_model_parts;
     const mc_client_tile_renderer_draw_call *tile_draw;
     mc_client_render_global_tile_receipt last_tile_draw;
+    mc_client_render_global_tile_receipt last_sign_draw;
 } mc_client_render_global_entities_state;
 
 /* Actual n.a(Lbt;Lyn;F)V on the same constructed N. Native admission allocates
@@ -143,7 +154,7 @@ typedef struct mc_client_render_global_entities_state {
  * retired before traversal continues at N332/N519. Nonempty N.a TileEntity
  * rows are admitted through the actual publication ledger, then enter LL560.
  * Each returned LL child retires before the fresh size534 of the next row.
- * Concrete Sign and MovingPiston draw descendants remain explicit frontiers.
+ * Concrete Sign and MovingPiston rows enter their actual retained renderer.
  *
  * Out starts NULL. Once admitted, return the terminal call even on failure.
  * App and the complete argument/service graph stay live and exclusive on the

@@ -160,6 +160,24 @@ static int test_layout(mc_font_renderer *font) {
     CHECK(run.count == 2 && run.width == 4);
     CHECK(glyph_is(&run.glyphs[0], 38, 0, 0, UINT32_C(0xff000000)));
     CHECK(glyph_is(&run.glyphs[1], 37, 4, 0, UINT32_C(0xff000000)));
+    const uint16_t unicode_format[] = {0x00e9, 0x00a7, 'C', 'A'};
+    text = (mc_font_text){unicode_format, COUNT(unicode_format)};
+    CHECK(mc_font_renderer_layout(font, &text, 0, 0, 0, true, &run) == MC_FONT_RENDERER_OK);
+    CHECK(run.count == 4 && run.width == 9);
+    CHECK(glyph_is(&run.glyphs[0], 38, 1, 1, UINT32_C(0xff000000)));
+    CHECK(glyph_is(&run.glyphs[1], 33, 5, 1, UINT32_C(0xff3f1515)));
+    CHECK(glyph_is(&run.glyphs[2], 38, 0, 0, UINT32_C(0xff000000)));
+    CHECK(glyph_is(&run.glyphs[3], 33, 4, 0, UINT32_C(0xffff5555)));
+    const uint16_t sign_unicode[] = {0x00a7, 'b', 0x00e9, 0x03a9};
+    text = (mc_font_text){sign_unicode, COUNT(sign_unicode)};
+    CHECK(mc_font_renderer_layout(font, &text, 0, 0, 0, false, &run) == MC_FONT_RENDERER_OK);
+    CHECK(run.count == 1 && run.width == 4);
+    CHECK(glyph_is(&run.glyphs[0], 38, 0, 0, UINT32_C(0xff55ffff)));
+    const uint16_t unreached_expansion[] = {0x0130, 0x00a7};
+    text = (mc_font_text){unreached_expansion, COUNT(unreached_expansion)};
+    CHECK(mc_font_renderer_layout(font, &text, 0, 0, 0, false, &run) == MC_FONT_RENDERER_OK);
+    CHECK(run.count == 1 && run.width == 0);
+    CHECK(glyph_is(&run.glyphs[0], 37, 0, 0, UINT32_C(0xff000000)));
     const uint16_t twice[] = {'A', 'A'};
     text = (mc_font_text){twice, COUNT(twice)};
     CHECK(mc_font_renderer_layout(font, &text, INT32_MAX, INT32_MAX, UINT32_C(0xffffffff), true,
@@ -240,9 +258,15 @@ static int test_failures(mc_font_renderer *font) {
     CHECK(memcmp(before, &run, sizeof(before)) == 0 &&
           memcmp(glyphs, run.glyphs, sizeof(glyphs)) == 0);
     CHECK(measure_is(font, expanding_case, COUNT(expanding_case), 5) == 0);
-    const uint16_t unicode_format[] = {0x00e9, 0x00a7, 'c', 'A'};
-    text = (mc_font_text){unicode_format, COUNT(unicode_format)};
+    const uint16_t contextual_expansion[] = {'J', 0x0323, 0x0301, 0x00a7, 'c', 'A'};
+    text = (mc_font_text){contextual_expansion, COUNT(contextual_expansion)};
     CHECK(mc_font_renderer_layout(font, &text, 0, 0, 0, true, &run) ==
+          MC_FONT_RENDERER_UNSUPPORTED_LOWERCASE);
+    CHECK(memcmp(before, &run, sizeof(before)) == 0 &&
+          memcmp(glyphs, run.glyphs, sizeof(glyphs)) == 0);
+    const uint16_t contextual_removal[] = {'I', 0x0307, 0x00a7, 'b'};
+    text = (mc_font_text){contextual_removal, COUNT(contextual_removal)};
+    CHECK(mc_font_renderer_layout(font, &text, 0, 0, 0, false, &run) ==
           MC_FONT_RENDERER_UNSUPPORTED_LOWERCASE);
     CHECK(memcmp(before, &run, sizeof(before)) == 0 &&
           memcmp(glyphs, run.glyphs, sizeof(glyphs)) == 0);

@@ -304,7 +304,8 @@ static bool hook(mc_world_chunk *chunk, int32_t id, int32_t x, int32_t y, int32_
         bool completed;
         if (added && block != NULL &&
             (block->kind == MC_BLOCK_FLOWING_FLUID || block->kind == MC_BLOCK_STILL_FLUID ||
-             block->kind == MC_BLOCK_CHEST || block->kind == MC_BLOCK_FURNACE)) {
+             block->kind == MC_BLOCK_CHEST || block->kind == MC_BLOCK_FURNACE ||
+             block->kind == MC_BLOCK_SIGN)) {
             const mc_world_mutation_execution_context context = {.execution = execution->execution,
                                                                  .code_classes =
                                                                      execution->code_classes,
@@ -313,6 +314,15 @@ static bool hook(mc_world_chunk *chunk, int32_t id, int32_t x, int32_t y, int32_
                                                                  .world = execution->scope.token};
             completed = mc_world_mutation_execution_added(&context, fields.d, block, x, y, z,
                                                           &execution->hook, error, site);
+        } else if (!added && block != NULL && block->kind == MC_BLOCK_SIGN) {
+            const mc_world_mutation_execution_context context = {.execution = execution->execution,
+                                                                 .code_classes =
+                                                                     execution->code_classes,
+                                                                 .code = execution->code,
+                                                                 .result = execution->owned,
+                                                                 .world = execution->scope.token};
+            completed = mc_world_mutation_execution_removed(&context, fields.d, block, x, y, z,
+                                                            &execution->hook, error, site);
         } else
             completed = added ? mc_world_mutation_block_added_in_execution(
                                     fields.d, block, x, y, z, error, execution->owned, site)

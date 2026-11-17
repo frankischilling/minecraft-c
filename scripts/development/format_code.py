@@ -62,6 +62,7 @@ def main():
         return 77
     root = Path(__file__).resolve().parents[2]
     fragments = {"tests/item/use/redstone/statistics_setup.inc",
+                 "src/core/java/string_lower_hex_ccc_partition.inc",
                  "tests/client/startup/death_respawn_controls.inc",
                  "tests/client/startup/bed_respawn_controls.inc",
                  "tests/entity/player/coordinate_methods_cases.inc",
@@ -86,6 +87,9 @@ def main():
                  "src/world/runtime/tile_entities/furnace_core.inc",
                  "src/world/runtime/tile_entities/furnace_drops.inc",
                  "src/world/runtime/tile_entities/furnace_nbt.inc",
+                 "src/world/runtime/tile_entities/sign_fields.inc",
+                 "src/world/runtime/tile_entities/sign_nbt.inc",
+                 "tests/world/runtime/tile_entities/sign_controls.inc",
                  "src/world/runtime/tile_entities/lazy_execution.inc",
                  "tests/world/runtime/world_access/furnace_lazy_controls.inc",
                  "tests/client/startup/focus_trace.inc",

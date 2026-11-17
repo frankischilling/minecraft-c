@@ -314,6 +314,7 @@ add_library(mc_core STATIC
     src/core/java/object_identity.c
     src/core/java/java.c
     src/core/java/string_case.c
+    src/core/java/string_lower_hex.c
     src/core/java/float_parse.c
     src/core/java/float_format.c
     src/core/java/integer_parse.c
@@ -757,6 +758,7 @@ add_library(mc_simulation STATIC
     src/world/runtime/mutation/pressure_lifecycle.c
     src/world/runtime/mutation/lever.c
     src/world/runtime/mutation/ladder.c
+    src/world/runtime/mutation/sign.c
     src/world/runtime/mutation/rails/connections.c
     src/world/runtime/mutation/rails/detector.c
     src/world/runtime/mutation/rails/dispatch.c
@@ -5748,6 +5750,7 @@ include(cmake/client_chest.cmake)
 include(cmake/client_furnace.cmake)
 include(cmake/client_spawner.cmake)
 include(cmake/client_piston.cmake)
+include(cmake/client_sign.cmake)
 include(cmake/entity_named_factory.cmake)
 include(cmake/tests/client_chest_loop.cmake)
 include(cmake/client_world_frame.cmake)
@@ -5864,6 +5867,7 @@ include(cmake/tests/slime_removal.cmake)
 include(cmake/tests/slime_removal_execution.cmake)
 include(cmake/tests/slime_delayed_removal.cmake)
 include(cmake/tests/string_case.cmake)
+include(cmake/tests/string_lower_hex.cmake)
 include(cmake/tests/entity_drop_execution.cmake)
 include(cmake/tests/player_drop_execution.cmake)
 include(cmake/tests/player_death_execution.cmake)

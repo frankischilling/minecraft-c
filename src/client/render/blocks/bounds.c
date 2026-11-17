@@ -347,9 +347,26 @@ bool mc_cv_update_bounds_bound(mc_cv_context *c, const mc_block *receiver, const
                 return false;
             break;
         case MC_BLOCK_DOOR:
-        case MC_BLOCK_SIGN:
             return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
                               "actual specialized Block bound-update child", 0, true);
+        case MC_BLOCK_SIGN:
+            /* Standing UJ returns without reading XP or replacing the retained
+             * bounds. Wall UJ resets first, including unrecognized metadata. */
+            mc_cv_pc(c, 1);
+            if (b->subtype.uj.b)
+                break;
+            if (!mc_cv_metadata_bound(c, xp, x, y, z, 13, &m) ||
+                !bounds(c, b, 0, 0, 0, 1, 1, 1, 45))
+                return false;
+            if (m == 2 && !bounds(c, b, 0, .28125f, .875f, 1, .78125f, 1, 68))
+                return false;
+            if (m == 3 && !bounds(c, b, 0, .28125f, 0, 1, .78125f, .125f, 89))
+                return false;
+            if (m == 4 && !bounds(c, b, .875f, .28125f, 0, 1, .78125f, 1, 112))
+                return false;
+            if (m == 5 && !bounds(c, b, 0, .28125f, 0, .125f, .78125f, 1, 133))
+                return false;
+            break;
         default:
             break;
     }

@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "files": {
+    ".gitattributes": {
+      "bytes": 15,
+      "sha256": "70a4361a1eed91143e7de91d6eebf82f98990ec0dd9df197f2b64050a5f851f8"
+    },
+    "batches.json": {
+      "bytes": 499939,
+      "sha256": "b53091d0b9c73960346bc32679decee8544f72eac13f44ad961b74512a185312"
+    },
+    "cases.json": {
+      "bytes": 17427,
+      "sha256": "91d207d32afb668342892b37ac00dc0b2b98a5f1962eb5cb011f60fd3c9f5e90"
+    },
+    "ConstructorJson.java": {
+      "bytes": 1571,
+      "sha256": "9ed002149ed9782c5deb4b833be9ed97ad2319ed6291af526b02baf58f62ceb3"
+    },
+    "draws.json": {
+      "bytes": 1026155,
+      "sha256": "c76d45b43dbc23033ce06295960332ef8f757b1cf1d6a77fc008de9c495ad65b"
+    },
+    "font.json": {
+      "bytes": 112104,
+      "sha256": "ab9b01bf6fda56f68421c0993466e0dfb3a542dc7086cb00c6d642ea3eff060e"
+    },
+    "JdiStringUnits.java": {
+      "bytes": 5285,
+      "sha256": "d0f6eb112e64010ced85fbc23d2546118a688633c897e962cac206b8d7b4ca40"
+    },
+    "ordinary.stdout": {
+      "bytes": 298890,
+      "sha256": "637609987c21589d31505f5d96d3563582efc00706417746889c59c6e42dd5d7"
+    },
+    "packet.py": {
+      "bytes": 21995,
+      "sha256": "200f1ac23e5eac006c31febfe394384afb60076611c254797215630f87ebddb2"
+    },
+    "project.py": {
+      "bytes": 20097,
+      "sha256": "f6af0f53e1adc9100669d5ee8ed89d942246408e2f18fd6bb1713f6d6b7576c9"
+    },
+    "provenance.json": {
+      "bytes": 223752,
+      "sha256": "696d414bdeb9a6adc052a508bab2c592755335fbf1a0572e5ac0c755598adb27"
+    },
+    "publish.py": {
+      "bytes": 15671,
+      "sha256": "b67cf0f152a8c9ae26794d7d38930f728ed5c247b36d887cc97303696e41c1ca"
+    },
+    "README.md": {
+      "bytes": 4486,
+      "sha256": "ff6c984d1f2353ec6bbc774369e65af5366514768935cabdf8f92f9aa7db6d0c"
+    },
+    "SignDrawJdiV2.java": {
+      "bytes": 24551,
+      "sha256": "dae3b670db534d754bafe78bbb6973711ec7a39b9980056737b6a5115dfec554"
+    },
+    "SignDrawObservation.java": {
+      "bytes": 15583,
+      "sha256": "a87849531e4f278bf9f02f1f0acc6b55d0ba139a1ca97751e4c1a201666b00dc"
+    },
+    "source-pins.json": {
+      "bytes": 16853,
+      "sha256": "9cdbc8f2f58273e68d1c05aee35301114d3076d50e5c4cf6b18128def9722163"
+    },
+    "test_packet.py": {
+      "bytes": 7408,
+      "sha256": "3cb42de06d8f7ca29ad0e700551df2f54ebe99a1b703554b225e974077efa929"
+    },
+    "traces.json": {
+      "bytes": 32691,
+      "sha256": "2edbe60e4612c2065a9170be123900d107288abc0d80eea919905dcd71fc9c4a"
+    },
+    "verify_projection.py": {
+      "bytes": 11421,
+      "sha256": "c79a286f9cb9637ad439060cf1508e3d7c3e22f8a40044f51f771ad5844657b1"
+    }
+  }
+}

@@ -46,8 +46,8 @@ bool wt_tile_active(wt_scope *s) {
         else if (!tile->invalid) {
             s->error.loop_bytecode = 390;
             s->error.tile_bytecode = 0;
-            if (tile->kind == MC_TILE_ENTITY_CHEST) {
-                /* Actual js inherits the literal-return ow.n_()V. */
+            if (tile->kind == MC_TILE_ENTITY_CHEST || tile->kind == MC_TILE_ENTITY_SIGN) {
+                /* Actual js and yk inherit the literal-return ow.n_()V. */
             } else if (tile->kind == MC_TILE_ENTITY_FURNACE) {
                 if (!s->has_error_output)
                     ok = wt_fail(s, MC_WORLD_STORAGE_UNSUPPORTED_STATE,

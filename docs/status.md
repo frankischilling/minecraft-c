@@ -7,11 +7,50 @@ the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining w
 
 ## Current client work
 
+[Loaded Signs](world/signs.md) now reach the ordinary World renderer with actual
+TileEntity text, board/pole models, texture lookup, Java text centering and
+state-dependent bounds. Client support and removal hooks preserve drop order,
+lazy Tile lookup and retained failure ownership. Four ordinary null-World
+removal controls also cover a reviewed failure-publication crash.
+
+The original/native direct-draw comparison passes 36 finite cases. Both original
+debugger modes supply 140 measurements and 140 draws whose exact UTF-16 argument
+lengths/digests, widths and coordinates match native row receipts. Original
+active Font buffers remain separate evidence; native active GL-list payloads
+and pixel equality have not been compared.
+
+The shared [whole-String lowercase hex projection](../tests/reference/core/string_lower_hex/README.md)
+admits formatted Unicode in its qualified domain, including the Sign case that
+previously stopped at the ASCII-only dependency. It conservatively refuses
+possible Locale-dependent UTF-16 insertion/removal. A genuine monitor-2
+SourceFont control passes 680 checks, preserving the reached GL/NIO prefix and
+queued glyph through that native refusal and owner retirement. Post-fix GCC
+and Clang selections pass seven and eleven tests in 35.11 and 40.38 seconds
+with ASan, UBSan and leak detection. The complete MSVC Release build and
+formatting of 2,528 files pass. All eight final monitor-2 Sign profiles pass
+7,895 checks with ordinary save/reselection and checked closure. Independent
+readback covers 48 draws and 40 selected saved Chunk/metadata copies; complete
+413-file asset inventories agree across the sweep. Pushed-Stone, Furnace and
+dense-Chest regressions pass 961, 9,710 and 971 checks. Placement, editing,
+sustained play and gameplay FPS remain open.
+
+The complete serial MSVC Release sweep passes all 1,380 tests in 1804.48
+seconds. All 1,372 preceding names remain plus exactly eight additions, with
+complete inventory/log/JUnit and Start/completion joins and no skips or unrun
+tests. All 6,601 public files and 689 native products stay unchanged during
+the sweep. The preceding local suite used four workers; these elapsed times
+are not a performance comparison. Later validation annotations, admission
+fingerprints and CRLF whitespace declarations preserve the tested native
+code and products.
+
 The Tile Set snapshot declaration now uses the existing scoped MSVC C4200
 guard for standard C17 flexible arrays. This addresses the hosted VS2022 build
 failure while retaining strict diagnostics elsewhere. Local MSVC Debug Tile
 Set controls pass; MSVC/GCC/Clang preprocessing preserves all non-diagnostic
-C output. Hosted validation of the compatibility change remains pending.
+C output. Hosted validation at `4a550e57` passes all four jobs: Windows 1,348
+tests, GCC and Clang 1,407 tests each, and formatting of 2,515 files. Every
+preceding test remains, with exactly the three identity additions and no skips
+or unrun tests. The checked merge tree matches that source head.
 
 The [native identity integration](reference/object-identity.md) removes the
 multiple-new-Tile compilation blocker. Final monitor-2 pushed-Stone, Furnace

@@ -300,6 +300,31 @@ static bool tile_entity_has_slots(const mc_tile_entity *tile) {
     return tile->kind == MC_TILE_ENTITY_CHEST || tile->kind == MC_TILE_ENTITY_FURNACE;
 }
 
+/* Native String-owner accounting, including constructor-private array prefix.
+ * No ordering/hash algorithm or Source String identity is inferred here. */
+static size_t tile_entity_name_count(const mc_tile_entity *tile) {
+    if (tile->kind == MC_TILE_ENTITY_SPAWNER)
+        return 1u;
+    if (tile->kind == MC_TILE_ENTITY_SIGN && tile->state.sign.capacity <= 4 &&
+        ((tile->state.sign.lines == NULL) == (tile->state.sign.capacity == 0)))
+        return tile->state.sign.capacity;
+    /* A complete storage admission diagnoses malformed backing. Passive
+     * duplicate hints must not dereference it before that admission. */
+    return 0;
+}
+
+static mc_tile_entity_name *tile_entity_name_at(const mc_tile_entity *tile, size_t index) {
+    return tile->kind == MC_TILE_ENTITY_SPAWNER ? tile->state.spawner.name
+                                                : tile->state.sign.lines[index];
+}
+
+static bool tile_entity_has_name(const mc_tile_entity *tile, const mc_tile_entity_name *name) {
+    for (size_t i = 0; i < tile_entity_name_count(tile); ++i)
+        if (tile_entity_name_at(tile, i) == name)
+            return true;
+    return false;
+}
+
 static size_t tile_entity_slot_capacity(const mc_tile_entity *tile) {
     return tile->kind == MC_TILE_ENTITY_FURNACE ? tile->state.furnace.capacity
                                                 : tile->state.chest.capacity;
@@ -395,6 +420,10 @@ size_t mc_tile_entity_name_native_bytes(const mc_tile_entity_name *name) {
     return name == NULL ? 0 : name->allocation_bytes;
 }
 
+static mc_tile_entity_status tile_entity_sign_construct(mc_tile_entity *,
+                                                        const tile_entity_import_context *,
+                                                        mc_tile_entity_error *);
+
 static mc_tile_entity_status tile_entity_allocate_in_owner(mc_tile_entity_classes *classes,
                                                            mc_tile_entity_kind kind,
                                                            mc_tile_entity **out) {
@@ -423,7 +452,8 @@ mc_tile_entity_status mc_tile_entity_allocate(mc_world_runtime *world, mc_tile_e
     if (out == NULL)
         return MC_TILE_ENTITY_INVALID_ARGUMENT;
     if (kind != MC_TILE_ENTITY_CHEST && kind != MC_TILE_ENTITY_SPAWNER &&
-        kind != MC_TILE_ENTITY_PISTON && kind != MC_TILE_ENTITY_FURNACE)
+        kind != MC_TILE_ENTITY_PISTON && kind != MC_TILE_ENTITY_FURNACE &&
+        kind != MC_TILE_ENTITY_SIGN)
         return MC_TILE_ENTITY_INVALID_KIND;
     mc_tile_entity_classes *classes = NULL;
     const mc_tile_entity_status active = live_classes_get(world, &classes);
@@ -443,7 +473,8 @@ mc_tile_entity_status mc_tile_entity_allocate_in_classes_detailed(mc_world_runti
     if (out == NULL)
         return tile_entity_status(error, MC_TILE_ENTITY_INVALID_ARGUMENT, NULL, SIZE_MAX);
     if (kind != MC_TILE_ENTITY_CHEST && kind != MC_TILE_ENTITY_SPAWNER &&
-        kind != MC_TILE_ENTITY_PISTON && kind != MC_TILE_ENTITY_FURNACE)
+        kind != MC_TILE_ENTITY_PISTON && kind != MC_TILE_ENTITY_FURNACE &&
+        kind != MC_TILE_ENTITY_SIGN)
         return tile_entity_status(error, MC_TILE_ENTITY_INVALID_KIND, NULL, SIZE_MAX);
     mc_tile_entity_classes *classes = NULL;
     mc_tile_entity_status active = live_classes_owner_in(parent, &classes);
@@ -505,6 +536,10 @@ static mc_tile_entity_status tile_entity_construct(mc_tile_entity *raw,
             return named;
         }
         raw->state.spawner.delay = 20;
+    } else if (raw->kind == MC_TILE_ENTITY_SIGN) {
+        const mc_tile_entity_status sign = tile_entity_sign_construct(raw, context, error);
+        if (sign != MC_TILE_ENTITY_OK)
+            return sign;
     } else if (raw->kind != MC_TILE_ENTITY_PISTON) {
         return tile_entity_status(error, MC_TILE_ENTITY_INVALID_KIND, NULL, SIZE_MAX);
     }
@@ -610,6 +645,10 @@ void mc_tile_entity_release(mc_tile_entity *tile_entity) {
                                   tile_entity_slot_capacity(tile_entity));
     } else if (tile_entity->kind == MC_TILE_ENTITY_SPAWNER) {
         mc_tile_entity_name_release(tile_entity->state.spawner.name);
+    } else if (tile_entity->kind == MC_TILE_ENTITY_SIGN) {
+        for (size_t i = 0; i < tile_entity->state.sign.capacity; ++i)
+            mc_tile_entity_name_release(tile_entity->state.sign.lines[i]);
+        free(tile_entity->state.sign.lines);
     }
     mc_nbt_tree_free(tile_entity->source);
     if (tile_entity->world != NULL) {
@@ -642,6 +681,10 @@ mc_tile_entity_status mc_tile_entity_get_snapshot(const mc_tile_entity *tile_ent
                &tile_entity->state.spawner.previous_rotation,
                sizeof(snapshot.spawner_previous_rotation_bits));
         snapshot.spawner_name = tile_entity->state.spawner.name;
+    } else if (tile_entity->kind == MC_TILE_ENTITY_SIGN) {
+        snapshot.sign_line_count = tile_entity->state.sign.count;
+        snapshot.sign_edit_row = tile_entity->state.sign.edit_row;
+        snapshot.sign_read_flag = tile_entity->state.sign.read_flag;
     } else if (tile_entity->kind == MC_TILE_ENTITY_PISTON) {
         snapshot.piston_block_id = tile_entity->state.piston.block_id;
         snapshot.piston_block_data = tile_entity->state.piston.block_data;
@@ -662,6 +705,8 @@ size_t mc_tile_entity_native_bytes(const mc_tile_entity *tile_entity) {
     return sizeof(*tile_entity) +
            (tile_entity_has_slots(tile_entity)
                 ? tile_entity_slot_capacity(tile_entity) * sizeof(mc_item_stack *)
+            : tile_entity->kind == MC_TILE_ENTITY_SIGN
+                ? tile_entity->state.sign.capacity * sizeof(mc_tile_entity_name *)
                 : 0);
 }
 
@@ -738,6 +783,24 @@ mc_tile_entity_status mc_tile_entity_storage_bytes(const mc_tile_entity *tile_en
         if (!tile_entity_size_add(
                 &bytes, mc_tile_entity_name_native_bytes(tile_entity->state.spawner.name))) {
             return MC_TILE_ENTITY_LIMIT;
+        }
+    } else if (tile_entity->kind == MC_TILE_ENTITY_SIGN) {
+        const size_t capacity = tile_entity->state.sign.capacity;
+        if ((capacity != 0 && capacity != 4) ||
+            (tile_entity->state.sign.lines == NULL) != (capacity == 0) ||
+            tile_entity->state.sign.count > capacity ||
+            (tile_entity->phase == MC_TILE_ENTITY_READY && tile_entity->state.sign.count != 4))
+            return MC_TILE_ENTITY_STATE_ERROR;
+        if (!tile_entity_size_add(&bytes, capacity * sizeof(mc_tile_entity_name *)))
+            return MC_TILE_ENTITY_LIMIT;
+        for (size_t i = 0; i < capacity; ++i) {
+            const mc_tile_entity_name *name = tile_entity->state.sign.lines[i];
+            bool seen = false;
+            for (size_t j = 0; j < i; ++j)
+                if (tile_entity->state.sign.lines[j] == name)
+                    seen = true;
+            if (!seen && !tile_entity_size_add(&bytes, mc_tile_entity_name_native_bytes(name)))
+                return MC_TILE_ENTITY_LIMIT;
         }
     } else if (tile_entity->kind != MC_TILE_ENTITY_PISTON) {
         return MC_TILE_ENTITY_STATE_ERROR;
@@ -1144,6 +1207,8 @@ mc_tile_entity_status mc_tile_entity_spawner_set_name(mc_tile_entity *tile_entit
     return MC_TILE_ENTITY_OK;
 }
 
+#include "sign_fields.inc"
+
 mc_tile_entity_status mc_tile_entity_piston_block_id(const mc_tile_entity *tile_entity,
                                                      int32_t *out) {
     if (out == NULL)
@@ -1420,13 +1485,23 @@ static mc_tile_entity_status tile_entity_piston_read(mc_tile_entity *tile_entity
 }
 
 #include "furnace_nbt.inc"
+#include "sign_nbt.inc"
 
 static mc_tile_entity_status tile_entity_read_nbt(mc_tile_entity *tile_entity,
                                                   const mc_nbt_tag *compound,
                                                   tile_entity_import_context *context,
                                                   mc_tile_entity_error *error) {
+    const bool sign = tile_entity != NULL && tile_entity->kind == MC_TILE_ENTITY_SIGN &&
+                      tile_entity->phase == MC_TILE_ENTITY_READY;
+    if (sign)
+        tile_entity->state.sign.read_flag = false; /* YK.c2, before the parent invocation7. */
     const mc_tile_entity_status status = mc_tile_entity_read_base(tile_entity, compound, error);
     if (status != MC_TILE_ENTITY_OK) {
+        if (sign && error != NULL) {
+            error->read_bytecode = 7;
+            if (compound == NULL)
+                error->base_read_bytecode = 4;
+        }
         if (error != NULL && tile_entity != NULL &&
             (tile_entity->kind == MC_TILE_ENTITY_PISTON ||
              tile_entity->kind == MC_TILE_ENTITY_FURNACE) &&
@@ -1442,6 +1517,8 @@ static mc_tile_entity_status tile_entity_read_nbt(mc_tile_entity *tile_entity,
         return tile_entity_spawner_read(tile_entity, compound, context, error);
     if (tile_entity->kind == MC_TILE_ENTITY_PISTON)
         return tile_entity_piston_read(tile_entity, compound, error);
+    if (tile_entity->kind == MC_TILE_ENTITY_SIGN)
+        return tile_entity_sign_read(tile_entity, compound, context, error);
     return tile_entity_status(error, MC_TILE_ENTITY_INVALID_KIND, NULL, SIZE_MAX);
 }
 
@@ -1569,7 +1646,8 @@ tile_entity_import_storage_scoped(mc_world_runtime *world, mc_tile_entity_kind r
         return tile_entity_status(error, MC_TILE_ENTITY_INVALID_ARGUMENT, NULL, SIZE_MAX);
     }
     if (resolved_kind != MC_TILE_ENTITY_CHEST && resolved_kind != MC_TILE_ENTITY_SPAWNER &&
-        resolved_kind != MC_TILE_ENTITY_PISTON && resolved_kind != MC_TILE_ENTITY_FURNACE) {
+        resolved_kind != MC_TILE_ENTITY_PISTON && resolved_kind != MC_TILE_ENTITY_FURNACE &&
+        resolved_kind != MC_TILE_ENTITY_SIGN) {
         return tile_entity_status(error, MC_TILE_ENTITY_INVALID_KIND, NULL, SIZE_MAX);
     }
     tile_entity_import_context context = {0};
@@ -1736,6 +1814,12 @@ static mc_tile_entity_status tile_entity_build_fields(const mc_tile_entity *tile
         fields[5].name = (mc_nbt_string){tile_entity_delay_name, 5};
         fields[5].value.short_value = mc_java_i16_narrow(tile_entity->state.spawner.delay);
         *field_count = 6;
+    } else if (tile_entity->kind == MC_TILE_ENTITY_SIGN) {
+        const mc_tile_entity_status status =
+            tile_entity_sign_build_fields(tile_entity, fields, error);
+        if (status != MC_TILE_ENTITY_OK)
+            return status;
+        *field_count = 8;
     } else if (tile_entity->kind == MC_TILE_ENTITY_PISTON) {
         fields[4].type = fields[5].type = fields[6].type = MC_NBT_INT;
         fields[4].name = (mc_nbt_string){tile_entity_block_id_name, 7};
@@ -1946,8 +2030,7 @@ static mc_tile_entity_status live_literal(mc_tile_entity_classes *classes, const
             if (context != NULL && scope_tile_entity != NULL) {
                 const bool already =
                     context->scope_chunk == NULL
-                        ? scope_tile_entity->kind == MC_TILE_ENTITY_SPAWNER &&
-                              scope_tile_entity->state.spawner.name == name
+                        ? tile_entity_has_name(scope_tile_entity, name)
                         : live_graph_has_name(context->scope_chunk, scope_tile_entity, name);
                 const mc_tile_entity_status admitted =
                     tile_entity_import_admit(scope_tile_entity, context,
@@ -2134,6 +2217,9 @@ mc_tile_entity_status mc_tile_entity_get_class(const mc_tile_entity *tile_entity
             break;
         case MC_TILE_ENTITY_FURNACE:
             kind = MC_TILE_ENTITY_CLASS_KIND_FURNACE;
+            break;
+        case MC_TILE_ENTITY_SIGN:
+            kind = MC_TILE_ENTITY_CLASS_KIND_SIGN;
             break;
         default:
             return MC_TILE_ENTITY_INVALID_KIND;
@@ -2790,6 +2876,9 @@ static mc_tile_entity_status live_class_name(mc_tile_entity_classes *classes,
             break;
         case MC_TILE_ENTITY_FURNACE:
             selected = LIVE_FURNACE;
+            break;
+        case MC_TILE_ENTITY_SIGN:
+            selected = LIVE_SIGN;
             break;
         default:
             return MC_TILE_ENTITY_INVALID_KIND;
@@ -4169,7 +4258,17 @@ static bool live_block_added_held(mc_world_runtime *world, const mc_block *block
         kind = MC_TILE_ENTITY_SPAWNER;
     else if (block->kind == MC_BLOCK_FURNACE)
         kind = MC_TILE_ENTITY_FURNACE;
-    else {
+    else if (block->kind == MC_BLOCK_SIGN) {
+        mc_world_runtime_classes *defining =
+            query == NULL ? (world == NULL ? NULL : world->classes) : query->factory_classes;
+        if (defining == NULL || block->classes == NULL || defining->registry != block->classes ||
+            block->subtype.uj.a != &block->classes->sign_class) {
+            live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                      "Sign Block actual Class operand/defining namespace");
+            return false;
+        }
+        kind = MC_TILE_ENTITY_SIGN;
+    } else {
         live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "TileEntity concrete Block factory");
         return false;
     }
@@ -4288,12 +4387,13 @@ static bool live_chunk_get_held(mc_world_chunk *chunk, int32_t x, int32_t y, int
             return live_query_close(query, &token, false, error);
             /* NULL passed checkcast59; callee base6 is NOT entered. */
         }
-        const bool furnace_client_join = query != NULL && block->kind == MC_BLOCK_FURNACE &&
-                                         block->classes->options.side == MC_REGISTRY_CLIENT;
-        bool called = furnace_client_join
-                          ? live_lazy_furnace(query, world, block, wx, y, wz, error)
+        const bool retained_client_join =
+            query != NULL && (block->kind == MC_BLOCK_FURNACE || block->kind == MC_BLOCK_SIGN) &&
+            block->classes->options.side == MC_REGISTRY_CLIENT;
+        bool called = retained_client_join
+                          ? live_lazy_added(query, world, block, wx, y, wz, error)
                           : live_block_added_held(world, block, wx, y, wz, error, query);
-        if (called && query != NULL && block->kind == MC_BLOCK_FURNACE && !furnace_client_join) {
+        if (called && query != NULL && block->kind == MC_BLOCK_FURNACE && !retained_client_join) {
             /* Preserve the already supported server LB factory/install prefix.
              * Its LZ private orientation continuation is still unjoined. The
              * generic retained owner closes the same evaluated hi.d67 scope. */
@@ -4495,8 +4595,9 @@ mc_world_storage_status mc_live_tile_entities_set(mc_world_runtime *world, int32
     return live_finish(publish_world ? world : NULL, frame, error);
 }
 
-mc_world_storage_status mc_live_tile_entities_remove(mc_world_runtime *world, int32_t x, int32_t y,
-                                                     int32_t z, mc_live_tile_entity_error *error) {
+static mc_world_storage_status live_world_remove_run(mc_world_runtime *world, int32_t x, int32_t y,
+                                                     int32_t z, mc_live_tile_entity_error *error,
+                                                     const live_query_execution *query) {
     mc_live_tile_entity_error frame;
     mc_live_tile_entities_error_init(&frame);
     if (!live_enter(world, &frame))
@@ -4504,7 +4605,7 @@ mc_world_storage_status mc_live_tile_entities_remove(mc_world_runtime *world, in
     mc_tile_entity *tile_entity = NULL;
     frame.bytecode = 4;
     frame.remove_bytecode = 4;
-    if (live_world_get_held(world, x, y, z, &tile_entity, &frame, NULL)) {
+    if (live_world_get_held(world, x, y, z, &tile_entity, &frame, query)) {
         if (tile_entity != NULL && world->fields.L) {
             frame.bytecode = 23;
             frame.remove_bytecode = 23;
@@ -4519,7 +4620,9 @@ mc_world_storage_status mc_live_tile_entities_remove(mc_world_runtime *world, in
                 frame.remove_bytecode = 53;
                 mc_chunk_state *state = NULL;
                 if (live_acquire(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &state,
-                                 &frame, NULL, (mc_world_runtime_execution_code){0}, NULL) &&
+                                 &frame, query == NULL ? NULL : query->execution,
+                                 query == NULL ? (mc_world_runtime_execution_code){0} : query->code,
+                                 query == NULL ? NULL : query->owned) &&
                     state != NULL && !state->blank) {
                     frame.bytecode = 74;
                     frame.remove_bytecode = 74;
@@ -4535,6 +4638,11 @@ mc_world_storage_status mc_live_tile_entities_remove(mc_world_runtime *world, in
     mc_tile_entity_release(tile_entity);
     mc_world_runtime_call_leave(world);
     return live_finish(world, frame, error);
+}
+
+mc_world_storage_status mc_live_tile_entities_remove(mc_world_runtime *world, int32_t x, int32_t y,
+                                                     int32_t z, mc_live_tile_entity_error *error) {
+    return live_world_remove_run(world, x, y, z, error, NULL);
 }
 
 mc_world_storage_status mc_live_tile_entities_block_added(mc_world_runtime *world,
@@ -5169,7 +5277,8 @@ static mc_world_storage_status live_tile_entities_factory_scoped(
                     }
                 }
             } else if (entry->kind != LIVE_CHEST && entry->kind != LIVE_SPAWNER &&
-                       entry->kind != LIVE_FURNACE && entry->kind != LIVE_PISTON) {
+                       entry->kind != LIVE_FURNACE && entry->kind != LIVE_PISTON &&
+                       entry->kind != LIVE_SIGN) {
                 frame.bytecode = 25;
                 live_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                           "TileEntity registered concrete constructor");
@@ -5178,6 +5287,7 @@ static mc_world_storage_status live_tile_entities_factory_scoped(
                     entry->kind == LIVE_FURNACE   ? MC_TILE_ENTITY_FURNACE
                     : entry->kind == LIVE_CHEST   ? MC_TILE_ENTITY_CHEST
                     : entry->kind == LIVE_SPAWNER ? MC_TILE_ENTITY_SPAWNER
+                    : entry->kind == LIVE_SIGN    ? MC_TILE_ENTITY_SIGN
                                                   : MC_TILE_ENTITY_PISTON;
                 mc_tile_entity *tile_entity = NULL;
                 mc_tile_entity_error detail;
@@ -5434,7 +5544,7 @@ mc_world_storage_status mc_live_tile_entities_block_removed(mc_world_runtime *wo
     bool base = false;
     if (block == NULL)
         live_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "TileEntity removed Block receiver");
-    else if (block->kind == MC_BLOCK_MOB_SPAWNER)
+    else if (block->kind == MC_BLOCK_MOB_SPAWNER || block->kind == MC_BLOCK_SIGN)
         base = true; /* Actual inherited rw/lb removed hook. */
     else if (block->kind == MC_BLOCK_CHEST) {
         if (live_chest_drops_held(world, block, x, y, z, &frame)) {
@@ -5467,6 +5577,56 @@ mc_world_storage_status mc_live_tile_entities_block_removed(mc_world_runtime *wo
         }
     }
     mc_world_runtime_call_leave(world);
+    return live_finish(world, frame, error);
+}
+
+mc_world_storage_status mc_live_tile_entities_sign_removed_in_execution(
+    mc_entity_tick_execution *execution, mc_world_runtime *world,
+    mc_world_runtime_execution_code code, mc_world_runtime_classes *code_classes,
+    mc_registry_classes *defining_registry, mc_world_runtime_classes *factory_classes,
+    mc_entity_tick_execution_site receiver_site, int32_t x, int32_t y, int32_t z,
+    mc_live_tile_entity_error *error, mc_world_runtime_execution_result *owned,
+    mc_live_tile_entity_query_execution_call **lazy_call, bool *source_null) {
+    mc_live_tile_entity_error frame;
+    mc_live_tile_entities_error_init(&frame);
+    if (source_null != NULL)
+        *source_null = false;
+    if (execution == NULL || owned == NULL || lazy_call == NULL || *lazy_call != NULL ||
+        source_null == NULL) {
+        live_fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                  "Sign removal execution/result/fresh lookup required");
+        mc_world_runtime_execution_result_note(owned, frame.status, frame.operation, receiver_site);
+        return live_finish(NULL, frame, error);
+    }
+    mc_world_access_failure_lease *unused = NULL;
+    const mc_world_storage_status admitted =
+        mc_world_execution_child_lease(execution, world, &unused);
+    if (admitted != MC_WORLD_STORAGE_OK) {
+        live_fail(&frame, admitted, "Sign removal evaluated World ownership");
+        mc_world_runtime_execution_result_note(owned, admitted, frame.operation, receiver_site);
+        return live_finish(NULL, frame, error);
+    }
+    /* Actual inherited RW.b base6 is empty. It dereferences the captured
+     * nullable World only at invocation14; no replacement receiver is read. */
+    if (world == NULL) {
+        frame.bytecode = frame.caller_bytecode = 14;
+        *source_null = true;
+        live_fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                  "Sign removal actual null World receiver");
+        return live_finish(NULL, frame, error);
+    }
+    const live_query_execution query = {.execution = execution,
+                                        .caller_world = world,
+                                        .code = code,
+                                        .registry = defining_registry,
+                                        .factory_classes = factory_classes,
+                                        .receiver_site = {"lm", "d", "(III)Low;", 67},
+                                        .owned = owned,
+                                        .code_classes = code_classes,
+                                        .lazy_call = lazy_call};
+    const mc_world_storage_status status = live_world_remove_run(world, x, y, z, &frame, &query);
+    if (status != MC_WORLD_STORAGE_OK)
+        frame.caller_bytecode = 14;
     return live_finish(world, frame, error);
 }
 
@@ -5897,11 +6057,15 @@ mc_world_storage_status mc_live_tile_entities_build_records(const mc_world_chunk
                         }
                     }
                 }
-            } else if (tile_entity->kind == MC_TILE_ENTITY_SPAWNER &&
-                       live_seen_insert(seen, seen_capacity, tile_entity->state.spawner.name)) {
-                if (!tile_entity_size_add(
-                        &live, mc_tile_entity_name_native_bytes(tile_entity->state.spawner.name)))
-                    live_fail(&frame, MC_WORLD_STORAGE_LIMIT, "TileEntity records name graph");
+            } else {
+                for (size_t n = 0; n < tile_entity_name_count(tile_entity); ++n) {
+                    mc_tile_entity_name *name = tile_entity_name_at(tile_entity, n);
+                    if (live_seen_insert(seen, seen_capacity, name) &&
+                        !tile_entity_size_add(&live, mc_tile_entity_name_native_bytes(name))) {
+                        live_fail(&frame, MC_WORLD_STORAGE_LIMIT, "TileEntity records name graph");
+                        break;
+                    }
+                }
             }
         }
     }
@@ -6065,21 +6229,27 @@ static bool live_graph_measure(const mc_world_chunk *chunk, mc_tile_entity *extr
                     }
                 }
             }
-        } else if (tile_entity->kind == MC_TILE_ENTITY_SPAWNER) {
-            mc_tile_entity_name *name = tile_entity->state.spawner.name;
-            bool seen_name = name == NULL;
-            for (size_t j = 0; j < i && !seen_name; ++j) {
-                mc_tile_entity *previous = NULL;
-                if (mc_live_tile_entities_map_at(chunk, j, &previous) != MC_WORLD_STORAGE_OK) {
-                    live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                              "TileEntity graph name Map iteration");
-                    return false;
+        } else {
+            for (size_t n = 0; n < tile_entity_name_count(tile_entity); ++n) {
+                mc_tile_entity_name *name = tile_entity_name_at(tile_entity, n);
+                bool seen_name = name == NULL;
+                for (size_t k = 0; k < n && !seen_name; ++k)
+                    seen_name = tile_entity_name_at(tile_entity, k) == name;
+                for (size_t j = 0; j < i && !seen_name; ++j) {
+                    mc_tile_entity *previous = NULL;
+                    if (mc_live_tile_entities_map_at(chunk, j, &previous) != MC_WORLD_STORAGE_OK) {
+                        live_fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                  "TileEntity graph name Map iteration");
+                        return false;
+                    }
+                    seen_name = tile_entity_has_name(previous, name);
                 }
-                seen_name = previous->kind == MC_TILE_ENTITY_SPAWNER &&
-                            previous->state.spawner.name == name;
+                if (!seen_name &&
+                    !tile_entity_size_add(&live, mc_tile_entity_name_native_bytes(name))) {
+                    live_fail(error, MC_WORLD_STORAGE_LIMIT, "TileEntity graph name bytes");
+                    break;
+                }
             }
-            if (!seen_name && !tile_entity_size_add(&live, mc_tile_entity_name_native_bytes(name)))
-                live_fail(error, MC_WORLD_STORAGE_LIMIT, "TileEntity graph name bytes");
         }
         if (live > ceiling)
             live_fail(error, MC_WORLD_STORAGE_LIMIT, "TileEntity graph complete peak budget");
@@ -6094,13 +6264,13 @@ static bool live_graph_has_name(const mc_world_chunk *chunk, const mc_tile_entit
                                 const mc_tile_entity_name *name) {
     if (name == NULL)
         return true;
-    if (extra != NULL && extra->kind == MC_TILE_ENTITY_SPAWNER && extra->state.spawner.name == name)
+    if (extra != NULL && tile_entity_has_name(extra, name))
         return true;
     for (size_t i = 0; i < chunk->l->count; ++i) {
         mc_tile_entity *tile_entity = NULL;
         if (mc_live_tile_entities_map_at(chunk, i, &tile_entity) != MC_WORLD_STORAGE_OK)
             return false; /* The following full admission still rejects invalid Map state. */
-        if (tile_entity->kind == MC_TILE_ENTITY_SPAWNER && tile_entity->state.spawner.name == name)
+        if (tile_entity_has_name(tile_entity, name))
             return true;
     }
     return false;

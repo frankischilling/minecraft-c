@@ -79,7 +79,7 @@ typedef struct mc_world_material_execution mc_world_material_execution;
 const mc_world_material_execution *
 mc_world_mutation_execution_failed_material(const mc_world_mutation_execution_call *,
                                             mc_world_storage_status *);
-/* The reached Chest/Furnace RW addition is joined. Its nullable World argument
+/* The reached Chest/Furnace/Sign RW addition is joined. Its nullable World argument
  * reaches factory15 first and reports a successful factory's NULL invocation
  * through execution_source_null at RW18. Its complete live Tile child
  * remains in this mutation call while the one canonical result retains any
@@ -87,9 +87,20 @@ mc_world_mutation_execution_failed_material(const mc_world_mutation_execution_ca
 bool mc_world_mutation_execution_tile_added(mc_world_mutation_execution_call *, mc_world_runtime *,
                                             const mc_block *, int32_t, int32_t, int32_t,
                                             mc_world_mutation_error *);
+bool mc_world_mutation_execution_sign_removed(mc_world_mutation_execution_call *,
+                                              mc_world_runtime *, int32_t, int32_t, int32_t,
+                                              mc_world_mutation_error *);
 const mc_live_tile_entity_error *
 mc_world_mutation_execution_failed_tile_added(const mc_world_mutation_execution_call *,
                                               mc_world_storage_status *);
+const mc_live_tile_entity_error *
+mc_world_mutation_execution_failed_tile_removed(const mc_world_mutation_execution_call *,
+                                                mc_world_storage_status *);
+typedef struct mc_live_tile_entity_query_execution_call mc_live_tile_entity_query_execution_call;
+/* Borrow the actual failed nested lazy lookup while this mutation owns it.
+ * Its complete addition diagnostics and capture site expire at retirement. */
+const mc_live_tile_entity_query_execution_call *
+mc_world_mutation_execution_failed_tile_removed_lookup(const mc_world_mutation_execution_call *);
 bool mc_world_mutation_execution_set(mc_world_mutation_execution_call *, mc_world_runtime *,
                                      int32_t, int32_t, int32_t, int32_t, bool *,
                                      mc_world_mutation_error *, mc_entity_tick_execution_site);
@@ -133,6 +144,10 @@ bool mc_world_mutation_execution_added(const mc_world_mutation_execution_context
                                        mc_world_runtime *, const mc_block *, int32_t, int32_t,
                                        int32_t, mc_world_mutation_execution_call **,
                                        mc_world_mutation_error *, mc_entity_tick_execution_site);
+bool mc_world_mutation_execution_removed(const mc_world_mutation_execution_context *,
+                                         mc_world_runtime *, const mc_block *, int32_t, int32_t,
+                                         int32_t, mc_world_mutation_execution_call **,
+                                         mc_world_mutation_error *, mc_entity_tick_execution_site);
 /* Lazy Chunk lookup supplies its independently held defining Registry and RW
  * factory classes. NULL remains an actual borrow until its reached use. These
  * bindings belong only to this virtual addition, never a mutable World/Block
@@ -144,6 +159,9 @@ bool mc_world_mutation_execution_added_with_tile_bindings(
 bool mc_world_mutation_block_added_with_call(mc_world_mutation_execution_call *, mc_world_runtime *,
                                              const mc_block *, int32_t, int32_t, int32_t,
                                              mc_world_mutation_error *);
+bool mc_world_mutation_block_removed_with_call(mc_world_mutation_execution_call *,
+                                               mc_world_runtime *, const mc_block *, int32_t,
+                                               int32_t, int32_t, mc_world_mutation_error *);
 typedef struct mc_world_solid_support_execution mc_world_solid_support_execution;
 /* Retain the actual lower frame and raw C return before projection. A native
  * stop can accompany a non-OK raw return while support detail stays empty;
@@ -191,6 +209,10 @@ bool mc_world_mutation_ladder_neighbor_in_execution(mc_world_mutation_execution_
                                                     mc_world_runtime *, const mc_block *, int32_t,
                                                     int32_t, int32_t, int32_t,
                                                     mc_world_mutation_error *);
+bool mc_world_mutation_sign_neighbor_in_execution(mc_world_mutation_execution_call *,
+                                                  mc_world_runtime *, const mc_block *, int32_t,
+                                                  int32_t, int32_t, int32_t,
+                                                  mc_world_mutation_error *);
 bool mc_world_mutation_torch_neighbor_in_execution(mc_world_mutation_execution_call *,
                                                    mc_world_runtime *, const mc_block *, int32_t,
                                                    int32_t, int32_t, int32_t,

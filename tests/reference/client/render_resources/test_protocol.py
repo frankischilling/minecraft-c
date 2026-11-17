@@ -5,7 +5,8 @@ import sys
 import tempfile
 import unittest
 from compare import activation
-from protocol import CPU_NAMES, FONT_NAMES, completed, cpu_rows, font_rows
+from protocol import (CPU_NAMES, FONT_NAMES, FONT_NAMES_V1, completed, cpu_rows, font_rows,
+                      historical_font_rows_v1)
 
 
 def cpu_fixture():
@@ -25,9 +26,9 @@ def cpu_fixture():
     return b"\n".join(rows) + b"\n"
 
 
-def font_fixture():
+def font_fixture(names=FONT_NAMES):
     return b"\n".join([b"DEVICE|4,5,1|66697874757265|66697874757265|66697874757265"] +
-                       [("FONT " + n + " PASS").encode() for n in FONT_NAMES] +
+                       [("FONT " + n + " PASS").encode() for n in names] +
                        [b"source font: 700 checks passed"]) + b"\n"
 
 
@@ -67,6 +68,21 @@ class ProtocolControls(unittest.TestCase):
                      font_fixture().replace(b"DEVICE|4,5,1", b"DEVICE|3,2,1"),
                      font_fixture().replace(b"FONT ready-288-commands PASS", b"FONT ready-288-commands SKIP")):
             with self.subTest(data=data[-70:]), self.assertRaises(ValueError): font_rows(data)
+
+    def test_terminal_unsafe_control_is_mandatory_and_last_before_cleanup(self):
+        current, historical = font_fixture(), font_fixture(FONT_NAMES_V1)
+        self.assertEqual(font_rows(current)["rows"], 12)
+        self.assertEqual(historical_font_rows_v1(historical)["rows"], 11)
+        with self.assertRaises(ValueError): font_rows(historical)
+        with self.assertRaises(ValueError): historical_font_rows_v1(current)
+        marker = b"FONT unsupported-lowercase178-terminal PASS\n"
+        bad = (current.replace(marker, b""), current.replace(marker, marker + marker),
+               current.replace(marker, marker.replace(b"PASS", b"SKIP")),
+               current.replace(marker + b"FONT native-retirement PASS\n",
+                               b"FONT native-retirement PASS\n" + marker))
+        for altered in bad:
+            with self.subTest(stream=altered[-170:]), self.assertRaises(ValueError):
+                font_rows(altered)
 
     def test_strict_real_process_receipt(self):
         stdout = cpu_fixture()

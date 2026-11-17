@@ -157,6 +157,8 @@ static bool retire_tile_draw(mc_client_render_global_entities_call *c,
     c->tile_draw_failure.texture = c->tile_draw_cleanup.texture = NULL;
     c->tile_draw_failure.lighting = c->tile_draw_cleanup.lighting = NULL;
     c->tile_draw_failure.application_query = c->tile_draw_cleanup.application_query = NULL;
+    c->tile_draw_failure.font = c->tile_draw_cleanup.font = NULL;
+    c->tile_draw_failure.model = c->tile_draw_cleanup.model = NULL;
     c->tile_draw_failure.exception_class = c->tile_draw_cleanup.exception_class = NULL;
     mc_tile_entity_release(c->current_tile);
     c->current_tile = NULL;

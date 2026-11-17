@@ -515,9 +515,55 @@ static bool tiles(mc_client_render_global_entities_call *c) {
                                            ? SIZE_MAX
                                            : c->state.piston_vertices + state.piston_vertices;
         }
+        const bool sign = state.renderer_class != NULL && strcmp(state.renderer_class, "po") == 0;
+        if (sign) {
+            receipt->sign_block_returned = state.sign_block_returned;
+            receipt->sign_metadata_returned = state.sign_metadata_returned;
+            receipt->sign_standing = state.sign_standing;
+            receipt->sign_model_returned = state.sign_model_returned;
+            receipt->sign_model_popped = state.sign_model_popped;
+            receipt->sign_font_returned = state.sign_font_returned;
+            receipt->sign_depth_disabled = state.sign_depth_disabled;
+            receipt->sign_depth_restored = state.sign_depth_restored;
+            receipt->sign_color_restored = state.sign_color_restored;
+            receipt->sign_matrix_popped = state.matrix_popped;
+            receipt->sign_texture_returned = state.texture_returned;
+            receipt->sign_texture_bound = state.texture_bound;
+            receipt->sign_metadata = state.sign_metadata;
+            receipt->sign_last_row = state.sign_last_row;
+            receipt->sign_last_width = state.sign_last_width;
+            receipt->sign_last_x = state.sign_last_x;
+            receipt->sign_last_y = state.sign_last_y;
+            memcpy(&receipt->sign_angle_bits, &state.sign_angle, sizeof(receipt->sign_angle_bits));
+            memcpy(&receipt->sign_text_scale_bits, &state.sign_text_scale,
+                   sizeof(receipt->sign_text_scale_bits));
+            receipt->sign_rows_measured = state.sign_rows_measured;
+            receipt->sign_rows_drawn = state.sign_rows_drawn;
+            receipt->sign_text_units = state.sign_text_units;
+            receipt->sign_null_rows = state.sign_null_rows;
+            receipt->sign_text_digest = state.sign_text_digest;
+            if (c->state.sign_draws_returned != SIZE_MAX)
+                ++c->state.sign_draws_returned;
+            c->state.sign_rows_measured =
+                state.sign_rows_measured > SIZE_MAX - c->state.sign_rows_measured
+                    ? SIZE_MAX
+                    : c->state.sign_rows_measured + state.sign_rows_measured;
+            c->state.sign_rows_drawn = state.sign_rows_drawn > SIZE_MAX - c->state.sign_rows_drawn
+                                           ? SIZE_MAX
+                                           : c->state.sign_rows_drawn + state.sign_rows_drawn;
+            c->state.sign_model_parts = state.model_parts > SIZE_MAX - c->state.sign_model_parts
+                                            ? SIZE_MAX
+                                            : c->state.sign_model_parts + state.model_parts;
+            c->state.last_sign_draw = *receipt;
+        }
         ++c->state.tile_draws_returned;
         if (!retire_tile_draw(c, &c->failure))
             return false;
+        if (sign) {
+            c->state.last_sign_draw = c->state.last_tile_draw;
+            if (c->state.sign_draws_retired != SIZE_MAX)
+                ++c->state.sign_draws_retired;
+        }
         c->state.source_pc = 563;
     }
 }

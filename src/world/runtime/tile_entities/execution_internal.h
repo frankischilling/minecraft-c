@@ -22,6 +22,10 @@ mc_world_storage_status
 mc_live_tile_entity_query_execution_retire(mc_live_tile_entity_query_execution_call **);
 const struct mc_world_mutation_error *
 mc_live_tile_entity_query_execution_failure(const mc_live_tile_entity_query_execution_call *);
+/* Passive copied defining capture site from an actual retained invocation,
+ * including after its checked pop. No new Source call or owning hold. */
+bool mc_live_tile_entity_query_execution_capture_site(
+    const mc_live_tile_entity_query_execution_call *, mc_entity_tick_execution_site *);
 bool mc_live_tile_entity_query_execution_source_null(
     const mc_live_tile_entity_query_execution_call *, mc_entity_tick_execution_site *);
 
@@ -98,5 +102,17 @@ mc_world_storage_status mc_live_tile_entities_block_added_in_execution(
     mc_registry_classes *defining_registry, mc_world_runtime_classes *factory_classes,
     mc_entity_tick_execution_site receiver_site, const mc_block *, int32_t, int32_t, int32_t,
     mc_live_tile_entity_error *, mc_world_runtime_execution_result *, bool *source_null);
+
+/* Actual inherited Sign RW.b: literal base6, then World.p invocation14.
+ * Both World acquisitions use the same caller-owned result and defining
+ * code/Registry/factory operands. A failed lazy lookup keeps its real owner
+ * until native close/retirement; this body never retries Source or resets the
+ * enclosing ledger. The exact evaluated World token is already open. */
+mc_world_storage_status mc_live_tile_entities_sign_removed_in_execution(
+    mc_entity_tick_execution *, mc_world_runtime *, mc_world_runtime_execution_code,
+    mc_world_runtime_classes *code_classes, mc_registry_classes *defining_registry,
+    mc_world_runtime_classes *factory_classes, mc_entity_tick_execution_site, int32_t, int32_t,
+    int32_t, mc_live_tile_entity_error *, mc_world_runtime_execution_result *,
+    mc_live_tile_entity_query_execution_call **, bool *source_null);
 
 #endif

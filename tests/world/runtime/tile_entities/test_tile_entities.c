@@ -1234,6 +1234,8 @@ static bool cleanup_fixture(fixture *f) {
     return true;
 }
 
+#include "sign_controls.inc"
+
 int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
@@ -1285,7 +1287,7 @@ int main(int argc, char **argv) {
     for (size_t slot = 0; slot < WORLD_COUNT; ++slot)
         CHECK(open_store(f, slot, root) && create_world(f, slot));
     for (size_t side = 0; side < 2; ++side)
-        CHECK(shared_and_fresh(f, side) && nbt_copy(f, side));
+        CHECK(shared_and_fresh(f, side) && nbt_copy(f, side) && sign_components(f, side));
     /* Core uses real empty loaded records. No live Store import is needed to
      * run constructors, source-added owners and the ownership regressions. */
     for (size_t slot = 0; slot < 2; ++slot)

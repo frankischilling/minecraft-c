@@ -3,6 +3,8 @@
 #include "../interpolation_internal.h"
 #include "../living_draw_internal.h"
 #include "client/display/source_surface.h"
+#include "client/render_engine/texture_lookup.h"
+#include "mc/core/java/java.h"
 #include "world/runtime/runtime_internal.h"
 
 #include <stdlib.h>
@@ -66,6 +68,58 @@ bool tile_draw_display(mc_client_tile_renderer_draw_call *c, bool returned) {
     ++c->state.gl_calls;
     return returned || tile_draw_fail(c, MC_CLIENT_TILE_RENDERER_DISPLAY_FAILED,
                                       c->error.display.operation, true);
+}
+
+bool tile_draw_texture(mc_client_tile_renderer_draw_call *c, const uint16_t *key, size_t length,
+                       mc_client_render_engine **held, bool *pending,
+                       mc_client_texture_lookup_error *detail) {
+    c->error.child = (mc_client_graphics_site){"je", "a", "(Ljava/lang/String;)V", 4};
+    mc_client_tile_renderer_dispatcher *manager = c->renderer->manager;
+    mc_client_render_engine *engine = manager == NULL ? NULL : manager->fields.e;
+    if (manager == NULL || engine == NULL) {
+        if (manager != NULL)
+            c->error.child.pc = 11;
+        c->error.source_exception = true;
+        c->error.exception_class = "java/lang/NullPointerException";
+        return tile_draw_fail(c, MC_CLIENT_TILE_RENDERER_NULL_REFERENCE,
+                              manager == NULL ? "JE actual null LL texture field receiver"
+                                              : "JE actual null JI texture lookup receiver",
+                              false);
+    }
+    c->error.child.pc = 11;
+    c->error.owner.engine_status = mc_client_render_engine_retain(engine);
+    if (c->error.owner.engine_status != MC_CLIENT_RENDER_ENGINE_OK)
+        return tile_draw_fail(c, MC_CLIENT_TILE_RENDERER_ENGINE_FAILED,
+                              "JE reached actual Engine occurrence", true);
+    *held = engine;
+    const bool foreign_pending = mc_client_texture_lookup_pending(engine);
+    mc_client_texture id;
+    c->error.texture = detail;
+    const mc_client_texture_lookup_status status = mc_client_render_engine_texture(
+        engine, c->services.display, NULL, (mc_texture_pack_text){key, length, false}, &id, detail);
+    *pending = !foreign_pending && mc_client_texture_lookup_pending(engine);
+    if (status != MC_CLIENT_LOOKUP_OK) {
+        c->error.child = detail->site;
+        c->error.source_exception = !detail->native_policy;
+        if (status == MC_CLIENT_LOOKUP_NULL_REFERENCE)
+            c->error.exception_class = "java/lang/NullPointerException";
+        else if (status == MC_CLIENT_LOOKUP_SOURCE_ILLEGAL_ARGUMENT)
+            c->error.exception_class = "java/lang/IllegalArgumentException";
+        else if (status == MC_CLIENT_LOOKUP_SOURCE_NEGATIVE_SIZE)
+            c->error.exception_class = "java/lang/NegativeArraySizeException";
+        return tile_draw_fail(c, MC_CLIENT_TILE_RENDERER_TEXTURE_FAILED, detail->operation,
+                              detail->native_policy);
+    }
+    c->state.texture_returned = true;
+    c->error.child = (mc_client_graphics_site){"je", "a", "(Ljava/lang/String;)V", 14};
+    if (mc_java_i32_narrow((int64_t)id) >= 0) {
+        if (!tile_draw_display(
+                c, mc_client_display_source_bind_id(c->services.display, id, &c->error.display)))
+            return false;
+        c->state.texture_bound = true;
+    }
+    c->error.child = (mc_client_graphics_site){0};
+    return true;
 }
 
 static bool numeric(mc_client_tile_renderer_draw_call *c, double a, double b, int32_t pc) {
@@ -220,9 +274,12 @@ static bool coordinates(mc_client_tile_renderer_draw_call *c) {
         } else if (strcmp(renderer->source_class, "hy") == 0) {
             if (!tile_draw_piston(c))
                 return false;
+        } else if (strcmp(renderer->source_class, "po") == 0) {
+            if (!tile_draw_sign(c))
+                return false;
         } else
             return tile_draw_fail(c, MC_CLIENT_TILE_RENDERER_UNIMPLEMENTED_DEPENDENCY,
-                                  "reached Sign TileEntity renderer draw descendant", true);
+                                  "reached TileEntity renderer draw descendant", true);
         c->state.renderer_returned = true;
     }
     c->error.parent = (mc_client_graphics_site){0};
@@ -393,6 +450,8 @@ mc_client_tile_renderer_draw_retire(mc_client_tile_renderer_draw_call **slot,
             c->state.retiring = true;
             if (!tile_draw_piston_retire(c, &e))
                 goto retained;
+            if (!tile_draw_sign_retire(c, &e))
+                goto retained;
             /* Fallible graphics release precedes child diagnostic expiry. */
             if (c->graphics != NULL) {
                 if (mc_client_render_engine_classes_release(c->graphics) !=
@@ -437,6 +496,7 @@ mc_client_tile_renderer_draw_retire(mc_client_tile_renderer_draw_call **slot,
                 mc_world_runtime_binding_release(c->brightness_world);
             mc_tile_entity_release(c->tile_entity);
             tile_draw_piston_free(c);
+            tile_draw_sign_free(c);
             --m->holds;
             m->draw_call = NULL;
             free(c);

@@ -3,6 +3,7 @@
 #include "bitmap_font_internal.h"
 #include "font_kernels.h"
 #include "mc/core/java/java.h"
+#include "mc/core/java/string_lower_hex.h"
 #include <string.h>
 #include <xmmintrin.h>
 
@@ -71,24 +72,20 @@ static bool remaining(mc_client_bitmap_font *font, int32_t pc, bool *empty,
     return true;
 }
 
-static bool format_index(mc_player_string_view input, size_t next, int32_t *out,
+static bool format_index(mc_player_string_view input, size_t next,
+                         mc_java_string_lower_hex_view *lowered, bool *prepared, int32_t *out,
                          mc_client_bitmap_font_error *e) {
-    /* Actual toLowerCase178 acts on the WHOLE String at every format pair.
-     * ASCII plus section signs has stable single-unit behavior for this
-     * lookup, including Turkish I (which is outside the hex alphabet).
-     * Wider locale/expansion semantics remain a reached dependency. */
-    for (size_t i = 0; i < input.length; ++i)
-        if (input.units[i] > 127u && input.units[i] != UINT16_C(0x00a7))
+    /* The pure invariant-domain check is first reached at actual toLowerCase178.
+     * It preserves the GL/NIO prefix before any unsafe width-changing input.
+     * The immutable counted input can share its proof across later format sites. */
+    if (!*prepared) {
+        if (mc_java_string_lower_hex_prepare(input.units, input.length, lowered) !=
+            MC_JAVA_STRING_LOWER_HEX_OK)
             return failed(e, MC_CLIENT_BITMAP_FONT_UNSUPPORTED_LOWERCASE,
                           "sj actual default-locale whole-String lowercase", 178, true);
-    uint16_t unit = input.units[next];
-    if (unit >= 'A' && unit <= 'Z')
-        unit = (uint16_t)(unit + ('a' - 'A'));
-    const char hex[] = "0123456789abcdef";
-    int32_t index = 0;
-    while (index < 16 && (uint16_t)hex[index] != unit)
-        ++index;
-    *out = index == 16 ? 15 : index;
+        *prepared = true;
+    }
+    *out = mc_java_string_lower_hex_project(lowered, next);
     return true;
 }
 
@@ -115,10 +112,12 @@ static bool draw_body(mc_client_bitmap_font *font, mc_player_string_view input, 
                       "sj reached translation integer conversion", 133, true);
     if (!mc_client_display_source_translate(font->display, (float)x, (float)y, 0, &e->display))
         return device_failed(e, 137);
+    mc_java_string_lower_hex_view lowered;
+    bool lowercase_prepared = false;
     for (size_t index = 0; index < input.length; ++index) {
         while (index + 1u < input.length && input.units[index] == UINT16_C(0x00a7)) {
             int32_t palette;
-            if (!format_index(input, index + 1u, &palette, e))
+            if (!format_index(input, index + 1u, &lowered, &lowercase_prepared, &palette, e))
                 return false;
             const int32_t name = mc_java_i32_add(
                 mc_java_i32_add(mc_java_i32_add(font->fields.c, 256), palette), shadow ? 16 : 0);

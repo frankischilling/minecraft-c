@@ -674,7 +674,7 @@ static mc_world_storage_status moving_piston_tile_entity(const block_context *co
                     "Moving-piston TileEntity concrete identity");
     }
     if (snapshot.kind == MC_TILE_ENTITY_CHEST || snapshot.kind == MC_TILE_ENTITY_SPAWNER ||
-        snapshot.kind == MC_TILE_ENTITY_FURNACE) {
+        snapshot.kind == MC_TILE_ENTITY_FURNACE || snapshot.kind == MC_TILE_ENTITY_SIGN) {
         mc_tile_entity_release(tile_entity);
         *out = NULL; /* Actual instanceof uk/mu is false for these real types. */
         return MC_WORLD_STORAGE_OK;

@@ -46,6 +46,8 @@ struct mc_world_mutation_execution_call {
     mc_world_schedule_execution *schedule;
     mc_world_material_execution *material;
     mc_live_tile_entity_error *tile_added;
+    mc_live_tile_entity_error *tile_removed;
+    mc_live_tile_entity_query_execution_call *tile_removed_lookup;
     mc_registry_classes *tile_registry;
     mc_world_runtime_classes *tile_factory_classes;
     mutation_presentation *presentation;
@@ -54,8 +56,10 @@ struct mc_world_mutation_execution_call {
     mc_world_storage_status schedule_status;
     mc_world_storage_status material_status;
     mc_world_storage_status tile_added_status;
+    mc_world_storage_status tile_removed_status;
     bool active, close_done, support_returned, plant_returned, tile_added_completed;
     bool tile_added_source_null;
+    bool tile_removed_completed, tile_removed_source_null;
     bool explicit_tile_bindings;
 };
 
@@ -949,7 +953,7 @@ static bool admit_owned(const mc_world_mutation_execution_context *context, mc_w
 }
 
 /* A Block hook receives World as an ordinary nullable argument. Only this
- * Chest/Furnace RW bodies may evaluate factory15 before invoking that value at18;
+ * Chest/Furnace/Sign RW bodies may evaluate factory15 before invoking that value at18;
  * nullable World method receivers retain admit_owned's earlier refusal. */
 static bool admit_nullable_tile_added(const mc_world_mutation_execution_context *context,
                                       mc_world_mutation_execution_call **slot,
@@ -1131,7 +1135,8 @@ bool mc_world_mutation_execution_added_with_tile_bindings(
     mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
     mc_world_access_failure_lease *lease = NULL;
     const bool nullable_tile = world == NULL && block != NULL &&
-                               (block->kind == MC_BLOCK_CHEST || block->kind == MC_BLOCK_FURNACE) &&
+                               (block->kind == MC_BLOCK_CHEST || block->kind == MC_BLOCK_FURNACE ||
+                                block->kind == MC_BLOCK_SIGN) &&
                                block->classes->options.side == MC_REGISTRY_CLIENT;
     if (!(nullable_tile ? admit_nullable_tile_added(context, slot, error, &lease, site)
                         : admit_owned(context, world, true, slot, &raw, error, &lease, site)))
@@ -1157,6 +1162,27 @@ bool mc_world_mutation_execution_added(const mc_world_mutation_execution_context
     return mc_world_mutation_execution_added_with_tile_bindings(
         context, classes == NULL ? NULL : classes->registry, classes, world, block, x, y, z, slot,
         error, site);
+}
+
+bool mc_world_mutation_execution_removed(const mc_world_mutation_execution_context *context,
+                                         mc_world_runtime *world, const mc_block *block, int32_t x,
+                                         int32_t y, int32_t z,
+                                         mc_world_mutation_execution_call **slot,
+                                         mc_world_mutation_error *error,
+                                         mc_entity_tick_execution_site site) {
+    mc_world_storage_status raw = MC_WORLD_STORAGE_OK;
+    mc_world_access_failure_lease *lease = NULL;
+    const bool nullable_sign = world == NULL && block != NULL && block->kind == MC_BLOCK_SIGN &&
+                               block->classes->options.side == MC_REGISTRY_CLIENT;
+    if (!(nullable_sign ? admit_nullable_tile_added(context, slot, error, &lease, site)
+                        : admit_owned(context, world, true, slot, &raw, error, &lease, site)))
+        return false;
+    mc_world_mutation_execution_call *call = start_owned(context, slot, lease, site);
+    if (call == NULL)
+        return false;
+    const bool completed =
+        mc_world_mutation_block_removed_with_call(call, world, block, x, y, z, &call->error);
+    return finish_owned(slot, completed, &raw, error, site, true);
 }
 
 bool mc_world_mutation_execution_observe_range(mc_world_mutation_execution_call *call,
@@ -1240,6 +1266,7 @@ bool mc_world_mutation_execution_owns_world(const mc_world_mutation_execution_ca
             return true;
     }
     return mc_world_mutation_drop_owns_world(call->drop, world) ||
+           mc_live_tile_entity_query_execution_owns_world(call->tile_removed_lookup, world) ||
            mc_world_mutation_execution_owns_world(call->child, world) ||
            (call->chunk != NULL &&
             mc_world_mutation_chunk_execution_owns_world(call->chunk, world));
@@ -1261,6 +1288,17 @@ bool mc_world_mutation_execution_source_null(const mc_world_mutation_execution_c
     }
     if (call->tile_added_source_null) {
         *site = (mc_entity_tick_execution_site){"rw", "c", "(Lfd;III)V", 18};
+        return true;
+    }
+    if (call->tile_removed_source_null) {
+        *site = (mc_entity_tick_execution_site){"rw", "b", "(Lfd;III)V", 14};
+        return true;
+    }
+    if (mc_live_tile_entity_query_execution_source_null(call->tile_removed_lookup, site))
+        return true;
+    if (call->error.sign_source_null) {
+        *site = (mc_entity_tick_execution_site){"uj", "b", "(Lfd;IIII)V",
+                                                (int)call->error.hook_bytecode};
         return true;
     }
     return false;
@@ -1329,7 +1367,8 @@ bool mc_world_mutation_execution_tile_added(mc_world_mutation_execution_call *ca
     if (!mc_world_mutation_execution_current(call, world, site))
         return false;
     if (call->tile_added != NULL || error == NULL || block == NULL ||
-        (block->kind != MC_BLOCK_CHEST && block->kind != MC_BLOCK_FURNACE)) {
+        (block->kind != MC_BLOCK_CHEST && block->kind != MC_BLOCK_FURNACE &&
+         block->kind != MC_BLOCK_SIGN)) {
         mc_world_runtime_execution_result_note(call->context.result, MC_WORLD_STORAGE_BUSY,
                                                "TileEntity addition requires fresh retained child",
                                                site);
@@ -1372,6 +1411,86 @@ bool mc_world_mutation_execution_tile_added(mc_world_mutation_execution_call *ca
     return false;
 }
 
+bool mc_world_mutation_execution_sign_removed(mc_world_mutation_execution_call *call,
+                                              mc_world_runtime *world, int32_t x, int32_t y,
+                                              int32_t z, mc_world_mutation_error *error) {
+    const mc_entity_tick_execution_site site = {"rw", "b", "(Lfd;III)V", 14};
+    if (!mc_world_mutation_execution_current(call, world, site))
+        return false;
+    if (call->tile_removed != NULL || error == NULL) {
+        mc_world_runtime_execution_result_note(call->context.result, MC_WORLD_STORAGE_BUSY,
+                                               "Sign removal requires fresh retained child", site);
+        return false;
+    }
+    call->tile_removed = calloc(1, sizeof(*call->tile_removed));
+    if (call->tile_removed == NULL) {
+        mc_world_runtime_execution_result_note(call->context.result,
+                                               MC_WORLD_STORAGE_ALLOCATION_FAILED,
+                                               "Sign retained removal child", site);
+        return false;
+    }
+    call->tile_removed_status = mc_live_tile_entities_sign_removed_in_execution(
+        call->context.execution, world, call->context.code, call->context.code_classes,
+        mc_world_mutation_execution_registry(call), call->context.code_classes, site, x, y, z,
+        call->tile_removed, call->context.result, &call->tile_removed_lookup,
+        &call->tile_removed_source_null);
+    call->tile_removed_completed = call->tile_removed_status == MC_WORLD_STORAGE_OK &&
+                                   call->context.result->ownership_status == MC_WORLD_STORAGE_OK;
+    if (call->tile_removed_completed) {
+        error->hook_class = error->hook_method = NULL;
+        error->hook_bytecode = 0;
+        return true;
+    }
+    error->tile_entity = *call->tile_removed;
+    error->registry = call->tile_removed->registry;
+    error->entity = call->tile_removed->entity;
+    error->publication = call->tile_removed->publication;
+    error->status = call->tile_removed_status;
+    error->operation = call->tile_removed->operation;
+    error->cause = call->tile_removed->cause;
+    error->hook_class = "rw";
+    error->hook_method = "b";
+    error->hook_bytecode = 14;
+    return false;
+}
+
+const mc_live_tile_entity_error *
+mc_world_mutation_execution_failed_tile_removed(const mc_world_mutation_execution_call *call,
+                                                mc_world_storage_status *raw) {
+    if (call == NULL || call->active || raw == NULL)
+        return NULL;
+    const mc_live_tile_entity_error *child =
+        mc_world_mutation_execution_failed_tile_removed(call->child, raw);
+    if (child != NULL)
+        return child;
+    if (call->chunk != NULL) {
+        child = mc_world_mutation_execution_failed_tile_removed(call->chunk->hook, raw);
+        if (child != NULL)
+            return child;
+    }
+    if (call->tile_removed == NULL || call->tile_removed_completed)
+        return NULL;
+    *raw = call->tile_removed_status;
+    return call->tile_removed;
+}
+
+const mc_live_tile_entity_query_execution_call *
+mc_world_mutation_execution_failed_tile_removed_lookup(
+    const mc_world_mutation_execution_call *call) {
+    if (call == NULL || call->active)
+        return NULL;
+    const mc_live_tile_entity_query_execution_call *child =
+        mc_world_mutation_execution_failed_tile_removed_lookup(call->child);
+    if (child != NULL)
+        return child;
+    if (call->chunk != NULL) {
+        child = mc_world_mutation_execution_failed_tile_removed_lookup(call->chunk->hook);
+        if (child != NULL)
+            return child;
+    }
+    return call->tile_removed_completed ? NULL : call->tile_removed_lookup;
+}
+
 const mc_live_tile_entity_error *
 mc_world_mutation_execution_failed_tile_added(const mc_world_mutation_execution_call *call,
                                               mc_world_storage_status *raw) {
@@ -1404,6 +1523,8 @@ mc_world_mutation_execution_native_close(mc_world_mutation_execution_call *call)
     if (status == MC_WORLD_STORAGE_OK)
         status = mc_world_mutation_drop_native_close(call->drop);
     if (status == MC_WORLD_STORAGE_OK)
+        status = mc_live_tile_entity_query_execution_native_close(call->tile_removed_lookup);
+    if (status == MC_WORLD_STORAGE_OK)
         status = presentation_native_close(call);
     call->close_done = status == MC_WORLD_STORAGE_OK;
     return status;
@@ -1426,6 +1547,10 @@ mc_world_mutation_execution_retire(mc_world_mutation_execution_call **slot) {
     const mc_world_storage_status schedule = mc_world_schedule_execution_retire(&call->schedule);
     if (schedule != MC_WORLD_STORAGE_OK)
         return schedule;
+    const mc_world_storage_status removed_lookup =
+        mc_live_tile_entity_query_execution_retire(&call->tile_removed_lookup);
+    if (removed_lookup != MC_WORLD_STORAGE_OK)
+        return removed_lookup;
     const mc_world_storage_status chunk_children =
         mc_world_mutation_chunk_children_retire(call->chunk);
     if (chunk_children != MC_WORLD_STORAGE_OK)
@@ -1435,6 +1560,7 @@ mc_world_mutation_execution_retire(mc_world_mutation_execution_call **slot) {
     free(call->plant);
     free(call->material);
     free(call->tile_added);
+    free(call->tile_removed);
     free(call->presentation);
     free(call);
     *slot = NULL;

@@ -64,6 +64,14 @@ mc_live_tile_entity_query_execution_failure(const mc_live_tile_entity_query_exec
                : NULL;
 }
 
+bool mc_live_tile_entity_query_execution_capture_site(
+    const mc_live_tile_entity_query_execution_call *call, mc_entity_tick_execution_site *out) {
+    if (call == NULL || call->active || !call->created || out == NULL)
+        return false;
+    *out = call->site;
+    return true;
+}
+
 bool mc_live_tile_entity_query_execution_source_null(
     const mc_live_tile_entity_query_execution_call *call, mc_entity_tick_execution_site *site) {
     return call != NULL && !call->active &&
@@ -157,16 +165,16 @@ static void live_lazy_project(const mc_world_mutation_error *child,
         child->cause_hook_bytecode != 0 ? child->cause_hook_bytecode : child->hook_bytecode;
 }
 
-static bool live_lazy_furnace(const live_query_execution *query, mc_world_runtime *world,
-                              const mc_block *block, int32_t x, int32_t y, int32_t z,
-                              mc_live_tile_entity_error *error) {
+static bool live_lazy_added(const live_query_execution *query, mc_world_runtime *world,
+                            const mc_block *block, int32_t x, int32_t y, int32_t z,
+                            mc_live_tile_entity_error *error) {
     mc_live_tile_entity_query_execution_call *call = *query->lazy_call;
     const mc_world_mutation_execution_context context = {query->execution, query->code_classes,
                                                          query->code, query->owned, call->world};
     call->error = calloc(1, sizeof(*call->error));
     if (call->error == NULL) {
         live_fail(error, MC_WORLD_STORAGE_ALLOCATION_FAILED,
-                  "TileEntity lazy Furnace retained child diagnostics");
+                  "TileEntity lazy addition retained child diagnostics");
         mc_world_runtime_execution_result_note(query->owned, error->status, error->operation,
                                                query->receiver_site);
         return false;

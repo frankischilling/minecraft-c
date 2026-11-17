@@ -9,9 +9,9 @@
 
 #include <stdbool.h>
 
-/* Concrete Chest/Spawner/Piston/Furnace TileEntity owner. Caller-facing runtime and persistence
- * joins require the coordinated actual owners; reached missing descendants
- * remain explicit failures. Full gameplay/tick qualification is separate. */
+/* Concrete Chest/Spawner/Piston/Furnace/Sign TileEntity owner. Caller-facing runtime and
+ * persistence joins require the coordinated actual owners; reached missing descendants remain
+ * explicit failures. Full gameplay/tick qualification is separate. */
 typedef struct mc_world_runtime mc_world_runtime;
 typedef struct mc_world_runtime_classes mc_world_runtime_classes;
 typedef struct mc_world_reference_list mc_world_reference_list;
@@ -25,7 +25,8 @@ typedef enum mc_tile_entity_kind {
     MC_TILE_ENTITY_CHEST = 0,
     MC_TILE_ENTITY_SPAWNER,
     MC_TILE_ENTITY_PISTON,
-    MC_TILE_ENTITY_FURNACE
+    MC_TILE_ENTITY_FURNACE,
+    MC_TILE_ENTITY_SIGN
 } mc_tile_entity_kind;
 
 typedef enum mc_tile_entity_class_phase {
@@ -171,6 +172,9 @@ typedef struct mc_tile_entity_snapshot {
     int32_t spawner_delay;
     uint64_t spawner_rotation_bits, spawner_previous_rotation_bits;
     mc_tile_entity_name *spawner_name;
+    size_t sign_line_count;
+    int32_t sign_edit_row;
+    bool sign_read_flag; /* Actual private YK.c: true after ctor, false before NBT base read. */
     int32_t piston_block_id, piston_block_data, piston_facing;
     bool piston_extending, piston_render_head;
     uint32_t piston_progress_bits, piston_previous_progress_bits;
@@ -203,7 +207,8 @@ size_t mc_tile_entity_name_native_bytes(const mc_tile_entity_name *name);
 /* Allocate raw zero fields before constructor work, with one native hold and
  * fixed concrete kind. Construct only RAW: Furnace allocates3 null slots;
  * chest allocates36 null physical
- * slots; spawner executes delay-1/previous0/Pig/delay20; Piston default invokes
+ * slots; spawner executes delay-1/previous0/Pig/delay20; Sign constructs four
+ * shared empty String handles, edit row -1 and private c=true; Piston default invokes
  * only the empty base constructor and leaves every raw field zero. Piston's
  * separate static ArrayList initializes before any instance allocation.
  * Constructor failure
@@ -247,7 +252,7 @@ void mc_tile_entity_release(mc_tile_entity *tile_entity);
 mc_tile_entity_status mc_tile_entity_get_snapshot(const mc_tile_entity *tile_entity,
                                                   mc_tile_entity_snapshot *out);
 
-/* Exact direct requested heap bytes: common owner plus its physical slot array.
+/* Exact direct requested heap bytes: common owner plus its physical slot/Sign-line array.
  * Name handles and ItemStack owners are independent held identities, excluded
  * here and exposed separately; callers count shared owners once. Whole TileEntity
  * provenance is also excluded here and exposed below. This is not a total
@@ -308,6 +313,25 @@ mc_tile_entity_status mc_tile_entity_spawner_get_name(mc_tile_entity *tile_entit
 mc_tile_entity_status mc_tile_entity_spawner_set_name(mc_tile_entity *tile_entity,
                                                       mc_tile_entity_name *name);
 
+/* Fresh Sign public-array reads. Normal construction owns four nullable String
+ * entries. get_line publishes an independent hold on that SAME immutable name;
+ * no copy, truncation, dirty, RNG or field repair occurs. Retain the returned
+ * name across reentry and release it independently. Invalid slots preserve out.
+ * Field-only setters model reached public field/array assignments, accept NULL
+ * lines and any edit-row int, and never truncate. NBT read alone truncates to
+ * fifteen UTF-16 units; writer preserves full current line contents. The native
+ * API admits the constructor-owned four-element array, not arbitrary synthetic
+ * array backing or concurrent mutation. All calls require a held READY Sign. */
+mc_tile_entity_status mc_tile_entity_sign_line_count(const mc_tile_entity *tile_entity,
+                                                     size_t *out);
+mc_tile_entity_status mc_tile_entity_sign_get_line(mc_tile_entity *tile_entity, int32_t index,
+                                                   mc_tile_entity_name **out);
+mc_tile_entity_status mc_tile_entity_sign_set_line(mc_tile_entity *tile_entity, int32_t index,
+                                                   mc_tile_entity_name *name);
+mc_tile_entity_status mc_tile_entity_sign_get_edit_row(const mc_tile_entity *tile_entity,
+                                                       int32_t *out);
+mc_tile_entity_status mc_tile_entity_sign_set_edit_row(mc_tile_entity *tile_entity, int32_t row);
+
 /* Actual field-only Piston getters, requiring a held READY Piston. No World,
  * dirty, class initialization or mutation. Metadata is the stored uk/mu.e(),
  * rather than the inherited live World metadata getter. Progress bits preserve
@@ -345,7 +369,10 @@ mc_tile_entity_status mc_tile_entity_piston_progress(const mc_tile_entity *tile_
  * new EntityId value before reading Short Delay, retaining coordinate/name prefix
  * on later failure. Piston reads Int blockId/blockData/facing, Float progress
  * into current k then previous l, and Byte extending in that order. It leaves
- * the render/source flag j unchanged. Input is an immutable valid NBT tree.
+ * the render/source flag j unchanged. Sign stores private c=false BEFORE the
+ * base reader, then reads/assigns Text1..4 in order, truncating each to fifteen
+ * UTF-16 units only after its initial assignment. Edit row is untouched. Input
+ * is an immutable valid NBT tree.
  * The caller must keep
  * every input owner and span alive throughout the call and all partial prefixes,
  * including replacement releasing old slot holds and their stack/source owners.
@@ -400,12 +427,11 @@ mc_tile_entity_status mc_tile_entity_storage_bytes(const mc_tile_entity *tile_en
 
 /* READY only. Build one independent document from the physical slots ascending
  * (including fresh27..35 and nonpositive counts), current base fields or current
- * spawner name/Short Delay, or the nine Piston base/ID/data/facing/previous
- * progress/extending fields. Piston never writes current k or flag j. Null
- * spawner name fails before Delay preparation. Known
- * fields replace retained positions; unknowns/names stay preserved. Current
- * container Slot Byte replaces a moved stack's old Slot. Earlier discarded
- * duplicates/out-of-range records never reappear; no extension keys are added.
+ * spawner name/Short Delay, Sign's four complete current text lines, or the nine Piston
+ * base/ID/data/facing/previous progress/extending fields. Piston never writes current k or flag j.
+ * Null spawner name fails before Delay preparation. Known fields replace retained positions;
+ * unknowns/names stay preserved. Current container Slot Byte replaces a moved stack's old Slot.
+ * Earlier discarded duplicates/out-of-range records never reappear; no extension keys are added.
  *
  * Hold TileEntity and all input views stable with exclusive access. Shared stack
  * identities count once in the live graph, but each slot gets its own record.
@@ -425,7 +451,7 @@ mc_tile_entity_status mc_tile_entity_build(const mc_tile_entity *tile_entity,
 
 /* Fresh source ow.b/concrete writer result. Uses genuine current base/subtype
  * fields and direct Stack id/Count/Damage with Slot, without unknown provenance
- * overlays. Supported READY Chest/Spawner/Piston/Furnace owners only; no source heap,
+ * overlays. Supported READY Chest/Spawner/Piston/Furnace/Sign owners only; no source heap,
  * mutable setter or HashMap wire-order claim. Tree/new scratch allocations obey
  * the operation ceiling; supplying owner graphs have their separate budgets. */
 mc_tile_entity_status mc_tile_entity_build_source_nbt(const mc_tile_entity *, const mc_nbt_limits *,

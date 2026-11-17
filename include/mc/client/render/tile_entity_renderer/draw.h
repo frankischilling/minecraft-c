@@ -14,6 +14,8 @@ typedef struct mc_cv_world_error mc_cv_world_error;
 typedef struct mc_client_texture_lookup_error mc_client_texture_lookup_error;
 typedef struct mc_client_lighting_error mc_client_lighting_error;
 typedef struct mc_client_application_query_error mc_client_application_query_error;
+typedef struct mc_client_bitmap_font_error mc_client_bitmap_font_error;
+typedef struct mc_client_model_draw_error mc_client_model_draw_error;
 
 typedef struct mc_client_tile_renderer_draw_limits {
     size_t max_bytes;
@@ -44,7 +46,17 @@ typedef struct mc_client_tile_renderer_draw_error {
     const mc_client_texture_lookup_error *texture;
     const mc_client_lighting_error *lighting;
     const mc_client_application_query_error *application_query;
+    const mc_client_bitmap_font_error *font;
+    const mc_client_model_draw_error *model;
 } mc_client_tile_renderer_draw_error;
+
+typedef struct mc_client_tile_renderer_sign_row_receipt {
+    bool captured, is_null, selected;
+    bool measure_attempted, measure_returned, draw_attempted, draw_returned;
+    size_t text_units;
+    uint64_t text_digest; /* One row, with the same encoding as sign_text_digest. */
+    int32_t width, x, y;
+} mc_client_tile_renderer_sign_row_receipt;
 
 typedef struct mc_client_tile_renderer_draw_state {
     bool active, returned, retiring, coordinates_only;
@@ -57,6 +69,19 @@ typedef struct mc_client_tile_renderer_draw_state {
     bool tessellator_begun, tessellator_drawn, piston_head_returned, piston_base_returned;
     bool piston_block_returned, piston_override_set, piston_override_reset;
     bool blocks_capture_attempted;
+    bool sign_block_returned, sign_metadata_returned, sign_standing;
+    bool sign_model_pushed, sign_model_returned, sign_model_popped, sign_font_returned;
+    bool sign_depth_disabled, sign_depth_restored, sign_color_restored;
+    int32_t sign_metadata, sign_last_row, sign_last_width, sign_last_x, sign_last_y;
+    float sign_angle, sign_text_scale;
+    size_t sign_rows_measured, sign_rows_drawn;
+    size_t sign_text_units, sign_null_rows;
+    /* FNV-1a64 over successful Font row arguments, seeded before the loop.
+     * Each row encodes index:u32LE, null:u8, length:u64LE, then UTF-16:u16LE.
+     * This value receipt assigns no Java object identity to its contents. */
+    uint64_t sign_text_digest;
+    /* Passive value-only receipts for the admitted constructor-owned array. */
+    mc_client_tile_renderer_sign_row_receipt sign_rows[4];
     mc_world_storage_status blocks_capture_status;
     float piston_progress;
     double piston_translation[3];

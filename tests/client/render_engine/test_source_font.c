@@ -3,6 +3,7 @@
  * every intercepted GL call to its genuine function before testing reentry.
  * Do not also link another display.c object into this executable. */
 #include "../../../src/client/application_state.h"
+#include "../../../src/client/display/camera_surface.h"
 #include "../../../src/client/display/display.c"
 #include "../../../src/client/gui/bitmap_font_internal.h"
 #include "../../../src/client/render_engine/ge.h"
@@ -24,6 +25,34 @@ static unsigned probe_checks;
             goto done;                                                                             \
         }                                                                                          \
     } while (0)
+
+typedef struct probe_source_prefix {
+    float projection[16], modelview[16], color[4];
+    int32_t mode;
+    size_t modelview_depth, projection_depth;
+    bool color_known;
+} probe_source_prefix;
+
+static bool probe_prefix(mc_client_display *display, probe_source_prefix *out) {
+    mc_client_source_draw_state draw = {0};
+    if (!mc_client_display_source_draw_inspect(display, &draw) ||
+        !mc_client_display_camera_matrices_inspect(display, out->projection, out->modelview) ||
+        !mc_client_display_camera_stack_inspect(display, &out->mode, &out->modelview_depth,
+                                                &out->projection_depth))
+        return false;
+    memcpy(out->color, draw.color, sizeof(out->color));
+    out->color_known = draw.color_known;
+    return true;
+}
+
+static bool probe_prefix_equal(const probe_source_prefix *left, const probe_source_prefix *right) {
+    return left->mode == right->mode && left->modelview_depth == right->modelview_depth &&
+           left->projection_depth == right->projection_depth &&
+           left->color_known == right->color_known &&
+           memcmp(left->projection, right->projection, sizeof(left->projection)) == 0 &&
+           memcmp(left->modelview, right->modelview, sizeof(left->modelview)) == 0 &&
+           memcmp(left->color, right->color, sizeof(left->color)) == 0;
+}
 
 static mc_client_gl_texture_image_fn probe_real_image;
 static mc_client_gl_draw_arrays_fn probe_real_draw;
@@ -160,7 +189,7 @@ int main(int argc, char **argv) {
     mc_client_loading_error *loading_error = calloc(1, sizeof(*loading_error));
     mc_client_application_owner_error app_error;
     bool registered = false;
-    mc_player_string *name = NULL, *bad_name = NULL, *text = NULL;
+    mc_player_string *name = NULL, *bad_name = NULL, *text = NULL, *unsafe_text = NULL;
     mc_client_bitmap_font_error *error = calloc(1, sizeof(*error));
     mc_client_bitmap_font_state *state = calloc(1, sizeof(*state));
     mc_client_display_error device_error = {0};
@@ -172,6 +201,19 @@ int main(int argc, char **argv) {
     REQUIRE(mc_resource_files_create(argv[1], &files) == MC_REGISTRY_OK);
     REQUIRE(
         mc_client_display_create("source font controls", 64, 64, true, &display, &device_error));
+#ifdef _WIN32
+    /* The actual Windows control owns a hidden context; place that same
+     * window on physical monitor2 before any Font/GL work, without showing it. */
+    int display_count = 0;
+    SDL_DisplayID *displays = SDL_GetDisplays(&display_count);
+    REQUIRE(displays != NULL && display_count >= 2);
+    const SDL_DisplayID selected_display = displays[1];
+    SDL_free(displays);
+    REQUIRE(SDL_SetWindowPosition(mc_client_display_window(display),
+                                  (int)SDL_WINDOWPOS_CENTERED_DISPLAY(selected_display),
+                                  (int)SDL_WINDOWPOS_CENTERED_DISPLAY(selected_display)));
+    REQUIRE(SDL_GetDisplayForWindow(mc_client_display_window(display)) == selected_display);
+#endif
     const mc_client_display_info *info = mc_client_display_info_get(display);
     REQUIRE(info != NULL && (info->gl_major > 3 || (info->gl_major == 3 && info->gl_minor >= 3)) &&
             info->profile == SDL_GL_CONTEXT_PROFILE_CORE);
@@ -488,8 +530,70 @@ int main(int argc, char **argv) {
 
     REQUIRE(mc_client_render_engine_retire_resources(classes, &texture_error) ==
             MC_CLIENT_RENDER_TEXTURE_BUSY);
+    /* LAST Source invocation. U+0130 is outside the invariant whole-String
+     * lowercase domain. The first glyph is already queued when sj reaches178;
+     * no palette command, flush, Source pop or subsequent Source case follows. */
+    static const uint16_t unsafe_units[] = {'A', UINT16_C(0x00a7), 'a', UINT16_C(0x0130)};
+    REQUIRE(mc_player_string_create(unsafe_units, sizeof(unsafe_units) / sizeof(*unsafe_units),
+                                    &unsafe_text) == MC_PLAYER_OK);
+    probe_source_prefix unsafe_before, unsafe_failed, unsafe_first_release, unsafe_final_release;
+    REQUIRE(probe_prefix(display, &unsafe_before) && unsafe_before.mode == GL_MODELVIEW &&
+            unsafe_before.color_known && unsafe_before.modelview[0] == 1.0f &&
+            unsafe_before.modelview[5] == 1.0f && unsafe_before.modelview[1] == 0.0f &&
+            unsafe_before.modelview[4] == 0.0f);
+    mc_client_direct_buffer_state unsafe_nio_before, unsafe_nio_failed, unsafe_nio_held;
+    REQUIRE(mc_client_direct_int_buffer_inspect(ready->fields.d, &unsafe_nio_before) &&
+            unsafe_nio_before.capacity == 1024 && unsafe_nio_before.direct &&
+            unsafe_nio_before.native_order);
+    REQUIRE(mc_client_bitmap_font_retain(ready) == MC_CLIENT_BITMAP_FONT_OK);
+    alias = ready;
+    REQUIRE(mc_client_bitmap_font_draw(ready, unsafe_text, 7, 11, UINT32_C(0xff123456), false,
+                                       error) == MC_CLIENT_BITMAP_FONT_UNSUPPORTED_LOWERCASE &&
+            error->status == MC_CLIENT_BITMAP_FONT_UNSUPPORTED_LOWERCASE && error->pc == 178 &&
+            error->native_policy && !error->cleanup_failed && strcmp(error->method, "a") == 0 &&
+            strcmp(error->descriptor, "(Ljava/lang/String;IIIZ)V") == 0);
+    REQUIRE(mc_client_bitmap_font_inspect(ready, state) &&
+            state->phase == MC_CLIENT_BITMAP_FONT_READY && state->holds == 2 && !state->active);
+    REQUIRE(probe_prefix(display, &unsafe_failed) && unsafe_failed.mode == unsafe_before.mode &&
+            unsafe_failed.modelview_depth == unsafe_before.modelview_depth + 1 &&
+            unsafe_failed.projection_depth == unsafe_before.projection_depth &&
+            memcmp(unsafe_failed.projection, unsafe_before.projection,
+                   sizeof(unsafe_before.projection)) == 0 &&
+            unsafe_failed.color_known);
+    float unsafe_expected_modelview[16];
+    memcpy(unsafe_expected_modelview, unsafe_before.modelview, sizeof(unsafe_expected_modelview));
+    unsafe_expected_modelview[12] += 7.0f;
+    unsafe_expected_modelview[13] += 11.0f;
+    const float unsafe_expected_color[] = {18.0f / 255.0f, 52.0f / 255.0f, 86.0f / 255.0f, 1.0f};
+    REQUIRE(memcmp(unsafe_failed.modelview, unsafe_expected_modelview,
+                   sizeof(unsafe_expected_modelview)) == 0 &&
+            memcmp(unsafe_failed.color, unsafe_expected_color, sizeof(unsafe_expected_color)) == 0);
+    REQUIRE(mc_client_direct_int_buffer_inspect(ready->fields.d, &unsafe_nio_failed) &&
+            unsafe_nio_failed.identity == unsafe_nio_before.identity &&
+            unsafe_nio_failed.storage == unsafe_nio_before.storage &&
+            unsafe_nio_failed.position == 1 && unsafe_nio_failed.limit == 1024 &&
+            unsafe_nio_failed.capacity == 1024 && unsafe_nio_failed.direct &&
+            unsafe_nio_failed.native_order &&
+            ((const int32_t *)unsafe_nio_failed.storage)[0] == ready->fields.c + 65);
     REQUIRE(mc_client_bitmap_font_release(&ready, error) == MC_CLIENT_BITMAP_FONT_OK &&
             ready == NULL);
+    REQUIRE(mc_client_bitmap_font_inspect(alias, state) && state->holds == 1 && !state->active &&
+            probe_prefix(display, &unsafe_first_release) &&
+            probe_prefix_equal(&unsafe_failed, &unsafe_first_release) &&
+            mc_client_direct_int_buffer_inspect(alias->fields.d, &unsafe_nio_held) &&
+            unsafe_nio_held.identity == unsafe_nio_failed.identity &&
+            unsafe_nio_held.storage == unsafe_nio_failed.storage &&
+            unsafe_nio_held.position == unsafe_nio_failed.position &&
+            unsafe_nio_held.limit == unsafe_nio_failed.limit &&
+            unsafe_nio_held.capacity == unsafe_nio_failed.capacity &&
+            ((const int32_t *)unsafe_nio_held.storage)[0] == alias->fields.c + 65);
+    REQUIRE(mc_client_bitmap_font_release(&alias, error) == MC_CLIENT_BITMAP_FONT_OK &&
+            alias == NULL);
+    /* The NIO borrow ends with final Font release. Passive Source matrix/color
+     * state remains inspectable on the live Display; no repair is performed. */
+    REQUIRE(probe_prefix(display, &unsafe_final_release) &&
+            probe_prefix_equal(&unsafe_failed, &unsafe_final_release));
+    puts("FONT unsupported-lowercase178-terminal PASS");
     REQUIRE(mc_client_render_engine_retire_resources(classes, &texture_error) ==
             MC_CLIENT_RENDER_TEXTURE_OK);
     REQUIRE(classes->font_lease_count == 0 && classes->command_range_count == 0 &&
@@ -575,6 +679,7 @@ done:
     mc_player_string_release(name);
     mc_player_string_release(bad_name);
     mc_player_string_release(text);
+    mc_player_string_release(unsafe_text);
     mc_client_capture_free(&capture);
     free(state);
     free(error);

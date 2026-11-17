@@ -70,9 +70,10 @@ mc_font_renderer_status mc_font_renderer_measure(const mc_font_renderer *font,
  * quad within its 8x8 atlas cell. A zero input alpha means 255; section colors
  * reset alpha to 255, as glColor3f does. Unsupported mapping units draw nothing.
  *
- * Unformatted UTF-16 and ASCII formatted text (plus section signs) are admitted.
- * A real format pair anywhere alongside any other non-ASCII unit returns
- * UNSUPPORTED_LOWERCASE: source whole-String/default-locale lowercasing remains
+ * Unformatted UTF-16 and formatted text in the qualified whole-String invariant
+ * hex domain are admitted. Potential default-Locale lowercase insertion/removal
+ * anywhere alongside a real format pair returns UNSUPPORTED_LOWERCASE; general
+ * source whole-String/default-locale lowercasing remains
  * unfinished. Measurement is independent of that restriction.
  *
  * The run borrows owner scratch until its next successful layout or free.

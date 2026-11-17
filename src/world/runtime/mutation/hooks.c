@@ -62,7 +62,8 @@ static bool storage_fail(mc_world_runtime *world, mc_world_mutation_error *error
     error->status = cause.status;
     error->operation = cause.operation;
     error->cause = cause;
-    world->last_error = cause;
+    if (world != NULL)
+        world->last_error = cause;
     return false;
 }
 
@@ -170,7 +171,7 @@ static bool mark_leaves(mc_world_runtime *world, const mc_block *block, int32_t 
 
 static bool block_removed(mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y,
                           int32_t z, mc_world_mutation_error *error, const hook_execution *owned,
-                          mc_world_runtime_classes *code) {
+                          mc_world_mutation_execution_call *call, mc_world_runtime_classes *code) {
     if (!receiver(world, block, error))
         return false;
     switch (block->kind) {
@@ -235,9 +236,15 @@ static bool block_removed(mc_world_runtime *world, const mc_block *block, int32_
                        ? mark_leaves(world, block, x, y, z, false, error)
                        : unjoined(owned, "Block leaf-marking removal requires owned execution");
         case MC_BLOCK_NOTE_BLOCK:
-        case MC_BLOCK_SIGN:
             return unavailable(world, block, "rw", "lb", "Block TileEntity removal hook", error,
                                owned);
+        case MC_BLOCK_SIGN:
+            if (block->classes->options.side == MC_REGISTRY_CLIENT)
+                return owned == NULL ? tile_entity_hook(world, block, x, y, z, false, error)
+                       : call != NULL
+                           ? mc_world_mutation_execution_sign_removed(call, world, x, y, z, error)
+                           : unjoined(owned, "Sign removal requires retained caller");
+            return unavailable(world, block, "rw", "lb", "Block Sign removal hook", error, owned);
         case MC_BLOCK_MOB_SPAWNER:
             return owned == NULL
                        ? tile_entity_hook(world, block, x, y, z, false, error)
@@ -369,16 +376,16 @@ static bool block_added(mc_world_runtime *world, const mc_block *block, int32_t 
                        : unjoined(owned, "Falling Block addition requires owned execution");
         case MC_BLOCK_NOTE_BLOCK:
         case MC_BLOCK_MOB_SPAWNER:
-        case MC_BLOCK_SIGN:
         case MC_BLOCK_JUKEBOX:
             return owned == NULL
                        ? tile_entity_hook(world, block, x, y, z, true, error)
                        : unjoined(owned, "Block TileEntity hook requires owned execution");
+        case MC_BLOCK_SIGN:
         case MC_BLOCK_CHEST:
             return owned == NULL ? tile_entity_hook(world, block, x, y, z, true, error)
                    : call != NULL && block->classes->options.side == MC_REGISTRY_CLIENT
                        ? mc_world_mutation_execution_tile_added(call, world, block, x, y, z, error)
-                       : unjoined(owned, "Chest addition requires retained client caller");
+                       : unjoined(owned, "Chest/Sign addition requires retained client caller");
         case MC_BLOCK_RAIL:
         case MC_BLOCK_DETECTOR_RAIL:
             return owned == NULL ? mc_world_mutation_rail_added_hook(world, block, x, y, z, error)
@@ -579,7 +586,13 @@ static bool block_neighbor(mc_world_runtime *world, const mc_block *block, int32
                        ? mc_plant_farmland_neighbor(world, block, x, y, z, source_id, error)
                        : unjoined(owned, "Farmland neighbor hook requires owned execution");
         case MC_BLOCK_SIGN:
-            return unavailable(world, block, "uj", "mt", "Block sign neighbor hook", error, owned);
+            if (block->classes->options.side == MC_REGISTRY_CLIENT)
+                return owned == NULL  ? mc_world_mutation_sign_neighbor(world, block, x, y, z,
+                                                                        source_id, error)
+                       : call != NULL ? mc_world_mutation_sign_neighbor_in_execution(
+                                            call, world, block, x, y, z, source_id, error)
+                                      : unjoined(owned, "Sign neighbor requires retained caller");
+            return unavailable(world, block, "uj", "mt", "Block Sign neighbor hook", error, owned);
         case MC_BLOCK_DOOR:
             return unavailable(world, block, "le", "hc", "Block neighbor hook", error, owned);
         case MC_BLOCK_LADDER:
@@ -634,7 +647,7 @@ static bool block_neighbor(mc_world_runtime *world, const mc_block *block, int32
 
 bool mc_world_mutation_block_removed(mc_world_runtime *world, const mc_block *block, int32_t x,
                                      int32_t y, int32_t z, mc_world_mutation_error *error) {
-    return block_removed(world, block, x, y, z, error, NULL, NULL);
+    return block_removed(world, block, x, y, z, error, NULL, NULL, NULL);
 }
 
 bool mc_world_mutation_block_removed_in_execution(mc_world_runtime *world, const mc_block *block,
@@ -643,7 +656,16 @@ bool mc_world_mutation_block_removed_in_execution(mc_world_runtime *world, const
                                                   mc_world_runtime_execution_result *result,
                                                   mc_entity_tick_execution_site site) {
     const hook_execution owned = {result, site};
-    return result != NULL && block_removed(world, block, x, y, z, error, &owned, NULL);
+    return result != NULL && block_removed(world, block, x, y, z, error, &owned, NULL, NULL);
+}
+
+bool mc_world_mutation_block_removed_with_call(mc_world_mutation_execution_call *call,
+                                               mc_world_runtime *world, const mc_block *block,
+                                               int32_t x, int32_t y, int32_t z,
+                                               mc_world_mutation_error *error) {
+    const hook_execution owned = {mc_world_mutation_execution_result_of(call),
+                                  {"rw", "b", "(Lfd;III)V", 0}};
+    return call != NULL && block_removed(world, block, x, y, z, error, &owned, call, NULL);
 }
 
 bool mc_world_mutation_block_added(mc_world_runtime *world, const mc_block *block, int32_t x,
@@ -694,7 +716,7 @@ bool mc_world_mutation_block_removed_with_code(mc_world_runtime_classes *code,
                                                mc_world_runtime *world, const mc_block *block,
                                                int32_t x, int32_t y, int32_t z,
                                                mc_world_mutation_error *error) {
-    return block_removed(world, block, x, y, z, error, NULL, code);
+    return block_removed(world, block, x, y, z, error, NULL, NULL, code);
 }
 
 bool mc_world_mutation_block_neighbor_with_code(mc_world_runtime_classes *code,

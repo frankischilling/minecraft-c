@@ -41,6 +41,13 @@ struct mc_tile_entity {
         } spawner;
 
         struct {
+            mc_tile_entity_name **lines;
+            uint32_t count, capacity; /* Both bounded to the four constructor entries. */
+            int32_t edit_row;
+            bool read_flag;
+        } sign;
+
+        struct {
             int32_t block_id, block_data, facing;
             bool extending, render_head;
             uint32_t progress_bits, previous_progress_bits;

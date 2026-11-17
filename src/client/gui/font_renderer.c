@@ -2,6 +2,7 @@
 #include "font_kernels.h"
 
 #include "mc/core/java/java.h"
+#include "mc/core/java/string_lower_hex.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -132,16 +133,6 @@ mc_font_renderer_status mc_font_renderer_measure(const mc_font_renderer *font,
     return MC_FONT_RENDERER_OK;
 }
 
-static unsigned int color_code(uint16_t unit) {
-    if (unit >= '0' && unit <= '9')
-        return (unsigned int)(unit - '0');
-    if (unit >= 'A' && unit <= 'F')
-        return (unsigned int)(unit - 'A') + 10u;
-    if (unit >= 'a' && unit <= 'f')
-        return (unsigned int)(unit - 'a') + 10u;
-    return 15u;
-}
-
 typedef struct layout_counts {
     size_t glyphs, commands;
 } layout_counts;
@@ -157,7 +148,8 @@ static void command_emit(mc_font_command *commands, layout_counts *count, mc_fon
  * command sink retains the operations instead of absolute cursor geometry. */
 static layout_counts walk_pass(const mc_font_renderer *font, const mc_font_text *text, int32_t x,
                                int32_t y, uint32_t argb, bool shadow, mc_font_glyph *glyphs,
-                               mc_font_command *commands) {
+                               mc_font_command *commands,
+                               const mc_java_string_lower_hex_view *lowered) {
     layout_counts count = {0};
     if (text == NULL)
         return count;
@@ -169,7 +161,8 @@ static layout_counts walk_pass(const mc_font_renderer *font, const mc_font_text 
                                    .value.begin_pass = {(float)x, baseline, color}});
     for (size_t i = 0; i < text->length; ++i) {
         while (i + 1 < text->length && text->units[i] == UINT16_C(0x00a7)) {
-            color = font->palette[color_code(text->units[i + 1]) + (shadow ? 16u : 0u)];
+            color = font->palette[mc_java_string_lower_hex_project(lowered, i + 1) +
+                                  (shadow ? 16u : 0u)];
             command_emit(commands, &count,
                          (mc_font_command){.kind = MC_FONT_COMMAND_COLOR, .value.argb = color});
             i += 2;
@@ -194,17 +187,20 @@ static layout_counts walk_pass(const mc_font_renderer *font, const mc_font_text 
     return count;
 }
 
-static mc_font_renderer_status layout_text_valid(const mc_font_text *text) {
+static mc_font_renderer_status layout_text_valid(const mc_font_text *text,
+                                                 mc_java_string_lower_hex_view *lowered) {
     const mc_font_renderer_status status = text_valid(text);
     if (status != MC_FONT_RENDERER_OK)
         return status;
-    bool non_ascii = false, formatting = false;
+    *lowered = (mc_java_string_lower_hex_view){0};
     if (text != NULL)
-        for (size_t i = 0; i < text->length; ++i) {
-            non_ascii = non_ascii || (text->units[i] > 127u && text->units[i] != UINT16_C(0x00a7));
-            formatting = formatting || (text->units[i] == UINT16_C(0x00a7) && i + 1 < text->length);
-        }
-    return non_ascii && formatting ? MC_FONT_RENDERER_UNSUPPORTED_LOWERCASE : MC_FONT_RENDERER_OK;
+        for (size_t i = 0; i + 1 < text->length; ++i)
+            if (text->units[i] == UINT16_C(0x00a7))
+                return mc_java_string_lower_hex_prepare(text->units, text->length, lowered) ==
+                               MC_JAVA_STRING_LOWER_HEX_OK
+                           ? MC_FONT_RENDERER_OK
+                           : MC_FONT_RENDERER_UNSUPPORTED_LOWERCASE;
+    return MC_FONT_RENDERER_OK;
 }
 
 mc_font_renderer_status mc_font_renderer_layout(mc_font_renderer *font, const mc_font_text *text,
@@ -212,10 +208,11 @@ mc_font_renderer_status mc_font_renderer_layout(mc_font_renderer *font, const mc
                                                 mc_font_run *out) {
     if (font == NULL || out == NULL)
         return MC_FONT_RENDERER_INVALID_ARGUMENT;
-    const mc_font_renderer_status status = layout_text_valid(text);
+    mc_java_string_lower_hex_view lowered;
+    const mc_font_renderer_status status = layout_text_valid(text, &lowered);
     if (status != MC_FONT_RENDERER_OK)
         return status;
-    const size_t count = walk_pass(font, text, 0, 0, 0, false, NULL, NULL).glyphs;
+    const size_t count = walk_pass(font, text, 0, 0, 0, false, NULL, NULL, &lowered).glyphs;
     const size_t passes = shadow ? 2u : 1u;
     if (count > SIZE_MAX / passes / sizeof(mc_font_glyph))
         return MC_FONT_RENDERER_LIMIT;
@@ -229,11 +226,11 @@ mc_font_renderer_status mc_font_renderer_layout(mc_font_renderer *font, const mc
     size_t written = 0;
     if (shadow)
         written = walk_pass(font, text, mc_java_i32_add(x, 1), mc_java_i32_add(y, 1), argb, true,
-                            records, NULL)
+                            records, NULL, &lowered)
                       .glyphs;
-    written +=
-        walk_pass(font, text, x, y, argb, false, records == NULL ? NULL : records + written, NULL)
-            .glyphs;
+    written += walk_pass(font, text, x, y, argb, false, records == NULL ? NULL : records + written,
+                         NULL, &lowered)
+                   .glyphs;
     if (records != font->scratch) {
         free(font->scratch);
         font->scratch = records;
@@ -249,10 +246,11 @@ mc_font_renderer_status mc_font_renderer_layout_commands(mc_font_renderer *font,
                                                          mc_font_command_run *out) {
     if (font == NULL || out == NULL)
         return MC_FONT_RENDERER_INVALID_ARGUMENT;
-    const mc_font_renderer_status status = layout_text_valid(text);
+    mc_java_string_lower_hex_view lowered;
+    const mc_font_renderer_status status = layout_text_valid(text, &lowered);
     if (status != MC_FONT_RENDERER_OK)
         return status;
-    const size_t count = walk_pass(font, text, 0, 0, 0, false, NULL, NULL).commands;
+    const size_t count = walk_pass(font, text, 0, 0, 0, false, NULL, NULL, &lowered).commands;
     const size_t passes = shadow ? 2u : 1u;
     if (count > SIZE_MAX / passes / sizeof(mc_font_command))
         return MC_FONT_RENDERER_LIMIT;
@@ -269,11 +267,11 @@ mc_font_renderer_status mc_font_renderer_layout_commands(mc_font_renderer *font,
     size_t written = 0;
     if (shadow)
         written = walk_pass(font, text, mc_java_i32_add(x, 1), mc_java_i32_add(y, 1), argb, true,
-                            NULL, records)
+                            NULL, records, &lowered)
                       .commands;
-    written +=
-        walk_pass(font, text, x, y, argb, false, NULL, records == NULL ? NULL : records + written)
-            .commands;
+    written += walk_pass(font, text, x, y, argb, false, NULL,
+                         records == NULL ? NULL : records + written, &lowered)
+                   .commands;
     if (records != font->commands) {
         free(font->commands);
         font->commands = records;

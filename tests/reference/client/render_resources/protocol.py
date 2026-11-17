@@ -10,12 +10,17 @@ CPU_NAMES = (
     "nwInitial", "nwBegin", "nwBeginAgain", "nwVertex0", "nwVertex1",
     "nwVertex2", "nwVertex3", "nwResetBody", "geListsAfterCpu",
 )
-FONT_NAMES = (
+FONT_NAMES_V1 = (
     "not-image56", "png-widths242", "ready-288-commands", "constructor-reentry",
     "execute-all-288", "measure-draw-capture", "draw-reentry",
     "actual-App-d-e-J-lifetime", "actual-mk165-frontier",
     "failed580-retire-busy-retry", "native-retirement",
 )
+
+# Current native profile requires the final unsafe-domain failure/retirement
+# control. Historical V1 streams remain readable only through the explicit
+# historical_font_rows_v1 entry; they cannot satisfy current native admission.
+FONT_NAMES = FONT_NAMES_V1[:-1] + ("unsupported-lowercase178-terminal", FONT_NAMES_V1[-1])
 
 
 def require(value, message):
@@ -104,23 +109,33 @@ def cpu_rows(data):
     return rows
 
 
-def font_rows(data):
+def _font_rows(data, names):
     rows = records(data)
-    require(len(rows) == len(FONT_NAMES) + 2, "complete font control inventory")
+    require(len(rows) == len(names) + 2, "complete font control inventory")
     device = rows[0].split(b"|")
     require(len(device) == 5 and device[0] == b"DEVICE", "actual GL device record")
     version = re.fullmatch(rb"([0-9]+),([0-9]+),1", device[1])
     require(version is not None and (int(version[1]), int(version[2])) >= (3, 3), "actual core GL>=3.3")
     require(all(re.fullmatch(rb"(?:[0-9a-f]{2}){1,160}", cell) for cell in device[2:]),
             "actual bounded provider strings")
-    require(rows[1:-1] == [("FONT " + name + " PASS").encode("ascii") for name in FONT_NAMES],
+    require(rows[1:-1] == [("FONT " + name + " PASS").encode("ascii") for name in names],
             "ordered genuine font controls")
     footer = re.fullmatch(rb"source font: ([1-9][0-9]*) checks passed", rows[-1])
     require(footer is not None and int(footer[1]) >= 600, "positive completed native contract")
-    return {"rows": len(FONT_NAMES), "checks": int(footer[1]),
+    return {"rows": len(names), "checks": int(footer[1]),
             "device": {"version": [int(version[1]), int(version[2])], "profile": "CORE",
                        "vendor_hex": device[2].decode(), "renderer_hex": device[3].decode(),
                        "version_hex": device[4].decode()}}
+
+
+def font_rows(data):
+    """Current native profile, including its mandatory terminal unsafe control."""
+    return _font_rows(data, FONT_NAMES)
+
+
+def historical_font_rows_v1(data):
+    """Read only historical V1 streams; never current native execution credit."""
+    return _font_rows(data, FONT_NAMES_V1)
 
 
 def completed(capture, stdout, stderr, executable, *, empty_stderr=True):

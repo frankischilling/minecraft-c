@@ -58,7 +58,7 @@ static bool run_side(mc_world_info_side side, mc_java_random_profile *profile,
     mc_world_runtime_classes *world_classes[3] = {0};
     mc_tile_entity_classes *classes[3] = {0}, *again = NULL;
     mc_registry_classes *registry[2] = {0};
-    mc_tile_entity *instances[3] = {0}, *failed = NULL;
+    mc_tile_entity *instances[4] = {0}, *failed = NULL;
     const mc_tile_entity_class_literal *literals[MC_TILE_ENTITY_CLASS_KIND_COUNT] = {0};
     mc_tile_entity_piston_class_snapshot view;
     mc_world_runtime_class_state world_state;
@@ -182,10 +182,10 @@ static bool run_side(mc_world_info_side side, mc_java_random_profile *profile,
           mc_world_runtime_classes_bind_registry(world_classes[0], registry[0], NULL) ==
               MC_REGISTRY_OK);
     static const mc_tile_entity_kind instance_kinds[] = {
-        MC_TILE_ENTITY_CHEST, MC_TILE_ENTITY_SPAWNER, MC_TILE_ENTITY_PISTON};
-    static const mc_tile_entity_class_kind instance_classes[] = {MC_TILE_ENTITY_CLASS_KIND_CHEST,
-                                                                 MC_TILE_ENTITY_CLASS_KIND_SPAWNER,
-                                                                 MC_TILE_ENTITY_CLASS_KIND_PISTON};
+        MC_TILE_ENTITY_CHEST, MC_TILE_ENTITY_SPAWNER, MC_TILE_ENTITY_PISTON, MC_TILE_ENTITY_SIGN};
+    static const mc_tile_entity_class_kind instance_classes[] = {
+        MC_TILE_ENTITY_CLASS_KIND_CHEST, MC_TILE_ENTITY_CLASS_KIND_SPAWNER,
+        MC_TILE_ENTITY_CLASS_KIND_PISTON, MC_TILE_ENTITY_CLASS_KIND_SIGN};
     for (size_t i = 0; i < COUNT(instances); ++i) {
         const mc_tile_entity_class_literal *expected_class = NULL;
         mc_tile_entity_snapshot instance_view;

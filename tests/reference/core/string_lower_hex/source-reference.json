@@ -1,0 +1,595 @@
+{
+  "schema": 1,
+  "scope": "Qualified selected-JDK17 invariant whole-String lowercase ASCII-hex projection; no full Locale lower or native renderer parity claim.",
+  "original_archive_sha256": "af1fa04b8006d3ef78c7e24f8de4aa56f439a74d7f314827529062d5bab6db4c",
+  "original_font_draw": {
+    "access": 1,
+    "name": "a",
+    "descriptor": "(Ljava/lang/String;IIIZ)V",
+    "code_bytes": 383,
+    "code_sha256": "d74116561200f0d45c788751ae221e80096c273fc0501c3058fe54f76d6d9dcf",
+    "code_attribute_sha256": "ebae539dfdf0737f978e30b5ea5d8e28503b3207509f7be5d543c526dae9c173",
+    "max_stack": 4,
+    "max_locals": 10
+  },
+  "jdk_files": {
+    "release": {
+      "bytes": 1667,
+      "sha256": "fdf03ea4c142f886ff60e4f2fb44b1a9f8c47aa9784c8d34fc7f8cbada48cf44"
+    },
+    "bin/java.exe": {
+      "bytes": 50344,
+      "sha256": "974fd93b1279f87db5c86e15469dc5f76e708c3a341847523170c532118c8841"
+    },
+    "bin/javac.exe": {
+      "bytes": 24232,
+      "sha256": "cb8056d3878c2bd252e0f6316e009cdf8a140ef7cb38878c62b8aa2c75fbd5f3"
+    },
+    "bin/server/jvm.dll": {
+      "bytes": 12681896,
+      "sha256": "5539382b75556a9873fafa2d8b7d0b36b169ac436a3608467da4f74c2600cbce"
+    },
+    "lib/modules": {
+      "bytes": 128648619,
+      "sha256": "2d290b746c6497265cc2498d30e9695166a3fc282f231ebed467ce29c32946a8"
+    },
+    "jmods/java.base.jmod": {
+      "bytes": 19983150,
+      "sha256": "6eed1c9a90ae0f2ede839d7e50d8be939c1e8585647be55586e1b3c7390ee723"
+    },
+    "lib/src.zip": {
+      "bytes": 50855389,
+      "sha256": "5d0afb30b29d1eff95502604e9415d361f0f503553f32416320c58c1f0619e1e"
+    }
+  },
+  "jdk_sources": {
+    "java.base/java/lang/String.java": {
+      "present": true,
+      "bytes": 182638,
+      "sha256": "06b3373be9643b9711acb19845164b30b00f3558f8f2775b685b634d755f25bd"
+    },
+    "java.base/java/lang/StringUTF16.java": {
+      "present": true,
+      "bytes": 57323,
+      "sha256": "3518855d44ed3dc91a19c4c2996253a50b4867b30190446fd332cd9589e80828"
+    },
+    "java.base/java/lang/StringLatin1.java": {
+      "present": true,
+      "bytes": 29437,
+      "sha256": "573dcc5d271e3663dfefda82bf2a211e427708dfc8aa68736c3348bc8f794302"
+    },
+    "java.base/java/lang/Character.java": {
+      "present": true,
+      "bytes": 453710,
+      "sha256": "677de6733b920f36a78ff8542cb4d605fb61a47dc610c24bc7b98e2b1de95c59"
+    },
+    "java.base/java/lang/CharacterData.java": {
+      "present": true,
+      "bytes": 3342,
+      "sha256": "2bd76aaf490ab3fd7b7401d40ec3cce111bbe100bcd9cf5626769d2ef385d704"
+    },
+    "java.base/java/lang/CharacterData00.java": {
+      "present": true,
+      "bytes": 121456,
+      "sha256": "0b79dfa4a8eac35c71d1981443761e6ce9bc24010b88e82048ca91ed3dcd5ab2"
+    },
+    "java.base/java/lang/CharacterData01.java": {
+      "present": true,
+      "bytes": 75753,
+      "sha256": "f2925fc978a43a714d9c717163c92d1765bd810a5b79fa640f9a005b795b3c65"
+    },
+    "java.base/java/lang/CharacterData02.java": {
+      "present": true,
+      "bytes": 19632,
+      "sha256": "2cdd5f9bd7371ecb3c26310e9739587bfe996f8d91d9d8075dceb7036da4b6be"
+    },
+    "java.base/java/lang/CharacterData03.java": {
+      "present": true,
+      "bytes": 19314,
+      "sha256": "09d5c8e4168eb10195da43ccf4c656506d2f93f5fcc50aada95b9efb2a0bc2ad"
+    },
+    "java.base/java/lang/CharacterData0E.java": {
+      "present": true,
+      "bytes": 19576,
+      "sha256": "741a18e49633175211425fbf9040f8615ae4ddf6506b5872f374b9af767589f7"
+    },
+    "java.base/java/lang/CharacterDataLatin1.java": {
+      "present": true,
+      "bytes": 34730,
+      "sha256": "3ed40545e4721ab7ccd6d73defe10d338897c8f84d7abae1bb9b9172774b62ca"
+    },
+    "java.base/java/lang/CharacterDataPrivateUse.java": {
+      "present": true,
+      "bytes": 2858,
+      "sha256": "6f6e5ee46859008a8b3d9bb0a904ddcc49503d56d75f5fa5922b1823a3907b7c"
+    },
+    "java.base/java/lang/CharacterDataUndefined.java": {
+      "present": true,
+      "bytes": 2690,
+      "sha256": "c18d9b357508a1ed67eb790caa8750718652aef24fe0ee60151dd97a5eba886e"
+    },
+    "java.base/java/lang/ConditionalSpecialCasing.java": {
+      "present": true,
+      "bytes": 17326,
+      "sha256": "cdd17b115087d7528301b807693dfd9ce9cd4d1de82b9a8c6f0caf69b42f03aa"
+    },
+    "java.base/sun/text/Normalizer.java": {
+      "present": true,
+      "bytes": 4060,
+      "sha256": "20f0a147cc44ce18f487fe473b65e99318f3aade97b4de36094c11707a68dbd5"
+    },
+    "java.base/jdk/internal/icu/lang/UCharacter.java": {
+      "present": true,
+      "bytes": 21228,
+      "sha256": "a6e92bf51e8f6c912ac5104c3d56f08c34ddfdabfc323c45b801788d7faf0b0d"
+    },
+    "java.base/jdk/internal/icu/text/Normalizer2.java": {
+      "present": true,
+      "bytes": 11542,
+      "sha256": "efb4ff29359c8ba5a3005adb569b7cc2397aa4db4e0cf5fe095261c8d9b3b808"
+    },
+    "java.base/jdk/internal/icu/impl/Norm2AllModes.java": {
+      "present": true,
+      "bytes": 10280,
+      "sha256": "d31c6c8a61825992b468303ddfb1d77a158d6d34a3f4b5de260859a35a543887"
+    },
+    "java.base/jdk/internal/icu/impl/NormalizerImpl.java": {
+      "present": true,
+      "bytes": 90233,
+      "sha256": "fa9fd9e714f6682279f34ad970b11105c222f8a373a671bcb9658ced8c8de3cf"
+    }
+  },
+  "jdk_class_code_pins": {
+    "java.lang.String": {
+      "class_bytes": 47651,
+      "class_sha256": "57ff1a852f031e7ba6ba2d82156189eec357e647a241f4260adab40c2be91bc7",
+      "methods": [
+        {
+          "access": 1,
+          "name": "toLowerCase",
+          "descriptor": "(Ljava/util/Locale;)Ljava/lang/String;",
+          "code_bytes": 29,
+          "code_sha256": "045ff4d5d2e246d28e635622ae02703e9cea14bbedf69e6ba75a52c891ba94ad",
+          "code_attribute_sha256": "a7e88841626278efa797ca820eb69ba7781d2bf1a961041f56e792b8f6854fd4",
+          "max_stack": 3,
+          "max_locals": 2
+        },
+        {
+          "access": 1,
+          "name": "toLowerCase",
+          "descriptor": "()Ljava/lang/String;",
+          "code_bytes": 8,
+          "code_sha256": "2cebd042c77ae382aaa5a909f82ae0ec6b573151c87380054348699d3d042e26",
+          "code_attribute_sha256": "a3ef064d87e91b062e12f8098fdea5fb7f3812a16aacec11ac10df007bdf93b6",
+          "max_stack": 2,
+          "max_locals": 1
+        }
+      ]
+    },
+    "java.lang.StringUTF16": {
+      "class_bytes": 25919,
+      "class_sha256": "6c3edcca58cfeacee4c98c80c2c46f596616b88e0173382b1afb4f1f71c7a721",
+      "methods": [
+        {
+          "access": 9,
+          "name": "toLowerCase",
+          "descriptor": "(Ljava/lang/String;[BLjava/util/Locale;)Ljava/lang/String;",
+          "code_bytes": 299,
+          "code_sha256": "3c7dd28786ba7710ce35e778c7afba74dfbe8e4de100e3785338c541e9f3bbb6",
+          "code_attribute_sha256": "5a6e81cdda6fabefbb7b6a72347df27d9ab15d29749646018da16858b25d7a1a",
+          "max_stack": 6,
+          "max_locals": 11
+        },
+        {
+          "access": 10,
+          "name": "toLowerCaseEx",
+          "descriptor": "(Ljava/lang/String;[B[BILjava/util/Locale;Z)Ljava/lang/String;",
+          "code_bytes": 319,
+          "code_sha256": "c758988a242f53b457c7bb8bc3c78140ba91a7abf337c762127545bf66ea9a79",
+          "code_attribute_sha256": "984fceb5d6c4b95781e26e65dfe2ad1433e6337e487b57dd4d36c6d65e2f61d2",
+          "max_stack": 6,
+          "max_locals": 15
+        }
+      ]
+    },
+    "java.lang.StringLatin1": {
+      "class_bytes": 14677,
+      "class_sha256": "7256950b0266e29d5b415789b756b0bb08bd2a216788817313ee4ddd23bf56ce",
+      "methods": [
+        {
+          "access": 9,
+          "name": "toLowerCase",
+          "descriptor": "(Ljava/lang/String;[BLjava/util/Locale;)Ljava/lang/String;",
+          "code_bytes": 186,
+          "code_sha256": "42d5855acb18af24115d1c537ac9e56012a5a40c5c69b31afb1f097f56acabe0",
+          "code_attribute_sha256": "f66ff44b091afcad293b873b46766080e59f3f4b99621e95733413652f0d1bdb",
+          "max_stack": 5,
+          "max_locals": 9
+        },
+        {
+          "access": 10,
+          "name": "toLowerCaseEx",
+          "descriptor": "(Ljava/lang/String;[BILjava/util/Locale;Z)Ljava/lang/String;",
+          "code_bytes": 227,
+          "code_sha256": "3373a53ece66ddbd512715422788cd4a60c4ebdcb3b11b3fc8f6b29f91e035bd",
+          "code_attribute_sha256": "9e4d36f67fd1f2391486aca7c8e0f3a42c3600f21162a9bc647e45996442beab",
+          "max_stack": 6,
+          "max_locals": 13
+        }
+      ]
+    },
+    "java.lang.Character": {
+      "class_bytes": 18118,
+      "class_sha256": "58166cfa8d540f6e6bf1583a8c90c53198ffe25080d539861bcf715d2965c96b",
+      "methods": [
+        {
+          "access": 9,
+          "name": "toLowerCase",
+          "descriptor": "(C)C",
+          "code_bytes": 6,
+          "code_sha256": "7043ac76de9f60bc5b6266b6e03ee8dde8b39811aec8c7982d007c137d2807b7",
+          "code_attribute_sha256": "5cc3015685832d7832a6144903ef158e7fe16467ff015b18961b8dedfc2fea9a",
+          "max_stack": 1,
+          "max_locals": 1
+        },
+        {
+          "access": 9,
+          "name": "toLowerCase",
+          "descriptor": "(I)I",
+          "code_bytes": 9,
+          "code_sha256": "70c5cce3e6d2eaddd443b540ac71b2295c82798f88f4f3c498d3e7dd4cf74c31",
+          "code_attribute_sha256": "da014758498c744a8708b2d85a6652cdf13bdb0332bafd848169611133d88246",
+          "max_stack": 2,
+          "max_locals": 1
+        }
+      ]
+    },
+    "java.lang.CharacterData": {
+      "class_bytes": 1842,
+      "class_sha256": "982204a89ad38bb1369b21ef43b3de11c116a56651475f719bb8bb5a07765fe0",
+      "methods": []
+    },
+    "java.lang.CharacterData00": {
+      "class_bytes": 46762,
+      "class_sha256": "6e72eaeaefb0844e989351ee446bc4d3a08f573812a5c8d12f397971f0116807",
+      "methods": [
+        {
+          "access": 0,
+          "name": "toLowerCase",
+          "descriptor": "(I)I",
+          "code_bytes": 3433,
+          "code_sha256": "0a74caebc167944b088fd4ec65d25bf1b17f8f4facec0170ae819a6c3f253c15",
+          "code_attribute_sha256": "91bebe973738fe9f4581436139b2febac55e7a43d22ef1159fd96ecc0dca60ff",
+          "max_stack": 2,
+          "max_locals": 5
+        }
+      ]
+    },
+    "java.lang.CharacterData01": {
+      "class_bytes": 23477,
+      "class_sha256": "9e9740464235a0cd38b53172ee2bda78ee00aecace13fe9a8d2f14192f5d7297",
+      "methods": [
+        {
+          "access": 0,
+          "name": "toLowerCase",
+          "descriptor": "(I)I",
+          "code_bytes": 30,
+          "code_sha256": "31ba3d777c288a7ca01d72d0f6a6a767c6891b4376cd2e7ae1c8b53add7e2bdb",
+          "code_attribute_sha256": "32e01bf35c2a25b3fdfc8f383b4df0abb98b7b36fd0d6ebd23774995980f5869",
+          "max_stack": 2,
+          "max_locals": 5
+        }
+      ]
+    },
+    "java.lang.CharacterData02": {
+      "class_bytes": 8594,
+      "class_sha256": "84fe327256edb6f4e0591e8378d4f0242c9b3ca786d7281817d25164074dcb0e",
+      "methods": [
+        {
+          "access": 0,
+          "name": "toLowerCase",
+          "descriptor": "(I)I",
+          "code_bytes": 30,
+          "code_sha256": "ad8e53c5e792e5093c223ef95abc71cdbfd3cc05c44d6deede176acf0c45d8c7",
+          "code_attribute_sha256": "70db58fadfd6fd87edd5c64dd30858a2e59cea37f7a9bf8d3fc471e02f3416fa",
+          "max_stack": 2,
+          "max_locals": 5
+        }
+      ]
+    },
+    "java.lang.CharacterData03": {
+      "class_bytes": 6731,
+      "class_sha256": "664fd52c26b3cd414aa6f4d509ade484513047a48d08391ec62b80b65261b6f9",
+      "methods": [
+        {
+          "access": 0,
+          "name": "toLowerCase",
+          "descriptor": "(I)I",
+          "code_bytes": 30,
+          "code_sha256": "ad8e53c5e792e5093c223ef95abc71cdbfd3cc05c44d6deede176acf0c45d8c7",
+          "code_attribute_sha256": "70db58fadfd6fd87edd5c64dd30858a2e59cea37f7a9bf8d3fc471e02f3416fa",
+          "max_stack": 2,
+          "max_locals": 5
+        }
+      ]
+    },
+    "java.lang.CharacterData0E": {
+      "class_bytes": 6648,
+      "class_sha256": "a75bfae044221020b557acfe217ad7116a123c15f86121bfc2a5bd298886d2b9",
+      "methods": [
+        {
+          "access": 0,
+          "name": "toLowerCase",
+          "descriptor": "(I)I",
+          "code_bytes": 30,
+          "code_sha256": "ad8e53c5e792e5093c223ef95abc71cdbfd3cc05c44d6deede176acf0c45d8c7",
+          "code_attribute_sha256": "70db58fadfd6fd87edd5c64dd30858a2e59cea37f7a9bf8d3fc471e02f3416fa",
+          "max_stack": 2,
+          "max_locals": 5
+        }
+      ]
+    },
+    "java.lang.CharacterDataLatin1": {
+      "class_bytes": 9071,
+      "class_sha256": "ae40228f4d6a3f3862379a1e8f1190ab344f91f3e0e0adf8a1f600bb185955a9",
+      "methods": [
+        {
+          "access": 0,
+          "name": "toLowerCase",
+          "descriptor": "(I)I",
+          "code_bytes": 39,
+          "code_sha256": "6e689430fe230f23ed5d4946cf4653fe6d56d916f208355ad72d76b0cac93ccc",
+          "code_attribute_sha256": "cc6e91035d1abba3fe9546515e1607ebd3b1b51210ec3d5d2facbcfcc9ac958e",
+          "max_stack": 2,
+          "max_locals": 5
+        }
+      ]
+    },
+    "java.lang.CharacterDataPrivateUse": {
+      "class_bytes": 2146,
+      "class_sha256": "aa6eb67524b7f56620060c8c6161dbd3eabbc8708753c0ad537f2f4e2f4422cc",
+      "methods": [
+        {
+          "access": 0,
+          "name": "toLowerCase",
+          "descriptor": "(I)I",
+          "code_bytes": 2,
+          "code_sha256": "bddc352a97e0af2e2267d80a1c7c27e2265e5306a3ca194598448c0a3cbb8fc5",
+          "code_attribute_sha256": "3e0e226e844c95762091e6e0495aa98b49598f1ba73ddd88f767c0a329aa30c2",
+          "max_stack": 1,
+          "max_locals": 2
+        }
+      ]
+    },
+    "java.lang.CharacterDataUndefined": {
+      "class_bytes": 2049,
+      "class_sha256": "f91c5ed0b64124c9229dfcf6dbbeb7b94259fc31e36ff2afdc07b6169a7ebaa2",
+      "methods": [
+        {
+          "access": 0,
+          "name": "toLowerCase",
+          "descriptor": "(I)I",
+          "code_bytes": 2,
+          "code_sha256": "bddc352a97e0af2e2267d80a1c7c27e2265e5306a3ca194598448c0a3cbb8fc5",
+          "code_attribute_sha256": "664b59c540bfba66f715438e7ce124c04bf3554d438a562c57c3614fbd9d12ab",
+          "max_stack": 1,
+          "max_locals": 2
+        }
+      ]
+    },
+    "java.lang.ConditionalSpecialCasing": {
+      "class_bytes": 7028,
+      "class_sha256": "86607badf0ecac37cd54e2dd427d515536331c761d192663f9c2105e0592e862",
+      "methods": [
+        {
+          "access": 8,
+          "name": "toLowerCaseEx",
+          "descriptor": "(Ljava/lang/String;ILjava/util/Locale;)I",
+          "code_bytes": 33,
+          "code_sha256": "385e3f77e7a2097a4d27593eb3782dab6144fc72afbf7d1e8a886f47861e1a6a",
+          "code_attribute_sha256": "b7200fb0af686995922c3db3a4f516d6f6253cdef045efc8c4509d4388c61a9b",
+          "max_stack": 4,
+          "max_locals": 4
+        },
+        {
+          "access": 8,
+          "name": "toLowerCaseCharArray",
+          "descriptor": "(Ljava/lang/String;ILjava/util/Locale;)[C",
+          "code_bytes": 8,
+          "code_sha256": "51c8bd9a0d5e2d69642ad8df553e4e5e07ccea3e5fac6500c54cc6214616b271",
+          "code_attribute_sha256": "c89b072437b1be499efa7af0f4dadcc55d6a4aee29d28770d967d727aa0520c8",
+          "max_stack": 4,
+          "max_locals": 3
+        },
+        {
+          "access": 10,
+          "name": "lookUpTable",
+          "descriptor": "(Ljava/lang/String;ILjava/util/Locale;Z)[C",
+          "code_bytes": 131,
+          "code_sha256": "5832826768664071d5e84b499dd4f4d68e7ac43eec2391aada13f07aef4a625f",
+          "code_attribute_sha256": "d9cadd88efa0780a7c7354cbbb73d839b892c28345a489e311ea7fd69903d03c",
+          "max_stack": 4,
+          "max_locals": 10
+        },
+        {
+          "access": 10,
+          "name": "isConditionMet",
+          "descriptor": "(Ljava/lang/String;ILjava/util/Locale;I)Z",
+          "code_bytes": 87,
+          "code_sha256": "67e26a1d1b9df536749bfcddd35a6f4cb2aed6906f2cedfec86cb255e2729dbe",
+          "code_attribute_sha256": "5694db4bab2617de6e133c9b7a17fb01a1debabf5200c5c0e398bf8a03a45a6c",
+          "max_stack": 3,
+          "max_locals": 4
+        },
+        {
+          "access": 10,
+          "name": "isAfterI",
+          "descriptor": "(Ljava/lang/String;I)Z",
+          "code_bytes": 55,
+          "code_sha256": "6bc0cb30df9155b279bfcad938a41c7a714b3dd834c8ab139453c9a0cb63a3da",
+          "code_attribute_sha256": "d4121310b533e12b809c55b3a644454779d35d042914076aafbfcc8698e8f7d2",
+          "max_stack": 2,
+          "max_locals": 5
+        },
+        {
+          "access": 10,
+          "name": "isMoreAbove",
+          "descriptor": "(Ljava/lang/String;I)Z",
+          "code_bytes": 66,
+          "code_sha256": "2c063ed56c93ac868fefe975df016d18f8be5755afd5b4bd8b357c212b315452",
+          "code_attribute_sha256": "c6d9ea7df41ddc6368dcd7e39c8e8c3e57e3f6a7ef8efe8573bac7bdc3abcc59",
+          "max_stack": 3,
+          "max_locals": 6
+        }
+      ]
+    },
+    "sun.text.Normalizer": {
+      "class_bytes": 1234,
+      "class_sha256": "574dbd8a71d3c4820458ab1f0a8aa3115adeb3bf391130629ae890ea2182b970",
+      "methods": [
+        {
+          "access": 25,
+          "name": "getCombiningClass",
+          "descriptor": "(I)I",
+          "code_bytes": 5,
+          "code_sha256": "73053a6e99677d5ac24fe85056b9ec5fd1ecc0b41d75280189bdf064a52f028f",
+          "code_attribute_sha256": "d7d3e643471fdc929547ece681834b4b056f396ed2753e9cdccbe4be33249036",
+          "max_stack": 1,
+          "max_locals": 1
+        }
+      ]
+    },
+    "jdk.internal.icu.lang.UCharacter": {
+      "class_bytes": 2897,
+      "class_sha256": "118f32b46f33cfb4d35575bb7d6643400687024da5840f4b96817007d9d400df",
+      "methods": [
+        {
+          "access": 9,
+          "name": "getCombiningClass",
+          "descriptor": "(I)I",
+          "code_bytes": 8,
+          "code_sha256": "a00d404027bfee799b1dec2dd7eacf842e7bab91328d28489366eb6ecb0ec676",
+          "code_attribute_sha256": "519e60c2dde661a9fdac2071df2c9d66496c5371b2c11955eecb8dd490396a18",
+          "max_stack": 2,
+          "max_locals": 1
+        }
+      ]
+    },
+    "jdk.internal.icu.text.Normalizer2": {
+      "class_bytes": 2354,
+      "class_sha256": "ffc0d396031e981b6310d7a4f75e7eb857d7e36c814f0c6b458d5206fa35b0d2",
+      "methods": [
+        {
+          "access": 1,
+          "name": "getCombiningClass",
+          "descriptor": "(I)I",
+          "code_bytes": 2,
+          "code_sha256": "42ca1f85243342bd41983ab86f2235408fa46ded7466d4525196f66b9dbb5f3e",
+          "code_attribute_sha256": "76ac520d84f0010e8c79659feb3f1932b6c8d862e2cea7e2f5461c628a6c52aa",
+          "max_stack": 1,
+          "max_locals": 2
+        }
+      ]
+    },
+    "jdk.internal.icu.impl.Norm2AllModes": {
+      "class_bytes": 2129,
+      "class_sha256": "06ed3bf597811e8c6d6bfb8966fc4aa981cdcef1c965f9c727d3a4bc6b57fbac",
+      "methods": []
+    },
+    "jdk.internal.icu.impl.NormalizerImpl": {
+      "class_bytes": 29278,
+      "class_sha256": "4ceab95cb8533f58d88eeb3671ab745b4b0641c44b05f022d6be5f297b783aef",
+      "methods": []
+    }
+  },
+  "jdk_icu_data": {
+    "classes/jdk/internal/icu/impl/data/icudt67b/nfc.nrm": {
+      "bytes": 35136,
+      "sha256": "5e19686086cbef8df890e5245806c2f9dd6b1f2d1ec2971288157cf480c4db71"
+    },
+    "classes/jdk/internal/icu/impl/data/icudt67b/nfkc.nrm": {
+      "bytes": 54144,
+      "sha256": "3114f55057ab4388e378a9bbe6158cebc6c352882775861b881cdef094afa3f8"
+    },
+    "classes/jdk/internal/icu/impl/data/icudt67b/ubidi.icu": {
+      "bytes": 26640,
+      "sha256": "b16ed05dcfb8bd41cfd74d91f900f69164095dd5aa3694efc1a633ea9e403ffa"
+    },
+    "classes/jdk/internal/icu/impl/data/icudt67b/uprops.icu": {
+      "bytes": 135664,
+      "sha256": "92ddd62e90692649fd535bffcc01fa81d9877abc68da914739114241ad94bead"
+    }
+  },
+  "authored_probe": {
+    "bytes": 16868,
+    "sha256": "c4e5dd8b6ac93bb4a733d176c470338efb8dbb0a66c4a424defa59e9d04c808f"
+  },
+  "physical_transports": [
+    {
+      "mode": "interpreter",
+      "stdout": {
+        "bytes": 159748,
+        "sha256": "2bc85c1819ea3b202ca4f9d2911f96c3f87a7a57220b1c12e490c130b8de6ad5"
+      },
+      "stderr": {
+        "bytes": 431,
+        "sha256": "a11000633939e428fd00935e18248fc7c01590c8d8285a5470aefec365f39ccd"
+      },
+      "returncode": 0,
+      "timed_out": false
+    },
+    {
+      "mode": "default",
+      "stdout": {
+        "bytes": 159748,
+        "sha256": "2bc85c1819ea3b202ca4f9d2911f96c3f87a7a57220b1c12e490c130b8de6ad5"
+      },
+      "stderr": {
+        "bytes": 431,
+        "sha256": "a11000633939e428fd00935e18248fc7c01590c8d8285a5470aefec365f39ccd"
+      },
+      "returncode": 0,
+      "timed_out": false
+    }
+  ],
+  "fresh_target_vms": 2,
+  "codepoint_values_per_vm": 1114112,
+  "unicode_scalars_per_vm": 1112064,
+  "isolated_surrogate_values_per_vm": 2048,
+  "contexts_per_vm": 222,
+  "admitted_contexts_per_vm": 138,
+  "refused_contexts_per_vm": 84,
+  "guard_denials": 0,
+  "raw_stdout_sha256": "2bc85c1819ea3b202ca4f9d2911f96c3f87a7a57220b1c12e490c130b8de6ad5",
+  "ordered_binary_observation_sha256": "d6534bd6994f642d0115db8221731a806b6e937eb883cf5b5df9df0298b88d80",
+  "generator_sha256": "95247c582243a3e5ff955e6704abba00e08a1910a802bb6196c6f239cd1249f5",
+  "generated": {
+    "codepoint_values": 1114112,
+    "source_ccc_ranges": 365,
+    "partition_ranges": 297,
+    "partition_distribution": {
+      "0": 1113240,
+      "1": 484,
+      "2": 388
+    },
+    "ccc_bytes_sha256": "775c30ae7f989f798cfbfb21a7125fd514ae68a1798154c9635c4934842f2633",
+    "domain_context_fingerprint": {
+      "fnv64": "2524dfda23d2be1f",
+      "first_refused": 488,
+      "second_refused": 879,
+      "status_bytes": 2228224
+    },
+    "table_sha256": "47bd914971ff65f6a30476444c9c3865999354900a117881e60e6ce1dff9517b"
+  },
+  "independent_private_audit": {
+    "bytes": 13230,
+    "sha256": "4bf92554c49fa22688f29df18184acd965cb966ef4b6e08e96670287c0bf316f",
+    "checks": 206971
+  },
+  "limits": [
+    "A finite context corpus and per-codepoint inventory do not enumerate all Strings.",
+    "Admission relies additionally on complete pinned JDK17 special-case source and control-flow review.",
+    "Possible width changes anywhere in a reached formatted String are conservatively refused.",
+    "No general Locale/String lowercase, JDK implementation redistribution, native GL, World, wire, or whole-game parity claim."
+  ]
+}

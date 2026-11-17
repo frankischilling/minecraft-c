@@ -766,7 +766,7 @@ static bool world_player_and_tiles(fixture *f, client_application *app, const ch
     bool ok = false, inserted = false;
     mc_entity *player = NULL;
     mc_movement_input *input = NULL;
-    mc_tile_entity *chest = NULL, *spawner = NULL, *piston = NULL;
+    mc_tile_entity *chest = NULL, *spawner = NULL, *piston = NULL, *sign = NULL;
     wt_scope *scope = NULL;
     mc_entity *nearest = NULL;
     mc_world_runtime *w = f->worlds[0];
@@ -815,14 +815,18 @@ static bool world_player_and_tiles(fixture *f, client_application *app, const ch
           MC_TILE_ENTITY_OK);
     f->states[0]->data->blocks[boxes_index(7, 8, 7)] = 36;
     CHECK(mc_live_tile_entities_set(w, 7, 8, 7, piston, NULL) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_live_tile_entities_new(w, MC_TILE_ENTITY_SIGN, &sign, NULL) == MC_WORLD_STORAGE_OK);
+    f->states[0]->data->blocks[boxes_index(8, 8, 8)] = 63;
+    CHECK(mc_live_tile_entities_set(w, 8, 8, 8, sign, NULL) == MC_WORLD_STORAGE_OK);
     /* Direct active phase avoids source loaded-dead removal while isolating
      * the actual dead-Player nearest predicate and positive-delay Spawner. */
     const int32_t before = spawner->state.spawner.delay;
     CHECK(wt_tile_active(scope));
-    CHECK(!w->fields.L && spawner->state.spawner.delay == before - 1 && !chest->invalid);
+    CHECK(!w->fields.L && spawner->state.spawner.delay == before - 1 && !chest->invalid &&
+          !sign->invalid && sign->state.sign.edit_row == -1 && sign->state.sign.read_flag);
     CHECK(mc_tile_entity_set_invalid(chest, true) == MC_TILE_ENTITY_OK);
     CHECK(wt_tile_active(scope) && !w->fields.L);
-    CHECK(w->fields.c->count == 2 && chest->invalid);
+    CHECK(w->fields.c->count == 3 && chest->invalid && !sign->invalid);
     /* An expired branch needs an actual output to retain failed descendants.
      * This private scope has none; native admission preserves its prefix. */
     spawner->state.spawner.delay = 0;
@@ -870,6 +874,7 @@ cleanup:
     mc_tile_entity_release(chest);
     mc_tile_entity_release(spawner);
     mc_tile_entity_release(piston);
+    mc_tile_entity_release(sign);
     mc_entity_release(player);
     return ok;
 }

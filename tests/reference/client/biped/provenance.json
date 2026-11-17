@@ -18,8 +18,8 @@
       "sha256": "fd3c1880912d8e690c2cc1453a693a521a9256476bb0e68f8e82de0e5ac716db"
     },
     "include/mc/client/gui/font_renderer.h": {
-      "bytes": 6943,
-      "sha256": "5cec2bc41e8a9782c6c01f033c3a60ba19104999c4ca494051d431ab33a751ce"
+      "bytes": 7006,
+      "sha256": "650023ebd2f1bbdc2234c4fcbacb757e677fc908ac66d9a27f5ccf65aca619b7"
     },
     "include/mc/client/gui/scaled_resolution.h": {
       "bytes": 1727,

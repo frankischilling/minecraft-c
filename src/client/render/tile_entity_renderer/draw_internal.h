@@ -8,6 +8,7 @@
 #include "mc/world/storage/source_chunk_loader.h"
 
 typedef struct tile_draw_piston_call tile_draw_piston_call;
+typedef struct tile_draw_sign_call tile_draw_sign_call;
 
 struct mc_client_tile_renderer_draw_call {
     mc_client_tile_renderer_draw_state state;
@@ -20,6 +21,7 @@ struct mc_client_tile_renderer_draw_call {
     mc_world_runtime *brightness_world;
     mc_client_render_engine_classes *graphics;
     tile_draw_piston_call *piston;
+    tile_draw_sign_call *sign;
     mc_entity *preview, *factory_result, *map_value_pending;
     mc_tile_entity_name *names[3];
     mc_world_brightness_error brightness;
@@ -43,6 +45,14 @@ bool tile_draw_display(mc_client_tile_renderer_draw_call *, bool returned);
 bool tile_draw_fp(mc_client_tile_renderer_draw_call *, int32_t);
 bool tile_draw_spawner(mc_client_tile_renderer_draw_call *);
 bool tile_draw_piston(mc_client_tile_renderer_draw_call *);
+bool tile_draw_sign(mc_client_tile_renderer_draw_call *);
+bool tile_draw_sign_retire(mc_client_tile_renderer_draw_call *,
+                           mc_client_tile_renderer_draw_error *);
+void tile_draw_sign_free(mc_client_tile_renderer_draw_call *);
+/* Entered inherited JE.a(String), with caller-owned retained Engine/lookup
+ * slots. The caller has already recorded its actual PO/HY invocation site. */
+bool tile_draw_texture(mc_client_tile_renderer_draw_call *, const uint16_t *, size_t,
+                       mc_client_render_engine **, bool *, mc_client_texture_lookup_error *);
 bool tile_draw_piston_retire(mc_client_tile_renderer_draw_call *,
                              mc_client_tile_renderer_draw_error *);
 void tile_draw_piston_free(mc_client_tile_renderer_draw_call *);

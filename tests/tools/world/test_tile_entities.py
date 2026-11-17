@@ -43,7 +43,7 @@ def input_paths(executable):
         "include/mc/item/stack", "include/mc/block/registry", "include/mc/storage/nbt",
     ):
         for path in sorted((ROOT / relative).rglob("*")):
-            if path.is_file() and path.suffix in (".c", ".h"):
+            if path.is_file() and path.suffix in (".c", ".h", ".inc"):
                 paths[path.relative_to(ROOT).as_posix()] = path
     return paths
 

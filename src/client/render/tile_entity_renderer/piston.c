@@ -196,56 +196,13 @@ static bool narrow(mc_client_tile_renderer_draw_call *c, double input, int32_t p
     return true;
 }
 
-/* Inherited JE.a(String): capture JE.a1, then its actual LL.e4, and use that
- * same JI local for lookup11 and bind14. The key is a source literal. */
+/* Inherited JE.a(String) keeps the same HY invocation site and retained
+ * actual Engine/lookup occurrences as the shared entered helper. */
 static bool tile_draw_piston_texture(mc_client_tile_renderer_draw_call *c) {
     static const uint16_t key[] = {'/', 't', 'e', 'r', 'r', 'a', 'i', 'n', '.', 'p', 'n', 'g'};
     at(c, 34);
-    c->error.child = (mc_client_graphics_site){"je", "a", "(Ljava/lang/String;)V", 4};
-    mc_client_tile_renderer_dispatcher *manager = c->renderer->manager;
-    if (manager == NULL)
-        return source_null(c, "JE actual null LL texture field receiver");
-    mc_client_render_engine *engine = manager->fields.e;
-    c->error.child.pc = 11;
-    if (engine == NULL)
-        return source_null(c, "JE actual null JI texture lookup receiver");
-    c->error.owner.engine_status = mc_client_render_engine_retain(engine);
-    if (c->error.owner.engine_status != MC_CLIENT_RENDER_ENGINE_OK)
-        return tile_draw_fail(c, MC_CLIENT_TILE_RENDERER_ENGINE_FAILED,
-                              "JE reached actual Engine occurrence", true);
-    c->piston->texture_engine = engine;
-    const bool foreign_pending = mc_client_texture_lookup_pending(engine);
-    mc_client_texture id;
-    c->error.texture = &c->piston->texture_error;
-    const mc_client_texture_lookup_status status = mc_client_render_engine_texture(
-        engine, c->services.display, NULL,
-        (mc_texture_pack_text){key, sizeof(key) / sizeof(*key), false}, &id,
-        &c->piston->texture_error);
-    c->piston->texture_pending_owned = !foreign_pending && mc_client_texture_lookup_pending(engine);
-    if (status != MC_CLIENT_LOOKUP_OK) {
-        c->error.child = c->piston->texture_error.site;
-        c->error.source_exception = !c->piston->texture_error.native_policy;
-        if (status == MC_CLIENT_LOOKUP_NULL_REFERENCE)
-            c->error.exception_class = "java/lang/NullPointerException";
-        else if (status == MC_CLIENT_LOOKUP_SOURCE_ILLEGAL_ARGUMENT)
-            c->error.exception_class = "java/lang/IllegalArgumentException";
-        else if (status == MC_CLIENT_LOOKUP_SOURCE_NEGATIVE_SIZE)
-            c->error.exception_class = "java/lang/NegativeArraySizeException";
-        return tile_draw_fail(c, MC_CLIENT_TILE_RENDERER_TEXTURE_FAILED,
-                              c->piston->texture_error.operation,
-                              c->piston->texture_error.native_policy);
-    }
-    c->state.texture_returned = true;
-    c->error.child.pc = 14;
-    /* Actual JI.b(I)V returns for negative source IDs. */
-    if (mc_java_i32_narrow((int64_t)id) >= 0) {
-        if (!tile_draw_display(
-                c, mc_client_display_source_bind_id(c->services.display, id, &c->error.display)))
-            return false;
-        c->state.texture_bound = true;
-    }
-    c->error.child = (mc_client_graphics_site){0};
-    return true;
+    return tile_draw_texture(c, key, sizeof(key) / sizeof(*key), &c->piston->texture_engine,
+                             &c->piston->texture_pending_owned, &c->piston->texture_error);
 }
 
 /* Each axis is a fresh actual UK method invocation. Its Direction getstatic

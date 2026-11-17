@@ -56,3 +56,7 @@ tests/reference/inventory/workbench_auto_close/entropy.py -text whitespace=trail
 # Keep recorded native replay controller inputs unchanged.
 tests/tools/world/redstone_torch_accounting.py whitespace=trailing-space,space-before-tab,cr-at-eol,-blank-at-eof
 tests/tools/world/redstone_torch_current.py whitespace=trailing-space,space-before-tab,cr-at-eol,-blank-at-eof
+
+# Preserve captured CRLF streams without whitespace false positives.
+tests/reference/world/sign_nbt/*.stdout whitespace=trailing-space,space-before-tab,cr-at-eol
+tests/reference/client/sign_draw/*.stdout whitespace=trailing-space,space-before-tab,cr-at-eol

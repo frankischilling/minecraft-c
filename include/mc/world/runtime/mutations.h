@@ -91,6 +91,7 @@ typedef struct mc_world_mutation_error {
     bool torch_source_null;
     bool lever_source_null;
     bool ladder_source_null;
+    bool sign_source_null;
     bool bed_source_null;
     bool fire_source_null, fire_array_index, stairs_source_null;
     bool furnace_source_null;
