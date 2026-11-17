@@ -42,6 +42,7 @@ static void render_error_views_expired(mc_client_render_global_error *error) {
     error->image_download = NULL;
     error->image_buffer = NULL;
     error->tile_renderer = NULL;
+    error->tile_identity_set = NULL;
     error->manager_draw = NULL;
     error->tile_draw = NULL;
     error->render_distance = NULL;

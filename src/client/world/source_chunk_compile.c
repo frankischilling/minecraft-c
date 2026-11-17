@@ -1,9 +1,11 @@
 #include "source_chunk_compile_internal.h"
 
+#include "../../core/java/object_identity_profile_internal.h"
 #include "../../entity/player/tick_math_internal.h"
 #include "../../world/runtime/chunk_cache_internal.h"
 #include "../../world/runtime/construction_internal.h"
 #include "../../world/runtime/runtime_internal.h"
+#include "../../world/runtime/tile_entities/identity_set_internal.h"
 #include "../application_state.h"
 #include "../display/camera_surface.h"
 #include "../render/blocks/internal.h"
@@ -28,10 +30,12 @@ struct mc_source_dk_compile {
     mc_world_runtime_classes *world_classes;
     mc_cv_context render_blocks;
     mc_client_render_global_error render_blocks_cleanup;
-    mc_tile_entity **old_tiles;
-    size_t old_count;
-    mc_tile_entity **new_tiles;
-    size_t new_count;
+    mc_tile_identity_set *old_tiles, *new_tiles;
+    mc_tile_identity_set_snapshot *new_array;
+    mc_tile_identity_set_error set_error, set_cleanup;
+    mc_tile_entity **b_items;
+    mc_render_global_tile_occurrence **pending_f;
+    size_t pending_count;
     mc_tile_entity *tile;
     mc_client_tile_renderer_dispatcher *ll;
     mc_client_tile_renderer_error tiles, tiles_cleanup;
@@ -41,6 +45,63 @@ struct mc_source_dk_compile {
 static bool shape(mc_source_dk_compile *, mc_client_render_list *, unsigned int);
 static bool fail(mc_source_dk_compile *, mc_client_render_global_status, const char *, unsigned int,
                  bool);
+
+static mc_java_identity_thread *current_thread(const mc_source_dk_compile *c) {
+    client_application *app = c->state.chunk->owner->fields.t;
+    return mc_java_random_profile_main_identity(app == NULL ? NULL : app->profile);
+}
+
+static bool set_result(mc_source_dk_compile *c, mc_tile_identity_set_status status,
+                       unsigned int pc) {
+    if (status == MC_TILE_IDENTITY_SET_OK)
+        return true;
+    mc_client_render_global_status mapped = MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE;
+    if (status == MC_TILE_IDENTITY_SET_NULL_COLLECTION)
+        mapped = MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE;
+    else if (status == MC_TILE_IDENTITY_SET_LIMIT ||
+             (status == MC_TILE_IDENTITY_SET_TILE_FAILED &&
+              c->set_error.tile_status == MC_TILE_ENTITY_LIMIT))
+        mapped = MC_CLIENT_RENDER_GLOBAL_LIMIT;
+    else if (status == MC_TILE_IDENTITY_SET_ALLOCATION_FAILED)
+        mapped = MC_CLIENT_RENDER_GLOBAL_ALLOCATION_FAILED;
+    else if (status == MC_TILE_IDENTITY_SET_BUSY)
+        mapped = MC_CLIENT_RENDER_GLOBAL_BUSY;
+    c->failure.tile_identity_set = &c->set_error;
+    return fail(c, mapped, c->set_error.operation, pc,
+                status != MC_TILE_IDENTITY_SET_NULL_COLLECTION);
+}
+
+static void set_counts(mc_source_dk_compile *c) {
+    mc_tile_identity_set_view view;
+    if (mc_tile_identity_set_inspect(c->old_tiles, &view, NULL) == MC_TILE_IDENTITY_SET_OK)
+        c->state.old_tile_set_count = view.size;
+    if (mc_tile_identity_set_inspect(c->new_tiles, &view, NULL) == MC_TILE_IDENTITY_SET_OK)
+        c->state.new_tile_set_count = view.size;
+}
+
+/* B and F are the actual default-constructed ArrayLists, so an unallocated
+ * first backing has capacity ten; subsequent growth uses old + old/2. */
+static bool grow_tile_list(mc_source_dk_compile *c, mc_client_render_list *list, size_t count,
+                           unsigned int pc) {
+    if (count <= list->capacity)
+        return true;
+    size_t capacity = list->capacity == 0 ? 10u : list->capacity + list->capacity / 2u;
+    if (capacity < count)
+        capacity = count;
+    if (capacity > INT32_MAX || capacity > SIZE_MAX / sizeof(*list->entries))
+        return fail(c, MC_CLIENT_RENDER_GLOBAL_LIMIT, "DK Tile List backing native extent", pc,
+                    true);
+    void **entries = mc_render_global_allocate(
+        c->state.chunk->owner, capacity * sizeof(*entries),
+        (mc_client_graphics_site){"dk", "a", "()V", (int32_t)pc}, &c->failure);
+    if (entries == NULL)
+        return fail(c, c->failure.status, c->failure.operation, pc, true);
+    if (list->count != 0)
+        memcpy(entries, list->entries, list->count * sizeof(*entries));
+    list->entries = entries;
+    list->capacity = capacity;
+    return true;
+}
 
 static mc_source_dk_tile_hold *b_occurrence(mc_client_source_dk *dk, mc_client_render_list *list,
                                             size_t index) {
@@ -195,10 +256,13 @@ static bool tile_eligibility(mc_source_dk_compile *c) {
         if (c->tile != NULL && mc_tile_entity_retain(c->tile) != MC_TILE_ENTITY_OK)
             return fail(c, MC_CLIENT_RENDER_GLOBAL_BUSY, "DK B native Tile occurrence", 411, true);
         const size_t index = dk->fields.B->count;
-        if (!mc_render_global_pointer_append(n, dk->fields.B, c->tile, at, &c->failure)) {
+        ++dk->fields.B->mod_count;
+        if (!grow_tile_list(c, dk->fields.B, index + 1u, 411)) {
             mc_tile_entity_release(c->tile);
-            return fail(c, c->failure.status, c->failure.operation, 411, c->failure.native_policy);
+            return false;
         }
+        dk->fields.B->entries[index] = c->tile;
+        dk->fields.B->count = index + 1u;
         hold->tile = c->tile;
         hold->list = dk->fields.B;
         hold->index = index;
@@ -218,48 +282,43 @@ static bool shape(mc_source_dk_compile *c, mc_client_render_list *list, unsigned
     return true;
 }
 
-static bool old_set(mc_source_dk_compile *c) {
-    mc_client_render_list *b = c->state.chunk->fields.B;
-    if (!tile_list(c, b, c->state.chunk->tile_list_origin, 106))
+/* The Source ArrayList iterator visits each actual occurrence, including
+ * duplicates and null. Native ledger admission stays at that reached element. */
+static bool add_b(mc_source_dk_compile *c, mc_tile_identity_set *set, unsigned int pc) {
+    mc_client_source_dk *dk = c->state.chunk;
+    mc_client_render_list *b = dk->fields.B;
+    if (!tile_list(c, b, dk->tile_list_origin, pc))
         return false;
-    if (b->count > (8u * 1024u * 1024u) / sizeof(*c->old_tiles))
-        return fail(c, MC_CLIENT_RENDER_GLOBAL_LIMIT, "DK transient TileEntity Set storage", 98,
-                    true);
-    if (b->count != 0) {
-        c->old_tiles = calloc(b->count, sizeof(*c->old_tiles));
-        if (c->old_tiles == NULL)
-            return fail(c, MC_CLIENT_RENDER_GLOBAL_ALLOCATION_FAILED,
-                        "DK transient TileEntity Set allocation", 98, true);
-    }
     for (size_t i = 0; i < b->count; ++i) {
         mc_tile_entity *tile = b->entries[i];
-        /* HashSet accepts the actual NULL reference without a Tile object or
-         * native hold. Every non-NULL object still needs its exact row proof. */
         if (tile != NULL) {
-            mc_source_dk_tile_hold *h = b_occurrence(c->state.chunk, b, i);
+            mc_source_dk_tile_hold *h = b_occurrence(dk, b, i);
             if (h == NULL || h->tile != tile)
                 return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
-                            "DK old Set actual Tile occurrence ownership", 106, true);
+                            "DK Set actual Tile occurrence ownership", pc, true);
         }
-        bool seen = false;
-        for (size_t j = 0; j < c->old_count; ++j)
-            if (c->old_tiles[j] == tile) {
-                seen = true;
-                break;
-            }
-        if (!seen) {
-            if (tile != NULL && mc_tile_entity_retain(tile) != MC_TILE_ENTITY_OK)
-                return fail(c, MC_CLIENT_RENDER_GLOBAL_BUSY, "DK old TileEntity native occurrence",
-                            106, true);
-            c->old_tiles[c->old_count++] = tile;
-        }
+        bool changed;
+        const mc_tile_identity_set_status status =
+            mc_tile_identity_set_add(set, tile, current_thread(c), &changed, &c->set_error);
+        set_counts(c);
+        if (!set_result(c, status, pc))
+            return false;
     }
-    /* The source clear is after the old identities have been captured. */
+    return true;
+}
+
+static bool old_set(mc_source_dk_compile *c) {
+    if (!set_result(c, mc_tile_identity_set_create(NULL, &c->old_tiles, &c->set_error), 98) ||
+        !add_b(c, c->old_tiles, 106))
+        return false;
+    mc_client_render_list *b = c->state.chunk->fields.B; /* Fresh getfield113. */
+    if (!tile_list(c, b, c->state.chunk->tile_list_origin, 116))
+        return false;
+    ++b->mod_count;
     for (size_t i = 0; i < b->count; ++i)
         b->entries[i] = NULL;
     b->count = 0;
     mc_source_dk_tile_occurrences_release(c->state.chunk, b);
-    c->state.old_tile_set_count = c->old_count;
     return true;
 }
 
@@ -377,50 +436,15 @@ static bool block(mc_source_dk_compile *c) {
     return true;
 }
 
-static bool contains(mc_tile_entity *const *tiles, size_t count, const mc_tile_entity *tile) {
-    for (size_t i = 0; i < count; ++i)
-        if (tiles[i] == tile)
-            return true;
-    return false;
-}
-
 static bool new_set(mc_source_dk_compile *c) {
-    mc_client_source_dk *dk = c->state.chunk;
-    mc_client_render_list *b = dk->fields.B;
-    if (!tile_list(c, b, dk->tile_list_origin, 562))
+    if (!set_result(c, mc_tile_identity_set_create(NULL, &c->new_tiles, &c->set_error), 551) ||
+        !add_b(c, c->new_tiles, 562))
         return false;
-    if (b->count > (8u * 1024u * 1024u) / sizeof(*c->new_tiles))
-        return fail(c, MC_CLIENT_RENDER_GLOBAL_LIMIT, "DK new TileEntity Set native extent", 547,
-                    true);
-    if (b->count != 0) {
-        c->new_tiles = calloc(b->count, sizeof(*c->new_tiles));
-        if (c->new_tiles == NULL)
-            return fail(c, MC_CLIENT_RENDER_GLOBAL_ALLOCATION_FAILED,
-                        "DK new TileEntity Set native allocation", 547, true);
-    }
-    for (size_t i = 0; i < b->count; ++i) {
-        mc_source_dk_tile_hold *h = b_occurrence(dk, b, i);
-        if (h == NULL || h->tile != b->entries[i])
-            return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
-                        "DK new Set actual Tile occurrence ownership", 562, true);
-        if (!contains(c->new_tiles, c->new_count, h->tile)) {
-            if (mc_tile_entity_retain(h->tile) != MC_TILE_ENTITY_OK)
-                return fail(c, MC_CLIENT_RENDER_GLOBAL_BUSY, "DK new Set native Tile occurrence",
-                            562, true);
-            c->new_tiles[c->new_count++] = h->tile;
-        }
-    }
-    /* OW and the supported concrete CY/UK classes inherit Object equality.
-     * Set membership is identity; no JVM identity-hash iteration is invented. */
-    size_t kept = 0;
-    for (size_t i = 0; i < c->new_count; ++i)
-        if (contains(c->old_tiles, c->old_count, c->new_tiles[i]))
-            mc_tile_entity_release(c->new_tiles[i]);
-        else
-            c->new_tiles[kept++] = c->new_tiles[i];
-    c->new_count = kept;
-    c->state.new_tile_set_count = kept;
-    return true;
+    bool changed;
+    const mc_tile_identity_set_status status = mc_tile_identity_set_remove_all_set(
+        c->new_tiles, c->old_tiles, current_thread(c), &changed, &c->set_error);
+    set_counts(c);
+    return set_result(c, status, 572);
 }
 
 static mc_render_global_tile_occurrence *f_occurrence(mc_client_render_global *n,
@@ -431,46 +455,61 @@ static mc_render_global_tile_occurrence *f_occurrence(mc_client_render_global *n
     return NULL;
 }
 
+/* ArrayList.addAll finishes the complete Set.toArray before modCount or
+ * backing growth. Its one bulk publication cannot expose a per-element prefix. */
 static bool publish_new(mc_source_dk_compile *c) {
     mc_client_source_dk *dk = c->state.chunk;
     mc_client_render_global *n = dk->owner;
     mc_client_render_list *f = dk->fields.F; /* Actual fresh F579. */
-    if (!tile_list(c, f, n->tile_list_origin, 584))
+    if (!tile_list(c, f, n->tile_list_origin, 584) ||
+        !set_result(c, mc_tile_identity_set_to_array(c->new_tiles, &c->new_array, &c->set_error),
+                    584))
         return false;
-    if (c->new_count > 1)
-        return fail(c, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
-                    "DK multiple new Tiles require actual JVM identity-hash Set iteration", 584,
-                    true);
-    if (c->new_count == 0)
+    mc_tile_identity_set_snapshot_view array;
+    if (!set_result(c, mc_tile_identity_set_snapshot_inspect(c->new_array, &array, &c->set_error),
+                    584))
+        return false;
+    ++f->mod_count; /* Including an empty complete toArray result. */
+    if (array.count == 0)
         return true;
-    mc_render_global_tile_occurrence *h = n->tile_occurrences;
-    while (h != NULL && h->active)
-        h = h->next;
-    if (h == NULL) {
-        h = mc_render_global_allocate(
-            n, sizeof(*h), (mc_client_graphics_site){"dk", "a", "()V", 584}, &c->failure);
-        if (h == NULL)
-            return fail(c, c->failure.status, c->failure.operation, 584, true);
-        h->next = n->tile_occurrences;
-        n->tile_occurrences = h;
-    }
-    mc_tile_entity *tile = c->new_tiles[0];
-    if (mc_tile_entity_retain(tile) != MC_TILE_ENTITY_OK)
-        return fail(c, MC_CLIENT_RENDER_GLOBAL_BUSY, "DK shared List native Tile occurrence", 584,
+    if (array.count > INT32_MAX - f->count)
+        return fail(c, MC_CLIENT_RENDER_GLOBAL_LIMIT, "DK shared List.addAll native extent", 584,
                     true);
-    const size_t index = f->count;
-    /* Actual ArrayList.addAll with zero/one Set element publishes no prefix
-     * on an allocation refusal. Its independent native right is prepared first. */
-    if (!mc_render_global_pointer_append(
-            n, f, tile, (mc_client_graphics_site){"dk", "a", "()V", 584}, &c->failure)) {
-        mc_tile_entity_release(tile);
-        return fail(c, c->failure.status, c->failure.operation, 584, c->failure.native_policy);
+    c->pending_f = calloc(array.count, sizeof(*c->pending_f));
+    if (c->pending_f == NULL)
+        return fail(c, MC_CLIENT_RENDER_GLOBAL_ALLOCATION_FAILED,
+                    "DK shared List native occurrence reservation", 584, true);
+    for (size_t i = 0; i < array.count; ++i) {
+        mc_render_global_tile_occurrence *h = n->tile_occurrences;
+        while (h != NULL && (h->active || h->list != NULL))
+            h = h->next;
+        if (h == NULL) {
+            h = mc_render_global_allocate(
+                n, sizeof(*h), (mc_client_graphics_site){"dk", "a", "()V", 584}, &c->failure);
+            if (h == NULL)
+                return fail(c, c->failure.status, c->failure.operation, 584, true);
+            h->next = n->tile_occurrences;
+            n->tile_occurrences = h;
+        }
+        mc_tile_entity *tile = array.items[i];
+        if (tile != NULL && mc_tile_entity_retain(tile) != MC_TILE_ENTITY_OK)
+            return fail(c, MC_CLIENT_RENDER_GLOBAL_BUSY, "DK shared List native Tile occurrence",
+                        584, true);
+        h->tile = tile;
+        h->list = f;
+        h->index = f->count + i;
+        c->pending_f[c->pending_count++] = h;
     }
-    h->tile = tile;
-    h->list = f;
-    h->index = index;
-    h->active = true;
-    ++c->state.shared_tiles_added;
+    const size_t count = f->count + array.count;
+    if (!grow_tile_list(c, f, count, 584))
+        return false;
+    for (size_t i = 0; i < array.count; ++i) {
+        f->entries[f->count + i] = array.items[i];
+        c->pending_f[i]->active = true;
+    }
+    f->count = count;
+    c->state.shared_tiles_added = array.count;
+    c->pending_count = 0; /* All rights now belong to the published List rows. */
     return true;
 }
 
@@ -479,27 +518,32 @@ static bool remove_old(mc_source_dk_compile *c) {
     mc_client_render_list *b = dk->fields.B; /* Actual fresh B593. */
     if (!tile_list(c, b, dk->tile_list_origin, 596))
         return false;
+    if (b->count > (8u * 1024u * 1024u) / sizeof(*c->b_items))
+        return fail(c, MC_CLIENT_RENDER_GLOBAL_LIMIT, "DK old Set argument native extent", 596,
+                    true);
+    if (b->count != 0) {
+        c->b_items = calloc(b->count, sizeof(*c->b_items));
+        if (c->b_items == NULL)
+            return fail(c, MC_CLIENT_RENDER_GLOBAL_ALLOCATION_FAILED,
+                        "DK old Set argument native storage", 596, true);
+    }
     for (size_t i = 0; i < b->count; ++i) {
-        mc_source_dk_tile_hold *h = b_occurrence(dk, b, i);
-        if (h == NULL || h->tile != b->entries[i])
-            return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
-                        "DK old Set subtraction actual Tile ownership", 596, true);
+        mc_tile_entity *tile = b->entries[i];
+        if (tile != NULL) {
+            mc_source_dk_tile_hold *h = b_occurrence(dk, b, i);
+            if (h == NULL || h->tile != tile)
+                return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
+                            "DK old Set subtraction actual Tile ownership", 596, true);
+        }
+        c->b_items[i] = tile;
     }
-    size_t old_kept = 0;
-    for (size_t i = 0; i < c->old_count; ++i) {
-        bool found = false;
-        for (size_t j = 0; j < b->count; ++j)
-            if (b->entries[j] == c->old_tiles[i]) {
-                found = true;
-                break;
-            }
-        if (found)
-            mc_tile_entity_release(c->old_tiles[i]);
-        else
-            c->old_tiles[old_kept++] = c->old_tiles[i];
-    }
-    c->old_count = old_kept;
-    c->state.old_tile_set_count = old_kept;
+    const mc_tile_identity_set_span span = {.items = c->b_items, .count = b->count};
+    bool changed;
+    const mc_tile_identity_set_status status = mc_tile_identity_set_remove_all_span(
+        c->old_tiles, &span, current_thread(c), &changed, &c->set_error);
+    set_counts(c);
+    if (!set_result(c, status, 596))
+        return false;
     mc_client_render_list *f = dk->fields.F; /* Actual fresh F603, after Set.removeAll596. */
     if (!tile_list(c, f, dk->owner->tile_list_origin, 608))
         return false;
@@ -509,25 +553,44 @@ static bool remove_old(mc_source_dk_compile *c) {
             return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
                         "DK shared List.removeAll actual Tile occurrence ownership", 608, true);
     }
-    size_t kept = 0;
-    for (size_t i = 0; i < f->count; ++i) {
+    const size_t original_count = f->count;
+    size_t kept = 0, i = 0;
+    bool ok = true;
+    for (; i < original_count; ++i) {
         mc_render_global_tile_occurrence *h = f_occurrence(dk->owner, f, i);
-        if (contains(c->old_tiles, c->old_count, h->tile)) {
-            mc_tile_entity_release(h->tile);
+        bool found;
+        if (!set_result(c,
+                        mc_tile_identity_set_contains(c->old_tiles, h->tile, current_thread(c),
+                                                      &found, &c->set_error),
+                        608)) {
+            ok = false;
+            break;
+        }
+        if (found) {
+            if (h->tile != NULL)
+                mc_tile_entity_release(h->tile);
             h->tile = NULL;
             h->list = NULL;
             h->index = 0;
             h->active = false;
             ++c->state.shared_tiles_removed;
         } else {
-            f->entries[kept++] = f->entries[i];
-            h->index = kept - 1u;
+            f->entries[kept] = f->entries[i];
+            h->index = kept++;
         }
     }
-    for (size_t i = kept; i < f->count; ++i)
-        f->entries[i] = NULL;
+    /* ArrayList.batchRemove's exceptional tail keeps the throwing element and
+     * every unvisited element, after compacting the completed removal prefix. */
+    for (; i < original_count; ++i) {
+        mc_render_global_tile_occurrence *h = f_occurrence(dk->owner, f, i);
+        f->entries[kept] = f->entries[i];
+        h->index = kept++;
+    }
+    for (size_t j = kept; j < original_count; ++j)
+        f->entries[j] = NULL;
+    f->mod_count += (uint32_t)(original_count - kept);
     f->count = kept;
-    return true;
+    return ok;
 }
 
 static bool finish_lists(mc_source_dk_compile *c) {
@@ -799,15 +862,29 @@ mc_client_render_global_status mc_source_dk_compile_retire(mc_source_dk_compile 
     if (mc_client_chunk_cache_retire(&c->cache, &c->cache_cleanup) != MC_CLIENT_CHUNK_CACHE_OK)
         return mc_render_global_source_fail(error, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED,
                                             c->cache_cleanup.operation, NULL, NULL, NULL, 0, true);
-    if (c->tile != NULL)
+    if (c->tile != NULL) {
         mc_tile_entity_release(c->tile);
-    for (size_t i = 0; i < c->old_count; ++i)
-        if (c->old_tiles[i] != NULL)
-            mc_tile_entity_release(c->old_tiles[i]);
-    for (size_t i = 0; i < c->new_count; ++i)
-        mc_tile_entity_release(c->new_tiles[i]);
-    free(c->old_tiles);
-    free(c->new_tiles);
+        c->tile = NULL;
+    }
+    for (size_t i = 0; i < c->pending_count; ++i) {
+        mc_render_global_tile_occurrence *h = c->pending_f[i];
+        if (h->tile != NULL)
+            mc_tile_entity_release(h->tile);
+        h->tile = NULL;
+        h->list = NULL;
+        h->index = 0;
+    }
+    c->pending_count = 0;
+    if (mc_tile_identity_set_snapshot_retire(&c->new_array, &c->set_cleanup) !=
+            MC_TILE_IDENTITY_SET_OK ||
+        mc_tile_identity_set_retire(&c->new_tiles, &c->set_cleanup) != MC_TILE_IDENTITY_SET_OK ||
+        mc_tile_identity_set_retire(&c->old_tiles, &c->set_cleanup) != MC_TILE_IDENTITY_SET_OK) {
+        error->tile_identity_set = &c->set_cleanup;
+        return mc_render_global_source_fail(error, MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED,
+                                            c->set_cleanup.operation, NULL, NULL, NULL, 0, true);
+    }
+    free(c->b_items);
+    free(c->pending_f);
     free(c);
     *slot = NULL;
     return MC_CLIENT_RENDER_GLOBAL_OK;

@@ -56,6 +56,7 @@ struct mc_client_render_global_error {
     const mc_client_tile_renderer_draw_error *tile_draw;
     const struct mc_particle_error *particle;
     const struct mc_effect_renderer_error *effects;
+    const struct mc_tile_identity_set_error *tile_identity_set;
     const struct mc_world_mutation_error *auxiliary_world;
 };
 

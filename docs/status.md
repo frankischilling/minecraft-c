@@ -7,6 +7,22 @@ the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining w
 
 ## Current client work
 
+The [native identity integration](reference/object-identity.md) removes the
+multiple-new-Tile compilation blocker. Final monitor-2 pushed-Stone, Furnace
+and dense-Chest scenarios pass 964, 9,540 and 1,016 checks through ordinary
+save/reselection and checked shutdown. Lazy Class-hash and collision-order
+controls add 299 checks. Final affected selections pass six Windows, nine GCC
+and twelve Clang tests, with sanitizers and leak detection on Linux.
+The final full MSVC Release build and all 1,372 Windows tests pass in 539.74
+seconds. All 1,369 preceding names remain plus exactly three additions, with
+complete inventory/log/JUnit and Start/completion joins and no skips or unrun
+tests. All 6,544 public files and 684 native products stay unchanged during
+the sweep. Formatting checks 2,515 files. Later documentation, LF normalization
+and current admission updates preserve runtime and native C harness bytes.
+The [Integer measurements](performance/integer-sets.md)
+show faster sparse copies and a remaining dispersed-operation cost; they
+establish no gameplay FPS result.
+
 [Piston activation](world/pistons.md) now reaches real Lever notifications,
 synchronous block events, push/retract bodies and Piston ticks. Nine native
 gameplay cases pass 273 checks. The [moving renderer](client/piston-rendering.md)
@@ -14,8 +30,13 @@ matches all 27 finite original direct-draw cases, including active vertex words
 and declared retained state. A separate late lighting NULL-buffer control
 checks the drawn prefix and native cleanup. The ordinary monitor-2 empty-front
 scene passes 951 checks through extension, retraction, save and reselection.
-The pushed-Stone scene still fails at the independent multiple-new-Tile
-identity-hash Set-order dependency; it is not credited as passing gameplay.
+The later pushed-Stone scene passes 948 checks after the
+[identity Set join](reference/object-identity.md), including both moving Tiles,
+settled extension/retraction and ordinary save/reselection on monitor 2.
+Its earlier multiple-new-Tile failure remains in the historical capture.
+The approved [native identity startup](adr/0001-native-object-identity-profile.md)
+preserves lazy hashing and collection behavior while allowing concrete hashes
+and traversal order to differ from a JVM launch.
 
 The original/native activation replay matches six scenarios, 48 phases,
 94 ordered callbacks and 315 independently hashed array planes. Piston pitch

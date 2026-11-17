@@ -263,8 +263,8 @@
       "sha256": "3d7f49889692b45b101d42b5b853e6c185f100269e9f7064ddf5ed549b0fd682"
     },
     "src/world/runtime/tile_entities/tile_entities.c": {
-      "bytes": 295508,
-      "sha256": "df6b6f7338b78f45d12b201470dcbfbd5cf7375290592bf0e5f3efeebfd875c5"
+      "bytes": 299202,
+      "sha256": "031ed6385b33216842a1ad5aa666e0cc205eee932ded71fb05115829cbfd4fa5"
     },
     "tests/world/runtime/world_access/test_kernel_execution.c": {
       "bytes": 25462,
@@ -391,8 +391,8 @@
       "sha256": "367c128628c6c258560befcae39359c882af97ce9bf3abfd14b0316ff7f83a68"
     },
     "src/core/java/random_profile_internal.h": {
-      "bytes": 9836,
-      "sha256": "589490b66a84ed45bf63d6143ea782125a6859bc937aa1c7b238f0ad2d264d8d"
+      "bytes": 9998,
+      "sha256": "06edb05d5d019dbfaf9239acd582b122b067aad86ab368abed1edce994772a03"
     },
     "tests/world/runtime/world_access/test_material_scanner_execution.c": {
       "bytes": 23179,

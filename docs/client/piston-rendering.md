@@ -76,11 +76,12 @@ source state across native retirement. These are direct-body observations,
 not original whole-frame or pixel equality.
 
 The ordinary monitor-2 empty-front SDK scene also exercises returned World/HUD
-frames, extension, retraction, save and reload. Pushing a Stone reaches a
-separate World-renderer dependency: two new special Tiles require the actual
-identity-hash Set publication order. That failure is retained and remains a
-failure. See [Piston activation](../world/pistons.md). No sustained-play or FPS
-result is established by these tests.
+frames, extension, retraction, save and reload. A later pushed-Stone capture
+passes 948 checks through both moving Tiles, settled extension/retraction and
+save/reselection after the [identity Set join](../reference/object-identity.md).
+The earlier multiple-new-Tile failure remains in its historical receipt.
+See [Piston activation](../world/pistons.md). These finite captures do not
+establish sustained play, original pixel equality or FPS.
 
 The [sanitized Windows record](../../tests/benchmarks/piston_windows.json)
 preserves selected input/product/image hashes, finite observations and failed

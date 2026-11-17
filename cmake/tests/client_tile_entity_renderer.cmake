@@ -13,6 +13,11 @@ if(BUILD_TESTING AND TARGET mc_client_tile_renderer_cpu)
     set_tests_properties(client.tile_entity_renderer PROPERTIES
         LABELS "public;unit;client;ownership;replay" TIMEOUT 300)
 
+    add_test(NAME client.tile_entity_renderer_identity
+        COMMAND mc_test_tile_entity_renderer identity)
+    set_tests_properties(client.tile_entity_renderer_identity PROPERTIES
+        LABELS "public;unit;client;ownership" TIMEOUT 90)
+
     add_executable(mc_test_tile_entity_renderer_world
         tests/client/render/test_tile_entity_renderer_world.c)
     target_include_directories(mc_test_tile_entity_renderer_world PRIVATE src)

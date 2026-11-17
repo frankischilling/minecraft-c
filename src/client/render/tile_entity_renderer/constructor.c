@@ -152,8 +152,9 @@ bool tile_renderer_construct(mc_client_tile_renderer_dispatcher *m) {
         if (!tile_renderer_map_put(m, key, r, put_pc[i], true, &c->failure))
             goto failed;
     }
-    /* Traverse THIS actual Map's values, including occurrence multiplicity.
-     * Native bucket order is not asserted to equal a JVM identity-hash order. */
+    /* Traverse THIS actual Map's buckets/next links, including occurrence
+     * multiplicity. Class hashes use the admitted native startup stream;
+     * HashMap append/resize ordering does not import a JVM startup history. */
     for (size_t i = 0; i < m->map->capacity; ++i)
         for (tile_renderer_map_node *p = m->map->buckets[i]; p != NULL; p = p->next) {
             p->value->manager = m; /* Actual JE.a(LL) source putfield a2. */

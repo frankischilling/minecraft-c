@@ -176,6 +176,8 @@ static bool compile(mc_client_render_global_update_call *c, mc_client_source_dk 
                     "completed DK compilation native retirement", pc, true);
     }
     c->state.compilation = NULL;
+    c->failure.tile_identity_set = NULL;
+    c->failure.tile_renderer = NULL;
     if (!reserve(c, &c->order, &c->order_capacity, c->state.compile_attempts + 1, pc))
         return false;
     c->state.compile_order = c->order;
@@ -391,6 +393,10 @@ mc_client_render_global_update_retire(mc_client_render_global_update_call **slot
         return error->status;
     }
     c->state.compilation = NULL;
+    /* The Source diagnostic scalars survive a later N-release refusal, but
+     * these views belonged to the now-retired compilation child. */
+    c->failure.tile_identity_set = NULL;
+    c->failure.tile_renderer = NULL;
     mc_client_render_global *owner = c->state.owner;
     owner->update_call = NULL;
     if (mc_client_render_global_release(&c->state.owner, &c->cleanup) !=

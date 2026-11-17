@@ -87,10 +87,10 @@ ordinary input, Timer/World ticks and save/reselection. Its Piston came from
 the saved input; placing a new Piston Item and its orientation hook are not
 qualified by that scene.
 
-The pushed-Stone SDK profile currently reaches the existing DK multiple-new-
-Tile Set-order frontier before the World renderer publishes its special-Tile
-list. It records both genuinely created moving Tiles and closes the actual
-Frame, while retaining a failed result. Sorting native addresses, assigning
-construction ordinals or injecting captured Java hashes would not implement
-that dependency. Full Piston gameplay, broader saves, sustained play and FPS
-qualification remain incomplete.
+The pushed-Stone SDK profile now publishes both World-created moving Tiles
+through the [native identity Sets](../reference/object-identity.md), draws them,
+settles extension/retraction and completes ordinary save/reselection on monitor 2.
+The preceding failed Set-order capture remains historical evidence. The native
+identity stream uses the approved startup profile; concrete hashes and traversal
+order need not match a particular JVM launch. Full Piston gameplay, broader
+saves, sustained play and FPS qualification remain incomplete.

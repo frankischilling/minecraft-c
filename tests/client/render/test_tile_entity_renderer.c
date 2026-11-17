@@ -1,8 +1,10 @@
 #include "client/render/tile_entity_renderer/internal.h"
+#include "core/java/object_identity_profile_internal.h"
 #include "mc/block/material/material.h"
 #include "mc/core/math/math.h"
 #include "mc/world/runtime/construction.h"
 #include "mc/world/runtime/entities.h"
+#include "world/runtime/tile_entities/identity_internal.h"
 
 #include <inttypes.h>
 #include <stdarg.h>
@@ -11,7 +13,8 @@
 #include <string.h>
 
 /* Authored CPU observation of the actual LL owner and its canonical graph.
- * Expected state/geometry is supplied only by the public original fixture. */
+ * Reference modes take expected state/geometry from the public original fixture.
+ * Native identity controls use explicitly authored cells, never JVM captures. */
 static unsigned int checks, rows;
 #define CHECK(condition)                                                                           \
     do {                                                                                           \
@@ -199,8 +202,8 @@ static bool map_rows(fixture *f, const char *stage) {
             CHECK(object.manager == f->manager);
         }
     }
-    /* Only logical entries are sorted, matching the authored observer. Native
-     * pointer hashing/physical iteration never claims JVM bucket equivalence. */
+    /* Only logical entries are sorted, matching the authored observer. The
+     * admitted native Class hashes do not reproduce a JVM startup history. */
     for (size_t i = 1; i < state.entries; ++i)
         for (size_t j = i; j > 0 && strcmp(names[j - 1], names[j]) > 0; --j) {
             const char *name = names[j - 1];
@@ -405,6 +408,187 @@ static bool fixture_close(fixture *f) {
     return true;
 }
 
+static bool same_identity_thread(mc_java_identity_thread a, mc_java_identity_thread b) {
+    return a.x == b.x && a.y == b.y && a.z == b.z && a.w == b.w;
+}
+
+static bool fresh_class_cells(fixture *f, mc_java_identity_cell **cells) {
+    for (size_t i = 0; i < 9; ++i)
+        CHECK(mc_tile_entity_class_literal_identity_cell(f->literals[i], &cells[i]) ==
+                  MC_TILE_ENTITY_OK &&
+              cells[i]->hash == 0);
+    return true;
+}
+
+static bool class_chain(fixture *f, size_t bucket, const size_t *indices, size_t count) {
+    CHECK(bucket < f->manager->map->capacity);
+    tile_renderer_map_node *node = f->manager->map->buckets[bucket];
+    for (size_t i = 0; i < count; ++i) {
+        CHECK(node != NULL && node->key == f->literals[indices[i]]);
+        node = node->next;
+    }
+    CHECK(node == NULL);
+    return true;
+}
+
+static bool lazy_class_identity(void) {
+    fixture f = {0};
+    mc_java_identity_cell *cells[9];
+    mc_java_identity_cell expected_cells[9] = {{0}};
+    CHECK(fixture_open(&f) && fresh_class_cells(&f, cells));
+    mc_java_identity_thread *thread = mc_java_random_profile_main_identity(f.profile);
+    CHECK(thread != NULL);
+    mc_java_identity_thread expected = *thread;
+    const size_t constructor_keys[] = {4, 5, 7};
+    for (size_t i = 0; i < 3; ++i)
+        (void)mc_java_object_identity_hash(&expected, &expected_cells[constructor_keys[i]]);
+    CHECK(mc_client_tile_renderer_static_get(f.classes, &f.manager, &f.error) ==
+          MC_CLIENT_TILE_RENDERER_OK);
+    CHECK(same_identity_thread(*thread, expected));
+    CHECK(f.manager->map->size == 3 && f.manager->map->capacity == 16 &&
+          f.manager->map->threshold == 12 && f.manager->map->mod_count == 3);
+    for (size_t i = 0; i < 9; ++i)
+        CHECK(cells[i]->hash == expected_cells[i].hash);
+    /* Passive Map inspection of an unhashed Class neither caches it nor draws. */
+    mc_client_tile_renderer_map_entry missing, entry;
+    CHECK(mc_client_tile_renderer_map_find(f.manager, f.literals[0], &missing, &f.error) ==
+              MC_CLIENT_TILE_RENDERER_OK &&
+          !missing.present);
+    for (size_t i = 0; i < 3; ++i) {
+        CHECK(mc_client_tile_renderer_entry(f.manager, i, &entry, &f.error) ==
+              MC_CLIENT_TILE_RENDERER_OK);
+        const tile_renderer_map_node *node = entry.identity;
+        mc_java_identity_cell *cell = NULL;
+        CHECK(mc_tile_entity_class_literal_identity_cell(entry.key, &cell) == MC_TILE_ENTITY_OK &&
+              node->hash == (cell->hash ^ (cell->hash >> 16u)));
+    }
+    CHECK(cells[0]->hash == 0 && cells[8]->hash == 0 && same_identity_thread(*thread, expected));
+    /* get(Furnace) hashes that key, then the recursive get(base) hashes base.
+     * The final cache put reuses Furnace's cell; base is not inserted. */
+    (void)mc_java_object_identity_hash(&expected, &expected_cells[0]);
+    (void)mc_java_object_identity_hash(&expected, &expected_cells[8]);
+    mc_client_tile_renderer *renderer = NULL;
+    CHECK(mc_client_tile_renderer_lookup_class(f.manager, f.literals[0], &renderer, &f.error) ==
+              MC_CLIENT_TILE_RENDERER_OK &&
+          renderer == NULL && same_identity_thread(*thread, expected));
+    for (size_t i = 0; i < 9; ++i)
+        CHECK(cells[i]->hash == expected_cells[i].hash);
+    CHECK(mc_client_tile_renderer_map_find(f.manager, f.literals[0], &entry, &f.error) ==
+              MC_CLIENT_TILE_RENDERER_OK &&
+          entry.present && entry.value == NULL && f.manager->map->size == 4 &&
+          f.manager->map->mod_count == 4);
+    const void *cached_node = entry.identity;
+    const size_t puts = f.manager->put_calls;
+    CHECK(mc_client_tile_renderer_lookup_class(f.manager, f.literals[0], &renderer, &f.error) ==
+              MC_CLIENT_TILE_RENDERER_OK &&
+          renderer == NULL && f.manager->put_calls == puts + 1);
+    CHECK(mc_client_tile_renderer_map_find(f.manager, f.literals[0], &entry, &f.error) ==
+              MC_CLIENT_TILE_RENDERER_OK &&
+          entry.identity == cached_node && f.manager->map->size == 4 &&
+          f.manager->map->mod_count == 4);
+    CHECK(mc_client_tile_renderer_lookup_class(f.manager, f.literals[4], &renderer, &f.error) ==
+              MC_CLIENT_TILE_RENDERER_OK &&
+          renderer != NULL && f.manager->put_calls == puts + 1);
+    CHECK(mc_client_tile_renderer_map_find(f.manager, f.literals[8], &entry, &f.error) ==
+              MC_CLIENT_TILE_RENDERER_OK &&
+          !entry.present);
+    CHECK(mc_client_tile_renderer_lookup_class(f.manager, f.literals[8], &renderer, &f.error) ==
+              MC_CLIENT_TILE_RENDERER_OK &&
+          renderer == NULL && f.manager->put_calls == puts + 1);
+    CHECK(mc_client_tile_renderer_lookup_class(f.manager, NULL, &renderer, &f.error) ==
+              MC_CLIENT_TILE_RENDERER_NULL_REFERENCE &&
+          f.error.pc == 26 && !f.error.native_policy && same_identity_thread(*thread, expected));
+    for (size_t i = 0; i < 9; ++i)
+        CHECK(cells[i]->hash == expected_cells[i].hash);
+    CHECK(fixture_close(&f));
+    return true;
+}
+
+static bool colliding_class_identity(void) {
+    fixture f = {0};
+    mc_java_identity_cell *cells[9];
+    CHECK(fixture_open(&f) && fresh_class_cells(&f, cells));
+    mc_java_identity_thread *thread = mc_java_random_profile_main_identity(f.profile);
+    CHECK(thread != NULL);
+    const mc_java_identity_thread saved = *thread;
+    /* Authored cached native cells, installed before their first Map use.
+     * Raw hashes below 2^16 equal their spread. All share bucket3 at16 and
+     * alternate bit 0x10 in insertion order, so resize must stably split them. */
+    const size_t insertion[] = {4, 5, 7, 0, 1, 2, 3, 6, 8};
+    for (size_t i = 0; i < 9; ++i)
+        cells[insertion[i]]->hash = (uint32_t)(i + 2u) * 16u + 3u;
+    CHECK(mc_client_tile_renderer_static_get(f.classes, &f.manager, &f.error) ==
+              MC_CLIENT_TILE_RENDERER_OK &&
+          same_identity_thread(*thread, saved));
+    CHECK(class_chain(&f, 3, insertion, 3));
+    for (size_t i = 3; i < 8; ++i) {
+        mc_client_tile_renderer *renderer = NULL;
+        CHECK(mc_client_tile_renderer_lookup_class(f.manager, f.literals[insertion[i]], &renderer,
+                                                   &f.error) == MC_CLIENT_TILE_RENDERER_OK &&
+              renderer == NULL && f.manager->map->size == i + 1u &&
+              f.manager->map->capacity == 16 && f.manager->map->threshold == 12 &&
+              f.manager->map->mod_count == (uint32_t)(i + 1u));
+        CHECK(class_chain(&f, 3, insertion, i + 1u));
+    }
+    tile_renderer_map_node *nodes[9] = {0};
+    for (size_t i = 0; i < 8; ++i) {
+        nodes[insertion[i]] = tile_renderer_map_node_find(f.manager->map, f.literals[insertion[i]]);
+        CHECK(nodes[insertion[i]] != NULL &&
+              nodes[insertion[i]]->hash == cells[insertion[i]]->hash);
+    }
+    /* Source LL never inserts its base key: its eight reachable concrete keys
+     * stop before collision growth. This ninth canonical key is an explicit
+     * private Map-child control for the finite backend's full admitted domain,
+     * not an assertion about an ordinary LL caller or a tree-bin execution. */
+    tile_renderer_error_init(&f.error);
+    f.manager->active = f.classes->active = true;
+    const bool put = tile_renderer_map_put(f.manager, f.literals[8], NULL, 39, false, &f.error);
+    f.manager->active = f.classes->active = false;
+    CHECK(put && f.manager->map->size == 9 && f.manager->map->capacity == 32 &&
+          f.manager->map->threshold == 24 && f.manager->map->mod_count == 9 &&
+          same_identity_thread(*thread, saved));
+    nodes[8] = tile_renderer_map_node_find(f.manager->map, f.literals[8]);
+    CHECK(nodes[8] != NULL);
+    const size_t low[] = {4, 7, 1, 3, 8}, high[] = {5, 0, 2, 6};
+    CHECK(class_chain(&f, 3, low, 5) && class_chain(&f, 19, high, 4));
+    for (size_t i = 0; i < 32; ++i)
+        if (i != 3 && i != 19)
+            CHECK(f.manager->map->buckets[i] == NULL);
+    const size_t traversal[] = {4, 7, 1, 3, 8, 5, 0, 2, 6};
+    for (size_t i = 0; i < 9; ++i) {
+        mc_client_tile_renderer_map_entry entry;
+        CHECK(mc_client_tile_renderer_entry(f.manager, i, &entry, &f.error) ==
+                  MC_CLIENT_TILE_RENDERER_OK &&
+              entry.key == f.literals[traversal[i]] && entry.identity == nodes[traversal[i]]);
+    }
+    const size_t puts = f.manager->put_calls;
+    for (size_t i = 0; i < 9; ++i) {
+        mc_client_tile_renderer *renderer = NULL;
+        mc_client_tile_renderer_map_entry entry;
+        CHECK(mc_client_tile_renderer_lookup_class(f.manager, f.literals[i], &renderer, &f.error) ==
+              MC_CLIENT_TILE_RENDERER_OK);
+        CHECK(mc_client_tile_renderer_map_find(f.manager, f.literals[i], &entry, &f.error) ==
+                  MC_CLIENT_TILE_RENDERER_OK &&
+              entry.present && entry.identity == nodes[i] && entry.value == renderer &&
+              entry.value == nodes[i]->value);
+    }
+    /* Five cached-null concrete lookups still recurse and replace their value;
+     * positive hits and the base return do not put. No key draws again. */
+    CHECK(f.manager->put_calls == puts + 5u && f.manager->map->size == 9 &&
+          f.manager->map->mod_count == 9 && same_identity_thread(*thread, saved));
+    CHECK(class_chain(&f, 3, low, 5) && class_chain(&f, 19, high, 4));
+    for (size_t i = 0; i < 9; ++i)
+        CHECK(cells[insertion[i]]->hash == (uint32_t)(i + 2u) * 16u + 3u);
+    CHECK(fixture_close(&f));
+    return true;
+}
+
+static bool identity_controls(void) {
+    CHECK(lazy_class_identity() && colliding_class_identity());
+    printf("Native LL Class identity: %u checks passed; cleanup=1\n", checks);
+    return true;
+}
+
 static bool observe(const char *profile) {
     fixture f = {0};
     CHECK(fixture_open(&f));
@@ -426,9 +610,11 @@ static bool observe(const char *profile) {
 }
 
 int main(int argc, char **argv) {
+    if (argc == 2 && strcmp(argv[1], "identity") == 0)
+        return identity_controls() ? 0 : 1;
     if (argc != 2 || (strcmp(argv[1], "constructor") != 0 && strcmp(argv[1], "forward") != 0 &&
                       strcmp(argv[1], "reverse") != 0 && strcmp(argv[1], "nulls") != 0)) {
-        fprintf(stderr, "TileEntityRenderer requires constructor|forward|reverse|nulls\n");
+        fprintf(stderr, "TileEntityRenderer requires constructor|forward|reverse|nulls|identity\n");
         return 1;
     }
     return observe(argv[1]) ? 0 : 1;

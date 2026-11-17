@@ -73,9 +73,11 @@ C save has finite original readback. Extend that boundary to original saves
 and both round trips, then qualify sustained play alongside the other containers.
 The [MobSpawner preview](client/spawner-rendering.md) now joins actual Chunk
 publication, typed N traversal, LL/AG and the named Entity factory through the
-existing Pig renderer. Extend the qualified zero/one-new-Tile publication to
-larger identity-hash Sets, implement Sign/MovingPiston's earlier dependencies
-and draw bodies, and continue the separate Spawner spawning path.
+existing Pig renderer. Native identity Sets now publish multiple new Tiles;
+the pushed-Stone scene also reaches the MovingPiston draw and save/reload path.
+Continue loaded Sign integration, broader Spawner encounters and sustained
+single-player coverage. The separate [Spawner tick path](world/spawner-tick.md)
+already has finite expired-delay spawning and save/reselection controls.
 The loader has no fixed session count limit, and a retained Windows Tiny
 scenario covers ten saves/reloads plus a successor conversion failure before
 storage acquisition. Reclaim superseded Worlds during play and qualify later

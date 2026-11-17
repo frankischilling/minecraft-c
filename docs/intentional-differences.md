@@ -3,8 +3,9 @@
 | Decision | Approval | Scope |
 | --- | --- | --- |
 | Local usernames; omit Minecraft/Microsoft account authentication | Owner's development prompt | Does not exclude multiplayer handshakes, joining, skins, or any other gameplay behavior. Servers requiring authenticated accounts are outside supported identity operation. |
+| [Native startup for object identity](adr/0001-native-object-identity-profile.md) | Owner decision, 2026-11-16 | Use a native startup stream with the selected lazy hashing algorithm and Java HashSet rules. Concrete hashes and resulting identity-based order may differ from a JVM launch; caching, current Thread consumption, collisions and full collection behavior remain required. |
 
-There are no other approved gameplay exceptions. The MIT license choice covers
+There are no other approved differences in normal runtime behavior. The MIT license choice covers
 new project work and does not grant rights to distribute original resources.
 
 The account-authentication exclusion includes the `kp` session-validation

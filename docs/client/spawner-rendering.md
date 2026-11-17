@@ -27,10 +27,12 @@ fixtures that allocate Lists directly record that native identity separately
 from their unchanged Source fields and expected original rows.
 
 TileEntities inherit Object identity equality and hashing in the original.
-The current code admits zero or one new identity per Chunk publication. More
-than one new identity stops at584 because the original HashSet's identity-hash
-iteration has not been qualified. Several Chunks can each publish one identity.
-This limit is explicit native policy, not original behavior.
+The native [identity profile and Set](../reference/object-identity.md) now retain
+lazy hashes, bucket/tree history and both size-dependent removeAll branches.
+Multiple new identities publish together in Set traversal order after a complete
+toArray. Hashes use the approved native startup stream; concrete order can differ
+from a particular JVM launch. Duplicate B entries still contribute to the
+ArrayList size used by removeAll.
 
 `n.a(BT,YN,F)V` reads the live size at534, captures the fresh LL singleton
 at542, reads the actual row at551 and calls LL at560. Each successful retained

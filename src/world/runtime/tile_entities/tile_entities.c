@@ -12,6 +12,7 @@
 
 #include "../../../block/registry/registry_internal.h"
 #include "../../../block/registry/runtime_internal.h"
+#include "../../../core/java/object_identity_profile_internal.h"
 #include "../../../platform/text/stdout.h"
 #include "../../chunk/object_state_internal.h"
 #include "../../storage/objects_internal.h"
@@ -24,6 +25,7 @@
 #include "../terminal_inventory_internal.h"
 #include "../world_access_internal.h"
 #include "execution_internal.h"
+#include "identity_internal.h"
 #include "mc/world/runtime/blocks.h"
 #include "mc/world/runtime/entities.h"
 #include "piston_list_internal.h"
@@ -56,6 +58,12 @@ typedef enum live_class_id {
     LIVE_CLASS_COUNT
 } live_class_id;
 
+static const mc_tile_entity_class_kind live_class_kinds[LIVE_CLASS_COUNT] = {
+    MC_TILE_ENTITY_CLASS_KIND_FURNACE,    MC_TILE_ENTITY_CLASS_KIND_CHEST,
+    MC_TILE_ENTITY_CLASS_KIND_JUKEBOX,    MC_TILE_ENTITY_CLASS_KIND_DISPENSER,
+    MC_TILE_ENTITY_CLASS_KIND_SIGN,       MC_TILE_ENTITY_CLASS_KIND_SPAWNER,
+    MC_TILE_ENTITY_CLASS_KIND_NOTE_BLOCK, MC_TILE_ENTITY_CLASS_KIND_PISTON};
+
 typedef struct live_class_entry {
     live_class_id kind;
     mc_tile_entity_name *name;
@@ -64,6 +72,7 @@ typedef struct live_class_entry {
 struct mc_tile_entity_class_literal {
     mc_tile_entity_classes *owner;
     mc_tile_entity_class_kind kind;
+    mc_java_identity_cell identity;
 };
 
 /* Unchanged ow/jh.<clinit> Class/String pairs at20..73, independently checked
@@ -83,6 +92,7 @@ struct mc_tile_entity_classes {
     size_t class_literal_borrows;
     unsigned int phase, initializer_pc;
     mc_tile_entity_status failure;
+    const char *failure_operation;
     mc_registry_error first_registry_failure;
     live_class_entry *by_name, *by_class;
     size_t name_count, class_count, live_tile_entities, allocation_bytes;
@@ -121,8 +131,8 @@ static mc_tile_entity_status live_literal(mc_tile_entity_classes *classes, const
                                           mc_tile_entity_name **out, mc_registry_error *attempt,
                                           const mc_tile_entity *scope_tile_entity,
                                           const struct tile_entity_import_context *context);
-static mc_tile_entity_name *live_class_name(mc_tile_entity_classes *classes,
-                                            mc_tile_entity_kind kind);
+static mc_tile_entity_status live_class_name(mc_tile_entity_classes *classes,
+                                             mc_tile_entity_kind kind, mc_tile_entity_name **out);
 static bool live_graph_measure(const mc_world_chunk *chunk, mc_tile_entity *extra, size_t ceiling,
                                size_t *out, mc_live_tile_entity_error *error);
 
@@ -1673,12 +1683,17 @@ static mc_tile_entity_status tile_entity_build_fields(const mc_tile_entity *tile
                                                       mc_tile_entity_error *error) {
     fields[0].type = MC_NBT_STRING;
     fields[0].name = (mc_nbt_string){tile_entity_id_name, 2};
-    mc_tile_entity_name *registered = live_class_name(tile_entity->classes, tile_entity->kind);
-    if (registered == NULL) {
-        const mc_tile_entity_status status =
-            tile_entity_status(error, MC_TILE_ENTITY_STATE_ERROR, "id", SIZE_MAX);
-        if (error != NULL)
+    mc_tile_entity_name *registered = NULL;
+    const mc_tile_entity_status named =
+        live_class_name(tile_entity->classes, tile_entity->kind, &registered);
+    if (named != MC_TILE_ENTITY_OK || registered == NULL) {
+        const mc_tile_entity_status status = tile_entity_status(
+            error, named == MC_TILE_ENTITY_OK ? MC_TILE_ENTITY_STATE_ERROR : named, "id", SIZE_MAX);
+        if (error != NULL) {
             error->base_save_bytecode = 7;
+            if (named != MC_TILE_ENTITY_OK)
+                error->operation = "TileEntity save Class-key lookup";
+        }
         return status;
     }
     fields[0].value.string = registered->text;
@@ -1985,8 +2000,8 @@ static mc_tile_entity_status live_classes_owner_in(mc_world_runtime_classes *par
         classes->parent = parent;
         classes->registry = parent->registry;
         for (size_t i = 0; i < (size_t)MC_TILE_ENTITY_CLASS_KIND_COUNT; ++i)
-            classes->class_literals[i] =
-                (mc_tile_entity_class_literal){classes, (mc_tile_entity_class_kind)i};
+            classes->class_literals[i] = (mc_tile_entity_class_literal){
+                .owner = classes, .kind = (mc_tile_entity_class_kind)i, .identity = {0}};
         classes->allocation_bytes = sizeof(*classes);
         classes->piston_max_allocation_bytes = 1024u * 1024u;
         parent->tile_entities = classes; /* Native owner publication, no Java field. */
@@ -2029,6 +2044,34 @@ static bool class_literal_is_canonical(const mc_tile_entity_class_literal *liter
            literal->owner->parent->tile_entities == literal->owner &&
            (unsigned int)literal->kind < (unsigned int)MC_TILE_ENTITY_CLASS_KIND_COUNT &&
            literal == &literal->owner->class_literals[(size_t)literal->kind];
+}
+
+mc_tile_entity_status
+mc_tile_entity_class_literal_identity_cell(const mc_tile_entity_class_literal *literal,
+                                           mc_java_identity_cell **out) {
+    if (out == NULL || !class_literal_is_canonical(literal))
+        return MC_TILE_ENTITY_INVALID_ARGUMENT;
+    *out = &literal->owner->class_literals[(size_t)literal->kind].identity;
+    return MC_TILE_ENTITY_OK;
+}
+
+mc_tile_entity_status
+mc_tile_entity_class_literal_source_name(const mc_tile_entity_class_literal *literal,
+                                         const char **out) {
+    if (out == NULL || !class_literal_is_canonical(literal))
+        return MC_TILE_ENTITY_INVALID_ARGUMENT;
+    /* The this_class CONSTANT_Class/Utf8 entries in all nine classes of each
+     * pinned archive above are exactly these root-package names; concrete
+     * classes name OW/JH as super_class and OW/JH name java/lang/Object.
+     * Class.getName therefore needs no slash-to-dot conversion here. This
+     * private functional projection is ASCII/UTF-16 lexical data only, not
+     * an inference of Source String identity from diagnostic view pointers. */
+    const mc_world_info_side side = literal->owner->parent->side;
+    if (side != MC_WORLD_INFO_CLIENT && side != MC_WORLD_INFO_SERVER)
+        return MC_TILE_ENTITY_INVALID_ARGUMENT;
+    *out = side == MC_WORLD_INFO_CLIENT ? class_literal_client_names[(size_t)literal->kind]
+                                        : class_literal_server_names[(size_t)literal->kind];
+    return MC_TILE_ENTITY_OK;
 }
 
 mc_tile_entity_status mc_tile_entity_class_literal_get(const mc_tile_entity_classes *classes,
@@ -2619,6 +2662,7 @@ static void tile_entity_allocation_class_error(const mc_tile_entity_classes *cla
     if (classes->phase == MC_TILE_ENTITY_CLASS_FAILED) {
         error->registry = classes->first_registry_failure;
         error->initializer_bytecode = classes->initializer_pc;
+        error->operation = classes->failure_operation;
     } else if (kind == MC_TILE_ENTITY_PISTON &&
                classes->piston_phase == MC_TILE_ENTITY_CLASS_FAILED) {
         error->operation = "Piston class initializer";
@@ -2704,7 +2748,18 @@ static mc_tile_entity_status live_classes_initialize(mc_tile_entity_classes *cla
              * native arrays represent those distinct Maps, whose iteration is
              * not exposed by the original callers. Literal pool owns name. */
             classes->by_name[classes->name_count++] = (live_class_entry){(live_class_id)i, name};
-            classes->by_class[classes->class_count++] = (live_class_entry){(live_class_id)i, name};
+            uint32_t hash = 0;
+            status = mc_tile_entity_class_literal_identity_hash(
+                &classes->class_literals[(size_t)live_class_kinds[i]],
+                mc_java_random_profile_main_identity(classes->parent->profile), &hash);
+            if (status == MC_TILE_ENTITY_OK) {
+                /* Class->ID put55 acquires the actual Class identity hash even
+                 * though this fixed native backend exposes no bucket order.
+                 * Earlier LL puts may already have cached this same cell. */
+                classes->by_class[classes->class_count++] =
+                    (live_class_entry){(live_class_id)i, name};
+            } else
+                classes->failure_operation = "TileEntity registration Class hash at put55";
         }
         mc_tile_entity_name_release(name);
     }
@@ -2720,8 +2775,8 @@ static mc_tile_entity_status live_classes_initialize(mc_tile_entity_classes *cla
     return MC_TILE_ENTITY_OK;
 }
 
-static mc_tile_entity_name *live_class_name(mc_tile_entity_classes *classes,
-                                            mc_tile_entity_kind kind) {
+static mc_tile_entity_status live_class_name(mc_tile_entity_classes *classes,
+                                             mc_tile_entity_kind kind, mc_tile_entity_name **out) {
     live_class_id selected;
     switch (kind) {
         case MC_TILE_ENTITY_CHEST:
@@ -2737,14 +2792,25 @@ static mc_tile_entity_name *live_class_name(mc_tile_entity_classes *classes,
             selected = LIVE_FURNACE;
             break;
         default:
-            return NULL;
+            return MC_TILE_ENTITY_INVALID_KIND;
     }
     if (classes == NULL || classes->phase != 2)
-        return NULL;
+        return MC_TILE_ENTITY_STATE_ERROR;
+    if (classes->by_class != NULL) {
+        uint32_t hash = 0;
+        const mc_tile_entity_status status = mc_tile_entity_class_literal_identity_hash(
+            &classes->class_literals[(size_t)live_class_kinds[(size_t)selected]],
+            mc_java_random_profile_main_identity(classes->parent->profile), &hash);
+        if (status != MC_TILE_ENTITY_OK)
+            return status;
+    }
     for (size_t i = 0; i < classes->class_count; ++i)
-        if (classes->by_class[i].kind == selected)
-            return classes->by_class[i].name;
-    return NULL;
+        if (classes->by_class[i].kind == selected) {
+            *out = classes->by_class[i].name;
+            return MC_TILE_ENTITY_OK;
+        }
+    *out = NULL;
+    return MC_TILE_ENTITY_OK;
 }
 
 mc_world_storage_status mc_live_tile_entities_classes_retire(mc_world_runtime_classes *parent,

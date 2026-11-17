@@ -6,6 +6,8 @@
 #include "mc/core/math/math.h"
 #include "mc/world/runtime/construction.h"
 #include "mc/world/runtime/entities.h"
+#include "world/runtime/tile_entities/identity_set_internal.h"
+#include "world/runtime/tile_entities/tile_entities_internal.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -167,7 +169,7 @@ int main(void) {
 
     /* Selected original98..115 /394..417 /547..626 List/Set bodies over
      * explicitly registered native fixture Lists. No GL/ChunkCache execution
-     * or JVM identity-hash order is claimed by these component controls. */
+     * is claimed by these component controls. Identity uses the native profile. */
     CHECK(mc_source_dk_tile_lists_entered(&dk, NULL, 0, &call, &error) && tiles.count == 0 &&
           shared.count == 0);
     CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);
@@ -185,10 +187,12 @@ int main(void) {
     captured = NULL;
     const size_t stable_bytes = owner.arena.bytes, stable_allocations = owner.arena.allocations;
     for (size_t i = 0; i < 64; ++i) {
+        const uint32_t previous_mod_count = shared.mod_count;
         CHECK(mc_source_dk_tile_lists_entered(&dk, duplicates, 2, &call, &error));
         CHECK(mc_source_dk_compile_inspect(call, &state) && state.new_tile_set_count == 0 &&
               state.old_tile_set_count == 0 && state.shared_tiles_added == 0 &&
-              state.shared_tiles_removed == 0 && shared.count == 1 && tiles.count == 2);
+              state.shared_tiles_removed == 0 && shared.count == 1 && tiles.count == 2 &&
+              shared.mod_count == previous_mod_count + 1u);
         CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK &&
               owner.arena.bytes == stable_bytes && owner.arena.allocations == stable_allocations);
     }
@@ -237,12 +241,14 @@ int main(void) {
     shared.entries = NULL;
     shared.capacity = 0;
     owner.arena.options.max_constructor_bytes = owner.arena.bytes;
+    const uint32_t before_refused_mod_count = shared.mod_count;
     const bool refused_add = mc_source_dk_tile_lists_entered(&dk, one_spawner, 1, &call, &error);
     owner.arena.options.max_constructor_bytes = arena_limit;
     CHECK(!refused_add && error.status == MC_CLIENT_RENDER_GLOBAL_LIMIT && error.source_pc == 584 &&
           error.native_policy && shared.count == 0 && tiles.count == 1 &&
           mc_source_dk_compile_inspect(call, &state) && state.new_tile_set_count == 1 &&
-          state.shared_tiles_added == 0 && !state.returned);
+          state.shared_tiles_added == 0 && !state.returned &&
+          shared.mod_count == before_refused_mod_count + 1u);
     shared.entries = saved_entries;
     shared.capacity = saved_capacity;
     CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);
@@ -274,13 +280,46 @@ int main(void) {
     CHECK(mc_source_dk_tile_lists_entered(&dk, NULL, 0, &call, &error));
     CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);
     mc_tile_entity *two_new[] = {spawner, second};
-    CHECK(!mc_source_dk_tile_lists_entered(&dk, two_new, 2, &call, &error) &&
-          error.status == MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY &&
-          error.source_pc == 584 && error.native_policy && shared.count == 0 && tiles.count == 2 &&
-          mc_source_dk_compile_inspect(call, &state) && state.new_tile_set_count == 2 &&
-          state.shared_tiles_added == 0);
+    const uint32_t spawner_bin = (spawner->identity.hash ^ (spawner->identity.hash >> 16u)) & 15u;
+    const uint32_t second_bin = (second->identity.hash ^ (second->identity.hash >> 16u)) & 15u;
+    CHECK(mc_source_dk_tile_lists_entered(&dk, two_new, 2, &call, &error) && shared.count == 2 &&
+          tiles.count == 2 && mc_source_dk_compile_inspect(call, &state) && state.returned &&
+          state.source_pc == 626 && state.new_tile_set_count == 2 &&
+          state.shared_tiles_added == 2 &&
+          shared.entries[0] == (spawner_bin <= second_bin ? spawner : second) &&
+          shared.entries[1] == (spawner_bin <= second_bin ? second : spawner));
     CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);
-    CHECK(mc_source_dk_tile_lists_entered(&dk, NULL, 0, &call, &error));
+    CHECK(mc_source_dk_tile_lists_entered(&dk, NULL, 0, &call, &error) && shared.count == 0 &&
+          mc_source_dk_compile_inspect(call, &state) && state.shared_tiles_removed == 2);
+    CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);
+
+    /* Authored native invalid-cell input reaches contains608 only in the
+     * other DK's F occurrence. The first completed removal is committed;
+     * the throwing element and untouched suffix remain held and indexed. */
+    CHECK(mc_source_dk_tile_lists_entered(&dk, one_spawner, 1, &call, &error));
+    CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);
+    CHECK(mc_source_dk_tile_lists_entered(&other_dk, one_second, 1, &call, &error) &&
+          shared.count == 2 && shared.entries[0] == spawner && shared.entries[1] == second);
+    CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);
+    const uint32_t saved_second_hash = second->identity.hash;
+    const uint32_t before_tail_mod_count = shared.mod_count;
+    second->identity.hash = UINT32_C(0x80000000);
+    const bool refused_tail = mc_source_dk_tile_lists_entered(&dk, NULL, 0, &call, &error);
+    second->identity.hash = saved_second_hash;
+    CHECK(!refused_tail && error.source_pc == 608 && error.native_policy &&
+          error.tile_identity_set != NULL &&
+          error.tile_identity_set->tile_status == MC_TILE_ENTITY_STATE_ERROR && shared.count == 1 &&
+          shared.entries[0] == second && shared.entries[1] == NULL &&
+          shared.mod_count == before_tail_mod_count + 2u &&
+          mc_source_dk_compile_inspect(call, &state) && state.shared_tiles_removed == 1 &&
+          !state.returned);
+    CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);
+    CHECK(mc_render_global_tile_list_get(&owner, &shared, 0, &captured, &error) ==
+              MC_CLIENT_RENDER_GLOBAL_OK &&
+          captured == second);
+    mc_tile_entity_release(captured);
+    captured = NULL;
+    CHECK(mc_source_dk_tile_lists_entered(&other_dk, NULL, 0, &call, &error) && shared.count == 0);
     CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);
     CHECK(mc_source_dk_tile_lists_entered(&dk, one_spawner, 1, &call, &error));
     CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);

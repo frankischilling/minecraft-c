@@ -1,5 +1,31 @@
 # Test scope and reproduction
 
+## Native object identity and Tile collections
+
+The [identity contract](reference/object-identity.md) separates native startup,
+lazy object/Class hashing, typed Tile Sets and the actual DK collection joins.
+Public controls are `core.java_object_identity`, `world.tile_identity_set`,
+`client.tile_entity_renderer_identity` and `client.chunk_tile_eligibility`.
+The Class consumer/collision control passes 299 checks. The final affected
+selections pass six Windows, nine GCC and twelve Clang tests; both Linux
+selections enable ASan, UBSan and leak detection.
+
+The final full MSVC Release build and all 1,372 Windows CTests pass in 539.74
+seconds. Every one of the 1,369 preceding names remains plus the three new
+identity controls, with unique complete inventory/log/JUnit and Start/completion
+joins and no skips or unrun tests. All 6,544 public files and 684 executables/DLLs
+remain unchanged through the sweep. Formatting checks 2,515 files. Subsequent
+documentation, LF normalization and admission updates leave runtime and native
+C harness bytes unchanged.
+
+Fresh serial monitor-2 Piston, Furnace and dense-Chest runs pass 964, 9,540 and
+1,016 checks through ordinary save/reselection and checked window cleanup.
+Selected inputs and imported assets remain unchanged. Eight final gameplay
+images were visually inspected, separately from automated PNG checks. These
+are finite native scenarios; original pixels, sustained play and FPS remain
+unqualified. The [Integer workload](performance/integer-sets.md) reports mixed
+costs and retains its unresolved dispersed-operation regression.
+
 ## Piston activation and drawing
 
 The [activation contract](world/pistons.md) and
@@ -32,15 +58,18 @@ python -B tests/client/test_piston_sdk.py --profile pushed-stone --executable PA
 Run these processes serially on physical monitor2. Empty-front requires real
 transient HY draws, settled extension/retraction, normal save/reselection,
 six fresh images including the inherited held-Dirt capture, and closed
-windows. Pushed-Stone currently retains a real failed DK Set-order prefix
-with two World-created moving Tiles; that profile is not a passing result.
+windows. Pushed-Stone now also passes through two World-created moving Tiles,
+their drawing, settled extension/retraction and ordinary save/reselection.
+The earlier failed DK Set-order prefix remains in its historical capture.
 The runners retain raw streams and failed attempts, guard source/products/
 assets, and never seed the Timer or repair a source outcome to obtain a frame.
 The [sanitized capture record](../tests/benchmarks/piston_windows.json) binds
 the final 27-case geometry comparison, six-scenario activation replay, 951-check
 empty-front SDK pass and separate pushed-Stone failure. All six successful SDK
 images were visually inspected; that review remains separate from PNG checks
-and supplies no original pixel comparison.
+and supplies no original pixel comparison. The later
+[identity integration](reference/object-identity.md) has its own native controls
+and monitor-2 result; it does not rewrite that frozen record.
 
 The full MSVC Release build and all 1,369 Windows CTests pass in 462.59 seconds.
 The exact seventeen additions retain all 1,352 preceding names, with complete

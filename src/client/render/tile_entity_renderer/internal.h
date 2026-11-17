@@ -8,6 +8,7 @@ typedef struct tile_renderer_map_node {
     const mc_tile_entity_class_literal *key;
     mc_client_tile_renderer *value;
     struct tile_renderer_map_node *next;
+    uint32_t hash; /* Cached HashMap spread of the actual Class identity hash. */
 } tile_renderer_map_node;
 
 typedef struct tile_renderer_map {

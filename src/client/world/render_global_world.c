@@ -99,6 +99,7 @@ bool mc_render_global_pointer_append(mc_client_render_global *o, mc_client_rende
                                      list != NULL);
         return false;
     }
+    ++list->mod_count;
     if (list->count == list->capacity) {
         size_t capacity = list->capacity == 0 ? 8u : list->capacity * 2u;
         if (capacity > INT32_MAX || capacity > SIZE_MAX / sizeof(void *)) {
@@ -246,6 +247,9 @@ static bool rebuild(rebuild_context *c) {
                                o->fields.a == NULL ? MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE
                                                    : MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
                                "actual TileEntity List.clear receiver", 249, o->fields.a != NULL);
+    ++o->fields.a->mod_count;
+    for (size_t i = 0; i < o->fields.a->count; ++i)
+        o->fields.a->entries[i] = NULL;
     o->fields.a->count = 0;
     mc_render_global_tile_list_release(o);
     int32_t offset = 0, ordinal = 0;

@@ -310,6 +310,8 @@ endif()
 # The shared core has no window, graphics, audio, JDK, or asset dependencies.
 add_library(mc_core STATIC
     src/core/java/int_set.c
+    src/core/java/hash_table_internal.c
+    src/core/java/object_identity.c
     src/core/java/java.c
     src/core/java/string_case.c
     src/core/java/float_parse.c
@@ -660,6 +662,8 @@ add_library(mc_simulation STATIC
     src/entity/nbt/nbt.c
     src/entity/nbt/storage.c
     src/world/runtime/tile_entities/tile_entities.c
+    src/world/runtime/tile_entities/identity.c
+    src/world/runtime/tile_entities/identity_set_internal.c
     src/world/runtime/tile_entities/piston_math.c
     src/world/runtime/tile_entities/piston.c
     src/world/runtime/tile_entities/piston_tick.c
@@ -3144,6 +3148,11 @@ if(BUILD_TESTING)
     add_test(NAME world.tile_entity_class_literals COMMAND mc_test_tile_entity_class_literals)
     set_tests_properties(world.tile_entity_class_literals PROPERTIES LABELS "public;unit;world;ownership")
 
+    add_executable(mc_test_tile_identity_set tests/world/runtime/tile_entities/test_identity_set.c)
+    target_link_libraries(mc_test_tile_identity_set PRIVATE mc_simulation mc_c_atomics mc_build_options)
+    add_test(NAME world.tile_identity_set COMMAND mc_test_tile_identity_set)
+    set_tests_properties(world.tile_identity_set PROPERTIES LABELS "public;unit;world;ownership" TIMEOUT 60)
+
     add_executable(mc_test_world_saving tests/world/runtime/saving/test_saving.c)
     target_link_libraries(mc_test_world_saving PRIVATE mc_simulation mc_c_atomics mc_build_options)
 
@@ -3378,6 +3387,12 @@ if(BUILD_TESTING)
     target_link_libraries(mc_test_java_int_set_allocator PRIVATE mc_core mc_build_options)
     add_test(NAME core.java_int_set_allocator COMMAND mc_test_java_int_set_allocator)
     set_tests_properties(core.java_int_set_allocator PROPERTIES LABELS "public;unit;ownership" TIMEOUT 60)
+
+    add_executable(mc_test_java_object_identity tests/core/java/test_object_identity.c)
+    target_include_directories(mc_test_java_object_identity PRIVATE src/core/java)
+    target_link_libraries(mc_test_java_object_identity PRIVATE mc_core mc_c_atomics mc_build_options)
+    add_test(NAME core.java_object_identity COMMAND mc_test_java_object_identity)
+    set_tests_properties(core.java_object_identity PROPERTIES LABELS "public;unit" TIMEOUT 30)
 
     add_executable(mc_test_java_properties tests/core/java/test_properties.c)
     target_link_libraries(mc_test_java_properties PRIVATE mc_core mc_build_options)

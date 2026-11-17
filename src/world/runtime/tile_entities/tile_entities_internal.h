@@ -3,11 +3,17 @@
 
 #include "mc/world/runtime/tile_entities/tile_entities.h"
 
+#include "../../../core/java/object_identity_internal.h"
+
 /* The actual native TileEntity owner layout. Instance field controls used by native
  * invariant/reference tests must be explicitly labeled and restored. Public
  * clients use held owner APIs; raw field access adds no gameplay/tick support. */
 struct mc_tile_entity {
     size_t holds;
+    /* Native Object identity, outside all Source kind-state assignments. The
+     * zeroed RAW allocation owns this cell until final native destruction;
+     * constructors, invalidation, World rebinding and NBT never reset/copy it. */
+    mc_java_identity_cell identity;
     mc_tile_entity_kind kind;
     mc_tile_entity_phase phase;
     mc_tile_entity_classes *classes;

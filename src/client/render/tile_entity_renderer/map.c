@@ -1,88 +1,169 @@
 #include "internal.h"
 
+#include "../../../core/java/object_identity_profile_internal.h"
+#include "../../../world/runtime/tile_entities/identity_internal.h"
+
 #include <stdint.h>
 #include <stdlib.h>
 
-/* Canonical pointer identity, not name/profile/kind equality. This native hash
- * and iteration order do not claim JDK identityHashCode/bucket equivalence. */
-static size_t bucket(const mc_tile_entity_class_literal *key, size_t capacity) {
-    uintptr_t value = (uintptr_t)key;
-    value ^= value >> 7;
-    value ^= value >> 17;
-    return (size_t)value & (capacity - 1);
-}
+static bool same_class_namespace(mc_client_tile_renderer_dispatcher *,
+                                 const mc_tile_entity_class_literal *,
+                                 mc_client_tile_renderer_error *);
 
 tile_renderer_map_node *tile_renderer_map_node_find(const tile_renderer_map *map,
                                                     const mc_tile_entity_class_literal *key) {
     if (map == NULL || map->capacity == 0)
         return NULL;
-    for (tile_renderer_map_node *p = map->buckets[bucket(key, map->capacity)]; p != NULL;
+    /* Passive diagnostic lookup must not acquire an Object identity hash. */
+    for (size_t i = 0; i < map->capacity; ++i)
+        for (tile_renderer_map_node *p = map->buckets[i]; p != NULL; p = p->next)
+            if (p->key == key)
+                return p;
+    return NULL;
+}
+
+static bool class_hash(mc_client_tile_renderer_dispatcher *m,
+                       const mc_tile_entity_class_literal *key, uint32_t *out, const char *method,
+                       const char *descriptor, int32_t pc, mc_client_tile_renderer_error *e) {
+    if (key == NULL) {
+        *out = 0; /* HashMap.hash(null) does not invoke Object.hashCode. */
+        return true;
+    }
+    uint32_t hash = 0;
+    e->tile_entity = mc_tile_entity_class_literal_identity_hash(
+        key, mc_java_random_profile_main_identity(m->classes->profile), &hash);
+    if (e->tile_entity != MC_TILE_ENTITY_OK) {
+        tile_renderer_fail(e, MC_CLIENT_TILE_RENDERER_TILE_ENTITY_FAILED,
+                           "LL actual Class identity hash", "ll", method, descriptor, pc, true);
+        return false;
+    }
+    *out = hash ^ (hash >> 16u);
+    return true;
+}
+
+static tile_renderer_map_node *find_hashed(const tile_renderer_map *map,
+                                           const mc_tile_entity_class_literal *key, uint32_t hash) {
+    for (tile_renderer_map_node *p = map->buckets[hash & (map->capacity - 1)]; p != NULL;
          p = p->next)
-        if (p->key == key)
+        if (p->hash == hash && p->key == key)
             return p;
     return NULL;
+}
+
+/* Only nine canonical same-namespace Class keys can enter this no-remove Map;
+ * Source LL never puts NULL. Default capacity16/threshold12 cannot resize by
+ * size here. Nine colliding insertions can ask treeifyBin to grow16->32, but
+ * cannot reach a tree. This is not a general arbitrary-key HashMap backend. */
+static bool resize(mc_client_tile_renderer_dispatcher *m, const char *method,
+                   const char *descriptor, int32_t pc, mc_client_tile_renderer_error *e) {
+    tile_renderer_map *map = m->map;
+    if (map->capacity != 0 && map->capacity != 16) {
+        tile_renderer_fail(e, MC_CLIENT_TILE_RENDERER_INVALID_PHASE,
+                           "LL finite canonical Class Map resize history", "ll", method, descriptor,
+                           pc, true);
+        return false;
+    }
+    const size_t old_capacity = map->capacity;
+    const size_t capacity = old_capacity == 0 ? 16 : old_capacity * 2;
+    /* HashMap.resize stores its threshold before allocating the new array;
+     * a native allocation refusal retains that completed scalar effect. */
+    map->threshold = capacity - capacity / 4;
+    tile_renderer_map_node **buckets = tile_renderer_allocate(
+        m->classes, capacity * sizeof(*buckets), "ll", method, descriptor, pc, e);
+    if (buckets == NULL)
+        return false;
+    for (size_t i = 0; i < old_capacity; ++i) {
+        tile_renderer_map_node *lo = NULL, *lo_tail = NULL, *hi = NULL, *hi_tail = NULL;
+        for (tile_renderer_map_node *p = map->buckets[i]; p != NULL;) {
+            tile_renderer_map_node *next = p->next;
+            if ((p->hash & old_capacity) == 0) {
+                if (lo_tail == NULL)
+                    lo = p;
+                else
+                    lo_tail->next = p;
+                lo_tail = p;
+            } else {
+                if (hi_tail == NULL)
+                    hi = p;
+                else
+                    hi_tail->next = p;
+                hi_tail = p;
+            }
+            p = next;
+        }
+        if (lo_tail != NULL)
+            lo_tail->next = NULL;
+        if (hi_tail != NULL)
+            hi_tail->next = NULL;
+        buckets[i] = lo;
+        buckets[i + old_capacity] = hi;
+    }
+    m->classes->bytes -= old_capacity * sizeof(*buckets);
+    free(map->buckets);
+    map->buckets = buckets;
+    map->capacity = capacity;
+    return true;
 }
 
 bool tile_renderer_map_put(mc_client_tile_renderer_dispatcher *m,
                            const mc_tile_entity_class_literal *key, mc_client_tile_renderer *value,
                            int32_t pc, bool constructor, mc_client_tile_renderer_error *e) {
-    mc_client_tile_renderer_classes *c = m->classes;
     tile_renderer_map *map = m->map;
     const char *method = constructor ? "<init>" : "a";
     const char *descriptor = constructor ? "()V" : "(Ljava/lang/Class;)Lje;";
+    if (key == NULL || !same_class_namespace(m, key, e)) {
+        if (key == NULL)
+            tile_renderer_fail(e, MC_CLIENT_TILE_RENDERER_INVALID_ARGUMENT,
+                               "LL never puts a null Class key", "ll", method, descriptor, pc,
+                               true);
+        return false;
+    }
+    uint32_t hash = 0;
+    if (!class_hash(m, key, &hash, method, descriptor, pc, e))
+        return false;
     if (m->put_calls == SIZE_MAX) {
         tile_renderer_fail(e, MC_CLIENT_TILE_RENDERER_LIMIT, "LL native Map put counter bound",
                            "ll", method, descriptor, pc, true);
         return false;
     }
-    tile_renderer_map_node *existing = tile_renderer_map_node_find(map, key);
+    if (map->capacity == 0 && !resize(m, method, descriptor, pc, e))
+        return false;
+    tile_renderer_map_node *existing = find_hashed(map, key, hash);
     if (existing != NULL) {
         existing->value = value; /* Null-value replacement preserves this actual node. */
     } else {
-        if (map->capacity == 0 || map->size >= map->threshold) {
-            if (map->capacity > SIZE_MAX / 2) {
-                tile_renderer_fail(e, MC_CLIENT_TILE_RENDERER_LIMIT, "LL native Map capacity bound",
-                                   "ll", method, descriptor, pc, true);
-                return false;
-            }
-            const size_t capacity = map->capacity == 0 ? 16 : map->capacity * 2;
-            if (capacity > SIZE_MAX / sizeof(*map->buckets)) {
-                tile_renderer_fail(e, MC_CLIENT_TILE_RENDERER_LIMIT,
-                                   "LL native Map backing size bound", "ll", method, descriptor, pc,
-                                   true);
-                return false;
-            }
-            tile_renderer_map_node **buckets = tile_renderer_allocate(
-                c, capacity * sizeof(*buckets), "ll", method, descriptor, pc, e);
-            if (buckets == NULL)
-                return false;
-            for (size_t i = 0; i < map->capacity; ++i) {
-                tile_renderer_map_node *p = map->buckets[i];
-                while (p != NULL) {
-                    tile_renderer_map_node *next = p->next;
-                    const size_t b = bucket(p->key, capacity);
-                    p->next = buckets[b];
-                    buckets[b] = p;
-                    p = next;
-                }
-            }
-            c->bytes -= map->capacity * sizeof(*buckets);
-            free(map->buckets);
-            map->buckets = buckets;
-            map->capacity = capacity;
-            map->threshold = capacity - capacity / 4;
+        if (map->size >= (size_t)MC_TILE_ENTITY_CLASS_KIND_COUNT) {
+            tile_renderer_fail(e, MC_CLIENT_TILE_RENDERER_INVALID_PHASE,
+                               "LL finite canonical Class Map key bound", "ll", method, descriptor,
+                               pc, true);
+            return false;
         }
         tile_renderer_map_node *p =
-            tile_renderer_allocate(c, sizeof(*p), "ll", method, descriptor, pc, e);
+            tile_renderer_allocate(m->classes, sizeof(*p), "ll", method, descriptor, pc, e);
         if (p == NULL)
             return false;
-        const size_t b = bucket(key, map->capacity);
+        const size_t b = hash & (map->capacity - 1);
         p->key = key;
         p->value = value;
-        p->next = map->buckets[b];
-        map->buckets[b] = p;
-        ++map->size;
+        p->hash = hash;
+        if (map->buckets[b] == NULL)
+            map->buckets[b] = p;
+        else {
+            size_t bin_count = 0;
+            tile_renderer_map_node *tail = map->buckets[b];
+            while (tail->next != NULL) {
+                tail = tail->next;
+                ++bin_count;
+            }
+            tail->next = p;
+            /* Actual putVal links the new node before treeifyBin/resize and
+             * increments modCount/size only after that child returns. */
+            if (bin_count >= 7 && !resize(m, method, descriptor, pc, e))
+                return false;
+        }
         ++map->mod_count;
+        if (++map->size > map->threshold && !resize(m, method, descriptor, pc, e))
+            return false;
     }
     ++m->put_calls;
     m->last_put_pc = pc;
@@ -143,7 +224,14 @@ static bool source_admit(mc_client_tile_renderer_dispatcher *m, mc_client_tile_r
 static bool lookup_class(mc_client_tile_renderer_dispatcher *m,
                          const mc_tile_entity_class_literal *key, mc_client_tile_renderer **out,
                          mc_client_tile_renderer_error *e) {
-    tile_renderer_map_node *node = tile_renderer_map_node_find(m->map, key); /* Map.get5. */
+    tile_renderer_map_node *node = NULL;
+    /* HashMap.getNode skips hash(key) entirely while its table is absent. */
+    if (m->map->capacity != 0) {
+        uint32_t hash = 0;
+        if (!class_hash(m, key, &hash, "a", "(Ljava/lang/Class;)Lje;", 5, e))
+            return false;
+        node = find_hashed(m->map, key, hash); /* Map.get5. */
+    }
     mc_client_tile_renderer *value = node == NULL ? NULL : node->value;
     if (value == NULL && key != m->classes->base) { /* Actual Class comparison21. */
         if (key == NULL) {

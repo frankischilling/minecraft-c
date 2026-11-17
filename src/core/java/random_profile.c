@@ -93,6 +93,7 @@ mc_java_random_profile_status mc_java_random_profile_create(size_t max_allocatio
         free(profile);
         return status;
     }
+    mc_java_identity_profile_initialize(&profile->identity);
     atomic_init(&profile->uniquifier, INITIAL_UNIQUIFIER);
     atomic_init(&profile->holder_phase, MC_JAVA_RANDOM_HOLDER_COLD);
     atomic_init(&profile->constructor_admitted, false);
@@ -117,6 +118,10 @@ mc_java_random_profile_status mc_java_random_profile_create(size_t max_allocatio
 
 size_t mc_java_random_profile_allocation_bytes(const mc_java_random_profile *profile) {
     return profile == NULL ? 0 : profile->allocated_bytes;
+}
+
+mc_java_identity_thread *mc_java_random_profile_main_identity(mc_java_random_profile *profile) {
+    return profile == NULL ? NULL : &profile->identity.main_thread;
 }
 
 void mc_java_random_profile_free(mc_java_random_profile *profile) {

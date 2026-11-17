@@ -45,6 +45,7 @@ _Static_assert(sizeof(struct mc_client_render_map) == 2 * sizeof(size_t) + sizeo
 struct mc_client_render_list {
     size_t count, capacity;
     void **entries;
+    uint32_t mod_count;
 };
 
 struct mc_client_direct_byte_buffer {

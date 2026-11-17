@@ -3,6 +3,8 @@
 
 #include "mc/core/java/random_profile.h"
 
+#include "object_identity_profile_internal.h"
+
 #include "../../platform/time/nanotime.h"
 
 #include <stdatomic.h>
@@ -85,6 +87,8 @@ typedef struct mc_java_random_constructor_records_view {
  * its consumed/failure fields are accessed exclusively in bound mode. */
 struct mc_java_random_profile {
     mc_platform_nanotime clock;
+    /* Separate native VM state; Random constructors/Math never draw it. */
+    mc_java_identity_profile identity;
     _Atomic(uint64_t) uniquifier;
     atomic_uint holder_phase;
     mc_java_math_random_owner *math;

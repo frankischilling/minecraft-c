@@ -104,6 +104,7 @@ separate comparison scope; they do not establish composed original N parity.
 The [Spawner preview path](spawner-rendering.md) adds typed published-row
 ownership, LL drawing and the actual AG/TH coordinates call. The
 [Piston renderer](piston-rendering.md) now enters the actual HY/CV bodies and
-has a separate finite original/native comparison. Sign drawing, multiple new
-Tile Set order, deferred old Worlds and general interactive play remain
-unfinished or unqualified.
+has a separate finite original/native comparison. The
+[identity Set join](../reference/object-identity.md) now publishes multiple new
+Tiles using lazy cached hashes and the selected collection rules. Sign drawing,
+deferred old Worlds and general interactive play remain unfinished or unqualified.

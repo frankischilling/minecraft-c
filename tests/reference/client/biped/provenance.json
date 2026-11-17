@@ -354,12 +354,12 @@
       "sha256": "161364bb3c034fa7f5f06900e613ef5092c5fa444cb6669155a63223ac86e68e"
     },
     "src/core/java/random_profile.c": {
-      "bytes": 20567,
-      "sha256": "c0ea797b3ee5d0b9c4bc7d50695fe03e223f5361e693d62a20050a2e7571a909"
+      "bytes": 20796,
+      "sha256": "0c6551175316a6bda76358e103bd3ccf775aacbafa425500dedbfec2492b4cc8"
     },
     "src/core/java/random_profile_internal.h": {
-      "bytes": 9836,
-      "sha256": "589490b66a84ed45bf63d6143ea782125a6859bc937aa1c7b238f0ad2d264d8d"
+      "bytes": 9998,
+      "sha256": "06edb05d5d019dbfaf9239acd582b122b067aad86ab368abed1edce994772a03"
     },
     "src/core/java/system_output.c": {
       "bytes": 7492,
