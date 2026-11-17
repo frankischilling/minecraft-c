@@ -7,13 +7,19 @@ the [inventory](inventory.md) and [roadmap](roadmap.md) preserve the remaining w
 
 ## Current client work
 
+The Tile Set snapshot declaration now uses the existing scoped MSVC C4200
+guard for standard C17 flexible arrays. This addresses the hosted VS2022 build
+failure while retaining strict diagnostics elsewhere. Local MSVC Debug Tile
+Set controls pass; MSVC/GCC/Clang preprocessing preserves all non-diagnostic
+C output. Hosted validation of the compatibility change remains pending.
+
 The [native identity integration](reference/object-identity.md) removes the
 multiple-new-Tile compilation blocker. Final monitor-2 pushed-Stone, Furnace
 and dense-Chest scenarios pass 964, 9,540 and 1,016 checks through ordinary
 save/reselection and checked shutdown. Lazy Class-hash and collision-order
 controls add 299 checks. Final affected selections pass six Windows, nine GCC
 and twelve Clang tests, with sanitizers and leak detection on Linux.
-The final full MSVC Release build and all 1,372 Windows tests pass in 539.74
+At `2543f72e`, the full MSVC Release build and all 1,372 Windows tests pass in 539.74
 seconds. All 1,369 preceding names remain plus exactly three additions, with
 complete inventory/log/JUnit and Start/completion joins and no skips or unrun
 tests. All 6,544 public files and 684 native products stay unchanged during

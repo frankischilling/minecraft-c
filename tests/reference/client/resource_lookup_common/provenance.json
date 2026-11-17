@@ -802,8 +802,8 @@
       "sha256": "7b326a80035ebe9fca109d58eaf7140a1c7eca3c624288cc06730b6da87c096e"
     },
     "docs/status.md": {
-      "bytes": 14289,
-      "sha256": "ce7876e0e617ea105f78139be307d5310543bd539d52bd3ed1d8b46cfa4c0ddf"
+      "bytes": 14678,
+      "sha256": "8681c068b327bae7a8d95900bcfc906f53e2d12d0c96748cf03f85743003a494"
     },
     "docs/storage/compression.md": {
       "bytes": 3162,
@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 701554,
-      "sha256": "84d89e4a1255aea24269d706ec325b187500d3364fab40e2cbe8836efb05d230"
+      "bytes": 702096,
+      "sha256": "a71bf81cc2fc2e38783860ede2fa6c65d912a73dc2688410a3aa86afe3facc18"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39570,
@@ -6411,7 +6411,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 904810,
-      "sha256": "fc94661061772079b051847235901e7ad5d5fecc2081b90f056de54b0b188645"
+      "sha256": "7395ebb4a2dc7283f240e8f3f50109f8b800dc69f0b9a6272db59dfa7b5df947"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6475,7 +6475,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1029093,
-      "sha256": "4b222c01c8307a7b0affc103d53e6762c6712b783a625f72affc4cbfa42d57fb"
+      "sha256": "c8c85af28d151b6f151934da78326b015eda66f1f8b5923534d6fef223777606"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6607,7 +6607,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 901635,
-      "sha256": "1854ac280f9284505226bd0b6ec722772e87fa79e45e8a287b8fa33e802f3164"
+      "sha256": "c77b22f233805fbf57b63ce709645153e8e23bdceaa478666a08e410eb85b0de"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -25578,8 +25578,8 @@
       "sha256": "56aa9c481abfe74d3f8671b1164aba6076652bb73548fc4130955d86f0a53494"
     },
     "src/world/runtime/tile_entities/identity_set_internal.c": {
-      "bytes": 30357,
-      "sha256": "f263600ac5acc7686d54b853c11b35ed93056c3e4b6890330a2726f4165c2f17"
+      "bytes": 30647,
+      "sha256": "8dcc573d8f6556f19cb6ebb23db2280134616563af703b82f81e978fd8620939"
     },
     "src/world/runtime/tile_entities/identity_set_internal.h": {
       "bytes": 9523,

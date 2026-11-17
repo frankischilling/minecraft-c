@@ -11762,8 +11762,8 @@
       "sha256": "56aa9c481abfe74d3f8671b1164aba6076652bb73548fc4130955d86f0a53494"
     },
     "src/world/runtime/tile_entities/identity_set_internal.c": {
-      "bytes": 30357,
-      "sha256": "f263600ac5acc7686d54b853c11b35ed93056c3e4b6890330a2726f4165c2f17"
+      "bytes": 30647,
+      "sha256": "8dcc573d8f6556f19cb6ebb23db2280134616563af703b82f81e978fd8620939"
     },
     "src/world/runtime/tile_entities/identity_set_internal.h": {
       "bytes": 9523,

@@ -10,7 +10,7 @@ The Class consumer/collision control passes 299 checks. The final affected
 selections pass six Windows, nine GCC and twelve Clang tests; both Linux
 selections enable ASan, UBSan and leak detection.
 
-The final full MSVC Release build and all 1,372 Windows CTests pass in 539.74
+At `2543f72e`, the full MSVC Release build and all 1,372 Windows CTests pass in 539.74
 seconds. Every one of the 1,369 preceding names remains plus the three new
 identity controls, with unique complete inventory/log/JUnit and Start/completion
 joins and no skips or unrun tests. All 6,544 public files and 684 executables/DLLs
@@ -25,6 +25,14 @@ images were visually inspected, separately from automated PNG checks. These
 are finite native scenarios; original pixels, sustained play and FPS remain
 unqualified. The [Integer workload](performance/integer-sets.md) reports mixed
 costs and retains its unresolved dispersed-operation regression.
+
+The subsequent MSVC compatibility guard surrounds only the Tile Set snapshot's
+standard flexible-array declaration. A strict local Debug build and Tile Set
+controls pass. After removing line markers and diagnostic pragmas, local MSVC's
+preprocessed C is unchanged; GCC and Clang output is byte-identical. A separate
+authored unused-parameter canary still fails under `/W4 /WX` with C4100/C2220.
+The older hosted compiler's original C4200 build failure remains unqualified;
+its new exact-head build and tests are checked separately.
 
 ## Piston activation and drawing
 

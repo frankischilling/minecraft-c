@@ -17,6 +17,12 @@ typedef struct tile_identity_node {
     uint32_t identity_hash;
 } tile_identity_node;
 
+/* Older MSVC diagnoses this standard C17 flexible array as extension C4200.
+ * Keep the suppression local to the declaration, matching the other owners. */
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4200)
+#endif
 struct mc_tile_identity_set_snapshot {
     mc_tile_identity_set *owner;
     mc_tile_identity_set_snapshot *previous, *next;
@@ -24,6 +30,9 @@ struct mc_tile_identity_set_snapshot {
     bool published;
     mc_tile_entity *items[];
 };
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
 struct mc_tile_identity_set {
     mc_tile_identity_set_limits limits;
