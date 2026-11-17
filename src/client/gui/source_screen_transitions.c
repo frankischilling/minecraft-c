@@ -20,6 +20,8 @@
 #include "source_pause_screen_internal.h"
 #include "source_screen_transition_receipts_internal.h"
 #include "source_screen_transitions_terminal_internal.h"
+#include "source_sign_screen.h"
+#include "source_sign_screen_internal.h"
 #include "source_workbench_screen_internal.h"
 #include "source_world_list.h"
 #include "source_world_selection_internal.h"
@@ -38,6 +40,7 @@ typedef struct screen_node {
     mc_client_source_oo *workbench;
     mc_client_source_hp *chest;
     mc_client_source_ov *furnace;
+    mc_client_source_yc *sign;
     mc_entity *constructor_player; /* Native occurrence of actual DC invocation receiver. */
     mc_world_info_name *create_folder, *create_name;
     mc_client_display_screen_call *display;
@@ -130,6 +133,41 @@ static screen_node *node(mc_client_screen_transitions *r) {
     r->nodes = n;
     ++r->node_count;
     return n;
+}
+
+mc_client_screen_status
+mc_client_screen_transitions_adopt_display(mc_client_screen_transitions *r,
+                                           mc_client_display_screen_call **slot,
+                                           mc_client_screen_error *e) {
+    if (e == NULL)
+        return MC_CLIENT_SCREEN_INVALID_ARGUMENT;
+    *e = (mc_client_screen_error){0};
+    if (r == NULL || slot == NULL)
+        return mc_screen_fail(e, MC_CLIENT_SCREEN_INVALID_ARGUMENT,
+                              "display custody actual router/owning slot", NULL, NULL, NULL, 0);
+    if (*slot == NULL)
+        return MC_CLIENT_SCREEN_OK;
+    if (r->active || (*slot)->active)
+        return mc_screen_fail(e, MC_CLIENT_SCREEN_BUSY, "display custody active native call", NULL,
+                              NULL, NULL, 0);
+    if ((*slot)->app != r->app || (*slot)->classes != r->classes)
+        return mc_screen_fail(e, MC_CLIENT_SCREEN_INVALID_ARGUMENT,
+                              "display custody actual App/class identity", NULL, NULL, NULL, 0);
+    /* This is native ownership transfer, including after one-way admission
+     * ending. It never clears the router's retained Source failure. */
+    if (r->node_count == SIZE_MAX)
+        return mc_screen_fail(e, MC_CLIENT_SCREEN_LIMIT, "display custody record bound", NULL, NULL,
+                              NULL, 0);
+    screen_node *n = calloc(1, sizeof(*n));
+    if (n == NULL)
+        return mc_screen_fail(e, MC_CLIENT_SCREEN_ALLOCATION_FAILED,
+                              "display custody record allocation", NULL, NULL, NULL, 0);
+    n->display = *slot;
+    n->next = r->nodes;
+    r->nodes = n;
+    ++r->node_count;
+    *slot = NULL;
+    return MC_CLIENT_SCREEN_OK;
 }
 
 static mc_client_screen_status world_status(mc_client_world_load_status status) {
@@ -684,6 +722,63 @@ mc_client_screen_status mc_client_screen_transitions_furnace(mc_client_screen_tr
     return leave(r, e);
 }
 
+mc_client_screen_status mc_client_screen_transitions_sign(mc_client_screen_transitions *r,
+                                                          mc_entity *player, mc_tile_entity *tile,
+                                                          mc_client_screen_error *e) {
+    if (!enter(r, e))
+        return r == NULL || e == NULL ? MC_CLIENT_SCREEN_INVALID_ARGUMENT : e->status;
+    if (player == NULL) {
+        fail(r, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE, "DC.a null actual receiver", "dc", "a",
+             "(Lyk;)V", 1);
+        r->failure.native_policy = false;
+        r->failure.source_exception = true;
+        r->failure.exception_class = "java/lang/NullPointerException";
+    } else if (!mc_entity_is_kind(player, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) ||
+               player->local_player == NULL)
+        fail(r, MC_CLIENT_SCREEN_INVALID_ARGUMENT, "DC.a actual LocalPlayer source storage", "dc",
+             "a", "(Lyk;)V", 1);
+    else {
+        screen_node *n = node(r);
+        if (n != NULL) {
+            if (mc_entity_retain(player) != MC_ENTITY_OK)
+                fail(r, MC_CLIENT_SCREEN_BUSY, "DC.a native invocation Player occurrence", NULL,
+                     NULL, NULL, 0);
+            else {
+                n->constructor_player = player;
+                client_application *actual = player->local_player->fields.minecraft;
+                const mc_client_sign_screen_dependencies dependencies = {
+                    .mapping = mc_client_loading_classes_mapping(r->app->startup->font_classes),
+                    .input = mc_client_display_inputs(r->app->display),
+                    .literal_classes = r->app->world_classes};
+                if (mc_client_screen_sign_allocate(r->classes, &dependencies, NULL, &n->sign,
+                                                   &r->failure) != MC_CLIENT_SCREEN_OK)
+                    r->failure.parent_site = (mc_client_screen_site){"dc", "a", "(Lyk;)V", 4};
+                else {
+                    ++r->screens;
+                    if (mc_client_screen_sign_construct(n->sign, tile, &r->failure) !=
+                        MC_CLIENT_SCREEN_OK)
+                        r->failure.parent_site = (mc_client_screen_site){"dc", "a", "(Lyk;)V", 9};
+                    else if (actual == NULL) {
+                        fail(r, MC_CLIENT_SCREEN_SOURCE_NULL_REFERENCE,
+                             "DC.a null captured Minecraft display receiver", "dc", "a", "(Lyk;)V",
+                             12);
+                        r->failure.native_policy = false;
+                        r->failure.source_exception = true;
+                        r->failure.exception_class = "java/lang/NullPointerException";
+                    } else if (actual != r->app)
+                        fail(r, MC_CLIENT_SCREEN_INVALID_ARGUMENT,
+                             "DC.a actual captured Minecraft router identity", "dc", "a", "(Lyk;)V",
+                             12);
+                    else
+                        (void)display(r, mc_client_screen_sign_base(n->sign), "dc", "a", "(Lyk;)V",
+                                      12);
+                }
+            }
+        }
+    }
+    return leave(r, e);
+}
+
 mc_client_screen_status mc_client_screen_transitions_player_close(mc_client_screen_transitions *r,
                                                                   mc_entity *player,
                                                                   mc_client_screen_error *e) {
@@ -1160,6 +1255,21 @@ static bool prepare_inventory_screen(mc_client_screen_transitions *r, mc_client_
     return returned;
 }
 
+static bool sign_terminal_prefix(mc_client_screen_transitions *r, mc_client_screen_error *e) {
+    for (screen_node *n = r->nodes; n != NULL; n = n->next) {
+        if (n->sign == NULL)
+            continue;
+        const bool copied =
+            mc_screen_transition_sign_capture(&r->receipts, &r->failure, &n->sign->detail);
+        const mc_client_screen_status status = mc_client_screen_sign_terminal_prepare(n->sign, e);
+        if (copied)
+            mc_screen_transition_sign_after(&r->receipts, &n->sign->detail);
+        if (status != MC_CLIENT_SCREEN_OK)
+            return false;
+    }
+    return mc_client_screen_sign_class_terminal_prepare(r->classes, e) == MC_CLIENT_SCREEN_OK;
+}
+
 static bool inventory_terminal_prefix(mc_client_screen_transitions *r, mc_client_screen_error *e) {
     if (!mc_screen_lock(r->classes, e))
         return false;
@@ -1388,6 +1498,10 @@ static mc_client_screen_status terminal_prepare(mc_client_screen_transitions *r,
     if (r->terminal_prepared)
         return MC_CLIENT_SCREEN_OK;
     r->active = true;
+    if (!sign_terminal_prefix(r, e)) {
+        r->active = false;
+        return e->status;
+    }
     if (!(scope == NULL ? inventory_terminal_prefix(r, e) : root_inventory_terminal_prefix(r, e))) {
         r->active = false;
         return e->status;
@@ -1629,6 +1743,8 @@ mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_tra
     r->retiring = true;
     if (!retire_respawns(r, e))
         return e->status;
+    if (!sign_terminal_prefix(r, e))
+        return e->status;
     if (!inventory_terminal_prefix(r, e))
         return e->status;
     while (r->nodes != NULL) {
@@ -1708,6 +1824,17 @@ mc_client_screen_status mc_client_screen_transitions_retire(mc_client_screen_tra
                 &r->receipts, n->furnace == NULL ? NULL : &n->furnace->container.detail);
         if (furnace != MC_CLIENT_SCREEN_OK)
             return furnace;
+        if (base != NULL && r->app->r == base)
+            r->app->r = NULL;
+        base = mc_client_screen_sign_base(n->sign);
+        const bool copied_sign = mc_screen_transition_sign_capture(
+            &r->receipts, &r->failure, n->sign == NULL ? NULL : &n->sign->detail);
+        const mc_client_screen_status sign = mc_client_screen_sign_retire(&n->sign, e);
+        if (copied_sign)
+            mc_screen_transition_sign_after(&r->receipts,
+                                            n->sign == NULL ? NULL : &n->sign->detail);
+        if (sign != MC_CLIENT_SCREEN_OK)
+            return sign;
         if (base != NULL && r->app->r == base)
             r->app->r = NULL;
         base = mc_client_screen_inventory_base(n->inventory);

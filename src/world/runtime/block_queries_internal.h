@@ -13,6 +13,15 @@ mc_world_storage_status mc_world_runtime_block_get_source_detailed(
     mc_world_runtime *, int32_t x, int32_t y, int32_t z, int32_t *out, mc_world_storage_error *,
     mc_world_runtime_acquisition_error *, bool *provider_null);
 
+/* Same material body and one FD.f4 block query, retaining that actual query's
+ * complete acquisition and null-provider witness. Required diagnostics are
+ * fresh, caller-owned and disjoint. Native admission refusal leaves acquisition
+ * untouched; the reached lower getter initializes it. Registry work follows only
+ * a returned lower success, and failure preserves the material output. */
+mc_world_storage_status mc_world_runtime_material_get_source_detailed(
+    mc_world_runtime *, int32_t x, int32_t y, int32_t z, mc_material **out,
+    mc_world_material_error *, mc_world_runtime_acquisition_error *, bool *provider_null);
+
 typedef struct mc_world_solid_support_detail {
     mc_world_solid_support_error error;
     mc_world_nearby_error access;

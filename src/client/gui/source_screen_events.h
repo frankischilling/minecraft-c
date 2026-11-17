@@ -7,6 +7,8 @@
 #include "source_screen.h"
 
 typedef struct mc_client_screen_transitions mc_client_screen_transitions;
+typedef struct mc_client_display_screen_call mc_client_display_screen_call;
+typedef struct mc_client_sign_display_record mc_client_sign_display_record;
 
 typedef enum mc_client_screen_action {
     MC_CLIENT_SCREEN_ACTION_NONE,
@@ -50,6 +52,9 @@ typedef struct mc_client_screen_event_error {
     mc_client_display_error display;
     mc_client_source_da *pending_receiver; /* Native monitor-recovery occurrence only. */
     bool monitor_lost;
+    mc_client_display_screen_call *sign_display; /* Borrowed last YC child in the ledger below. */
+    mc_client_sign_display_record *sign_displays, *sign_displays_tail;
+    size_t sign_display_count, sign_display_bytes;
 } mc_client_screen_event_error;
 
 /* Actual virtual a()V: fu increments its canonical i by binary32 +1; da is
@@ -71,7 +76,11 @@ mc_client_screen_status mc_client_screen_particles_draw(mc_client_source_du *, f
 /* Uses the same SDK's Mouse.next until empty, then Keyboard.next until empty.
  * No SDL pump/poll or replacement input queue is introduced. On a reached
  * failure/dependency, later events remain unread. Report/error are required,
- * disjoint, reset on entry and borrowed views expire on owner mutation. */
+ * disjoint, reset on entry and borrowed views expire on owner mutation. Once an
+ * error record owns a reached Sign display child or monitor-recovery occurrence,
+ * retire it before passing that storage to any event/tick/particle entry again.
+ * Runtime composition performs this retirement or an explicit native custody
+ * move before reuse; a failed entry keeps its views until terminal retirement. */
 mc_client_screen_status mc_client_screen_handle_input(mc_client_source_da *, mc_client_sdk_input *,
                                                       mc_client_screen_event_report *,
                                                       mc_client_screen_event_error *);
@@ -85,6 +94,19 @@ mc_client_screen_status mc_client_screen_handle_input_with_transitions(
  * after this consumes pending_receiver. No source input, action, initialization
  * or field rollback is performed. */
 mc_client_screen_status mc_client_screen_event_retire(mc_client_screen_event_error *);
+/* Passive ordered YC Done child access. Every reached invocation has its own
+ * caller-owned output slot, including a failed child. No queued second click
+ * overwrites the first call; all records end through event_retire. */
+bool mc_client_screen_event_sign_display(const mc_client_screen_event_error *, size_t index,
+                                         const mc_client_display_screen_call **out);
+/* Move each actual Done child slot oldest-to-newest into the router's native
+ * graph, without invoking Source or changing diagnostic borrows. Partial
+ * success remains consumed in place; a failed slot stays Event-owned. Call
+ * event_retire afterward to end views/recovery and free the empty ledger.
+ * Terminal failures may move custody before Source graph/storage teardown. */
+mc_client_screen_status mc_client_screen_event_adopt_sign_displays(mc_client_screen_event_error *,
+                                                                   mc_client_screen_transitions *,
+                                                                   mc_client_screen_error *);
 /* Prepared-current-event controls and source callees. They do not claim SDK
  * next/poll completion. Mouse scaling reads actual da.c/d and App.d/e, with
  * Java wrapping multiplication, integer division and inverted Y. The transition

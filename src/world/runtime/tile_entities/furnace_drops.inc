@@ -4,7 +4,7 @@ static bool live_furnace_drops_held(mc_world_runtime *world, const mc_block *blo
                                     int32_t y, int32_t z, mc_live_tile_entity_error *error) {
     mc_tile_entity *furnace = NULL;
     error->bytecode = 11;
-    if (!live_world_get_held(world, x, y, z, &furnace, error, NULL))
+    if (!live_world_get_held(world, x, y, z, &furnace, error, NULL, NULL, NULL))
         return false;
     error->bytecode = 14;
     if (furnace != NULL && furnace->kind != MC_TILE_ENTITY_FURNACE) {

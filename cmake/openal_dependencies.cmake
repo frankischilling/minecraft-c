@@ -131,6 +131,33 @@ function(mc_add_openal_dependencies)
     file(CONFIGURE OUTPUT "${compat_source}/al/auxeffectslot.cpp" CONTENT "${aux_slot}"
         @ONLY NEWLINE_STYLE LF)
     add_subdirectory("${compat_source}" "${openal_binary}/build" EXCLUDE_FROM_ALL)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND HAVE_WFUNCTION_EFFECTS)
+        # Clang 21/libstdc++ 15 cannot infer nonblocking through variant::emplace:
+        # its std::get path includes bad_variant_access and a static local. This
+        # occurs even for a trivial nothrow alternative, without assertions and
+        # at -O2. Keep the diagnostic visible, but do not make this library
+        # inference failure fatal in the one upstream resampler translation unit.
+        include(CheckCXXSourceCompiles)
+        set(CMAKE_CXX_STANDARD 20)
+        set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -Werror=function-effects")
+        check_cxx_source_compiles([=[
+            #include <variant>
+            struct State { float values[4]; };
+            void prepare(std::variant<std::monostate, State> &state)
+                noexcept [[clang::nonblocking]] { state.emplace<State>(); }
+            int main() { return 0; }
+        ]=] MC_OPENAL_NONBLOCKING_VARIANT_COMPILES)
+        if(NOT MC_OPENAL_NONBLOCKING_VARIANT_COMPILES)
+            file(SHA256 "${openal_source}/alc/alu.cpp" resampler_sha256)
+            if(NOT resampler_sha256 STREQUAL
+                "3ceffb2266fddada4ed03164ce983a208ef05d24ac20e8209cfb4a8c7037358a")
+                message(FATAL_ERROR "Pinned OpenAL Soft resampler differs from the reviewed source")
+            endif()
+            set_property(SOURCE "${compat_source}/alc/alu.cpp"
+                DIRECTORY "${compat_source}" APPEND PROPERTY
+                COMPILE_OPTIONS -Wno-error=function-effects)
+        endif()
+    endif()
     get_target_property(openal_type OpenAL TYPE)
     if(NOT openal_type STREQUAL "SHARED_LIBRARY")
         message(FATAL_ERROR "Client audio requires the shared OpenAL Soft runtime")

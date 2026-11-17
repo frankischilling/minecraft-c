@@ -123,7 +123,20 @@ typedef struct mc_client_sdk_input_state {
     const mc_client_sdk_input_error *failure;
     mc_client_sdk_key_event current_key;
     mc_client_sdk_mouse_event current_mouse;
+    size_t code_borrows; /* Passive native code-namespace capabilities; no Source field. */
 } mc_client_sdk_input_state;
+
+/* Passive counted borrow of this SAME READY ordinary SDK namespace. Does not
+ * pump, initialize a device or read/write repeat. NULL/cold namespaces are not
+ * widened into a separate Keyboard class profile. Requires the video thread;
+ * outputs are unchanged on failure. Release consumes one borrow and clears its
+ * slot, including after a retained SDK failure. Final input retirement is BUSY
+ * until all capabilities have ended; no App/Display owning cycle is introduced. */
+mc_client_sdk_input_status mc_client_sdk_input_code_borrow(mc_client_sdk_input *,
+                                                           mc_client_sdk_input **,
+                                                           mc_client_sdk_input_error *);
+mc_client_sdk_input_status mc_client_sdk_input_code_release(mc_client_sdk_input **,
+                                                            mc_client_sdk_input_error *);
 
 /* Explicit real source-window attachment. RAW allocation does not publish any
  * created flag. construct_default performs real native platform/window/input

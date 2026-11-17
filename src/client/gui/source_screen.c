@@ -5,6 +5,7 @@
 #include "source_inventory_screen_internal.h"
 #include "source_pause_screen_internal.h"
 #include "source_screen_internal.h"
+#include "source_sign_screen_internal.h"
 #include "source_world_selection_internal.h"
 
 #include <stdlib.h>
@@ -168,6 +169,8 @@ static bool prepare_final(mc_client_source_da *o, mc_client_screen_error *e) {
         ready = mc_screen_death_cleanup_locked((mc_client_source_ch *)o, e);
     else if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD)
         ready = mc_screen_create_world_cleanup_locked((mc_client_source_fj *)o, e);
+    else if (o->kind == MC_CLIENT_SCREEN_SIGN)
+        ready = mc_screen_sign_cleanup_locked((mc_client_source_yc *)o, e);
     else if (mc_screen_container_kind(o->kind))
         ready = mc_screen_container_cleanup_locked((mc_client_source_id *)o, e);
     if (ready)
@@ -251,6 +254,8 @@ mc_client_screen_status mc_client_screen_closed(mc_client_source_da *o,
                            "h", "()V", 0);
         else if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD)
             (void)mc_screen_create_world_closed_locked((mc_client_source_fj *)o, &e);
+        else if (o->kind == MC_CLIENT_SCREEN_SIGN)
+            (void)mc_screen_sign_closed_locked((mc_client_source_yc *)o, &e);
         else if (o->kind == MC_CLIENT_SCREEN_INVENTORY || o->kind == MC_CLIENT_SCREEN_CHEST ||
                  o->kind == MC_CLIENT_SCREEN_FURNACE)
             (void)mc_screen_container_closed_locked((mc_client_source_id *)o, &e);
@@ -289,6 +294,7 @@ mc_client_screen_status mc_client_screen_pauses_game(mc_client_source_da *o, boo
             case MC_CLIENT_SCREEN_WORKBENCH:
             case MC_CLIENT_SCREEN_CHEST:
             case MC_CLIENT_SCREEN_FURNACE:
+            case MC_CLIENT_SCREEN_SIGN:
                 *out = !mc_screen_container_kind(o->kind);
                 e.site = (mc_client_screen_site){mc_screen_container_kind(o->kind) ? "id" : "da",
                                                  "c", "()Z", 1};

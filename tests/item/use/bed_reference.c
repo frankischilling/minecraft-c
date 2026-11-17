@@ -232,7 +232,7 @@ static bool bed_project(fixture *f, mc_chunk_state **chunks, bed_observer *o, mc
     (void)bed_snapshot(chunks, prior);
     const mc_java_random world_random = *f->world->fields.r, player_random = *f->player->random;
     const size_t player_holds = f->player->holds;
-    mc_item_use_context context = {math};
+    mc_item_use_context context = {.math = math};
     mc_item_use_error error;
     mc_item_use_state state;
     mc_item_use_status status = mc_item_use_bed_begin(
@@ -400,7 +400,7 @@ static bool bed_wrapper_controls(fixture *f, mc_chunk_state **chunks, mc_math_cl
     int32_t before, after;
     CHECK(used != NULL && mc_client_stats_writer_value(f->app.stats_writer, used, &before, NULL) ==
                               MC_CLIENT_STATS_OK);
-    mc_item_use_context context = {math};
+    mc_item_use_context context = {.math = math};
     CHECK(mc_item_use_on_block_with_context_begin(f->app.registry, stack, f->player, f->world, 8,
                                                   63, 8, 1, &context, &call,
                                                   &error) == MC_ITEM_USE_OK &&
@@ -422,7 +422,7 @@ static bool bed_context_controls(fixture *f, mc_math_classes *math) {
     mc_math_class_state before, after;
     CHECK(mc_math_classes_state(math, &before, NULL) == MC_MATH_CLASS_OK &&
           before.phase == MC_MATH_CLASS_COLD && before.holds == 1);
-    mc_item_use_context context = {math};
+    mc_item_use_context context = {.math = math};
     mc_item_use_call *call = NULL;
     mc_item_use_error error;
     mc_item_use_state state;

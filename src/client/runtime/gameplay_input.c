@@ -304,6 +304,26 @@ static mc_world_storage_status furnace(void *context, mc_entity *player,
     return screen_transition_result(call, status, error);
 }
 
+static mc_item_use_status sign_editor(void *context, mc_entity *player, mc_tile_entity *tile,
+                                      mc_item_use_sign_error *error) {
+    mc_client_gameplay_input *call = context;
+    const mc_client_screen_status status =
+        mc_client_screen_transitions_sign(call->transitions, player, tile, &call->screen.screen);
+    const mc_client_screen_error *screen = &call->screen.screen;
+    *error = (mc_item_use_sign_error){
+        .status = status == MC_CLIENT_SCREEN_OK ? MC_ITEM_USE_OK : MC_ITEM_USE_PLAYER,
+        .operation = screen->operation,
+        .exception_class = screen->exception_class,
+        .site = {screen->site.class_name, screen->site.method, screen->site.descriptor,
+                 screen->site.pc},
+        .child = {screen->parent_site.class_name, screen->parent_site.method,
+                  screen->parent_site.descriptor, screen->parent_site.pc},
+        .native_policy = screen->native_policy,
+        .source_exception = screen->source_exception,
+        .source_error = screen->source_error};
+    return error->status;
+}
+
 static mc_world_storage_status player_message(void *context, mc_entity *player,
                                               mc_registry_classes *literal_owner,
                                               const mc_registry_string *key,
@@ -349,7 +369,10 @@ static bool use(client_application *app, mc_client_gameplay_input *call, bool on
                                                           .furnace = furnace,
                                                           .player_message = player_message};
     const mc_singleplayer_use_context sources = {.activation = &activation,
-                                                 .math = app->source_math_classes};
+                                                 .math = app->source_math_classes,
+                                                 .world_code_classes = app->world_classes,
+                                                 .sign_context = call,
+                                                 .sign = sign_editor};
     const mc_singleplayer_use_status status =
         on_block
             ? mc_client_singleplayer_use_on_block_with_sources_begin(

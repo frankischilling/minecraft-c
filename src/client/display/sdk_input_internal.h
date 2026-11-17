@@ -53,6 +53,7 @@ struct mc_client_sdk_input {
     uint8_t backend_keys[256];
     uint8_t *backend_buttons;
     bool key_pending;
+    size_t code_borrows;
     mc_client_sdk_mouse_event current_mouse;
     size_t queue_full_results;
 };

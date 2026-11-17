@@ -16,6 +16,7 @@ typedef struct mc_client_screen_list mc_client_screen_list;
 typedef struct mc_client_screen_initialization mc_client_screen_initialization;
 typedef struct mc_client_screen_init_error mc_client_screen_init_error;
 typedef struct mc_client_inventory_screen_error mc_client_inventory_screen_error;
+typedef struct mc_client_sign_screen_error mc_client_sign_screen_error;
 typedef struct mc_entity mc_entity;
 typedef struct mc_container mc_container;
 typedef struct mc_inventory_player mc_inventory_player;
@@ -66,7 +67,8 @@ typedef enum mc_client_screen_kind {
     MC_CLIENT_SCREEN_WORKBENCH,
     MC_CLIENT_SCREEN_DEATH,
     MC_CLIENT_SCREEN_CHEST,
-    MC_CLIENT_SCREEN_FURNACE
+    MC_CLIENT_SCREEN_FURNACE,
+    MC_CLIENT_SCREEN_SIGN
 } mc_client_screen_kind;
 
 typedef enum mc_client_screen_class_phase {
@@ -108,6 +110,7 @@ typedef struct mc_client_screen_error {
     mc_java_random_profile_status first_class_random;
     const mc_client_screen_init_error *initialization;
     const mc_client_inventory_screen_error *inventory;
+    const mc_client_sign_screen_error *sign;
 } mc_client_screen_error;
 
 /* Actual virtual DA.h(): ordinary screens return; FJ disables keyboard repeat.

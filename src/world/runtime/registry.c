@@ -1,6 +1,7 @@
 #include "registry_execution_internal.h"
 #include "runtime_internal.h"
 
+#include "block_queries_internal.h"
 #include "construction_internal.h"
 #include "execution_children_internal.h"
 
@@ -80,6 +81,8 @@ typedef struct material_execution {
     mc_world_storage_status *query_status;
     mc_world_runtime_execution_result *owned;
     mc_world_material_execution *retained;
+    mc_world_runtime_acquisition_error *source_acquisition;
+    bool *provider_null;
 } material_execution;
 
 static mc_world_storage_status material_get(mc_world_runtime *runtime, int32_t x, int32_t y,
@@ -91,6 +94,9 @@ static mc_world_storage_status material_get(mc_world_runtime *runtime, int32_t x
     mc_world_storage_status status;
     if (query == NULL) {
         status = mc_world_runtime_block_get(runtime, x, y, z, &id, &error->cause);
+    } else if (query->source_acquisition != NULL) {
+        status = mc_world_runtime_block_get_source_detailed(
+            runtime, x, y, z, &id, &error->cause, query->source_acquisition, query->provider_null);
     } else if (query->retained != NULL) {
         mc_world_material_execution *retained = query->retained;
         retained->lower = (mc_world_block_execution){.execution = query->execution,
@@ -129,8 +135,9 @@ static mc_world_storage_status material_get(mc_world_runtime *runtime, int32_t x
         error->operation = error->cause.operation;
         return status;
     }
-    mc_registry_classes *registry =
-        query == NULL ? mc_world_runtime_registry(runtime) : query->code_classes->registry;
+    mc_registry_classes *registry = query == NULL || query->source_acquisition != NULL
+                                        ? mc_world_runtime_registry(runtime)
+                                        : query->code_classes->registry;
     mc_registry_error cause = {.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
                                .message = "World material registry binding",
                                .initializer_pc = -1,
@@ -214,6 +221,36 @@ mc_world_storage_status mc_world_runtime_material_get(mc_world_runtime *runtime,
     return status;
 }
 
+mc_world_storage_status mc_world_runtime_material_get_source_detailed(
+    mc_world_runtime *runtime, int32_t x, int32_t y, int32_t z, mc_material **out,
+    mc_world_material_error *error, mc_world_runtime_acquisition_error *acquisition,
+    bool *provider_null) {
+    mc_world_material_error frame = material_empty_error();
+    if (provider_null != NULL)
+        *provider_null = false;
+    if (runtime == NULL || out == NULL || error == NULL || acquisition == NULL ||
+        provider_null == NULL) {
+        frame.status = MC_WORLD_STORAGE_INVALID_ARGUMENT;
+        frame.operation = "World material source diagnostic arguments";
+        frame.cause = (mc_world_storage_error){frame.status, frame.operation, 0};
+        if (error != NULL)
+            *error = frame;
+        return frame.status;
+    }
+    mc_world_storage_status status = mc_world_runtime_call_enter(runtime, &frame.cause);
+    if (status != MC_WORLD_STORAGE_OK) {
+        frame.status = status;
+        frame.operation = frame.cause.operation;
+    } else {
+        const material_execution query = {.source_acquisition = acquisition,
+                                          .provider_null = provider_null};
+        status = material_get(runtime, x, y, z, out, &frame, &query);
+        mc_world_runtime_call_leave(runtime);
+    }
+    *error = frame;
+    return status;
+}
+
 /* Native interface refusal is not a Source material/query outcome. Only the
  * required fresh owner result is written; caller Source/query/out storage stays
  * untouched until the same material body actually enters. */
@@ -257,8 +294,12 @@ bool mc_world_runtime_material_get_in_execution(
         return material_execution_refused(owned, entered, "World material World call admission",
                                           site);
     mc_world_material_error frame = material_empty_error();
-    const material_execution query = {execution,    code_classes, code, query_error,
-                                      query_status, owned,        NULL};
+    const material_execution query = {.execution = execution,
+                                      .code_classes = code_classes,
+                                      .code = code,
+                                      .query_error = query_error,
+                                      .query_status = query_status,
+                                      .owned = owned};
     const mc_world_storage_status status = material_get(runtime, x, y, z, out, &frame, &query);
     /* Pair only this exact entered World. A refused descendant unwind may have
      * left another neutral scope current; never pop or infer from that scope. */

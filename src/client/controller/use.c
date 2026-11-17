@@ -25,7 +25,7 @@ struct mc_singleplayer_use_call {
     mc_item_use_error item_error, item_cleanup;
     mc_world_placement_error activation;
     mc_world_block_activation_context activation_context;
-    mc_math_classes *math;
+    mc_item_use_context item_context;
     mc_registry_classes *registry;
     mc_world_runtime_acquisition_error *acquisition;
     mc_world_source_chunk_error *source;
@@ -289,11 +289,10 @@ static bool on_block(mc_singleplayer_use_call *c) {
     if (!stack_hold(c, 56) || !player_hold(c, 56) || !registry_hold(c, 56))
         return false;
     c->state.item_entered = true;
-    const mc_item_use_context item_context = {.math = c->math};
     if (!item_result(c,
                      mc_item_use_on_block_with_context_begin(
                          c->registry, c->state.stack, c->state.player, c->state.world, c->state.x,
-                         c->state.y, c->state.z, c->state.face, &item_context, &c->item,
+                         c->state.y, c->state.z, c->state.face, &c->item_context, &c->item,
                          &c->item_error),
                      56))
         return false;
@@ -450,7 +449,10 @@ begin(mc_client_singleplayer_controller *controller, mc_entity *player, mc_world
     if (context != NULL) {
         if (context->activation != NULL)
             c->activation_context = *context->activation;
-        c->math = context->math;
+        c->item_context = (mc_item_use_context){.math = context->math,
+                                                .world_code_classes = context->world_code_classes,
+                                                .sign_context = context->sign_context,
+                                                .sign = context->sign};
     }
     *out = c;
     controller->fields.entered = true;

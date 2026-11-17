@@ -28,7 +28,8 @@ typedef struct mc_client_display_screen_call {
     bool player_keys_released;
     int32_t player_health;
     unsigned int focus_pc;
-    client_application *app; /* Stable caller borrow through retirement. */
+    client_application *app;           /* Stable caller borrow through retirement. */
+    mc_client_screen_classes *classes; /* Exact defining namespace; stable native caller borrow. */
     mc_client_source_da *argument, *target, *old_screen; /* Stable caller-owned source operands. */
     mc_client_source_fu *fallback; /* Actual new fu57, if the null/no-World branch is reached. */
     mc_client_source_ch *death;    /* Actual new ch82/constructor86, when live Player health <=0. */

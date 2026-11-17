@@ -4,6 +4,7 @@
 #include "mc/block/registry/runtime.h"
 #include "mc/client/controller/singleplayer.h"
 #include "mc/inventory/player.h"
+#include "mc/item/use/use.h"
 #include "mc/world/runtime/runtime.h"
 
 typedef struct mc_singleplayer_use_call mc_singleplayer_use_call;
@@ -22,6 +23,9 @@ typedef struct mc_math_classes mc_math_classes;
 typedef struct mc_singleplayer_use_context {
     const mc_world_block_activation_context *activation;
     mc_math_classes *math;
+    mc_world_runtime_classes *world_code_classes;
+    void *sign_context;
+    mc_item_use_sign_callback sign;
 } mc_singleplayer_use_context;
 
 typedef enum mc_singleplayer_use_status {

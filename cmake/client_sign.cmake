@@ -1,5 +1,14 @@
 include_guard(GLOBAL)
 
+if(TARGET mc_client_source_screen_drawing AND TARGET mc_client_tile_renderer_draw)
+    target_sources(mc_client_source_screen_drawing PRIVATE
+        src/client/gui/source_sign_drawing.c
+        src/client/gui/source_sign_drawing_quads.c
+        src/client/gui/source_sign_drawing_buttons.c)
+    target_include_directories(mc_client_source_screen_drawing PRIVATE src)
+    target_link_libraries(mc_client_source_screen_drawing PRIVATE mc_client_tile_renderer_draw)
+endif()
+
 if(BUILD_TESTING)
     add_executable(mc_test_world_sign tests/world/runtime/sign/test_lifecycle.c)
     target_link_libraries(mc_test_world_sign PRIVATE mc_simulation mc_c_atomics mc_build_options)

@@ -275,6 +275,7 @@ mc_client_display_screen_status mc_client_display_screen_run(client_application 
         return MC_CLIENT_DISPLAY_SCREEN_ALLOCATION;
     *out = call;
     call->app = app;
+    call->classes = classes;
     call->argument = call->target = argument;
     call->active = true;
     const mc_client_display_screen_status result = run(call, classes);
@@ -292,6 +293,7 @@ mc_client_display_screen_status mc_client_display_focus_run(client_application *
         return MC_CLIENT_DISPLAY_SCREEN_ALLOCATION;
     *out = call;
     call->app = app;
+    call->classes = classes;
     call->site = (mc_client_screen_site){MC_CLASS, "g", "()V", 0};
     call->active = true;
     const mc_client_display_screen_status result = focus(call, classes, true);

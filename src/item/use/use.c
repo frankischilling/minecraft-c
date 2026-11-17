@@ -1,6 +1,7 @@
 #include "mc/item/use/use.h"
 #include "bed_internal.h"
 #include "flint_and_steel/flint_and_steel_internal.h"
+#include "sign_internal.h"
 
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
@@ -8,7 +9,9 @@
 #include "../../entity/living/fields_internal.h"
 #include "../../world/runtime/acquisition_internal.h"
 #include "../../world/runtime/block_queries_internal.h"
+#include "../../world/runtime/construction_internal.h"
 #include "../../world/runtime/mutation/plants/plants_internal.h"
+#include "../../world/runtime/tile_entities/source_detailed_internal.h"
 #include "../registry/registry_internal.h"
 #include "../render/internal.h"
 #include "../stack/source_internal.h"
@@ -23,6 +26,7 @@
 #include "mc/world/runtime/mutations.h"
 #include "mc/world/runtime/placement.h"
 #include "mc/world/runtime/presentation.h"
+#include "mc/world/runtime/tile_entities/tile_entities.h"
 #include "mc/world/storage/source_chunk_loader.h"
 #include "metadata_internal.h"
 
@@ -43,6 +47,10 @@ typedef struct use_source_copy {
 struct mc_item_use_call {
     mc_item_use_state state;
     mc_item_use_error error;
+    mc_item_use_context context;
+    mc_item_use_sign_error sign_error;
+    mc_world_material_error sign_material;
+    mc_live_tile_entity_error *sign_tile;
     mc_world_placement_error predicate, face, by;
     mc_player_statistic_error statistic;
     mc_world_runtime_acquisition_error *queries[2];
@@ -64,7 +72,7 @@ static const char *const use_block_descriptor = "(Liz;Lgs;Lfd;IIII)Z";
 static const char *const wrapper_block_descriptor = "(Lgs;Lfd;IIII)Z";
 static const char *const use_air_descriptor = "(Liz;Lfd;Lgs;)Liz;";
 
-typedef enum item_use_entry { ITEM_USE_IZ, ITEM_USE_LP, ITEM_USE_YE } item_use_entry;
+typedef enum item_use_entry { ITEM_USE_IZ, ITEM_USE_LP, ITEM_USE_YE, ITEM_USE_VC } item_use_entry;
 
 static mc_item_use_site site(const char *owner, const char *method, const char *descriptor,
                              unsigned int pc) {
@@ -244,6 +252,9 @@ static bool capture(mc_item_use_call *c) {
                           c->bed_support[i]->error.status != MC_WORLD_STORAGE_OK) ||
              !copy_source(c, &c->bed_support[i]->access.query.source_chunk)))
             return false;
+    if (c->sign_tile != NULL && !publication(c, &c->sign_tile->batch, c->sign_tile,
+                                             c->sign_tile->status != MC_WORLD_STORAGE_OK))
+        return false;
     return mutation_capture(c, c->mutation) && mutation_capture(c, c->sound);
 }
 
@@ -974,6 +985,7 @@ static bool seeds(mc_item_use_call *c) {
 
 #include "bed.inc"
 #include "dye.inc"
+#include "sign.inc"
 
 static bool used_statistic(mc_item_use_call *c) {
     at(c, "iz", wrapper_block_descriptor, 25);
@@ -1064,6 +1076,9 @@ static bool execute(mc_item_use_call *c) {
     } else if (k == MC_ITEM_BED) {
         if (!bed(c))
             return false;
+    } else if (k == MC_ITEM_SIGN) {
+        if (!sign(c))
+            return false;
     } else if (block_item(k)) {
         if (!ck(c))
             return false;
@@ -1115,8 +1130,14 @@ static mc_item_use_status begin(mc_registry_classes *r, mc_item_stack *stack, mc
         return admission(error, MC_ITEM_USE_LIMIT, "Item use input Stack occurrence");
     }
     c->stack_held = stack != NULL;
+    if (context != NULL) {
+        c->context.math = context->math;
+        c->context.world_code_classes = context->world_code_classes;
+        c->context.sign_context = context->sign_context;
+        c->context.sign = context->sign;
+    }
     c->state = (mc_item_use_state){.registry = r,
-                                   .math = context == NULL ? NULL : context->math,
+                                   .math = c->context.math,
                                    .stack = stack,
                                    .world = world,
                                    .player = player,
@@ -1134,8 +1155,10 @@ static mc_item_use_status begin(mc_registry_classes *r, mc_item_stack *stack, mc
     *out = c;
     if (entry != ITEM_USE_IZ) {
         c->state.item = direct_receiver;
-        const char *owner = entry == ITEM_USE_LP ? "lp" : "ye";
-        const mc_item_kind kind = entry == ITEM_USE_LP ? MC_ITEM_BED : MC_ITEM_FLINT_AND_STEEL;
+        const char *owner = entry == ITEM_USE_LP ? "lp" : entry == ITEM_USE_VC ? "vc" : "ye";
+        const mc_item_kind kind = entry == ITEM_USE_LP   ? MC_ITEM_BED
+                                  : entry == ITEM_USE_VC ? MC_ITEM_SIGN
+                                                         : MC_ITEM_FLINT_AND_STEEL;
         at(c, owner, use_block_descriptor, 0);
         if (direct_receiver == NULL)
             c->state.returned =
@@ -1143,7 +1166,9 @@ static mc_item_use_status begin(mc_registry_classes *r, mc_item_stack *stack, mc
         else if (direct_receiver->classes != r || direct_receiver->kind != kind)
             c->state.returned = fail(c, MC_ITEM_USE_ARGUMENT, "Entered Item code owner", true);
         else
-            c->state.returned = entry == ITEM_USE_LP ? bed(c) : flint_and_steel(c);
+            c->state.returned = entry == ITEM_USE_LP   ? bed(c)
+                                : entry == ITEM_USE_VC ? sign(c)
+                                                       : flint_and_steel(c);
     } else
         c->state.returned = execute(c);
     c->state.active = false;
@@ -1187,6 +1212,15 @@ mc_item_use_status mc_item_use_flint_and_steel_begin(mc_registry_classes *r,
                  error);
 }
 
+mc_item_use_status mc_item_use_sign_begin(mc_registry_classes *r, const mc_item *receiver,
+                                          mc_item_stack *stack, mc_entity *player,
+                                          mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
+                                          int32_t face, const mc_item_use_context *context,
+                                          mc_item_use_call **out, mc_item_use_error *error) {
+    return begin(r, stack, player, world, x, y, z, face, false, context, receiver, ITEM_USE_VC, out,
+                 error);
+}
+
 mc_item_use_status mc_item_use_in_air_begin(mc_registry_classes *r, mc_item_stack *stack,
                                             mc_world_runtime *world, mc_entity *player,
                                             mc_item_use_call **out, mc_item_use_error *error) {
@@ -1222,6 +1256,15 @@ mc_item_use_status mc_item_use_retire(mc_item_use_call **slot, mc_item_use_error
         goto busy;
     }
     c->error.placement = NULL;
+    if (mc_tile_entity_classes_release(&c->state.sign_classes) != MC_TILE_ENTITY_OK) {
+        c->error.cleanup = (mc_world_storage_error){MC_WORLD_STORAGE_BUSY,
+                                                    "Item use Sign code occurrence retirement", 0};
+        goto busy;
+    }
+    c->state.sign_expected_class = NULL;
+    c->state.sign_actual_class = NULL;
+    mc_tile_entity_release(c->state.sign_tile);
+    c->state.sign_tile = NULL;
     if (c->math_held &&
         mc_math_classes_release(&c->state.math, &c->error.cleanup_math) != MC_MATH_CLASS_OK) {
         c->error.cleanup = (mc_world_storage_error){MC_WORLD_STORAGE_BUSY,
@@ -1269,6 +1312,7 @@ mc_item_use_status mc_item_use_retire(mc_item_use_call **slot, mc_item_use_error
     free(c->mutation);
     free(c->sound);
     free(c->durability);
+    free(c->sign_tile);
     free(c);
     *slot = NULL;
     return admission(error, MC_ITEM_USE_OK, NULL);

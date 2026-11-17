@@ -9,12 +9,13 @@
 typedef struct mc_entity mc_entity;
 typedef struct mc_item mc_item;
 typedef struct mc_item_use_call mc_item_use_call;
-
-typedef struct mc_item_use_context {
-    mc_math_classes *math;
-} mc_item_use_context;
+typedef struct mc_tile_entity mc_tile_entity;
+typedef struct mc_tile_entity_classes mc_tile_entity_classes;
+typedef struct mc_tile_entity_class_literal mc_tile_entity_class_literal;
 typedef struct mc_world_mutation_error mc_world_mutation_error;
 typedef struct mc_world_runtime_acquisition_error mc_world_runtime_acquisition_error;
+typedef struct mc_world_material_error mc_world_material_error;
+typedef struct mc_live_tile_entity_error mc_live_tile_entity_error;
 typedef struct mc_world_placement_error mc_world_placement_error;
 typedef struct mc_player_statistic_error mc_player_statistic_error;
 typedef struct mc_item_combat_error mc_item_combat_error;
@@ -44,6 +45,27 @@ typedef struct mc_item_use_site {
     unsigned int pc;
 } mc_item_use_site;
 
+/* Value projection of the reached real DC Sign callback. The supplying bridge
+ * retains its complete client child through checked Item/controller retirement;
+ * this neutral record owns no GUI pointer and never borrows an ambient error. */
+typedef struct mc_item_use_sign_error {
+    mc_item_use_status status;
+    const char *operation, *exception_class;
+    mc_item_use_site site, child;
+    bool native_policy, source_exception, source_error;
+} mc_item_use_sign_error;
+
+typedef mc_item_use_status (*mc_item_use_sign_callback)(void *context, mc_entity *actual_dc,
+                                                        mc_tile_entity *nullable_sign,
+                                                        mc_item_use_sign_error *error);
+
+typedef struct mc_item_use_context {
+    mc_math_classes *math;
+    mc_world_runtime_classes *world_code_classes;
+    void *sign_context;
+    mc_item_use_sign_callback sign;
+} mc_item_use_context;
+
 typedef struct mc_item_use_error {
     mc_item_use_status status;
     const char *operation, *exception_class;
@@ -57,6 +79,11 @@ typedef struct mc_item_use_error {
     mc_item_stack_status stack;
     mc_world_storage_error world;
     const mc_world_runtime_acquisition_error *acquisition;
+    /* VC's actual FD.f14 and FD.b174 children, beside the complete acquisition
+     * from the same reached getter. Each borrows this retained call. */
+    const mc_world_material_error *material;
+    const mc_live_tile_entity_error *tile;
+    const mc_item_use_sign_error *sign;
     const mc_world_placement_error *placement;
     const mc_world_mutation_error *mutation, *sound;
     const mc_player_statistic_error *statistic;
@@ -104,6 +131,16 @@ typedef struct mc_item_use_state {
     int32_t bed_direction, bed_head_x, bed_head_z;
     bool bed_foot_setter_returned, bed_foot_setter_value;
     bool bed_head_setter_returned, bed_head_setter_value;
+    /* Passive VC observations. The getter owns its nullable result through
+     * retirement; canonical cast literals are protected by sign_classes. */
+    mc_material *sign_material;
+    mc_tile_entity *sign_tile;
+    mc_tile_entity_classes *sign_classes;
+    const mc_tile_entity_class_literal *sign_expected_class, *sign_actual_class;
+    float sign_yaw;
+    bool sign_material_returned, sign_solid, sign_standing;
+    bool sign_tile_entered, sign_tile_returned, sign_cast_returned;
+    bool sign_callback_entered, sign_callback_returned;
     mc_item_use_status status;
 } mc_item_use_state;
 
@@ -126,10 +163,15 @@ mc_item_use_status mc_item_use_on_block_begin(mc_registry_classes *, mc_item_sta
                                               mc_world_runtime *, int32_t x, int32_t y, int32_t z,
                                               int32_t face, mc_item_use_call **out,
                                               mc_item_use_error *);
-/* Same IZ wrapper with the actual defining Math namespace. Context is copied;
- * LP retains/activates Math only at reached IN37, after its face/null/yaw
- * prefix. Keep the supplied namespace live through the synchronous call.
- * A reached Math occurrence belongs to the returned call through retirement. */
+/* Same IZ wrapper with explicit defining code/callback capabilities. Context
+ * fields are copied by value. LP/VC retain and activate Math only at IN37/125,
+ * after their respective prefixes. Nonnull VC checkcast177 borrows the supplied
+ * defining World/Tile namespace, never one inferred from World/Tile operands.
+ * NULL casts allocate no namespace. The real DC callback is consulted only at
+ * VC190; a missing bridge is a reached native refusal after placement/count.
+ * Keep unentered capabilities live through the synchronous call, and every
+ * supplying callback child live through checked retirement. Reached Math/Tile
+ * occurrences and stable value diagnostics belong to the returned call. */
 mc_item_use_status
 mc_item_use_on_block_with_context_begin(mc_registry_classes *, mc_item_stack *, mc_entity *,
                                         mc_world_runtime *, int32_t x, int32_t y, int32_t z,

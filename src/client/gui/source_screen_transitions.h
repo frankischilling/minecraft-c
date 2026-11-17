@@ -4,6 +4,7 @@
 #include "source_screen.h"
 
 typedef struct mc_client_screen_transitions mc_client_screen_transitions;
+typedef struct mc_tile_entity mc_tile_entity;
 typedef struct mc_client_source_rq mc_client_source_rq;
 typedef struct mc_client_world_load_call mc_client_world_load_call;
 typedef struct mc_client_world_load_error mc_client_world_load_error;
@@ -48,6 +49,13 @@ typedef struct mc_client_screen_transition_state {
 mc_client_screen_status mc_client_screen_transitions_create(client_application *,
                                                             mc_client_screen_transitions **,
                                                             mc_client_screen_error *);
+/* Transfer an inactive actual display-call owning slot into this same App's
+ * chronological native graph. No Source call, count, publication or admission
+ * reset occurs. Terminal retry may transfer custody before graph teardown.
+ * The slot is consumed only on success; calls retain their Source diagnostics. */
+mc_client_screen_status mc_client_screen_transitions_adopt_display(mc_client_screen_transitions *,
+                                                                   mc_client_display_screen_call **,
+                                                                   mc_client_screen_error *);
 mc_client_screen_status mc_client_screen_transitions_button(mc_client_screen_transitions *,
                                                             mc_client_source_da *,
                                                             mc_client_source_ke *,
@@ -89,6 +97,12 @@ mc_client_screen_status mc_client_screen_transitions_furnace(mc_client_screen_tr
                                                              mc_entity *actual_player,
                                                              mc_inventory_furnace *actual_inventory,
                                                              mc_client_screen_error *);
+/* Actual DC.a(YK): capture DC.b1, active-use/NEW YC4, constructor9, then
+ * invoke captured Minecraft12. Nullable tile and captured App are inspected
+ * only by their reached concrete bodies. Every failed prefix stays owned. */
+mc_client_screen_status mc_client_screen_transitions_sign(mc_client_screen_transitions *,
+                                                          mc_entity *, mc_tile_entity *,
+                                                          mc_client_screen_error *);
 /* Actual DC.r: GS.r publishes e=d before reading DC.b and synchronously
  * displaying NULL. No additional DA Escape focus call is inserted. */
 mc_client_screen_status mc_client_screen_transitions_player_close(mc_client_screen_transitions *,

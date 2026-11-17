@@ -167,6 +167,8 @@ bool mc_screen_class_final_locked(mc_client_screen_classes *c, mc_client_screen_
     c->retiring = true;
     if (!mc_screen_inventory_classes_cleanup_locked(c, e))
         return false;
+    if (!mc_screen_sign_class_cleanup_locked(c, e))
+        return false;
     if (c->registry_held) {
         e->registry.status = mc_registry_classes_release(c->registry, &e->registry);
         if (e->registry.status != MC_REGISTRY_OK) {

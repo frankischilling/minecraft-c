@@ -140,6 +140,9 @@ mc_client_loading_classes *mc_client_loading_screen_classes(const mc_client_load
  * use, clock or App access. Caller may retain its own String occurrence at the
  * actual source store. The class owner remains live through this operation. */
 mc_player_string *mc_client_loading_classes_empty(const mc_client_loading_classes *);
+/* Borrow this defining FP namespace without activating it or consulting App.q.
+ * The supplying GUI class graph must stay live until the caller retains it. */
+mc_client_font_mapping *mc_client_loading_classes_mapping(const mc_client_loading_classes *);
 mc_client_loading_status mc_client_loading_classes_retain(mc_client_loading_classes *);
 mc_client_loading_status mc_client_loading_classes_release(mc_client_loading_classes *);
 

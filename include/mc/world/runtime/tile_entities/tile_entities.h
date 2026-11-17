@@ -73,6 +73,15 @@ typedef struct mc_tile_entity_class_literal_view {
 mc_tile_entity_status mc_tile_entity_classes_borrow(mc_world_runtime_classes *world_classes,
                                                     mc_tile_entity_classes **out);
 mc_tile_entity_status mc_tile_entity_classes_release(mc_tile_entity_classes **slot);
+/* Reached code literal in an explicitly borrowed defining namespace, independent
+ * of any nullable World/Tile field. No OW registration/class active use occurs.
+ * Publishes one held Name with the actual shared Registry literal identity;
+ * empty is canonical here while name_create(length0) remains a fresh String.
+ * Requires a live counted class borrow and exclusive dependencies. On failure
+ * out is unchanged and registry_error receives the actual Registry cause. */
+mc_tile_entity_status mc_tile_entity_classes_literal(mc_tile_entity_classes *, const char *ascii,
+                                                     mc_tile_entity_name **out,
+                                                     mc_registry_error *registry_error);
 
 /* Actual canonical Class identity is pointer equality within one live owner;
  * distinct namespaces have distinct cells even with the same side/profile.

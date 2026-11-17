@@ -1,10 +1,15 @@
 #include "../application_state.h"
 #include "loading_internal.h"
+
 #include "mc/core/java/java.h"
 #include "scaled_resolution_internal.h"
 
 #include <stdlib.h>
 #include <xmmintrin.h>
+
+mc_client_font_mapping *mc_client_loading_classes_mapping(const mc_client_loading_classes *c) {
+    return c == NULL ? NULL : c->mapping;
+}
 
 mc_client_loading_status mc_client_loading_fail(mc_client_loading_error *e,
                                                 mc_client_loading_status status,

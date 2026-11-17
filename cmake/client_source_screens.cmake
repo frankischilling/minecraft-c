@@ -1,5 +1,6 @@
 # Actual da/fu namespace is CPU-only, independently releasable by MC classes.
-add_library(mc_client_screen_classes STATIC src/client/gui/source_screen_classes.c)
+add_library(mc_client_screen_classes STATIC src/client/gui/source_screen_classes.c
+    src/client/gui/source_sign_screen_classes.c)
 target_include_directories(mc_client_screen_classes PUBLIC include src/client/gui)
 target_link_libraries(mc_client_screen_classes PUBLIC mc_simulation mc_registry
     PRIVATE Threads::Threads mc_build_options)
@@ -9,8 +10,10 @@ if(TARGET mc_client_image_io)
     add_library(mc_client_source_screens STATIC
         src/client/gui/source_screen.c src/client/gui/source_menu.c
         src/client/gui/source_widgets.c src/client/gui/source_screen_initialize.c)
+    target_sources(mc_client_source_screens PRIVATE src/client/gui/source_sign_screen.c
+        src/client/gui/source_sign_screen_methods.c)
     target_include_directories(mc_client_source_screens PUBLIC include src/client/gui PRIVATE src/client)
     target_link_libraries(mc_client_source_screens PUBLIC mc_client_screen_classes
         PRIVATE mc_client_image_io mc_client_source_resources mc_client_notice mc_platform_time
-        mc_simulation mc_core mc_c_atomics Threads::Threads mc_build_options)
+        mc_simulation mc_core mc_c_atomics mc_client_sdk_runtime Threads::Threads mc_build_options)
 endif()

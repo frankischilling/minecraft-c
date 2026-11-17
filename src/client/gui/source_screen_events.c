@@ -3,6 +3,7 @@
 #include "../display/source_surface.h"
 #include "../display/staged.h"
 #include "../startup/application_startup.h"
+#include "display_screen.h"
 #include "mc/core/java/java.h"
 #include "source_clipboard.h"
 #include "source_create_world_internal.h"
@@ -10,10 +11,78 @@
 #include "source_pause_screen_internal.h"
 #include "source_screen_internal.h"
 #include "source_screen_transitions.h"
+#include "source_sign_screen_internal.h"
 
 #include <fenv.h>
 #include <float.h>
 #include <limits.h>
+#include <stdlib.h>
+
+struct mc_client_sign_display_record {
+    struct mc_client_sign_display_record *next, *previous;
+    mc_client_display_screen_call *call;
+    mc_client_display_screen_call *view; /* Borrowed even after the owning slot moves. */
+};
+
+bool mc_client_screen_event_sign_display(const mc_client_screen_event_error *e, size_t index,
+                                         const mc_client_display_screen_call **out) {
+    if (e == NULL || out == NULL || index >= e->sign_display_count)
+        return false;
+    const mc_client_sign_display_record *record = e->sign_displays;
+    for (size_t i = 0; i < index && record != NULL; ++i)
+        record = record->next;
+    if (record == NULL)
+        return false;
+    *out = record->call == NULL ? record->view : record->call;
+    return true;
+}
+
+mc_client_screen_status
+mc_client_screen_event_adopt_sign_displays(mc_client_screen_event_error *e,
+                                           mc_client_screen_transitions *router,
+                                           mc_client_screen_error *error) {
+    mc_client_screen_error local = {0};
+    mc_client_screen_error *out = error == NULL ? &local : error;
+    *out = (mc_client_screen_error){0};
+    if (e == NULL)
+        return mc_screen_fail(out, MC_CLIENT_SCREEN_INVALID_ARGUMENT,
+                              "screen-event display custody receiver", NULL, NULL, NULL, 0);
+    if (e->pending_receiver != NULL && !e->monitor_lost)
+        return mc_screen_fail(out, MC_CLIENT_SCREEN_BUSY,
+                              "screen-event display custody during Source call", NULL, NULL, NULL,
+                              0);
+    for (mc_client_sign_display_record *record = e->sign_displays; record != NULL;
+         record = record->next) {
+        if (record->call == NULL)
+            continue;
+        const mc_client_screen_status status =
+            mc_client_screen_transitions_adopt_display(router, &record->call, out);
+        if (status != MC_CLIENT_SCREEN_OK)
+            return status;
+    }
+    return MC_CLIENT_SCREEN_OK;
+}
+
+static bool sign_displays_retire(mc_client_screen_event_error *e) {
+    /* Newer display calls borrow earlier calls' old-screen operands. Preserve
+     * that order on partial BUSY, including for direct callers without a router. */
+    while (e->sign_displays_tail != NULL) {
+        mc_client_sign_display_record *record = e->sign_displays_tail;
+        if (mc_client_display_screen_retire(&record->call) != MC_CLIENT_DISPLAY_SCREEN_OK)
+            return false;
+        e->sign_displays_tail = record->previous;
+        if (e->sign_displays_tail == NULL)
+            e->sign_displays = NULL;
+        else
+            e->sign_displays_tail->next = NULL;
+        --e->sign_display_count;
+        e->sign_display_bytes -= sizeof(*record);
+        free(record);
+        e->sign_display = e->sign_displays_tail == NULL ? NULL : e->sign_displays_tail->view;
+    }
+    e->sign_display = NULL;
+    return true;
+}
 
 static const char mouse_desc[] = "(III)V";
 
@@ -102,6 +171,67 @@ mc_client_screen_status mc_client_screen_button_hit(mc_client_source_ke *button,
 
 static bool action(mc_client_source_da *o, mc_client_source_ke *button,
                    mc_client_screen_event_report *r, mc_client_screen_event_error *e) {
+    if (o->kind == MC_CLIENT_SCREEN_SIGN) {
+        mc_client_source_yc *sign = (mc_client_source_yc *)o;
+        bool display = false;
+        client_application *app = NULL;
+        if (!mc_screen_sign_button_prefix_locked(sign, button, &display, &app, &e->screen))
+            return false;
+        r->button = button;
+        r->button_id = button->fields.f;
+        if (!display)
+            return true;
+        /* Caller-owned native custody, reserved after dirty/App23 but before
+         * invoking display27. The ordinary Screen byte/allocation budgets bound
+         * this independent per-call ledger; no fixed click-count profile exists. */
+        if (e->sign_display_count >= o->memory.options.maximum_allocations ||
+            e->sign_display_bytes > o->memory.options.maximum_bytes ||
+            sizeof(mc_client_sign_display_record) >
+                o->memory.options.maximum_bytes - e->sign_display_bytes) {
+            mc_screen_sign_fail(sign, &e->screen, MC_CLIENT_SCREEN_LIMIT,
+                                "YC event-owned display record budget", "a", "(Lke;)V", 27, true);
+            return false;
+        }
+        mc_client_sign_display_record *record = calloc(1, sizeof(*record));
+        if (record == NULL) {
+            mc_screen_sign_fail(sign, &e->screen, MC_CLIENT_SCREEN_ALLOCATION_FAILED,
+                                "YC event-owned display record allocation", "a", "(Lke;)V", 27,
+                                true);
+            return false;
+        }
+        record->previous = e->sign_displays_tail;
+        if (e->sign_displays_tail == NULL)
+            e->sign_displays = record;
+        else
+            e->sign_displays_tail->next = record;
+        e->sign_displays_tail = record;
+        ++e->sign_display_count;
+        e->sign_display_bytes += sizeof(*record);
+        ++r->actions;
+        r->action = MC_CLIENT_SCREEN_ACTION_CLOSE;
+        r->pending = (mc_client_screen_site){"yc", "a", "(Lke;)V", 27};
+        sign->detail.display_entered = true;
+        mc_client_screen_classes *classes = o->classes;
+        mtx_unlock(&classes->mutex);
+        const mc_client_display_screen_status status =
+            mc_client_display_screen_run(app, classes, NULL, &record->call);
+        record->view = record->call;
+        e->sign_display = record->call;
+        if (mtx_lock(&classes->mutex) != thrd_success) {
+            e->monitor_lost = true;
+            fail(e, MC_CLIENT_SCREEN_THREAD_FAILED, "YC Done source-call monitor reacquisition",
+                 NULL, NULL, NULL, 0, true);
+            return false;
+        }
+        if (status != MC_CLIENT_DISPLAY_SCREEN_OK) {
+            return mc_screen_sign_display_failed(sign, record->view, &e->screen);
+        }
+        sign->detail.display_returned = true;
+        sign->last_pc = 30;
+        sign->method = "a";
+        r->pending = (mc_client_screen_site){0};
+        return true;
+    }
     if (o->kind == MC_CLIENT_SCREEN_WORLD_SELECTION || o->kind == MC_CLIENT_SCREEN_PAUSE ||
         o->kind == MC_CLIENT_SCREEN_DEATH || o->kind == MC_CLIENT_SCREEN_CREATE_WORLD) {
         r->button = button;
@@ -365,6 +495,9 @@ static bool key(mc_client_source_da *o, const mc_client_sdk_key_event *event,
     }
     if (o->kind == MC_CLIENT_SCREEN_DEATH)
         return true; /* Actual CH.a(CI)V overrides Escape with literal return0. */
+    if (o->kind == MC_CLIENT_SCREEN_SIGN)
+        return mc_screen_sign_key_locked((mc_client_source_yc *)o, (uint16_t)event->character,
+                                         event->key, &e->screen);
     if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD) {
         mc_client_source_fj *fj = (mc_client_source_fj *)o;
         create_key_context context = {r, e};
@@ -523,8 +656,11 @@ mc_client_screen_status mc_client_screen_event_retire(mc_client_screen_event_err
         return MC_CLIENT_SCREEN_INVALID_ARGUMENT;
     mc_client_source_da *o = e->pending_receiver;
     if (o == NULL) {
+        if (!sign_displays_retire(e))
+            return MC_CLIENT_SCREEN_BUSY;
         e->screen.inventory = NULL;
         e->screen.initialization = NULL;
+        e->screen.sign = NULL;
         return MC_CLIENT_SCREEN_OK;
     }
     if (!e->monitor_lost)
@@ -537,8 +673,11 @@ mc_client_screen_status mc_client_screen_event_retire(mc_client_screen_event_err
     e->pending_receiver = NULL;
     e->monitor_lost = false;
     (void)mtx_unlock(&o->classes->mutex);
+    if (!sign_displays_retire(e))
+        return MC_CLIENT_SCREEN_BUSY;
     e->screen.inventory = NULL;
     e->screen.initialization = NULL;
+    e->screen.sign = NULL;
     return MC_CLIENT_SCREEN_OK;
 }
 
@@ -566,6 +705,8 @@ mc_client_screen_status mc_client_screen_tick_with_transitions(mc_client_source_
         mc_screen_pause_tick_locked((mc_client_source_oz *)o, &e->screen);
     else if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD)
         (void)mc_screen_create_world_tick_locked((mc_client_source_fj *)o, &e->screen);
+    else if (o->kind == MC_CLIENT_SCREEN_SIGN)
+        (void)mc_screen_sign_tick_locked((mc_client_source_yc *)o, &e->screen);
     else if (mc_screen_container_kind(o->kind)) {
         mc_entity *player = NULL;
         if (mc_screen_container_tick_locked((mc_client_source_id *)o, &player, &e->screen) &&

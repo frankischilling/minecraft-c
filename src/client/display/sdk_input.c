@@ -396,8 +396,54 @@ bool mc_client_sdk_input_inspect(const mc_client_sdk_input *o, mc_client_sdk_inp
         .pending_native_event = o->pending,
         .failure = &o->failure,
         .current_key = o->current_key == NULL ? (mc_client_sdk_key_event){0} : *o->current_key,
-        .current_mouse = o->current_mouse};
+        .current_mouse = o->current_mouse,
+        .code_borrows = o->code_borrows};
     return true;
+}
+
+mc_client_sdk_input_status mc_client_sdk_input_code_borrow(mc_client_sdk_input *o,
+                                                           mc_client_sdk_input **out,
+                                                           mc_client_sdk_input_error *error) {
+    mc_client_sdk_input_error e = {0};
+    if (o == NULL || out == NULL || !SDL_IsMainThread())
+        mc_client_sdk_input_fail(&e, MC_CLIENT_SDK_INPUT_INVALID_ARGUMENT,
+                                 "SDK input passive code borrow", NULL, NULL, NULL, -1, true);
+    else if (o->phase != MC_CLIENT_SDK_INPUT_READY || o->active)
+        mc_client_sdk_input_fail(
+            &e, o->active ? MC_CLIENT_SDK_INPUT_BUSY : MC_CLIENT_SDK_INPUT_INVALID_PHASE,
+            "SDK input live code namespace", NULL, NULL, NULL, -1, true);
+    else if (o->code_borrows == SIZE_MAX)
+        mc_client_sdk_input_fail(&e, MC_CLIENT_SDK_INPUT_LIMIT, "SDK input code borrow count", NULL,
+                                 NULL, NULL, -1, true);
+    else {
+        ++o->code_borrows;
+        *out = o;
+    }
+    if (error != NULL)
+        *error = e;
+    return e.status;
+}
+
+mc_client_sdk_input_status mc_client_sdk_input_code_release(mc_client_sdk_input **slot,
+                                                            mc_client_sdk_input_error *error) {
+    mc_client_sdk_input_error e = {0};
+    if (slot == NULL || !SDL_IsMainThread())
+        mc_client_sdk_input_fail(&e, MC_CLIENT_SDK_INPUT_INVALID_ARGUMENT,
+                                 "SDK input code release slot/thread", NULL, NULL, NULL, -1, true);
+    else if (*slot != NULL) {
+        mc_client_sdk_input *o = *slot;
+        if (o->active || o->code_borrows == 0)
+            mc_client_sdk_input_fail(
+                &e, o->active ? MC_CLIENT_SDK_INPUT_BUSY : MC_CLIENT_SDK_INPUT_INVALID_ARGUMENT,
+                "SDK input active/unbalanced code release", NULL, NULL, NULL, -1, true);
+        else {
+            --o->code_borrows;
+            *slot = NULL;
+        }
+    }
+    if (error != NULL)
+        *error = e;
+    return e.status;
 }
 
 mc_client_sdk_input_status mc_client_sdk_input_retire(mc_client_sdk_input **slot,
@@ -409,7 +455,7 @@ mc_client_sdk_input_status mc_client_sdk_input_retire(mc_client_sdk_input **slot
     else if (*slot != NULL) {
         mc_client_sdk_input *o = *slot;
         mc_client_events_state events;
-        if (o->active || mc_client_display_sdk_external_busy(o->display) ||
+        if (o->active || o->code_borrows != 0 || mc_client_display_sdk_external_busy(o->display) ||
             !mc_client_events_inspect(o->events, &events) || events.active) {
             mc_client_sdk_input_fail(&e, MC_CLIENT_SDK_INPUT_BUSY,
                                      "SDK input active native retirement", NULL, NULL, NULL, -1,

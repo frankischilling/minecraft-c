@@ -1,9 +1,12 @@
-# Loaded Signs
+# Signs
 
 Saved standing and wall Signs construct real native TileEntity owners and reach
 the ordinary World renderer. Four held UTF-16 lines, NBT, model and Font drawing,
 state-dependent wall bounds, inherited empty ticking, and client support/removal
-hooks are implemented. Placement and the editor remain open.
+hooks are implemented. Sign Item placement and the four-line editor also run
+through the client input and screen owners. The current loaded placement,
+editing, Done and save/reselection evidence is a finite Windows scenario; see
+[the editor contract and platform limits](../client/sign-editor.md).
 
 ## Text and storage
 
@@ -19,8 +22,10 @@ a surrogate pair. Earlier coordinate and text assignments survive a later wrong
 tag. Writing preserves full line lengths. A null line fails in the original
 String-tag constructor after earlier output fields have been written.
 
-Native line getters return independent holds. Native text copies do not claim
-the original Java String-reference aliases. The owner admits four lines and
+Native line getters return independent holds. NBT/storage text copies preserve
+values; general Java String-reference alias equality remains unqualified. The
+editor has separate controls for shared empty values at construction and after
+Backspace. The owner admits four lines and
 nullable individual entries; arbitrary replacement or nulling of the entire
 public Java array remains outside its API. Fresh source NBT and storage overlays
 have separate unknown-field contracts. Native immutable builders do not claim
@@ -74,6 +79,13 @@ retirement without Source GL repair.
 
 ## Finite validation
 
+The checkpoint results below describe the saved-Sign, Font and lifecycle work.
+The current placement/editor increment has separate
+[component, draw and gameplay results](../client/sign-editor.md#finite-validation).
+Complete client suites on all three compilers apply to the prior `b30453b5`
+baseline. Current Sign client builds and seven selected tests pass; full
+validation of the combined current source is pending.
+
 At `d572d6dc`, the complete serial MSVC Release sweep passes all 1,380 tests in 1804.48
 seconds. All 1,372 preceding names remain plus exactly eight additions, with
 complete inventory/log/JUnit and Start/completion joins and no skips or unrun
@@ -101,8 +113,8 @@ A later local [Fontconfig change](../client/render-engine.md) supplies the
 existing owned configuration to default substitution on Fontconfig 2.17+.
 The local Mesa 26 control then passes all 678 checks with leak detection
 enabled, clean process exit and no sanitizer stderr. It does not finalize
-global Fontconfig state. These new production bytes await hosted validation;
-the earlier failed process remains separate evidence.
+global Fontconfig state. That local result is separate from the hosted
+checkpoint above; the earlier failed process remains separate evidence.
 
 After the Unicode Font change and reviewed null-World removal fix, seven GCC
 and eleven Clang tests pass in 35.11 and 40.38 seconds. Both enable ASan, UBSan
@@ -142,7 +154,7 @@ copies and 2,398 shared source/helper/product pins across the eight processes.
 Complete 413-file asset inventories agree before and after the sweep. These
 passes include the shared Unicode Font change and null-World removal fix.
 
-Current monitor-2 pushed-Stone, Furnace and dense-Chest regressions also pass
+Separate monitor-2 pushed-Stone, Furnace and dense-Chest regressions pass
 961, 9,710 and 971 checks through ordinary save/reselection and checked closure.
 
 The first SDK process completed 967 native checks, but its result reader used a
@@ -151,5 +163,6 @@ retained. The corrected reader has positive and negative baseline controls; all
 eight later processes pass it.
 
 These are bounded loaded-world and component scenarios. They establish no
-sustained-play, gameplay FPS, item-placement, editor, networking or complete Sign
-parity result.
+sustained-play, gameplay FPS, networking or complete Sign parity result. Item
+placement and the editor now have their own finite evidence, with the original
+and native caller scopes kept separate.

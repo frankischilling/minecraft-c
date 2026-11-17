@@ -442,8 +442,8 @@
       "sha256": "b3f5135585c5f38e255cd37878b31807b04826b3f65510e1daf2e10321b50289"
     },
     "src/client/gui/source_screen.h": {
-      "bytes": 16433,
-      "sha256": "9d64d214eceee6e0addad49c776f9d8162d11072864a22f66831eafacd897082"
+      "bytes": 16577,
+      "sha256": "d6018a8d39ff19e7ec706bc565f4b05d8ebd961837e322eee698c723207e37eb"
     },
     "src/client/images/class_stream.h": {
       "bytes": 3513,

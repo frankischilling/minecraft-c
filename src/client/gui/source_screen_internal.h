@@ -1,5 +1,6 @@
 #ifndef MC_CLIENT_GUI_SOURCE_SCREEN_INTERNAL_H
 #define MC_CLIENT_GUI_SOURCE_SCREEN_INTERNAL_H
+#include "font_mapping.h"
 #include "source_inventory_screen.h"
 #include "source_screen.h"
 #include <threads.h>
@@ -60,6 +61,14 @@ struct mc_client_screen_classes {
     unsigned int inventory_pc, inventory_store_pc;
     mc_client_screen_error inventory_failure;
     mc_client_inventory_screen_error inventory_detail;
+    mc_client_screen_class_phase sign_phase;
+    mc_client_font_mapping *sign_mapping;
+    bool sign_admission_ended;
+    bool (*sign_mapping_cleanup)(mc_client_screen_classes *, mc_client_screen_error *);
+    mc_player_string *sign_accepted;
+    unsigned int sign_pc, sign_store_pc;
+    mc_client_screen_error sign_failure;
+    mc_client_font_mapping_error sign_mapping_failure;
 };
 
 struct mc_client_source_da {
@@ -174,4 +183,5 @@ bool mc_screen_initializations_prepare_locked(mc_client_source_da *, mc_client_s
 bool mc_screen_initializations_release_apps_locked(mc_client_source_da *, mc_client_screen_error *);
 bool mc_screen_literal_locked(mc_client_screen_classes *, const char *, mc_player_string **,
                               mc_client_screen_error *);
+bool mc_screen_sign_class_cleanup_locked(mc_client_screen_classes *, mc_client_screen_error *);
 #endif

@@ -6,6 +6,7 @@
 #include "../render_engine/nw.h"
 #include "../render_engine/textures.h"
 #include "../startup/application_construction.h"
+#include "../startup/application_logo.h"
 #include "../startup/application_services.h"
 #include "../startup/application_startup_internal.h"
 #include "../startup/application_startup_menu.h"
@@ -105,6 +106,16 @@ static void startup_failure(const mc_client_startup_error *error) {
         fprintf(stderr, "  Display: %s: %s (status%d, GL%u)\n", error->display.display.operation,
                 error->display.display.detail, (int)error->display.display.status,
                 error->display.display.gl_error);
+    if (error->logo != NULL && error->logo->graphics.status != MC_CLIENT_GRAPHICS_OK) {
+        const mc_client_graphics_error *graphics = &error->logo->graphics;
+        fprintf(stderr, "  Logo graphics: %s (status%d) at %s.%s%s:%d\n", text(graphics->operation),
+                (int)graphics->status, text(graphics->site.class_name), text(graphics->site.method),
+                text(graphics->site.descriptor), graphics->site.pc);
+        if (graphics->display.operation != NULL)
+            fprintf(stderr, "  Logo Display: %s: %s (status%d, GL%u)\n",
+                    graphics->display.operation, graphics->display.detail,
+                    (int)graphics->display.status, graphics->display.gl_error);
+    }
     if (error->directory.operation != NULL)
         fprintf(stderr, "  Directory: %s (status%d, native%d)\n", error->directory.operation,
                 (int)error->directory.status, error->directory.system_error);

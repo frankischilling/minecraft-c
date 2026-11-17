@@ -1,7 +1,9 @@
 /* Canonical client LOAD_OR_CREATE with real source File/HC/fm/ld owners. */
+#include "../../../src/world/runtime/block_queries_internal.h"
 #include "../../../src/world/runtime/runtime_internal.h"
 #include "../../../src/world/runtime/source_construction_internal.h"
 #include "../../../src/world/runtime/source_terminal_internal.h"
+#include "../../../src/world/runtime/tile_entities/source_detailed_internal.h"
 #include "mc/world/dimension/world_provider.h"
 #include "mc/world/runtime/queries.h"
 #include "mc/world/runtime/source_construction.h"
@@ -30,6 +32,13 @@ typedef struct fixture {
     mc_world_source_regions *regions;
     mc_java_random_profile *profile;
     mc_world_runtime_classes *classes;
+    /* Independent genuine output owners. They never become dependencies or
+     * replacements of the queried source Worlds. */
+    mc_materials *sentinel_materials;
+    mc_java_random_profile *sentinel_profile;
+    mc_registry_classes *sentinel_registry;
+    mc_world_runtime_classes *sentinel_classes;
+    mc_tile_entity *sentinel_tile;
     mc_world_info_name *display;
     mc_world_source_error source;
     mc_world_source_region_error region;
@@ -46,6 +55,15 @@ typedef enum scenario {
     NETHER,
     MISSING
 } scenario;
+
+typedef enum source_query_control { QUERY_PLANT, QUERY_MATERIAL, QUERY_TILE } source_query_control;
+
+typedef struct saved_query_failure {
+    mc_world_runtime_acquisition_error acquisition;
+    unsigned char acquisition_bytes[sizeof(mc_world_runtime_acquisition_error)];
+    mc_world_source_chunk_error producer;
+    mc_world_source_chunk_loader_state loader;
+} saved_query_failure;
 
 static mc_world_info_name *text(const char *ascii) {
     const size_t n = strlen(ascii);
@@ -243,7 +261,135 @@ static int terminal_controls(fixture *f, mc_world_runtime *world, mc_world_store
     return 0;
 }
 
-static int test_case(fixture *f, const char *folder, scenario selected_case) {
+static bool same_cause(const mc_world_storage_error *a, const mc_world_storage_error *b) {
+    return a->status == b->status && a->operation == b->operation &&
+           a->system_error == b->system_error;
+}
+
+static bool empty_registry(const mc_registry_error *e) {
+    return e->status == MC_REGISTRY_OK && e->message == NULL && e->initializer_pc == -1 &&
+           e->block_id == -1 && e->constructor_class == NULL && e->constructor_pc == -1 &&
+           e->profile_status == MC_JAVA_RANDOM_PROFILE_OK && e->active_initializer_class == NULL &&
+           e->active_initializer_pc == -1 && e->item_argument == -1 &&
+           e->format_error.status == MC_JAVA_FORMAT_OK && e->format_error.offset == 0 &&
+           e->format_error.length == 0 && e->format_error.value == 0 &&
+           e->format_error.flags == 0 && e->format_error.conversion == 0 &&
+           e->format_error.date_time == 0;
+}
+
+/* These independent genuine owners are only nonnull failure-output sentinels.
+ * The queried source class keeps its absent Registry binding, so neither getter
+ * can accidentally reach Registry/Tile construction and still satisfy the test. */
+static int query_sentinels_create(fixture *f) {
+    CHECK(mc_materials_create(&f->sentinel_materials));
+    CHECK(mc_java_random_profile_create(SIZE_MAX, &f->sentinel_profile) ==
+          MC_JAVA_RANDOM_PROFILE_OK);
+    const mc_registry_options options = {.side = MC_REGISTRY_CLIENT,
+                                         .random_profile = f->sentinel_profile,
+                                         .materials = f->sentinel_materials};
+    CHECK(mc_registry_classes_allocate(&options, &f->sentinel_registry, NULL) == MC_REGISTRY_OK);
+    CHECK(mc_world_runtime_classes_create(MC_WORLD_INFO_CLIENT, f->sentinel_profile, &trig,
+                                          &f->sentinel_classes, NULL) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_world_runtime_classes_bind_registry(f->sentinel_classes, f->sentinel_registry, NULL) ==
+          MC_REGISTRY_OK);
+    CHECK(mc_tile_entity_allocate_in_classes(f->sentinel_classes, MC_TILE_ENTITY_CHEST,
+                                             &f->sentinel_tile) == MC_TILE_ENTITY_OK);
+    return 0;
+}
+
+/* One actual getter, first on a fresh World's READY loader and empty cache.
+ * The fixture's real compressed non-Compound NBT causes ld/as18; there is no
+ * replacement loader, fabricated child or second query for comparison. */
+static int source_detailed_failure(fixture *f, mc_world_runtime *world,
+                                   const mc_world_source_chunk_loader *loader,
+                                   source_query_control selected, saved_query_failure **out) {
+    CHECK(selected == QUERY_MATERIAL || selected == QUERY_TILE);
+    saved_query_failure *saved = calloc(1, sizeof(*saved));
+    CHECK(saved != NULL);
+    mc_world_runtime_acquisition_error *q = &saved->acquisition;
+    mc_live_tile_entities_error_init(&q->tile_entity);
+    q->registry = q->tile_entity.registry;
+    mc_world_entity_load_error_init(&q->load_entity);
+    mc_world_entity_batch_error_init(&q->batch);
+    mc_world_source_chunk_loader_state before;
+    CHECK(mc_world_source_chunk_loader_inspect(loader, &before) &&
+          before.phase == MC_WORLD_SOURCE_READY && !before.active && !before.retiring &&
+          before.holds == 1 && before.reader == NULL && before.document == NULL &&
+          before.failure != NULL && before.failure->storage.status == MC_WORLD_STORAGE_OK &&
+          world->active_calls == 0 && world->local_leases == 0 &&
+          world->acquisition.cache->count == 0 && world->acquisition.pending->count == 0 &&
+          world->acquisition_error == NULL && world->lifecycle_error == NULL &&
+          mc_world_runtime_registry(world) == NULL);
+    bool provider_null = true;
+    if (selected == QUERY_MATERIAL) {
+        mc_material *const sentinel = mc_materials_get(f->sentinel_materials, MC_MATERIAL_b);
+        mc_material *material = sentinel;
+        mc_world_material_error error;
+        CHECK(sentinel != NULL && mc_world_runtime_material_get_source_detailed(
+                                      world, 0, 64, 0, &material, &error, q, &provider_null) ==
+                                      MC_WORLD_STORAGE_INVALID_DATA);
+        CHECK(material == sentinel && error.status == MC_WORLD_STORAGE_INVALID_DATA &&
+              error.bytecode == 4 && error.operation == q->cause.operation &&
+              same_cause(&error.cause, &q->cause) && empty_registry(&error.registry));
+    } else {
+        mc_tile_entity *tile = f->sentinel_tile;
+        mc_live_tile_entity_error *error = malloc(sizeof(*error));
+        CHECK(error != NULL && tile != NULL);
+        CHECK(mc_live_tile_entities_get_source_detailed(world, 0, 64, 0, &tile, error, q,
+                                                        &provider_null) ==
+              MC_WORLD_STORAGE_INVALID_DATA);
+        CHECK(tile == f->sentinel_tile && error->status == MC_WORLD_STORAGE_INVALID_DATA &&
+              error->bytecode == 7 && error->provider_bytecode == 0 && error->load_bytecode == 6 &&
+              error->load_builder_bytecode == 0 && error->operation == q->cause.operation &&
+              same_cause(&error->cause, &q->cause) && empty_registry(&error->registry));
+        free(error);
+    }
+    const mc_world_source_chunk_error *child = mc_world_source_chunk_loader_last_error(loader);
+    CHECK(!provider_null && q->status == MC_CHUNK_ACQUIRE_CALLBACK_FAILED &&
+          q->cause.status == MC_WORLD_STORAGE_INVALID_DATA && q->source_chunk == child &&
+          child != NULL && same_cause(&q->cause, &child->storage) &&
+          child->source.frame_count == 1 && child->source.frames[0].pc == 18 &&
+          child->source.source_exception && !child->source.native_policy &&
+          child->input.source_fault != MC_NBT_SOURCE_NONE);
+    CHECK(empty_registry(&q->registry) && q->tile_entity.status == MC_WORLD_STORAGE_OK &&
+          empty_registry(&q->tile_entity.registry) && q->batch.index == SIZE_MAX &&
+          q->batch.publication.status == MC_WORLD_STORAGE_OK && q->activation_bytecode == 0 &&
+          q->activation_world_bytecode == 0 && q->load_bytecode == 6 &&
+          q->load_builder_bytecode == 0 && q->load_entity.index == SIZE_MAX &&
+          q->load_entity.native.status == MC_WORLD_STORAGE_OK && !q->population.reached &&
+          world->active_calls == 0 && world->local_leases == 0 &&
+          world->acquisition.cache->count == 0 && world->acquisition.pending->count == 0 &&
+          world->acquisition_error == NULL && world->lifecycle_error == NULL);
+    CHECK(mc_world_source_chunk_loader_inspect(loader, &saved->loader) &&
+          saved->loader.phase == MC_WORLD_SOURCE_FAILED && !saved->loader.active &&
+          saved->loader.holds == before.holds && saved->loader.last_pc == 18 &&
+          saved->loader.reader != NULL && saved->loader.document == NULL &&
+          saved->loader.record != NULL && saved->loader.failure == child);
+    /* Byte snapshots of the complete ACTUAL records, not expected synthetic
+     * diagnostics. Later owner-lifetime checks cannot overlook an overwritten
+     * nested codec/Source field or caller acquisition member. */
+    memcpy(saved->acquisition_bytes, q, sizeof(*q));
+    memcpy(&saved->producer, child, sizeof(saved->producer));
+    *out = saved;
+    return 0;
+}
+
+static int source_detailed_retained(const saved_query_failure *saved,
+                                    const mc_world_source_chunk_loader *loader, size_t holds) {
+    mc_world_source_chunk_loader_state state;
+    CHECK(mc_world_source_chunk_loader_inspect(loader, &state) && state.holds == holds &&
+          state.failure == saved->loader.failure && state.reader == saved->loader.reader &&
+          state.record == saved->loader.record && state.document == saved->loader.document &&
+          saved->acquisition.source_chunk == state.failure &&
+          mc_world_source_chunk_loader_last_error(loader) == state.failure);
+    CHECK(memcmp(saved->acquisition_bytes, &saved->acquisition, sizeof(saved->acquisition)) == 0 &&
+          memcmp(&saved->producer, state.failure, sizeof(saved->producer)) == 0);
+    return 0;
+}
+
+static int test_case(fixture *f, const char *folder, scenario selected_case,
+                     source_query_control selected_query) {
+    saved_query_failure *saved_query = NULL;
     mc_world_store *store = NULL;
     mc_world_runtime *world = NULL;
     mc_world_info_name *name = text(folder);
@@ -408,7 +554,7 @@ static int test_case(fixture *f, const char *folder, scenario selected_case) {
     else
         CHECK(terminal_attempt(f, world, &store, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                MC_WORLD_STORAGE_OK) == 0);
-    if (selected_case == PRIMARY) {
+    if (selected_case == PRIMARY && selected_query == QUERY_PLANT) {
         /* The copied region has a real zlib record with a non-Compound root.
          * Query acquisition must keep the exact retained ld/as failure, with
          * no second disk read or reconstruction from the smaller status. */
@@ -434,11 +580,15 @@ static int test_case(fixture *f, const char *folder, scenario selected_case) {
               value == 0 && query.source_chunk == NULL &&
               mc_world_source_chunk_loader_last_error(source.loader) == child &&
               child->source.frames[0].pc == 18);
+    } else if (selected_case == PRIMARY) {
+        CHECK(source_detailed_failure(f, world, source.loader, selected_query, &saved_query) == 0);
     }
     mc_world_source_chunk_loader *external = NULL;
     if (selected_case == PRIMARY) {
         external = (mc_world_source_chunk_loader *)source.loader;
         CHECK(mc_world_source_chunk_loader_retain(external, &f->source) == MC_WORLD_SOURCE_OK);
+        if (saved_query != NULL)
+            CHECK(source_detailed_retained(saved_query, external, 2) == 0);
     }
     CHECK(mc_world_runtime_retire_world(world, &f->error) == MC_WORLD_STORAGE_OK);
     if (external != NULL) {
@@ -451,16 +601,27 @@ static int test_case(fixture *f, const char *folder, scenario selected_case) {
         mc_world_info_fields info;
         CHECK(mc_world_info_fields_get(fields.x, &info) == MC_WORLD_INFO_OK &&
               info.name == f->display);
+        if (saved_query != NULL)
+            CHECK(world->active_calls == 0 &&
+                  source_detailed_retained(saved_query, external, 2) == 0);
         CHECK(mc_world_source_chunk_loader_release(&external, &f->source) == MC_WORLD_SOURCE_OK &&
               external == NULL);
+        if (saved_query != NULL)
+            CHECK(source_detailed_retained(saved_query, source.loader, 1) == 0);
     }
     CHECK(mc_world_runtime_free(world, &f->error) == MC_WORLD_STORAGE_OK);
     world = NULL;
+    /* The loader's final release ends the typed descendant borrow. Do not
+     * dereference its saved pointer after the actual World free. */
+    free(saved_query);
     mc_world_source_state handler;
     CHECK(mc_world_store_source_inspect(store, &handler) && handler.holds == 1);
     CHECK(mc_world_store_source_release(&store, &f->source) == MC_WORLD_SOURCE_OK && store == NULL);
     printf("SOURCE_WORLD case=%s ready=%d failed_call=%u cleanup=1\n", folder,
            state.phase == MC_WORLD_RUNTIME_READY, state.failed_call_pc);
+    if (selected_query != QUERY_PLANT)
+        printf("SOURCE_QUERY kind=%s actual_saved_failure=1 retained_loader=1 cleanup=1\n",
+               selected_query == QUERY_MATERIAL ? "material" : "tile");
     return 0;
 }
 
@@ -490,7 +651,19 @@ int main(int argc, char **argv) {
     const char *const folders[] = {"primary", "old-only",    "bad-primary", "bad-old",
                                    "bad-ids", "limited-ids", "nether",      "missing"};
     for (size_t i = 0; i < sizeof(folders) / sizeof(folders[0]); ++i)
-        CHECK(test_case(f, folders[i], (scenario)i) == 0);
+        CHECK(test_case(f, folders[i], (scenario)i, QUERY_PLANT) == 0);
+    CHECK(query_sentinels_create(f) == 0);
+    CHECK(test_case(f, "primary", PRIMARY, QUERY_MATERIAL) == 0);
+    CHECK(test_case(f, "primary", PRIMARY, QUERY_TILE) == 0);
+    mc_tile_entity_snapshot sentinel;
+    CHECK(mc_tile_entity_get_snapshot(f->sentinel_tile, &sentinel) == MC_TILE_ENTITY_OK &&
+          sentinel.kind == MC_TILE_ENTITY_CHEST && sentinel.phase == MC_TILE_ENTITY_RAW &&
+          sentinel.world == NULL && sentinel.chest_capacity == 0);
+    mc_tile_entity_release(f->sentinel_tile);
+    CHECK(mc_world_runtime_classes_free(f->sentinel_classes, &f->error) == MC_WORLD_STORAGE_OK);
+    CHECK(mc_registry_classes_free(f->sentinel_registry, NULL) == MC_REGISTRY_OK);
+    mc_java_random_profile_free(f->sentinel_profile);
+    mc_materials_destroy(f->sentinel_materials);
     CHECK(mc_world_runtime_classes_free(f->classes, &f->error) == MC_WORLD_STORAGE_OK);
     CHECK(mc_world_store_source_classes_retire(&f->handlers, &f->source) == MC_WORLD_SOURCE_OK);
     CHECK(mc_world_source_regions_retire(&f->regions, &f->region) == MC_WORLD_SOURCE_OK);

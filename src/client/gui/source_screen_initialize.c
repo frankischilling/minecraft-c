@@ -5,6 +5,7 @@
 #include "source_inventory_screen_internal.h"
 #include "source_pause_screen_internal.h"
 #include "source_screen_initialize_internal.h"
+#include "source_sign_screen_internal.h"
 #include "source_world_selection_internal.h"
 
 #include <limits.h>
@@ -381,6 +382,12 @@ static bool da_body(mc_client_source_da *o, mc_client_screen_initialization *r, 
     } else if (o->kind == MC_CLIENT_SCREEN_CREATE_WORLD) {
         if (!mc_screen_create_world_initialize_locked((mc_client_source_fj *)o,
                                                       &r->failure.screen)) {
+            r->failure.entry = site(true, 45);
+            r->failure.caller = site(true, 45);
+            return false;
+        }
+    } else if (o->kind == MC_CLIENT_SCREEN_SIGN) {
+        if (!mc_screen_sign_initialize_locked((mc_client_source_yc *)o, &r->failure.screen)) {
             r->failure.entry = site(true, 45);
             r->failure.caller = site(true, 45);
             return false;

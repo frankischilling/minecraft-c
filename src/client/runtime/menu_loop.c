@@ -1,10 +1,12 @@
 #include "menu_loop.h"
 #include "../gui/achievement_notice_draw.h"
+#include "../gui/display_screen.h"
 #include "../gui/loading_internal.h"
 #include "../gui/source_chest_drawing.h"
 #include "../gui/source_furnace_drawing.h"
 #include "../gui/source_inventory_drawing.h"
 #include "../gui/source_screen_initialize.h"
+#include "../gui/source_sign_drawing.h"
 #include "../gui/source_workbench_drawing.h"
 #include "../window/canvas.h"
 #include "bootstrap_terminal_internal.h"
@@ -109,11 +111,15 @@ struct mc_client_menu_loop {
     mc_client_inventory_draw_call *inventory_draw;
     mc_client_inventory_draw_state inventory_state;
     mc_client_inventory_draw_error inventory_error, inventory_cleanup;
+    mc_client_sign_draw_call *sign_draw;
+    mc_client_sign_draw_state sign_state;
+    mc_client_sign_draw_error sign_error, sign_cleanup;
     mc_client_overlay_setup_state menu_projection;
     mc_client_overlay_setup_error menu_projection_error;
     mc_client_create_world_draw_error create_world_draw;
     mc_client_world_selection_draw_error world_draw;
     mc_client_screen_event_error events;
+    mc_client_screen_error event_custody;
     mc_client_screen_event_report event_report;
     mc_client_effect_upload_error effects;
     mc_client_texture_lookup_error lookup;
@@ -184,6 +190,32 @@ static bool screen_failure(mc_client_menu_loop *loop) {
     const mc_client_screen_error *error = &loop->events.screen;
     return stop(loop, error->operation == NULL ? "source screen call" : error->operation,
                 error->site.class_name, error->site.method, error->site.pc);
+}
+
+/* Caller/Event child custody joins the same chronological graph as later RQ,
+ * FJ and other Source-parent users. App.r equality cannot establish that an
+ * older FU/CH has no live dependents. Moving actual slots performs no Source
+ * call, slot change or premature strict retirement of such a parent. */
+static bool screen_events_retire(mc_client_menu_loop *loop) {
+    if (mc_client_screen_event_adopt_sign_displays(&loop->events, loop->transitions,
+                                                   &loop->event_custody) != MC_CLIENT_SCREEN_OK)
+        return false;
+    const mc_client_screen_status status = mc_client_screen_event_retire(&loop->events);
+    if (status != MC_CLIENT_SCREEN_OK) {
+        loop->event_custody = (mc_client_screen_error){
+            .status = status,
+            .operation = "actual screen-event native recovery/ledger retirement",
+            .native_policy = true};
+        return false;
+    }
+    return true;
+}
+
+/* Successful calls end their diagnostic borrows before the next entry resets
+ * this storage. Failed calls reach this same custody join only at terminal
+ * retirement, preserving every child/view throughout failure reporting. */
+static bool screen_event_completed(mc_client_menu_loop *loop) {
+    return screen_events_retire(loop) || stop(loop, loop->event_custody.operation, NULL, NULL, -1);
 }
 
 static bool screen_state(mc_client_menu_loop *loop, mc_client_screen_state *out) {
@@ -334,6 +366,8 @@ static bool tick(mc_client_menu_loop *loop) {
             return screen_failure(loop);
         loop->state.mouse_events += loop->event_report.mouse_events;
         loop->state.keyboard_events += loop->event_report.keyboard_events;
+        if (!screen_event_completed(loop))
+            return false;
         if (app->r != NULL) {
             mc_client_screen_state state;
             if (!screen_state(loop, &state))
@@ -341,10 +375,15 @@ static bool tick(mc_client_menu_loop *loop) {
             if (state.da.h == NULL)
                 return stop(loop, "actual null screen-particle receiver",
                             "net/minecraft/client/Minecraft", "k", 310);
-            if (mc_client_screen_particles_tick(state.da.h, &loop->events) != MC_CLIENT_SCREEN_OK ||
-                mc_client_screen_tick_with_transitions(app->r, loop->transitions, &loop->events) !=
-                    MC_CLIENT_SCREEN_OK)
+            if (mc_client_screen_particles_tick(state.da.h, &loop->events) != MC_CLIENT_SCREEN_OK)
                 return screen_failure(loop);
+            if (!screen_event_completed(loop))
+                return false;
+            if (mc_client_screen_tick_with_transitions(app->r, loop->transitions, &loop->events) !=
+                MC_CLIENT_SCREEN_OK)
+                return screen_failure(loop);
+            if (!screen_event_completed(loop))
+                return false;
         }
     }
     bool gameplay = app->r == NULL;
@@ -664,6 +703,28 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
                             loop->create_world_draw.screen.site.method,
                             loop->create_world_draw.screen.site.pc);
             loop->state.font_measurements += loop->create_world_draw.font_measurements;
+        } else if (drawn.kind == MC_CLIENT_SCREEN_SIGN) {
+            const mc_client_sign_draw_services services = {
+                .draw = {.math = loop->math,
+                         .graphics = loop->graphics,
+                         .display = app->display,
+                         .application_classes = app->source_namespace},
+                .models = app->render_classes,
+                .world_classes = app->world_classes,
+                .registry = app->registry,
+                .profile = app->profile};
+            const mc_client_screen_status status = mc_client_source_sign_draw_begin(
+                (mc_client_source_yc *)app->r, mouse, partial, &services, NULL, &loop->sign_draw,
+                &loop->sign_error);
+            if (loop->sign_draw != NULL) {
+                (void)mc_client_source_sign_draw_inspect(loop->sign_draw, &loop->sign_state);
+                loop->state.sign = &loop->sign_state;
+            }
+            if (status != MC_CLIENT_SCREEN_OK)
+                return stop(loop, loop->sign_error.screen.operation,
+                            loop->sign_error.screen.site.class_name,
+                            loop->sign_error.screen.site.method, loop->sign_error.screen.site.pc);
+            loop->state.font_measurements += loop->sign_state.font_measurements;
         } else if (drawn.kind == MC_CLIENT_SCREEN_INVENTORY ||
                    drawn.kind == MC_CLIENT_SCREEN_WORKBENCH ||
                    drawn.kind == MC_CLIENT_SCREEN_CHEST || drawn.kind == MC_CLIENT_SCREEN_FURNACE) {
@@ -728,6 +789,8 @@ static bool render_menu(mc_client_menu_loop *loop, float partial) {
                 mc_client_screen_particles_draw(screen.da.h, partial, &loop->events) !=
                     MC_CLIENT_SCREEN_OK)
                 return screen_failure(loop);
+            if (screen.da.h != NULL && !screen_event_completed(loop))
+                return false;
         }
     }
     loop->state.render_returned = true;
@@ -826,6 +889,16 @@ static void expire_inventory_draw_chest_views(mc_client_menu_loop *loop) {
 static bool retire_completed_draws(mc_client_menu_loop *loop) {
     /* Completed frame receipts stay inspectable through that frame. Drain
      * their native occurrences before the next source pool reset or tick. */
+    if (loop->sign_draw != NULL && loop->sign_state.returned) {
+        const mc_client_screen_status status =
+            mc_client_source_sign_draw_retire(&loop->sign_draw, &loop->sign_cleanup);
+        if (loop->sign_draw != NULL)
+            (void)mc_client_source_sign_draw_inspect(loop->sign_draw, &loop->sign_state);
+        if (status != MC_CLIENT_SCREEN_OK)
+            return run_stop(loop, "completed Sign draw native retirement", 0);
+        loop->state.sign = NULL;
+        loop->sign_state = (mc_client_sign_draw_state){0};
+    }
     if (loop->inventory_draw != NULL && loop->inventory_state.returned) {
         if (mc_client_source_inventory_draw_retire(&loop->inventory_draw,
                                                    &loop->inventory_cleanup) != MC_CLIENT_SCREEN_OK)
@@ -1118,6 +1191,14 @@ bool mc_client_menu_loop_inspect(const mc_client_menu_loop *loop, mc_client_menu
 static bool retire_calls(mc_client_menu_loop *loop) {
     /* Transition-owned display calls can end before a later screen refuses
      * retirement. Do not expose that borrow through the surviving loop. */
+    const mc_client_screen_status sign_status =
+        mc_client_source_sign_draw_retire(&loop->sign_draw, &loop->sign_cleanup);
+    if (loop->sign_draw != NULL)
+        (void)mc_client_source_sign_draw_inspect(loop->sign_draw, &loop->sign_state);
+    if (sign_status != MC_CLIENT_SCREEN_OK)
+        return false;
+    loop->state.sign = NULL;
+    loop->sign_state = (mc_client_sign_draw_state){0};
     if (loop->screen_display == NULL)
         loop->state.display_call = NULL;
     if (mc_client_source_inventory_draw_retire(&loop->inventory_draw, &loop->inventory_cleanup) !=
@@ -1186,7 +1267,7 @@ static bool retire_calls(mc_client_menu_loop *loop) {
         mc_client_entity_renderer_pick_detach(loop->app->t, &loop->pick_cleanup) !=
             MC_CLIENT_PICK_OK)
         return false;
-    return mc_client_screen_event_retire(&loop->events) == MC_CLIENT_SCREEN_OK &&
+    return screen_events_retire(loop) &&
            mc_client_source_create_world_draw_retire(&loop->create_world_draw) ==
                MC_CLIENT_SCREEN_OK &&
            mc_client_source_pause_draw_retire(&loop->pause_draw) == MC_CLIENT_SCREEN_OK &&
