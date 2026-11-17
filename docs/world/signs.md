@@ -67,21 +67,32 @@ Two fresh JDK17 VMs agree on observations for all 1,114,112 codepoint values,
 including 2,048 isolated-surrogate values, plus 222 Locale/context rows each.
 Complete special-case source review and combining-class observations support
 the conservative domain. Windows core, layout and command controls pass. A
-genuine SourceFont control on monitor 2 passes 680 checks. Its final unsafe
+genuine SourceFont control on monitor 2 passes 681 checks. Its final unsafe
 U+0130 input reaches the native refusal at SJ178 after queuing an earlier glyph.
 The GL/NIO prefix survives both an independent alias release and final native
 retirement without Source GL repair.
 
 ## Finite validation
 
-The complete serial MSVC Release sweep passes all 1,380 tests in 1804.48
+At `d572d6dc`, the complete serial MSVC Release sweep passes all 1,380 tests in 1804.48
 seconds. All 1,372 preceding names remain plus exactly eight additions, with
 complete inventory/log/JUnit and Start/completion joins and no skips or unrun
 tests. All 6,601 public files and 689 native products stay unchanged during
 the sweep. The preceding local suite used four workers; these elapsed times
-are not a performance comparison. Later validation annotations, admission
-fingerprints and CRLF whitespace declarations preserve the tested native
-code and products.
+are not a performance comparison. That checkpoint's validation annotations,
+admission fingerprints and CRLF declarations preserved its tested code/products.
+
+The first hosted Sign run passes Windows and formatting; GCC and Clang each
+finish 1,414 of 1,415 tests. Only the new terminal SourceFont assertion fails:
+Mesa retains the requested color as pending CURRENT-only state before SJ178,
+while the test expected the prior committed color to have changed. The corrected
+test passively captures both states, checks the complete matrix, and verifies
+both states through first/final release without getters, flushes or tolerances.
+Production code is unchanged. Its monitor-2 Windows process passes 681 checks.
+Local Mesa 26 completes 678 assertions, then LeakSanitizer reports 320 bytes
+from Fontconfig 2.17.1; a separate Fontconfig-only match/destroy control reproduces
+those allocations. That local process is retained as failed, not a sanitizer
+pass. Hosted confirmation on the measured Mesa 25.2.8 profile is pending.
 
 After the Unicode Font change and reviewed null-World removal fix, seven GCC
 and eleven Clang tests pass in 35.11 and 40.38 seconds. Both enable ASan, UBSan

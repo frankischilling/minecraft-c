@@ -1446,8 +1446,8 @@
       "sha256": "dd7694b79d9955ff5c5d8fe0b6c2e0318fb0d2f26e9b1f720b71bb78122c715b"
     },
     "tests/client/render_engine/test_source_font.c": {
-      "bytes": 38372,
-      "sha256": "0cd0d0dce426456d88b77844bcc4b1262b7e2e9deea37c208a216455b6abe2ab"
+      "bytes": 40844,
+      "sha256": "06a7aed7805d4ffc116b59f180c128beee859a00abf9cb0b03fbb1e3b01265bc"
     },
     "tests/client/render_engine/test_source_fp.c": {
       "bytes": 11917,
@@ -11798,8 +11798,8 @@
       "sha256": "1770155764c0984c83030a833f01aa5aabeffb3399ad34f173ec8c4c8f070e80"
     },
     "docs/world/signs.md": {
-      "bytes": 8068,
-      "sha256": "7d588a3bb50842a5e3603b228d79e1aef73ca3519454616fa65d779a70fc9292"
+      "bytes": 8937,
+      "sha256": "25160e9edab64c36e03891c214b20b7e1bdd325052a0a651678515bff91f204b"
     },
     "include/mc/core/java/string_lower_hex.h": {
       "bytes": 1602,

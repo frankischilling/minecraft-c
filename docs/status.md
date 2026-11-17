@@ -23,7 +23,7 @@ The shared [whole-String lowercase hex projection](../tests/reference/core/strin
 admits formatted Unicode in its qualified domain, including the Sign case that
 previously stopped at the ASCII-only dependency. It conservatively refuses
 possible Locale-dependent UTF-16 insertion/removal. A genuine monitor-2
-SourceFont control passes 680 checks, preserving the reached GL/NIO prefix and
+SourceFont control passes 681 checks, preserving the reached GL/NIO prefix and
 queued glyph through that native refusal and owner retirement. Post-fix GCC
 and Clang selections pass seven and eleven tests in 35.11 and 40.38 seconds
 with ASan, UBSan and leak detection. The complete MSVC Release build and
@@ -34,14 +34,20 @@ readback covers 48 draws and 40 selected saved Chunk/metadata copies; complete
 dense-Chest regressions pass 961, 9,710 and 971 checks. Placement, editing,
 sustained play and gameplay FPS remain open.
 
-The complete serial MSVC Release sweep passes all 1,380 tests in 1804.48
+At `d572d6dc`, the complete serial MSVC Release sweep passes all 1,380 tests in 1804.48
 seconds. All 1,372 preceding names remain plus exactly eight additions, with
 complete inventory/log/JUnit and Start/completion joins and no skips or unrun
 tests. All 6,601 public files and 689 native products stay unchanged during
 the sweep. The preceding local suite used four workers; these elapsed times
-are not a performance comparison. Later validation annotations, admission
-fingerprints and CRLF whitespace declarations preserve the tested native
-code and products.
+are not a performance comparison. That checkpoint's validation annotations,
+admission fingerprints and CRLF declarations preserved its tested code/products.
+
+The first hosted Sign run passes formatting and Windows, while GCC and Clang
+each pass 1,414 of 1,415 tests. Their sole failure is the new SourceFont control:
+it expected a committed color where the measured Mesa profile retains pending
+attributes. The corrected control snapshots and byte-checks both states through
+retirement. Its Windows control passes 681 checks; production code is unchanged.
+New hosted confirmation is pending.
 
 The Tile Set snapshot declaration now uses the existing scoped MSVC C4200
 guard for standard C17 flexible arrays. This addresses the hosted VS2022 build

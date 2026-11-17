@@ -11982,8 +11982,8 @@
       "sha256": "1770155764c0984c83030a833f01aa5aabeffb3399ad34f173ec8c4c8f070e80"
     },
     "docs/world/signs.md": {
-      "bytes": 8068,
-      "sha256": "7d588a3bb50842a5e3603b228d79e1aef73ca3519454616fa65d779a70fc9292"
+      "bytes": 8937,
+      "sha256": "25160e9edab64c36e03891c214b20b7e1bdd325052a0a651678515bff91f204b"
     },
     "include/mc/core/java/string_lower_hex.h": {
       "bytes": 1602,

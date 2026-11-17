@@ -27,10 +27,12 @@ static unsigned probe_checks;
     } while (0)
 
 typedef struct probe_source_prefix {
-    float projection[16], modelview[16], color[4];
+    float projection[16], modelview[16], color[4], pending_color[4];
     int32_t mode;
     size_t modelview_depth, projection_depth;
-    bool color_known;
+    mc_client_source_attribute_profile attribute_profile;
+    uint32_t pending_enabled, pending_flags;
+    bool color_known, pending_color_known;
 } probe_source_prefix;
 
 static bool probe_prefix(mc_client_display *display, probe_source_prefix *out) {
@@ -42,6 +44,12 @@ static bool probe_prefix(mc_client_display *display, probe_source_prefix *out) {
         return false;
     memcpy(out->color, draw.color, sizeof(out->color));
     out->color_known = draw.color_known;
+    /* Passive reads retain Mesa's pending attributes without committing them. */
+    out->attribute_profile = display->source.attribute_profile;
+    out->pending_enabled = display->source.attribute_staging.enabled;
+    out->pending_flags = display->source.attribute_staging.flags;
+    memcpy(out->pending_color, display->source.attribute_staging.color, sizeof(out->pending_color));
+    out->pending_color_known = display->source.attribute_staging.color_known;
     return true;
 }
 
@@ -49,9 +57,14 @@ static bool probe_prefix_equal(const probe_source_prefix *left, const probe_sour
     return left->mode == right->mode && left->modelview_depth == right->modelview_depth &&
            left->projection_depth == right->projection_depth &&
            left->color_known == right->color_known &&
+           left->attribute_profile == right->attribute_profile &&
+           left->pending_enabled == right->pending_enabled &&
+           left->pending_flags == right->pending_flags &&
+           left->pending_color_known == right->pending_color_known &&
            memcmp(left->projection, right->projection, sizeof(left->projection)) == 0 &&
            memcmp(left->modelview, right->modelview, sizeof(left->modelview)) == 0 &&
-           memcmp(left->color, right->color, sizeof(left->color)) == 0;
+           memcmp(left->color, right->color, sizeof(left->color)) == 0 &&
+           memcmp(left->pending_color, right->pending_color, sizeof(left->pending_color)) == 0;
 }
 
 static mc_client_gl_texture_image_fn probe_real_image;
@@ -537,10 +550,15 @@ int main(int argc, char **argv) {
     REQUIRE(mc_player_string_create(unsafe_units, sizeof(unsafe_units) / sizeof(*unsafe_units),
                                     &unsafe_text) == MC_PLAYER_OK);
     probe_source_prefix unsafe_before, unsafe_failed, unsafe_first_release, unsafe_final_release;
+    const float unsafe_initial_modelview[] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -200, 1};
     REQUIRE(probe_prefix(display, &unsafe_before) && unsafe_before.mode == GL_MODELVIEW &&
-            unsafe_before.color_known && unsafe_before.modelview[0] == 1.0f &&
-            unsafe_before.modelview[5] == 1.0f && unsafe_before.modelview[1] == 0.0f &&
-            unsafe_before.modelview[4] == 0.0f);
+            unsafe_before.color_known && unsafe_before.pending_enabled == 0 &&
+            unsafe_before.pending_flags == 0 &&
+            (unsafe_before.attribute_profile == SOURCE_ATTRIBUTE_PROFILE_UNKNOWN ||
+             unsafe_before.attribute_profile == SOURCE_ATTRIBUTE_PROFILE_NVIDIA_581_42 ||
+             unsafe_before.attribute_profile == SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8) &&
+            memcmp(unsafe_before.modelview, unsafe_initial_modelview,
+                   sizeof(unsafe_initial_modelview)) == 0);
     mc_client_direct_buffer_state unsafe_nio_before, unsafe_nio_failed, unsafe_nio_held;
     REQUIRE(mc_client_direct_int_buffer_inspect(ready->fields.d, &unsafe_nio_before) &&
             unsafe_nio_before.capacity == 1024 && unsafe_nio_before.direct &&
@@ -560,14 +578,30 @@ int main(int argc, char **argv) {
             memcmp(unsafe_failed.projection, unsafe_before.projection,
                    sizeof(unsafe_before.projection)) == 0 &&
             unsafe_failed.color_known);
-    float unsafe_expected_modelview[16];
-    memcpy(unsafe_expected_modelview, unsafe_before.modelview, sizeof(unsafe_expected_modelview));
-    unsafe_expected_modelview[12] += 7.0f;
-    unsafe_expected_modelview[13] += 11.0f;
+    /* Full loading-projection prestate makes the rounded translation exact in
+     * every row, including the signed-zero-sensitive last-column stores. */
+    const float unsafe_expected_modelview[] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 7, 11, -200, 1};
     const float unsafe_expected_color[] = {18.0f / 255.0f, 52.0f / 255.0f, 86.0f / 255.0f, 1.0f};
     REQUIRE(memcmp(unsafe_failed.modelview, unsafe_expected_modelview,
-                   sizeof(unsafe_expected_modelview)) == 0 &&
-            memcmp(unsafe_failed.color, unsafe_expected_color, sizeof(unsafe_expected_color)) == 0);
+                   sizeof(unsafe_expected_modelview)) == 0);
+    probe_source_prefix unsafe_expected = unsafe_before;
+    memcpy(unsafe_expected.modelview, unsafe_expected_modelview, sizeof(unsafe_expected.modelview));
+    ++unsafe_expected.modelview_depth;
+    if (unsafe_before.attribute_profile == SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8) {
+        /* sj118 stages CURRENT-only color. Push does not commit attributes and
+         * Translate flushes only STORED, so sj178 retains the previous committed
+         * color alongside this newly pending color. No getter/flush is inserted. */
+        unsafe_expected.pending_enabled = UINT32_C(1) << SOURCE_STAGE_COLOR;
+        unsafe_expected.pending_flags = SOURCE_STAGE_CURRENT;
+        memcpy(unsafe_expected.pending_color, unsafe_expected_color,
+               sizeof(unsafe_expected.pending_color));
+        unsafe_expected.pending_color_known = true;
+    } else {
+        /* NVIDIA and the unknown-profile immediate path update committed color;
+         * all inactive staging cells retain their captured bytes and knowledge. */
+        memcpy(unsafe_expected.color, unsafe_expected_color, sizeof(unsafe_expected.color));
+    }
+    REQUIRE(probe_prefix_equal(&unsafe_failed, &unsafe_expected));
     REQUIRE(mc_client_direct_int_buffer_inspect(ready->fields.d, &unsafe_nio_failed) &&
             unsafe_nio_failed.identity == unsafe_nio_before.identity &&
             unsafe_nio_failed.storage == unsafe_nio_before.storage &&
