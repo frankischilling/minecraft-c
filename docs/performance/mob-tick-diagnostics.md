@@ -211,3 +211,41 @@ three frames with exactly matching tick spans in the same pair had combined
 host frame times of 1,745.02 ms before and 1,751.79 ms after. The live scene
 reproduces the same Mob work with long frames. It leaves the whole-frame speed
 effect of the collision change unresolved.
+
+### Reusing collision scan diagnostics
+
+Two instrumented runs of the 82-Mob cave scene spent a median 249.72–263.61 ms
+in the World entity loop. Per-tick travel took 174.55–183.69 ms, including
+80.86–85.55 ms in collision-box queries. Environment checks took 27.93–30.12 ms.
+These stage timings include work in their called functions.
+
+The collision scan initializes its private nearby diagnostic before the scan.
+The column-presence and Block reads restore just the fields they write on
+success. Block contributions use the same private frame directly. A failure
+still publishes the reached coordinates, stage and cause. The collision-box
+control shortens a live Chunk's backing extent to test a failure after a valid
+air read and after a solid Block contribution. It checks the failing read's
+World, Block and Chunk diagnostics and the caller's output sentinel.
+
+The pinned Windows Release workload repeated the same eight- and 64-Zombie
+cases, with 14 matched measurements at each count. Each interval completed 16
+World entity ticks. State, actor tick words, RNG, Chunk and ownership digests
+matched for each seed.
+
+| Zombies | Baseline median ms per tick | Candidate median ms per tick | Faster pairs |
+| ---: | ---: | ---: | ---: |
+| 8 | 3.170 | 3.143 | 13 of 14 |
+| 64 | 24.513 | 24.077 | 14 of 14 |
+
+Six instrumented Far runs on DISPLAY2 repeated 2,905 collision-box calls and
+entity dispatches in the same 35 World ticks, with matching per-tick state
+and call counts. One of the three pairs had lower median collision-box and
+World entity loop times. Median collision-box time per tick for each pair was
+84.74 to 78.37 ms, 83.97 to 86.22 ms, and 72.51 to 77.01 ms, respectively.
+
+A smaller cave in four Chunks (X=3–4, Z=−1–0) produced 2,881 matching
+entity dispatches over the 169 ticks common to six further DISPLAY2 runs.
+The complete intervals returned 169–177 World ticks. At 854×480, the median
+run FPS changed from 9.94 to 10.04 and median run p99 from 767.54 to 765.81 ms.
+Two pairs had higher FPS and one had lower FPS. The fixed-work tick savings
+are reproducible in this sample. The whole-frame benefit remains unresolved.

@@ -285,7 +285,6 @@ static mc_world_storage_status block_value_body(mc_world_runtime *world, int32_t
                                                 int32_t z, bool metadata, int32_t *out,
                                                 mc_world_collision_error *frame,
                                                 const block_value_execution *query) {
-    mc_world_nearby_error_init(&frame->nearby);
     frame->x = x;
     frame->y = y;
     frame->z = z;
@@ -356,10 +355,8 @@ static mc_world_storage_status block_value_body(mc_world_runtime *world, int32_t
             }
         }
     }
-    if (status == MC_WORLD_STORAGE_OK) {
+    if (status == MC_WORLD_STORAGE_OK)
         *out = value;
-        mc_world_nearby_error_init(&frame->nearby);
-    }
     return status;
 }
 
@@ -372,8 +369,11 @@ static mc_world_storage_status block_value_run(mc_world_runtime *world, int32_t 
         mc_world_collision_error_init(&frame);
     else
         frame = *error;
+    mc_world_nearby_error_init(&frame.nearby);
     const mc_world_storage_status status =
         block_value_body(world, x, y, z, metadata, out, &frame, query);
+    if (status == MC_WORLD_STORAGE_OK)
+        mc_world_nearby_error_init(&frame.nearby);
     if (error != NULL)
         *error = frame;
     return status;
@@ -383,7 +383,13 @@ mc_world_storage_status mc_world_collision_block_value_in_place(mc_world_runtime
                                                                 int32_t y, int32_t z, bool metadata,
                                                                 int32_t *out,
                                                                 mc_world_collision_error *frame) {
-    return block_value_body(world, x, y, z, metadata, out, frame, NULL);
+    const mc_world_storage_status status =
+        block_value_body(world, x, y, z, metadata, out, frame, NULL);
+    if (status == MC_WORLD_STORAGE_OK) {
+        frame->nearby.query.bytecode = 0;
+        frame->nearby.query.chunk_bytecode = 0;
+    }
+    return status;
 }
 
 mc_world_storage_status mc_world_collision_block_value_held(mc_world_runtime *world, int32_t x,
@@ -2019,30 +2025,35 @@ static mc_world_storage_status contribute(const block_context *context, mc_block
     return MC_WORLD_STORAGE_OK;
 }
 
+mc_world_storage_status mc_world_collision_block_contribute_in_place(
+    mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y, int32_t z,
+    const mc_entity_bounds *query, mc_world_reference_list *destination,
+    mc_world_collision_error *frame) {
+    block_context frame_context = {NULL, world, true, NULL};
+    frame->bounds = (mc_entity_bounds_error){0};
+    frame->block_class = NULL;
+    frame->block_bytecode = 0;
+    frame->x = x;
+    frame->y = y;
+    frame->z = z;
+    if (!block_admit(&frame_context, block, frame))
+        return frame->nearby.query.status;
+    return contribute(&frame_context, (mc_block *)block, x, y, z, query, destination, frame);
+}
+
 mc_world_storage_status
 mc_world_collision_block_contribute_held(mc_world_runtime *world, const mc_block *block, int32_t x,
                                          int32_t y, int32_t z, const mc_entity_bounds *query,
                                          mc_world_reference_list *destination,
                                          mc_world_collision_error *error) {
-    block_context frame_context = {NULL, world, true, NULL};
-    block_context *const context = &frame_context;
     mc_world_collision_error frame;
     if (error == NULL)
         mc_world_collision_error_init(&frame);
     else
         frame = *error;
     mc_world_nearby_error_init(&frame.nearby);
-    frame.bounds = (mc_entity_bounds_error){0};
-    frame.block_class = NULL;
-    frame.block_bytecode = 0;
-    frame.x = x;
-    frame.y = y;
-    frame.z = z;
-    mc_world_storage_status status;
-    if (!block_admit(context, block, &frame))
-        status = frame.nearby.query.status;
-    else
-        status = contribute(context, (mc_block *)block, x, y, z, query, destination, &frame);
+    const mc_world_storage_status status = mc_world_collision_block_contribute_in_place(
+        world, block, x, y, z, query, destination, &frame);
     if (error != NULL)
         *error = frame;
     return status;

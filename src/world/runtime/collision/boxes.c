@@ -356,13 +356,14 @@ static bool query(mc_world_runtime *world, mc_entity *moving, const mc_entity_bo
     const int32_t high_y = mc_math_floor_double(bounds->max_y + 1.0);
     const int32_t low_z = mc_math_floor_double(bounds->min_z);
     const int32_t high_z = mc_math_floor_double(bounds->max_z + 1.0);
+    /* The private nearby record stays empty between completed reads. A
+     * failure leaves the scan immediately with the reached diagnostics. */
     for (int32_t x = low_x; x < high_x; x = mc_java_i32_add(x, 1)) {
         for (int32_t z = low_z; z < high_z; z = mc_java_i32_add(z, 1)) {
             frame->world_bytecode = 94;
             frame->x = x;
             frame->y = 64;
             frame->z = z;
-            mc_world_nearby_error_init(&frame->nearby);
             frame->nearby.query.bytecode = 20; /* column's private presence call */
             frame->nearby.query.provider_bytecode = 6;
             bool present;
@@ -375,7 +376,8 @@ static bool query(mc_world_runtime *world, mc_entity *moving, const mc_entity_bo
                 frame->nearby.query.cause = child;
                 return false;
             }
-            mc_world_nearby_error_init(&frame->nearby);
+            frame->nearby.query.bytecode = 0;
+            frame->nearby.query.provider_bytecode = 0;
             if (!present)
                 continue;
             for (int32_t y = mc_java_i32_sub(low_y, 1); y < high_y; y = mc_java_i32_add(y, 1)) {
@@ -402,9 +404,9 @@ static bool query(mc_world_runtime *world, mc_entity *moving, const mc_entity_bo
                 if (block == NULL)
                     continue;
                 frame->world_bytecode = 148;
-                if (mc_world_collision_block_contribute_held(world, block, x, y, z, bounds,
-                                                             world->fields.K,
-                                                             frame) != MC_WORLD_STORAGE_OK)
+                if (mc_world_collision_block_contribute_in_place(world, block, x, y, z, bounds,
+                                                                 world->fields.K,
+                                                                 frame) != MC_WORLD_STORAGE_OK)
                     return false;
                 frame->block_class = NULL;
                 frame->block_bytecode = 0;

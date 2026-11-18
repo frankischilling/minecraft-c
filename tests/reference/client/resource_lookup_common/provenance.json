@@ -4626,16 +4626,16 @@
       "sha256": "a5508eef58b78dc8f3626b4871d55380883ba13882e105af3c6bc811897a0a2f"
     },
     "src/world/runtime/collision/blocks.c": {
-      "bytes": 98709,
-      "sha256": "239a27dd20789a1c83c61505820554c73ad301ba58c1ea9b007d46021ef5c38d"
+      "bytes": 99268,
+      "sha256": "725915d83ea5e96bd4f6ec41f5e2c74caf6beb043b50b2c0a39904820ce3fc9b"
     },
     "src/world/runtime/collision/blocks_internal.h": {
-      "bytes": 9206,
-      "sha256": "70659787afb7e8c6d00f882d0fd6f85dbc139ee60ea7b1179d3586b8feee6367"
+      "bytes": 9564,
+      "sha256": "4e5984aad16929de566746113e881a571f8198974bd171df826103773cdcdd67"
     },
     "src/world/runtime/collision/boxes.c": {
-      "bytes": 26426,
-      "sha256": "8213102f003f9f353fc9b17da8ed89ce1ec27b588943d026f502965bb283089f"
+      "bytes": 26575,
+      "sha256": "3cca889451dd46fa4c47d0ffa2dc52037bd6f0986ff168d4b7a466a00e4cf5a3"
     },
     "src/world/runtime/collision/boxes_internal.h": {
       "bytes": 1673,
@@ -6411,7 +6411,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 937706,
-      "sha256": "445bc2850d58cf8418bfecf4597e51c422cc3ce4e3d4f7d46353d45dcc757939"
+      "sha256": "302472363fee65a5225584fd43256c643a7d44306cc723fd2388ad7301a6476f"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6475,7 +6475,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067659,
-      "sha256": "5917ae11990bf0b6ada9e3f8cca9b0bae5286934376248f6d04d9a3476f9c303"
+      "sha256": "afb9aab4260a6f9662b34fb87acd4b61abecf5be5cdd80e3994015d029ec02a8"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6607,7 +6607,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934531,
-      "sha256": "02fd38ca04e5cd7ffc16a80c3f6dc90cca8cc1f13a761b376eab8b72fcae54c1"
+      "sha256": "76d2f4f8a46fbdfc5aaadc3f150f20a9588773fb89b4afb888dc1f2d1ac9b2af"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9074,8 +9074,8 @@
       "sha256": "465d0a8842fe7f3c30d3b78442bbf33c044298078463bfe295eef3257dc2ef31"
     },
     "tests/world/runtime/collision/test_boxes.c": {
-      "bytes": 71868,
-      "sha256": "8e3a3b6383213d0c8402a47a946bf447966bc1bba7b78852a515aea0a435d655"
+      "bytes": 73712,
+      "sha256": "5404ab48e3ad91c51e3e450a841d19b7f7bcde86f82eac3377c08e4d9d207d75"
     },
     "tests/world/runtime/collision/test_class_entities.c": {
       "bytes": 30320,
@@ -22722,8 +22722,8 @@
       "sha256": "a713dcbfe1c1dc85f9bb98f663871ba74a0b30595bdf239dc5a116f3789c3650"
     },
     "docs/performance/mob-tick-diagnostics.md": {
-      "bytes": 13104,
-      "sha256": "89f7e9a072f16adca7db4b2169dc14b0cc323c42ba6e1d3b0e0845b6784906b2"
+      "bytes": 15264,
+      "sha256": "8a0ccd4bdfc687de280f4a7efd412ebdc9f739f17403284c3f2936e37c5f9ece"
     },
     "src/entity/mob/tick/workspace_internal.h": {
       "bytes": 1738,
@@ -23347,11 +23347,11 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76652,
-      "sha256": "cbd1d0bc72d93cfd1614033e6af7801a6a1fa6b85078b3751d1da2396efb3115"
+      "sha256": "c8601982d09e5bf803d880f17273c975388ec99806c3ed6761fdba04e5d51bfd"
     },
     "tests/tools/world/world_query_controls_bundle.json": {
       "bytes": 61334,
-      "sha256": "a9b76d2ac089855cda17d9375687e16e52ac3472717ead8c558a798826ae1946"
+      "sha256": "2e315162e182bca684db3c66fa522854f838c0aed7490b5e2d992ff46389275d"
     },
     "tests/tools/world/world_query_controls_protocol.json": {
       "bytes": 33175,
@@ -23551,11 +23551,11 @@
     },
     "tests/tools/client/arrow_world_tick_cleanup_bundle.json": {
       "bytes": 9794,
-      "sha256": "7fda550ac621f62d8ca1cc03d085b92dac31c3e9d4104f8a6d2619dd6e538f8f"
+      "sha256": "10833b5e743271f73870ac432ec9f279a6bde62c03d347127710cd2f46fba180"
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "706ab22bbb34a7f39ead5892833b05e09fc1d4e0cac22a6b0415b90cbb450aa6"
+      "sha256": "9aceec666f74caaa89cb102bcb63daf037e48234d9606cd0f72dce4932a9eb63"
     },
     "docs/entity/arrow-flight.md": {
       "bytes": 12048,

@@ -610,6 +610,41 @@ cleanup:
     return ok;
 }
 
+static bool boxes_read_failure_after_success(fixture *f, size_t side) {
+    bool ok = false;
+    mc_world_runtime *const world = f->worlds[side];
+    mc_chunk_data *const data = f->states[side]->data;
+    const size_t cell = boxes_index(6, 7, 6);
+    const uint8_t saved = data->blocks[cell];
+    const size_t capacity = data->blocks_capacity;
+    const mc_entity_bounds query = {6.125, 8.125, 6.125, 6.875, 8.875, 6.875};
+    for (uint8_t id = 0; id <= 1; ++id) {
+        data->blocks[cell] = id;
+        data->blocks_capacity = cell + 1;
+        mc_world_collision_list_view out = {NULL, world->fields.K};
+        mc_world_collision_error error;
+        const mc_world_storage_status status =
+            mc_world_runtime_collision_boxes(world, NULL, &query, &out, &error);
+        data->blocks_capacity = capacity;
+        CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.world_bytecode == 123 &&
+              error.block_bytecode == 0 && error.block_class == NULL && error.x == 6 &&
+              error.y == 8 && error.z == 6 && out.owner == NULL && out.identity == world->fields.K);
+        const mc_world_nearby_error *nearby = &error.nearby;
+        CHECK(nearby->query.bytecode == 60 && nearby->query.provider_bytecode == 0 &&
+              nearby->query.chunk_bytecode == 15 &&
+              nearby->query.acquisition == MC_CHUNK_ACQUIRE_OK &&
+              nearby->query.source_chunk == NULL && !nearby->query.source_null &&
+              nearby->slice == SIZE_MAX && nearby->index == SIZE_MAX &&
+              nearby->query.operation != NULL &&
+              strcmp(nearby->query.operation, "Collision Chunk block backing/index") == 0 &&
+              world->fields.K->count == 0);
+    }
+    ok = true;
+cleanup:
+    data->blocks[cell] = saved;
+    return ok;
+}
+
 static bool boxes_multipart_failure(fixture *f, size_t side) {
     bool ok = false;
     const size_t slot = side + 4u;
@@ -1235,7 +1270,8 @@ int MC_COLLISION_BOXES_MAIN(int argc, char **argv) {
     for (size_t side = 0; side < 2; ++side)
         CHECK(boxes_basic(f, side) && boxes_registered_shapes(f, side) &&
               boxes_multipart_and_order(f, side) && boxes_direct_numeric_and_null_order(f, side) &&
-              boxes_pool_lifetime(f, side) && boxes_permanent_ownership(f, side));
+              boxes_pool_lifetime(f, side) && boxes_permanent_ownership(f, side) &&
+              boxes_read_failure_after_success(f, side));
     for (size_t slot = 4; slot <= 5; ++slot)
         CHECK(boxes_open_store(f, slot, root) && boxes_create_world(f, slot));
     for (size_t side = 0; side < 2; ++side)

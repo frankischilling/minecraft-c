@@ -12,8 +12,8 @@ mc_world_storage_status mc_world_collision_block_value_held(mc_world_runtime *wo
                                                             int32_t *out,
                                                             mc_world_collision_error *error);
 
-/* Same operation on an initialized private frame. The frame must stay
- * inaccessible to callbacks until the enclosing query publishes it. */
+/* Same operation with a canonical empty nearby record on entry and on
+ * success. The frame stays private until the enclosing query publishes it. */
 mc_world_storage_status mc_world_collision_block_value_in_place(mc_world_runtime *, int32_t,
                                                                 int32_t, int32_t, bool, int32_t *,
                                                                 mc_world_collision_error *);
@@ -135,5 +135,11 @@ mc_world_collision_block_contribute_held(mc_world_runtime *world, const mc_block
                                          int32_t y, int32_t z, const mc_entity_bounds *query,
                                          mc_world_reference_list *destination,
                                          mc_world_collision_error *error);
+
+/* Same operation on a private frame, with nearby empty at entry and on success. */
+mc_world_storage_status mc_world_collision_block_contribute_in_place(
+    mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y, int32_t z,
+    const mc_entity_bounds *query, mc_world_reference_list *destination,
+    mc_world_collision_error *frame);
 
 #endif

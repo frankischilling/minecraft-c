@@ -343,8 +343,8 @@
       "sha256": "fe49c20bad99406c6e2c589d011c4e9a2b666a17f589abaeb9e2daf839614ca3"
     },
     "src/world/runtime/collision/blocks.c": {
-      "bytes": 98709,
-      "sha256": "239a27dd20789a1c83c61505820554c73ad301ba58c1ea9b007d46021ef5c38d"
+      "bytes": 99268,
+      "sha256": "725915d83ea5e96bd4f6ec41f5e2c74caf6beb043b50b2c0a39904820ce3fc9b"
     },
     "src/world/runtime/collision/blocks_execution_internal.h": {
       "bytes": 8329,

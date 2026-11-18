@@ -3146,16 +3146,16 @@
       "sha256": "a5508eef58b78dc8f3626b4871d55380883ba13882e105af3c6bc811897a0a2f"
     },
     "src/world/runtime/collision/blocks.c": {
-      "bytes": 98709,
-      "sha256": "239a27dd20789a1c83c61505820554c73ad301ba58c1ea9b007d46021ef5c38d"
+      "bytes": 99268,
+      "sha256": "725915d83ea5e96bd4f6ec41f5e2c74caf6beb043b50b2c0a39904820ce3fc9b"
     },
     "src/world/runtime/collision/blocks_internal.h": {
-      "bytes": 9206,
-      "sha256": "70659787afb7e8c6d00f882d0fd6f85dbc139ee60ea7b1179d3586b8feee6367"
+      "bytes": 9564,
+      "sha256": "4e5984aad16929de566746113e881a571f8198974bd171df826103773cdcdd67"
     },
     "src/world/runtime/collision/boxes.c": {
-      "bytes": 26426,
-      "sha256": "8213102f003f9f353fc9b17da8ed89ce1ec27b588943d026f502965bb283089f"
+      "bytes": 26575,
+      "sha256": "3cca889451dd46fa4c47d0ffa2dc52037bd6f0986ff168d4b7a466a00e4cf5a3"
     },
     "src/world/runtime/collision/boxes_internal.h": {
       "bytes": 1673,
@@ -4974,8 +4974,8 @@
       "sha256": "465d0a8842fe7f3c30d3b78442bbf33c044298078463bfe295eef3257dc2ef31"
     },
     "tests/world/runtime/collision/test_boxes.c": {
-      "bytes": 71868,
-      "sha256": "8e3a3b6383213d0c8402a47a946bf447966bc1bba7b78852a515aea0a435d655"
+      "bytes": 73712,
+      "sha256": "5404ab48e3ad91c51e3e450a841d19b7f7bcde86f82eac3377c08e4d9d207d75"
     },
     "tests/world/runtime/collision/test_class_entities.c": {
       "bytes": 30320,
@@ -11723,7 +11723,7 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76652,
-      "sha256": "cbd1d0bc72d93cfd1614033e6af7801a6a1fa6b85078b3751d1da2396efb3115"
+      "sha256": "c8601982d09e5bf803d880f17273c975388ec99806c3ed6761fdba04e5d51bfd"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -11899,7 +11899,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "706ab22bbb34a7f39ead5892833b05e09fc1d4e0cac22a6b0415b90cbb450aa6"
+      "sha256": "9aceec666f74caaa89cb102bcb63daf037e48234d9606cd0f72dce4932a9eb63"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,
