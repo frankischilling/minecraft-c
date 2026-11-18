@@ -96,6 +96,12 @@ through resource callbacks and nested calls. Failure reports separate World,
 presence/provider, collection, Registry and concrete-tick frames and preserves
 all reached effects. Native admission leaves earlier World diagnostics intact.
 
+Ordinary Falling Block and fluid hooks pass their own schedule diagnostic to
+the World scheduler. Each call keeps that storage through its descendants and
+reads it only after a failure. The scheduler initializes the supplied frame
+and publishes the same reached diagnostics in place. The public API still
+returns a canonical diagnostic on success.
+
 F/E retain their separate entry and allocation limits. Checked record allocation
 also applies to discarded requests and locals held through reentry. The World
 constructor's direct-byte counter is not a combined dynamic scheduler budget.

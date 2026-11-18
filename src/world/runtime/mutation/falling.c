@@ -5,11 +5,11 @@
 #include "../../../block/registry/runtime_internal.h"
 #include "../construction_internal.h"
 #include "../presence_internal.h"
+#include "../scheduling_execution_internal.h"
 #include "mc/block/registry/falling.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
 #include "mc/world/runtime/blocks.h"
-#include "mc/world/runtime/scheduling.h"
 
 #include <float.h>
 #include <stdlib.h>
@@ -442,7 +442,7 @@ static bool falling_schedule(const falling_frame *frame, int32_t x, int32_t y, i
     if (scheduled == NULL)
         return falling_fail(frame, 13, MC_WORLD_STORAGE_ALLOCATION_FAILED,
                             "Falling scheduled diagnostic allocation");
-    if (mc_world_runtime_schedule(frame->world, x, y, z, id, delay, scheduled) ==
+    if (mc_world_runtime_schedule_in_place(frame->world, x, y, z, id, delay, scheduled) ==
         MC_WORLD_STORAGE_OK) {
         free(scheduled);
         return falling_return(frame);

@@ -2,11 +2,11 @@
 
 #include "../../../block/registry/registry_internal.h"
 #include "../../../block/registry/runtime_internal.h"
+#include "../scheduling_execution_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
 #include "mc/world/dimension/world_provider.h"
 #include "mc/world/runtime/blocks.h"
-#include "mc/world/runtime/scheduling.h"
 #include "world_execution_internal.h"
 
 #include <stdlib.h>
@@ -367,7 +367,7 @@ static bool fluid_schedule(const fluid_frame *frame, unsigned int pc, int32_t x,
         return mc_world_mutation_fail(frame->world, frame->error,
                                       MC_WORLD_STORAGE_ALLOCATION_FAILED,
                                       "Fluid schedule diagnostic allocation");
-    if (mc_world_runtime_schedule(frame->world, x, y, z, id, delay, scheduled) ==
+    if (mc_world_runtime_schedule_in_place(frame->world, x, y, z, id, delay, scheduled) ==
         MC_WORLD_STORAGE_OK) {
         free(scheduled);
         return true;

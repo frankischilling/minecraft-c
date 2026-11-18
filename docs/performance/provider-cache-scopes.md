@@ -366,6 +366,27 @@ differed in a scheduler record after the matched interval. The native
 controls cover late setter failures after completed writes and verify
 the preserved Random, lighting and Chunk state.
 
+#### Falling Block and fluid schedule diagnostics
+
+The ordinary Falling Block and fluid hooks already reserve a diagnostic
+that lives through synchronous scheduling. The World scheduler uses that
+frame directly and sends failures back through the existing fields. Each
+private call avoids a second native diagnostic allocation and the success
+copy. Actual record allocation, presence checks, immediate ticks and deferred
+membership and ordering still use the same scheduling body.
+
+In two DISPLAY2 setter traces, Block addition took an estimated 54–57 ms
+across 57,068 ore writes. A per-Block sample attributed about 51 ms to
+Gravel in a third run. The timings sample one in 32 setters and include
+work called by the hook.
+
+The before-and-after trials at Far distance and 854×480 each followed one
+of two scheduler paths. Each matched pair agreed on 160 World ticks,
+ore placement order and Block writes, and all 42 or 44 live Chunk digests.
+Across the two pairs, median sampled Gravel addition fell from 55.41 to
+28.91 ms, and median measured ore placement fell from 202.24 to 173.40 ms.
+The longest matched random-block tick fell from 163.15 to 151.96 ms.
+
 #### Height and light diagnostics in Chunk mutations
 
 The ordinary Chunk mutation callers now request diagnostics only when a

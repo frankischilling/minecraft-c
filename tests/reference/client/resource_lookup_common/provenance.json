@@ -1046,8 +1046,8 @@
       "sha256": "cd54507a873cab3e65b84940189d366d6e1896284ceeb9f247e738b7228ed378"
     },
     "docs/world/scheduling.md": {
-      "bytes": 14597,
-      "sha256": "846e06f09298cfda96b09854a9f772d3c8746e0108c73c984f96424e4011a9d7"
+      "bytes": 14946,
+      "sha256": "c80c307adc34071133ff63f2b420bdb85ff72a0c38c9322df293f52b7c66f9e3"
     },
     "docs/world/simplex.md": {
       "bytes": 3358,
@@ -4806,12 +4806,12 @@
       "sha256": "0c0d035462109b0720275b74c93977cbef40378e2a5ffe37edb32f08eb75a3d4"
     },
     "src/world/runtime/mutation/falling.c": {
-      "bytes": 23171,
-      "sha256": "93b58c6004fe6c87a09b2b66393b5926cc17b8cc8d79c848a08d6950e8b4fa0d"
+      "bytes": 23185,
+      "sha256": "d3ba267bc2f3bfb2730e336d80b50fb6484dba1bdfbabb72ee9dbd6fb6bac184"
     },
     "src/world/runtime/mutation/fluids.c": {
-      "bytes": 56906,
-      "sha256": "aa78548af630be908e7f97f0bef511227609696dc549df1c337d571564c0ca5f"
+      "bytes": 56920,
+      "sha256": "ff36e27b7ae5e092465223171193c01c9a664c0ba7aa7971b3fffcd0276b1203"
     },
     "src/world/runtime/mutation/height.c": {
       "bytes": 14285,
@@ -5046,8 +5046,8 @@
       "sha256": "8cf97c7390c62de2f074a2c9e60259e226f997f39c04eb165e9fb3ccd4e3eda2"
     },
     "src/world/runtime/scheduling.c": {
-      "bytes": 19452,
-      "sha256": "62baf23da19e30841dc99088c586b0d1fa01d1eb4fe848d7afa86b62495fef16"
+      "bytes": 20608,
+      "sha256": "0a595a66b6730c173c910268d5eac0442399c0212f5336bc5d0f266cc4da0596"
     },
     "src/world/runtime/solid_support.c": {
       "bytes": 15297,
@@ -6483,7 +6483,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067982,
-      "sha256": "e09acfd45f848e6dfa6569d90c2d06c1c5492c0207ee072bfdc0e6ecee5e9ce7"
+      "sha256": "04ed4cbf6f5126c1fbd050b9bdd9e27236e55c98fb385fa8bdbde93a47477238"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -26098,8 +26098,8 @@
       "sha256": "f1bbba543d57f575c49975ef2a841f2605d2d0be0d5e0428e831427fc5b16245"
     },
     "src/world/runtime/scheduling_execution_internal.h": {
-      "bytes": 2023,
-      "sha256": "7fe8f1b17851f4ed9fd5ded84afd876001d6e3f13bb17bfdb4e2b9cf51aeba0c"
+      "bytes": 2453,
+      "sha256": "a39f30349be041442a333dff3d30bb3c322ee8bf1343e228d4f8ed57f5ec1cdd"
     },
     "src/world/runtime/terminal_dispenser.inc": {
       "bytes": 2528,

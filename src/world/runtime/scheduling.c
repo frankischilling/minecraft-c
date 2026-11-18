@@ -22,15 +22,6 @@ static void error_init(mc_world_schedule_error *error) {
     error->registry = mc_world_mutation_empty_registry();
 }
 
-static mc_world_storage_status result(mc_world_schedule_error *out,
-                                      mc_world_schedule_error *frame) {
-    const mc_world_storage_status status = frame->status;
-    if (out != NULL)
-        *out = *frame;
-    free(frame);
-    return status;
-}
-
 static mc_world_storage_status admission(mc_world_schedule_error *error,
                                          mc_world_storage_status status, const char *operation) {
     error_init(error);
@@ -278,9 +269,8 @@ mc_world_storage_status mc_world_runtime_schedule_class_get(const mc_world_runti
     return MC_WORLD_STORAGE_OK;
 }
 
-mc_world_storage_status mc_world_runtime_schedule(mc_world_runtime *world, int32_t x, int32_t y,
-                                                  int32_t z, int32_t block, int32_t delay,
-                                                  mc_world_schedule_error *error) {
+static mc_world_storage_status admit_schedule(mc_world_runtime *world,
+                                              mc_world_schedule_error *error) {
     /* Native admission does not alter existing World diagnostics or execute
      * scheduled-record class initialization, allocation or counter effects. */
     if (world == NULL)
@@ -289,24 +279,55 @@ mc_world_storage_status mc_world_runtime_schedule(mc_world_runtime *world, int32
     if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
         world->construction.phase == MC_WORLD_RUNTIME_RETIRED)
         return admission(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World scheduled tick phase");
+    return MC_WORLD_STORAGE_OK;
+}
+
+static mc_world_storage_status schedule(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
+                                        int32_t block, int32_t delay,
+                                        mc_world_schedule_error *frame) {
+    error_init(frame);
+    mc_world_storage_error cause = {0};
+    const mc_world_storage_status status = mc_world_runtime_call_enter(world, &cause);
+    if (status != MC_WORLD_STORAGE_OK) {
+        frame->status = cause.status;
+        frame->operation = cause.operation;
+        frame->cause = cause;
+        return status;
+    }
+    const bool completed = schedule_held(world, x, y, z, block, delay, frame, NULL);
+    mc_world_runtime_call_leave(world);
+    return completed ? MC_WORLD_STORAGE_OK : frame->status;
+}
+
+mc_world_storage_status mc_world_runtime_schedule(mc_world_runtime *world, int32_t x, int32_t y,
+                                                  int32_t z, int32_t block, int32_t delay,
+                                                  mc_world_schedule_error *error) {
+    mc_world_storage_status status = admit_schedule(world, error);
+    if (status != MC_WORLD_STORAGE_OK)
+        return status;
     /* Immediate ticks can synchronously schedule more fluid work. Retain each
      * complete diagnostic off the native stack until its descendants return. */
     mc_world_schedule_error *frame = malloc(sizeof(*frame));
     if (frame == NULL)
         return admission(error, MC_WORLD_STORAGE_ALLOCATION_FAILED,
                          "World scheduled tick diagnostic allocation");
-    error_init(frame);
-    mc_world_storage_error cause = {0};
-    if (mc_world_runtime_call_enter(world, &cause) != MC_WORLD_STORAGE_OK) {
-        frame->status = cause.status;
-        frame->operation = cause.operation;
-        frame->cause = cause;
-        return result(error, frame);
-    }
-    if (schedule_held(world, x, y, z, block, delay, frame, NULL))
-        error_init(frame);
-    mc_world_runtime_call_leave(world);
-    return result(error, frame);
+    status = schedule(world, x, y, z, block, delay, frame);
+    if (status == MC_WORLD_STORAGE_OK)
+        error_init(error);
+    else if (error != NULL)
+        *error = *frame;
+    free(frame);
+    return status;
+}
+
+mc_world_storage_status mc_world_runtime_schedule_in_place(mc_world_runtime *world, int32_t x,
+                                                           int32_t y, int32_t z, int32_t block,
+                                                           int32_t delay,
+                                                           mc_world_schedule_error *frame) {
+    if (frame == NULL)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    const mc_world_storage_status status = admit_schedule(world, frame);
+    return status == MC_WORLD_STORAGE_OK ? schedule(world, x, y, z, block, delay, frame) : status;
 }
 
 void mc_world_schedule_execution_init(mc_world_schedule_execution *frame,

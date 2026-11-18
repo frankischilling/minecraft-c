@@ -4,6 +4,12 @@
 #include "blocks_execution_internal.h"
 #include "mc/world/runtime/scheduling.h"
 
+/* Each caller owns its frame across synchronous descendants. Its contents are
+ * defined on failure. A successful caller can discard or reuse the storage. */
+mc_world_storage_status mc_world_runtime_schedule_in_place(mc_world_runtime *, int32_t, int32_t,
+                                                           int32_t, int32_t, int32_t,
+                                                           mc_world_schedule_error *);
+
 /* Borrow the caller's initialized result and exact evaluated World token.
  * The same scheduling body constructs its actual record before presence/flag
  * branches. A failed invocation retains that local record and any scalar
