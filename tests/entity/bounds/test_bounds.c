@@ -987,6 +987,118 @@ cleanup:
     return fixture_close(&test, result);
 }
 
+/* Every publication prepends one real wrapper. Final retirement must preserve
+ * the relative order of all surviving direct, pooled and detached identities. */
+static bool bounds_owner_order(const mc_entity_classes *classes, mc_entity_bounds *const *published,
+                               size_t count) {
+    const mc_entity_bounds_object *object = classes->bounds_objects;
+    for (size_t i = count; i != 0; --i) {
+        if (published[i - 1] == NULL)
+            continue;
+        if (object == NULL || &object->value != published[i - 1])
+            return false;
+        object = object->next;
+    }
+    return object == NULL;
+}
+
+static int test_owner_unlinks(mc_entity_source source, bool fallback) {
+    _Static_assert(sizeof(mc_entity_bounds_object) == 72,
+                   "bounds ownership wrapper retains its captured x64 allocation size");
+    int result = 1;
+    fixture test = {0};
+    mc_entity_bounds *published[128] = {0}, *pooled[33] = {0};
+    CHECK(fixture_open(&test, source) == 0);
+    CHECK(mc_entity_bounds_create(test.classes, -1, 0, 0, 1, 1, 1, &published[0], NULL) ==
+          MC_ENTITY_OK);
+    const size_t maximum = test.classes->limits.max_allocation_bytes;
+    for (size_t i = 0; i < 32; ++i) {
+        /* One standalone plus 31 pooled wrappers fill the existing index. The
+         * next wrapper fits the real budget; optional table growth does not. */
+        if (fallback && i == 31)
+            test.classes->limits.max_allocation_bytes =
+                test.classes->allocated_bytes + sizeof(mc_entity_bounds_object);
+        const mc_entity_status status =
+            mc_entity_bounds_pool_get(test.classes, (double)i, 0, 0, 1, 1, 1, &pooled[i], NULL);
+        test.classes->limits.max_allocation_bytes = maximum;
+        CHECK(status == MC_ENTITY_OK);
+        published[i + 1] = pooled[i];
+        if (i != 0 && i != 15 && i != 31)
+            CHECK(mc_entity_bounds_release(test.classes, pooled[i]) == MC_ENTITY_OK);
+    }
+    mc_entity_bounds_pool *const pool = test.classes->bounds_pool;
+    CHECK(fallback ? pool->lookup == NULL && pool->lookup_disabled
+                   : pool->lookup != NULL && !pool->lookup_disabled);
+    CHECK(mc_entity_bounds_create(test.classes, -2, 0, 0, 1, 1, 1, &published[33], NULL) ==
+          MC_ENTITY_OK);
+    CHECK(mc_entity_bounds_pool_get(test.classes, 32, 0, 0, 1, 1, 1, &pooled[32], NULL) ==
+          MC_ENTITY_OK);
+    published[34] = pooled[32];
+    CHECK(mc_entity_bounds_create(test.classes, -3, 0, 0, 1, 1, 1, &published[35], NULL) ==
+              MC_ENTITY_OK &&
+          bounds_owner_order(test.classes, published, 36));
+    CHECK(mc_entity_bounds_retain(test.classes, published[35]) == MC_ENTITY_OK &&
+          mc_entity_bounds_release(test.classes, published[35]) == MC_ENTITY_OK &&
+          mc_entity_bounds_native_holds(test.classes, published[35]) == 1 &&
+          bounds_owner_order(test.classes, published, 36));
+    const size_t direct_sites[] = {35, 33, 0}; /* Head, between pooled nodes, tail. */
+    for (size_t i = 0; i < sizeof(direct_sites) / sizeof(*direct_sites); ++i) {
+        const size_t slot = direct_sites[i], bytes = test.classes->allocated_bytes;
+        CHECK(mc_entity_bounds_release(test.classes, published[slot]) == MC_ENTITY_OK);
+        published[slot] = NULL;
+        CHECK(test.classes->allocated_bytes == bytes - sizeof(mc_entity_bounds_object) &&
+              bounds_owner_order(test.classes, published, 36) &&
+              test.classes->bounds_holds ==
+                  4 + sizeof(direct_sites) / sizeof(*direct_sites) - i - 1);
+    }
+    const size_t capacity = pool->capacity;
+    mc_entity_bounds **const elements = pool->elements;
+    if (source == MC_ENTITY_CLIENT) {
+        CHECK(mc_entity_bounds_pool_clear_client(test.classes, NULL) == MC_ENTITY_OK);
+        for (size_t i = 0; i < 32; ++i)
+            if (i != 0 && i != 15 && i != 31)
+                published[i + 1] = NULL;
+        CHECK(pool->length == 0 && pool->capacity == capacity && pool->elements == elements &&
+              pool->lookup == NULL && test.classes->bounds_cursor == 0 &&
+              bounds_owner_order(test.classes, published, 36));
+        const size_t detached_sites[] = {16, 1, 34}; /* Middle, tail, head. */
+        for (size_t i = 0; i < sizeof(detached_sites) / sizeof(*detached_sites); ++i) {
+            const size_t slot = detached_sites[i];
+            CHECK(mc_entity_bounds_native_holds(test.classes, published[slot]) == 1 &&
+                  mc_entity_bounds_release(test.classes, published[slot]) == MC_ENTITY_OK);
+            published[slot] = NULL;
+            CHECK(bounds_owner_order(test.classes, published, 36));
+        }
+        CHECK(capacity < 92 && mc_entity_bounds_native_holds(test.classes, pooled[31]) == 1);
+        for (size_t i = 0; i <= capacity; ++i) {
+            CHECK(mc_entity_bounds_pool_get(test.classes, (double)i, 2, 3, 4, 5, 6,
+                                            &published[36 + i], NULL) == MC_ENTITY_OK &&
+                  mc_entity_bounds_release(test.classes, published[36 + i]) == MC_ENTITY_OK &&
+                  bounds_owner_order(test.classes, published, 37 + i));
+        }
+        CHECK(pool->capacity > capacity && pool->lookup != NULL &&
+              mc_entity_bounds_native_holds(test.classes, pooled[31]) == 1 &&
+              pooled[31]->min_x == 31 &&
+              mc_entity_bounds_release(test.classes, pooled[31]) == MC_ENTITY_OK);
+        published[32] = NULL;
+        CHECK(bounds_owner_order(test.classes, published, 37 + capacity) &&
+              test.classes->bounds_holds == 0 &&
+              mc_entity_bounds_pool_clear_client(test.classes, NULL) == MC_ENTITY_OK &&
+              test.classes->bounds_objects == NULL && pool->length == 0);
+    } else {
+        CHECK(mc_entity_bounds_pool_clear_client(test.classes, NULL) ==
+                  MC_ENTITY_INVALID_ARGUMENT &&
+              pool->length == 33 && bounds_owner_order(test.classes, published, 36));
+        const size_t held[] = {0, 15, 31, 32};
+        for (size_t i = 0; i < sizeof(held) / sizeof(*held); ++i)
+            CHECK(mc_entity_bounds_release(test.classes, pooled[held[i]]) == MC_ENTITY_OK);
+        CHECK(test.classes->bounds_holds == 0 && bounds_owner_order(test.classes, published, 36));
+    }
+    result = 0;
+cleanup:
+    return fixture_close(&test, result);
+}
+
 static int test_lookup_large(void) {
     int result = 1;
     fixture test = {0};
@@ -1024,7 +1136,8 @@ int main(void) {
             test_standalone_class_failure(source) || test_lifecycle(source) ||
             test_budgets(source) || test_class_failure(source) || test_invariant_prefixes(source) ||
             test_transforms(source) || test_nan_payloads(source) || test_lookup_lifecycle(source) ||
-            test_lookup_fallback(source))
+            test_lookup_fallback(source) || test_owner_unlinks(source, false) ||
+            test_owner_unlinks(source, true))
             return 1;
     }
     if (test_lookup_large() || test_geometry())

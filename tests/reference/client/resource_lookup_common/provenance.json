@@ -350,8 +350,8 @@
       "sha256": "1e83a70402387cd334218d03be99abb1127826f4ea8d2d4c669b912e6819d0cd"
     },
     "docs/entity/bounds.md": {
-      "bytes": 8577,
-      "sha256": "0a568fc3b018cd026f00114d391668ee5171a8a10ef84295093eef5be3082321"
+      "bytes": 9794,
+      "sha256": "9b1221351002e3620c7cb870cd9c917b3f8d1e2d40ad18089fafa9553d261a40"
     },
     "docs/entity/construction.md": {
       "bytes": 14928,
@@ -3906,12 +3906,12 @@
       "sha256": "2ca442e2a82d8fb504be645df58c1b6ccd98721c4b2de738515bfcc5de12d9d1"
     },
     "src/entity/bounds/bounds.c": {
-      "bytes": 27337,
-      "sha256": "5aa14d055000585d050d8be50445bfb971d36ff4172ac8328c48a2223b8bfaea"
+      "bytes": 27831,
+      "sha256": "d00e5c035da8d5deeab1fb0fa6ed0b728416e9d007a90f9138782774ed6c6027"
     },
     "src/entity/bounds/bounds_internal.h": {
-      "bytes": 1097,
-      "sha256": "a5768439cb478cb9e13567a6ab223ff0e4fa2bd031f9d3272a71fb1ce6215ce0"
+      "bytes": 1535,
+      "sha256": "39d884f8293961d045343ab7d1a5cc0c4cf49bf6ad74099a6243e164cb6ceb4f"
     },
     "src/entity/classes/classes.c": {
       "bytes": 14019,
@@ -5962,8 +5962,8 @@
       "sha256": "6e0371948558c17776c0e4e8d9131bcfd22b353be03fe79e89a95232a2aecfdb"
     },
     "tests/entity/bounds/test_bounds.c": {
-      "bytes": 59265,
-      "sha256": "2d82bfd012258865c9c845b45753ffa2cc4ad9a8be9ef34c050146148a61df4a"
+      "bytes": 65702,
+      "sha256": "a1e273263fc22c58501f52487f575847ad803ded193e383281a9e38410034ef7"
     },
     "tests/entity/bounds/values_probe.c": {
       "bytes": 9791,
@@ -6010,8 +6010,8 @@
       "sha256": "3b4d1b7618a4680f206bc49e80f714aafc123ef502d7be943cd80b5e7f35fb54"
     },
     "tests/entity/movement/movement_probe.c": {
-      "bytes": 49979,
-      "sha256": "d41613da222f61554f29e72a3ab523bab94fdafdeb93015798f47ec86d3f709d"
+      "bytes": 50045,
+      "sha256": "4bf58bd795caeb654b69d449e78e99e6d486b249b6469007dc58995de75a37b4"
     },
     "tests/entity/movement/test_effects.c": {
       "bytes": 14761,
@@ -6034,8 +6034,8 @@
       "sha256": "60c2aa84d81928b51e9ec5a0a6b996bf9b75fe84c5c1c8c5fb192fc94956cf91"
     },
     "tests/entity/movement/test_world_movement.c": {
-      "bytes": 34569,
-      "sha256": "1017a14fb373e64d0e589940199e466cfd540e20016f4f2f220f0ea543d9d9e0"
+      "bytes": 34575,
+      "sha256": "3e72a8995e3466629dc16a270ccd6cd3ba8b2dbc5e94e0fcf2c9883366a4c79c"
     },
     "tests/entity/movement/turn_fixture.h": {
       "bytes": 3754,
@@ -6419,7 +6419,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938028,
-      "sha256": "9f6561198069133b6877fa2d8726e91bbeb79897239097cebbc45d3020cc730e"
+      "sha256": "aa61de60fc63dd9ebfcbf4ac7fc984a226302d350e6384e21d9ad735294923c3"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6483,7 +6483,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067981,
-      "sha256": "e2126cc693a7aaa68ac8ade8fe8d9fb010773394e882b25118c3ae555e1875e8"
+      "sha256": "4d1fcff59fe69590a65e78dcdcbd02b5789ce34d2f383347d07d817eee832ae5"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6615,7 +6615,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934853,
-      "sha256": "25b5547a858391a68a6a53fec479f65cd9ee823a94dd5039385bcbb6dd7fffd0"
+      "sha256": "274e1bcc69bcf8bdda0b797202d2af441e65bd07c4ae87384f1fc4c89650c3ea"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9082,8 +9082,8 @@
       "sha256": "465d0a8842fe7f3c30d3b78442bbf33c044298078463bfe295eef3257dc2ef31"
     },
     "tests/world/runtime/collision/test_boxes.c": {
-      "bytes": 73712,
-      "sha256": "5404ab48e3ad91c51e3e450a841d19b7f7bcde86f82eac3377c08e4d9d207d75"
+      "bytes": 73739,
+      "sha256": "ce8e7c54c5c2daeb9d46078ed4dac7f321258ca81801462ff57fd410d760acda"
     },
     "tests/world/runtime/collision/test_class_entities.c": {
       "bytes": 30320,

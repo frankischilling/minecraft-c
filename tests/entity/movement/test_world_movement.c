@@ -160,7 +160,7 @@ static bool world_move_area_failures(fixture *f, size_t side) {
         for (unsigned material = 0; material < 2; ++material) {
             const bool initial = fault != 0;
             bool value = initial;
-            mc_world_material_movement_error child;
+            mc_world_material_movement_error child = {0};
             world->last_error = sentinel;
             if (fault == 0)
                 world->fields.v = NULL;

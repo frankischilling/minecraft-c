@@ -2662,8 +2662,8 @@
       "sha256": "d24ab718d92afa8607fb7a8660a740d3c14f2c878135d2ae93340dd9e7edb347"
     },
     "src/entity/bounds/bounds_internal.h": {
-      "bytes": 1097,
-      "sha256": "a5768439cb478cb9e13567a6ab223ff0e4fa2bd031f9d3272a71fb1ce6215ce0"
+      "bytes": 1535,
+      "sha256": "39d884f8293961d045343ab7d1a5cc0c4cf49bf6ad74099a6243e164cb6ceb4f"
     },
     "src/entity/bounds/intercept.c": {
       "bytes": 13048,
@@ -2762,8 +2762,8 @@
       "sha256": "5ad7d035b189651ea91c31ee9ac9427dd11a7e3f06288888325a526a667ba2e5"
     },
     "tests/world/runtime/collision/test_boxes.c": {
-      "bytes": 73712,
-      "sha256": "5404ab48e3ad91c51e3e450a841d19b7f7bcde86f82eac3377c08e4d9d207d75"
+      "bytes": 73739,
+      "sha256": "ce8e7c54c5c2daeb9d46078ed4dac7f321258ca81801462ff57fd410d760acda"
     },
     "tests/world/runtime/collision/test_raytrace.c": {
       "bytes": 21992,

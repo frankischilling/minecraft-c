@@ -107,11 +107,27 @@ actual initializer/direct-factory/append child. Retain/release accept only live
 standalone, pooled or detached boxes from the same owner; they reject foreign
 boxes, caller-owned values and Entity's permanent box.
 
-Pool acquisition is constant time except backing growth. Public native retain
-and release validate identity by scanning the owner's live standalone, pooled
-and detached objects; a large batch of external releases can have quadratic cost.
-This lifetime policy and native allocation budget are not claims of identical
-JDK garbage collection or allocation-failure behavior.
+Pool acquisition is constant time between backing-array growths. Native retain
+and release validate identity against the owner's live objects through an optional
+bounded index, with a list search when the index is unavailable. Each live object
+keeps the address of the link that points to it. Final release uses that link
+directly and preserves the remaining list order. The link's low bit stores pool
+membership, keeping the native wrapper and allocation charge at 72 bytes.
+
+## Bounds retirement during renderer moves
+
+Two pairs on DISPLAY2 used ordinary forward input in the saved Far scene at
+854×480. Both builds matched input, motion, actor, random, and scheduler
+receipts over 215 World ticks. Across six actual grid shifts per build, median
+frame time fell from 30.66 to 19.86 ms. Whole-run median FPS rose from 66.45 to
+66.86 and p99 frame time fell from 22.51 to 22.15 ms.
+
+Two additional profiled pairs rebuilt the same 208 bounds lists and retired 208
+displaced boxes per shift. Median time in those releases fell from 13.08 to
+0.05 ms per shift. Median recenter time fell from 14.10 to 0.86 ms. The release
+span is part of recentering. One fixed-camera pair per cave measured nearly
+flat FPS, with heavy-cave p99 moving from 30.69 to 31.95 ms and lighter-cave p99
+from 24.22 to 24.12 ms.
 
 Ray/segment intersection, Vec3 and HitResult pools, point containment through a
 real vector, client mean-edge length and Java text conversion remain unfinished.
@@ -121,6 +137,11 @@ and environment effects have a separate [movement contract](movement.md).
 The [Falling Sand active tick](falling-tick.md) now has finite native landing/drop controls; full original-game replay remains unqualified.
 
 ## Verification
+
+MSVC and sanitized WSL each passed 25,678 Bounds checks. The owner-list controls
+exercise head, middle, and tail releases, retained pooled identities across a
+clear, and subsequent index growth. They also force index fallback through the
+native allocation budget on both class owners.
 
 Focused MSVC and sanitized GCC/Clang `entity.bounds` runs pass 4,751 native checks.
 Standalone factory coverage includes both class owners, raw coordinate stores, fresh

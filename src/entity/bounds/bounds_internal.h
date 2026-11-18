@@ -3,15 +3,25 @@
 
 #include "../classes/classes_internal.h"
 #include "mc/entity/bounds/bounds.h"
+#include <stdint.h>
 
 /* A pool reference and native holds are independent. Clearing the source List
  * may detach an object while actual source descendants still retain it. */
 typedef struct mc_entity_bounds_object {
     mc_entity_bounds value;
     size_t holds;
-    bool pooled;
+    /* Address of the owner-list link that currently points to this object.
+     * The low bit carries the independent pool reference without growing the
+     * native allocation charged for a box. */
+    uintptr_t owner_link;
     struct mc_entity_bounds_object *next;
 } mc_entity_bounds_object;
+
+enum { MC_ENTITY_BOUNDS_POOLED_BIT = 1 };
+
+static inline bool mc_entity_bounds_object_is_pooled(const mc_entity_bounds_object *object) {
+    return (object->owner_link & MC_ENTITY_BOUNDS_POOLED_BIT) != 0;
+}
 
 /* Shared constructor active use, retaining its existing diagnostic prefix. */
 mc_entity_status mc_entity_bounds_initialize(mc_entity_classes *classes, mc_entity_error *error);

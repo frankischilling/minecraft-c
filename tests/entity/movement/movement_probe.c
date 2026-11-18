@@ -434,7 +434,7 @@ static bool mp_pool_valid(const mp_probe *probe, const mc_entity_bounds *permane
         const mc_entity_bounds_object *object = probe->classes->bounds_objects;
         while (object != NULL && &object->value != value)
             object = object->next;
-        if (object == NULL || !object->pooled)
+        if (object == NULL || !mc_entity_bounds_object_is_pooled(object))
             return false;
         for (size_t j = 0; j < i; ++j)
             if (pool->elements[j] == value)
@@ -443,7 +443,8 @@ static bool mp_pool_valid(const mp_probe *probe, const mc_entity_bounds *permane
     size_t objects = 0, holds = 0;
     for (const mc_entity_bounds_object *object = probe->classes->bounds_objects; object != NULL;
          object = object->next) {
-        if (++objects > 3u || !object->pooled || object->holds > SIZE_MAX - holds)
+        if (++objects > 3u || !mc_entity_bounds_object_is_pooled(object) ||
+            object->holds > SIZE_MAX - holds)
             return false;
         bool listed = false;
         for (size_t i = 0; i < pool->length; ++i)

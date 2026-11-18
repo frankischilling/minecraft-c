@@ -190,7 +190,7 @@ static size_t boxes_detached_count(const mc_entity_classes *classes) {
     size_t count = 0;
     for (const mc_entity_bounds_object *object = classes->bounds_objects; object != NULL;
          object = object->next)
-        if (!object->pooled)
+        if (!mc_entity_bounds_object_is_pooled(object))
             ++count;
     return count;
 }

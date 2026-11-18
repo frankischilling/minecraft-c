@@ -46,6 +46,8 @@ mc_entity_geometry_status mc_entity_bounds_contains_point(mc_entity_classes *cla
 _Static_assert(FLT_RADIX == 2 && DBL_MANT_DIG == 53 && DBL_MAX_EXP == 1024 &&
                    FLT_EVAL_METHOD == 0 && sizeof(double) == sizeof(uint64_t),
                "strict binary64 evaluation required");
+_Static_assert(_Alignof(mc_entity_bounds_object *) >= 2, "bounds owner links need one tag bit");
+_Static_assert(sizeof(mc_entity_bounds_object) == 72, "keep the existing x86-64 bounds charge");
 
 static double add(double left, double right) {
     uint64_t left_bits, right_bits;
@@ -193,9 +195,24 @@ static void lookup_grow(mc_entity_classes *classes) {
     pool->lookup = next;
 }
 
+static void set_owner_link(mc_entity_bounds_object *object, mc_entity_bounds_object **link) {
+    object->owner_link = (uintptr_t)link | (object->owner_link & MC_ENTITY_BOUNDS_POOLED_BIT);
+}
+
+static void unlink_object(mc_entity_bounds_object *object) {
+    mc_entity_bounds_object **const link =
+        (mc_entity_bounds_object **)(object->owner_link & ~(uintptr_t)MC_ENTITY_BOUNDS_POOLED_BIT);
+    *link = object->next;
+    if (*link != NULL)
+        set_owner_link(*link, link);
+}
+
 static void publish(mc_entity_classes *classes, mc_entity_bounds_object *object) {
     object->next = classes->bounds_objects;
     classes->bounds_objects = object;
+    set_owner_link(object, &classes->bounds_objects);
+    if (object->next != NULL)
+        set_owner_link(object->next, &object->next);
     mc_entity_bounds_pool *const pool = classes->bounds_pool;
     if (pool->lookup_disabled)
         return;
@@ -298,25 +315,14 @@ mc_entity_status mc_entity_bounds_retain(mc_entity_classes *classes, mc_entity_b
 mc_entity_status mc_entity_bounds_release(mc_entity_classes *classes, mc_entity_bounds *bounds) {
     if (classes == NULL || bounds == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
-    mc_entity_bounds_lookup *const lookup =
-        classes->bounds_pool == NULL ? NULL : classes->bounds_pool->lookup;
-    mc_entity_bounds_object **link = &classes->bounds_objects;
-    mc_entity_bounds_object *object;
-    if (lookup == NULL) {
-        while (*link != NULL && &(*link)->value != bounds)
-            link = &(*link)->next;
-        object = *link;
-    } else
-        object = lookup->slots[lookup_slot(lookup, bounds)];
+    mc_entity_bounds_object *object = find(classes, bounds);
     if (object == NULL || object->holds == 0)
         return MC_ENTITY_INVALID_ARGUMENT;
     --object->holds;
     --classes->bounds_holds;
-    if (object->holds == 0 && !object->pooled) {
-        while (*link != object)
-            link = &(*link)->next;
-        *link = object->next;
-        lookup_remove(lookup, bounds);
+    if (object->holds == 0 && !mc_entity_bounds_object_is_pooled(object)) {
+        unlink_object(object);
+        lookup_remove(classes->bounds_pool == NULL ? NULL : classes->bounds_pool->lookup, bounds);
         retire(classes, object, sizeof(*object));
     }
     return MC_ENTITY_OK;
@@ -380,7 +386,7 @@ mc_entity_status mc_entity_bounds_pool_get(mc_entity_classes *classes, double mi
             retire(classes, object, sizeof(*object));
             return result(error, status, operation, 26);
         }
-        object->pooled = true;
+        object->owner_link = MC_ENTITY_BOUNDS_POOLED_BIT;
         pool->elements[pool->length++] = &object->value;
         publish(classes, object);
     }
@@ -426,16 +432,14 @@ static mc_entity_status reset(mc_entity_classes *classes, bool clear,
         for (size_t index = 0; index < pool->length; ++index)
             pool->elements[index] = NULL;
         pool->length = 0;
-        mc_entity_bounds_object **link = &classes->bounds_objects;
-        while (*link != NULL) {
-            mc_entity_bounds_object *object = *link;
-            object->pooled = false;
+        for (mc_entity_bounds_object *object = classes->bounds_objects; object != NULL;) {
+            mc_entity_bounds_object *next = object->next;
+            object->owner_link &= ~(uintptr_t)MC_ENTITY_BOUNDS_POOLED_BIT;
             if (object->holds == 0) {
-                *link = object->next;
+                unlink_object(object);
                 retire(classes, object, sizeof(*object));
-            } else {
-                link = &object->next;
             }
+            object = next;
         }
     }
     classes->bounds_cursor = 0;
