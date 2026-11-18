@@ -4,8 +4,10 @@ import base64
 import copy
 import hashlib
 import importlib.util
+import itertools
 import json
 from pathlib import Path
+import re
 import struct
 import sys
 import tempfile
@@ -92,6 +94,63 @@ def change_empty_list(plain, name):
         raise AssertionError("one genuine BYTE-typed empty source list is required")
     offset = plain.index(needle) + len(prefix)
     return plain[:offset] + b"\x0a" + plain[offset + 1:]
+
+
+class PublicPathContracts(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.scanners = [(name, name != "fixtures.py", DRIVER.load(
+            "public_path_" + name.removesuffix(".py"),
+            "scripts/reference/world/population/" + name))
+            for name in ("fixtures.py", "persistence_fixtures.py", "world_save_fixtures.py",
+                         "named_data_fixtures.py")]
+
+    def test_path_filters_match_existing_string_policy(self):
+        paths = ["file:/archive.jar", "prefixFILE:/archive.jar", "C:/capture", "c:\\capture",
+                 "prefixZ:/capture", "\\\\host\\share", "prefix\\\\host\\share\\capture",
+                 "\\\\host", "\\host\\share", "\\\\\\share", "\\\\host\\", "file:",
+                 "file:relative", "supplied:client", "https://example.invalid/resource",
+                 "/capture", "relative/path", "//host/share", "ＦＩＬＥ:/capture",
+                 "é:/capture", "Σ\\\\host\\share", "C\n:/capture", "Ｃ:/capture"]
+        paths.extend("".join(parts) for size in range(7)
+                     for parts in itertools.product("a:/\\", repeat=size))
+        for name, absolute_paths, scanner in self.scanners:
+            for value in paths:
+                rejected = ("file:/" in value.lower() or
+                            (absolute_paths and value.startswith("/")) or
+                            re.search(r"[A-Za-z]:[\\/]", value) is not None or
+                            re.search(r"\\\\[^\\]+\\[^\\]+", value) is not None)
+                try:
+                    scanner._public_values(value)
+                except ValueError as error:
+                    self.assertTrue(rejected, (name, value, str(error)))
+                    self.assertEqual(str(error), "public record retains host path")
+                else:
+                    self.assertFalse(rejected, (name, value))
+
+    def test_paths_are_checked_in_keys_and_nested_values(self):
+        for name, absolute_paths, scanner in self.scanners:
+            for value in ("nested/file:/archive.jar", "C:/capture", "\\\\host\\share"):
+                for record in ({value: None}, {"proof": [{"path": value}]}):
+                    with self.subTest(scanner=name, value=value, record=record), self.assertRaisesRegex(
+                            ValueError, "public record retains host path"):
+                        scanner._public_values(record)
+            if not absolute_paths:
+                scanner._public_values({"/ring/path": ["/capture"]})
+
+    def test_structure_and_non_json_admission(self):
+        for name, _, scanner in self.scanners:
+            scanner._public_values({"values": [None, True, 1, -1, 1.5]})
+            for value in (b"value", ("value",), {1: "value"}):
+                with self.subTest(scanner=name, value=value), self.assertRaises(ValueError):
+                    scanner._public_values(value)
+            nested = None
+            for _ in range(64):
+                nested = [nested]
+            scanner._public_values(nested)
+            with self.subTest(scanner=name), self.assertRaisesRegex(
+                    ValueError, "bounded public JSON structure"):
+                scanner._public_values([nested])
 
 
 class PersistenceEvidence(unittest.TestCase):

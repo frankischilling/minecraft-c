@@ -189,6 +189,51 @@ visibility throttle, tests actual DK bounds, then stores visibility. Its wrappin
 j counter increments after the whole loop. No terrain mesh or always-visible
 substitute supplies these results.
 
+### Frustum corner evaluation
+
+Each plane first tests the minimum-coordinate corner. If it fails, ordered
+box coordinates within ±2^512 and finite plane coefficients allow the test to
+select the corner that maximizes the product on each axis. The bound keeps
+every product and sum finite in double precision. The additions keep their
+original order, so the maximum score preserves the strict `> 0` result.
+Other inputs continue through the original ordered corners. The native test
+compares 5,824 cases against that corner walk, including signed zero,
+subnormal values, reversed extents and nonfinite inputs.
+
+In two profiled Windows Release pairs on DISPLAY2 at 854 × 480 and Far render
+distance, median culling time moved from 0.866 to 0.824 ms. A separate
+instrumented pair measured 8.287 and 2.436 corner evaluations per tested box,
+respectively. Camera interpolation differed between captures, so the traces
+compare aggregate rates. The two moving pairs without phase instrumentation
+shared 215 World ticks. Their median FPS moved from 63.97 to 63.78 and p99
+frame time moved from 21.16 to 21.33 ms.
+
+### Display-list capacity during movement
+
+Two forward-input runs reached the old 32 MiB display-list budget after
+roughly 15 seconds. One refused a 48 KiB command payload with 12,477 commands
+already in a range that allowed 65,536. The display now budgets 128 MiB for
+committed and pending list definitions together, with allocation as commands
+arrive. Individual command and staging limits stay at 32 MiB. Device tests
+cover admission above the old total, refusal at the new ceiling, continued
+replay of the committed list and charge retirement.
+
+The Windows device test passed 32,697 checks. The Linux Clang sanitizer run
+passed the other 24 focused tests. Both revisions of the device test reached
+the same attribute-profile refusal on local Mesa 26.0.8, before the quota
+controls. The test requires one of the measured driver profiles.
+
+A 30-second DISPLAY2 run with the new budget completed 600 World ticks,
+advanced 132.4 blocks and closed normally. Independent region and NBT readback
+verified 1,405 saved Chunks, including 36 of the 38 coordinates generated during
+the timed interval. Saved Player position bits matched the live tick record.
+During this run the Player stayed within the authored footprint while the
+renderer requested Chunks outside it. Native reload remains unverified for
+this run. At 50.1 FPS with a 44.97 ms p99 frame time, this run still shows stalls.
+Two longer attempts ended at a Player environment tick and a Skeleton Arrow
+publication, after 66.3 and 46.5 seconds respectively. The 75-second target
+remains open.
+
 ## Evidence and limits
 
 The [full-fog fixture](../../tests/reference/client/world_frame/README.md)

@@ -444,6 +444,86 @@ cleanup:
     return result;
 }
 
+static bool retained_byte_controls(mc_client_display *display,
+                                   mc_client_display_context_lease *lease, uint8_t bytes[96],
+                                   mc_client_display_error *error) {
+    bool result = false;
+    mc_client_display_list_range *range = NULL;
+    int32_t base = 0;
+    size_t simulated_bytes = 0;
+    const size_t before = display->source.command_bytes;
+    mc_client_source_list_state state;
+    mc_client_source_batch_view committed, pending;
+    const void *pending_identity = NULL, *after_identity = NULL;
+    uint8_t red[96];
+    CHECK(triangle_arrays(display, lease, bytes, error));
+    CHECK(mc_client_display_lists_generate(display, 2, 8, &range, &base, error));
+    triangle(bytes, 0);
+    memcpy(red, bytes, sizeof(red));
+    CHECK(mc_client_display_lists_begin(display, base, error));
+    CHECK(mc_client_display_source_batch(lease, bytes, bytes, sizeof(red), 3, GL_TRIANGLES, error));
+    CHECK(mc_client_display_lists_end(display, error));
+    CHECK(mc_client_display_list_batch(display, base, 0, &committed));
+    const uint8_t *old_bytes = committed.bytes;
+    CHECK(display->source.command_bytes <= SOURCE_COMMAND_BYTES);
+
+    /* Charge other live definitions without allocating their payload. Every
+     * new pending record and command below still takes the real admission path. */
+    simulated_bytes = SOURCE_COMMAND_BYTES - display->source.command_bytes;
+    display->source.command_bytes += simulated_bytes;
+    triangle(bytes, 2);
+    CHECK(mc_client_display_lists_begin(display, base, error));
+    CHECK(mc_client_display_source_batch(lease, bytes, bytes, sizeof(red), 3, GL_TRIANGLES, error));
+    CHECK(mc_client_display_pending_list_identity(display, base, &pending_identity) &&
+          pending_identity != NULL && display->source.command_bytes > SOURCE_COMMAND_BYTES &&
+          mc_client_display_list_inspect(display, base, &state) && state.defined &&
+          state.building && state.commands == 1 && state.pending_commands == 1 &&
+          range->command_count == 2 && mc_client_display_list_batch(display, base, 0, &committed) &&
+          committed.bytes == old_bytes && memcmp(committed.bytes, red, sizeof(red)) == 0 &&
+          mc_client_display_list_pending_batch(display, base, 0, &pending) &&
+          memcmp(pending.bytes, bytes, sizeof(red)) == 0);
+    const size_t prefix_charge = display->source.command_bytes;
+    CHECK(source_append(display, SOURCE_COMMAND_DRAW, SOURCE_COMMAND_BYTES, error) == NULL &&
+          error->status == MC_CLIENT_DISPLAY_LIMIT &&
+          display->source.command_bytes == prefix_charge && range->command_count == 2);
+
+    simulated_bytes += SOURCE_RETAINED_COMMAND_BYTES - display->source.command_bytes;
+    display->source.command_bytes = SOURCE_RETAINED_COMMAND_BYTES;
+    CHECK(!mc_client_display_source_color(display, 0, 1, 0, 1, error) &&
+          error->status == MC_CLIENT_DISPLAY_LIMIT &&
+          display->source.command_bytes == SOURCE_RETAINED_COMMAND_BYTES &&
+          range->command_count == 2 &&
+          mc_client_display_pending_list_identity(display, base, &after_identity) &&
+          after_identity == pending_identity);
+    CHECK(mc_client_display_lists_abort(display, base, error));
+    CHECK(!mc_client_display_lists_begin(display, base + 1, error) &&
+          error->status == MC_CLIENT_DISPLAY_LIMIT &&
+          display->source.command_bytes == SOURCE_RETAINED_COMMAND_BYTES &&
+          display->source.compiling == NULL && display->source.compiling_range == NULL &&
+          mc_client_display_list_inspect(display, base + 1, &state) && !state.defined &&
+          !state.building && state.pending_commands == 0 && state.pending_bytes == 0);
+    CHECK(mc_client_display_list_inspect(display, base, &state) && state.defined &&
+          state.building && state.commands == 1 && state.pending_commands == 1 &&
+          range->command_count == 2 && mc_client_display_list_batch(display, base, 0, &committed) &&
+          committed.bytes == old_bytes && memcmp(committed.bytes, red, sizeof(red)) == 0 &&
+          mc_client_display_list_pending_batch(display, base, 0, &pending) &&
+          memcmp(pending.bytes, bytes, sizeof(red)) == 0);
+
+    CHECK(mc_client_display_lists_call(display, &base, 1, error) &&
+          display->source.command_bytes == SOURCE_RETAINED_COMMAND_BYTES);
+    simulated_bytes -= sizeof(mc_client_source_definition);
+    display->source.command_bytes -= sizeof(mc_client_source_definition);
+    CHECK(mc_client_display_lists_begin(display, base + 1, error) &&
+          display->source.command_bytes == SOURCE_RETAINED_COMMAND_BYTES);
+    CHECK(mc_client_display_lists_end(display, error));
+    result = true;
+cleanup:
+    display->source.command_bytes -= simulated_bytes;
+    if (!mc_client_display_lists_retire(&range, error) || display->source.command_bytes != before)
+        result = false;
+    return result;
+}
+
 int main(int argc, char **argv) {
     (void)argc;
     (void)argv;
@@ -451,8 +531,7 @@ int main(int argc, char **argv) {
     const unsigned original_controls = _mm_getcsr();
     mc_client_display *display = NULL;
     mc_client_display_context_lease *lease = NULL;
-    mc_client_display_list_range *range = NULL, *limited = NULL, *large = NULL,
-                                 *byte_limited = NULL;
+    mc_client_display_list_range *range = NULL, *limited = NULL, *large = NULL;
     mc_client_render_engine_classes *classes = NULL;
     mc_client_display_error error = {0};
     mc_client_graphics_error graphics = {0};
@@ -462,8 +541,7 @@ int main(int argc, char **argv) {
     mc_client_source_batch_view committed, pending;
     mc_client_nw_state nw;
     uint8_t bytes[96], red[96];
-    uint8_t *large_bytes = NULL;
-    int32_t id = 0, limited_id = 0, large_id = 0, byte_id = 0;
+    int32_t id = 0, limited_id = 0, large_id = 0;
     uint32_t sticky = 0;
     _mm_setcsr(0x1f80u);
     CHECK(mc_client_display_create("source list replacement controls", 64, 64, true, &display,
@@ -602,34 +680,7 @@ int main(int argc, char **argv) {
     CHECK(mc_client_nw_inspect(classes, &nw) && nw.static_b && !nw.fields.w && nw.fields.h == 0 &&
           nw.fields.o == 0 && nw.fields.p == 0);
 
-    /* A real native byte quota with simultaneously owned old/new commands.
-     * The old definition fits; an equal replacement cannot fit beside it. */
-    const int32_t large_vertices = (16 * 1024 * 1024 / 32 / 3) * 3;
-    const size_t large_size = (size_t)large_vertices * 32;
-    large_bytes = calloc(1, large_size);
-    CHECK(large_bytes != NULL);
-    CHECK(mc_client_display_source_pointer(lease, MC_CLIENT_SOURCE_VERTEX_ARRAY, large_bytes, 0,
-                                           &error));
-    CHECK(mc_client_display_source_array(display, MC_CLIENT_SOURCE_VERTEX_ARRAY, true, &error));
-    CHECK(mc_client_display_lists_generate(display, 1, 8, &byte_limited, &byte_id, &error));
-    CHECK(mc_client_display_lists_begin(display, byte_id, &error));
-    CHECK(mc_client_display_source_batch(lease, large_bytes, large_bytes, large_size,
-                                         large_vertices, GL_TRIANGLES, &error));
-    CHECK(mc_client_display_lists_end(display, &error));
-    CHECK(mc_client_display_list_batch(display, byte_id, 0, &committed));
-    old_bytes = committed.bytes;
-    CHECK(mc_client_display_lists_begin(display, byte_id, &error));
-    CHECK(!mc_client_display_source_batch(lease, large_bytes, large_bytes, large_size,
-                                          large_vertices, GL_TRIANGLES, &error) &&
-          error.status == MC_CLIENT_DISPLAY_LIMIT);
-    CHECK(mc_client_display_list_inspect(display, byte_id, &state) && state.defined &&
-          state.building && state.commands == 1 && state.pending_commands == 0 &&
-          state.pending_bytes > 0);
-    CHECK(mc_client_display_lists_abort(display, byte_id, &error));
-    CHECK(mc_client_display_list_batch(display, byte_id, 0, &committed) &&
-          committed.bytes == old_bytes && committed.byte_count == large_size &&
-          byte_limited->command_count == 1);
-    CHECK(mc_client_display_lists_retire(&byte_limited, &error) &&
+    CHECK(retained_byte_controls(display, lease, bytes, &error) &&
           display->source.command_bytes == bbox_charge);
 
     CHECK(!mc_client_render_bounds_draw(classes, display, NULL, &graphics) &&
@@ -649,11 +700,8 @@ cleanup:
                 graphics.operation == NULL ? "none" : graphics.operation);
     _mm_setcsr(0x1f80u);
     mc_client_capture_free(&capture);
-    free(large_bytes);
     if (classes != NULL &&
         mc_client_render_engine_classes_release(classes) != MC_CLIENT_RENDER_ENGINE_OK)
-        result = 1;
-    if (!mc_client_display_lists_retire(&byte_limited, &error))
         result = 1;
     if (!mc_client_display_lists_retire(&large, &error))
         result = 1;

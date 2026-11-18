@@ -347,8 +347,9 @@ static mc_client_source_command *source_append(mc_client_display *display,
                                                mc_client_display_error *error) {
     mc_client_source_state *s = &display->source;
     mc_client_display_list_range *range = s->compiling_range;
-    if (bytes > SIZE_MAX - sizeof(mc_client_source_command) ||
-        sizeof(mc_client_source_command) + bytes > SOURCE_COMMAND_BYTES - s->command_bytes ||
+    if (bytes > SOURCE_COMMAND_BYTES - sizeof(mc_client_source_command) ||
+        sizeof(mc_client_source_command) + bytes >
+            SOURCE_RETAINED_COMMAND_BYTES - s->command_bytes ||
         range->command_count >= range->max_commands) {
         fail(error, MC_CLIENT_DISPLAY_LIMIT, "source command definition",
              "command byte/count limit", 0);
@@ -835,7 +836,7 @@ bool mc_client_display_lists_begin(mc_client_display *display, int32_t id,
         fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source glNewList",
              "unregistered/interrupted/nested list path", 0);
     } else if (sizeof(mc_client_source_definition) >
-               SOURCE_COMMAND_BYTES - display->source.command_bytes) {
+               SOURCE_RETAINED_COMMAND_BYTES - display->source.command_bytes) {
         fail(error, MC_CLIENT_DISPLAY_LIMIT, "source glNewList", "pending definition byte limit",
              0);
     } else {

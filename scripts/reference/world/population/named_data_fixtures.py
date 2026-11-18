@@ -15,6 +15,10 @@ import re
 import tempfile
 
 
+_DRIVE_PATH = re.compile(r"[A-Za-z]:[\\/]")
+_UNC_PATH = re.compile(r"\\\\[^\\]+\\[^\\]+")
+
+
 ROOT = Path(__file__).resolve().parents[4]
 MAX_PACKAGE = 16 * 1024 * 1024
 MAX_RECORD = 64 * 1024 * 1024
@@ -86,9 +90,9 @@ def _public_values(value):
         elif kind is list:
             stack.extend((entry, depth + 1) for entry in item)
         elif kind is str:
-            require("file:/" not in item.lower() and not item.startswith("/") and
-                    re.search(r"[A-Za-z]:[\\/]", item) is None and
-                    re.search(r"\\\\[^\\]+\\[^\\]+", item) is None,
+            drive_or_uri = ":" in item and ("file:/" in item.lower() or _DRIVE_PATH.search(item))
+            unc = "\\\\" in item and _UNC_PATH.search(item)
+            require(not (item.startswith("/") or drive_or_uri or unc),
                     "public record retains host path")
         else:
             require(item is None or kind in (bool, int, float), "ordinary JSON value")

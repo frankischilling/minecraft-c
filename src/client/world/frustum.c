@@ -359,6 +359,27 @@ bool mc_client_frustum_inspect(const mc_client_render_classes *models,
     return true;
 }
 
+static inline bool box_corner_visible(const float *coefficients, double x, double y, double z) {
+    __m128d value = _mm_mul_sd(_mm_set_sd((double)coefficients[0]), _mm_set_sd(x));
+    value = _mm_add_sd(value, _mm_mul_sd(_mm_set_sd((double)coefficients[1]), _mm_set_sd(y)));
+    value = _mm_add_sd(value, _mm_mul_sd(_mm_set_sd((double)coefficients[2]), _mm_set_sd(z)));
+    value = _mm_add_sd(value, _mm_set_sd((double)coefficients[3]));
+    return _mm_cvtsd_f64(value) > 0.0;
+}
+
+static inline bool finite_plane(const float *coefficients) {
+    const __m128i exponent = _mm_set1_epi32(0x7f800000);
+    const __m128i bits = _mm_castps_si128(_mm_loadu_ps(coefficients));
+    return _mm_movemask_epi8(_mm_cmpeq_epi32(_mm_and_si128(bits, exponent), exponent)) == 0;
+}
+
+static inline bool box_max_corner_visible(const float *coefficients, double min_x, double min_y,
+                                          double min_z, double max_x, double max_y, double max_z) {
+    return box_corner_visible(coefficients, coefficients[0] > 0.0f ? max_x : min_x,
+                              coefficients[1] > 0.0f ? max_y : min_y,
+                              coefficients[2] > 0.0f ? max_z : min_z);
+}
+
 mc_client_frustum_status mc_client_frustum_box(const mc_client_source_dr *d, double min_x,
                                                double min_y, double min_z, double max_x,
                                                double max_y, double max_z, bool *out,
@@ -375,21 +396,31 @@ mc_client_frustum_status mc_client_frustum_box(const mc_client_source_dr *d, dou
     }
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u)
         return result(error, MC_CLIENT_FRUSTUM_UNSUPPORTED_FP, "frustum box FP admission");
+
+    /* With float coefficients and these ordered coordinates, double products
+     * and their sum stay finite. Each rounded addition is monotone, so the
+     * corner with the greatest product on each axis has the greatest score. */
+    const double limit = 0x1p512;
+    const bool bounded = -limit <= min_x && min_x <= max_x && max_x <= limit && -limit <= min_y &&
+                         min_y <= max_y && max_y <= limit && -limit <= min_z && min_z <= max_z &&
+                         max_z <= limit;
     for (size_t plane = 0; plane < 6; ++plane) {
+        const float *coefficients = d->a[plane];
+        if (box_corner_visible(coefficients, min_x, min_y, min_z))
+            continue;
         bool visible = false;
-        for (unsigned int corner = 0; corner < 8; ++corner) {
-            const double x = (corner & 1u) != 0 ? max_x : min_x;
-            const double y = (corner & 2u) != 0 ? max_y : min_y;
-            const double z = (corner & 4u) != 0 ? max_z : min_z;
-            __m128d value = _mm_mul_sd(_mm_set_sd((double)d->a[plane][0]), _mm_set_sd(x));
-            value =
-                _mm_add_sd(value, _mm_mul_sd(_mm_set_sd((double)d->a[plane][1]), _mm_set_sd(y)));
-            value =
-                _mm_add_sd(value, _mm_mul_sd(_mm_set_sd((double)d->a[plane][2]), _mm_set_sd(z)));
-            value = _mm_add_sd(value, _mm_set_sd((double)d->a[plane][3]));
-            if (_mm_cvtsd_f64(value) > 0.0) {
-                visible = true;
-                break;
+        if (bounded && finite_plane(coefficients)) {
+            visible =
+                box_max_corner_visible(coefficients, min_x, min_y, min_z, max_x, max_y, max_z);
+        } else {
+            for (unsigned int corner = 1; corner < 8; ++corner) {
+                const double x = (corner & 1u) != 0 ? max_x : min_x;
+                const double y = (corner & 2u) != 0 ? max_y : min_y;
+                const double z = (corner & 4u) != 0 ? max_z : min_z;
+                if (box_corner_visible(coefficients, x, y, z)) {
+                    visible = true;
+                    break;
+                }
             }
         }
         if (!visible) {

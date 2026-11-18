@@ -6,7 +6,13 @@
 #include "source_surface.h"
 #include <string.h>
 
-enum { SOURCE_RANGES = 128, SOURCE_COMMAND_BYTES = 32 * 1024 * 1024, SOURCE_MATRIX_DEPTH = 32 };
+enum {
+    SOURCE_RANGES = 128,
+    SOURCE_COMMAND_BYTES = 32 * 1024 * 1024,
+    /* Live and pending list definitions share this aggregate budget. */
+    SOURCE_RETAINED_COMMAND_BYTES = 128 * 1024 * 1024,
+    SOURCE_MATRIX_DEPTH = 32
+};
 
 typedef enum mc_client_source_command_kind {
     SOURCE_COMMAND_DRAW,

@@ -62,7 +62,8 @@ mc_client_frustum_status mc_client_frustum_update(mc_client_render_classes *,
                                                   const mc_client_source_dr **borrowed_out,
                                                   mc_client_frustum_error *);
 bool mc_client_frustum_inspect(const mc_client_render_classes *, mc_client_frustum_state *);
-/* Exact dr.a(DDDDDD): ordered eight-corner >0 tests for each of six planes. */
+/* The dr.a(DDDDDD) box decision requires a strictly positive corner on each
+ * of six planes. Bounded finite inputs may use the greatest corner score. */
 mc_client_frustum_status mc_client_frustum_box(const mc_client_source_dr *, double min_x,
                                                double min_y, double min_z, double max_x,
                                                double max_y, double max_z, bool *out,

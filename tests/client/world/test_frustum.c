@@ -4,6 +4,8 @@
 #include "client/render_engine/internal.h"
 #include "mc/client/world/frustum.h"
 
+#include <emmintrin.h>
+#include <float.h>
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,6 +26,171 @@ static uint32_t bits(float value) {
     uint32_t result;
     memcpy(&result, &value, sizeof(result));
     return result;
+}
+
+/* Native dr storage for independent box predicates, before any singleton or GL
+ * work. Its six plane rows are borrowed for each synchronous call. */
+struct mc_client_source_dr {
+    float **a;
+    float *b, *c, *d;
+};
+
+static double box_double(uint64_t value) {
+    double result;
+    memcpy(&result, &value, sizeof(result));
+    return result;
+}
+
+static float box_float(uint32_t value) {
+    float result;
+    memcpy(&result, &value, sizeof(result));
+    return result;
+}
+
+/* The previous dr body is the oracle. Each product and each x+y+z+w addition
+ * stays a separate binary64 SSE operation, with the source corner order. */
+static bool box_original(const float planes[6][4], const double box[6]) {
+    for (size_t plane = 0; plane < 6; ++plane) {
+        bool visible = false;
+        for (unsigned int corner = 0; corner < 8; ++corner) {
+            const double x = box[(corner & 1u) != 0 ? 3 : 0];
+            const double y = box[(corner & 2u) != 0 ? 4 : 1];
+            const double z = box[(corner & 4u) != 0 ? 5 : 2];
+            __m128d value = _mm_mul_sd(_mm_set_sd((double)planes[plane][0]), _mm_set_sd(x));
+            value =
+                _mm_add_sd(value, _mm_mul_sd(_mm_set_sd((double)planes[plane][1]), _mm_set_sd(y)));
+            value =
+                _mm_add_sd(value, _mm_mul_sd(_mm_set_sd((double)planes[plane][2]), _mm_set_sd(z)));
+            value = _mm_add_sd(value, _mm_set_sd((double)planes[plane][3]));
+            if (_mm_cvtsd_f64(value) > 0.0) {
+                visible = true;
+                break;
+            }
+        }
+        if (!visible)
+            return false;
+    }
+    return true;
+}
+
+static bool box_compare(float planes[6][4], const double box[6], unsigned int outcomes[2]) {
+    float *rows[6];
+    for (size_t plane = 0; plane < 6; ++plane)
+        rows[plane] = planes[plane];
+    const mc_client_source_dr dr = {.a = rows};
+    const bool expected = box_original((const float(*)[4])planes, box);
+    bool visible = !expected;
+    mc_client_frustum_error error;
+    memset(&error, 0xa5, sizeof(error));
+    CHECK(mc_client_frustum_box(&dr, box[0], box[1], box[2], box[3], box[4], box[5], &visible,
+                                &error) == MC_CLIENT_FRUSTUM_OK &&
+          visible == expected && error.status == MC_CLIENT_FRUSTUM_OK && error.operation == NULL &&
+          !error.native_policy && error.site.class_name == NULL && error.site.method == NULL &&
+          error.site.descriptor == NULL && error.site.pc == 0 && error.parent.class_name == NULL &&
+          error.parent.method == NULL && error.parent.descriptor == NULL && error.parent.pc == 0);
+    ++outcomes[expected ? 1 : 0];
+    return true;
+}
+
+static uint64_t box_random(uint64_t *state) {
+    *state ^= *state << 13u;
+    *state ^= *state >> 7u;
+    *state ^= *state << 17u;
+    return *state;
+}
+
+static bool box_differential_controls(void) {
+    const unsigned int control = _mm_getcsr();
+    CHECK((control & 0xffc0u) == 0x1f80u);
+    const double tiny = box_double(UINT64_C(1));
+    const double near_one = box_double(UINT64_C(0x3ff0000000000001));
+    const double infinity = box_double(UINT64_C(0x7ff0000000000000));
+    const double nan = box_double(UINT64_C(0x7ff8000000001234));
+    const double boxes[][6] = {{-1, -1, -1, 1, 1, 1},
+                               {1, 2, 3, -1, -2, -3},
+                               {-0.0, 0.0, -0.0, 0.0, -0.0, 0.0},
+                               {tiny, -tiny, tiny, -tiny, tiny, -tiny},
+                               {-DBL_MIN, DBL_MIN, 0, DBL_MIN, -DBL_MIN, tiny},
+                               {1, 1, 1, near_one, near_one, near_one},
+                               {-1, -1, -near_one, -near_one, -near_one, -1},
+                               {0, 0, 0, tiny, tiny, tiny},
+                               {DBL_MAX, -DBL_MAX, DBL_MAX, -DBL_MAX, DBL_MAX, -DBL_MAX},
+                               {-DBL_MAX, -DBL_MAX, -DBL_MAX, DBL_MAX, DBL_MAX, DBL_MAX},
+                               {infinity, 0, 0, infinity, 1, 1},
+                               {-infinity, 0, -infinity, infinity, 1, infinity},
+                               {nan, -1, -1, nan, 1, 1},
+                               {-1, nan, -1, 1, nan, 1},
+                               {-1, -1, nan, 1, 1, nan},
+                               {0, 0, 0, nan, infinity, -infinity}};
+    float coefficients[][4] = {{0, 0, 0, 0},       {-0.0f, 0, -0.0f, -0.0f},
+                               {1, 0, 0, 0},       {-1, 0, 0, 0},
+                               {0, 1, 0, 0},       {0, 0, -1, 0},
+                               {1, 1, 1, -3},      {-1, -1, -1, 3},
+                               {1, -1, 1, 0},      {FLT_MAX, 1, -1, 0},
+                               {FLT_MIN, 0, 0, 0}, {1, 1, -1, FLT_MIN},
+                               {0, 0, 0, 1},       {0, 0, 0, -1},
+                               {0, 0, 0, 0},       {0, 0, 0, 0},
+                               {0, 0, 0, 0},       {0, 0, 0, 0}};
+    coefficients[14][0] = box_float(UINT32_C(1));
+    coefficients[15][1] = box_float(UINT32_C(0x7f800000));
+    coefficients[16][2] = box_float(UINT32_C(0xff800000));
+    coefficients[17][3] = box_float(UINT32_C(0x7fc12345));
+    unsigned int outcomes[2] = {0};
+    float planes[6][4] = {{0}};
+    for (size_t selected = 0; selected < 6; ++selected) {
+        for (size_t plane = 0; plane < 6; ++plane) {
+            memset(planes[plane], 0, sizeof(planes[plane]));
+            planes[plane][3] = 1;
+        }
+        for (size_t coefficient = 0; coefficient < sizeof(coefficients) / sizeof(*coefficients);
+             ++coefficient) {
+            memcpy(planes[selected], coefficients[coefficient], sizeof(planes[selected]));
+            for (size_t box = 0; box < sizeof(boxes) / sizeof(*boxes); ++box)
+                CHECK(box_compare(planes, boxes[box], outcomes));
+        }
+    }
+    uint64_t random = UINT64_C(0x7f3d481a96e2b5c1);
+    for (unsigned int sample = 0; sample < 4096; ++sample) {
+        double box[6];
+        for (size_t coordinate = 0; coordinate < 6; ++coordinate) {
+            const uint64_t raw = box_random(&random);
+            const uint64_t exponent =
+                sample < 2048 ? 1000u + ((raw >> 52u) % 47u) : 1u + ((raw >> 52u) % 2046u);
+            box[coordinate] = box_double((raw & UINT64_C(0x800fffffffffffff)) | (exponent << 52u));
+        }
+        for (size_t plane = 0; plane < 6; ++plane)
+            for (size_t coefficient = 0; coefficient < 4; ++coefficient) {
+                const uint32_t raw = (uint32_t)box_random(&random);
+                const uint32_t exponent = 100u + ((raw >> 23u) % 56u);
+                planes[plane][coefficient] =
+                    box_float((raw & UINT32_C(0x807fffff)) | (exponent << 23u));
+            }
+        CHECK(box_compare(planes, box, outcomes));
+    }
+    CHECK(outcomes[0] != 0 && outcomes[1] != 0);
+    float *rows[6];
+    for (size_t plane = 0; plane < 6; ++plane)
+        rows[plane] = planes[plane];
+    mc_client_source_dr dr = {.a = rows};
+    mc_client_frustum_error error;
+    bool visible = true;
+    CHECK(mc_client_frustum_box(NULL, 0, 0, 0, 1, 1, 1, &visible, &error) ==
+              MC_CLIENT_FRUSTUM_SOURCE_NULL &&
+          visible && !error.native_policy && error.site.pc == 11);
+    dr.a = NULL;
+    CHECK(mc_client_frustum_box(&dr, 0, 0, 0, 1, 1, 1, &visible, &error) ==
+              MC_CLIENT_FRUSTUM_SOURCE_NULL &&
+          visible && !error.native_policy && error.site.pc == 16);
+    dr.a = rows;
+    _mm_setcsr(control | 0x8000u);
+    const mc_client_frustum_status fp_status =
+        mc_client_frustum_box(&dr, 0, 0, 0, 1, 1, 1, &visible, &error);
+    _mm_setcsr(control);
+    CHECK(fp_status == MC_CLIENT_FRUSTUM_UNSUPPORTED_FP && visible && error.native_policy);
+    CHECK(mc_client_frustum_box(&dr, 0, 0, 0, 1, 1, 1, NULL, &error) ==
+              MC_CLIENT_FRUSTUM_ARGUMENT &&
+          error.native_policy);
+    return true;
 }
 
 static bool constructor_limits(mc_entity_classes *entities, mc_java_random_profile *profile) {
@@ -163,6 +330,7 @@ static bool observe(mc_client_render_classes *models, const mc_client_source_dr 
 }
 
 static bool run(void) {
+    CHECK(box_differential_controls());
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *entities = NULL;
     mc_client_render_classes *models = NULL;

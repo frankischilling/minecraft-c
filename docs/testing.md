@@ -10628,3 +10628,24 @@ ordinary save/reselection, one cached Pig rebound to the new World, positive
 initial model compilation, unchanged selected inputs/assets and checked cleanup.
 The captured PNGs and saves remain private. No original-pixel, sustained-play
 or FPS qualification follows from this fixture.
+
+## Population fixture path checks
+
+The four population fixture readers precompile their drive and UNC patterns.
+They check for a colon before testing drive paths and `file:/` URLs, and
+check for two consecutive backslashes before invoking the UNC regex. A
+differential test checks 5,484 strings per reader against the previous path
+rules, including the leading-slash policy of each reader. Further cases cover
+nested keys and values, valid JSON shapes and the existing depth boundary.
+
+The medians below come from two alternating before/after Windows rounds.
+Each round used the same test files and fixture bytes, with four concurrent
+workers and fresh processes. All 76 tests passed. These are local suite
+times. Hosted end-to-end timing requires a comparable completed CI run.
+
+| Suite | Tests | Previous | Guarded |
+| --- | ---: | ---: | ---: |
+| Natural population | 13 | 24.78 s | 9.22 s |
+| Population persistence | 24 | 37.51 s | 29.92 s |
+| Population named data | 28 | 33.09 s | 25.83 s |
+| World save | 11 | 22.56 s | 17.39 s |
