@@ -7,6 +7,7 @@
 #include "../../world/render_global_internal.h"
 #include "mc/block/registry/rendering.h"
 #include "mc/client/world/chunk_cache.h"
+#include "mc/core/java/java.h"
 #include "mc/entity/vector/vector.h"
 #include "mc/world/dimension/world_chunk_manager.h"
 #include "mc/world/runtime/blocks.h"
@@ -162,6 +163,14 @@ bool mc_cv_block_color(mc_cv_context *, const mc_block *, int32_t, int32_t, int3
 bool mc_cv_face(mc_cv_context *, int32_t side, const mc_block *, double, double, double,
                 int32_t texture, unsigned int caller_pc);
 bool mc_cv_face_body(mc_cv_context *, int32_t, const mc_block *, double, double, double, int32_t);
+
+/* Fixed source coordinates for the -1, 0 and +1 offsets of a face/sample. */
+static inline void mc_cv_neighbor_axis(int32_t center, int32_t position[3]) {
+    position[0] = mc_java_i32_sub(center, 1);
+    position[1] = center;
+    position[2] = mc_java_i32_add(center, 1);
+}
+
 bool mc_cv_flat(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, float, float, float,
                 bool *);
 bool mc_source_cv_ambient_occlusion(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t,

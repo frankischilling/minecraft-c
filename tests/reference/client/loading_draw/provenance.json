@@ -6646,8 +6646,8 @@
       "sha256": "d749c65bec50c1df278d8a5c7c96ab550358fb163f54c360546b55f92d409e9f"
     },
     "src/client/world/source_chunk_compile.c": {
-      "bytes": 41838,
-      "sha256": "312e42117ab73cc780c3d4002863a9b9c4140b249a5422b6dd8ae12dd2092f91"
+      "bytes": 41551,
+      "sha256": "1809a01cd0bf2bf44a492ce776384b41e0e18f6138e61059910a8213519ab152"
     },
     "src/client/world/source_chunk_compile_internal.h": {
       "bytes": 2862,
@@ -6698,8 +6698,8 @@
       "sha256": "5102c708230fdbc32dc75e5c3e6abc11260d1f6cbdb141e68e6f0155ebe39179"
     },
     "src/client/render/blocks/ambient_occlusion.c": {
-      "bytes": 14218,
-      "sha256": "6694282eb61903fa9b5b1c2f1944f4a9683d7782bdad18762bbd2c3e95243966"
+      "bytes": 14435,
+      "sha256": "d974fdb1764df94ab6fe25c0a5683a3f222d0bd71188e54312c42e42421cb18b"
     },
     "src/client/render/blocks/block.c": {
       "bytes": 15430,
@@ -6718,12 +6718,12 @@
       "sha256": "739181c0a6152c828296dae7ddd357a1005dd74196714e2071c1f2798840aed4"
     },
     "src/client/render/blocks/flat.c": {
-      "bytes": 7018,
-      "sha256": "99c3d7bee454b78341314364052eb3aeeecb6448bec898380ad091f790efef3f"
+      "bytes": 7080,
+      "sha256": "4eb109dad24b3d7d43e397a91eea5c4f0d6417fb386c0bf84d254e2687187d84"
     },
     "src/client/render/blocks/internal.h": {
-      "bytes": 11876,
-      "sha256": "438329eb7f6396f73376625a129a733f3e6f7f8b1bfe2ea53fe3ea611f24a8e0"
+      "bytes": 12185,
+      "sha256": "00b876d68a362dbe20754c43d7b19c9ac29a42c5fb24c1e91bb564702b5bcb5d"
     },
     "src/client/render/blocks/render.c": {
       "bytes": 8770,
@@ -6738,8 +6738,8 @@
       "sha256": "8b7a0c75b826e9da5e29b9830ca3a5784f8ea96e2d77b9561c1ee04902dea376"
     },
     "tests/client/render/test_render_blocks_ao.c": {
-      "bytes": 13806,
-      "sha256": "1a53baaaefb2c5395e489288094384d0e2806d6001ea31ec89403d3aba27c04d"
+      "bytes": 14775,
+      "sha256": "7dac038c7291dba10ac1cf64e1bcd41b2558f0ae2a58fc65107adfa32b814c0f"
     },
     "tests/client/render/test_render_blocks_faces.c": {
       "bytes": 16519,

@@ -1,7 +1,6 @@
 #include "internal.h"
 
 #include "../../../entity/player/tick_math_internal.h"
-#include "mc/core/java/java.h"
 #include <string.h>
 
 /* Actual CV storage offsets, in declaration order. The immutable programs
@@ -216,15 +215,19 @@ static void light_store(mc_cv_context *c, unsigned int slot, float value, unsign
     mc_cv_store(c, pc);
 }
 
-static bool sample(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y, int32_t z,
+typedef struct ao_coordinates {
+    int32_t x[3], y[3], z[3];
+} ao_coordinates;
+
+static bool sample(mc_cv_context *c, const mc_block *block, const ao_coordinates *coordinates,
                    const ao_sample *s) {
     if (s->flag_a >= 0 && !c->fields->ab_to_am[s->flag_a] && !c->fields->ab_to_am[s->flag_b]) {
         light_store(c, s->slot, c->fields->n_to_N[s->fallback], s->pc + 14u);
         return true;
     }
     float value;
-    if (!mc_cv_brightness(c, block, mc_java_i32_add(x, s->dx), mc_java_i32_add(y, s->dy),
-                          mc_java_i32_add(z, s->dz), s->pc, &value))
+    if (!mc_cv_brightness(c, block, coordinates->x[s->dx + 1], coordinates->y[s->dy + 1],
+                          coordinates->z[s->dz + 1], s->pc, &value))
         return false;
     light_store(c, s->slot, value, s->pc + 3u);
     return true;
@@ -305,13 +308,17 @@ bool mc_source_cv_ambient_occlusion(mc_cv_context *c, const mc_block *block, int
     float corner[4];
     for (size_t i = 0; i < 4; ++i)
         memcpy(&corner[i], &c->fields->n_to_N[L_n], sizeof(corner[i]));
+    ao_coordinates coordinates;
+    mc_cv_neighbor_axis(x, coordinates.x);
+    mc_cv_neighbor_axis(y, coordinates.y);
+    mc_cv_neighbor_axis(z, coordinates.z);
     static const ao_sample initial[7] = {
         {L_n, 0, 0, 0, -1, -1, 0, 60},  {L_o, -1, 0, 0, -1, -1, 0, 78},
         {L_p, 0, -1, 0, -1, -1, 0, 96}, {L_q, 0, 0, -1, -1, -1, 0, 114},
         {L_r, 1, 0, 0, -1, -1, 0, 132}, {L_s, 0, 1, 0, -1, -1, 0, 150},
         {L_t, 0, 0, 1, -1, -1, 0, 168}};
     for (size_t i = 0; i < 7; ++i)
-        if (!sample(c, block, x, y, z, &initial[i]))
+        if (!sample(c, block, &coordinates, &initial[i]))
             return false;
 
     static const struct {
@@ -324,8 +331,8 @@ bool mc_source_cv_ambient_occlusion(mc_cv_context *c, const mc_block *block, int
     for (unsigned int i = 0; i < 12; ++i) {
         bool value;
         const unsigned int pc = 175u + i * 25u;
-        if (!mc_cv_ao_flag(c, mc_java_i32_add(x, flags[i].dx), mc_java_i32_add(y, flags[i].dy),
-                           mc_java_i32_add(z, flags[i].dz), pc, pc + 15u, pc + 20u, &value))
+        if (!mc_cv_ao_flag(c, coordinates.x[flags[i].dx + 1], coordinates.y[flags[i].dy + 1],
+                           coordinates.z[flags[i].dz + 1], pc, pc + 15u, pc + 20u, &value))
             return false;
         c->fields->ab_to_am[flags[i].slot] = value;
         mc_cv_store(c, pc + 21u);
@@ -339,14 +346,14 @@ bool mc_source_cv_ambient_occlusion(mc_cv_context *c, const mc_block *block, int
         const ao_face *face = &faces[side];
         bool visible = c->fields->f;
         if (!visible &&
-            !mc_cv_side(c, block, mc_java_i32_add(x, face->dx), mc_java_i32_add(y, face->dy),
-                        mc_java_i32_add(z, face->dz), side, face->side_pc, &visible))
+            !mc_cv_side(c, block, coordinates.x[face->dx + 1], coordinates.y[face->dy + 1],
+                        coordinates.z[face->dz + 1], side, face->side_pc, &visible))
             return false;
         if (!visible)
             continue;
         if (c->fields->O > 0) {
             for (size_t i = 0; i < 8; ++i)
-                if (!sample(c, block, x, y, z, &face->samples[i]))
+                if (!sample(c, block, &coordinates, &face->samples[i]))
                     return false;
             if (!averages(c, face, corner))
                 return false;

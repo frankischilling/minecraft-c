@@ -22,6 +22,27 @@ static uint32_t ao_bits(float value) {
     return result;
 }
 
+static bool ao_neighbor_axis_controls(void) {
+    static const struct {
+        int32_t center;
+        uint32_t expected[3];
+    } cases[] = {
+        {INT32_MIN, {UINT32_C(0x7fffffff), UINT32_C(0x80000000), UINT32_C(0x80000001)}},
+        {INT32_MAX, {UINT32_C(0x7ffffffe), UINT32_C(0x7fffffff), UINT32_C(0x80000000)}},
+        {INT32_MIN + 1, {UINT32_C(0x80000000), UINT32_C(0x80000001), UINT32_C(0x80000002)}},
+        {INT32_MAX - 1, {UINT32_C(0x7ffffffd), UINT32_C(0x7ffffffe), UINT32_C(0x7fffffff)}},
+        {0, {UINT32_C(0xffffffff), 0, 1}}};
+
+    for (size_t i = 0; i < sizeof(cases) / sizeof(*cases); ++i) {
+        int32_t position[5] = {17, 37, 37, 37, -17};
+        mc_cv_neighbor_axis(cases[i].center, position + 1);
+        CHECK(position[0] == 17 && position[4] == -17);
+        for (size_t axis = 0; axis < 3; ++axis)
+            CHECK((uint32_t)position[axis + 1] == cases[i].expected[axis]);
+    }
+    return true;
+}
+
 static bool ao_prepare(mc_chunk_state *chunk, int32_t id, int pattern) {
     memset(chunk->data->blocks, 0, MC_CHUNK_BLOCKS);
     memset(chunk->data->metadata, 0, MC_CHUNK_NIBBLE_BYTES);
@@ -113,7 +134,7 @@ static bool ao_controls(picking_fixture *f, const char *profiles) {
           MC_CLIENT_CHUNK_CACHE_OK);
     CHECK(mc_client_chunk_cache_create(f->base.world, 0, 0, 0, 15, 127, 15, &edge_cache,
                                        &cache_error) == MC_CLIENT_CHUNK_CACHE_OK);
-    CHECK(ao_registry_controls(f->base.registry, cache));
+    CHECK(ao_neighbor_axis_controls() && ao_registry_controls(f->base.registry, cache));
     mc_client_model_error model_error;
     CHECK(mc_client_render_blocks_active_use(f->models, &model_error));
     const bool prior_overlay = f->models->cv_a;

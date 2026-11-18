@@ -410,14 +410,10 @@ static bool block(mc_source_dk_compile *c) {
         }
     }
     const mc_block *b = NULL;
-    if (mc_registry_block_m_read_ready(registry, c->state.block_id, &b)) {
-        c->failure.registry = (mc_registry_error){.initializer_pc = -1,
-                                                  .block_id = -1,
-                                                  .constructor_pc = -1,
-                                                  .active_initializer_pc = -1,
-                                                  .item_argument = -1};
-    } else if (mc_registry_block_get(registry, c->state.block_id, &b, &c->failure.registry) !=
-               MC_REGISTRY_OK)
+    /* Pass zero publishes the Registry success record before the first m read. */
+    if (!mc_registry_block_m_read_ready(registry, c->state.block_id, &b) &&
+        mc_registry_block_get(registry, c->state.block_id, &b, &c->failure.registry) !=
+            MC_REGISTRY_OK)
         return fail(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED, c->failure.registry.message, 422,
                     true);
     /* astore19 at423 overwrites the Tile local after the actual array load. */

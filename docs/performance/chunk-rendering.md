@@ -362,3 +362,45 @@ if any process, work identity, guard or cleanup fails. The tools test audits
 malformed receipts; the optional native benchmark-controls test runs both
 adapters without timing samples. Execution hashes establish continuity; the
 receipt records separate shared-object and library build bindings.
+
+## Wrapped Block render coordinates
+
+Flat lighting and ambient occlusion compute the center and its two wrapped
+neighbors on each axis once per Block. Side, opacity and brightness operations
+still reach their live receivers in source order. Chunk compilation also
+reuses the Registry success record from pass zero for ready `uu.m` reads.
+The full lookup still supplies diagnostics on its failure path.
+
+Two profiled pairs on DISPLAY2 used actual forward input in the saved Far
+scene at 854×480. Across all four processes, 1,026 meshes matched on renderer
+position, pass cell and Block ID sequence, render and query counts, and held
+Chunk snapshots. They included 2,281,472 ambient-occlusion selections per
+process. Full mesh spans totaled 4,161–4,163 ms before and 3,942–3,982 ms
+after, a median reduction of 4.8%. The slowest three-mesh burst in each process
+compiled the same three fully occupied sections. Median compile time for those bursts
+fell from 22.99 to 21.56 ms. These are inclusive CPU spans from an instrumented
+build. The timed scalar samples within them overlap.
+
+Four separate uninstrumented pairs used the same moving route. Each cohort
+matched input, player, actor, random and scheduler state over 215 World ticks.
+The dirty queue fell further in all four candidate runs. Its median net
+decrease over ten seconds went from 1,031 to 1,151 entries. The queue count
+includes renderer invalidation and completion through the original update
+schedule.
+
+| Uninstrumented workload | Before FPS | After FPS | Before p99 (ms) | After p99 (ms) |
+| --- | ---: | ---: | ---: | ---: |
+| Moving, four pairs | 67.12 | 65.98 | 21.64 | 22.64 |
+| Heavy cave, one pair | 54.73 | 55.38 | 31.51 | 30.35 |
+| Lighter cave, one pair | 63.91 | 62.85 | 24.19 | 26.57 |
+
+The qualifying cave pairs each matched actor, random and scheduler state over
+200 World ticks. An earlier lighter candidate interval lost foreground focus
+and stayed paused. Its measurements are excluded from the table and the
+failed interval remains in the local receipts.
+
+Seventeen focused tests passed on each host, using Windows MSVC Release and
+Linux Clang Debug with ASan and UBSan. Checks include signed Java wraparound
+at both endpoints, 48 ambient-occlusion and 25 flat-lighting field and vertex
+rows, 1,680 face rows, 950 ChunkCache rows, and 18,938 Chunk compilation
+assertions, including its retained failure paths.

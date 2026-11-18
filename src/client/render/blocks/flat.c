@@ -1,7 +1,6 @@
 #include "internal.h"
 
 #include "../../../entity/player/tick_math_internal.h"
-#include "mc/core/java/java.h"
 
 static bool flat_color(mc_cv_context *c, const float rgb[3], float light, unsigned int multiply_pc,
                        unsigned int color_pc) {
@@ -84,6 +83,10 @@ bool mc_cv_flat(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y, i
     float center = 0;
     if (!mc_cv_brightness(c, block, x, y, z, 164, &center))
         return false;
+    int32_t xs[3], ys[3], zs[3];
+    mc_cv_neighbor_axis(x, xs);
+    mc_cv_neighbor_axis(y, ys);
+    mc_cv_neighbor_axis(z, zs);
     static const int32_t offsets[6][3] = {{0, -1, 0}, {0, 1, 0},  {0, 0, -1},
                                           {0, 0, 1},  {-1, 0, 0}, {1, 0, 0}};
     static const unsigned int side_pc[6] = {188, 277, 389, 557, 725, 893};
@@ -99,9 +102,9 @@ bool mc_cv_flat(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y, i
     static const unsigned int overlay_face_pc[4] = {532, 700, 868, 1036};
     bool rendered = false;
     for (int32_t side = 0; side < 6; ++side) {
-        const int32_t nx = mc_java_i32_add(x, offsets[side][0]);
-        const int32_t ny = mc_java_i32_add(y, offsets[side][1]);
-        const int32_t nz = mc_java_i32_add(z, offsets[side][2]);
+        const int32_t nx = xs[offsets[side][0] + 1];
+        const int32_t ny = ys[offsets[side][1] + 1];
+        const int32_t nz = zs[offsets[side][2] + 1];
         bool visible = c->fields->f;
         if (!visible && !mc_cv_side(c, block, nx, ny, nz, side, side_pc[side], &visible))
             return false;
