@@ -448,6 +448,56 @@ FPS and four had lower p99. The longest candidate frame took 107.77 ms.
 | First | 40.19 / 47.40 | 48.55 / 40.37 | 77.49 / 67.16 |
 | Repeat | 42.11 / 44.82 | 48.60 / 40.42 | 71.59 / 74.09 |
 
+### Acquisition diagnostics in saved-light queries
+
+World queries keep only the acquisition fields that can reach their error
+record. The coordinator still constructs the full diagnostic when callbacks
+run. A refused GET supplies the canonical unreached fields. Retained queries
+still resolve their selected loader before copying the reported fields.
+
+In MSVC Release, the stack reservation for the query acquisition wrapper
+dropped from 5,112 to 968 bytes and lost its stack probe. Native owned and
+exported cache tests confirm that a hit leaves the caller's failure record
+untouched and that invalid output returns the same unreached diagnostic.
+
+Two sampled DISPLAY2 runs after the Material change showed that saved-light
+reads were the largest cost in the slowest drains. The 62.75 ms drain made
+225,646 saved-light reads, with an estimated 48.39 ms in those calls.
+The 42.16 ms drain made 206,743 reads, with an estimated 33.90 ms in them.
+Sampling adds overhead and nested durations overlap.
+
+In the first pinned fixed-work group, the 499-region drain fell from 4.50 to
+3.97 ms at the median and from 7.98 to 7.26 ms at p95. Eight alternating
+pairs supplied 56 samples per build. All workloads and failure receipts
+matched, including the saved-light failure after seven earlier reads. In
+the repeat, median time was 3.25 to 3.27 ms and p95 was 3.78 to 6.36 ms.
+
+The 289-Chunk scalar query comparisons used eight pairs per scope. Median
+saved-light time fell from 147.84 to 144.63 ns with an idle index and from
+148.37 to 133.28 ns during a mutation scope. Its p95 rose from 227.54 to
+230.45 ns and from 228.39 to 233.06 ns, respectively. In the repeat, median
+saved-light time fell from 98.31 to 93.13 ns with an idle index and from
+99.80 to 91.40 ns in mutation scope. Repeat p95 values moved from 180.79 to
+201.51 ns and from 164.53 to 145.08 ns. Indexed owned GET medians moved from
+29.53 to 37.08 ns in the first group and from 23.99 to 24.39 ns in the repeat.
+
+Four further instrumented DISPLAY2 runs matched two drains by all nine
+operation counts. The larger match made 86,476 saved-light reads and
+took 21.61 ms before and 18.74 ms after. The smaller match made 14,215
+saved-light reads and took 2.48 ms before and 2.66 ms after.
+
+All 18 uninstrumented DISPLAY2 runs qualified at Tiny distance and 854×480.
+Both builds in each group shared the local Sign screen edit. The isolated
+comparison used the Material change in both builds. The combined groups
+used the baseline before either change. The combined result varied across
+groups, and the slowest combined candidate frame took 138.50 ms.
+
+| Scene group | Median FPS before / after | Median p95 frame time (ms) | Median p99 frame time (ms) |
+| --- | ---: | ---: | ---: |
+| Saved-light only | 32.53 / 30.55 | 64.73 / 71.63 | 104.87 / 110.62 |
+| Combined | 37.88 / 31.59 | 49.97 / 63.21 | 90.76 / 99.54 |
+| Combined repeat | 43.36 / 45.22 | 41.11 / 42.92 | 70.69 / 67.25 |
+
 ## Controlled Windows measurement
 
 The fixed-work CPU benchmark uses authored saved Chunks, an actual constructed

@@ -113,6 +113,19 @@ static void query_selected_view(mc_world_query_execution *execution) {
     }
 }
 
+static bool query_acquisition_failed(mc_world_query_error *error,
+                                     const mc_world_query_acquisition_failure *failure) {
+    error->source_chunk = failure->source_chunk;
+    error->population = failure->population;
+    error->registry = failure->registry;
+    if (failure->cause.status != MC_WORLD_STORAGE_OK)
+        return storage_fail(error, &failure->cause);
+    if (error->acquisition == MC_CHUNK_ACQUIRE_LIMIT ||
+        error->acquisition == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT)
+        return fail(error, MC_WORLD_STORAGE_LIMIT, "World query acquisition limit");
+    return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World query acquisition");
+}
+
 /* World.c(II) invokes the provider's b getter, preserving pending on a hit
  * and the dedicated denied-load fallback. Store leases protect the captured
  * source local across later Registry active use, without blocking reentry. */
@@ -131,35 +144,30 @@ static bool acquire_query(mc_world_runtime *world, int32_t chunk_x, int32_t chun
         &provider->pending != world->acquisition.pending || provider->store != world->options.store)
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                     "World query replacement provider binding");
-    mc_world_runtime_acquisition_error legacy;
-    mc_world_runtime_acquisition_error *const detail =
-        execution == NULL ? &legacy : &execution->acquisition;
-    if (execution == NULL)
+    if (execution == NULL) {
+        mc_world_query_acquisition_failure failure;
         error->acquisition =
-            mc_world_runtime_get_failure(world, chunk_x, chunk_z, &out->state, detail);
-    else {
+            mc_world_runtime_get_query_failure(world, chunk_x, chunk_z, &out->state, &failure);
+        if (error->acquisition != MC_CHUNK_ACQUIRE_OK)
+            return query_acquisition_failed(error, &failure);
+    } else {
         execution->get_entered = true;
-        error->acquisition = mc_world_runtime_get_failure_in_execution(
-            execution->execution, world, execution->code, chunk_x, chunk_z, &out->state, detail,
-            execution->owned);
-        execution->get_status = error->acquisition;
+        const mc_chunk_acquire_status status = mc_world_runtime_get_failure_in_execution(
+            execution->execution, world, execution->code, chunk_x, chunk_z, &out->state,
+            &execution->acquisition, execution->owned);
+        error->acquisition = status;
+        execution->get_status = status;
         execution->get_returned = true;
         /* Successful failure-only output remains untouched. Only an actually
          * failed getter supplies the full diagnostic and selected borrow. */
-        if (error->acquisition != MC_CHUNK_ACQUIRE_OK)
+        if (status != MC_CHUNK_ACQUIRE_OK)
             query_selected_view(execution);
         execution->native_stopped = execution->owned->ownership_status != MC_WORLD_STORAGE_OK;
-    }
-    if (error->acquisition != MC_CHUNK_ACQUIRE_OK) {
-        error->source_chunk = detail->source_chunk;
-        error->population = detail->population;
-        error->registry = detail->registry;
-        if (detail->cause.status != MC_WORLD_STORAGE_OK)
-            return storage_fail(error, &detail->cause);
-        if (error->acquisition == MC_CHUNK_ACQUIRE_LIMIT ||
-            error->acquisition == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT)
-            return fail(error, MC_WORLD_STORAGE_LIMIT, "World query acquisition limit");
-        return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World query acquisition");
+        if (status != MC_CHUNK_ACQUIRE_OK) {
+            const mc_world_query_acquisition_failure failure =
+                mc_world_query_acquisition_failure_of(&execution->acquisition);
+            return query_acquisition_failed(error, &failure);
+        }
     }
     if (execution != NULL) {
         if (!execution->native_stopped) {

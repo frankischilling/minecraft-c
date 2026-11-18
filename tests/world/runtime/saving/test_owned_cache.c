@@ -190,6 +190,13 @@ static int oc_diagnostics(source_save_fixture *s, mc_chunk_state *expected) {
     VERIFY(mc_world_runtime_get_failure_cause(world, 0, 0, &got, &cause) == MC_CHUNK_ACQUIRE_OK &&
            got == expected && cause.status == sentinel.status &&
            cause.operation == sentinel.operation && cause.system_error == sentinel.system_error);
+    mc_world_query_acquisition_failure query_failure;
+    unsigned char untouched_query[sizeof(query_failure)];
+    memset(&query_failure, 0x5a, sizeof(query_failure));
+    memcpy(untouched_query, &query_failure, sizeof(query_failure));
+    VERIFY(mc_world_runtime_get_query_failure(world, 0, 0, &got, &query_failure) ==
+               MC_CHUNK_ACQUIRE_OK &&
+           got == expected && memcmp(untouched_query, &query_failure, sizeof(query_failure)) == 0);
     memset(&second, 0x5a, sizeof(second));
     const mc_chunk_acquire_status invalid =
         mc_world_runtime_get_detailed(world, 0, 0, NULL, &second);
@@ -201,6 +208,12 @@ static int oc_diagnostics(source_save_fixture *s, mc_chunk_state *expected) {
     VERIFY(mc_world_runtime_get_failure_cause(world, 0, 0, NULL, &cause) == invalid &&
            cause.status == second.cause.status && cause.operation == second.cause.operation &&
            cause.system_error == second.cause.system_error);
+    VERIFY(mc_world_runtime_get_query_failure(world, 0, 0, NULL, &query_failure) == invalid &&
+           query_failure.cause.status == second.cause.status &&
+           query_failure.cause.operation == second.cause.operation &&
+           query_failure.cause.system_error == second.cause.system_error &&
+           query_failure.registry.initializer_pc == -1 && query_failure.registry.block_id == -1 &&
+           !query_failure.population.reached && query_failure.source_chunk == NULL);
     got = &world->fallback;
     world->active_calls = SIZE_MAX; /* Native admission limit, not a Source field. */
     const mc_chunk_acquire_status limited =
@@ -226,9 +239,9 @@ static int oc_diagnostics(source_save_fixture *s, mc_chunk_state *expected) {
            cause.status == second.cause.status && cause.operation == second.cause.operation &&
            cause.system_error == second.cause.system_error);
     VERIFY(oc_diagnostics_equal(&first, &second) && oc_observe(world, &after) == 0 &&
-           after.owned == before.owned && after.hits == before.hits + (before.owned ? 5u : 0u) &&
+           after.owned == before.owned && after.hits == before.hits + (before.owned ? 6u : 0u) &&
            after.misses == before.misses &&
-           after.generic_gets == before.generic_gets + (before.owned ? 0u : 8u) &&
+           after.generic_gets == before.generic_gets + (before.owned ? 0u : 10u) &&
            after.raw_exports == before.raw_exports && after.rebuilds == before.rebuilds &&
            after.map_count == before.map_count && after.insertion_count == before.insertion_count &&
            world->active_calls == active && world->acquisition_error == outer &&

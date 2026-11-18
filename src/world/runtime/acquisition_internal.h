@@ -28,6 +28,27 @@ mc_chunk_acquire_status mc_world_runtime_get_failure_cause(mc_world_runtime *run
                                                            int32_t z, mc_chunk_state **out,
                                                            mc_world_storage_error *cause);
 
+typedef struct mc_world_query_acquisition_failure {
+    mc_world_storage_error cause;
+    mc_registry_error registry;
+    mc_world_population_context population;
+    const mc_world_source_chunk_error *source_chunk;
+} mc_world_query_acquisition_failure;
+
+static inline mc_world_query_acquisition_failure
+mc_world_query_acquisition_failure_of(const mc_world_runtime_acquisition_error *detail) {
+    return (mc_world_query_acquisition_failure){.cause = detail->cause,
+                                                .registry = detail->registry,
+                                                .population = detail->population,
+                                                .source_chunk = detail->source_chunk};
+}
+
+/* Project a failed GET for World queries without reserving the full receipt
+ * in the caller. Successful GETs leave the projection untouched. */
+mc_chunk_acquire_status mc_world_runtime_get_query_failure(mc_world_runtime *, int32_t x, int32_t z,
+                                                           mc_chunk_state **,
+                                                           mc_world_query_acquisition_failure *);
+
 /* The ordinary block body, with the same failure-only diagnostic convention.
  * Every failed result supplies the complete acquisition/unreached baseline,
  * including failures before or after the actual provider invocation. */

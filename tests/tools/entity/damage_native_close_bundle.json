@@ -65,8 +65,8 @@
       "sha256": "254e167c898907879c70fccca62c635d37bba596bfe1fe764239bde52a0e983e"
     },
     "src/world/runtime/runtime.c": {
-      "bytes": 75872,
-      "sha256": "a948d00eefef61277dec8e15d43179307093e98e307ab7fdced2fdb819c29295"
+      "bytes": 76524,
+      "sha256": "46520cbf1ed37086dccc5919ce06c965f91a48d7c9ec540aa9a0622aec914001"
     },
     "src/world/runtime/runtime_execution.c": {
       "bytes": 20205,
