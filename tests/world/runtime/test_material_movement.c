@@ -235,6 +235,82 @@ cleanup:
     return ok;
 }
 
+static bool scan_read_failure_after_success(fixture *f, size_t side) {
+    bool ok = false;
+    mc_world_runtime *const world = f->worlds[side];
+    mc_chunk_data *const data = f->states[side]->data;
+    const size_t first = boxes_index(6, 64, 6);
+    const size_t second = boxes_index(6, 64, 7);
+    const uint8_t saved = data->blocks[first];
+    const size_t capacity = data->blocks_capacity;
+    const mc_entity_bounds bounds = {6.125, 64.125, 6.125, 6.875, 64.875, 7.875};
+    const mc_world_material_movement_limits limits = {2};
+    mc_material *const lava = mc_materials_get(f->materials, MC_MATERIAL_h);
+    for (unsigned int kind = 0; kind < 2; ++kind) {
+        for (uint8_t id = 0; id <= 1; ++id) {
+            data->blocks[first] = id;
+            /* The first air/Stone read succeeds and continues. The next Z
+             * voxel reaches the actual normal Chunk's shortened byte backing. */
+            data->blocks_capacity = second;
+            const bool sentinel = id != 0;
+            bool value = sentinel;
+            mc_world_material_movement_error error;
+            memset(&error, 0xa5, sizeof(error));
+            const mc_world_storage_status status =
+                kind == 0
+                    ? mc_world_runtime_contains_material(world, &bounds, lava, &limits, &value,
+                                                         &error)
+                    : mc_world_runtime_contains_liquid(world, &bounds, &limits, &value, &error);
+            data->blocks_capacity = capacity;
+            const mc_world_nearby_error *const nearby = &error.block.nearby;
+            const mc_world_storage_error *const reached = mc_world_runtime_last_error(world);
+            CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && value == sentinel &&
+                  error.status == status && error.bytecode == (kind == 0 ? 101u : 135u) &&
+                  error.cell_work == 2 && error.max_cell_work == 2 && error.block.x == 6 &&
+                  error.block.y == 64 && error.block.z == 7 && error.block.world_bytecode == 0 &&
+                  error.block.block_bytecode == 0 && error.block.block_class == NULL &&
+                  nearby->query.status == status && nearby->query.bytecode == 60 &&
+                  nearby->query.provider_bytecode == 0 && nearby->query.chunk_bytecode == 15 &&
+                  nearby->query.acquisition == MC_CHUNK_ACQUIRE_OK &&
+                  nearby->query.source_chunk == NULL && !nearby->query.source_null);
+            CHECK(error.operation != NULL &&
+                  strcmp(error.operation, "Collision Chunk block backing/index") == 0 &&
+                  error.cause.status == status && error.cause.operation == error.operation &&
+                  error.cause.system_error == 0 && nearby->query.cause.status == status &&
+                  nearby->query.cause.operation == error.operation &&
+                  nearby->query.cause.system_error == 0 && reached->status == status &&
+                  reached->operation == error.operation && reached->system_error == 0);
+            CHECK(error.registry.status == MC_REGISTRY_OK && error.registry.message == NULL &&
+                  error.registry.initializer_pc == -1 && error.registry.block_id == -1 &&
+                  error.registry.constructor_pc == -1 &&
+                  error.registry.active_initializer_pc == -1 &&
+                  error.registry.item_argument == -1 &&
+                  nearby->query.registry.status == MC_REGISTRY_OK &&
+                  nearby->query.registry.initializer_pc == -1 &&
+                  nearby->query.registry.block_id == -1 &&
+                  nearby->query.registry.constructor_pc == -1 &&
+                  nearby->query.registry.active_initializer_pc == -1 &&
+                  nearby->query.registry.item_argument == -1 && nearby->slice == SIZE_MAX &&
+                  nearby->index == SIZE_MAX && nearby->batch.index == SIZE_MAX &&
+                  nearby->load_entity.index == SIZE_MAX &&
+                  nearby->tile_entity.registry.initializer_pc == -1 &&
+                  nearby->tile_entity.tile_entity.item_index == SIZE_MAX &&
+                  nearby->activation_bytecode == 0 && nearby->activation_world_bytecode == 0 &&
+                  nearby->load_bytecode == 0 && nearby->load_builder_bytecode == 0);
+            CHECK(world->active_calls == 0 && world->local_leases == 0 &&
+                  f->providers[side].cache->count == 1 &&
+                  f->providers[side].cache->insertion_count == 1 &&
+                  mc_chunk_cache_validate(f->providers[side].cache) &&
+                  mc_world_store_chunk_count(f->stores[side]) == 1 && data->blocks[first] == id);
+        }
+    }
+    ok = true;
+cleanup:
+    data->blocks_capacity = capacity;
+    data->blocks[first] = saved;
+    return ok;
+}
+
 static bool player_eye(fixture *f) {
     bool ok = false, value = false;
     mc_entity *player = NULL;
@@ -445,6 +521,7 @@ int main(int argc, char **argv) {
         CHECK(vectors(f->entity_classes[side]));
         CHECK(vector_failures(f->entity_classes[side]));
         CHECK(failure_prefixes(f, side));
+        CHECK(scan_read_failure_after_success(f, side));
     }
     CHECK(player_eye(f));
     result = 0;

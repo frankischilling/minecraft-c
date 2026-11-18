@@ -6,6 +6,20 @@
 #include "mc/world/runtime/material_movement.h"
 #include <emmintrin.h>
 
+typedef enum mc_world_material_scan_kind {
+    MC_WORLD_MATERIAL_SCAN_MATCH,
+    MC_WORLD_MATERIAL_SCAN_LIQUID,
+    MC_WORLD_MATERIAL_SCAN_ACCELERATE
+} mc_world_material_scan_kind;
+
+/* The caller supplies a canonical private diagnostic. Success retains the
+ * scan's work count and limit. Failure retains the reached child frames. */
+mc_world_storage_status
+mc_world_runtime_material_scan_in_place(mc_world_runtime *, const mc_entity_bounds *, mc_material *,
+                                        mc_entity *, mc_world_material_scan_kind,
+                                        const mc_world_material_movement_limits *, bool *,
+                                        mc_world_material_movement_error *);
+
 /* Same run/scan, with actual reached IN active use in the caller-owned private
  * context. NULL execution is reserved for unchanged legacy callers. No new
  * public diagnostic member, owner inference or successful missing dependency. */

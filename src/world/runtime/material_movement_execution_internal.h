@@ -4,12 +4,6 @@
 #include "material_movement_internal.h"
 #include "registry_execution_internal.h"
 
-typedef enum mc_world_material_scan_kind {
-    MC_WORLD_MATERIAL_SCAN_MATCH,
-    MC_WORLD_MATERIAL_SCAN_LIQUID,
-    MC_WORLD_MATERIAL_SCAN_ACCELERATE
-} mc_world_material_scan_kind;
-
 typedef enum mc_world_material_scan_leaf {
     MC_WORLD_MATERIAL_SCAN_NO_LEAF,
     MC_WORLD_MATERIAL_SCAN_SCALAR_LEAF,

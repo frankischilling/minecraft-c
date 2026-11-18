@@ -69,6 +69,42 @@ visited cells and reached Stairs delegations. Exhaustion is a checked limit at
 the pending source operation, never a truncated successful answer. Existing
 provider, Entity and Registry budgets remain independent and unchanged.
 
+## Scan diagnostics and tick cost
+
+Ordinary scans reuse their private scalar diagnostic across successful
+cells. Each cell still captures the current `Block.m` before the acquiring
+World getter and indexes that captured array afterward. Success leaves the
+lower diagnostic ready for reuse. The first failure ends the scan with its
+reached World, Chunk, and Registry fields. The client and server fixture
+checks a valid air or Stone cell followed by a Block-backing fault. It verifies
+the failed cell's coordinates and bytecode positions, the untouched Boolean
+output, and the released holds.
+
+The Entity environment path supplies its existing private scan frame. Public
+calls continue to publish the diagnostic when the scan returns, including
+the cell count and limit on success. Parent initializers clear their own
+fields and let each child initialize its fields and sentinels once. The
+[owned scanner](material-execution.md#owned-material-scanner-controls)
+keeps the lower query and checked ownership result through unwind.
+
+Two heavy Far cave pairs on DISPLAY2 timed 74,978 Entity lava queries per
+run over 200 common World ticks and 16,424 actor dispatches. All scans in
+those intervals made 390,770 selected Block reads per run. Ordered actor
+state and scheduler work matched. Median inclusive lava-query time per tick
+fell from 6.59–6.61 to 2.54–2.56 ms. The nested World material-match call fell
+from 3.35–3.38 to 0.88 ms per tick. These are CPU time spans and overlap.
+
+Two uninstrumented pairs per scene ran 10 seconds of fixed-pose Far play at
+854×480 on DISPLAY2. The heavy and lighter groups each shared 199 World
+ticks, with 16,342 and 3,779 matching actor dispatches, respectively.
+
+| Cave | Median FPS, before → after | Median p99 frame ms, before → after |
+| --- | ---: | ---: |
+| Heavy | 35.33 → 44.41 | 45.67 → 40.37 |
+| Lighter | 59.20 → 61.66 | 29.08 → 27.13 |
+
+## Reference and native verification
+
 The source-pins metadata records both complete JAR hashes, 31 class identities,
 1,173 method entries and 1,166 Code hashes. Twelve paired method comparisons
 check instruction/PC/branch/immediate structure independently of constant-pool

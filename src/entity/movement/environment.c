@@ -11,6 +11,9 @@
 #include "mc/block/registry/runtime.h"
 #include "mc/core/math/math.h"
 
+#include <stddef.h>
+#include <string.h>
+
 #if !defined(_M_X64) && !defined(_M_AMD64) && !defined(__x86_64__)
 #error "Entity environment requires x86-64/SSE2"
 #endif
@@ -21,10 +24,16 @@
 #include <emmintrin.h>
 
 void mc_entity_environment_error_init(mc_entity_environment_error *error) {
-    static const mc_entity_environment_error zero = {0};
     if (error == NULL)
         return;
-    *error = zero;
+    const size_t collision_start = offsetof(mc_entity_environment_error, collision);
+    const size_t collision_end = collision_start + sizeof(error->collision);
+    const size_t material_start = offsetof(mc_entity_environment_error, material);
+    const size_t material_end = material_start + sizeof(error->material);
+    unsigned char *const bytes = (unsigned char *)error;
+    memset(bytes, 0, collision_start);
+    memset(bytes + collision_end, 0, material_start - collision_end);
+    memset(bytes + material_end, 0, sizeof(*error) - material_end);
     mc_world_material_movement_error_init(&error->material);
     mc_world_collision_error_init(&error->collision);
     error->registry = error->material.registry;
@@ -217,11 +226,20 @@ static bool liquid_probe(mc_entity *entity, mc_registry_classes *registry, bool 
         *out = value;
         completed = true;
     } else {
-        const mc_world_storage_status status =
-            water ? mc_world_runtime_material_accelerate_in_execution(
-                        receiver, query, material, entity, limits, &value, &e->material, execution)
-                  : mc_world_runtime_contains_material_in_execution(
-                        receiver, query, material, limits, &value, &e->material, execution);
+        mc_world_storage_status status;
+        if (execution == NULL) {
+            status = mc_world_runtime_material_scan_in_place(
+                receiver, query, material, water ? entity : NULL,
+                water ? MC_WORLD_MATERIAL_SCAN_ACCELERATE : MC_WORLD_MATERIAL_SCAN_MATCH, limits,
+                &value, &e->material);
+        } else {
+            status =
+                water ? mc_world_runtime_material_accelerate_in_execution(receiver, query, material,
+                                                                          entity, limits, &value,
+                                                                          &e->material, execution)
+                      : mc_world_runtime_contains_material_in_execution(
+                            receiver, query, material, limits, &value, &e->material, execution);
+        }
         if (world_result(e, status, receiver, world_pc)) {
             *out = value;
             completed = true;

@@ -12,6 +12,9 @@
 #include "mc/core/math/math.h"
 #include "runtime_internal.h"
 
+#include <stddef.h>
+#include <string.h>
+
 #if !defined(_M_X64) && !defined(_M_AMD64) && !defined(__x86_64__)
 #error "Material movement requires x86-64/SSE2"
 #endif
@@ -42,10 +45,16 @@ static mc_entity_classes *code_entities(mc_world_runtime *world,
 }
 
 void mc_world_material_movement_error_init(mc_world_material_movement_error *error) {
-    static const mc_world_material_movement_error zero = {0};
     if (error == NULL)
         return;
-    *error = zero;
+    const size_t area_start = offsetof(mc_world_material_movement_error, area);
+    const size_t area_end = area_start + sizeof(error->area);
+    const size_t block_start = offsetof(mc_world_material_movement_error, block);
+    const size_t block_end = block_start + sizeof(error->block);
+    unsigned char *const bytes = (unsigned char *)error;
+    memset(bytes, 0, area_start);
+    memset(bytes + area_end, 0, block_start - area_end);
+    memset(bytes + block_end, 0, sizeof(*error) - block_end);
     mc_world_movement_error_init(&error->area);
     mc_world_collision_error_init(&error->block);
     error->registry = error->area.registry;
@@ -116,7 +125,8 @@ static bool read_value(mc_world_runtime *w, int32_t x, int32_t y, int32_t z, boo
                        const material_owned_execution *owned) {
     mc_world_storage_status status;
     if (owned == NULL) {
-        status = mc_world_collision_block_value_held(w, x, y, z, metadata, out, &e->block);
+        /* The scan starts with a canonical private frame and stops on failure. */
+        status = mc_world_collision_block_value_in_place(w, x, y, z, metadata, out, &e->block);
     } else {
         *owned->query = (mc_world_material_scan_query){.leaf = MC_WORLD_MATERIAL_SCAN_SCALAR_LEAF};
         status = mc_world_collision_block_value_in_execution(
@@ -159,14 +169,15 @@ static bool selected_block(mc_world_runtime *w, int32_t x, int32_t y, int32_t z,
                            const material_owned_execution *owned) {
     mc_registry_block_m_view array;
     e->bytecode = load;
-    if (mc_registry_block_m_get(code_registry(w, owned), &array, &e->registry) != MC_REGISTRY_OK)
+    if (mc_registry_block_m_get_failure(code_registry(w, owned), &array, &e->registry) !=
+        MC_REGISTRY_OK)
         return registry_fail(w, e);
     e->bytecode = getter;
     int32_t id;
     if (!read_value(w, x, y, z, false, &id, e, owned))
         return false;
     e->bytecode = index;
-    if (mc_registry_block_m_at(&array, id, out, &e->registry) != MC_REGISTRY_OK)
+    if (mc_registry_block_m_at_failure(&array, id, out, &e->registry) != MC_REGISTRY_OK)
         return registry_fail(w, e);
     return true;
 }
@@ -375,8 +386,8 @@ static bool accelerate_block(mc_world_runtime *w, const mc_block *b, int32_t x, 
     return true;
 }
 
-static bool floor_ready(mc_math_execution *execution, int kind, unsigned int pc,
-                        mc_world_material_movement_error *e) {
+static bool floor_ready(mc_math_execution *execution, mc_world_material_scan_kind kind,
+                        unsigned int pc, mc_world_material_movement_error *e) {
     if (execution == NULL)
         return true;
     /* The new context is selected by the client Arrow's two actual material
@@ -402,8 +413,9 @@ static bool floor_ready(mc_math_execution *execution, int kind, unsigned int pc,
 }
 
 static bool execute(mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m,
-                    mc_entity *entity, int kind, bool *out, mc_world_material_movement_error *e,
-                    mc_math_execution *execution, const material_owned_execution *owned) {
+                    mc_entity *entity, mc_world_material_scan_kind kind, bool *out,
+                    mc_world_material_movement_error *e, mc_math_execution *execution,
+                    const material_owned_execution *owned) {
     e->bytecode = 1;
     if (b == NULL)
         return fail(e, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Material scan bounds receiver");
@@ -542,15 +554,10 @@ leave:
     return done;
 }
 
-static mc_world_storage_status run(mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m,
-                                   mc_entity *entity, int kind,
-                                   const mc_world_material_movement_limits *limits, bool *out,
-                                   mc_world_material_movement_error *error,
-                                   mc_math_execution *execution,
-                                   const material_owned_execution *owned, bool *continued) {
-    mc_world_material_movement_error legacy_local;
-    mc_world_material_movement_error *const e = owned == NULL ? &legacy_local : error;
-    mc_world_material_movement_error_init(e);
+static bool run(mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m, mc_entity *entity,
+                mc_world_material_scan_kind kind, const mc_world_material_movement_limits *limits,
+                bool *out, mc_world_material_movement_error *e, mc_math_execution *execution,
+                const material_owned_execution *owned) {
     e->max_cell_work =
         limits == NULL ? MC_WORLD_MATERIAL_MOVEMENT_DEFAULT_CELL_WORK : limits->max_cell_work;
     bool entered = false, completed = false;
@@ -570,26 +577,48 @@ static mc_world_storage_status run(mc_world_runtime *w, const mc_entity_bounds *
             w->last_error = e->cause;
         mc_world_runtime_call_leave(w);
     }
-    if (e->status == MC_WORLD_STORAGE_OK &&
-        (owned == NULL || (completed && owned->result->ownership_status == MC_WORLD_STORAGE_OK))) {
-        size_t work = e->cell_work, maximum = e->max_cell_work;
-        mc_world_material_movement_error_init(e);
-        e->cell_work = work;
-        e->max_cell_work = maximum;
+    return completed;
+}
+
+static void publish_success(mc_world_material_movement_error *out,
+                            const mc_world_material_movement_error *frame) {
+    const size_t work = frame->cell_work, maximum = frame->max_cell_work;
+    mc_world_material_movement_error_init(out);
+    out->cell_work = work;
+    out->max_cell_work = maximum;
+}
+
+static mc_world_storage_status
+run_legacy(mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m, mc_entity *entity,
+           mc_world_material_scan_kind kind, const mc_world_material_movement_limits *limits,
+           bool *out, mc_world_material_movement_error *error, mc_math_execution *execution) {
+    mc_world_material_movement_error frame;
+    mc_world_material_movement_error_init(&frame);
+    (void)run(w, b, m, entity, kind, limits, out, &frame, execution, NULL);
+    if (error != NULL) {
+        if (frame.status == MC_WORLD_STORAGE_OK)
+            publish_success(error, &frame);
+        else
+            *error = frame;
     }
-    if (owned == NULL && error != NULL && error != e)
-        *error = *e;
-    if (continued != NULL)
-        *continued = completed && e->status == MC_WORLD_STORAGE_OK &&
-                     owned->result->ownership_status == MC_WORLD_STORAGE_OK;
-    return e->status;
+    return frame.status;
+}
+
+mc_world_storage_status mc_world_runtime_material_scan_in_place(
+    mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m, mc_entity *entity,
+    mc_world_material_scan_kind kind, const mc_world_material_movement_limits *limits, bool *out,
+    mc_world_material_movement_error *error) {
+    (void)run(w, b, m, entity, kind, limits, out, error, NULL, NULL);
+    if (error->status == MC_WORLD_STORAGE_OK)
+        publish_success(error, error);
+    return error->status;
 }
 
 mc_world_storage_status
 mc_world_runtime_contains_material(mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m,
                                    const mc_world_material_movement_limits *l, bool *out,
                                    mc_world_material_movement_error *e) {
-    return run(w, b, m, NULL, 0, l, out, e, NULL, NULL, NULL);
+    return run_legacy(w, b, m, NULL, MC_WORLD_MATERIAL_SCAN_MATCH, l, out, e, NULL);
 }
 
 mc_world_storage_status mc_world_runtime_contains_liquid(mc_world_runtime *w,
@@ -597,28 +626,29 @@ mc_world_storage_status mc_world_runtime_contains_liquid(mc_world_runtime *w,
                                                          const mc_world_material_movement_limits *l,
                                                          bool *out,
                                                          mc_world_material_movement_error *e) {
-    return run(w, b, NULL, NULL, 1, l, out, e, NULL, NULL, NULL);
+    return run_legacy(w, b, NULL, NULL, MC_WORLD_MATERIAL_SCAN_LIQUID, l, out, e, NULL);
 }
 
 mc_world_storage_status
 mc_world_runtime_material_accelerate(mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m,
                                      mc_entity *entity, const mc_world_material_movement_limits *l,
                                      bool *out, mc_world_material_movement_error *e) {
-    return run(w, b, m, entity, 2, l, out, e, NULL, NULL, NULL);
+    return run_legacy(w, b, m, entity, MC_WORLD_MATERIAL_SCAN_ACCELERATE, l, out, e, NULL);
 }
 
 mc_world_storage_status mc_world_runtime_material_accelerate_in_execution(
     mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m, mc_entity *entity,
     const mc_world_material_movement_limits *limits, bool *out,
     mc_world_material_movement_error *error, mc_math_execution *execution) {
-    return run(w, b, m, entity, 2, limits, out, error, execution, NULL, NULL);
+    return run_legacy(w, b, m, entity, MC_WORLD_MATERIAL_SCAN_ACCELERATE, limits, out, error,
+                      execution);
 }
 
 mc_world_storage_status mc_world_runtime_contains_material_in_execution(
     mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m,
     const mc_world_material_movement_limits *limits, bool *out,
     mc_world_material_movement_error *error, mc_math_execution *execution) {
-    return run(w, b, m, NULL, 0, limits, out, error, execution, NULL, NULL);
+    return run_legacy(w, b, m, NULL, MC_WORLD_MATERIAL_SCAN_MATCH, limits, out, error, execution);
 }
 
 bool mc_world_runtime_material_scan_in_execution(
@@ -658,8 +688,11 @@ bool mc_world_runtime_material_scan_in_execution(
         return false;
     }
     const material_owned_execution descriptor = {execution, code_classes, code, query, owned};
-    bool completed = false;
-    (void)run(world, bounds, material_value, entity, (int)kind, limits, out, error, execution->math,
-              &descriptor, &completed);
-    return completed;
+    mc_world_material_movement_error_init(error);
+    if (!run(world, bounds, material_value, entity, kind, limits, out, error, execution->math,
+             &descriptor) ||
+        error->status != MC_WORLD_STORAGE_OK || owned->ownership_status != MC_WORLD_STORAGE_OK)
+        return false;
+    publish_success(error, error);
+    return true;
 }
