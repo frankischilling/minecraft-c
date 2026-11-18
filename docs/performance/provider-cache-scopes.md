@@ -311,6 +311,39 @@ and median FPS was 20.37 → 24.15. One repeat pair had a higher p99. Both group
 had a lower median p95, from 92.10 to 83.61 ms and from 112.91 to 86.53 ms,
 respectively.
 
+#### Light queue scans during ore placement
+
+Two DISPLAY2 traces estimated 20–21 ms in light queue scans and 12–13 ms
+in allocation and append during ore placement. The full submissions took
+77–80 ms across each ten-second interval. The estimates come from 9,983
+sampled setter calls across 122,143 replacements.
+
+The coalescing scan reuses the validated list while it examines up to five
+records in newest-first order. The scan cannot call back into the World.
+An accepted expansion updates the chosen region in place and ends the scan.
+The merge test computes volume with unsigned 32-bit arithmetic and applies
+the signed Java comparison to the wrapped result. Boundary tests cover a
+wrapped negative volume increase, wrapping at `INT32_MAX`, and failures
+from a null list, invalid list metadata, or a null queued region.
+
+In the seeded four-Chunk Windows MSVC workload, each side ran eight fresh
+processes per variant in balanced order. All 64 native reports matched
+byte-for-byte within each side. Median client ore placement took 87.41 ms
+before, 85.11 ms with the list change, 86.49 ms with the arithmetic change,
+and 84.47 ms with both. The median server regression control was 88.05 ms
+before and 80.49 ms with both. Five of eight pairs were faster on each side.
+A separate fixed sequence of 12 million bounds checks per process took a
+median of 248.67 → 104.63 ms across eight pairs and returned the same merge
+count and checked fields. A differential check matched every result and all
+six output bounds across one million inputs and 125,000 same-pointer calls.
+
+All six native DISPLAY2 runs qualified at 854×480 on Tiny. Median FPS was
+38.78 → 40.46, median p95 frame time was 49.07 → 50.16 ms, and median p99
+was 75.00 → 74.56 ms. A separate six-run repeat measured 31.00 → 31.66 FPS,
+69.52 → 61.82 ms p95, and 103.96 → 85.86 ms p99. The longest candidate
+frames took 113 ms and 144 ms, respectively. Both builds shared the local
+Sign screen edit and stayed in gameplay during timing.
+
 ### Spring fluid diagnostics
 
 Two DISPLAY2 traces separated spring placement from the immediate flowing

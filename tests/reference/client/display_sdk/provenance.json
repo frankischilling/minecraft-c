@@ -8534,8 +8534,8 @@
       "sha256": "2946206e5ba383bdebff3f3e25f0fc2250cc3b0172dd6e0c6cb5d920ae26a721"
     },
     "src/world/runtime/lighting.c": {
-      "bytes": 26318,
-      "sha256": "be53927a63ddc34911cd53e5df4272959dfcd369347ba0cca92b64ba05097c15"
+      "bytes": 26023,
+      "sha256": "64317a7c7520e63a73fb7548e905bcb433500685eeb4c6b79e58acaeeab86a2f"
     },
     "src/world/runtime/lighting_internal.h": {
       "bytes": 980,

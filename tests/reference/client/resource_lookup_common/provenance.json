@@ -4570,8 +4570,8 @@
       "sha256": "0a975f1f7116c54687f3f1e2af79ef87319118c43b3caeefa1236eedc7793da4"
     },
     "src/world/lighting/queue.c": {
-      "bytes": 3367,
-      "sha256": "25089ba7076767cc00d43e666e3d1a996326b2e5ad5bbd8e9c7134e852415f62"
+      "bytes": 3605,
+      "sha256": "c00c01aa5aee4727cdd47ac22d3a0cb6a51b5fda77ba72b9f2b14cf9ffeddf28"
     },
     "src/world/lighting/world.c": {
       "bytes": 3684,
@@ -4758,8 +4758,8 @@
       "sha256": "8a18b56af45dd9af9ebbf21e4472efe56994363c4993559e2a1bac05d1c028c3"
     },
     "src/world/runtime/lighting.c": {
-      "bytes": 26318,
-      "sha256": "be53927a63ddc34911cd53e5df4272959dfcd369347ba0cca92b64ba05097c15"
+      "bytes": 26023,
+      "sha256": "64317a7c7520e63a73fb7548e905bcb433500685eeb4c6b79e58acaeeab86a2f"
     },
     "src/world/runtime/lighting_internal.h": {
       "bytes": 980,
@@ -6411,7 +6411,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 937705,
-      "sha256": "44b502af7cddb63c77c1cfaad268ef9d9e8c2ea34bf18b8f94310b5932b041ba"
+      "sha256": "5c1c165f633365138f4776eb8efccfe2174bcc434e5d56eb36c742f7722dfdb1"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6475,7 +6475,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067658,
-      "sha256": "327e4db1a3b7730f855049f8e8f6087020afea414bfba589562cc9e196c8103a"
+      "sha256": "2a71de2a1d89c0494b257ae015cdaba69876546206f4d8a7bdae89130d04d4af"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6607,7 +6607,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934530,
-      "sha256": "52b9fb8f0760acdaea770ebee8d41d3058d9c265bbc612ba0f1964bd1e483ca1"
+      "sha256": "7102122c74336a04bd56c445a9a45a8601b883ba0f886e45ad7288f4e7865a7d"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9042,8 +9042,8 @@
       "sha256": "398f969b2d68f9b48bb99c492a90c556237bb298f8d25a720e45d643da688568"
     },
     "tests/world/lighting/test_queue.c": {
-      "bytes": 7215,
-      "sha256": "eaabe7c5364dca936c0ffe59fd507640826192e3df2e10c5fb303b4355d52819"
+      "bytes": 7839,
+      "sha256": "524ba4f55d6a12a0e0a2ee43287e8a74f784b553c1cbd01538b8f52077f21a00"
     },
     "tests/world/noise/noise_probe.c": {
       "bytes": 7473,
@@ -9250,8 +9250,8 @@
       "sha256": "fbbbdf08f9e513074940a44362cd86558dc805d51eebc544fef888677aa82fbc"
     },
     "tests/world/runtime/test_light_queue_runtime.c": {
-      "bytes": 53625,
-      "sha256": "14c7530e7ece297a9ba72d1bde84095c04208598e019d5a90af6ecf60e856912"
+      "bytes": 55498,
+      "sha256": "b5a848b68bb9edac25412e447a862e7778cfc2a9d6516d8972958f8c129cb5da"
     },
     "tests/world/runtime/test_lighting_runtime.c": {
       "bytes": 26757,

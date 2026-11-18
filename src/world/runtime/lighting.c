@@ -473,17 +473,9 @@ light_submit(mc_world_runtime *runtime, const mc_world_light_type *type,
         goto failed;
     const size_t examined = list->count < 5u ? list->count : 5u;
     if (coalesce) {
+        /* The scan has no callbacks, and only a successful merge changes a region. */
         for (size_t i = 0; i < examined; ++i) {
-            bytecode = 153;
-            mc_world_reference_list *current = NULL;
-            if (!list_load(runtime, &current, &cause))
-                goto failed;
-            bytecode = 163;
-            if (current->count <= i) {
-                cause = native_error(MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World light C get index");
-                goto failed;
-            }
-            mc_world_light_region *region = current->items[current->count - i - 1u];
+            mc_world_light_region *region = list->items[list->count - i - 1u];
             bytecode = 175;
             if (region == NULL) {
                 cause =

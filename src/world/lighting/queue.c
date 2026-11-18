@@ -1,12 +1,18 @@
 #include "mc/world/lighting/queue.h"
 
-#include "mc/core/java/java.h"
+static uint32_t volume(const mc_light_bounds *bounds) {
+    const uint32_t x = (uint32_t)bounds->max_x - (uint32_t)bounds->min_x;
+    const uint32_t y = (uint32_t)bounds->max_y - (uint32_t)bounds->min_y;
+    const uint32_t z = (uint32_t)bounds->max_z - (uint32_t)bounds->min_z;
+    return x * y * z;
+}
 
-static int32_t volume(const mc_light_bounds *bounds) {
-    int32_t x = mc_java_i32_sub(bounds->max_x, bounds->min_x);
-    int32_t y = mc_java_i32_sub(bounds->max_y, bounds->min_y);
-    int32_t z = mc_java_i32_sub(bounds->max_z, bounds->min_z);
-    return mc_java_i32_mul(mc_java_i32_mul(x, y), z);
+static int32_t lower_bound(int32_t bound) {
+    return bound == INT32_MIN ? INT32_MAX : bound - 1;
+}
+
+static int32_t upper_bound(int32_t bound) {
+    return bound == INT32_MAX ? INT32_MIN : bound + 1;
 }
 
 bool mc_light_bounds_merge(mc_light_bounds *stored, const mc_light_bounds *requested) {
@@ -18,12 +24,9 @@ bool mc_light_bounds_merge(mc_light_bounds *stored, const mc_light_bounds *reque
         next.max_x <= stored->max_x && next.max_y <= stored->max_y && next.max_z <= stored->max_z) {
         return true;
     }
-    if (next.min_x < mc_java_i32_sub(stored->min_x, 1) ||
-        next.min_y < mc_java_i32_sub(stored->min_y, 1) ||
-        next.min_z < mc_java_i32_sub(stored->min_z, 1) ||
-        next.max_x > mc_java_i32_add(stored->max_x, 1) ||
-        next.max_y > mc_java_i32_add(stored->max_y, 1) ||
-        next.max_z > mc_java_i32_add(stored->max_z, 1)) {
+    if (next.min_x < lower_bound(stored->min_x) || next.min_y < lower_bound(stored->min_y) ||
+        next.min_z < lower_bound(stored->min_z) || next.max_x > upper_bound(stored->max_x) ||
+        next.max_y > upper_bound(stored->max_y) || next.max_z > upper_bound(stored->max_z)) {
         return false;
     }
 
@@ -39,7 +42,9 @@ bool mc_light_bounds_merge(mc_light_bounds *stored, const mc_light_bounds *reque
         next.max_y = stored->max_y;
     if (next.max_z < stored->max_z)
         next.max_z = stored->max_z;
-    if (mc_java_i32_sub(volume(&next), volume(stored)) > 2) {
+    const uint32_t growth = volume(&next) - volume(stored);
+    /* A signed Java int with its high bit set is negative, and passes this check. */
+    if (growth > 2u && growth <= INT32_MAX) {
         return false;
     }
     *stored = next;

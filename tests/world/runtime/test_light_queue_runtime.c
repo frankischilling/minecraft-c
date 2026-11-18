@@ -416,6 +416,45 @@ cleanup:
     return ok;
 }
 
+static bool test_merge_list_faults(fixture *f) {
+    bool ok = false;
+    mc_world_runtime *world = f->worlds[1];
+    mc_world_reference_list *list = world->fields.C;
+    const mc_light_bounds point = {0, 0, 0, 0, 0, 0};
+    mc_world_light_error error;
+    mc_light_submit_result outcome = MC_LIGHT_SUBMIT_CLEARED;
+    CHECK(list != NULL && list->count != 0 && list->items != NULL);
+    const size_t count = list->count;
+    const mc_world_light_type *sky = f->types[0][0];
+
+    world->fields.C = NULL;
+    mc_world_storage_status status =
+        mc_world_runtime_light_submit(world, sky, &point, true, &outcome, &error);
+    world->fields.C = list;
+    CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.bytecode == 109 &&
+          strcmp(error.operation, "World light C receiver is null") == 0 &&
+          same_error(&error.cause, mc_world_runtime_last_error(world)));
+
+    list->count = list->capacity + 1u;
+    status = mc_world_runtime_light_submit(world, sky, &point, true, &outcome, &error);
+    list->count = count;
+    CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.bytecode == 109 &&
+          strcmp(error.operation, "World light C metadata") == 0 &&
+          same_error(&error.cause, mc_world_runtime_last_error(world)));
+
+    void *newest = list->items[count - 1u];
+    list->items[count - 1u] = NULL;
+    status = mc_world_runtime_light_submit(world, sky, &point, true, &outcome, &error);
+    list->items[count - 1u] = newest;
+    CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.bytecode == 175 &&
+          strcmp(error.operation, "World light region receiver") == 0 &&
+          same_error(&error.cause, mc_world_runtime_last_error(world)) &&
+          outcome == MC_LIGHT_SUBMIT_CLEARED && list_is(world, list, count) && depth_is(f, 0));
+    ok = true;
+cleanup:
+    return ok;
+}
+
 static bool test_depth_controls(fixture *f) {
     bool ok = false;
     mc_world_light_list_view before[2], after;
@@ -980,6 +1019,7 @@ int main(int argc, char **argv) {
     }
     CHECK(test_presence_and_measure(f, &base, &record, &pointers));
     CHECK(test_merges(f));
+    CHECK(test_merge_list_faults(f));
     CHECK(test_depth_controls(f));
     CHECK(test_budgets(f, base, record, pointers));
     CHECK(test_nonempty_growth(f, base, record));

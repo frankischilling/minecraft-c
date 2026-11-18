@@ -125,8 +125,22 @@ static int test_original_limit(void) {
     return 0;
 }
 
+static int test_wrapped_merge_borders(void) {
+    mc_light_bounds stored = {0, 0, 0, 0, 65536, 32768};
+    const mc_light_bounds negative_growth = {0, 0, 0, 1, 65536, 32768};
+    CHECK(mc_light_bounds_merge(&stored, &negative_growth));
+    CHECK(same_bounds(&stored, &negative_growth));
+
+    stored = (mc_light_bounds){INT32_MAX, 0, 0, INT32_MAX, 0, 0};
+    const mc_light_bounds original = stored;
+    const mc_light_bounds upper_wrap = {INT32_MAX, 0, 0, INT32_MAX, 1, 0};
+    CHECK(!mc_light_bounds_merge(&stored, &upper_wrap));
+    CHECK(same_bounds(&stored, &original));
+    return 0;
+}
+
 int main(void) {
-    if (test_original_merges() ||
+    if (test_original_merges() || test_wrapped_merge_borders() ||
         test_original_queue(
             light_client_baseline, sizeof(light_client_baseline) / sizeof(light_client_baseline[0]),
             light_client_steps, sizeof(light_client_steps) / sizeof(light_client_steps[0])) ||
