@@ -792,6 +792,13 @@ mc_world_storage_status mc_world_runtime_block_metadata_set_quiet(mc_world_runti
     return set(world, x, y, z, id, true, metadata, false, out, error, NULL, true);
 }
 
+mc_world_storage_status
+mc_world_runtime_block_metadata_set_quiet_failure(mc_world_runtime *world, int32_t x, int32_t y,
+                                                  int32_t z, int32_t id, int32_t metadata,
+                                                  bool *out, mc_world_mutation_error *error) {
+    return set(world, x, y, z, id, true, metadata, false, out, error, NULL, false);
+}
+
 mc_world_storage_status mc_world_runtime_block_set(mc_world_runtime *world, int32_t x, int32_t y,
                                                    int32_t z, int32_t id, bool *out,
                                                    mc_world_mutation_error *error) {

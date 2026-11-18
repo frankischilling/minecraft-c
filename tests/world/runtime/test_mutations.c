@@ -612,6 +612,13 @@ static bool public_cached(fixture *f) {
     CHECK(mc_world_runtime_block_set_quiet_failure(f->worlds[0], 136, 120, 8, 4, &out, &error) ==
               MC_WORLD_STORAGE_OK &&
           !out && bytes_are((const uint8_t *)&error, sizeof(error), 0xa5));
+    CHECK(mc_world_runtime_block_metadata_set_quiet_failure(f->worlds[0], 136, 120, 8, 4, 3, &out,
+                                                            &error) == MC_WORLD_STORAGE_OK &&
+          out && nibble(f->cached->data->metadata, cell(8, 120, 8)) == 3 &&
+          bytes_are((const uint8_t *)&error, sizeof(error), 0xa5));
+    CHECK(mc_world_runtime_block_metadata_set_quiet_failure(f->worlds[0], 136, 120, 8, 4, 3, &out,
+                                                            &error) == MC_WORLD_STORAGE_OK &&
+          !out && bytes_are((const uint8_t *)&error, sizeof(error), 0xa5));
     /* Seed a genuine earlier World diagnostic through the late full-ID m
      * failure, then reach a DIFFERENT coherent cache-capacity failure at48.
      * Neither source failure may be replaced by the older retained cause. */

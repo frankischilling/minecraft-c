@@ -1,8 +1,8 @@
 #include "mc/world/runtime/population/trees.h"
 
-/* Proposed location: src/world/runtime/population/trees.c. */
 #include "../../../block/registry/runtime_internal.h"
 #include "../construction_internal.h"
+#include "../mutation/mutation_internal.h"
 #include "../runtime_internal.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
@@ -127,16 +127,15 @@ static bool tree_set(tree_context *context, unsigned int pc, int32_t x, int32_t 
                      int32_t id, bool metadata_write, int32_t metadata) {
     tree_pc(context, pc);
     bool changed;
-    mc_world_mutation_error cause = {0};
+    mc_world_mutation_error *cause = &context->error->mutation;
     const mc_world_storage_status status =
-        metadata_write
-            ? mc_world_runtime_block_metadata_set_quiet(context->world, x, y, z, id, metadata,
-                                                        &changed, &cause)
-            : mc_world_runtime_block_set_quiet(context->world, x, y, z, id, &changed, &cause);
+        metadata_write ? mc_world_runtime_block_metadata_set_quiet_failure(
+                             context->world, x, y, z, id, metadata, &changed, cause)
+                       : mc_world_runtime_block_set_quiet_failure(context->world, x, y, z, id,
+                                                                  &changed, cause);
     if (status != MC_WORLD_STORAGE_OK) {
-        context->error->mutation = cause;
-        context->error->registry = cause.registry;
-        return tree_storage_fail(context, &cause.cause);
+        context->error->registry = cause->registry;
+        return tree_storage_fail(context, &cause->cause);
     }
     return true; /* Source discards changed, including ordinary false. */
 }
@@ -145,9 +144,9 @@ static bool tree_static_id(tree_context *context, const char *name, unsigned int
                            unsigned int field_pc, int32_t *out) {
     tree_pc(context, load_pc);
     const mc_block *block = NULL;
-    mc_registry_error cause = tree_empty_registry();
-    if (mc_registry_block_static_get(mc_world_runtime_registry(context->world), name, &block,
-                                     &cause) != MC_REGISTRY_OK)
+    mc_registry_error cause;
+    if (mc_registry_block_static_get_failure(mc_world_runtime_registry(context->world), name,
+                                             &block, &cause) != MC_REGISTRY_OK)
         return tree_registry_fail(context, &cause, "Tree Block static active use");
     tree_pc(context, field_pc);
     const mc_block_fields *fields = mc_block_fields_get(block);
@@ -648,7 +647,7 @@ static bool big_rows_allocate(mc_world_tree_big_oak *state, int32_t count, unsig
         bytes > state->max_allocation_bytes - state->allocation_bytes)
         return tree_fail(context, MC_WORLD_STORAGE_LIMIT, "Big oak coordinate allocation limit",
                          true);
-    int32_t(*rows)[4] = calloc((size_t)count, sizeof(*rows));
+    int32_t (*rows)[4] = calloc((size_t)count, sizeof(*rows));
     if (rows == NULL)
         return tree_fail(context, MC_WORLD_STORAGE_ALLOCATION_FAILED,
                          "Big oak coordinate allocation", true);
@@ -856,7 +855,7 @@ static bool big_plan(mc_world_tree_big_oak *state) {
         per_layer = 1;
     }
     const int32_t capacity = mc_java_i32_mul(per_layer, state->height_limit);
-    int32_t(*candidate)[4] = NULL;
+    int32_t (*candidate)[4] = NULL;
     if (!big_rows_allocate(state, capacity, 76, &candidate))
         return false;
     int32_t sample_y =
@@ -949,7 +948,7 @@ static bool big_plan(mc_world_tree_big_oak *state) {
         sample_y = mc_java_i32_sub(sample_y, 1);
         layer = mc_java_i32_sub(layer, 1);
     }
-    int32_t(*retained)[4] = NULL;
+    int32_t (*retained)[4] = NULL;
     if (!big_rows_allocate(state, used, 542, &retained)) {
         big_rows_free(state, candidate, capacity);
         return false;

@@ -379,6 +379,46 @@ All six runs in the separate repeat also qualified. Median FPS was
 63.88 to 64.47 ms. Two of three pairs had a higher p99, and the longest
 candidate frame took 102 ms.
 
+### Tree placement diagnostics
+
+Tree placement uses quiet Block setters that write the caller's diagnostic
+only on failure. Each setter still reserves its own workspace before it
+mutates the Chunk. Completed writes retain their existing effects if a
+later read fails. The small-tree fixture verifies the soil write and the
+clean nested mutation record after a later Registry failure. A separate
+test checks changed and unchanged metadata writes with a poisoned
+diagnostic.
+
+MSVC Release reduced the stack reservation in the tree's setter wrapper
+from 25,024 to 64 bytes and removed the stack probe. In eight alternating
+fixed-work pairs, all 146 placement receipts matched across the 16
+processes. The receipt includes the Block and light planes, the ordered
+light queue and failure sites. Existing fixture checks cover Random,
+ownership and save bytes. Timings bracket the actual tree placement calls.
+
+| Fixed workload | Before (ms) | After (ms) |
+| --- | ---: | ---: |
+| Client, 20 small trees | 11.94 | 10.73 |
+| Client, one large oak | 1.77 | 1.53 |
+| Server regression control, 20 small trees | 11.90 | 10.76 |
+| Server regression control, one large oak | 1.84 | 1.54 |
+
+Four instrumented DISPLAY2 runs had 11 tree groups with matching position,
+species, successful result and operation counts. All 11 finished faster.
+The tree with 1,159 writes fell from 6.02 to 5.84 ms at the median. The
+tree with 1,072 writes fell from 5.18 to 4.01 ms. Both groups went from
+one returned diagnostic per write to zero.
+
+All 12 uninstrumented DISPLAY2 runs qualified at 854×480 on Tiny. They
+shared the local Sign screen edit. Median FPS fell in both groups. The
+first group's p99 was slightly lower, and the repeat's p99 was higher.
+World and render work varied across processes.
+
+| Scene group | Median FPS before / after | Median p95 frame time (ms) | Median p99 frame time (ms) |
+| --- | ---: | ---: | ---: |
+| First | 53.06 / 52.15 | 30.03 / 28.62 | 55.72 / 55.37 |
+| Repeat | 54.61 / 52.24 | 28.28 / 27.83 | 50.65 / 53.34 |
+
 ### Spring fluid diagnostics
 
 Two DISPLAY2 traces separated spring placement from the immediate flowing

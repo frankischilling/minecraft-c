@@ -451,8 +451,12 @@ static bool tt_small_trial(fixture *f, size_t side, unsigned int kind, tt_contro
                   leaf_count == 0 && log_count == 0 && e.registry.initializer_pc == -1 &&
                   e.registry.constructor_pc == -1);
             CHECK(changes == (first_leaf ? 1u : 0u));
-            if (first_leaf)
-                CHECK(soil_after == dirt);
+            if (first_leaf) {
+                CHECK(soil_after == dirt && e.mutation.status == MC_WORLD_STORAGE_OK &&
+                      e.mutation.bytecode == 0 && e.mutation.chunk_bytecode == 0 &&
+                      e.mutation.batch.index == 0 && e.mutation.cause.operation == NULL &&
+                      same_registry(&e.mutation.registry, &empty));
+            }
         }
     }
     ok = true;
