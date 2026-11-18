@@ -498,6 +498,38 @@ groups, and the slowest combined candidate frame took 138.50 ms.
 | Combined | 37.88 / 31.59 | 49.97 / 63.21 | 90.76 / 99.54 |
 | Combined repeat | 43.36 / 45.22 | 41.11 / 42.92 | 70.69 / 67.25 |
 
+### Live opacity and emission reads
+
+Lighting propagation and Chunk setter opacity checks use an immediate
+array element read when the Registry has finished initialization, is idle
+and the live index is valid. The same capture and element operations
+handle null arrays, invalid indices and active initialization. Lighting
+reads the live array after the World Block lookup and repeats the emission
+read when reached during a point recheck.
+
+The native propagation test submits a one-cell Block-light region with
+each array set to null in turn. It checks that the drain stops at the
+reached element read, reports the null reference and consumes the failed
+region. The fixed 499-region Windows drain matched all state and failure
+receipts in eight alternating pairs, with 56 samples per build. Each
+sample visited 3,992 cells. In the isolated comparison, median time fell
+from 2.57 to 2.46 ms and p95 rose from 2.64 to 2.78 ms.
+
+In the preceding DISPLAY2 phase traces, the slowest drains took 45.34
+and 43.13 ms. Sampled opacity reads accounted for approximately 2.22
+and 2.00 ms. Saved-light reads were still the largest measured cost in
+both drains.
+
+All 12 uninstrumented DISPLAY2 runs qualified at 854×480 on Tiny.
+Both builds shared the same local Sign screen edit. Median FPS rose
+in both groups and median p99 frame time rose as well. World work
+varied across runs.
+
+| Scene group | Median FPS before / after | Median p95 frame time (ms) | Median p99 frame time (ms) |
+| --- | ---: | ---: | ---: |
+| First | 41.69 / 43.86 | 45.35 / 45.09 | 67.99 / 70.52 |
+| Repeat | 45.46 / 46.91 | 39.59 / 35.67 | 63.23 / 64.79 |
+
 ## Controlled Windows measurement
 
 The fixed-work CPU benchmark uses authored saved Chunks, an actual constructed

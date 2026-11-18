@@ -754,8 +754,8 @@
       "sha256": "367c128628c6c258560befcae39359c882af97ce9bf3abfd14b0316ff7f83a68"
     },
     "src/block/registry/runtime_internal.h": {
-      "bytes": 12489,
-      "sha256": "7ac3ac4ea8c107088db859f6ebabe1f52523851959aac81f28448ddb2c9c70ae"
+      "bytes": 12973,
+      "sha256": "b353bedcb48b2ad2dc6192ac835462ba85ea786fcfaea6380243ba410e9daaaa"
     },
     "src/client/achievements/description_registry.h": {
       "bytes": 2378,
@@ -8338,8 +8338,8 @@
       "sha256": "e34a1128384433aa4c7040040f414a05ba37e899380d2597cf56518ccebab7fd"
     },
     "src/block/registry/runtime.c": {
-      "bytes": 30701,
-      "sha256": "4747c6efc2b76266111ab9953b55f02f3ec3b249185e7b7c8068262310d63466"
+      "bytes": 31404,
+      "sha256": "af82732b2ed8ebd93f8cc11ed163ed0306dce83ff5c52c82d5d5dd6510fe7b2e"
     },
     "src/client/gui/gui_ingame_chat.c": {
       "bytes": 22354,

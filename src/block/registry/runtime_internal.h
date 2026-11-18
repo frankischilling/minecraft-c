@@ -52,6 +52,13 @@ mc_registry_status mc_registry_block_q_get(mc_registry_classes *classes,
 mc_registry_status mc_registry_block_q_at(const mc_registry_block_q_view *array, int32_t index,
                                           int32_t *out, mc_registry_error *error);
 
+/* For an immediate element read with no intervening work. These complete the
+ * read when the live Registry is ready and idle and its array/index is valid.
+ * On false, perform the original capture and element operations at their
+ * reached sites. The caller provides a writable output and holds the owner. */
+bool mc_registry_block_q_read_ready(const mc_registry_classes *, int32_t, int32_t *);
+bool mc_registry_block_s_read_ready(const mc_registry_classes *, int32_t, int32_t *);
+
 /* Actual m captured before a later acquiring World getter. NULL is a valid
  * captured reference; at performs its null/bounds checks only when reached.
  * Elements may themselves be NULL. No active use or current-array reload at at.

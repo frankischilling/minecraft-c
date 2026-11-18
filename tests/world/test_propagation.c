@@ -1,3 +1,4 @@
+#include "../../src/block/registry/registry_internal.h"
 #include "mc/resources/files/files.h"
 #include "mc/world/runtime/entities.h"
 #include "mc/world/runtime/propagation.h"
@@ -305,6 +306,26 @@ int main(int argc, char **argv) {
     mc_light_bounds point = {
         .min_x = 1, .min_y = 110, .min_z = 1, .max_x = 1, .max_y = 110, .max_z = 1};
     mc_light_submit_result submitted;
+    /* A successful static capture can still reach a null array at iaload. */
+    int32_t **arrays[] = {&registry->blocks.q, &registry->blocks.s};
+    const unsigned int element_pcs[] = {282, 341};
+    for (size_t i = 0; i < sizeof(arrays) / sizeof(arrays[0]); ++i) {
+        CHECK(mc_world_runtime_light_submit(world, block, &point, false, &submitted, NULL) ==
+              MC_WORLD_STORAGE_OK);
+        int32_t *array = *arrays[i];
+        *arrays[i] = NULL;
+        more = true;
+        const mc_world_storage_status failed =
+            mc_world_runtime_light_drain(world, SIZE_MAX, &more, &light);
+        *arrays[i] = array;
+        CHECK(failed == MC_WORLD_STORAGE_UNSUPPORTED_STATE && more);
+        CHECK(light.drain_bytecode == 82 && light.region_bytecode == element_pcs[i] &&
+              light.registry.status == MC_REGISTRY_NULL_REFERENCE &&
+              light.registry.initializer_pc == -1 && light.registry.constructor_pc == -1);
+        CHECK(mc_world_runtime_light_list_get(world, &list, NULL) == MC_WORLD_STORAGE_OK &&
+              list.count == 0);
+    }
+
     CHECK(mc_world_runtime_light_submit(world, sky, &point, false, &submitted, NULL) ==
           MC_WORLD_STORAGE_OK);
     more = true;

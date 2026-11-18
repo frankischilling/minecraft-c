@@ -168,10 +168,15 @@ bool mc_world_mutation_chunk_q(mc_world_runtime *world, mc_registry_classes *cla
                                unsigned int *bytecode, unsigned int capture_pc,
                                unsigned int element_pc, int32_t *out,
                                mc_world_mutation_error *error) {
+    if (mc_registry_block_q_read_ready(classes, id, out)) {
+        *bytecode = element_pc;
+        return true;
+    }
     mc_registry_block_q_view array;
-    mc_registry_error cause = mc_world_mutation_empty_registry();
+    mc_registry_error cause;
     *bytecode = capture_pc;
     if (classes == NULL) {
+        cause = mc_world_mutation_empty_registry();
         cause.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
         cause.message = "Chunk mutation Registry binding";
         return mc_world_mutation_registry_fail(world, error, &cause, cause.message);

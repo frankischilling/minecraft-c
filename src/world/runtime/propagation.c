@@ -351,13 +351,41 @@ static bool saved(mc_world_runtime *world, const mc_world_light_type *type, int3
     return true;
 }
 
+static bool opacity_at(mc_world_runtime *world, int32_t id, int32_t *out,
+                       mc_world_light_operation_error *frame) {
+    mc_registry_classes *classes = mc_world_runtime_registry(world);
+    if (mc_registry_block_q_read_ready(classes, id, out)) {
+        frame->region_bytecode = 282;
+        return true;
+    }
+    mc_registry_error cause;
+    if (classes == NULL) {
+        cause = empty_registry();
+        cause.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
+        cause.message = "World light Block.q Registry binding";
+        return registry_failed(world, frame, cause, cause.message);
+    }
+    mc_registry_block_q_view array;
+    if (mc_registry_block_q_get(classes, &array, &cause) != MC_REGISTRY_OK)
+        return registry_failed(world, frame, cause, "World light Block.q active use");
+    frame->region_bytecode = 282;
+    if (mc_registry_block_q_at(&array, id, out, &cause) != MC_REGISTRY_OK)
+        return registry_failed(world, frame, cause, "World light captured Block.q element");
+    return true;
+}
+
 static bool emission(mc_world_runtime *world, int32_t id, int32_t *out, unsigned int get_pc,
                      unsigned int at_pc, bool region, mc_world_light_operation_error *frame) {
     unsigned int *pc = region ? &frame->region_bytecode : &frame->point_bytecode;
     *pc = get_pc;
     mc_registry_classes *classes = mc_world_runtime_registry(world);
-    mc_registry_error cause = empty_registry();
+    if (mc_registry_block_s_read_ready(classes, id, out)) {
+        *pc = at_pc;
+        return true;
+    }
+    mc_registry_error cause;
     if (classes == NULL) {
+        cause = empty_registry();
         cause.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
         cause.message = "World light Block.s Registry binding";
         return registry_failed(world, frame, cause, cause.message);
@@ -542,22 +570,9 @@ static bool propagate(mc_world_runtime *world, mc_world_light_region *region, si
                 if (!block_get(world, x, y, z, &id, frame))
                     return false;
                 frame->region_bytecode = 277;
-                mc_registry_classes *classes = mc_world_runtime_registry(world);
-                mc_registry_error registry = empty_registry();
-                if (classes == NULL) {
-                    registry.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
-                    registry.message = "World light Block.q Registry binding";
-                    return registry_failed(world, frame, registry, registry.message);
-                }
-                mc_registry_block_q_view array;
-                if (mc_registry_block_q_get(classes, &array, &registry) != MC_REGISTRY_OK)
-                    return registry_failed(world, frame, registry,
-                                           "World light Block.q active use");
-                frame->region_bytecode = 282;
                 int32_t opacity;
-                if (mc_registry_block_q_at(&array, id, &opacity, &registry) != MC_REGISTRY_OK)
-                    return registry_failed(world, frame, registry,
-                                           "World light captured Block.q element");
+                if (!opacity_at(world, id, &opacity, frame))
+                    return false;
                 if (opacity == 0)
                     opacity = 1;
                 int32_t intrinsic = 0;

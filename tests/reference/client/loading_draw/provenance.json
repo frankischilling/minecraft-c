@@ -1034,12 +1034,12 @@
       "sha256": "5e0fecf6208f2281079aa214be720f44e6ec7f0c2ab582bab976d4bd4e43882e"
     },
     "src/block/registry/runtime.c": {
-      "bytes": 30701,
-      "sha256": "4747c6efc2b76266111ab9953b55f02f3ec3b249185e7b7c8068262310d63466"
+      "bytes": 31404,
+      "sha256": "af82732b2ed8ebd93f8cc11ed163ed0306dce83ff5c52c82d5d5dd6510fe7b2e"
     },
     "src/block/registry/runtime_internal.h": {
-      "bytes": 12489,
-      "sha256": "7ac3ac4ea8c107088db859f6ebabe1f52523851959aac81f28448ddb2c9c70ae"
+      "bytes": 12973,
+      "sha256": "b353bedcb48b2ad2dc6192ac835462ba85ea786fcfaea6380243ba410e9daaaa"
     },
     "src/block/registry/step_sound.c": {
       "bytes": 8271,
@@ -3450,8 +3450,8 @@
       "sha256": "190ad3de5c65ed49047d876e908375a5db6bbcba0e33f48e8b9866e748f2fec8"
     },
     "src/world/runtime/mutation/support.c": {
-      "bytes": 14118,
-      "sha256": "1108624326adb6316428dffba14e2804030baab0ba526dd9f0c346b69d2bd34e"
+      "bytes": 14252,
+      "sha256": "ee748e3ea5ec7a5b6ca5dd74990ffe06e432f7f652f541fb9d0f71f143f4783a"
     },
     "src/world/runtime/mutation/ticks.c": {
       "bytes": 6957,
@@ -3518,8 +3518,8 @@
       "sha256": "83dcab52704f6387fdb89785cad96bf527672aa5eb62be5b5e489136f3596413"
     },
     "src/world/runtime/propagation.c": {
-      "bytes": 32986,
-      "sha256": "1c937d93b6a4b5b25c0dfc1f7961c530ce9a8736e156325418d848f025c7c693"
+      "bytes": 33228,
+      "sha256": "c3e7063fe9dc8850df29aebe41e09c4f0fa330ffadcb1ee9bc0c244dc1fa19f1"
     },
     "src/world/runtime/queries.c": {
       "bytes": 31018,
@@ -5358,8 +5358,8 @@
       "sha256": "141f021819ab36a1c6339bce18ff2c4d6180cb328b6f29c9dcd3a7e938c84203"
     },
     "tests/world/test_propagation.c": {
-      "bytes": 24249,
-      "sha256": "2bf04eeedc19a36f9052db88675919e6ffed7059d66df8e6886413c8286f5bb8"
+      "bytes": 25384,
+      "sha256": "42522c401f100273c975c58c85757066f2e9f57ae4fdfed6222b6832ce671e4b"
     },
     "cmake/client_application_services.cmake": {
       "bytes": 174,
