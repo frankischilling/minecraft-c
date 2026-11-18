@@ -1,5 +1,46 @@
 # Chunk rendering and EW diagnostics
 
+## Live Block fields during Chunk compilation
+
+Brightness reads the four live named Block slots in order when the Registry
+is ready and idle. Each read still stops at the first matching Block or
+reports the reached null field. Cold and entered registries keep their
+ordinary active-use checks. Opacity and normal-cube reads keep the captured
+Block array and write Registry diagnostics on failure. The Chunk traversal
+keeps its Y, Z, X order and reuses the bounded loop increments.
+
+Two instrumented DISPLAY2 captures spent 6.00 and 6.42 ms per frame on average
+in Chunk compilation. One frame spent 69.21 ms in compilation. Brightness
+made 6.61 million and 8.59 million named Block reads across the measured
+intervals. These native clock observations include instrumentation overhead.
+
+The Windows MSVC Release comparison ran eight alternating process pairs.
+Each sample made 65,536 calls over the same nine leased Chunks, with 56 samples
+per build and operation. All processes passed 4,238,612 checks and matched
+outputs, light side effects, ownership, Random, and failure diagnostics.
+
+| Query | Before (ns) | After (ns) |
+| --- | ---: | ---: |
+| Brightness | 287.66 | 182.64 |
+| Minimum brightness | 287.65 | 183.30 |
+| Opaque | 116.47 | 82.76 |
+| Normal cube | 120.06 | 85.32 |
+
+These four medians fell in all eight pairs. Material moved from 99.91 to
+100.94 ns, and the Biome Manager control moved from 38.93 to 38.16 ns.
+
+Four further instrumented DISPLAY2 runs produced three Chunk compile workloads
+with matching counts for all seven recorded operations. All three took less
+time. The largest group, with 30,720 minimum-brightness reads and 24,576
+opacity reads per compile, moved from 24.01 to 19.03 ms at the median across
+83 baseline and 95 candidate observations.
+
+All 12 uninstrumented DISPLAY2 runs qualified at 854×480 on Tiny. The two
+cohorts moved from 18.83 to 21.84 FPS and from 19.72 to 20.26 FPS at the
+median. Median p99 fell from 204.95 to 166.35 ms and from 229.47 to 179.21 ms.
+One pair had a higher p99, and the longest candidate frame took 328 ms.
+Both builds shared the local Sign screen edit and stayed in gameplay.
+
 ## Packed light and registry lookups
 
 Chunk-cache reads use local block indices after checking the height. A light

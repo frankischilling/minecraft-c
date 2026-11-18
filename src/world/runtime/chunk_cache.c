@@ -612,20 +612,6 @@ static bool registry_result(mc_client_chunk_cache_error *e, mc_registry_status s
                                                      status == MC_REGISTRY_INDEX_OUT_OF_RANGE)));
 }
 
-static bool light_static(mc_client_chunk_cache *c, const char *name, unsigned int load_pc,
-                         unsigned int field_pc, int32_t *id, mc_client_chunk_cache_error *e) {
-    const mc_block *block = NULL;
-    if (!registry_result(e, mc_registry_block_static_get(registry(c), name, &block, &e->registry),
-                         load_pc))
-        return false;
-    const mc_block_fields *f = mc_block_fields_get(block);
-    if (f == NULL)
-        return fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL, "actual ew light static Block receiver",
-                    field_pc, false);
-    *id = f->bn;
-    return true;
-}
-
 static bool light_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z, bool neighbors,
                         int32_t *out, mc_client_chunk_cache_error *e) {
     e->method = "a";
@@ -638,14 +624,33 @@ static bool light_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t 
         int32_t block;
         if (!block_child(c, x, y, z, &block, "a", "(IIIZ)I", 36, e))
             return false;
-        static const char *const names[] = {"al", "aB", "au", "aI"};
-        static const unsigned int load[] = {43, 54, 65, 76}, field[] = {46, 57, 68, 79};
+
+        static const struct {
+            const char *name;
+            size_t slot;
+            unsigned int load_pc, field_pc;
+        } shapes[] = {
+            {"al", 43, 43, 46}, {"aB", 59, 54, 57}, {"au", 52, 65, 68}, {"aI", 66, 76, 79}};
+
+        const mc_registry_classes *ready = registry(c);
+        if (ready != NULL && (ready->entered != 0 || ready->blocks_phase != MC_REGISTRY_READY))
+            ready = NULL;
         bool sample = false;
-        for (size_t i = 0; i < 4; ++i) {
-            int32_t id;
-            if (!light_static(c, names[i], load[i], field[i], &id, e))
+        for (size_t i = 0; i < sizeof(shapes) / sizeof(shapes[0]); ++i) {
+            const mc_block *shape;
+            /* Ready static reads cannot call back. Still read each live slot only
+             * when reached, and read the original name after any slow active use. */
+            if (ready != NULL)
+                shape = ready->blocks.named[shapes[i].slot];
+            else if (!registry_result(e,
+                                      mc_registry_block_static_get_failure(
+                                          registry(c), shapes[i].name, &shape, &e->registry),
+                                      shapes[i].load_pc))
                 return false;
-            if (id == block) {
+            if (shape == NULL)
+                return fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL,
+                            "actual ew light static Block receiver", shapes[i].field_pc, false);
+            if (shape->fields.bn == block) {
                 sample = true;
                 break;
             }
@@ -855,11 +860,12 @@ static mc_client_chunk_cache_status predicate(mc_client_chunk_cache *c, int32_t 
     if (!enter(c, out != NULL, &e))
         return render_error_copy(error, &e, failure_only);
     mc_registry_block_m_view array;
-    if (registry_result(&e, mc_registry_block_m_get(registry(c), &array, &e.registry), 0)) {
+    if (registry_result(&e, mc_registry_block_m_get_failure(registry(c), &array, &e.registry), 0)) {
         int32_t id;
         const mc_block *block;
         if (block_child(c, x, y, z, &id, normal ? "h" : "g", "(III)Z", 7, &e) &&
-            registry_result(&e, mc_registry_block_m_at(&array, id, &block, &e.registry), 10)) {
+            registry_result(&e, mc_registry_block_m_at_failure(&array, id, &block, &e.registry),
+                            10)) {
             if (block == NULL)
                 *out = false;
             else if (!normal)

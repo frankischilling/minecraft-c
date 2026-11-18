@@ -502,6 +502,26 @@ static bool ew_getter_failure_controls(picking_fixture *f) {
     object->data->blocks[border_index] = border;
 
     mc_registry_classes *real_registry = world->classes->registry;
+    static const char *const light_names[] = {"al", "aB", "au", "aI"};
+    static const unsigned int light_field_pc[] = {46, 57, 68, 79};
+    const uint8_t center = blocks[index];
+    blocks[index] = 0;
+    for (size_t i = 0; i < sizeof(light_names) / sizeof(light_names[0]); ++i) {
+        size_t slot;
+        CHECK(mc_registry_block_static_index(light_names[i], &slot));
+        mc_block *saved = real_registry->blocks.named[slot];
+        CHECK(saved != NULL && saved->fields.bn > 0);
+        real_registry->blocks.named[slot] = NULL;
+        const bool failed_at_static =
+            ew_getter_pair(f, cache, EW_GET_MINIMUM, 8, 64, 8, 7, true,
+                           MC_CLIENT_CHUNK_CACHE_SOURCE_NULL, 4, false, NULL, error) &&
+            error->nested_count == 2 && error->nested[0].bytecode == 5 &&
+            error->nested[1].bytecode == light_field_pc[i] &&
+            error->registry.status == MC_REGISTRY_OK;
+        real_registry->blocks.named[slot] = saved;
+        CHECK(failed_at_static);
+    }
+    blocks[index] = center;
     world->classes->registry = NULL;
     for (ew_getter_kind kind = EW_GET_BRIGHTNESS; kind < EW_GET_MANAGER; ++kind)
         CHECK(ew_getter_pair(f, cache, kind, 8, 64, 8, 7, true, MC_CLIENT_CHUNK_CACHE_CHILD_FAILED,

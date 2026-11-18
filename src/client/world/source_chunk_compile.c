@@ -668,10 +668,10 @@ static bool body(mc_source_dk_compile *c) {
         c->state.needs_later_pass = false;
         c->state.pass_rendered = false;
         bool started = false;
-        for (c->state.y = y; c->state.y < end_y; c->state.y = mc_java_i32_add(c->state.y, 1))
-            for (c->state.z = z; c->state.z < end_z; c->state.z = mc_java_i32_add(c->state.z, 1))
-                for (c->state.x = x; c->state.x < end_x;
-                     c->state.x = mc_java_i32_add(c->state.x, 1)) {
+        /* Each current coordinate is below its signed end before incrementing. */
+        for (c->state.y = y; c->state.y < end_y; ++c->state.y)
+            for (c->state.z = z; c->state.z < end_z; ++c->state.z)
+                for (c->state.x = x; c->state.x < end_x; ++c->state.x) {
                     if (!cache_result(c,
                                       mc_client_chunk_cache_block_failure(
                                           c->cache, c->state.x, c->state.y, c->state.z,
