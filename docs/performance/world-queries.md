@@ -286,6 +286,59 @@ from the EW accessor comparison above; their percentages cannot be added or
 converted into a scene-FPS or full World.tick result. Source-reference parity
 remains scoped to the linked fixtures.
 
+### Random tick coordinates and packed Chunk keys
+
+Each random sample advances the live World coordinate generator using 32-bit
+wraparound and reads the coordinate bits directly. The scheduler checks the
+four live provider bindings before GET. World Block and metadata reads use
+floor division to find a Chunk at negative coordinates. The packed cache key
+keeps the source sign bits and coordinate masks. Ore and clay Block reads
+build their Registry diagnostic on failure.
+
+Eight alternating MSVC Release pairs per workload measured 112 ticks for each
+build. Each tick visited 361 Chunks and sampled 80 positions per Chunk. The
+workloads used air with ambient cooldown active and stone with ambient checks
+active. They ran no enabled Block updates. The 15 separate native random-tick
+controls matched exactly, including cases with enabled Block updates.
+
+| Fixed workload | Median before / after (ms) | p95 before / after (ms) |
+| --- | ---: | ---: |
+| Air | 5.235 / 4.782 | 6.763 / 5.890 |
+| Stone | 4.861 / 4.418 | 6.961 / 5.822 |
+
+The 289-Chunk mutation-scope query runner matched the state and checksums.
+Across eight pairs pinned to one logical CPU, median time per Block read fell
+from 47.68 to 44.59 ns and owned GET fell from 36.22 to 33.45 ns. The metadata
+median rose from 61.26 to 92.61 ns in the first cohort and fell from 61.74 to
+54.58 ns in the pinned repeat. Metadata p95 rose from 125.97 to 130.26 ns and
+from 108.11 to 123.84 ns. The fixed seed-23 legacy population fixture matched the
+recorded state across eight pairs. Four ore placements took a median of
+57.45 ms before and 57.27 ms after on the client.
+
+Separate instrumented baseline runs on `DISPLAY2` found a 121.12 ms random tick
+with 98.49 ms inside two nested population calls. An instrumented Block dispatch
+run identified Grass as the caller in a 102.63 ms update, with 94.58 ms in two
+nested population calls and 61.41 ms in one of their springs. These timings
+are inclusive. The change keeps the Grass update and population synchronous.
+
+Two instrumented candidate runs captured 41 accepted springs. The longest
+immediate fluid tick took 50.80 ms. Sampled timings put 37,441 material reads
+at 19.23 ms, 378,360 named Block reads at 14.00 ms, and 76,229 Block ID reads
+at 10.39 ms. The samples add overhead, and nested timings overlap.
+
+All six pairs qualified across two uninstrumented `DISPLAY2` groups at Tiny
+distance and 854×480. The camera and input matched. Both builds included the
+same local Sign screen edit.
+
+| Scene group | Median FPS before / after | Median p95 frame ms | Median p99 frame ms |
+| --- | ---: | ---: | ---: |
+| First | 30.17 / 24.79 | 69.05 / 83.33 | 113.41 / 149.46 |
+| Repeat | 26.33 / 34.01 | 79.95 / 67.76 | 115.80 / 92.71 |
+
+Four of six pairs had higher FPS and three had lower p99. Median results
+moved in opposite directions across groups. The longest candidate frame took
+187.71 ms, so long frame stalls remain.
+
 ## World reads
 
 Successful scalar World reads no longer construct the complete acquisition

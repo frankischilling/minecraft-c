@@ -1,6 +1,6 @@
 #include "mc/world/cache/cache.h"
 
-#include "mc/core/java/java.h"
+#include <string.h>
 
 static bool metadata_valid(const mc_chunk_cache *cache) {
     return cache != NULL && cache->count <= cache->capacity &&
@@ -14,9 +14,12 @@ static bool chunk_valid(const mc_chunk_state *chunk) {
 }
 
 int32_t mc_chunk_cache_key(int32_t x, int32_t z) {
-    uint32_t key = (x < 0 ? UINT32_C(0x80000000) : 0u) | (((uint32_t)x & UINT32_C(0x7fff)) << 16u) |
-                   (z < 0 ? UINT32_C(0x8000) : 0u) | ((uint32_t)z & UINT32_C(0x7fff));
-    return mc_java_i32_narrow((int64_t)key);
+    const uint32_t ux = (uint32_t)x, uz = (uint32_t)z;
+    const uint32_t bits = (ux & UINT32_C(0x80000000)) | ((ux & UINT32_C(0x7fff)) << 16u) |
+                          ((uz >> 16u) & UINT32_C(0x8000)) | (uz & UINT32_C(0x7fff));
+    int32_t key;
+    memcpy(&key, &bits, sizeof(key));
+    return key;
 }
 
 bool mc_chunk_cache_init(mc_chunk_cache *cache, mc_chunk_cache_entry *entries, size_t capacity,

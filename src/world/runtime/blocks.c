@@ -24,6 +24,10 @@ static bool in_domain(int32_t x, int32_t y, int32_t z) {
     return x >= -32000000 && x < 32000000 && z >= -32000000 && z <= 32000000 && y >= 0 && y < 128;
 }
 
+static int32_t chunk_coordinate(int32_t block) {
+    return block / 16 - (block % 16 < 0);
+}
+
 static bool scalar_records_quiet(const mc_world_runtime_execution_result *owned) {
     if (owned->root_pending)
         return false;
@@ -67,15 +71,15 @@ acquire_chunk_detailed(mc_world_runtime *runtime, int32_t x, int32_t z, mc_chunk
             *provider_null = true;
         return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World block provider receiver");
     }
+    const int32_t chunk_x = chunk_coordinate(x), chunk_z = chunk_coordinate(z);
     mc_chunk_acquire_status status;
     if (execution == NULL)
-        status = mc_world_runtime_get_failure(runtime, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4),
-                                              out, detail);
+        status = mc_world_runtime_get_failure(runtime, chunk_x, chunk_z, out, detail);
     else {
         execution->get_entered = true;
-        status = mc_world_runtime_get_failure_in_execution(
-            execution->execution, runtime, execution->code, mc_java_i32_shr(x, 4),
-            mc_java_i32_shr(z, 4), out, detail, execution->owned);
+        status = mc_world_runtime_get_failure_in_execution(execution->execution, runtime,
+                                                           execution->code, chunk_x, chunk_z, out,
+                                                           detail, execution->owned);
         execution->get_status = status;
         execution->get_returned = true;
         /* Only an actual failed GET supplies failure-only diagnostic storage.

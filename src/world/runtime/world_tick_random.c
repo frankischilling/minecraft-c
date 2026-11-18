@@ -3,7 +3,7 @@
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
 #include "../../entity/entity_internal.h"
-#include "chunk_provider_internal.h"
+#include "chunk_provider_state_internal.h"
 #include "chunk_tick_internal.h"
 #include "construction_internal.h"
 #include "entity_tick_math_internal.h"
@@ -359,16 +359,18 @@ static bool draw(mc_world_random_tick_call *c, unsigned int pc, int32_t bound, i
 static void lcg(mc_world_random_tick_call *c, unsigned int pc, bool height) {
     at(c, pc);
     mc_world_runtime *w = c->state.world;
-    w->fields.g = mc_java_i32_add(mc_java_i32_mul(w->fields.g, 3), 1013904223);
+    const uint32_t next = (uint32_t)w->fields.g * UINT32_C(3) + UINT32_C(1013904223);
+    memcpy(&w->fields.g, &next, sizeof(next));
     c->state.last_g = w->fields.g;
     ++c->state.lcg_updates;
-    const int32_t v = mc_java_i32_shr(w->fields.g, 2);
-    c->state.local_x = v & 15;
-    c->state.local_z = mc_java_i32_shr(v, 8) & 15;
+    /* The coordinate masks discard the sign extension of the Java shifts. */
+    c->state.local_x = (int32_t)((next >> 2u) & 15u);
+    c->state.local_z = (int32_t)((next >> 10u) & 15u);
     if (height)
-        c->state.local_y = mc_java_i32_shr(v, 16) & 127;
-    c->state.x = mc_java_i32_add(c->state.offset_x, c->state.local_x);
-    c->state.z = mc_java_i32_add(c->state.offset_z, c->state.local_z);
+        c->state.local_y = (int32_t)((next >> 18u) & 127u);
+    /* Both offsets are signed multiples of 16, so adding 0..15 fits. */
+    c->state.x = c->state.offset_x + c->state.local_x;
+    c->state.z = c->state.offset_z + c->state.local_z;
     if (height)
         c->state.y = c->state.local_y;
 }
@@ -500,14 +502,11 @@ static bool acquire(mc_world_random_tick_call *c) {
     c->error.child_class = "fd";
     c->error.child_method = "c(II)Llm;";
     c->error.child_bytecode = 6;
-    if (w->fields.v == NULL)
+    const mc_chunk_provider *provider = w->fields.v;
+    if (provider == NULL)
         return source_null(c, "World random tick null ChunkProvider");
-    mc_chunk_provider_fields provider;
-    mc_world_storage_error error = {0};
-    if (mc_chunk_provider_internal_fields(w->fields.v, &provider, &error) != MC_WORLD_STORAGE_OK)
-        return storage_fail(c, error);
-    if (provider.world != w || provider.cache != w->acquisition.cache ||
-        provider.pending != w->acquisition.pending || provider.store != w->options.store)
+    if (provider->world != w || &provider->cache != w->acquisition.cache ||
+        &provider->pending != w->acquisition.pending || provider->store != w->options.store)
         return fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                     "World random tick actual ChunkProvider binding", true, NULL);
     mc_chunk_state *chunk = NULL;

@@ -1,7 +1,6 @@
 #include "mc/world/runtime/population/ore_clay.h"
 
-/* Staging paths only. Intended home: src/world/runtime/population/ore_clay.c;
- * integration changes these three includes and the public header include. */
+#include "../../../block/registry/runtime_internal.h"
 #include "../construction_internal.h"
 #include "../mutation/mutation_internal.h"
 #include "../runtime_internal.h"
@@ -106,12 +105,13 @@ static bool static_id(feature_frame *frame, const char *name, unsigned int load_
                       unsigned int field_pc, int32_t *out) {
     frame->error.bytecode = load_pc;
     const mc_block *block = NULL;
-    mc_registry_error cause = empty_registry();
-    if (mc_registry_block_static_get(mc_world_runtime_registry(frame->world), name, &block,
-                                     &cause) != MC_REGISTRY_OK)
+    mc_registry_error cause;
+    if (mc_registry_block_static_get_failure(mc_world_runtime_registry(frame->world), name, &block,
+                                             &cause) != MC_REGISTRY_OK)
         return registry_fail(frame, &cause, "Ore/clay Block static active use");
     frame->error.bytecode = field_pc;
     if (block == NULL) {
+        cause = empty_registry();
         cause.status = MC_REGISTRY_NULL_REFERENCE;
         cause.message = "Ore/clay Block.bn receiver";
         return registry_fail(frame, &cause, cause.message);
