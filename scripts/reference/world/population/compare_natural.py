@@ -64,16 +64,16 @@ def first_difference(actual, expected, path="$", depth=0):
         if actual.keys() != expected.keys():
             return path + ": keys " + repr(sorted(actual.keys() ^ expected.keys()))
         for key in expected:
-            result = first_difference(actual[key], expected[key], path + "." + key, depth + 1)
+            result = first_difference(actual[key], expected[key], "", depth + 1)
             if result:
-                return result
+                return path + "." + key + result
     elif type(actual) is list:
         if len(actual) != len(expected):
             return path + ": length " + str(len(actual)) + " != " + str(len(expected))
         for index, (left, right) in enumerate(zip(actual, expected)):
-            result = first_difference(left, right, path + "[" + str(index) + "]", depth + 1)
+            result = first_difference(left, right, "", depth + 1)
             if result:
-                return result
+                return path + "[" + str(index) + "]" + result
     elif actual != expected:
         if type(actual) is str and max(len(actual), len(expected)) > 128:
             different = next((i for i, pair in enumerate(zip(actual, expected)) if pair[0] != pair[1]),

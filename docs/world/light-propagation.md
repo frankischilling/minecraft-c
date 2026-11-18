@@ -112,6 +112,44 @@ the [development status](../status.md). Startup progress, provider maintenance,
 Player publication and gameplay have separate coverage there. Lighting alone
 does not establish unrestricted play or complete server behavior.
 
+## Light state during the retained single-player replay
+
+Two DISPLAY2 runs from the same saved World used one Windows Release
+executable. A Chunk height update wrote skylight 6 at `(-55, 73, -344)` in both
+runs. At pre-tick World time 13451, Tall Grass at that position read raw
+skylight and Block light from the same Chunk that received the write. Block
+light was zero in both runs.
+
+The difference was when the frame loop processed the queued Sky regions. In
+one run, a region raised skylight to 13 before the Tall Grass tick. In the
+other, the first such change came two World ticks after the plant read
+skylight 6. Both updates used a neighbor with skylight 14 and subtracted one
+for the cell opacity. At 6, the plant's sky-visibility check failed and its
+removal consumed Random draws. At 13, it survived. The changed draw order
+shifted later snow attempts from 20 to 21, producing one extra World LCG
+advance while the World Random state reconverged by the end of the tick.
+
+The ordinary frame loop drains lighting after its batch of World ticks.
+The [paused-frame control](../client/menu-runtime.md#frames-ticks-and-input)
+exercises draining across frames with zero World ticks. A Windows run on
+DISPLAY2 processed 499 regions in the first paused frame and the remaining
+region in the second. The same queue stayed live, World time and Random stayed
+unchanged, and saved Block light went from 15 to zero. Replays that compare
+later simulation state need to account for when queued lighting reaches a cell.
+
+## Point recheck diagnostics
+
+Propagation asks the ordinary light submission for a diagnostic only on
+failure. A failed submit reports its nested cause and the reached point and
+queue positions. Completed operations initialize the public result directly.
+The native test reaches a missing queue during a recheck, restores the same
+queue and verifies the next successful call's canonical diagnostic.
+
+Eight alternating Windows Release pairs measured the drain after the fixed
+spring workload. Median time fell from 12.93 to 12.57 ms. Every run matched
+the ordered digest of the remaining 393 regions and both light planes across
+the four checked Chunks.
+
 ## Saved-light query diagnostics
 
 Propagation reuses its own canonical successful query receipt for saved-light

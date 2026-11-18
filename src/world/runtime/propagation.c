@@ -6,6 +6,7 @@
 #include "../storage/objects_internal.h"
 #include "chunk_provider_state_internal.h"
 #include "construction_internal.h"
+#include "lighting_execution_internal.h"
 #include "lighting_internal.h"
 #include "mc/core/java/java.h"
 #include "runtime_internal.h"
@@ -86,14 +87,17 @@ static bool admit(mc_world_runtime *world, const mc_world_light_type *type, bool
 static mc_world_storage_status finish(mc_world_runtime *world,
                                       mc_world_light_operation_error *frame,
                                       mc_world_light_operation_error *error) {
-    if (frame->status == MC_WORLD_STORAGE_OK)
-        init_error(frame);
-    else
+    const mc_world_storage_status status = frame->status;
+    if (status != MC_WORLD_STORAGE_OK)
         world->last_error = frame->cause;
     mc_world_runtime_call_leave(world);
-    if (error != NULL)
-        *error = *frame;
-    return frame->status;
+    if (error != NULL) {
+        if (status == MC_WORLD_STORAGE_OK)
+            init_error(error);
+        else
+            *error = *frame;
+    }
+    return status;
 }
 
 static void release(light_chunk *chunk) {
@@ -465,8 +469,8 @@ static bool recheck(mc_world_runtime *world, const mc_world_light_type *type, in
         frame->point_bytecode = 115;
         mc_light_bounds bounds = {x, y, z, x, y, z};
         mc_light_submit_result submitted;
-        if (mc_world_runtime_light_submit(world, type, &bounds, true, &submitted, &frame->submit) !=
-            MC_WORLD_STORAGE_OK)
+        if (mc_world_runtime_light_submit_failure(world, type, &bounds, true, &submitted,
+                                                  &frame->submit) != MC_WORLD_STORAGE_OK)
             return storage_failed(frame, frame->submit.cause);
     }
     frame->point_bytecode = 0;

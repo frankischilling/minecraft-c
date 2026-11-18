@@ -3526,8 +3526,8 @@
       "sha256": "83dcab52704f6387fdb89785cad96bf527672aa5eb62be5b5e489136f3596413"
     },
     "src/world/runtime/propagation.c": {
-      "bytes": 33228,
-      "sha256": "c3e7063fe9dc8850df29aebe41e09c4f0fa330ffadcb1ee9bc0c244dc1fa19f1"
+      "bytes": 33422,
+      "sha256": "428c21aa5289e6af5ecfe602d98790b1d512cadf22d5079fe5338c807782e7b2"
     },
     "src/world/runtime/queries.c": {
       "bytes": 31404,
@@ -3566,8 +3566,8 @@
       "sha256": "8cf97c7390c62de2f074a2c9e60259e226f997f39c04eb165e9fb3ccd4e3eda2"
     },
     "src/world/runtime/scheduling.c": {
-      "bytes": 20608,
-      "sha256": "0a595a66b6730c173c910268d5eac0442399c0212f5336bc5d0f266cc4da0596"
+      "bytes": 20800,
+      "sha256": "d32ce896820525a39f9da636e426398905924c14ad16b0a9d14da185b3a33dc7"
     },
     "src/world/runtime/solid_support.c": {
       "bytes": 15297,
@@ -5366,8 +5366,8 @@
       "sha256": "141f021819ab36a1c6339bce18ff2c4d6180cb328b6f29c9dcd3a7e938c84203"
     },
     "tests/world/test_propagation.c": {
-      "bytes": 25384,
-      "sha256": "42522c401f100273c975c58c85757066f2e9f57ae4fdfed6222b6832ce671e4b"
+      "bytes": 26090,
+      "sha256": "337ad8ec98aed011e0c49d6ee49635d35d2bb1c9c66bc19aff513647f926a4dd"
     },
     "cmake/client_application_services.cmake": {
       "bytes": 174,

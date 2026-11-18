@@ -826,8 +826,8 @@
       "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
     },
     "docs/testing.md": {
-      "bytes": 703524,
-      "sha256": "6cc79ceaa5f3fbf4fb4fd72f1f033864f93c76a3bb53ad63670313fd1bc65721"
+      "bytes": 704092,
+      "sha256": "95c41b58bd07cb37d5cfe48733c7a8c3c50874b589bdb01c4872b9b32c109040"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39570,
@@ -950,8 +950,8 @@
       "sha256": "d0c52dbed23c53221d1aa7b54a8bff6cef85dfdabb832b3bb5765b2f656b370f"
     },
     "docs/world/light-propagation.md": {
-      "bytes": 8148,
-      "sha256": "0d4e81ef1d991cc2867d3add42506064bee23047eaa8e3ab93dee68e49ab09cd"
+      "bytes": 10316,
+      "sha256": "bd2f10e3189311ae6932d6f9c19551f80405d68d8d2a3f94845e670e4eec2916"
     },
     "docs/world/lighting.md": {
       "bytes": 3141,
@@ -1046,8 +1046,8 @@
       "sha256": "cd54507a873cab3e65b84940189d366d6e1896284ceeb9f247e738b7228ed378"
     },
     "docs/world/scheduling.md": {
-      "bytes": 14946,
-      "sha256": "c80c307adc34071133ff63f2b420bdb85ff72a0c38c9322df293f52b7c66f9e3"
+      "bytes": 15448,
+      "sha256": "62207ab54f1c6af97eeb455c14b188dc47f1425576a95535069332122dd71962"
     },
     "docs/world/simplex.md": {
       "bytes": 3358,
@@ -2370,8 +2370,8 @@
       "sha256": "d8849d9e229fd3a69b18cfb605e5d154517db67a9db60d2da4106a4e0ccc69df"
     },
     "scripts/reference/world/population/compare_natural.py": {
-      "bytes": 28854,
-      "sha256": "7c417e3e603919e7505cd9e3bf8a76a383aeb067c53d59936399723678c8544e"
+      "bytes": 28864,
+      "sha256": "bc057ae2e8526269ab975caff4e1c9ea1af1931efa91ac1e85457885e938dba1"
     },
     "scripts/reference/world/population/compare_persistence.py": {
       "bytes": 40932,
@@ -5006,8 +5006,8 @@
       "sha256": "83dcab52704f6387fdb89785cad96bf527672aa5eb62be5b5e489136f3596413"
     },
     "src/world/runtime/propagation.c": {
-      "bytes": 33228,
-      "sha256": "c3e7063fe9dc8850df29aebe41e09c4f0fa330ffadcb1ee9bc0c244dc1fa19f1"
+      "bytes": 33422,
+      "sha256": "428c21aa5289e6af5ecfe602d98790b1d512cadf22d5079fe5338c807782e7b2"
     },
     "src/world/runtime/queries.c": {
       "bytes": 31404,
@@ -5046,8 +5046,8 @@
       "sha256": "8cf97c7390c62de2f074a2c9e60259e226f997f39c04eb165e9fb3ccd4e3eda2"
     },
     "src/world/runtime/scheduling.c": {
-      "bytes": 20608,
-      "sha256": "0a595a66b6730c173c910268d5eac0442399c0212f5336bc5d0f266cc4da0596"
+      "bytes": 20800,
+      "sha256": "d32ce896820525a39f9da636e426398905924c14ad16b0a9d14da185b3a33dc7"
     },
     "src/world/runtime/solid_support.c": {
       "bytes": 15297,
@@ -6483,7 +6483,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067982,
-      "sha256": "04ed4cbf6f5126c1fbd050b9bdd9e27236e55c98fb385fa8bdbde93a47477238"
+      "sha256": "878f87bbea4184136243be8b9f49eb0d3d9980d6d7caf608974e7f64609ccc3e"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -9470,8 +9470,8 @@
       "sha256": "b3442e77a1d20998349b0540217b31b2f6aa597c74fbed5c778937dcb3427fca"
     },
     "tests/world/test_propagation.c": {
-      "bytes": 25384,
-      "sha256": "42522c401f100273c975c58c85757066f2e9f57ae4fdfed6222b6832ce671e4b"
+      "bytes": 26090,
+      "sha256": "337ad8ec98aed011e0c49d6ee49635d35d2bb1c9c66bc19aff513647f926a4dd"
     },
     "cmake/client_application_services.cmake": {
       "bytes": 174,

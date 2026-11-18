@@ -1,4 +1,5 @@
 #include "../../src/block/registry/registry_internal.h"
+#include "../../src/world/runtime/runtime_internal.h"
 #include "mc/resources/files/files.h"
 #include "mc/world/runtime/entities.h"
 #include "mc/world/runtime/propagation.h"
@@ -280,7 +281,18 @@ int main(int argc, char **argv) {
           value == 15);
     CHECK(mc_world_runtime_saved_light_set(world, sky, 1, 110, 1, 0, &light) ==
           MC_WORLD_STORAGE_OK);
+    mc_world_reference_list *queue = world->fields.C;
+    world->fields.C = NULL;
+    const mc_world_storage_status rechecked =
+        mc_world_runtime_light_recheck(world, sky, 1, 110, 1, 0, &light);
+    world->fields.C = queue;
+    CHECK(rechecked == MC_WORLD_STORAGE_UNSUPPORTED_STATE && light.point_bytecode == 115 &&
+          light.submit.bytecode == 109 && light.submit.acquisition == MC_CHUNK_ACQUIRE_OK &&
+          light.submit.cause.status == rechecked);
     CHECK(mc_world_runtime_light_recheck(world, sky, 1, 110, 1, 0, &light) == MC_WORLD_STORAGE_OK);
+    CHECK(light.point_bytecode == 0 && light.submit.bytecode == 0 &&
+          light.submit.cause.status == MC_WORLD_STORAGE_OK &&
+          light.query.registry.initializer_pc == -1);
     CHECK(mc_world_runtime_light_drain(world, SIZE_MAX, &more, &light) == MC_WORLD_STORAGE_OK);
     CHECK(mc_world_runtime_saved_light(world, sky, 1, 110, 1, &value, NULL) ==
               MC_WORLD_STORAGE_OK &&

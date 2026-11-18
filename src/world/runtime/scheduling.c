@@ -12,12 +12,15 @@
 
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 
 static void error_init(mc_world_schedule_error *error) {
-    static const mc_world_schedule_error zero = {0};
     if (error == NULL)
         return;
-    *error = zero;
+    const size_t tick_start = offsetof(mc_world_schedule_error, tick);
+    const size_t tick_end = tick_start + sizeof(error->tick);
+    memset(error, 0, tick_start);
+    memset((unsigned char *)error + tick_end, 0, sizeof(*error) - tick_end);
     mc_world_mutation_error_init(&error->tick);
     error->registry = mc_world_mutation_empty_registry();
 }

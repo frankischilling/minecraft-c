@@ -102,6 +102,14 @@ reads it only after a failure. The scheduler initializes the supplied frame
 and publishes the same reached diagnostics in place. The public API still
 returns a canonical diagnostic on success.
 
+Initialization clears the outer fields separately from the nested Block-tick
+diagnostic, which has its own canonical initializer. Two matched DISPLAY2
+pairs agreed on 160 World ticks each, with 60,074 and 63,263 ore writes and
+43 and 44 matching live Chunk digests, respectively. Median sampled Gravel
+addition fell from 30.20 to 22.61 ms. Measured ore placement fell from 177.68
+to 169.63 ms. The remaining four runs followed different World state paths
+and were excluded from the timing comparison.
+
 F/E retain their separate entry and allocation limits. Checked record allocation
 also applies to discarded requests and locals held through reentry. The World
 constructor's direct-byte counter is not a combined dynamic scheduler budget.

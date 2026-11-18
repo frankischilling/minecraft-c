@@ -10649,3 +10649,16 @@ times. Hosted end-to-end timing requires a comparable completed CI run.
 | Population persistence | 24 | 37.51 s | 29.92 s |
 | Population named data | 28 | 33.09 s | 25.83 s |
 | World save | 11 | 22.56 s | 17.39 s |
+
+### Comparison diagnostics
+
+The comparison visitor builds the path only after finding a difference. It
+still checks JSON types, visits keys and array elements in the same order and
+reports the same first difference. All 76 Python controls passed, and 18,888
+additional comparisons produced identical diagnostics against the previous
+visitor.
+
+Six alternating Windows pairs compared the same four decoded persistence
+records. Median comparison time fell from 0.598 to 0.381 seconds. This
+measurement covers the visitor and excludes fixture decoding and native
+replay.
