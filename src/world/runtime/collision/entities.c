@@ -445,7 +445,7 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk_stat
         return false;
     }
     frame->query.acquisition =
-        owned == NULL ? mc_world_runtime_get_detailed(world, x, z, out, &child)
+        owned == NULL ? mc_world_runtime_get_failure(world, x, z, out, &child)
                       : mc_world_runtime_get_in_execution(owned->execution, world, owned->code, x,
                                                           z, out, &child, owned->owned);
     if (frame->query.acquisition != MC_CHUNK_ACQUIRE_OK) {

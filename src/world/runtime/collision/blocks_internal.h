@@ -12,6 +12,12 @@ mc_world_storage_status mc_world_collision_block_value_held(mc_world_runtime *wo
                                                             int32_t *out,
                                                             mc_world_collision_error *error);
 
+/* Same operation on an initialized private frame. The frame must stay
+ * inaccessible to callbacks until the enclosing query publishes it. */
+mc_world_storage_status mc_world_collision_block_value_in_place(mc_world_runtime *, int32_t,
+                                                                int32_t, int32_t, bool, int32_t *,
+                                                                mc_world_collision_error *);
+
 /* Actual virtual e(World,III), distinct from multipart contribution. A genuine
  * nonnull result owns one pooled bounds hold; the caller releases it through
  * this World's canonical Entity classes. NULL is an actual completed source

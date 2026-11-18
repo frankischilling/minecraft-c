@@ -4626,16 +4626,16 @@
       "sha256": "a5508eef58b78dc8f3626b4871d55380883ba13882e105af3c6bc811897a0a2f"
     },
     "src/world/runtime/collision/blocks.c": {
-      "bytes": 97768,
-      "sha256": "3091cb102345f0eccae84132267ba6f40e3f5b93415675bbd1b8c8b648c33d60"
+      "bytes": 98709,
+      "sha256": "239a27dd20789a1c83c61505820554c73ad301ba58c1ea9b007d46021ef5c38d"
     },
     "src/world/runtime/collision/blocks_internal.h": {
-      "bytes": 8777,
-      "sha256": "7ad616ef84cfcb556647f58e47dbe651e847768154f7ef08ac1030433f07fe76"
+      "bytes": 9206,
+      "sha256": "70659787afb7e8c6d00f882d0fd6f85dbc139ee60ea7b1179d3586b8feee6367"
     },
     "src/world/runtime/collision/boxes.c": {
-      "bytes": 26456,
-      "sha256": "0218d7749b8aec918c47d6453d7364220d08b07f499e6efe98b714b84bb6f61e"
+      "bytes": 26426,
+      "sha256": "8213102f003f9f353fc9b17da8ed89ce1ec27b588943d026f502965bb283089f"
     },
     "src/world/runtime/collision/boxes_internal.h": {
       "bytes": 1673,
@@ -4650,8 +4650,8 @@
       "sha256": "93f9e71649390515f35169ec498e826f3c46bbe1bdf417eab0186c0f4a9ddae7"
     },
     "src/world/runtime/collision/entities.c": {
-      "bytes": 34990,
-      "sha256": "1117c8c216bbab76f4f89f1e2184ebc31fce5e66daeb9809e0d45be0329b671e"
+      "bytes": 34989,
+      "sha256": "6237f44915f2b8f53a91d3506146d4727303dc2e1007d57f553d00ffd6d6bb84"
     },
     "src/world/runtime/collision/entities_internal.h": {
       "bytes": 1949,
@@ -6411,7 +6411,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 937706,
-      "sha256": "b186911a64d149eaf9d39061d21f3dd8744e8b978fed3dd8a8cc61a8d81ff1e8"
+      "sha256": "8dd243289fbd5a0ed80b2b56be0f6b38c92bc2de4702f0757c6ee494a76b26e7"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6475,7 +6475,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067659,
-      "sha256": "5180377ddf697ae71730b24cec90a006cae00e735bdbd8d3d74a0160266901b3"
+      "sha256": "02931f94e1f2178837d413f9af24625a432a62f4fb9d5c6738b1f4d5e41607f2"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6607,7 +6607,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934531,
-      "sha256": "871caccd3579742d1ea1140d3ca1eb296903fbf3df83f207cab80136291386a2"
+      "sha256": "1d7bec74a00fbcdc4bc78ea1561ad279b93ed9eba12404103cfcc6eab45a2d6c"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -22722,8 +22722,8 @@
       "sha256": "a713dcbfe1c1dc85f9bb98f663871ba74a0b30595bdf239dc5a116f3789c3650"
     },
     "docs/performance/mob-tick-diagnostics.md": {
-      "bytes": 8876,
-      "sha256": "c91f8556ffaec8e9bfa9490269055caa34c5e8bf1c07f937933bd772dea71be8"
+      "bytes": 11360,
+      "sha256": "a5092a6b0bf30394d62543facb7e67b1a8ee50072d348a16a06e8894f772a563"
     },
     "src/entity/mob/tick/workspace_internal.h": {
       "bytes": 1738,
@@ -23347,11 +23347,11 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76652,
-      "sha256": "2692abee68fad22a9a4efc3d0f985259af41626f455368517f70f91dfafa8fc4"
+      "sha256": "be8a6700f423232d3e842602be4c848b4e747b28544ee80d984a5b90cd148a82"
     },
     "tests/tools/world/world_query_controls_bundle.json": {
       "bytes": 61334,
-      "sha256": "ef406970dee5c6363c6272e2fe4d15b8d5075d2dc87daee1d66decb66fc62833"
+      "sha256": "96fabf2bb97c495b3bb80b4c0ae50b842370869bf16284aef4d4c6b3a0078046"
     },
     "tests/tools/world/world_query_controls_protocol.json": {
       "bytes": 33175,
@@ -23551,11 +23551,11 @@
     },
     "tests/tools/client/arrow_world_tick_cleanup_bundle.json": {
       "bytes": 9794,
-      "sha256": "530b900068edbc03be8331a2512e6a9d1224925ecea4a632297eed4678bce50c"
+      "sha256": "19c34d753df46bb321169ee6a36ed13cf4e313050d3d92d89dc6c33e928ef45f"
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "f879b1a0da2a4d1304ad37e58ffb535b1787f9d8782c5043432dd7d11c92141c"
+      "sha256": "b7b8ad25c11c72ab23a7f34812cdaaca97e5d8107637bac3376a4a900939012c"
     },
     "docs/entity/arrow-flight.md": {
       "bytes": 12048,
@@ -23567,11 +23567,11 @@
     },
     "tests/tools/entity/damage_native_close_bundle.json": {
       "bytes": 13011,
-      "sha256": "5f49bfff8404f2d1f894ca3e5300300e30699805960cb8a845a662604453da75"
+      "sha256": "bffa697bc624e89bf994c18080c2ffa2617c5a5d0c1898718c95406cd513c1bd"
     },
     "tests/tools/entity/test_damage_native_close.py": {
       "bytes": 17605,
-      "sha256": "32a33ca33ea35c52fb42c845b78829226290924b38a134dee254d67ef681b20e"
+      "sha256": "2eeba16010c0927f879c3eb94606ac8cd7152a5437df5fb733ea034db43e50f0"
     },
     "tests/world/runtime/world_access/test_damage_close_execution.c": {
       "bytes": 30398,

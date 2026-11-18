@@ -140,3 +140,46 @@ normalizes block IDs through `vi.a` without deriving a new minimum. Only that
 expectation changed to 0. All voxel/metadata/light/HeightMap guards and first
 difference diagnostics remain. The failed opportunity, probe and original input
 hashes are retained; no runtime or failed input was repaired to obtain a pass.
+
+## Collision reads during Mob travel
+
+Two instrumented Far dusk runs broke down Mob travel in the native client. In
+the busiest sampled frame (510.53 ms with tracing enabled), collision-box queries
+used 66.44 ms in Zombie travel and 65.59 ms in Spider travel. Path requests used
+about 2.9 ms in that frame. These are inclusive times and overlap with their
+parent travel and action timers.
+
+The ordinary collision-box scan now writes block-read diagnostics into the
+enclosing call's private frame. Block and nearby Entity queries request the
+Chunk acquisition diagnostic on failure. The collision scan captures `Block.m`
+before the Chunk provider runs and indexes that same array afterward. The
+public result and retained-execution diagnostics still use their original
+publication points.
+
+A Windows Release comparison changed only the three collision translation units
+relative to `edd355cd`. It used the fixture above with eight and 64 Zombies and
+the same current World and dispatcher adapters in both builds. Each count had
+two warmups and seven timed samples per process, with two processes per build in
+baseline, candidate, candidate, baseline order. Processes ran on logical CPU 4.
+Each interval completed 16 actual World entity ticks. Matching sample seeds
+produced equal actor tick words and semantic, RNG, Chunk, and ownership
+digests. All 14 matched measurements at each count were faster.
+
+| Zombies | Baseline median ms per World entity tick | Candidate median ms per World entity tick | Reduction |
+| ---: | ---: | ---: | ---: |
+| 8 | 3.399 | 3.213 | 5.5% |
+| 64 | 26.232 | 24.567 | 6.3% |
+
+The first uninstrumented Far dusk comparison lost foreground focus in two of
+six runs. In the full repeat, every run stayed focused on DISPLAY2 with the
+same fixed camera, 854×480 resolution, seed 123, and saved World time 12,420.
+The median of the three run FPS values fell from 25.58 to 17.86. The median
+run p99 rose from 82.11 to 190.08 ms. The six runs completed 197–200 World
+ticks each and allowed natural Mob spawning.
+
+Six separately instrumented runs counted the entity dispatches. The build with
+fewer calls in each pair had higher FPS. The three baseline/candidate call
+counts were 413/1,637, 903/272, and 817/1,248, with 199–201 World ticks per run.
+In the first pair, Creeper dispatches alone rose from 132 to 1,167. The fixed
+Zombie workload shows a lower tick cost with matched inputs. A controlled
+gameplay FPS result still needs matched changing Mob work.

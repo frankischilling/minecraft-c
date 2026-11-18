@@ -382,21 +382,21 @@ static bool query(mc_world_runtime *world, mc_entity *moving, const mc_entity_bo
                 frame->y = y;
                 frame->world_bytecode = 113;
                 mc_registry_block_m_view array;
-                mc_registry_error registry = frame->nearby.query.registry;
+                mc_registry_error registry;
                 if (!registry_result(world, frame,
-                                     mc_registry_block_m_get(mc_world_runtime_registry(world),
-                                                             &array, &registry),
+                                     mc_registry_block_m_get_failure(
+                                         mc_world_runtime_registry(world), &array, &registry),
                                      &registry))
                     return false;
                 frame->world_bytecode = 123;
                 int32_t id;
-                if (mc_world_collision_block_value_held(world, x, y, z, false, &id, frame) !=
+                if (mc_world_collision_block_value_in_place(world, x, y, z, false, &id, frame) !=
                     MC_WORLD_STORAGE_OK)
                     return false;
                 frame->world_bytecode = 126;
                 const mc_block *block;
                 const mc_registry_status selected =
-                    mc_registry_block_m_at(&array, id, &block, &registry);
+                    mc_registry_block_m_at_failure(&array, id, &block, &registry);
                 if (!registry_result(world, frame, selected, &registry))
                     return false;
                 if (block == NULL)

@@ -210,8 +210,8 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk_stat
     mc_world_runtime_acquisition_error child;
     lower->query.acquisition =
         query == NULL
-            ? mc_world_runtime_get_detailed(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4),
-                                            out, &child)
+            ? mc_world_runtime_get_failure(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), out,
+                                           &child)
             : mc_world_runtime_get_in_execution(query->execution, world, query->code,
                                                 mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), out,
                                                 &child, query->owned);
@@ -281,76 +281,71 @@ static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, mc_chunk_stat
     return true;
 }
 
-static mc_world_storage_status block_value_run(mc_world_runtime *world, int32_t x, int32_t y,
-                                               int32_t z, bool metadata, int32_t *out,
-                                               mc_world_collision_error *error,
-                                               const block_value_execution *query) {
-    mc_world_collision_error frame;
-    if (error == NULL)
-        mc_world_collision_error_init(&frame);
-    else
-        frame = *error;
-    mc_world_nearby_error_init(&frame.nearby);
-    frame.x = x;
-    frame.y = y;
-    frame.z = z;
+static mc_world_storage_status block_value_body(mc_world_runtime *world, int32_t x, int32_t y,
+                                                int32_t z, bool metadata, int32_t *out,
+                                                mc_world_collision_error *frame,
+                                                const block_value_execution *query) {
+    mc_world_nearby_error_init(&frame->nearby);
+    frame->x = x;
+    frame->y = y;
+    frame->z = z;
     mc_world_storage_status status = MC_WORLD_STORAGE_OK;
     int32_t value = 0;
     if (world == NULL || out == NULL)
-        status = fail(&frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Collision block read arguments");
+        status = fail(frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "Collision block read arguments");
     else if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
              world->construction.phase == MC_WORLD_RUNTIME_RETIRED)
-        status = fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Collision block read World");
+        status = fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Collision block read World");
     else if (x < -32000000 || z < -32000000 || x >= 32000000 || z > 32000000 || y < 0 || y >= 128) {
         /* Actual World guards return zero before reading the provider. */
     } else {
-        frame.nearby.query.bytecode = 48;
+        frame->nearby.query.bytecode = 48;
         mc_chunk_state *state = NULL;
-        if (!acquire(world, x, z, &state, &frame, query))
-            status = frame.nearby.query.status;
+        if (!acquire(world, x, z, &state, frame, query))
+            status = frame->nearby.query.status;
         else {
-            frame.nearby.query.bytecode = metadata ? 68u : 60u;
+            frame->nearby.query.bytecode = metadata ? 68u : 60u;
             if (state == NULL)
-                status = fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                status = fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                               "Collision acquired Chunk receiver");
             else if (!state->blank) {
                 /* Concrete-kind dispatch precedes normal header resolution. */
                 mc_world_store *const store = world->fields.w;
                 mc_world_chunk *const chunk = mc_world_store_chunk_object(store, state);
                 if (chunk == NULL || !mc_world_chunk_source_enabled(chunk))
-                    status = fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                    status = fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                   "Collision concrete Chunk owner");
                 else {
                     mc_world_storage_error child = {0};
                     status = mc_world_store_lease_chunk(store, state, &child);
                     if (status != MC_WORLD_STORAGE_OK)
-                        cause(&frame, child);
+                        cause(frame, child);
                     else {
                         const int32_t local_x = (int32_t)((uint32_t)x & 15u);
                         const int32_t local_z = (int32_t)((uint32_t)z & 15u);
                         const int32_t cell =
                             mc_java_i32_shl(local_x, 11) | mc_java_i32_shl(local_z, 7) | y;
-                        frame.nearby.query.chunk_bytecode = 1;
+                        frame->nearby.query.chunk_bytecode = 1;
                         if (metadata) {
                             const mc_world_chunk_nibble *const nibble = chunk->e;
-                            frame.nearby.query.chunk_bytecode = 7;
+                            frame->nearby.query.chunk_bytecode = 7;
                             const int32_t index = mc_java_i32_shr(cell, 1);
                             if (nibble == NULL || nibble->a == NULL || index < 0 ||
                                 (size_t)index >= nibble->length)
-                                status = fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                status = fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                               "Collision metadata Nibble backing/index");
                             else
                                 value = (int32_t)(((uint32_t)nibble->a[(size_t)index] >>
                                                    (((uint32_t)cell & 1u) * 4u)) &
                                                   15u);
                         } else if (chunk->data == NULL)
-                            status = fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                            status = fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                           "Collision Chunk block owner");
                         else {
-                            frame.nearby.query.chunk_bytecode = 15;
+                            frame->nearby.query.chunk_bytecode = 15;
                             if (chunk->data->blocks == NULL || cell < 0 ||
                                 (size_t)cell >= chunk->data->blocks_capacity)
-                                status = fail(&frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                status = fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                               "Collision Chunk block backing/index");
                             else
                                 value = (int32_t)chunk->data->blocks[(size_t)cell];
@@ -363,11 +358,32 @@ static mc_world_storage_status block_value_run(mc_world_runtime *world, int32_t 
     }
     if (status == MC_WORLD_STORAGE_OK) {
         *out = value;
-        mc_world_nearby_error_init(&frame.nearby);
+        mc_world_nearby_error_init(&frame->nearby);
     }
+    return status;
+}
+
+static mc_world_storage_status block_value_run(mc_world_runtime *world, int32_t x, int32_t y,
+                                               int32_t z, bool metadata, int32_t *out,
+                                               mc_world_collision_error *error,
+                                               const block_value_execution *query) {
+    mc_world_collision_error frame;
+    if (error == NULL)
+        mc_world_collision_error_init(&frame);
+    else
+        frame = *error;
+    const mc_world_storage_status status =
+        block_value_body(world, x, y, z, metadata, out, &frame, query);
     if (error != NULL)
         *error = frame;
     return status;
+}
+
+mc_world_storage_status mc_world_collision_block_value_in_place(mc_world_runtime *world, int32_t x,
+                                                                int32_t y, int32_t z, bool metadata,
+                                                                int32_t *out,
+                                                                mc_world_collision_error *frame) {
+    return block_value_body(world, x, y, z, metadata, out, frame, NULL);
 }
 
 mc_world_storage_status mc_world_collision_block_value_held(mc_world_runtime *world, int32_t x,
