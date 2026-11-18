@@ -105,10 +105,13 @@ static bool enter(mc_entity *entity, bool output, mc_entity_environment_error *e
     return true;
 }
 
+static bool strict_fp(void) {
+    return (_mm_getcsr() & 0xffc0u) == 0x1f80u;
+}
+
 static bool floating(mc_entity_environment_error *e, unsigned pc) {
-    return (_mm_getcsr() & 0xffc0u) == 0x1f80u ||
-           fail(e, MC_ENTITY_UNSUPPORTED_FP, MC_ENTITY_ENVIRONMENT_FP,
-                "Entity environment FP admission", pc);
+    return strict_fp() || fail(e, MC_ENTITY_UNSUPPORTED_FP, MC_ENTITY_ENVIRONMENT_FP,
+                               "Entity environment FP admission", pc);
 }
 
 static bool bounds_result(mc_entity_environment_error *e, mc_entity_status status, unsigned pc) {
@@ -253,24 +256,24 @@ leave:
     return mc_tick_arrow_base_world_end(state, completed);
 }
 
-static mc_entity_status liquid(mc_entity *entity, mc_registry_classes *registry, bool water,
-                               const mc_world_material_movement_limits *limits, bool *out,
-                               mc_entity_environment_error *error) {
-    mc_entity_environment_error e;
-    mc_entity_environment_error_init(&e);
+static mc_entity_status liquid_run(mc_entity *entity, mc_registry_classes *registry, bool water,
+                                   const mc_world_material_movement_limits *limits, bool *out,
+                                   mc_entity_environment_error *e) {
     bool value = false, completed = false;
-    if (enter(entity, out != NULL, &e)) {
+    if (enter(entity, out != NULL, e)) {
         const mc_registry_status held = mc_registry_classes_retain(
             registry,
             entity->classes->source == MC_ENTITY_CLIENT ? MC_REGISTRY_CLIENT : MC_REGISTRY_SERVER,
-            entity->classes->profile, &e.registry);
-        if (registry_result(&e, held, 0)) {
-            completed = liquid_probe(entity, registry, water, limits, &value, &e, NULL, NULL);
+            entity->classes->profile, &e->registry);
+        if (registry_result(e, held, 0)) {
+            completed = liquid_probe(entity, registry, water, limits, &value, e, NULL, NULL);
             /* Exact native borrow retirement, including an admitted synchronous
              * initializer flow. This does not initialize or replace a class. */
             if (!mc_registry_runtime_borrow_release(registry)) {
+                if (completed)
+                    mc_world_material_movement_error_complete(&e->material);
                 completed = false;
-                fail(&e, MC_ENTITY_STATE_ERROR, MC_ENTITY_ENVIRONMENT_OWNER,
+                fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_ENVIRONMENT_OWNER,
                      "Entity environment Registry borrow retirement", 0);
             }
         }
@@ -278,7 +281,26 @@ static mc_entity_status liquid(mc_entity *entity, mc_registry_classes *registry,
     }
     if (completed)
         *out = value;
+    return e->status;
+}
+
+static mc_entity_status liquid(mc_entity *entity, mc_registry_classes *registry, bool water,
+                               const mc_world_material_movement_limits *limits, bool *out,
+                               mc_entity_environment_error *error) {
+    mc_entity_environment_error e;
+    mc_entity_environment_error_init(&e);
+    (void)liquid_run(entity, registry, water, limits, out, &e);
     return result(error, &e);
+}
+
+mc_entity_status
+mc_entity_environment_liquid_in_place(mc_entity *entity, mc_registry_classes *registry, bool water,
+                                      const mc_world_material_movement_limits *limits, bool *out,
+                                      mc_entity_environment_error *error) {
+    const mc_entity_status status = liquid_run(entity, registry, water, limits, out, error);
+    if (status == MC_ENTITY_OK)
+        mc_entity_environment_error_init(error);
+    return status;
 }
 
 static mc_entity_status liquid_held_in_execution(mc_entity *entity, mc_registry_classes *registry,
@@ -367,8 +389,18 @@ mc_entity_status mc_entity_environment_lava(mc_entity *entity, mc_registry_class
     return liquid(entity, registry, false, limits, out, e);
 }
 
-mc_entity_status mc_entity_environment_stored_in_water(mc_entity *entity, bool *out,
-                                                       mc_entity_environment_error *error) {
+static void publish_primitive_failure(mc_entity_environment_error *error,
+                                      environment_admission admitted, const char *source_class,
+                                      unsigned pc) {
+    if (error == NULL)
+        return;
+    mc_entity_environment_error_init(error);
+    (void)fail(error, admitted.status, admitted.cause, admitted.operation, pc);
+    error->source_class = source_class;
+}
+
+static mc_entity_status stored_in_water(mc_entity *entity, bool *out,
+                                        mc_entity_environment_error *error) {
     environment_admission admitted = enter_domain(entity, out != NULL, true);
     const char *source_class = NULL;
     unsigned pc = 0;
@@ -384,21 +416,22 @@ mc_entity_status mc_entity_environment_stored_in_water(mc_entity *entity, bool *
         }
         mc_entity_release(entity);
     }
-    if (error != NULL) {
-        mc_entity_environment_error_init(error);
-        if (admitted.status != MC_ENTITY_OK) {
-            (void)fail(error, admitted.status, admitted.cause, admitted.operation, pc);
-            error->source_class = source_class;
-        }
-    }
+    if (admitted.status != MC_ENTITY_OK)
+        publish_primitive_failure(error, admitted, source_class, pc);
     return admitted.status;
 }
 
-mc_entity_status mc_entity_environment_in_water(mc_entity *entity, mc_registry_classes *registry,
-                                                const mc_world_material_movement_limits *limits,
-                                                bool *out, mc_entity_environment_error *error) {
-    if (!mc_entity_has_mob(entity) || !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SQUID))
-        return mc_entity_environment_stored_in_water(entity, out, error);
+mc_entity_status mc_entity_environment_stored_in_water(mc_entity *entity, bool *out,
+                                                       mc_entity_environment_error *error) {
+    const mc_entity_status status = stored_in_water(entity, out, error);
+    if (status == MC_ENTITY_OK)
+        mc_entity_environment_error_init(error);
+    return status;
+}
+
+static mc_entity_status squid_in_water(mc_entity *entity, mc_registry_classes *registry,
+                                       const mc_world_material_movement_limits *limits, bool *out,
+                                       mc_entity_environment_error *error) {
     mc_entity_environment_error e;
     mc_entity_environment_error_init(&e);
     bool completed = false, value = false;
@@ -432,6 +465,23 @@ mc_entity_status mc_entity_environment_in_water(mc_entity *entity, mc_registry_c
     if (completed)
         *out = value;
     return result(error, &e);
+}
+
+mc_entity_status mc_entity_environment_in_water(mc_entity *entity, mc_registry_classes *registry,
+                                                const mc_world_material_movement_limits *limits,
+                                                bool *out, mc_entity_environment_error *error) {
+    if (mc_entity_has_mob(entity) && mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SQUID))
+        return squid_in_water(entity, registry, limits, out, error);
+    return mc_entity_environment_stored_in_water(entity, out, error);
+}
+
+mc_entity_status
+mc_entity_environment_in_water_in_place(mc_entity *entity, mc_registry_classes *registry,
+                                        const mc_world_material_movement_limits *limits, bool *out,
+                                        mc_entity_environment_error *error) {
+    if (mc_entity_has_mob(entity) && mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SQUID))
+        return squid_in_water(entity, registry, limits, out, error);
+    return stored_in_water(entity, out, error);
 }
 
 static bool clearance(mc_entity *entity, double x, double y, double z,
@@ -517,19 +567,14 @@ static float divf(float a, float b) {
     return _mm_cvtss_f32(_mm_div_ss(_mm_set_ss(a), _mm_set_ss(b)));
 }
 
-static bool relative(mc_entity *entity, const mc_math_trig *trig, float strafe, float forward,
-                     float friction, mc_entity_environment_error *e) {
-    if (trig == NULL)
-        return fail(e, MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_ENVIRONMENT_OWNER,
-                    "Entity relative trig context", 0);
-    if (!floating(e, 2))
-        return false;
+static void relative_velocity(mc_entity *entity, const mc_math_trig *trig, float strafe,
+                              float forward, float friction) {
     const float square = addf(mulf(strafe, strafe), mulf(forward, forward));
     const __m128d root =
         _mm_sqrt_sd(_mm_setzero_pd(), _mm_cvtss_sd(_mm_setzero_pd(), _mm_set_ss(square)));
     float magnitude = _mm_cvtss_f32(_mm_cvtsd_ss(_mm_setzero_ps(), root));
     if (magnitude < 0.01f)
-        return true;
+        return;
     if (magnitude < 1.0f)
         magnitude = 1.0f;
     const float factor = divf(friction, magnitude);
@@ -543,17 +588,40 @@ static bool relative(mc_entity *entity, const mc_math_trig *trig, float strafe, 
     const float dz = addf(mulf(forward, cosine), mulf(strafe, sine));
     entity->base.velocity_z =
         _mm_cvtsd_f64(_mm_add_sd(_mm_set_sd((double)dz), _mm_set_sd(entity->base.velocity_z)));
-    return true;
+}
+
+mc_entity_status mc_entity_environment_relative_in_place(mc_entity *entity,
+                                                         const mc_math_trig *trig, float strafe,
+                                                         float forward, float friction,
+                                                         mc_entity_environment_error *error) {
+    environment_admission admitted = enter_domain(entity, true, false);
+    const char *source_class = NULL;
+    unsigned pc = 0;
+    if (admitted.status == MC_ENTITY_OK) {
+        source_class = entity->classes->source == MC_ENTITY_CLIENT ? "sn" : "lq";
+        if (trig == NULL)
+            admitted =
+                (environment_admission){MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_ENVIRONMENT_OWNER,
+                                        "Entity relative trig context"};
+        else if (!strict_fp()) {
+            admitted = (environment_admission){MC_ENTITY_UNSUPPORTED_FP, MC_ENTITY_ENVIRONMENT_FP,
+                                               "Entity environment FP admission"};
+            pc = 2;
+        } else
+            relative_velocity(entity, trig, strafe, forward, friction);
+        mc_entity_release(entity);
+    }
+    if (admitted.status != MC_ENTITY_OK)
+        publish_primitive_failure(error, admitted, source_class, pc);
+    return admitted.status;
 }
 
 mc_entity_status mc_entity_environment_relative(mc_entity *entity, const mc_math_trig *trig,
                                                 float strafe, float forward, float friction,
                                                 mc_entity_environment_error *error) {
-    mc_entity_environment_error e;
-    mc_entity_environment_error_init(&e);
-    if (enter(entity, true, &e)) {
-        (void)relative(entity, trig, strafe, forward, friction, &e);
-        mc_entity_release(entity);
-    }
-    return result(error, &e);
+    const mc_entity_status status =
+        mc_entity_environment_relative_in_place(entity, trig, strafe, forward, friction, error);
+    if (status == MC_ENTITY_OK)
+        mc_entity_environment_error_init(error);
+    return status;
 }

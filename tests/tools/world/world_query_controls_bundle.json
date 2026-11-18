@@ -399,20 +399,20 @@
       "sha256": "de1645d2d89f27f6975ec7bdda43167b25532df96d7b121123ce67e22422a89c"
     },
     "src/world/runtime/material_movement.c": {
-      "bytes": 30232,
-      "sha256": "017c0ae1953da09bbc5d8ba7f51b9415ed56971d1f1ab23bd9371a4c8b848dab"
+      "bytes": 30275,
+      "sha256": "693c8333e04f810ddd24dfd9067759eeb750a2acc617a4278bce7de22cd9c827"
     },
     "src/world/runtime/material_movement_execution_internal.h": {
       "bytes": 4749,
       "sha256": "e976c2e84b0b004ec913e8c3444c036a32b14b0726d62c9ff10da9f434ef4719"
     },
     "src/entity/tick/environment.c": {
-      "bytes": 41719,
-      "sha256": "06edcbbad8d1df8c990a4db451d76c9d909e86ae3b54b2baafba68b948659b68"
+      "bytes": 41795,
+      "sha256": "b4128730cc654332f7e57fc5fc25aee6473baea27ea625c96e78fefb2bd8e62f"
     },
     "src/entity/movement/environment.c": {
-      "bytes": 26328,
-      "sha256": "20d5a5cf83ccbd90d8b3112c282f6a80b390cc8f4ff7551b5235b0a4a6b960cc"
+      "bytes": 29826,
+      "sha256": "2792ed1d6e4b1b858ca6c301dc07a9052bde5f15a34dfab762f562772703db67"
     },
     "src/entity/tick/arrow_base_execution_internal.h": {
       "bytes": 4542,

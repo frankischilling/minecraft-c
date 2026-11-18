@@ -7994,8 +7994,8 @@
       "sha256": "9e261466fe34462be35557f3ac3bbc595b5880c918382317f6b45c6de886d93a"
     },
     "src/entity/living/travel.c": {
-      "bytes": 28880,
-      "sha256": "c182723f4c729c3309c96ecddbc05d20d399bbb8e7adcc3fa15a2dac54cdac56"
+      "bytes": 28936,
+      "sha256": "320751812b75ebe6dcdcdca972d7fb2c6d39d80c2da70242e41c21ea9346e7df"
     },
     "src/entity/movement/movement.c": {
       "bytes": 35369,
@@ -8018,8 +8018,8 @@
       "sha256": "6c04ddcd89c64aaff3db755e60399a64fee045861c599a222c8dbae4c9121165"
     },
     "src/entity/tick/environment.c": {
-      "bytes": 41719,
-      "sha256": "06edcbbad8d1df8c990a4db451d76c9d909e86ae3b54b2baafba68b948659b68"
+      "bytes": 41795,
+      "sha256": "b4128730cc654332f7e57fc5fc25aee6473baea27ea625c96e78fefb2bd8e62f"
     },
     "src/inventory/runtime/scatter.c": {
       "bytes": 8759,
@@ -9538,12 +9538,12 @@
       "sha256": "ff3cf04e9bcfb028e2e372fc328da5a1277f30e7edb4b1346925312fb1970abb"
     },
     "src/entity/movement/environment_internal.h": {
-      "bytes": 1069,
-      "sha256": "6729a5a94ce47b07a55eb7adc6692d8de0a1fb955d8d363cd7e4484be809e9f0"
+      "bytes": 2096,
+      "sha256": "41916c646bfa963b0ba8c6582a062bfc338168062387d786b388d7098e51b254"
     },
     "src/world/runtime/material_movement_internal.h": {
-      "bytes": 2003,
-      "sha256": "ef126d981a46d79d6c96ed9cb2c7cc36ebc3bf896d51928561a1c2ec83aab170"
+      "bytes": 2163,
+      "sha256": "6e923bd5085a443af676c701c8259c1a2a3cca6a1a9c3e632d1890a8a8cb1803"
     },
     "tests/core/math/test_execution.c": {
       "bytes": 12551,
@@ -9675,7 +9675,7 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76652,
-      "sha256": "a375a0d2f28e7a7bc79800493289db7b5142aed164c63b4ccdce72deb7e5b1d4"
+      "sha256": "84c014be304d223148c0b955bedbcd27fa35b6d57ef5b9dc93f6e5590929466c"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -9855,7 +9855,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "ab78f7b7701c0f91aff98217854d8ece6f89f5ecabfb8d0af650efa54d70b936"
+      "sha256": "1349a81b4dfe635c7bf4afaa9b14b4536e876b74974604d5a8a3477805df8f11"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,

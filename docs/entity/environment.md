@@ -98,7 +98,7 @@ compiler and supplied archive/library hashes are checked before original runs.
 
 The stored-water path keeps just the admission status, cause, and operation
 while it checks the actor and reads its water flag. It retains the actor for
-the read and releases the hold before publishing the result. A caller that
+the read and releases the hold before returning. A public caller that
 requests a diagnostic receives the canonical record, initialized once. The
 native controls cover both stored values with and without the diagnostic,
 invalid-phase metadata, balanced holds, and access under altered FP controls.
@@ -109,27 +109,24 @@ scheduler receipts matched. Median method time per tick fell from
 2.37–2.46 ms to 1.24–1.26 ms. A separate uninstrumented comparison measured
 the change alongside [Display-list replay reuse](../client/world-renderer.md#display-list-draw-cost).
 
-## Remaining active movement and tick work
+## Reusing diagnostic storage in the active tick
 
-`ls.a_(FF)V` remains unfinished. Its water branch now has the real stored flag
-at PC1, relative acceleration at17 and clearance at115; its actual movement
-call at33 is separate work. The lava branch uses the real lava query at132,
-relative call148, movement164 and clearance246. Dry movement later calls the
-movement body at571 and has its own friction, ladder and limb-state closure.
-The parallel Player movement stage owns movement/effects work; this stage
-does not replace it or implement the complete Living travel method.
+Living action and travel reuse their existing diagnostic frame for the
+stored-water query. A successful read or relative velocity update leaves that
+frame ready for the next operation. Squid still invokes its own water query.
+Ordinary Base tick, Living action, and Living travel pass their existing frame
+to liquid scans. A successful scan keeps the reached World fields until the
+Registry borrow retires, then the caller frame publishes its canonical result.
+Failure keeps the recorded bounds, work limit and reached source positions.
 
-The actual first-tick chain is also separate. `gs.w_()V` calls `ls.w_()V` at111;
-`ls.w_()V` calls `sn.w_()V` at1; that invokes virtual `U()` at1; `ls.U()V`
-stores its own previous animation value and calls `sn.U()V` at9. Base `sn.U`
-calls the real water helper at81, but its remaining work includes rider
-lifetime/virtual handling, splash sound/particle arguments and Random order,
-water/fire state stores, actual Player/Living damage at501 and through lava
-`ae()` at523, and watcher mutation `b(IZ)V` at565 and582. That setter reaches
-`ud.b(ILjava/lang/Object;)V` at27/49 after actual Byte boxing. No generic
-watcher write/active damage or tick success is invented by these helpers.
-Existing World sound/particle entries are already implemented; reached
-presentation callbacks keep their real failures. `ls.U` continues with its
-own Random/living state after the base call, and Player tick has additional
-sleep/statistics behavior. The successful helpers therefore do not establish a
-successful active Player/Living tick.
+Two pairs per scene ran at Far distance and 854×480 on DISPLAY2. In the heavy
+cave, median FPS rose from 52.35 to 54.96 and p99 frame time fell from
+33.32 to 31.28 ms. In the lighter cave, median FPS moved from 63.41 to
+63.77 with mixed results across the two pairs. Both scenes matched actor,
+random state and scheduler receipts over 200 shared World ticks each.
+Separate heavy profiles counted 807,882 and 585,072 World movement
+diagnostic initializations over the same 200 ticks per run.
+
+The [Living travel](living-travel.md), [base environment tick](base-environment-tick.md),
+and [Mob active tick](mob-active-tick.md) reports describe the supported callers
+and their independent failure paths.

@@ -1,5 +1,6 @@
 #include "../living/travel_internal.h"
 #include "../mob/tick/internal.h"
+#include "../movement/environment_internal.h"
 #include "action_internal.h"
 
 #include <stdlib.h>
@@ -314,19 +315,20 @@ static bool living_body(mc_entity *p, const mc_player_action_context *context,
     }
     bool water, lava;
     living_at(e, 352);
-    if (!entity_status(
-            e,
-            mc_entity_environment_in_water(p, registry(context),
-                                           context == NULL ? NULL : context->travel.material_limits,
-                                           &water, &e->environment),
-            "Action actual cached-water virtual", 352))
+    if (!entity_status(e,
+                       mc_entity_environment_in_water_in_place(
+                           p, registry(context),
+                           context == NULL ? NULL : context->travel.material_limits, &water,
+                           &e->environment),
+                       "Action actual cached-water virtual", 352))
         return false;
     living_at(e, 357);
     const mc_world_material_movement_limits *material =
         context == NULL ? NULL : context->travel.material_limits;
-    if (!entity_status(
-            e, mc_entity_environment_lava(p, registry(context), material, &lava, &e->environment),
-            "Action actual lava virtual", 357))
+    if (!entity_status(e,
+                       mc_entity_environment_liquid_in_place(p, registry(context), false, material,
+                                                             &lava, &e->environment),
+                       "Action actual lava virtual", 357))
         return false;
     if (v->az) {
         if (water || lava) {

@@ -6,6 +6,7 @@
 #include "../../world/runtime/runtime_internal.h"
 #include "../mob/internal.h"
 #include "../mob/tick/internal.h"
+#include "../movement/environment_internal.h"
 #include "../movement/movement_internal.h"
 #include "../player/player_internal.h"
 #include "../player/statistics_status_internal.h"
@@ -253,8 +254,8 @@ static bool accelerate(travel_scope *s, float strafe, float forward, float amoun
         return false;
     const mc_math_trig *trig = s->mob == NULL ? s->context == NULL ? NULL : s->context->trig
                                               : mc_math_classes_table(s->mob->math);
-    return environment_result(e, mc_entity_environment_relative(s->entity, trig, strafe, forward,
-                                                                amount, &e->environment));
+    return environment_result(e, mc_entity_environment_relative_in_place(
+                                     s->entity, trig, strafe, forward, amount, &e->environment));
 }
 
 static bool move(travel_scope *s, mc_player_travel_error *e) {
@@ -297,7 +298,7 @@ static bool living(travel_scope *s, float strafe, float forward, mc_player_trave
     mc_living_entity_fields *state = mc_entity_living_fields(p);
     bool water;
     e->living_bytecode = 1;
-    if (!environment_result(e, mc_entity_environment_in_water(
+    if (!environment_result(e, mc_entity_environment_in_water_in_place(
                                    p, s->registry,
                                    s->context == NULL ? NULL : s->context->material_limits, &water,
                                    &e->environment)))
@@ -322,8 +323,8 @@ static bool living(travel_scope *s, float strafe, float forward, mc_player_trave
     } else {
         bool lava;
         e->living_bytecode = 132;
-        if (!environment_result(e, mc_entity_environment_lava(
-                                       p, s->registry,
+        if (!environment_result(e, mc_entity_environment_liquid_in_place(
+                                       p, s->registry, false,
                                        s->context == NULL ? NULL : s->context->material_limits,
                                        &lava, &e->environment)))
             return false;

@@ -4,10 +4,20 @@
 void mc_player_action_error_init(mc_player_action_error *e) {
     if (e == NULL)
         return;
-    /* Travel clears its own storage. The suffix includes any unused union tail. */
+    /* Each child clears its own storage. Clear the padding and unused union tail. */
     const size_t travel_end = offsetof(mc_player_action_error, travel) + sizeof(e->travel);
-    memset(e, 0, offsetof(mc_player_action_error, travel));
-    memset((unsigned char *)e + travel_end, 0, sizeof(*e) - travel_end);
+    const size_t environment_start = offsetof(mc_player_action_error, environment);
+    const size_t environment_end = environment_start + sizeof(e->environment);
+    const size_t collision_start = offsetof(mc_player_action_error, collision);
+    const size_t collision_end = collision_start + sizeof(e->collision);
+    const size_t nearby_start = offsetof(mc_player_action_error, nearby);
+    const size_t nearby_end = nearby_start + sizeof(e->nearby);
+    unsigned char *const bytes = (unsigned char *)e;
+    memset(bytes, 0, offsetof(mc_player_action_error, travel));
+    memset(bytes + travel_end, 0, environment_start - travel_end);
+    memset(bytes + environment_end, 0, collision_start - environment_end);
+    memset(bytes + collision_end, 0, nearby_start - collision_end);
+    memset(bytes + nearby_end, 0, sizeof(*e) - nearby_end);
     e->nearby_index = SIZE_MAX;
     mc_player_travel_error_init(&e->travel);
     e->registry = e->travel.registry;
@@ -56,9 +66,11 @@ bool mc_action_work(mc_player_action_error *e, unsigned int pc) {
 
 mc_entity_status mc_action_finish(mc_player_action_error *frame, mc_player_action_error *out) {
     const mc_entity_status status = frame->status;
-    if (status == MC_ENTITY_OK)
-        mc_player_action_error_init(frame);
-    if (out != NULL)
-        *out = *frame;
+    if (out != NULL) {
+        if (status == MC_ENTITY_OK)
+            mc_player_action_error_init(out);
+        else
+            *out = *frame;
+    }
     return status;
 }

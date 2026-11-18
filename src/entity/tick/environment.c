@@ -378,9 +378,9 @@ static bool base_body(mc_entity *entity, mc_registry_classes *classes, mc_math_c
     } else {
         const mc_entity_status water_status =
             execution == NULL
-                ? mc_entity_environment_water(entity, classes,
-                                              limits == NULL ? NULL : &limits->material, &water,
-                                              &e->environment)
+                ? mc_entity_environment_liquid_in_place(entity, classes, true,
+                                                        limits == NULL ? NULL : &limits->material,
+                                                        &water, &e->environment)
                 : mc_entity_environment_water_held_in_execution(
                       entity, classes, execution, limits == NULL ? NULL : &limits->material, &water,
                       &e->environment);
@@ -429,9 +429,9 @@ static bool base_body(mc_entity *entity, mc_registry_classes *classes, mc_math_c
     } else {
         const mc_entity_status lava_status =
             execution == NULL
-                ? mc_entity_environment_lava(entity, classes,
-                                             limits == NULL ? NULL : &limits->material, &lava,
-                                             &e->environment)
+                ? mc_entity_environment_liquid_in_place(entity, classes, false,
+                                                        limits == NULL ? NULL : &limits->material,
+                                                        &lava, &e->environment)
                 : mc_entity_environment_lava_held_in_execution(
                       entity, classes, execution, limits == NULL ? NULL : &limits->material, &lava,
                       &e->environment);

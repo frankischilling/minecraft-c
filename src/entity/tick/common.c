@@ -1,9 +1,20 @@
 #include "tick_internal.h"
+#include <stddef.h>
 
 void mc_entity_tick_error_init(mc_entity_tick_error *e) {
     if (e == NULL)
         return;
-    memset(e, 0, sizeof(*e));
+    const size_t environment_start = offsetof(mc_entity_tick_error, environment);
+    const size_t environment_end = environment_start + sizeof(e->environment);
+    const size_t effect_start = offsetof(mc_entity_tick_error, effect);
+    const size_t effect_end = effect_start + sizeof(e->effect);
+    const size_t world_start = offsetof(mc_entity_tick_error, world);
+    const size_t world_end = world_start + sizeof(e->world);
+    unsigned char *const bytes = (unsigned char *)e;
+    memset(bytes, 0, environment_start);
+    memset(bytes + environment_end, 0, effect_start - environment_end);
+    memset(bytes + effect_end, 0, world_start - effect_end);
+    memset(bytes + world_end, 0, sizeof(*e) - world_end);
     e->watcher_index = -1;
     mc_entity_environment_error_init(&e->environment);
     mc_entity_effect_error_init(&e->effect);
@@ -137,9 +148,11 @@ bool mc_tick_code(mc_entity *entity, mc_registry_classes *classes, mc_entity_tic
 
 mc_entity_status mc_tick_finish(mc_entity_tick_error *frame, mc_entity_tick_error *out) {
     const mc_entity_status status = frame->status;
-    if (status == MC_ENTITY_OK)
-        mc_entity_tick_error_init(frame);
-    if (out != NULL)
-        *out = *frame;
+    if (out != NULL) {
+        if (status == MC_ENTITY_OK)
+            mc_entity_tick_error_init(out);
+        else
+            *out = *frame;
+    }
     return status;
 }

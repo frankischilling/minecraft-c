@@ -588,6 +588,10 @@ static void publish_success(mc_world_material_movement_error *out,
     out->max_cell_work = maximum;
 }
 
+void mc_world_material_movement_error_complete(mc_world_material_movement_error *error) {
+    publish_success(error, error);
+}
+
 static mc_world_storage_status
 run_legacy(mc_world_runtime *w, const mc_entity_bounds *b, mc_material *m, mc_entity *entity,
            mc_world_material_scan_kind kind, const mc_world_material_movement_limits *limits,
@@ -609,8 +613,6 @@ mc_world_storage_status mc_world_runtime_material_scan_in_place(
     mc_world_material_scan_kind kind, const mc_world_material_movement_limits *limits, bool *out,
     mc_world_material_movement_error *error) {
     (void)run(w, b, m, entity, kind, limits, out, error, NULL, NULL);
-    if (error->status == MC_WORLD_STORAGE_OK)
-        publish_success(error, error);
     return error->status;
 }
 

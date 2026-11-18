@@ -2,6 +2,7 @@
 #include "../../world/runtime/collision/test_boxes.c"
 #undef MC_COLLISION_BOXES_MAIN
 #include "../../../src/entity/bounds/bounds_internal.h"
+#include "../../../src/entity/movement/environment_internal.h"
 #include "mc/entity/minecart/minecart.h"
 #include "mc/entity/movement/environment.h"
 #include "mc/entity/player/player.h"
@@ -62,6 +63,171 @@ static bool record_probe(const char *label, size_t side, size_t kind, int c, boo
                   label, side, kind, c, value, bits(entity->base.velocity_x),
                   bits(entity->base.velocity_y), bits(entity->base.velocity_z),
                   b.bounds_pool_cursor, v.cursor) > 0;
+}
+
+static bool environment_same_text(const char *a, const char *b) {
+    return a == b || (a != NULL && b != NULL && strcmp(a, b) == 0);
+}
+
+static bool environment_same_error(const mc_entity_environment_error *a,
+                                   const mc_entity_environment_error *b) {
+    return a->status == b->status && a->cause == b->cause && a->bytecode == b->bytecode &&
+           environment_same_text(a->operation, b->operation) &&
+           environment_same_text(a->source_class, b->source_class) &&
+           a->entity.status == b->entity.status && a->entity.bytecode == b->entity.bytecode &&
+           a->entity.world == b->entity.world && a->bounds.status == b->bounds.status &&
+           a->bounds.bytecode == b->bounds.bytecode &&
+           a->bounds.factory.status == b->bounds.factory.status &&
+           a->bounds.pool.status == b->bounds.pool.status &&
+           a->registry.status == b->registry.status &&
+           a->registry.initializer_pc == b->registry.initializer_pc &&
+           a->collision.nearby.index == SIZE_MAX && b->collision.nearby.index == SIZE_MAX &&
+           a->material.status == b->material.status &&
+           environment_same_text(a->material.operation, b->material.operation) &&
+           a->material.bytecode == b->material.bytecode &&
+           a->material.cell_work == b->material.cell_work &&
+           a->material.max_cell_work == b->material.max_cell_work &&
+           a->material.block.x == b->material.block.x &&
+           a->material.block.y == b->material.block.y &&
+           a->material.block.z == b->material.block.z &&
+           a->material.block.nearby.query.status == b->material.block.nearby.query.status &&
+           a->material.block.nearby.query.bytecode == b->material.block.nearby.query.bytecode &&
+           a->material.block.nearby.query.chunk_bytecode ==
+               b->material.block.nearby.query.chunk_bytecode &&
+           a->material.block.nearby.index == SIZE_MAX &&
+           b->material.block.nearby.index == SIZE_MAX &&
+           a->material.area.presentation.registry.initializer_pc == -1 &&
+           b->material.area.presentation.registry.initializer_pc == -1;
+}
+
+static bool environment_canonical(const mc_entity_environment_error *e) {
+    return e->status == MC_ENTITY_OK && e->cause == MC_ENTITY_ENVIRONMENT_NONE &&
+           e->operation == NULL && e->source_class == NULL && e->bytecode == 0 &&
+           e->entity.status == MC_ENTITY_OK && e->bounds.status == MC_ENTITY_OK &&
+           e->registry.initializer_pc == -1 && e->collision.nearby.index == SIZE_MAX &&
+           e->material.status == MC_WORLD_STORAGE_OK && e->material.bytecode == 0 &&
+           e->material.cell_work == 0 && e->material.max_cell_work == 0 &&
+           e->material.block.nearby.index == SIZE_MAX &&
+           e->material.area.presentation.registry.initializer_pc == -1;
+}
+
+static bool prepared_cases(fixture *f, size_t side, mc_entity *entity) {
+    bool ok = false;
+    mc_entity_environment_error public_error, prepared_error;
+    mc_chunk_data *const data = f->states[side]->data;
+    const size_t capacity = data->blocks_capacity, holds = entity->holds,
+                 borrows = f->registry[side]->runtime_borrows;
+    const mc_entity_base_fields saved_base = entity->base;
+    const mc_entity_bounds saved_bounds = *entity->bounds;
+    const mc_java_random random = *entity->random;
+    const mc_entity_bounds scan = {6.125, 64.125, 6.125, 6.875, 65.875, 7.875};
+    const mc_world_material_movement_limits limits = {64};
+    for (unsigned water = 0; water < 2; ++water)
+        for (unsigned failure = 0; failure < 2; ++failure) {
+            empty_cells(f, side);
+            if (failure)
+                CHECK(boxes_cell(f, side, 6, 64, 6, 1, 0));
+            else
+                CHECK(flow_cells(f, side, water ? 8 : 10));
+            mc_entity_bounds_assign(entity->bounds, &scan);
+            entity->base.velocity_x = 2;
+            entity->base.velocity_y = -3;
+            entity->base.velocity_z = 4;
+            const mc_entity_base_fields input = entity->base;
+            bool public_value = failure != 0, prepared_value = public_value;
+            CHECK(reset_pools(entity->classes));
+            /* First Stone succeeds; the next Z cell reaches the genuine
+             * normal Chunk byte-backing limit. Restore before assertions. */
+            data->blocks_capacity = failure ? boxes_index(6, 64, 7) : capacity;
+            const mc_entity_status public_status =
+                water ? mc_entity_environment_water(entity, f->registry[side], &limits,
+                                                    &public_value, &public_error)
+                      : mc_entity_environment_lava(entity, f->registry[side], &limits,
+                                                   &public_value, &public_error);
+            data->blocks_capacity = capacity;
+            const uint64_t vx = bits(entity->base.velocity_x), vy = bits(entity->base.velocity_y),
+                           vz = bits(entity->base.velocity_z);
+            const int32_t public_bounds_cursor = entity->classes->bounds_cursor;
+            mc_entity_vector_snapshot public_vectors, prepared_vectors;
+            CHECK(mc_entity_vector_get_snapshot(entity->classes, &public_vectors) == MC_ENTITY_OK);
+            entity->base = input;
+            CHECK(reset_pools(entity->classes));
+            memset(&prepared_error, 0xa5, sizeof(prepared_error));
+            mc_entity_environment_error_init(&prepared_error);
+            data->blocks_capacity = failure ? boxes_index(6, 64, 7) : capacity;
+            const mc_entity_status prepared_status = mc_entity_environment_liquid_in_place(
+                entity, f->registry[side], water != 0, &limits, &prepared_value, &prepared_error);
+            data->blocks_capacity = capacity;
+            CHECK(mc_entity_vector_get_snapshot(entity->classes, &prepared_vectors) ==
+                  MC_ENTITY_OK);
+            CHECK(public_status == (failure ? MC_ENTITY_WORLD_FAILED : MC_ENTITY_OK) &&
+                  prepared_status == public_status && public_value && prepared_value &&
+                  environment_same_error(&public_error, &prepared_error) &&
+                  bits(entity->base.velocity_x) == vx && bits(entity->base.velocity_y) == vy &&
+                  bits(entity->base.velocity_z) == vz && entity->holds == holds &&
+                  entity->classes->bounds_cursor == public_bounds_cursor &&
+                  prepared_vectors.cursor == public_vectors.cursor && public_vectors.holds == 0 &&
+                  prepared_vectors.holds == 0 && f->registry[side]->runtime_borrows == borrows &&
+                  f->worlds[side]->active_calls == 0 && f->worlds[side]->local_leases == 0);
+            CHECK(failure ? public_error.material.cell_work == 2 &&
+                                public_error.material.bytecode == (water ? 135u : 101u) &&
+                                public_error.material.block.nearby.query.bytecode == 60 &&
+                                public_error.material.block.nearby.query.chunk_bytecode == 15 &&
+                                vx == bits(2) && vy == bits(-3) && vz == bits(4)
+                          : environment_canonical(&public_error) &&
+                                environment_canonical(&prepared_error));
+        }
+    for (unsigned failure = 0; failure < 2; ++failure) {
+        entity->base.bx = true;
+        bool public_value = false, prepared_value = false;
+        mc_entity_environment_error_init(&prepared_error);
+        if (failure)
+            entity->holds = SIZE_MAX;
+        const mc_entity_status public_status = mc_entity_environment_in_water(
+            entity, f->registry[side], NULL, &public_value, &public_error);
+        const size_t public_holds = entity->holds;
+        const mc_entity_status prepared_status = mc_entity_environment_in_water_in_place(
+            entity, f->registry[side], NULL, &prepared_value, &prepared_error);
+        const size_t prepared_holds = entity->holds;
+        entity->holds = holds;
+        CHECK(public_status == (failure ? MC_ENTITY_LIMIT : MC_ENTITY_OK) &&
+              prepared_status == public_status && public_value == !failure &&
+              prepared_value == public_value && public_holds == (failure ? SIZE_MAX : holds) &&
+              prepared_holds == public_holds &&
+              environment_same_error(&public_error, &prepared_error) &&
+              (failure ||
+               (environment_canonical(&public_error) && environment_canonical(&prepared_error))));
+        entity->base.velocity_x = 2;
+        entity->base.velocity_y = -3;
+        entity->base.velocity_z = 4;
+        entity->base.yaw = 30;
+        const mc_math_trig *const table = failure ? NULL : &trig;
+        const mc_entity_status public_relative =
+            mc_entity_environment_relative(entity, table, .7f, -.4f, .2f, &public_error);
+        const uint64_t vx = bits(entity->base.velocity_x), vz = bits(entity->base.velocity_z);
+        entity->base.velocity_x = 2;
+        entity->base.velocity_z = 4;
+        mc_entity_environment_error_init(&prepared_error);
+        const mc_entity_status prepared_relative =
+            mc_entity_environment_relative_in_place(entity, table, .7f, -.4f, .2f, &prepared_error);
+        CHECK(public_relative == (failure ? MC_ENTITY_INVALID_ARGUMENT : MC_ENTITY_OK) &&
+              prepared_relative == public_relative &&
+              environment_same_error(&public_error, &prepared_error) &&
+              bits(entity->base.velocity_x) == vx && bits(entity->base.velocity_z) == vz &&
+              entity->base.velocity_y == -3 && entity->holds == holds &&
+              (!failure || (vx == bits(2) && vz == bits(4))) &&
+              (failure ||
+               (environment_canonical(&public_error) && environment_canonical(&prepared_error))));
+    }
+    CHECK(mc_test_java_random_equal(&random, entity->random) && reset_pools(entity->classes) &&
+          f->registry[side]->runtime_borrows == borrows);
+    ok = true;
+cleanup:
+    data->blocks_capacity = capacity;
+    entity->holds = holds;
+    entity->base = saved_base;
+    mc_entity_bounds_assign(entity->bounds, &saved_bounds);
+    return ok;
 }
 
 static bool probes(fixture *f, size_t side, size_t kind, mc_entity *entity) {
@@ -457,7 +623,7 @@ int main(int argc, char **argv) {
             CHECK(clearance_cases(f, side, kind, actors[side][kind]));
             CHECK(relative_cases(actors[side][kind], side, kind));
         }
-        CHECK(failures(f, side, actors[side][1]));
+        CHECK(prepared_cases(f, side, actors[side][1]) && failures(f, side, actors[side][1]));
     }
     CHECK(published_boxes(f, actors[0][1], actors[0][3], actors[0][2]));
     result = 0;
