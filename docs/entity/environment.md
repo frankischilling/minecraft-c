@@ -94,6 +94,21 @@ controllers require completed bounded capture, explicit empty reader errors,
 zero exit, empty stderr and a final positive count; matching JDK17 runtime and
 compiler and supplied archive/library hashes are checked before original runs.
 
+## Stored water queries during a World tick
+
+The stored-water path keeps just the admission status, cause, and operation
+while it checks the actor and reads its water flag. It retains the actor for
+the read and releases the hold before publishing the result. A caller that
+requests a diagnostic receives the canonical record, initialized once. The
+native controls cover both stored values with and without the diagnostic,
+invalid-phase metadata, balanced holds, and access under altered FP controls.
+
+Two heavy-cave pairs on DISPLAY2 timed 58,554 stored-water calls per run
+over the same 200 World ticks and 16,424 actor dispatches. Ordered actor and
+scheduler receipts matched. Median method time per tick fell from
+2.37–2.46 ms to 1.24–1.26 ms. A separate uninstrumented comparison measured
+the change alongside [Display-list replay reuse](../client/world-renderer.md#display-list-draw-cost).
+
 ## Remaining active movement and tick work
 
 `ls.a_(FF)V` remains unfinished. Its water branch now has the real stored flag

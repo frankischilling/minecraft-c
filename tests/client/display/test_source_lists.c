@@ -9,6 +9,82 @@
 static unsigned checks, queries;
 static GLenum(GLAPIENTRY *native_get_error)(void);
 
+enum {
+    REPLAY_PROGRAM,
+    REPLAY_VAO,
+    REPLAY_BUFFER,
+    REPLAY_DRAW,
+    REPLAY_PROJECTION,
+    REPLAY_MODELVIEW,
+    REPLAY_TEXTURED,
+    REPLAY_ALPHA,
+    REPLAY_FOG,
+    REPLAY_LIGHTING,
+    REPLAY_FLAT,
+    REPLAY_COUNTERS
+};
+
+static mc_client_gl replay_native;
+static mc_client_display *replay_display;
+static unsigned replay_calls[REPLAY_COUNTERS];
+static GLuint replay_names[3][4];
+
+static void replay_name(unsigned int kind, GLuint name) {
+    if (replay_calls[kind] < 4)
+        replay_names[kind][replay_calls[kind]] = name;
+    ++replay_calls[kind];
+}
+
+static void GLAPIENTRY replay_program(GLuint program) {
+    replay_native.UseProgram(program);
+    replay_name(REPLAY_PROGRAM, program);
+}
+
+static void GLAPIENTRY replay_vao(GLuint vao) {
+    replay_native.BindVertexArray(vao);
+    replay_name(REPLAY_VAO, vao);
+}
+
+static void GLAPIENTRY replay_buffer(GLenum target, GLuint buffer) {
+    replay_native.BindBuffer(target, buffer);
+    if (target == GL_ARRAY_BUFFER)
+        replay_name(REPLAY_BUFFER, buffer);
+}
+
+static void GLAPIENTRY replay_draw(GLenum mode, GLint first, GLsizei count) {
+    replay_native.DrawArrays(mode, first, count);
+    ++replay_calls[REPLAY_DRAW];
+}
+
+static void GLAPIENTRY replay_integer(GLint location, GLint value) {
+    replay_native.Uniform1i(location, value);
+    const mc_client_source_state *s = &replay_display->source;
+    const GLint locations[] = {s->textured_uniform, s->alpha_uniform, s->fog_enabled_uniform,
+                               s->lighting_uniform, s->flat_uniform};
+    for (size_t i = 0; i < sizeof(locations) / sizeof(*locations); ++i)
+        if (location == locations[i])
+            ++replay_calls[REPLAY_TEXTURED + i];
+}
+
+static void GLAPIENTRY replay_matrix(GLint location, GLsizei count, GLboolean transpose,
+                                     const GLfloat *values) {
+    replay_native.UniformMatrix4fv(location, count, transpose, values);
+    if (location == replay_display->source.projection_uniform)
+        ++replay_calls[REPLAY_PROJECTION];
+    if (location == replay_display->source.modelview_uniform)
+        ++replay_calls[REPLAY_MODELVIEW];
+}
+
+static bool replay_payload_once(unsigned int draws) {
+    if (replay_calls[REPLAY_PROGRAM] != 1 || replay_calls[REPLAY_DRAW] != draws ||
+        replay_calls[REPLAY_PROJECTION] != draws || replay_calls[REPLAY_MODELVIEW] != draws)
+        return false;
+    for (unsigned int kind = REPLAY_TEXTURED; kind < REPLAY_COUNTERS; ++kind)
+        if (replay_calls[kind] != 1)
+            return false;
+    return true;
+}
+
 static GLenum GLAPIENTRY observe_error(void) {
     ++queries;
     return native_get_error();
@@ -243,6 +319,131 @@ cleanup:
     return result;
 }
 
+static bool replay_native_controls(mc_client_display *display,
+                                   mc_client_display_context_lease *lease, uint8_t resume_bytes[96],
+                                   mc_client_display_error *error) {
+    bool result = false, observing = false;
+    mc_client_display_list_range *range = NULL;
+    mc_client_capture capture = {0};
+    int32_t base = 0;
+
+    enum { CACHE_VERTICES = ((SOURCE_CACHE_MIN_VERTICES + 2) / 3) * 3 };
+
+    uint8_t small[2][96], cached[CACHE_VERTICES * 32];
+    static const float positions[2][3][3] = {{{4, 4, 0}, {28, 4, 0}, {4, 28, 0}},
+                                             {{36, 36, 0}, {60, 36, 0}, {36, 60, 0}}};
+    for (size_t side = 0; side < 2; ++side) {
+        triangle(small[side], (unsigned int)side);
+        for (size_t vertex = 0; vertex < 3; ++vertex)
+            memcpy(small[side] + vertex * 32, positions[side][vertex],
+                   sizeof(positions[side][vertex]));
+    }
+    for (size_t vertex = 0; vertex < CACHE_VERTICES; ++vertex) {
+        uint8_t *raw = cached + vertex * 32;
+        memcpy(raw, small[0] + (vertex % 3u) * 32, 32);
+        raw[20] = 0;
+        raw[22] = 255;
+    }
+    CHECK(display->source.gpu_phase == 2 && display->source.program != 0 &&
+          display->source.vao != 0 && display->source.vbo != 0 && display->program != 0 &&
+          display->vao != 0 && display->vbo != 0 && display->program != display->source.program &&
+          display->vao != display->source.vao && display->vbo != display->source.vbo);
+    CHECK(mc_client_display_source_lighting_enable(display, false, error) &&
+          mc_client_display_source_fog_enable(display, false, error) &&
+          mc_client_display_source_alpha_test(display, false, error) &&
+          mc_client_display_source_shade_model(display, GL_SMOOTH, error));
+    CHECK(mc_client_display_lists_generate(display, 3, 8, &range, &base, error));
+    for (int32_t i = 0; i < 3; ++i) {
+        uint8_t *bytes = i == 2 ? cached : small[i];
+        const int32_t count = i == 2 ? CACHE_VERTICES : 3;
+        CHECK(triangle_arrays(display, lease, bytes, error));
+        CHECK(mc_client_display_lists_begin(display, base + i, error));
+        CHECK(mc_client_display_source_batch(lease, bytes, bytes, (size_t)count * 32, count,
+                                             GL_TRIANGLES, error));
+        CHECK(mc_client_display_lists_end(display, error));
+    }
+    /* Populate the optional command storage before observing warm replay. */
+    const int32_t cached_id = base + 2;
+    CHECK(mc_client_display_lists_call(display, &cached_id, 1, error));
+    mc_client_source_batch_view view;
+    CHECK(mc_client_display_list_batch(display, cached_id, 0, &view) &&
+          display->source_cache != NULL);
+    const source_cached_vertices *entry =
+        &display->source_cache->slots[source_vertex_cache_index(view.bytes)];
+    CHECK(entry->data == view.bytes && entry->vao != 0 && entry->vbo != 0 &&
+          entry->vao != display->source.vao && entry->vbo != display->source.vbo);
+    const GLuint cached_vao = entry->vao, cached_vbo = entry->vbo;
+    replay_native = display->gl;
+    replay_display = display;
+    display->gl.UseProgram = replay_program;
+    display->gl.BindVertexArray = replay_vao;
+    display->gl.BindBuffer = replay_buffer;
+    display->gl.DrawArrays = replay_draw;
+    display->gl.Uniform1i = replay_integer;
+    display->gl.UniformMatrix4fv = replay_matrix;
+    observing = true;
+
+    const int32_t pair[] = {base, base + 1};
+    const int32_t mixed[] = {base, base + 1, cached_id, base};
+    for (unsigned int attempt = 0; attempt < 3; ++attempt) {
+        if (attempt == 2) {
+            /* Real caller-owned native state between public invocations. A
+             * replay-local receipt must not remember the previous bindings or
+             * uniforms. Use the Display's other actual program and storage. */
+            replay_native.UseProgram(display->source.program);
+            replay_native.Uniform1i(display->source.textured_uniform, 1);
+            replay_native.Uniform1i(display->source.alpha_uniform, 1);
+            replay_native.Uniform1i(display->source.fog_enabled_uniform, 1);
+            replay_native.Uniform1i(display->source.lighting_uniform, 1);
+            replay_native.Uniform1i(display->source.flat_uniform, 1);
+            replay_native.UseProgram(display->program);
+            replay_native.BindVertexArray(display->vao);
+            replay_native.BindBuffer(GL_ARRAY_BUFFER, display->vbo);
+            CHECK(replay_native.GetError() == GL_NO_ERROR);
+        }
+        CHECK(mc_client_display_loading_clear_color_depth(display, error));
+        memset(replay_calls, 0, sizeof(replay_calls));
+        memset(replay_names, 0, sizeof(replay_names));
+        const bool transition = attempt == 1;
+        CHECK(mc_client_display_lists_call(display, transition ? mixed : pair, transition ? 4 : 2,
+                                           error));
+        CHECK(replay_payload_once(transition ? 4 : 2) &&
+              replay_names[REPLAY_PROGRAM][0] == display->source.program &&
+              replay_calls[REPLAY_VAO] == (transition ? 3u : 1u) &&
+              replay_calls[REPLAY_BUFFER] == (transition ? 3u : 1u) &&
+              replay_names[REPLAY_VAO][0] == display->source.vao &&
+              replay_names[REPLAY_BUFFER][0] == display->source.vbo);
+        if (transition)
+            CHECK(replay_names[REPLAY_VAO][1] == cached_vao &&
+                  replay_names[REPLAY_BUFFER][1] == cached_vbo &&
+                  replay_names[REPLAY_VAO][2] == display->source.vao &&
+                  replay_names[REPLAY_BUFFER][2] == display->source.vbo);
+        GLint program = 0, vao = 0, buffer = 0;
+        replay_native.GetIntegerv(GL_CURRENT_PROGRAM, &program);
+        replay_native.GetIntegerv(GL_VERTEX_ARRAY_BINDING, &vao);
+        replay_native.GetIntegerv(GL_ARRAY_BUFFER_BINDING, &buffer);
+        CHECK((GLuint)program == display->source.program && (GLuint)vao == display->source.vao &&
+              (GLuint)buffer == display->source.vbo && replay_native.GetError() == GL_NO_ERROR);
+        CHECK(mc_client_display_capture_rgba(display, &capture, error) &&
+              color_pixels(&capture, 0) && color_pixels(&capture, 1) && !color_pixels(&capture, 2));
+        mc_client_capture_free(&capture);
+    }
+    result = true;
+cleanup:
+    if (observing) {
+        display->gl = replay_native;
+        replay_display = NULL;
+    }
+    mc_client_capture_free(&capture);
+    if (!mc_client_display_lists_retire(&range, error))
+        result = false;
+    const float white[4] = {1, 1, 1, 1};
+    if (!triangle_arrays(display, lease, resume_bytes, error) ||
+        !mc_client_display_source_color(display, white[0], white[1], white[2], white[3], error))
+        result = false;
+    return result;
+}
+
 int main(int argc, char **argv) {
     (void)argc;
     (void)argv;
@@ -283,6 +484,7 @@ int main(int argc, char **argv) {
     triangle(bytes, 0);
     memcpy(red, bytes, sizeof(red));
     CHECK(matrix_controls(display, lease, bytes, &error));
+    CHECK(replay_native_controls(display, lease, bytes, &error));
     const unsigned before_queries = queries;
     display->gl.Enable((GLenum)UINT32_MAX); /* Genuine sticky GL error. */
     CHECK(mc_client_display_lists_begin(display, id, &error));

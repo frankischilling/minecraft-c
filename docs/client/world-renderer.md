@@ -194,6 +194,42 @@ World ticks and 16,259 dispatches in the heavy cave, and 199 ticks and
 The heavy cave gained about 21% FPS. The lighter cave lost about 4% FPS.
 The p99 frame time improved in every pair in both scenes.
 
+Later paired traces measured the cache saving CPU time in both scenes.
+Mean unlit draw time fell from 7.56 to 4.18 ms per frame in the heavy cave
+and from 3.80–4.08 to 2.33–2.58 ms in the lighter cave. Native binds for
+cached vertices took 0.06–0.07 ms per frame in the lighter cave. These spans
+include driver waits. The instrumented lighter trials also spent more time
+in the native state queries and the GL check after drawing with the cache.
+
+Two fresh uninstrumented pairs per scene put the current cache ahead of
+streaming at 32.54 versus 26.71 median FPS in the heavy cave and at 59.46
+versus 57.41 in the lighter cave. The lighter result varied between pairs
+and reversed the earlier median. A shared-buffer prototype placed behind
+the current cache in both scenes at 32.13 and 57.10 median FPS.
+
+Within one list invocation, replay keeps the current source program and
+the last bound vertex objects. Unlit draws reuse unchanged non-matrix
+uniforms after verifying the current texture clamps. Every draw still
+uploads its current matrices and goes through native texture, error, and
+floating-point checks. The first draw of the next invocation sets its own
+bindings and uniforms. Native controls forward and count the actual GL
+calls, check both matrices and color pixels, and verify binding and uniform
+restoration after another native operation between invocations.
+
+Two final DISPLAY2 rounds per scene compared the preceding cache build,
+list replay reuse, and the combination with the
+[stored-water tick change](../entity/environment.md#stored-water-queries-during-a-world-tick).
+Ordered actor and scheduler receipts matched across 199 shared World ticks
+per scene, with 16,342 heavy-cave dispatches and 3,779 lighter-cave dispatches.
+
+| Scene | Median FPS, prior → replay → combined | Median p99 frame ms, prior → replay → combined |
+| --- | ---: | ---: |
+| Heavy cave | 32.73 → 34.02 → 35.38 | 48.26 → 47.38 → 46.04 |
+| Lighter cave | 59.15 → 59.16 → 59.41 | 28.15 → 29.28 → 28.50 |
+
+The combined build improved FPS and p99 in both heavy-cave rounds.
+The lighter scene varied between rounds and had nearly the same median FPS.
+
 ### Rendering and context ownership
 
 Vertices contain section-local float XYZ, UV and ARGB. The upload converts color

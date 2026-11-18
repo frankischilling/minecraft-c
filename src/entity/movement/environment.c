@@ -56,38 +56,44 @@ static mc_entity_status result(mc_entity_environment_error *out,
     return e->status;
 }
 
-static bool enter_domain(mc_entity *entity, bool output, mc_entity_environment_error *e,
-                         bool inherited_arrow) {
+typedef struct environment_admission {
+    mc_entity_status status;
+    mc_entity_environment_cause cause;
+    const char *operation;
+} environment_admission;
+
+static environment_admission enter_domain(mc_entity *entity, bool output, bool inherited_arrow) {
     if (entity == NULL || !output)
-        return fail(e, MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_ENVIRONMENT_OWNER,
-                    "Entity environment arguments", 0);
+        return (environment_admission){MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_ENVIRONMENT_OWNER,
+                                       "Entity environment arguments"};
     if (entity->phase != MC_ENTITY_READY)
-        return fail(e, MC_ENTITY_INVALID_PHASE, MC_ENTITY_ENVIRONMENT_OWNER,
-                    "Entity environment READY admission", 0);
+        return (environment_admission){MC_ENTITY_INVALID_PHASE, MC_ENTITY_ENVIRONMENT_OWNER,
+                                       "Entity environment READY admission"};
     const bool arrow = inherited_arrow && mc_entity_has_arrow(entity);
     if (arrow && entity->holds == 0)
-        return fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_ENVIRONMENT_OWNER,
-                    "Entity environment held Arrow owner", 0);
+        return (environment_admission){MC_ENTITY_STATE_ERROR, MC_ENTITY_ENVIRONMENT_OWNER,
+                                       "Entity environment held Arrow owner"};
     if (!arrow && !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
         !(mc_entity_has_mob(entity) && mc_entity_is_kind(entity, entity->class_literal->kind)))
-        return fail(e, MC_ENTITY_STATE_ERROR, MC_ENTITY_ENVIRONMENT_UNSUPPORTED_VIRTUAL,
-                    "Entity environment concrete virtual", 0);
+        return (environment_admission){MC_ENTITY_STATE_ERROR,
+                                       MC_ENTITY_ENVIRONMENT_UNSUPPORTED_VIRTUAL,
+                                       "Entity environment concrete virtual"};
     const mc_entity_status status = mc_entity_retain(entity);
     if (status != MC_ENTITY_OK)
-        return fail(e, status, MC_ENTITY_ENVIRONMENT_OWNER, "Entity environment lifetime hold", 0);
-    e->source_class = entity->classes->source == MC_ENTITY_CLIENT ? "sn" : "lq";
-    return true;
+        return (environment_admission){status, MC_ENTITY_ENVIRONMENT_OWNER,
+                                       "Entity environment lifetime hold"};
+    return (environment_admission){0};
 }
 
 static bool enter(mc_entity *entity, bool output, mc_entity_environment_error *e) {
-    return enter_domain(entity, output, e, false);
-}
-
-static bool enter_arrow_base(mc_entity *entity, bool output, mc_entity_environment_error *e) {
-    return enter_domain(entity, output, e, true);
+    const environment_admission admitted = enter_domain(entity, output, false);
+    if (admitted.status != MC_ENTITY_OK)
+        return fail(e, admitted.status, admitted.cause, admitted.operation, 0);
+    e->source_class = entity->classes->source == MC_ENTITY_CLIENT ? "sn" : "lq";
+    return true;
 }
 
 static bool floating(mc_entity_environment_error *e, unsigned pc) {
@@ -345,17 +351,29 @@ mc_entity_status mc_entity_environment_lava(mc_entity *entity, mc_registry_class
 
 mc_entity_status mc_entity_environment_stored_in_water(mc_entity *entity, bool *out,
                                                        mc_entity_environment_error *error) {
-    mc_entity_environment_error e;
-    mc_entity_environment_error_init(&e);
-    if (enter_arrow_base(entity, out != NULL, &e)) {
-        if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SQUID))
-            fail(&e, MC_ENTITY_STATE_ERROR, MC_ENTITY_ENVIRONMENT_NAMESPACE,
-                 "Squid ag requires its actual defining Registry context", 16);
-        else
+    environment_admission admitted = enter_domain(entity, out != NULL, true);
+    const char *source_class = NULL;
+    unsigned pc = 0;
+    if (admitted.status == MC_ENTITY_OK) {
+        if (mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_SQUID)) {
+            admitted =
+                (environment_admission){MC_ENTITY_STATE_ERROR, MC_ENTITY_ENVIRONMENT_NAMESPACE,
+                                        "Squid ag requires its actual defining Registry context"};
+            source_class = entity->classes->source == MC_ENTITY_CLIENT ? "sn" : "lq";
+            pc = 16;
+        } else {
             *out = entity->base.bx;
+        }
         mc_entity_release(entity);
     }
-    return result(error, &e);
+    if (error != NULL) {
+        mc_entity_environment_error_init(error);
+        if (admitted.status != MC_ENTITY_OK) {
+            (void)fail(error, admitted.status, admitted.cause, admitted.operation, pc);
+            error->source_class = source_class;
+        }
+    }
+    return admitted.status;
 }
 
 mc_entity_status mc_entity_environment_in_water(mc_entity *entity, mc_registry_classes *registry,

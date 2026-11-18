@@ -492,9 +492,16 @@ static bool source_gpu_create(mc_client_display *display, mc_client_display_erro
     return ok;
 }
 
+typedef struct source_replay_state {
+    bool drew, unlit_uniforms;
+    GLuint vao, vbo;
+    int clamp_s, clamp_t;
+} source_replay_state;
+
 static bool source_execute_batch(mc_client_display *display, const uint8_t *data, size_t bytes,
-                                 int32_t count, int32_t mode, unsigned arrays, bool compiled,
-                                 mc_client_display_error *error) {
+                                 int32_t count, int32_t mode, unsigned arrays,
+                                 source_replay_state *replay, mc_client_display_error *error) {
+    const bool compiled = replay != NULL;
     mc_client_source_state *s = &display->source;
     const unsigned vertex_bit = 1u << MC_CLIENT_SOURCE_VERTEX_ARRAY;
     const unsigned uv_bit = 1u << MC_CLIENT_SOURCE_UV_ARRAY;
@@ -597,20 +604,30 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
     source_material_publish(s, &candidate);
     bool ok = source_gpu_create(display, error);
     if (ok) {
-        display->gl.UseProgram(s->program);
+        if (replay == NULL || !replay->drew)
+            display->gl.UseProgram(s->program);
         if (entry != NULL) {
             entry->last_used = ++display->source_cache->sequence;
             if (hit) {
-                source_vertex_cache_bind(display, entry);
+                if (replay->vao != entry->vao)
+                    display->gl.BindVertexArray(entry->vao);
+                if (replay->vbo != entry->vbo)
+                    display->gl.BindBuffer(GL_ARRAY_BUFFER, entry->vbo);
                 ok = gl_check(display, "source VBO upload", error);
             } else {
                 ok = source_vertex_cache_upload(display, entry, data, allocation, attribute_profile,
                                                 current_color, current_normal, vertices,
                                                 (size_t)count, error);
             }
+            if (ok) {
+                replay->vao = entry->vao;
+                replay->vbo = entry->vbo;
+            }
         } else {
-            display->gl.BindVertexArray(s->vao);
-            display->gl.BindBuffer(GL_ARRAY_BUFFER, s->vbo);
+            if (replay == NULL || replay->vao != s->vao)
+                display->gl.BindVertexArray(s->vao);
+            if (replay == NULL || replay->vbo != s->vbo)
+                display->gl.BindBuffer(GL_ARRAY_BUFFER, s->vbo);
             if (allocation > s->vbo_bytes) {
                 display->gl.BufferData(GL_ARRAY_BUFFER, (GLsizeiptr)allocation, vertices,
                                        GL_STREAM_DRAW);
@@ -623,25 +640,40 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
                 display->gl.BufferSubData(GL_ARRAY_BUFFER, 0, (GLsizeiptr)allocation, vertices);
                 ok = gl_check(display, "source VBO upload", error);
             }
+            if (ok && replay != NULL) {
+                replay->vao = s->vao;
+                replay->vbo = s->vbo;
+            }
         }
     }
     if (ok) {
         display->gl.UniformMatrix4fv(s->projection_uniform, 1, GL_FALSE, s->projection);
         display->gl.UniformMatrix4fv(s->modelview_uniform, 1, GL_FALSE, s->modelview.column_major);
-        display->gl.Uniform1i(s->textured_uniform, s->texture_enabled ? 1 : 0);
-        display->gl.Uniform1i(s->alpha_uniform, s->alpha_test ? 1 : 0);
-        display->gl.Uniform1i(s->clamp_s_uniform, clamp_s);
-        display->gl.Uniform1i(s->clamp_t_uniform, clamp_t);
-        display->gl.Uniform1f(s->alpha_reference_uniform,
-                              s->alpha_function_set ? s->alpha_reference : 0.1f);
-        display->gl.Uniform1i(s->fog_enabled_uniform, s->fog_enabled ? 1 : 0);
-        display->gl.Uniform1i(s->fog_mode_uniform, s->fog.mode);
-        display->gl.Uniform1i(s->fog_distance_uniform, s->fog.distance_mode);
-        display->gl.Uniform4fv(s->fog_color_uniform, 1, s->fog.color);
-        display->gl.Uniform1f(s->fog_density_uniform, s->fog.density);
-        display->gl.Uniform1f(s->fog_start_uniform, s->fog.start);
-        display->gl.Uniform1f(s->fog_end_uniform, s->fog.end);
-        source_lighting_upload(display, normal_matrix, normal_scale);
+        /* Replay commands can change either matrix and the current attributes.
+         * The unlit shader's other inputs stay fixed except for sampled texture clamps. */
+        const bool reuse = replay != NULL && replay->unlit_uniforms && !s->lighting_enabled &&
+                           replay->clamp_s == clamp_s && replay->clamp_t == clamp_t;
+        if (!reuse) {
+            display->gl.Uniform1i(s->textured_uniform, s->texture_enabled ? 1 : 0);
+            display->gl.Uniform1i(s->alpha_uniform, s->alpha_test ? 1 : 0);
+            display->gl.Uniform1i(s->clamp_s_uniform, clamp_s);
+            display->gl.Uniform1i(s->clamp_t_uniform, clamp_t);
+            display->gl.Uniform1f(s->alpha_reference_uniform,
+                                  s->alpha_function_set ? s->alpha_reference : 0.1f);
+            display->gl.Uniform1i(s->fog_enabled_uniform, s->fog_enabled ? 1 : 0);
+            display->gl.Uniform1i(s->fog_mode_uniform, s->fog.mode);
+            display->gl.Uniform1i(s->fog_distance_uniform, s->fog.distance_mode);
+            display->gl.Uniform4fv(s->fog_color_uniform, 1, s->fog.color);
+            display->gl.Uniform1f(s->fog_density_uniform, s->fog.density);
+            display->gl.Uniform1f(s->fog_start_uniform, s->fog.start);
+            display->gl.Uniform1f(s->fog_end_uniform, s->fog.end);
+            source_lighting_upload(display, normal_matrix, normal_scale);
+            if (replay != NULL) {
+                replay->unlit_uniforms = !s->lighting_enabled;
+                replay->clamp_s = clamp_s;
+                replay->clamp_t = clamp_t;
+            }
+        }
         display->gl.ProvokingVertex(GL_LAST_VERTEX_CONVENTION);
         /* Preserve inherited blend/depth/viewport/scissor/cull/clear state. */
         display->gl.DrawArrays((GLenum)mode, 0, count);
@@ -650,8 +682,11 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
             last = hit ? &entry->last_vertex : &vertices[count - 1];
         source_attribute_batch_complete(s, attribute_profile, arrays, compiled, count, last);
         ok = gl_check(display, "source interleaved draw", error);
-        if (ok)
+        if (ok) {
             display->frame_started = true;
+            if (replay != NULL)
+                replay->drew = true;
+        }
     }
     free(vertices);
     return ok;
@@ -696,7 +731,7 @@ bool mc_client_display_source_batch(mc_client_display_context_lease *lease, cons
                 memcpy(command->value.draw.bytes, bytes, needed);
         }
     } else {
-        ok = source_execute_batch(display, bytes, size, count, mode, s->arrays, false, error);
+        ok = source_execute_batch(display, bytes, size, count, mode, s->arrays, NULL, error);
     }
     return source_leave(display, ok, error);
 }
@@ -1066,6 +1101,8 @@ bool mc_client_display_source_load_identity(mc_client_display *display,
 
 static bool source_lists_execute(mc_client_display *display, const int32_t *ids, size_t count,
                                  const char *operation, mc_client_display_error *error) {
+    /* Native state is known only during this closed command replay. */
+    source_replay_state replay = {0};
     bool ok = true;
     if (display->source.compiling != NULL) {
         ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation, "compiled/nested-call path",
@@ -1103,7 +1140,7 @@ static bool source_lists_execute(mc_client_display *display, const int32_t *ids,
                 ok = source_execute_batch(display, command->value.draw.bytes,
                                           command->value.draw.size, command->value.draw.count,
                                           command->value.draw.mode, command->value.draw.arrays,
-                                          true, error);
+                                          &replay, error);
             } else {
                 ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation,
                           "unrecognized native list command", 0);

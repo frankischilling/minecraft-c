@@ -411,8 +411,8 @@
       "sha256": "06edcbbad8d1df8c990a4db451d76c9d909e86ae3b54b2baafba68b948659b68"
     },
     "src/entity/movement/environment.c": {
-      "bytes": 24452,
-      "sha256": "3e34515a7fe7bbf230f9afb78dc3d2444b6f637ced269719a6d7e0c2e924bb44"
+      "bytes": 25336,
+      "sha256": "fac114197ad2a3e5bb0f770c53cea6fd1bd53cb1197122e814d171d67f03a57d"
     },
     "src/entity/tick/arrow_base_execution_internal.h": {
       "bytes": 4542,

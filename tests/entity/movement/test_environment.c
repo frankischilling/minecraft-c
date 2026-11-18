@@ -116,6 +116,7 @@ static bool probes(fixture *f, size_t side, size_t kind, mc_entity *entity) {
               entity->base.velocity_y == -3 && entity->base.velocity_z == 4);
     }
     const bool saved = entity->base.bx;
+    const size_t holds = entity->holds;
     for (int flag = 0; flag < 2; ++flag) {
         entity->base.bx = flag != 0;
         memset(&error, 0xa5, sizeof(error));
@@ -125,6 +126,9 @@ static bool probes(fixture *f, size_t side, size_t kind, mc_entity *entity) {
               error.material.block.nearby.index == SIZE_MAX &&
               error.collision.nearby.index == SIZE_MAX);
         CHECK(printf("FLAG %zu %zu %d %d\n", side, kind, flag, value) > 0);
+        value = !entity->base.bx;
+        CHECK(mc_entity_environment_stored_in_water(entity, &value, NULL) == MC_ENTITY_OK &&
+              value == entity->base.bx && entity->holds == holds);
     }
     entity->base.bx = saved;
     ok = true;
@@ -250,7 +254,13 @@ static bool failures(fixture *f, size_t side, mc_entity *ready) {
     CHECK(cold->blocks_phase == MC_REGISTRY_COLD && cold->runtime_borrows == 0);
     const int32_t initial_pc = cold->block_initializer_pc;
     CHECK(mc_falling_entity_allocate(classes, &raw, NULL) == MC_ENTITY_OK);
+    memset(&error, 0xa5, sizeof(error));
     CHECK(mc_entity_environment_stored_in_water(raw, &value, &error) == MC_ENTITY_INVALID_PHASE &&
+          value && error.status == MC_ENTITY_INVALID_PHASE &&
+          error.cause == MC_ENTITY_ENVIRONMENT_OWNER && error.source_class == NULL &&
+          error.bytecode == 0 && error.material.block.nearby.index == SIZE_MAX &&
+          error.collision.nearby.index == SIZE_MAX);
+    CHECK(mc_entity_environment_stored_in_water(NULL, &value, NULL) == MC_ENTITY_INVALID_ARGUMENT &&
           value);
     mc_entity_release(raw);
     raw = NULL;
