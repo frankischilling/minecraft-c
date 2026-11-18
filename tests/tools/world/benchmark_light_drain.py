@@ -151,16 +151,24 @@ def main():
                 folder = output / f'{round_index}-{label}'
                 authored = author(folder, saving)
                 command = [str(executables[label]), str(folder)]
-                started = time.monotonic()
-                result = subprocess.run(command, cwd=folder, capture_output=True, timeout=180)
-                (folder / 'native.stdout').write_bytes(result.stdout)
-                (folder / 'native.stderr').write_bytes(result.stderr)
                 profile = {'label': label, 'round': round_index, 'command': command,
-                           'returncode': result.returncode, 'seconds': time.monotonic() - started,
-                           'authored_inputs': authored}
+                           'returncode': None, 'authored_inputs': authored}
                 report['profiles'].append(profile)
-                require(result.returncode == 0 and not result.stderr, str(folder))
-                lines = result.stdout.decode('utf-8', 'strict').splitlines()
+                stdout_path = folder / 'native.stdout'
+                stderr_path = folder / 'native.stderr'
+                started = time.monotonic()
+                try:
+                    with stdout_path.open('wb') as stdout, stderr_path.open('wb') as stderr:
+                        result = subprocess.run(command, cwd=folder, stdout=stdout, stderr=stderr,
+                                                timeout=180)
+                    profile['returncode'] = result.returncode
+                except subprocess.TimeoutExpired:
+                    profile['timed_out'] = True
+                    raise
+                finally:
+                    profile['seconds'] = time.monotonic() - started
+                require(result.returncode == 0 and stderr_path.stat().st_size == 0, str(folder))
+                lines = stdout_path.read_text(encoding='utf-8').splitlines()
                 rows = [fields(line) for line in lines if line.startswith('LIGHT_CPU_SAMPLE ')]
                 receipts = [line for line in lines if line.startswith('LIGHT_CPU_') and
                             not line.startswith('LIGHT_CPU_SAMPLE ')]

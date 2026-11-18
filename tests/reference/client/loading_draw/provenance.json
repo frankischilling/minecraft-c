@@ -326,8 +326,8 @@
       "sha256": "a7b048c191e537a4fa2f6772de0f267ddf54c3f8bd52c1f43a4a56d609fecf19"
     },
     "include/mc/core/java/int_set.h": {
-      "bytes": 5032,
-      "sha256": "cc09767e77dcf687d0ebb819b1d2809fba7e94fc251557354262c5e2a245be5d"
+      "bytes": 5038,
+      "sha256": "5c13bd87cda0eb37314359e13331e43e759f58c604f79055a143bd06ef426681"
     },
     "include/mc/core/java/integer_parse.h": {
       "bytes": 1880,
@@ -2306,8 +2306,8 @@
       "sha256": "e28891267903f337a7ea1cbf3b14d7f42a1c3cb7a04f9693553fbff5ad131b43"
     },
     "src/core/java/int_set.c": {
-      "bytes": 13039,
-      "sha256": "70cee637f5feb3fac4e8c54cb8f90cf0c777953d4342273a8bb460de484211c7"
+      "bytes": 13555,
+      "sha256": "df559aab790473335728a293a9a2650df960ea026aa746397ab7f23ed3433e10"
     },
     "src/core/java/integer_parse.c": {
       "bytes": 3904,
@@ -4350,8 +4350,8 @@
       "sha256": "58ef12f9306c8e684babf47a1e260ec6c7050642807f23a7a58aa9927d9f6a43"
     },
     "tests/core/java/test_int_set_allocator.c": {
-      "bytes": 12398,
-      "sha256": "4457700ddaf1567a35cc4e56ff5643110b5b0df726f51acd34b85309f883fd56"
+      "bytes": 14253,
+      "sha256": "4b9d8d866cc5ae73dcdcf798e277ef251c217a2a6c75d68c40d7d48564bf44ad"
     },
     "tests/core/java/test_integer_parse.c": {
       "bytes": 5333,
@@ -9542,8 +9542,8 @@
       "sha256": "8e6c575df378820ea7e91345bf6708d4b4f138985e59c087745a1b6d4fadc818"
     },
     "tests/tools/world/benchmark_queries.py": {
-      "bytes": 11965,
-      "sha256": "79055ece60a5fd436fd5927c6c3c3ef82c472e1e459932918e82c9d6213d25a3"
+      "bytes": 12328,
+      "sha256": "7de238e8d5f30122b7afbcfb5c4472089103525d649e51088413600a3b1b9d17"
     },
     "cmake/client_leaf_harvest.cmake": {
       "bytes": 1792,
@@ -9706,8 +9706,8 @@
       "sha256": "4802ed1f2f7c763537392188b01f9be03fc709ec8faac433f277275383e50401"
     },
     "tests/tools/world/benchmark_light_drain.py": {
-      "bytes": 11139,
-      "sha256": "30264294b4f296f2fa00c519402275b22397ff37ad6bcdbe1835603af6a6f970"
+      "bytes": 11502,
+      "sha256": "8ac6cbf898380f6b4d3c6325fc322efde94e6ec981980f87a79fc131760a2709"
     },
     "cmake/client_inventory_geometry.cmake": {
       "bytes": 2171,
@@ -14082,8 +14082,8 @@
       "sha256": "18e3d5eac7aec83707c3b6038f5c22a7e9301da67022e9d479c6a35c7a189b6f"
     },
     "docs/performance/integer-sets.md": {
-      "bytes": 5555,
-      "sha256": "d24d85ba463ac4f886c4204cfa16764120281fdf1050f36d5df5e501aaddce23"
+      "bytes": 7271,
+      "sha256": "c0314861b2102434ae4c4ef1ae25f4dd0c8fb6a2e2561f6ae2fea9d59ccf88b7"
     },
     "tests/benchmarks/java/int_set.c": {
       "bytes": 12020,

@@ -88,16 +88,19 @@ static uint32_t int_set_threshold(uint32_t capacity) {
 /* Integer's h ^ (h >>> 16) is bijective over all 32 bits, so complete spread
  * hash equality is exactly value equality. This is not a general Object-key
  * lookup: distinct Object keys may have equal complete hashes. */
+static mc_java_hash_node *int_set_tree_find(mc_java_hash_node *node, uint32_t hash) {
+    node = mc_java_hash_root(node);
+    while (node != NULL && node->hash != hash)
+        node = node->children[int_set_before(hash, node->hash) ? 0 : 1];
+    return node;
+}
+
 static mc_java_hash_node *int_set_find(const mc_java_int_set *set, uint32_t hash) {
     if (set->capacity == 0)
         return NULL;
     mc_java_hash_node *node = set->buckets[hash & (set->capacity - 1u)];
-    if (node != NULL && node->tree) {
-        node = mc_java_hash_root(node);
-        while (node != NULL && node->hash != hash)
-            node = node->children[int_set_before(hash, node->hash) ? 0 : 1];
-        return node;
-    }
+    if (node != NULL && node->tree)
+        return int_set_tree_find(node, hash);
     while (node != NULL && node->hash != hash)
         node = node->next;
     return node;
@@ -174,20 +177,29 @@ mc_java_int_set_status mc_java_int_set_add(mc_java_int_set *set, int32_t key, bo
     if (set == NULL || changed == NULL)
         return MC_JAVA_INT_SET_INVALID_ARGUMENT;
     uint32_t hash = int_set_hash(key);
-    if (int_set_find(set, hash) != NULL) {
-        *changed = false;
-        return MC_JAVA_INT_SET_OK;
+    bool initial = set->capacity == 0;
+    uint32_t capacity = initial ? INT_SET_INITIAL_CAPACITY : set->capacity;
+    uint32_t index = hash & (capacity - 1u);
+    mc_java_hash_node *head = initial ? NULL : set->buckets[index];
+    mc_java_hash_node *tail = NULL;
+    size_t chain = 0;
+    if (head != NULL && head->tree) {
+        if (int_set_tree_find(head, hash) != NULL) {
+            *changed = false;
+            return MC_JAVA_INT_SET_OK;
+        }
+    } else {
+        for (mc_java_hash_node *node = head; node != NULL; node = node->next) {
+            if (node->hash == hash) {
+                *changed = false;
+                return MC_JAVA_INT_SET_OK;
+            }
+            tail = node;
+            ++chain;
+        }
     }
     if (set->size == set->limits.max_entries)
         return MC_JAVA_INT_SET_LIMIT;
-    mc_java_hash_node *head = set->capacity == 0 ? NULL : set->buckets[hash & (set->capacity - 1u)];
-    size_t chain = 0;
-    if (head != NULL && !head->tree) {
-        for (mc_java_hash_node *node = head; node != NULL; node = node->next)
-            ++chain;
-    }
-    bool initial = set->capacity == 0;
-    uint32_t capacity = initial ? INT_SET_INITIAL_CAPACITY : set->capacity;
     bool collision = chain >= 8u && capacity < INT_SET_TREE_CAPACITY;
     uint32_t capacities[2];
     size_t table_count = 0;
@@ -197,22 +209,29 @@ mc_java_int_set_status mc_java_int_set_add(mc_java_int_set *set, int32_t key, bo
         capacity *= 2u;
         capacities[table_count++] = capacity;
     }
-    bool growth = set->size + 1u > int_set_threshold(capacity) && capacity < INT_SET_MAX_CAPACITY;
+    uint32_t threshold = initial || collision ? int_set_threshold(capacity) : set->threshold;
+    bool growth = set->size + 1u > threshold && capacity < INT_SET_MAX_CAPACITY;
     if (growth) {
         capacity *= 2u;
         capacities[table_count++] = capacity;
     }
-    size_t old_bytes, retained, peak, table_bytes[2];
-    if (!int_set_bytes(set->capacity, set->size, &old_bytes) ||
-        !int_set_bytes(capacity, set->size + 1u, &retained) ||
-        !int_set_sum(old_bytes, sizeof(int_set_node), &peak))
+    size_t retained;
+    if (!int_set_bytes(capacity, set->size + 1u, &retained) ||
+        retained > set->limits.max_retained_bytes)
+        return MC_JAVA_INT_SET_LIMIT;
+    /* The final table is already in retained. Peak also counts the old
+     * table and any intermediate replacement reserved before insertion.
+     * Their capacities are bounded by the final checked capacity. */
+    size_t peak = retained, table_bytes[2];
+    if (table_count != 0 &&
+        !int_set_sum(peak, (size_t)set->capacity * sizeof(*set->buckets), &peak))
         return MC_JAVA_INT_SET_LIMIT;
     for (size_t i = 0; i < table_count; ++i) {
-        if (!int_set_product((size_t)capacities[i], sizeof(mc_java_hash_node *), &table_bytes[i]) ||
-            !int_set_sum(peak, table_bytes[i], &peak))
+        table_bytes[i] = (size_t)capacities[i] * sizeof(*set->buckets);
+        if (i + 1u < table_count && !int_set_sum(peak, table_bytes[i], &peak))
             return MC_JAVA_INT_SET_LIMIT;
     }
-    if (retained > set->limits.max_retained_bytes || peak > set->limits.max_allocation_bytes)
+    if (peak > set->limits.max_allocation_bytes)
         return MC_JAVA_INT_SET_LIMIT;
     int_set_node *entry = set->allocator.allocate(set->allocator.context, sizeof(*entry));
     if (entry == NULL)
@@ -236,16 +255,11 @@ mc_java_int_set_status mc_java_int_set_add(mc_java_int_set *set, int32_t key, bo
         int_set_resize(set, tables[table_index], capacities[table_index]);
         ++table_index;
     }
-    uint32_t index = hash & (set->capacity - 1u);
-    head = set->buckets[index];
     if (head == NULL) {
         set->buckets[index] = node;
     } else if (head->tree) {
         mc_java_hash_tree_add(set->buckets, set->capacity, head, node, NULL, NULL);
     } else {
-        mc_java_hash_node *tail = head;
-        while (tail->next != NULL)
-            tail = tail->next;
         tail->next = node;
         node->previous = tail;
         if (chain >= 8u) {
@@ -292,9 +306,9 @@ mc_java_int_set_status mc_java_int_set_remove(mc_java_int_set *set, int32_t key,
 mc_java_int_set_status mc_java_int_set_first(const mc_java_int_set *set, int32_t *key) {
     if (set == NULL || key == NULL)
         return MC_JAVA_INT_SET_INVALID_ARGUMENT;
-    const mc_java_hash_node *node = mc_java_hash_first(set->buckets, set->capacity);
-    if (node == NULL)
+    if (set->size == 0)
         return MC_JAVA_INT_SET_EMPTY;
+    const mc_java_hash_node *node = mc_java_hash_first(set->buckets, set->capacity);
     *key = int_set_key(node);
     return MC_JAVA_INT_SET_OK;
 }
@@ -331,7 +345,7 @@ mc_java_int_set_status mc_java_int_set_copy_order(const mc_java_int_set *set, in
 }
 
 void mc_java_int_set_clear(mc_java_int_set *set) {
-    if (set == NULL)
+    if (set == NULL || set->size == 0)
         return;
     for (uint32_t i = 0; i < set->capacity; ++i) {
         mc_java_hash_node *node = set->buckets[i];

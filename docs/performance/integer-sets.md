@@ -83,6 +83,37 @@ with all preceding names retained and no skips. The four-worker sweep takes
 571.01 seconds; all 6,602 public files and 689 native products stay unchanged
 during it. This integration run is separate from the CPU timing cohort.
 
+## Insertion and empty tables
+
+Insertion checks for duplicates, counts the chain and finds its tail in one
+pass through a list bucket. The retained-byte calculation also provides the
+peak reservation's starting point. A resize adds the old table and any
+intermediate replacement to the peak. Reads for the first element and clear
+calls return immediately when the set is empty.
+
+The [paired Linux record](../../tests/benchmarks/java/int_set_insertion_linux.json)
+compares the preceding implementation at `3a360202` with both changes using
+the same workload and compiler flags. Each cohort has 12 pairs of fresh
+processes pinned to logical CPU 0 on an i9-10900F under WSL2. Pair order
+alternates. All operation counts and checksums match. These are median process
+CPU times from the final cohort.
+
+| Case | Baseline | Candidate | Change | Faster pairs |
+| --- | ---: | ---: | ---: | ---: |
+| Dispersed operations | 81.499 ms | 79.326 ms | -2.67% | 10/12 |
+| Collision trees | 193.601 ms | 190.437 ms | -1.63% | 9/12 |
+| Sparse order copies | 477.780 ms | 473.181 ms | -0.96% | 9/12 |
+
+The insertion-only run reduced the medians by 2.09%, 1.19% and 1.43%,
+respectively. The two runs have separate baselines. They measure CPU work in
+the set benchmark and do not establish a frame-rate change.
+
+Six focused MSVC Release CTests cover the set, allocator, recorded order and
+the World queue callers. GCC and Clang address and undefined-behavior sanitizer
+runs cover the two direct C tests. The allocator regression checks the exact
+peak budget for a resize and verifies that a one-byte shortfall refuses the
+insertion before allocation.
+
 From the repository root, build and run the current workload:
 
 ```sh
@@ -93,8 +124,10 @@ gcc-15 -std=c17 -O2 -DNDEBUG -Wall -Wextra -Wpedantic -Werror -Iinclude \
 taskset -c 0 ./int-set-benchmark 128
 ```
 
-For the baseline, extract `src/core/java/int_set.c` from the named commit into a
-separate directory. Compile it with the same workload, flags and public header,
-without the shared kernel unit. Retain every attempt, alternate variant order,
-compare checksums before clocks, and record source/product identities and host
-details. Check the native runtime's `clock()` semantics before comparing platforms.
+For a baseline, extract `src/core/java/int_set.c` at the recorded commit into
+a separate directory. Use the same workload and compiler flags, and use the
+header from that commit. The pre-refactor baseline builds without the shared
+kernel unit. The insertion baseline links it. Retain every attempt, alternate
+variant order, compare checksums before clocks, and record source/product
+identities and host details. Check the native runtime's `clock()` semantics
+before comparing platforms.

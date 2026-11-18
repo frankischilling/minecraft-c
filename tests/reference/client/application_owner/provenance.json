@@ -42,8 +42,8 @@
       "sha256": "a7b048c191e537a4fa2f6772de0f267ddf54c3f8bd52c1f43a4a56d609fecf19"
     },
     "include/mc/core/java/int_set.h": {
-      "bytes": 5032,
-      "sha256": "cc09767e77dcf687d0ebb819b1d2809fba7e94fc251557354262c5e2a245be5d"
+      "bytes": 5038,
+      "sha256": "5c13bd87cda0eb37314359e13331e43e759f58c604f79055a143bd06ef426681"
     },
     "include/mc/core/java/java.h": {
       "bytes": 3573,

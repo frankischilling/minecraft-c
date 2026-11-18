@@ -75,8 +75,8 @@ bool mc_java_int_set_contains(const mc_java_int_set *set, int32_t key);
 mc_java_int_set_status mc_java_int_set_add(mc_java_int_set *set, int32_t key, bool *changed);
 mc_java_int_set_status mc_java_int_set_remove(mc_java_int_set *set, int32_t key, bool *changed);
 
-/* Rescan the current buckets on every call. EMPTY preserves *key. A successful
- * read does not remove the value or create a persistent iterator. */
+/* Find the first key in the current bucket order. EMPTY preserves *key.
+ * A successful read does not remove the value or create a persistent iterator. */
 mc_java_int_set_status mc_java_int_set_first(const mc_java_int_set *set, int32_t *key);
 
 /* Copy the complete current order; *count receives its size. count is required.

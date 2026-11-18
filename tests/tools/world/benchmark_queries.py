@@ -154,16 +154,24 @@ def main():
                 folder.mkdir()
                 authored = source_inputs(folder)
                 command = [str(executables[label]), str(folder), args.scope, str(args.chunks)]
-                started = time.monotonic()
-                result = subprocess.run(command, capture_output=True, timeout=180, cwd=folder)
-                (folder / 'native.stdout').write_bytes(result.stdout)
-                (folder / 'native.stderr').write_bytes(result.stderr)
                 profile = {'label': label, 'round': round_index, 'command': command,
-                           'returncode': result.returncode, 'host_seconds': time.monotonic() - started,
-                           'authored_inputs': authored}
+                           'returncode': None, 'authored_inputs': authored}
                 report['profiles'].append(profile)
-                assert result.returncode == 0 and not result.stderr, str(folder)
-                text = result.stdout.decode('utf-8', 'strict').splitlines()
+                stdout_path = folder / 'native.stdout'
+                stderr_path = folder / 'native.stderr'
+                started = time.monotonic()
+                try:
+                    with stdout_path.open('wb') as stdout, stderr_path.open('wb') as stderr:
+                        result = subprocess.run(command, cwd=folder, stdout=stdout, stderr=stderr,
+                                                timeout=180)
+                    profile['returncode'] = result.returncode
+                except subprocess.TimeoutExpired:
+                    profile['timed_out'] = True
+                    raise
+                finally:
+                    profile['host_seconds'] = time.monotonic() - started
+                assert result.returncode == 0 and stderr_path.stat().st_size == 0, str(folder)
+                text = stdout_path.read_text(encoding='utf-8').splitlines()
                 rows = [fields(line) for line in text if line.startswith('CACHE_QUERY_SAMPLE ')]
                 contexts = [fields(line) for line in text if line.startswith('CACHE_QUERY_CONTEXT ')]
                 invariants = [fields(line) for line in text if line.startswith('CACHE_QUERY_INVARIANTS ')]

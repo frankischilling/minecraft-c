@@ -160,6 +160,50 @@ cleanup:
     return result;
 }
 
+static int growth_peak_budget(void) {
+    int result = 1;
+    tracking t = {0};
+    mc_java_int_set *set = NULL;
+    const mc_java_int_set_allocator allocator = {&t, allocate, deallocate};
+    mc_java_int_set_limits limits = mc_java_int_set_default_limits();
+    size_t peak = 0;
+    /* Measure the first replacement's reservation, then exercise its two
+     * adjacent budget boundaries with the same allocator and insertion order. */
+    for (unsigned attempt = 0; attempt < 3; ++attempt) {
+        CHECK(mc_java_int_set_create_with_allocator(&limits, &allocator, &set) ==
+              MC_JAVA_INT_SET_OK);
+        bool changed = false;
+        for (int32_t key = 0; key < 12; ++key) {
+            CHECK(mc_java_int_set_add(set, key, &changed) == MC_JAVA_INT_SET_OK && changed);
+        }
+        const size_t before = t.count;
+        changed = false;
+        mc_java_int_set_status status = mc_java_int_set_add(set, 12, &changed);
+        if (attempt == 1) {
+            CHECK(status == MC_JAVA_INT_SET_LIMIT && !changed && t.count == before);
+            CHECK(mc_java_int_set_size(set) == 12 && !mc_java_int_set_contains(set, 12));
+        } else {
+            CHECK(status == MC_JAVA_INT_SET_OK && changed && t.count == before + 2u);
+            CHECK(mc_java_int_set_size(set) == 13 && mc_java_int_set_contains(set, 12));
+        }
+        if (attempt == 0) {
+            for (size_t i = 0; i < t.count; ++i)
+                peak += t.blocks[i].bytes;
+            CHECK(peak > 0);
+        }
+        mc_java_int_set_free(set);
+        set = NULL;
+        CHECK(released(&t, false) == 0);
+        t = (tracking){0};
+        limits.max_allocation_bytes = attempt == 0 ? peak - 1u : peak;
+    }
+    result = 0;
+cleanup:
+    mc_java_int_set_free(set);
+    caller_cleanup(&t);
+    return result;
+}
+
 static int history(bool retained, size_t fail_at, size_t *request_count) {
     int result = 1;
     tracking t = {0};
@@ -282,6 +326,8 @@ cleanup:
 }
 
 int main(void) {
+    if (growth_peak_budget() != 0)
+        return 1;
     for (unsigned int mode = 0; mode < 2; ++mode) {
         size_t requests = 0, ignored = 0;
         if (arguments(mode != 0) != 0 || history(mode != 0, 0, &requests) != 0)
