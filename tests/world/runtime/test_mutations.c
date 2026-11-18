@@ -9,9 +9,11 @@
 #include "../../../src/world/storage/objects_internal.h"
 
 #include <limits.h>
+#include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <threads.h>
 
 #define COUNT(a) (sizeof(a) / sizeof((a)[0]))
 #define CHECK(c)                                                                                   \
@@ -785,6 +787,43 @@ static bool decode_path(const char *hex, char *out, size_t capacity) {
     return true;
 }
 
+typedef struct diagnostic_start {
+    atomic_uint arrived;
+} diagnostic_start;
+
+static int initialize_diagnostic(void *argument) {
+    diagnostic_start *start = argument;
+    mc_world_mutation_error *error = malloc(sizeof(*error));
+    if (error != NULL)
+        memset(error, 0xa5, sizeof(*error));
+    (void)atomic_fetch_add_explicit(&start->arrived, 1u, memory_order_acq_rel);
+    while (atomic_load_explicit(&start->arrived, memory_order_acquire) != 2u)
+        thrd_yield();
+    if (error == NULL)
+        return 1;
+    mc_world_mutation_error_init(error);
+    const bool canonical = error->status == MC_WORLD_STORAGE_OK && error->operation == NULL &&
+                           error->chunk_bytecode == 0 && error->batch.index == SIZE_MAX &&
+                           error->registry.item_argument == -1 &&
+                           error->tile_entity.tile_entity.item_index == SIZE_MAX &&
+                           error->load_entity.index == SIZE_MAX &&
+                           error->plant.support.registry.initializer_pc == -1 &&
+                           error->rail_support.registry.constructor_pc == -1;
+    free(error);
+    return canonical ? 0 : 1;
+}
+
+static bool initialize_diagnostics_concurrently(void) {
+    diagnostic_start start = {0};
+    thrd_t thread;
+    if (thrd_create(&thread, initialize_diagnostic, &start) != thrd_success)
+        return false;
+    const int own_result = initialize_diagnostic(&start);
+    int worker_result;
+    return thrd_join(thread, &worker_result) == thrd_success && worker_result == 0 &&
+           own_result == 0;
+}
+
 int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
@@ -793,6 +832,7 @@ int main(int argc, char **argv) {
     if (argc != 3 || strcmp(argv[1], "world-mutations") != 0 ||
         !decode_path(argv[2], root, sizeof(root)) || !mc_math_trig_init(&trig))
         return 1;
+    CHECK(initialize_diagnostics_concurrently());
     f = calloc(1, sizeof(*f));
     CHECK(f != NULL);
     CHECK(mc_world_regions_create(NULL, &f->regions, NULL) == MC_WORLD_STORAGE_OK);

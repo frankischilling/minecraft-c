@@ -4930,8 +4930,8 @@
       "sha256": "190ad3de5c65ed49047d876e908375a5db6bbcba0e33f48e8b9866e748f2fec8"
     },
     "src/world/runtime/mutation/support.c": {
-      "bytes": 13807,
-      "sha256": "3bda7f63f0f8cb25ce62b353bf467ceefb144fa61670eaddaf07aff096024cc2"
+      "bytes": 14110,
+      "sha256": "694bc23fd795b4474538c44a74d7d7499a20f3e9536339b1bdc8b84370f1fdfa"
     },
     "src/world/runtime/mutation/ticks.c": {
       "bytes": 6957,
@@ -6411,7 +6411,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 937705,
-      "sha256": "aec664578e70a7da35b3c372bb2e0a2cfc41a5d4e9a1f850bad0ec312368364e"
+      "sha256": "44b502af7cddb63c77c1cfaad268ef9d9e8c2ea34bf18b8f94310b5932b041ba"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6475,7 +6475,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067658,
-      "sha256": "5443433c5c80146c66caf97d438ada5fac6dddfa05fd03b93cbeb7fe7a9bb7ec"
+      "sha256": "327e4db1a3b7730f855049f8e8f6087020afea414bfba589562cc9e196c8103a"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6607,7 +6607,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934530,
-      "sha256": "545810659c449b59db060eac9d1677b05e9821348a1d33800cf6c8732b161734"
+      "sha256": "52b9fb8f0760acdaea770ebee8d41d3058d9c265bbc612ba0f1964bd1e483ca1"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9266,8 +9266,8 @@
       "sha256": "24dbb8e3351c47f47c0b5400afd1d30a8d97aac1103d23ad2e7631f5944f900d"
     },
     "tests/world/runtime/test_mutations.c": {
-      "bytes": 39605,
-      "sha256": "6fcedcdb3bb724801bc0c03df4abe28d96343229b3b014bb0f7387bf76bb9bfd"
+      "bytes": 41279,
+      "sha256": "42fd765ff2a58ceee337edbe7de6ef0b7e2bb2a7f85da96168a3fbc1c5d2b826"
     },
     "tests/world/runtime/test_pressure_plate.c": {
       "bytes": 48075,

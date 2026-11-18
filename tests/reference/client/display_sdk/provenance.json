@@ -12398,8 +12398,8 @@
       "sha256": "b67dcd4e240c071a0f431a8039d14b8d52a970a01a2a2e3dd47155ce4f63d161"
     },
     "tests/world/runtime/test_mutations.c": {
-      "bytes": 39605,
-      "sha256": "6fcedcdb3bb724801bc0c03df4abe28d96343229b3b014bb0f7387bf76bb9bfd"
+      "bytes": 41279,
+      "sha256": "42fd765ff2a58ceee337edbe7de6ef0b7e2bb2a7f85da96168a3fbc1c5d2b826"
     },
     "include/mc/world/runtime/registry_failure.h": {
       "bytes": 1339,

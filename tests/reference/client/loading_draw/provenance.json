@@ -3450,8 +3450,8 @@
       "sha256": "190ad3de5c65ed49047d876e908375a5db6bbcba0e33f48e8b9866e748f2fec8"
     },
     "src/world/runtime/mutation/support.c": {
-      "bytes": 13807,
-      "sha256": "3bda7f63f0f8cb25ce62b353bf467ceefb144fa61670eaddaf07aff096024cc2"
+      "bytes": 14110,
+      "sha256": "694bc23fd795b4474538c44a74d7d7499a20f3e9536339b1bdc8b84370f1fdfa"
     },
     "src/world/runtime/mutation/ticks.c": {
       "bytes": 6957,
@@ -5166,8 +5166,8 @@
       "sha256": "24dbb8e3351c47f47c0b5400afd1d30a8d97aac1103d23ad2e7631f5944f900d"
     },
     "tests/world/runtime/test_mutations.c": {
-      "bytes": 39605,
-      "sha256": "6fcedcdb3bb724801bc0c03df4abe28d96343229b3b014bb0f7387bf76bb9bfd"
+      "bytes": 41279,
+      "sha256": "42fd765ff2a58ceee337edbe7de6ef0b7e2bb2a7f85da96168a3fbc1c5d2b826"
     },
     "tests/world/runtime/test_pressure_plate.c": {
       "bytes": 48075,

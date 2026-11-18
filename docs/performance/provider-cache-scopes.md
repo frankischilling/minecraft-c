@@ -280,6 +280,37 @@ passed 22 checks with Clang, ASan and UBSan after the full sanitizer build ran
 out of disk space. Both selections cover the shared cache fixture's save-stage
 and projection consumers, the light queue, failed mutations and population.
 
+#### Mutation diagnostic initialization
+
+Two later DISPLAY2 traces timed 7,267 of 88,716 quiet setter calls during ore
+placement. Initialization accounted for about 29–30% of estimated setter time,
+compared with 3–4% for allocation. The replacements still performed light
+submissions and neighboring height queries. An underground opaque replacement
+normally skips rebuilding its own height map.
+
+The mutation initializer now prepares one canonical diagnostic using the
+existing child initializers, then copies it into each caller's workspace.
+Concurrent callers get independent records with all nested sentinels. The
+setter still allocates its workspace at the same point and performs the same
+ordered Chunk calls.
+
+Repeating the seeded four-Chunk workload in Windows MSVC Release took a
+median of 126.33 → 103.41 ms on the client and 128.57 → 101.66 ms on the
+server regression control. Eight fresh process pairs per side ran in
+alternating order. The 32 processes produced byte-identical native reports
+within each side, including reaching the same four population calls and
+retaining the same exported Chunk data and Random continuations.
+
+At 854×480 on Tiny, three complete DISPLAY2 pairs had median p99 frame time
+of 163.73 → 114.85 ms and median FPS of 24.36 → 24.19. The fourth baseline
+stopped on an active Entity tick during the interval, so its frame indices
+failed validation and the pair was excluded. The two builds shared libraries
+containing the local Sign screen edit. The timed scene stayed in gameplay.
+All six runs in a separate repeat qualified. Median p99 was 162.54 → 137.28 ms,
+and median FPS was 20.37 → 24.15. One repeat pair had a higher p99. Both groups
+had a lower median p95, from 92.10 to 83.61 ms and from 112.91 to 86.53 ms,
+respectively.
+
 ### Spring fluid diagnostics
 
 Two DISPLAY2 traces separated spring placement from the immediate flowing

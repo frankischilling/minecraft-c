@@ -7,6 +7,8 @@
 #include "../power/power_internal.h"
 #include "mc/core/java/java.h"
 
+#include <threads.h>
+
 mc_registry_error mc_world_mutation_empty_registry(void) {
     return (mc_registry_error){.initializer_pc = -1,
                                .block_id = -1,
@@ -15,12 +17,12 @@ mc_registry_error mc_world_mutation_empty_registry(void) {
                                .item_argument = -1};
 }
 
-void mc_world_mutation_error_init(mc_world_mutation_error *error) {
-    static const mc_world_mutation_error zero = {0};
-    if (error == NULL)
-        return;
+static once_flag empty_error_once = ONCE_FLAG_INIT;
+static mc_world_mutation_error empty_error;
+
+static void prepare_empty_error(void) {
+    mc_world_mutation_error *error = &empty_error;
     const mc_registry_error registry = mc_world_mutation_empty_registry();
-    *error = zero;
     mc_live_tile_entities_error_init(&error->tile_entity);
     mc_world_entity_load_error_init(&error->load_entity);
     error->batch.index = SIZE_MAX;
@@ -34,6 +36,14 @@ void mc_world_mutation_error_init(mc_world_mutation_error *error) {
     mc_world_power_error_init(&error->power);
     mc_world_collision_error_init(&error->rail_access);
     error->rail_support.registry = registry;
+}
+
+void mc_world_mutation_error_init(mc_world_mutation_error *error) {
+    if (error == NULL)
+        return;
+    /* Initialize the nested sentinels once and copy the complete diagnostic. */
+    call_once(&empty_error_once, prepare_empty_error);
+    *error = empty_error;
 }
 
 mc_world_mutation_error mc_world_mutation_empty_error(void) {
