@@ -71,6 +71,14 @@ def change_record(fixture,side,mode,change):
 
 
 class TransportTests(unittest.TestCase):
+    def test_nested_json_comparison_keeps_numeric_types(self):
+        expected = [{"values": [0, 1, {"ready": True}]}]
+        self.assertTrue(region.same_json(copy.deepcopy(expected), expected))
+        for actual in ([{"values": [False, 1, {"ready": True}]}],
+                       [{"values": [0, 1.0, {"ready": True}]}],
+                       [{"values": [0, 1, {"ready": 1}]}]):
+            self.assertFalse(region.same_json(actual, expected))
+
     def test_complete_wire_bits_and_zero_write_schedule(self):
         raw=region.encode_replay("fresh",b"",[dict(x=-2147483648,z=-1,timestamp=0xffffffff,payload=b"opaque")])
         self.assertEqual(input_frames(raw),(0,b"",[(0x80000000,0xffffffff,0xffffffff,b"opaque")]))
@@ -198,6 +206,23 @@ class FixtureTests(unittest.TestCase):
         with self.assertRaisesRegex(region.Failure,"only explicit observed written timestamp slots"):
             region.compare(records[0],files[0],records[1],region.Evidence(mapping=changed))
         self.assertEqual(json.dumps(records,separators=(",",":"),sort_keys=True),before)
+
+    def test_audit_rejects_changed_padding_outside_write(self):
+        pool = {digest: region.unpack(value, region.MAX_FILE)
+                for digest, value in self.fixture["blobs"].items()}
+        record = region.strict_json(region.unpack(self.fixture["originals"]["client"]["observed"]))
+        changed = region.pool_evidence(record, pool).mapping
+        name = "allocation/region/r.0.0.mcr"
+        snapshot = next(row for row in record["events"]
+                        if row["kind"] == "snapshot" and row["label"] == "B-exact-two")
+        path = f"snapshots/{snapshot['directory']}/{name}"
+        image = bytearray(changed[path])
+        image[3 * 4096 - 1] ^= 1  # Padding in the previous write's sector.
+        changed[path] = bytes(image)
+        snapshot["files"][name] = region.blob(changed[path])
+
+        with self.assertRaisesRegex(region.Failure, "all unrelated original bytes preserved"):
+            region.audit(record, region.Evidence(mapping=changed))
 
     def test_corpus_omissions_duplicates_sides_order_and_counts_fail(self):
         for name in ("missing","duplicate","side","profile","count","index","extra"):

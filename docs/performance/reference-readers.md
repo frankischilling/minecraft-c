@@ -184,3 +184,26 @@ changes from SHA256 `333312ebe6de045d9f555c1dbad781d4ff889098453fc2b1bf95a0f7ab2
 to `7677557f711787fbbade553807e80adfa240a211808b3db2cbf87c83701437d7`.
 This measures the existing test setup on one host. It supplies no native
 runtime, new NBT comparison, hosted-job, whole-suite or gameplay FPS speedup.
+
+## Region writer fixture validation
+
+The [region writer checker](../../scripts/reference/storage/compare_region_write.py)
+validates each header vector without per-entry calls to the generic integer
+checker. It compares scalar JSON list entries inline and checks bytes outside
+each permitted write span in slices.
+The byte audit covers the same shared extent, including padding outside a
+write. Numeric types and signed 32-bit bounds still participate in validation.
+
+Three alternating pairs of fresh processes ran the same 35 tests on an
+Intel Core i9-10900F with Windows 10 and CPython 3.14.3. The baseline is
+`2124f34e`. Times are elapsed seconds for the full Python process.
+
+| Pair order | Baseline | Candidate |
+| --- | ---: | ---: |
+| Baseline first | 28.928 | 22.804 |
+| Candidate first | 28.825 | 22.368 |
+| Baseline first | 28.925 | 23.608 |
+
+Median elapsed time fell from 28.925 to 22.804 seconds, a 21.2% reduction for
+this test command. The expanded suite also checks that nested numeric type
+aliases are rejected and a write cannot change padding in an unrelated sector.

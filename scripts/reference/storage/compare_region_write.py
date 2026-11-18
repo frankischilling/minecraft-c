@@ -66,12 +66,24 @@ def integer(value, low, high, label):
     check(type(value) is int and low <= value <= high, label + ": exact integer bounds")
 
 def same_json(left, right):
-    if type(left) is not type(right):
+    kind = type(left)
+    if kind is not type(right):
         return False
-    if type(left) is dict:
-        return set(left) == set(right) and all(same_json(left[k], right[k]) for k in left)
-    if type(left) is list:
-        return len(left) == len(right) and all(same_json(a, b) for a, b in zip(left, right))
+    if kind is dict:
+        return left.keys() == right.keys() and all(same_json(left[k], right[k]) for k in left)
+    if kind is list:
+        if len(left) != len(right):
+            return False
+        for a, b in zip(left, right):
+            item_kind = type(a)
+            if item_kind is not type(b):
+                return False
+            if item_kind is dict or item_kind is list:
+                if not same_json(a, b):
+                    return False
+            elif not a == b:
+                return False
+        return True
     return left == right
 
 def strict_json(raw):
@@ -251,7 +263,15 @@ def audit(record, case):
                 check(timestamps[slot] in latest_timestamps[slot], "actual wallclock timestamp within original commit interval")
             start, length = sector * 4096, struct.unpack_from(">I", raw, sector * 4096)[0]
             allowed = [(index * 4, index * 4 + 4), (4096 + index * 4, 4100 + index * 4), (start, start + length + 4)]
-            check(all(a == b or any(begin <= i < end for begin, end in allowed) for i, (a, b) in enumerate(zip(previous, raw))), "all unrelated original bytes preserved")
+            # Compare only the shared extent. The permitted spans above are
+            # ordered and disjoint, with any appended sectors outside it.
+            extent = min(len(previous), len(raw))
+            cursor = 0
+            for begin, end in allowed:
+                stop = min(begin, extent)
+                check(previous[cursor:stop] == raw[cursor:stop], "all unrelated original bytes preserved")
+                cursor = end
+            check(previous[cursor:extent] == raw[cursor:extent], "all unrelated original bytes preserved")
             previous = raw
     final, locations, timestamps = read_region(case / "snapshots/final" / file_name)
     check(len(final) == 14 * 4096 and locations[:8] == [513,769,2052,1025,1282,1793,3074,0], "complete final original allocations")
@@ -431,7 +451,8 @@ def validate_original(value, files, side, mode, jar=None, public=False):
             check(row["growth"] == held[i]["growth"], "actual original growth ownership")
             for name in ("locations", "timestamps"):
                 check(type(row[name]) is list and len(row[name]) == 1024, "all1024 original header fields")
-                for item in row[name]: integer(item, -(1 << 31), (1 << 31)-1, "original header bits")
+                check(all(type(item) is int and -(1 << 31) <= item < (1 << 31) for item in row[name]),
+                      "original header bits: exact integer bounds")
             check(type(row["free"]) is list and 2 <= len(row["free"]) <= MAX_FILE//4096 and all(type(b) is bool for b in row["free"]), "complete original free-sector vector")
 
     for row in value["events"]:
