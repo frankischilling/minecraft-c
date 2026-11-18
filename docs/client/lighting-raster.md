@@ -121,6 +121,15 @@ also uses indexed core-state queries beyond GL 3.3, after checking that their
 function addresses are available. C owns
 the source state; captured JSON files are test inputs.
 
+Ubuntu 24.04 released Mesa 25.2.8 package revisions `0ubuntu0.24.04.4` and
+`0ubuntu0.24.04.5`. The same llvmpipe fixture applies to these two exact core
+context identities. The recorded compatibility-context capture keeps its
+original driver string, and each native receipt records the driver it loaded.
+On `.5`, ten device, lighting and raster checks failed before support was
+added and passed afterward under Clang with ASan, UBSan and leak detection.
+The full 30-test graphics failure selection then passed on the same Linux
+driver. The ten focused checks also passed on Windows with NVIDIA 581.42.
+
 Direct normals on Mesa multiply the signed byte by a binary32 reciprocal of
 127 and clamp the lower endpoint to -1. Its direct-array words differ from
 NVIDIA's for 255 of 256 values; byte zero agrees. Both drivers' compiled normal

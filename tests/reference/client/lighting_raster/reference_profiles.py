@@ -14,6 +14,15 @@ def require(value, message):
         raise RuntimeError(message)
 
 
+def native_driver_identities(profile):
+    driver = profile["native_driver"]
+    additional = profile.get("additional_native_versions", [])
+    require(isinstance(additional, list) and all(isinstance(v, str) and v for v in additional),
+            "additional native driver versions must be exact strings")
+    return [(driver["vendor"], driver["renderer"], version)
+            for version in (driver["version"], *additional)]
+
+
 def load_references(cohort, cases, row_count, parse_rows):
     manifest_bytes = MANIFEST.read_bytes()
     manifest = json.loads(manifest_bytes)
@@ -52,9 +61,8 @@ def load_references(cohort, cases, row_count, parse_rows):
             reference["observations_path"], reference["observations"] = load_data(entry["observations"], profile["id"])
             reference["observations_sha256"] = entry["observations"]["sha256"]
         references.append(reference)
-    identities = [(reference["profile"]["native_driver"]["vendor"],
-                   reference["profile"]["native_driver"]["renderer"],
-                   reference["profile"]["native_driver"]["version"]) for reference in references]
+    identities = [identity for reference in references
+                  for identity in native_driver_identities(reference["profile"])]
     require(len(identities) == len(set(identities)), "unambiguous captured legacy driver identities")
     return references, paths, loaded_hashes
 
@@ -69,10 +77,8 @@ def select_reference(references, text):
                              formats[0])
     require(driver is not None and format_row is not None, "complete actual native driver/framebuffer fields")
     actual = (driver[1], driver[2], driver[3])
-    matches = [reference for reference in references if actual ==
-               (reference["profile"]["native_driver"]["vendor"],
-                reference["profile"]["native_driver"]["renderer"],
-                reference["profile"]["native_driver"]["version"])]
+    matches = [reference for reference in references
+               if actual in native_driver_identities(reference["profile"])]
     require(len(matches) == 1, "no captured legacy lighting profile for actual driver: " + drivers[0])
     reference = matches[0]
     framebuffer = reference["profile"]["framebuffer"]

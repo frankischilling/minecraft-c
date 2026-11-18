@@ -1254,8 +1254,8 @@
       "sha256": "7b02fadfaf8310e34b2649de9dc5a7c9b79b2773185f035ff5681d9077a8e5e1"
     },
     "src/client/display/source_surface.inc": {
-      "bytes": 57593,
-      "sha256": "14441163324aa971bec3cf4fe5ae090c227056c6100b91688b20e9cc2b826087"
+      "bytes": 57731,
+      "sha256": "3525cd7595533660cda5687956f8571e1cfd8c4bf4f453f3d4babcaaaa78aefb"
     },
     "src/client/display/source_viewport.inc": {
       "bytes": 3343,
@@ -6850,8 +6850,8 @@
       "sha256": "38c77b611c4afd6d22f25dc5adc77ea218ba13d78eb8c5f3be4723000951f273"
     },
     "tests/client/render_engine/test_lighting_enable.c": {
-      "bytes": 40555,
-      "sha256": "7c0bee29099ca1f37b41429475d24e78f26ac43b999eabb3e7fee3694651c238"
+      "bytes": 40648,
+      "sha256": "a9825814bfe53f05c23a786836dc68cfa73747ba1e1cb118d6e90b42940e4aee"
     },
     "cmake/tests/client_lighting_raster.cmake": {
       "bytes": 5108,
@@ -6874,8 +6874,8 @@
       "sha256": "00eec8d86c8edfd5f2c99b9c26ed1c561a42ef4549d1b3a734c8ae3a865e0867"
     },
     "tests/client/display/test_lighting_raster.c": {
-      "bytes": 72299,
-      "sha256": "4e909f53748fbc9db5b23db4f15a8c39069b24f0fe494768ecaab1efca8457a5"
+      "bytes": 72395,
+      "sha256": "c1c1308fa7b42134da26f5a4ea1c0825c4ed5e0ca64ec4562e03ba972d60420e"
     },
     "tests/client/render_engine/test_nw_normals.c": {
       "bytes": 10068,

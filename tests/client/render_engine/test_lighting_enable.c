@@ -425,7 +425,8 @@ static void lit_draw_and_normal_knowledge(fixture *f) {
          strcmp(info->version, "3.3.0 NVIDIA 581.42") == 0) ||
         (strcmp(info->vendor, "Mesa") == 0 &&
          strcmp(info->renderer, "llvmpipe (LLVM 20.1.2, 256 bits)") == 0 &&
-         strcmp(info->version, "4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4") == 0);
+         (strcmp(info->version, "4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4") == 0 ||
+          strcmp(info->version, "4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.5") == 0));
     const float prior_normal[3] = {.25f, .5f, .75f};
     CHECK(mc_client_display_source_normal(f->display, prior_normal[0], prior_normal[1],
                                           prior_normal[2], &error));

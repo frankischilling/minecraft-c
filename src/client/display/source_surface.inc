@@ -26,8 +26,10 @@ static mc_client_source_attribute_profile source_attribute_profile_for(mc_client
             s->attribute_profile = SOURCE_ATTRIBUTE_PROFILE_NVIDIA_581_42;
         else if (strcmp(display->info.vendor, "Mesa") == 0 &&
                  strcmp(display->info.renderer, "llvmpipe (LLVM 20.1.2, 256 bits)") == 0 &&
-                 strcmp(display->info.version, "4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4") ==
-                     0)
+                 (strcmp(display->info.version,
+                         "4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4") == 0 ||
+                  strcmp(display->info.version,
+                         "4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.5") == 0))
             s->attribute_profile = SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8;
         s->attribute_profile_generation = display->native_context_generation;
     }
