@@ -399,8 +399,8 @@
       "sha256": "de1645d2d89f27f6975ec7bdda43167b25532df96d7b121123ce67e22422a89c"
     },
     "src/world/runtime/material_movement.c": {
-      "bytes": 30315,
-      "sha256": "a9508d927963bc0fc0488cf475173386d0f96f63fd806dd770884d3c9a8ac328"
+      "bytes": 30389,
+      "sha256": "303c34503b81f752a6958e084542b042a96d176d4e5316ae82bdd1c97e971a7b"
     },
     "src/world/runtime/material_movement_execution_internal.h": {
       "bytes": 4749,
@@ -491,8 +491,8 @@
       "sha256": "83dcab52704f6387fdb89785cad96bf527672aa5eb62be5b5e489136f3596413"
     },
     "src/world/runtime/raytrace.c": {
-      "bytes": 46236,
-      "sha256": "69b43e639be8f6115f523df66b92b144e14a7deddc5ec23f642408949e2166d9"
+      "bytes": 46300,
+      "sha256": "f4c326cd0294173143cd77bd98a7973e07bc70049e386458e995adc2a3a4bfa4"
     },
     "src/world/runtime/raytrace_blocks.c": {
       "bytes": 9482,

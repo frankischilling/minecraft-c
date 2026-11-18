@@ -1,3 +1,4 @@
+#include "../../vector/vector_internal.h"
 #include "internal.h"
 #include <stdlib.h>
 #include <string.h>
@@ -96,7 +97,8 @@ static bool drain(mc_entity *p, struct mc_mob_ray_pending *pending, mc_mob_tick_
     for (size_t i = 0; i < 2; ++i) {
         if (pending->arguments[i] == NULL)
             continue;
-        const mc_entity_status status = mc_entity_vector_release(p->classes, pending->arguments[i]);
+        const mc_entity_status status =
+            mc_entity_vector_release_held(p->classes, pending->arguments[i]);
         if (status != MC_ENTITY_OK) {
             error->cleanup_ray.has_entity = true;
             error->cleanup_ray.cause.status = MC_WORLD_RAYTRACE_CLEANUP_FAILED;

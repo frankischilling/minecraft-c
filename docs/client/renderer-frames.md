@@ -294,6 +294,17 @@ client released the input and closed the window with valid focus and
 pose checks. Independent NBT readback matched the earlier run's autosave
 at World time 13,799, including all Player position and rotation bits.
 
+Releasing held vectors directly in fluid scans and sight rays raised
+median FPS on the same saved route from 12.74 to 21.59 in two DISPLAY2
+pairs. Median p99 frame time fell from 233.88 to 214.28 ms. The four
+runs matched Player motion, scheduler work and Entity dispatches over
+165 timed World ticks. See [held-vector measurements](../world/material-movement.md#releasing-held-vectors).
+
+The longer held-vector run again reached the Bubble allocation after
+406 World ticks. It drew 464 frames before the stop and closed with
+valid focus and pose checks. NBT readback matched the earlier autosave
+at World time 13,799, including all Player position and rotation bits.
+
 ## Evidence and limits
 
 The [full-fog fixture](../../tests/reference/client/world_frame/README.md)

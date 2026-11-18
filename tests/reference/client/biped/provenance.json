@@ -374,12 +374,12 @@
       "sha256": "b1b7604e84a809e2cdd5406b357808474a2ec880f177dd13e2ed795d91388cff"
     },
     "src/entity/vector/vector.c": {
-      "bytes": 28104,
-      "sha256": "febf05349d5feca09eedda02d7c0f5dd4c0f9286215216141108beaf3638e041"
+      "bytes": 28958,
+      "sha256": "528cc62f089d8f87ee8feb44adaca10f77a65aa5a6e37aa8bbe85647b41a85b8"
     },
     "src/entity/vector/vector_internal.h": {
-      "bytes": 1558,
-      "sha256": "b06e6750bb65c92acb249cd719aa60d7c32ffc11fccb4ae7ecd37f49766712f5"
+      "bytes": 1926,
+      "sha256": "aa3218de8a5aaafee224f103c1389d8eefcf7f64767f00bfc79a5577cefad048"
     },
     "src/platform/text/stdout.h": {
       "bytes": 2129,

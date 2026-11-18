@@ -177,6 +177,11 @@ mc_entity_status mc_entity_vector_retain(mc_entity_classes *classes, mc_entity_v
     return hold(classes, object);
 }
 
+static void drop_hold(mc_entity_classes *classes, mc_entity_vector_object *object) {
+    --object->holds;
+    --classes->vector_holds;
+}
+
 mc_entity_status mc_entity_vector_release(mc_entity_classes *classes, mc_entity_vector *vector) {
     if (classes == NULL || vector == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
@@ -186,12 +191,27 @@ mc_entity_status mc_entity_vector_release(mc_entity_classes *classes, mc_entity_
     mc_entity_vector_object *object = *link;
     if (object == NULL || object->holds == 0)
         return MC_ENTITY_INVALID_ARGUMENT;
-    --object->holds;
-    --classes->vector_holds;
+    drop_hold(classes, object);
     if (object->holds == 0 && !object->pooled) {
         *link = object->next;
         retire(classes, object, sizeof(*object));
     }
+    return MC_ENTITY_OK;
+}
+
+mc_entity_status mc_entity_vector_release_held(mc_entity_classes *classes,
+                                               mc_entity_vector *vector) {
+    if (classes == NULL || vector == NULL)
+        return MC_ENTITY_INVALID_ARGUMENT;
+    /* The proven occurrence keeps the containing object live. A pooled
+     * object stays linked after the last hold. Detached objects still need
+     * the ordinary unlink and allocation retirement. */
+    mc_entity_vector_object *const object = (mc_entity_vector_object *)vector;
+    if (!object->pooled)
+        return mc_entity_vector_release(classes, vector);
+    if (object->holds == 0)
+        return MC_ENTITY_INVALID_ARGUMENT;
+    drop_hold(classes, object);
     return MC_ENTITY_OK;
 }
 

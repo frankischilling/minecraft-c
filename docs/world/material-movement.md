@@ -48,8 +48,8 @@ reset changes only its cursor; later gets overwrite the same held objects.
 Client clear detaches held vectors and retains backing capacity. Nothing
 implicitly resets or clears the pool per World, Entity or query. Direct
 construction canonicalizes signed zero; pooled set keeps raw coordinates.
-Class free is busy while any vector native hold survives. This is the reached
-Vec3 subset; ray, rotation and String methods remain outside the implementation.
+Class free is busy while any vector native hold survives. World ray tracing
+uses the same pool for its intersection and step vectors.
 
 Entity immersion dispatches the actual eye-height method for the existing
 canonical native owners. Item, Falling Sand and Minecart inherit zero;
@@ -102,6 +102,28 @@ ticks, with 16,342 and 3,779 matching actor dispatches, respectively.
 | --- | ---: | ---: |
 | Heavy | 35.33 → 44.41 | 45.67 → 40.37 |
 | Lighter | 59.20 → 61.66 | 29.08 → 27.13 |
+
+## Releasing held vectors
+
+Fluid scans and sight rays release attached pooled vectors directly once
+the caller owns a hold. The final hold leaves the vector in the pool for
+future acquisition. Vectors detached by a pool clear use the regular
+unlink and retirement path. Public release still validates the pointer
+against its owner. Native checks cover two holds on one reused vector and
+retiring the last hold after a clear.
+
+The retained-save trace found 89,578 vector releases during 165 World
+ticks. Releases took 12.09 ms per tick, including 4.86 ms for Squid.
+The vector pool reached 5,366 entries. Separate paired traces matched
+17,052 actor dispatches over 164 World ticks. Median Entity-loop time
+per tick fell from 23.82 to 13.34 ms. Squid dispatches took 5.32 to
+0.53 ms and visibility took 4.11 to 0.67 ms. The timer spans are inclusive.
+
+Two pairs of ordinary eight-second runs loaded the same save and sent
+forward input on DISPLAY2 at Far distance and 854×480. All four runs
+matched Player motion, scheduler receipts and 17,162 entered actor
+dispatches across 165 timed World ticks. Median FPS rose from 12.74 to
+21.59. Median p99 frame time fell from 233.88 to 214.28 ms.
 
 ## Loaded-area and dry-weather checks
 

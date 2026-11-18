@@ -3,6 +3,7 @@
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
 #include "../../entity/entity_internal.h"
+#include "../../entity/vector/vector_internal.h"
 #include "collision/blocks_internal.h"
 #include "construction_internal.h"
 #include "execution_children_internal.h"
@@ -245,7 +246,7 @@ static bool replace_add(mc_entity_classes *classes, mc_entity_vector **v, double
     mc_entity_vector *next;
     if (!vector_result(e, mc_entity_vector_add(classes, *v, x, y, z, &next, &e->vector)))
         return false;
-    mc_entity_vector_release(classes, *v);
+    mc_entity_vector_release_held(classes, *v);
     *v = next;
     return true;
 }
@@ -255,7 +256,7 @@ static bool replace_normal(mc_entity_classes *classes, mc_entity_vector **v,
     mc_entity_vector *next;
     if (!vector_result(e, mc_entity_vector_normalize(classes, *v, &next, &e->vector)))
         return false;
-    mc_entity_vector_release(classes, *v);
+    mc_entity_vector_release_held(classes, *v);
     *v = next;
     return true;
 }
@@ -343,7 +344,7 @@ static bool fluid_vector(mc_world_runtime *w, const mc_block *b, int32_t x, int3
     e->fluid_bytecode = 0;
     return true;
 failed:
-    mc_entity_vector_release(classes, v);
+    mc_entity_vector_release_held(classes, v);
     return false;
 }
 
@@ -380,7 +381,7 @@ static bool accelerate_block(mc_world_runtime *w, const mc_block *b, int32_t x, 
     sum->y = _mm_cvtsd_f64(_mm_add_sd(_mm_set_sd(sum->y), _mm_set_sd(flow->y)));
     e->acceleration_bytecode = 53;
     sum->z = _mm_cvtsd_f64(_mm_add_sd(_mm_set_sd(sum->z), _mm_set_sd(flow->z)));
-    mc_entity_vector_release(code_entities(w, owned), flow);
+    mc_entity_vector_release_held(code_entities(w, owned), flow);
     e->acceleration_bytecode = 0;
     e->stair_bytecode = 0;
     e->delegation_depth = 0;
@@ -551,7 +552,7 @@ static bool execute(mc_world_runtime *w, const mc_entity_bounds *b, mc_material 
     done = true;
 leave:
     if (sum != NULL)
-        mc_entity_vector_release(classes, sum);
+        mc_entity_vector_release_held(classes, sum);
     return done;
 }
 

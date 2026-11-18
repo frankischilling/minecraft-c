@@ -411,8 +411,9 @@ static bool vectors(mc_entity_classes *classes) {
     CHECK(mc_entity_classes_free(classes) == MC_ENTITY_BUSY);
     CHECK(mc_entity_vector_release(classes, a) == MC_ENTITY_OK);
     a = NULL;
-    CHECK(mc_entity_vector_release(classes, b) == MC_ENTITY_OK);
+    CHECK(mc_entity_vector_release_held(classes, b) == MC_ENTITY_OK);
     b = NULL;
+    CHECK(mc_entity_vector_native_holds(classes, c) == 1 && c->x == 4);
     CHECK(mc_entity_vector_release(classes, c) == MC_ENTITY_OK);
     c = NULL;
     CHECK(mc_entity_vector_get_snapshot(classes, &snap) == MC_ENTITY_OK && snap.holds == 0);
@@ -448,8 +449,11 @@ static bool vectors(mc_entity_classes *classes) {
         CHECK(mc_entity_vector_pool_clear_client(classes, NULL) == MC_ENTITY_OK && b->x == 8);
         CHECK(mc_entity_vector_get_snapshot(classes, &snap) == MC_ENTITY_OK && snap.cursor == 0 &&
               snap.size == 0 && snap.holds == 1);
-        CHECK(mc_entity_vector_release(classes, b) == MC_ENTITY_OK);
+        const size_t bytes_with_detached = classes->allocated_bytes;
+        CHECK(mc_entity_vector_release_held(classes, b) == MC_ENTITY_OK);
         b = NULL;
+        CHECK(classes->allocated_bytes + sizeof(mc_entity_vector_object) == bytes_with_detached &&
+              mc_entity_vector_get_snapshot(classes, &snap) == MC_ENTITY_OK && snap.holds == 0);
     }
     ok = true;
 cleanup:

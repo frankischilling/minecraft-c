@@ -23,6 +23,12 @@ void mc_entity_vector_dispose(mc_entity_classes *classes);
 size_t mc_entity_vector_native_holds(const mc_entity_classes *classes,
                                      const mc_entity_vector *vector);
 
+/* Consume a hold already established on this owner's vector. The pointer
+ * must refer to a live factory result or an occurrence retained by this
+ * owner. Clear may detach the object while that hold remains live. */
+mc_entity_status mc_entity_vector_release_held(mc_entity_classes *classes,
+                                               mc_entity_vector *vector);
+
 void mc_entity_geometry_error_clear(mc_entity_geometry_error *error);
 mc_entity_geometry_status
 mc_entity_geometry_fail(mc_entity_geometry_error *error, mc_entity_geometry_status status,

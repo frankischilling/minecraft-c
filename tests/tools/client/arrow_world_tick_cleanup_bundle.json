@@ -177,7 +177,7 @@
   "helpers": {
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76652,
-      "sha256": "21697a422eb708c0b13aab4b613ccaefe37252590534ec7bf7c8959abc448aad"
+      "sha256": "f0cdf320e1c56b1d438269a914dc7b8db7e009ff999089fbb7a072e9848e3753"
     },
     "tests/tools/world/test_execution_ownership.py": {
       "bytes": 8350,

@@ -1,4 +1,5 @@
 #include "../../block/registry/runtime_internal.h"
+#include "../../entity/vector/vector_internal.h"
 #include "execution_children_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
@@ -204,7 +205,7 @@ mc_world_raytrace_status mc_world_raytrace_hit_failed(mc_world_raytrace_work *w,
 static bool release_vector(mc_world_raytrace_work *w, mc_entity_vector **slot) {
     if (*slot == NULL)
         return true;
-    const mc_entity_status status = mc_entity_vector_release(w->entities, *slot);
+    const mc_entity_status status = mc_entity_vector_release_held(w->entities, *slot);
     if (status != MC_ENTITY_OK) {
         w->entity_cleanup =
             (mc_entity_error){.status = status, .operation = "World ray owned vector release"};
@@ -948,7 +949,7 @@ mc_world_raytrace_status mc_world_raytrace_retire(mc_world_raytrace_call **slot)
         w->box = NULL;
     }
     if (w->start_held) {
-        const mc_entity_status status = mc_entity_vector_release(w->entities, w->state.start);
+        const mc_entity_status status = mc_entity_vector_release_held(w->entities, w->state.start);
         if (status != MC_ENTITY_OK) {
             w->entity_cleanup =
                 (mc_entity_error){.status = status, .operation = "World ray start cleanup"};
@@ -958,7 +959,7 @@ mc_world_raytrace_status mc_world_raytrace_retire(mc_world_raytrace_call **slot)
         w->state.start = NULL;
     }
     if (w->end_held) {
-        const mc_entity_status status = mc_entity_vector_release(w->entities, w->state.end);
+        const mc_entity_status status = mc_entity_vector_release_held(w->entities, w->state.end);
         if (status != MC_ENTITY_OK) {
             w->entity_cleanup =
                 (mc_entity_error){.status = status, .operation = "World ray end cleanup"};
