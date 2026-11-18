@@ -1,7 +1,7 @@
 #include "application_queries.h"
 
-#include "../application_state.h"
-#include "mc/client/settings/game_settings.h"
+#include "../settings/source_access.h"
+#include "application_owner_internal.h"
 
 static mc_client_application_query_status fail(mc_client_application_query_error *error,
                                                mc_client_application_query_status status,
@@ -37,37 +37,35 @@ mc_client_application_ambient_occlusion(mc_client_application_classes *classes, 
              0, true);
         goto done;
     }
-    mc_client_application_class_state first;
-    if (!mc_client_application_classes_inspect(classes, &first)) {
+    client_application *first;
+    if (!application_static_app(classes, &first)) {
         fail(&e, MC_CLIENT_APPLICATION_QUERY_NATIVE_FAILED, "Minecraft.v getstatic0 native view", 0,
              true);
         goto done;
     }
-    if (first.a != NULL) {
-        mc_client_application_class_state second;
-        if (!mc_client_application_classes_inspect(classes, &second)) {
+    if (first != NULL) {
+        client_application *second;
+        if (!application_static_app(classes, &second)) {
             fail(&e, MC_CLIENT_APPLICATION_QUERY_NATIVE_FAILED,
                  "Minecraft.v getstatic6 native view", 6, true);
             goto done;
         }
-        if (second.a == NULL) {
+        if (second == NULL) {
             fail(&e, MC_CLIENT_APPLICATION_QUERY_SOURCE_NULL, "Minecraft.v App.z receiver", 9,
                  false);
             goto done;
         }
-        mc_game_settings *settings = second.a->settings;
+        mc_game_settings *settings = second->settings;
         if (settings == NULL) {
             fail(&e, MC_CLIENT_APPLICATION_QUERY_SOURCE_NULL, "Minecraft.v Settings.k receiver", 12,
                  false);
             goto done;
         }
-        mc_game_settings_state state;
-        if (!mc_game_settings_read_state(settings, &state)) {
+        if (!mc_game_settings_read_ambient_occlusion(settings, &value)) {
             fail(&e, MC_CLIENT_APPLICATION_QUERY_NATIVE_FAILED, "Minecraft.v Settings native view",
                  12, true);
             goto done;
         }
-        value = state.values.ambient_occlusion;
     }
     e.site = (mc_client_application_owner_site){"net/minecraft/client/Minecraft", "v", "()Z", 23};
     e.source_returned = true;

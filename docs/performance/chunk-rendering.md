@@ -404,3 +404,51 @@ Linux Clang Debug with ASan and UBSan. Checks include signed Java wraparound
 at both endpoints, 48 ambient-occlusion and 25 flat-lighting field and vertex
 rows, 1,680 face rows, 950 ChunkCache rows, and 18,938 Chunk compilation
 assertions, including its retained failure paths.
+
+## Ambient-occlusion setting reads
+
+The Block renderer's `Minecraft.v()` query reads the live published App and
+the live ambient-occlusion bit. Both reads of `Minecraft.a` still acquire the
+namespace mutex separately. Active use, temporary ownership and failure
+diagnostics follow the original call order. The query copies the App pointer
+and Settings bit directly, avoiding the full inspection snapshots.
+
+Four alternating Windows MSVC Release pairs ran the same query fixture, with
+seven timed samples of 250,000 queries per process. Median time fell from
+159.87 to 137.50 ns per query, a 14.0% reduction. Each timed call returned the
+expected bit and completed at source PC 23. All seven original fixture rows
+matched, including a replaced App, a null Settings receiver and a cold namespace.
+
+Two profiled moving pairs put the same three compiled units in the same link
+order for both builds. Across all four processes, 1,076 meshes matched on
+position, Block sequence, operation counts and held Chunk snapshots. They
+included 2,383,872 ambient-occlusion queries per process. Median total mesh
+time fell from 4,122.81 to 4,049.76 ms, a 1.8% reduction. An earlier comparison
+against the retained baseline binary showed a 2.8% reduction across 1,067
+matching meshes. In the same-link comparison, the median longest three-mesh
+compile span was 21.01 ms before and 21.41 ms after.
+
+The Windows game windows ran at 854×480 on DISPLAY2 with Far render distance.
+Each moving cohort matched input, player, actor, random and scheduler state
+over 215 World ticks. The two fixed-camera scenes matched actor, random and
+scheduler state over 199–200 shared ticks per scene. Uninstrumented frame
+results varied by pair and workload.
+
+| Uninstrumented workload | Before FPS | After FPS | Before p99 (ms) | After p99 (ms) |
+| --- | ---: | ---: | ---: | ---: |
+| Moving, same link order, two pairs | 66.49 | 65.57 | 21.21 | 21.39 |
+| Moving, retained baseline, two pairs | 66.39 | 66.54 | 23.05 | 22.70 |
+| Heavy cave, two pairs | 55.47 | 54.74 | 30.73 | 30.41 |
+| Lighter cave, two pairs | 64.53 | 63.84 | 22.51 | 23.65 |
+
+A separate trial reused the Chunk address from the first Block read during
+brightness lookup. Both variants increased fixed-work brightness and minimum
+brightness time by about 2.5–3.4%. The production change uses only the faster
+ambient-occlusion query. New ChunkCache controls verify distinct packed light
+values at four adjacent Chunk corners and confirm that positive skylight sets
+the Chunk flag before a reached block-light failure.
+
+All 23 focused tests passed on Windows MSVC Release and Linux Clang Debug
+with ASan and UBSan. The native ChunkCache replay passed 9,234 checks,
+including the 950 original rows. Settings, owner, ambient-occlusion, flat
+lighting, face and Chunk compile checks passed in the same selection.

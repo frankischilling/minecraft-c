@@ -358,8 +358,8 @@
       "sha256": "1e8d7271832e8c742fbcc3c73f9d228aab4ac779c938d9570bdcbcb1413019e2"
     },
     "src/client/startup/application_classes.c": {
-      "bytes": 17155,
-      "sha256": "2d348c0345d8cdea3433ed75fa83c858da8ed60b4c4e994bb970c310e609ebe5"
+      "bytes": 17440,
+      "sha256": "e9a3a9f929ed8e76d71fc7346d2abd6d63412d8cb5a0d58c115095665baeeed9"
     },
     "src/client/startup/application_lifetime.c": {
       "bytes": 11701,
@@ -370,8 +370,8 @@
       "sha256": "eed995c4a51f9679e2b9bb16a3af85cc79cf75cc65dc1d63c33084bce29db67b"
     },
     "src/client/startup/application_owner_internal.h": {
-      "bytes": 5372,
-      "sha256": "43dbe7ff2267ba165d4743e26959ed9e52e66bce861ac4a127ad4bddd1c8ccc5"
+      "bytes": 5617,
+      "sha256": "e8cee24c5504c7cd2ae5afd9a4f284a2aad20b050497fee4196efcdf947c1620"
     },
     "src/client/startup/timer_hack.c": {
       "bytes": 18780,

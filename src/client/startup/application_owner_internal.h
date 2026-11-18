@@ -111,6 +111,10 @@ mc_client_application_owner_status application_static_hold(client_application *,
                                                            mc_client_application_owner_error *);
 void application_static_release(client_application *);
 
+/* Actual nullable Minecraft.a read, with the same native lock as inspection.
+ * Callers keep the namespace and published App live through the source call. */
+bool application_static_app(mc_client_application_classes *, client_application **);
+
 void application_directory_classes_destroy(struct application_directory_classes *);
 
 /* Concrete synchronization used by both the real worker and authored native

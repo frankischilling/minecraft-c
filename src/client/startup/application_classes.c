@@ -306,6 +306,14 @@ mc_client_application_classes_release(mc_client_application_classes **owner,
     return MC_CLIENT_APPLICATION_OWNER_OK;
 }
 
+bool application_static_app(mc_client_application_classes *classes, client_application **out) {
+    if (classes == NULL || out == NULL || mtx_lock(&classes->mutex) != thrd_success)
+        return false;
+    *out = classes->a;
+    (void)mtx_unlock(&classes->mutex);
+    return true;
+}
+
 bool mc_client_application_classes_inspect(mc_client_application_classes *classes,
                                            mc_client_application_class_state *out) {
     if (classes == NULL || out == NULL || mtx_lock(&classes->mutex) != thrd_success)

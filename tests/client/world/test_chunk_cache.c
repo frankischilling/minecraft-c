@@ -428,6 +428,87 @@ static bool ew_observe(picking_fixture *f) {
 
 #include "chunk_cache_getter_controls.inc"
 
+static bool ew_light_chunk_boundary_controls(picking_fixture *f) {
+    static const struct {
+        int32_t x, y, z, sky, light, expected;
+    } points[] = {{15, 127, 15, 15, 1, 12},
+                  {16, 0, 15, 7, 2, 4},
+                  {15, 1, 16, 0, 9, 9},
+                  {16, 126, 16, 9, 4, 6}};
+
+    struct {
+        mc_world_chunk *object;
+        size_t index;
+        uint8_t block, sky, light;
+    } saved[4];
+
+    mc_world_runtime *world = f->base.world;
+    const int32_t subtraction = world->fields.f;
+    const bool chunk_a = world->classes->chunk_a;
+    mc_world_provider_fields dimension;
+    mc_client_chunk_cache *cache = NULL;
+    mc_client_chunk_cache_error error;
+    CHECK(world->classes->registry == f->base.registry && f->base.registry->entered == 0 &&
+          f->base.registry->blocks_phase == MC_REGISTRY_READY &&
+          mc_world_provider_fields_get(world->fields.t, &dimension) == MC_WORLD_PROVIDER_OK &&
+          dimension.f != NULL &&
+          mc_client_chunk_cache_create(world, 0, 0, 0, 31, 127, 31, &cache, &error) ==
+              MC_CLIENT_CHUNK_CACHE_OK);
+    world->fields.f = 3;
+    for (size_t i = 0; i < sizeof(points) / sizeof(*points); ++i) {
+        const int32_t x = points[i].x & 15, z = points[i].z & 15;
+        const size_t occurrence = (size_t)(points[i].x / 16) * 2u + (size_t)(points[i].z / 16);
+        mc_world_chunk *object = cache->occurrences[occurrence].object;
+        const size_t index = ((size_t)x * 16u + (size_t)z) * 128u + (size_t)points[i].y;
+        CHECK(object != NULL && object->data != NULL && object->f != NULL && object->g != NULL);
+        saved[i].object = object;
+        saved[i].index = index;
+        saved[i].block = object->data->blocks[index];
+        saved[i].sky = object->data->skylight[index / 2u];
+        saved[i].light = object->data->block_light[index / 2u];
+        object->data->blocks[index] = 1;
+        CHECK(mc_chunk_nibbles_set(object->data->skylight, MC_CHUNK_NIBBLE_BYTES, x, points[i].y, z,
+                                   points[i].sky) &&
+              mc_chunk_nibbles_set(object->data->block_light, MC_CHUNK_NIBBLE_BYTES, x, points[i].y,
+                                   z, points[i].light));
+    }
+    for (size_t i = 0; i < sizeof(points) / sizeof(*points); ++i) {
+        int32_t value = -179;
+        world->classes->chunk_a = false;
+        CHECK(mc_client_chunk_cache_light(cache, points[i].x, points[i].y, points[i].z, true,
+                                          &value, &error) == MC_CLIENT_CHUNK_CACHE_OK &&
+              value == points[i].expected && world->classes->chunk_a == (points[i].sky > 0));
+        world->classes->chunk_a = false;
+        ew_getter_output expected = {.brightness = dimension.f[points[i].expected]};
+        for (ew_getter_kind kind = EW_GET_BRIGHTNESS; kind <= EW_GET_MINIMUM; ++kind)
+            CHECK(ew_getter_pair(f, cache, kind, points[i].x, points[i].y, points[i].z, 0, true,
+                                 MC_CLIENT_CHUNK_CACHE_OK, 0, points[i].sky > 0, &expected, NULL));
+    }
+    /* Positive SkyLight is consumed before the second packed plane fails. */
+    mc_world_chunk_nibble *light = saved[1].object->g;
+    const size_t length = light->length;
+    light->length = saved[1].index / 2u;
+    world->classes->chunk_a = false;
+    for (ew_getter_kind kind = EW_GET_BRIGHTNESS; kind <= EW_GET_MINIMUM; ++kind)
+        CHECK(ew_getter_pair(f, cache, kind, points[1].x, points[1].y, points[1].z, 0, true,
+                             MC_CLIENT_CHUNK_CACHE_SOURCE_INDEX,
+                             kind == EW_GET_BRIGHTNESS ? 14u : 4u, true, NULL, &error) &&
+              error.nested_count == 2 && error.nested[0].bytecode == 5 &&
+              error.nested[1].bytecode == 274 && error.child_bytecode == 35);
+    light->length = length;
+    for (size_t i = 0; i < sizeof(points) / sizeof(*points); ++i) {
+        mc_chunk_data *data = saved[i].object->data;
+        data->blocks[saved[i].index] = saved[i].block;
+        data->skylight[saved[i].index / 2u] = saved[i].sky;
+        data->block_light[saved[i].index / 2u] = saved[i].light;
+    }
+    world->fields.f = subtraction;
+    world->classes->chunk_a = chunk_a;
+    CHECK(mc_client_chunk_cache_retire(&cache, &error) == MC_CLIENT_CHUNK_CACHE_OK &&
+          cache == NULL);
+    return true;
+}
+
 int main(int argc, char **argv) {
     if (argc != 3)
         return 1;
@@ -435,7 +516,7 @@ int main(int argc, char **argv) {
     if (f == NULL || !picking_open(f, argv[1]) || !picking_case_open(f, argv[2]) ||
         !ew_observe(f) || ew_rows != 950 || !ew_block_failure_controls(f) ||
         !ew_metadata_failure_controls(f) || !ew_getter_failure_controls(f) ||
-        !picking_case_close(f) || !picking_close(f))
+        !ew_light_chunk_boundary_controls(f) || !picking_case_close(f) || !picking_close(f))
         return 1;
     free(f);
     printf("Source EW: %u checks; 950 original rows and canonical leases\n", checks);

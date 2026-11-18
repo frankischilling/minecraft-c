@@ -1702,8 +1702,8 @@
       "sha256": "04250c23f22fba151654e1106a764d03cd5fdf5227504ca4fc7e828c9b1ea4da"
     },
     "src/client/settings/game_settings.c": {
-      "bytes": 106007,
-      "sha256": "0d4bb5dbbb1a67229d7c96458bfa7a8fed402eca2577146ffe30b45e08e65dea"
+      "bytes": 106235,
+      "sha256": "3b9cf8a690eaa965f2f63151e2471e9e201e33c24256881c63429aadf10b0bac"
     },
     "src/client/settings/labels.c": {
       "bytes": 15759,
@@ -1718,8 +1718,8 @@
       "sha256": "55fe0c2cb48f490d545c0ae10ebf8524a65b942d794e01dced8c24a30246506c"
     },
     "src/client/settings/source_access.h": {
-      "bytes": 559,
-      "sha256": "0eb84d9fab49d412a124ac0a2fef340c9fd6b73b0bbef069f6aba6d85eeebb8f"
+      "bytes": 712,
+      "sha256": "46f8a9cf919d59ce0daf46696336d66aaad26add4266976c0a5dbd7cbef0f12e"
     },
     "src/client/sound/backend/codec.c": {
       "bytes": 9071,
@@ -1782,8 +1782,8 @@
       "sha256": "de12f5fc5edeed38b5b73f12e46c772c313b481115324f578496f8f608994301"
     },
     "src/client/startup/application_classes.c": {
-      "bytes": 17155,
-      "sha256": "2d348c0345d8cdea3433ed75fa83c858da8ed60b4c4e994bb970c310e609ebe5"
+      "bytes": 17440,
+      "sha256": "e9a3a9f929ed8e76d71fc7346d2abd6d63412d8cb5a0d58c115095665baeeed9"
     },
     "src/client/startup/application_construction.c": {
       "bytes": 20251,
@@ -1842,8 +1842,8 @@
       "sha256": "eed995c4a51f9679e2b9bb16a3af85cc79cf75cc65dc1d63c33084bce29db67b"
     },
     "src/client/startup/application_owner_internal.h": {
-      "bytes": 5372,
-      "sha256": "43dbe7ff2267ba165d4743e26959ed9e52e66bce861ac4a127ad4bddd1c8ccc5"
+      "bytes": 5617,
+      "sha256": "e8cee24c5504c7cd2ae5afd9a4f284a2aad20b050497fee4196efcdf947c1620"
     },
     "src/client/startup/application_publication.c": {
       "bytes": 10743,
@@ -6658,8 +6658,8 @@
       "sha256": "695f1342d37d540e453c983bbb30cec70f70e6d8bfb154eab149a26544e97692"
     },
     "tests/client/world/test_chunk_cache.c": {
-      "bytes": 23526,
-      "sha256": "1781c42f673d2f338303158088783a3d4d7dacc17672c38f7171e8c18ebbd733"
+      "bytes": 27891,
+      "sha256": "fc6aa18a2f1ed305a4c09374beb621931f09af29fe135e780ae655a1140875e0"
     },
     "tests/client/world/test_chunk_compile.c": {
       "bytes": 59984,
@@ -6730,8 +6730,8 @@
       "sha256": "3ed003207367f196b746cbcab4b8ca1937bb94bcb172b5189340eb279d53ff64"
     },
     "src/client/startup/application_queries.c": {
-      "bytes": 3537,
-      "sha256": "bcacce7f6b41529d92de44aff1361dcee054aadec2a1fa0f075bdfc0c2af221f"
+      "bytes": 3398,
+      "sha256": "20ff6b061473a3054d8a0c74868fed9a70774501c60e664d7b9b328385e9272f"
     },
     "src/client/startup/application_queries.h": {
       "bytes": 1431,

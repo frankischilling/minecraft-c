@@ -478,8 +478,8 @@
       "sha256": "a19bf1b6b1389d186cdd75966d9fa41754a4c5cb479be580c3c7da8ad54fff4a"
     },
     "src/client/startup/application_owner_internal.h": {
-      "bytes": 5372,
-      "sha256": "43dbe7ff2267ba165d4743e26959ed9e52e66bce861ac4a127ad4bddd1c8ccc5"
+      "bytes": 5617,
+      "sha256": "e8cee24c5504c7cd2ae5afd9a4f284a2aad20b050497fee4196efcdf947c1620"
     },
     "include/mc/world/runtime/world_access_error.h": {
       "bytes": 2780,
