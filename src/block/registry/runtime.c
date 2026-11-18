@@ -196,8 +196,9 @@ static bool blocks_ready_idle(const mc_registry_classes *classes) {
     return classes != NULL && classes->entered == 0 && classes->blocks_phase == MC_REGISTRY_READY;
 }
 
-mc_registry_status mc_registry_block_static_get(mc_registry_classes *classes, const char *name,
-                                                const mc_block **out, mc_registry_error *error) {
+static mc_registry_status block_static_get(mc_registry_classes *classes, const char *name,
+                                           const mc_block **out, mc_registry_error *error,
+                                           bool success_error) {
     if (name == NULL || out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime static arguments");
     if (blocks_ready_idle(classes)) {
@@ -205,7 +206,7 @@ mc_registry_status mc_registry_block_static_get(mc_registry_classes *classes, co
         if (mc_registry_block_static_index(name, &index)) {
             /* Active use of a ready registry is synchronous and has no initializer work. */
             *out = classes->blocks.named[index];
-            return result(error, MC_REGISTRY_OK, NULL);
+            return result(success_error ? error : NULL, MC_REGISTRY_OK, NULL);
         }
     }
     mc_registry_status status = enter_blocks(classes, error);
@@ -213,10 +214,22 @@ mc_registry_status mc_registry_block_static_get(mc_registry_classes *classes, co
         return status;
     mc_block *block = NULL;
     status = mc_registry_block_static_load(classes, name, &block);
-    status = leave_blocks(classes, status, error);
+    status =
+        leave_blocks(classes, status, status == MC_REGISTRY_OK && !success_error ? NULL : error);
     if (status == MC_REGISTRY_OK)
         *out = block;
     return status;
+}
+
+mc_registry_status mc_registry_block_static_get(mc_registry_classes *classes, const char *name,
+                                                const mc_block **out, mc_registry_error *error) {
+    return block_static_get(classes, name, out, error, true);
+}
+
+mc_registry_status mc_registry_block_static_get_failure(mc_registry_classes *classes,
+                                                        const char *name, const mc_block **out,
+                                                        mc_registry_error *error) {
+    return block_static_get(classes, name, out, error, false);
 }
 
 mc_registry_status mc_registry_block_get(mc_registry_classes *classes, int32_t id,
@@ -332,27 +345,28 @@ mc_registry_status mc_registry_block_q_at(const mc_registry_block_q_view *array,
     return status;
 }
 
-mc_registry_status mc_registry_block_m_get(mc_registry_classes *classes,
-                                           mc_registry_block_m_view *out,
-                                           mc_registry_error *error) {
+static mc_registry_status block_m_get(mc_registry_classes *classes, mc_registry_block_m_view *out,
+                                      mc_registry_error *error, bool success_error) {
     if (out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime m output");
-    mc_registry_status status = enter_blocks(classes, error);
-    if (status != MC_REGISTRY_OK)
-        return status;
-    mc_block *const *identity = NULL;
-    status = mc_registry_blocks_active_use(classes);
-    if (status == MC_REGISTRY_OK)
-        identity = classes->blocks.m;
-    status = leave_blocks(classes, status, error);
-    if (status == MC_REGISTRY_OK)
-        *out = (mc_registry_block_m_view){classes, identity,
-                                          identity == NULL ? 0u : MC_REGISTRY_BLOCK_SLOTS};
-    return status;
+    if (!blocks_ready_idle(classes)) {
+        mc_registry_status status = enter_blocks(classes, error);
+        if (status != MC_REGISTRY_OK)
+            return status;
+        status = mc_registry_blocks_active_use(classes);
+        status = leave_blocks(classes, status, status == MC_REGISTRY_OK ? NULL : error);
+        if (status != MC_REGISTRY_OK)
+            return status;
+    }
+    mc_block *const *identity = classes->blocks.m;
+    *out = (mc_registry_block_m_view){classes, identity,
+                                      identity == NULL ? 0u : MC_REGISTRY_BLOCK_SLOTS};
+    return result(success_error ? error : NULL, MC_REGISTRY_OK, NULL);
 }
 
-mc_registry_status mc_registry_block_m_at(const mc_registry_block_m_view *array, int32_t index,
-                                          const mc_block **out, mc_registry_error *error) {
+static mc_registry_status block_m_at(const mc_registry_block_m_view *array, int32_t index,
+                                     const mc_block **out, mc_registry_error *error,
+                                     bool success_error) {
     if (array == NULL || array->classes == NULL || out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime m element arguments");
     mc_registry_status status;
@@ -366,11 +380,34 @@ mc_registry_status mc_registry_block_m_at(const mc_registry_block_m_view *array,
                         "Block runtime captured m index");
     else {
         *out = array->identity[index];
-        return result(error, MC_REGISTRY_OK, NULL);
+        return result(success_error ? error : NULL, MC_REGISTRY_OK, NULL);
     }
     if (error != NULL)
         *error = array->classes->last_error;
     return status;
+}
+
+mc_registry_status mc_registry_block_m_get(mc_registry_classes *classes,
+                                           mc_registry_block_m_view *out,
+                                           mc_registry_error *error) {
+    return block_m_get(classes, out, error, true);
+}
+
+mc_registry_status mc_registry_block_m_at(const mc_registry_block_m_view *array, int32_t index,
+                                          const mc_block **out, mc_registry_error *error) {
+    return block_m_at(array, index, out, error, true);
+}
+
+mc_registry_status mc_registry_block_m_get_failure(mc_registry_classes *classes,
+                                                   mc_registry_block_m_view *out,
+                                                   mc_registry_error *error) {
+    return block_m_get(classes, out, error, false);
+}
+
+mc_registry_status mc_registry_block_m_at_failure(const mc_registry_block_m_view *array,
+                                                  int32_t index, const mc_block **out,
+                                                  mc_registry_error *error) {
+    return block_m_at(array, index, out, error, false);
 }
 
 static mc_registry_status block_n_get(mc_registry_classes *classes, mc_registry_block_n_view *out,

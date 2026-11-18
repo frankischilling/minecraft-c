@@ -197,11 +197,11 @@ static bool fluid_material(const fluid_frame *frame, unsigned int pc, int32_t x,
         status = mc_registry_material_get(classes, MC_MATERIAL_a, &material, &registry);
     } else {
         mc_registry_block_m_view array;
-        status = mc_registry_block_m_get(classes, &array, &registry);
+        status = mc_registry_block_m_get_failure(classes, &array, &registry);
         if (status == MC_REGISTRY_OK) {
             const mc_block *selected;
             bytecode = 23;
-            status = mc_registry_block_m_at(&array, id, &selected, &registry);
+            status = mc_registry_block_m_at_failure(&array, id, &selected, &registry);
             if (status == MC_REGISTRY_OK) {
                 bytecode = 24;
                 if (selected == NULL) {
@@ -231,9 +231,9 @@ static bool fluid_material(const fluid_frame *frame, unsigned int pc, int32_t x,
 static bool fluid_static_id(const fluid_frame *frame, const char *name, unsigned int load_pc,
                             unsigned int field_pc, int32_t *out) {
     const mc_block *selected;
-    mc_registry_error registry = mc_world_mutation_empty_registry();
+    mc_registry_error registry;
     fluid_at(frame, load_pc);
-    if (mc_registry_block_static_get(frame->block->classes, name, &selected, &registry) !=
+    if (mc_registry_block_static_get_failure(frame->block->classes, name, &selected, &registry) !=
         MC_REGISTRY_OK)
         return fluid_registry_fail(frame, load_pc, &registry, "Fluid live Block static");
     if (selected == NULL)
@@ -245,12 +245,12 @@ static bool fluid_static_id(const fluid_frame *frame, const char *name, unsigned
 static bool fluid_array_block(const fluid_frame *frame, unsigned int load_pc, unsigned int index_pc,
                               int32_t id, const mc_block **out) {
     mc_registry_block_m_view array;
-    mc_registry_error registry = mc_world_mutation_empty_registry();
+    mc_registry_error registry;
     fluid_at(frame, load_pc);
-    if (mc_registry_block_m_get(frame->block->classes, &array, &registry) != MC_REGISTRY_OK)
+    if (mc_registry_block_m_get_failure(frame->block->classes, &array, &registry) != MC_REGISTRY_OK)
         return fluid_registry_fail(frame, load_pc, &registry, "Fluid live Block.m");
     fluid_at(frame, index_pc);
-    if (mc_registry_block_m_at(&array, id, out, &registry) != MC_REGISTRY_OK)
+    if (mc_registry_block_m_at_failure(&array, id, out, &registry) != MC_REGISTRY_OK)
         return fluid_registry_fail(frame, index_pc, &registry, "Fluid captured Block.m element");
     return true;
 }
@@ -265,7 +265,7 @@ static bool fluid_write_id(const fluid_frame *frame, unsigned int pc, int32_t x,
             return fluid_nested(frame, pc, frame->error);
         return true;
     }
-    mc_world_mutation_error *lower = fluid_workspace(frame, pc);
+    mc_world_mutation_error *lower = fluid_allocate_error(frame, pc);
     if (lower == NULL)
         return false;
     fluid_at(frame, pc);
@@ -290,7 +290,7 @@ static bool fluid_write(const fluid_frame *frame, unsigned int pc, int32_t x, in
                                                      metadata, &ignored, frame->error,
                                                      fluid_site(frame, pc));
     }
-    mc_world_mutation_error *lower = fluid_workspace(frame, pc);
+    mc_world_mutation_error *lower = fluid_allocate_error(frame, pc);
     if (lower == NULL)
         return false;
     fluid_at(frame, pc);
@@ -304,7 +304,7 @@ static bool fluid_write(const fluid_frame *frame, unsigned int pc, int32_t x, in
 
 static bool fluid_write_metadata(const fluid_frame *frame, unsigned int pc, int32_t x, int32_t y,
                                  int32_t z, int32_t metadata) {
-    mc_world_mutation_error *lower = fluid_workspace(frame, pc);
+    mc_world_mutation_error *lower = fluid_allocate_error(frame, pc);
     if (lower == NULL)
         return false;
     fluid_at(frame, pc);

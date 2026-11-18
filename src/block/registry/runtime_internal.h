@@ -67,6 +67,15 @@ mc_registry_status mc_registry_block_m_get(mc_registry_classes *classes,
 mc_registry_status mc_registry_block_m_at(const mc_registry_block_m_view *array, int32_t index,
                                           const mc_block **out, mc_registry_error *error);
 
+/* Same live lookups and failure diagnostics. Success preserves the caller's
+ * diagnostic record, including when a static or array element is null. */
+mc_registry_status mc_registry_block_static_get_failure(mc_registry_classes *, const char *,
+                                                        const mc_block **, mc_registry_error *);
+mc_registry_status mc_registry_block_m_get_failure(mc_registry_classes *,
+                                                   mc_registry_block_m_view *, mc_registry_error *);
+mc_registry_status mc_registry_block_m_at_failure(const mc_registry_block_m_view *, int32_t,
+                                                  const mc_block **, mc_registry_error *);
+
 /* Actual random-tick n reference. get performs reached Block active use;
  * captured NULL succeeds. at checks that same reference before signed bounds,
  * with no class use, current-array reload, phase gate or failed-prefix fallback.

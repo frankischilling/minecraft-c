@@ -3,6 +3,7 @@
 #include "mc/resources/translation/translation.h"
 
 #include "../../../src/block/registry/registry_internal.h"
+#include "../../../src/block/registry/runtime_internal.h"
 #include "../../../src/core/java/random_profile_internal.h"
 
 #include <stdio.h>
@@ -368,6 +369,53 @@ cleanup:
     return result;
 }
 
+static bool block_failure_only(mc_registry_classes *owner) {
+    bool ok = false;
+    const mc_registry_error sentinel = poison_error();
+    mc_registry_error error = sentinel;
+    const mc_block *block = NULL;
+    size_t index;
+    CHECK(mc_registry_block_static_index("u", &index));
+    mc_block *stone = owner->blocks.named[index];
+    CHECK(stone != NULL &&
+          mc_registry_block_static_get_failure(owner, "u", &block, &error) == MC_REGISTRY_OK &&
+          block == stone && same_error(error, sentinel));
+    owner->blocks.named[index] = NULL;
+    const mc_registry_status null_cell =
+        mc_registry_block_static_get_failure(owner, "u", &block, &error);
+    owner->blocks.named[index] = stone;
+    CHECK(null_cell == MC_REGISTRY_OK && block == NULL && same_error(error, sentinel));
+    block = stone;
+    mc_registry_error expected;
+    CHECK(mc_registry_block_static_get(owner, "missing", &block, &expected) ==
+              MC_REGISTRY_INVALID_ARGUMENT &&
+          block == stone);
+    CHECK(mc_registry_block_static_get_failure(owner, "missing", &block, &error) ==
+              MC_REGISTRY_INVALID_ARGUMENT &&
+          block == stone && same_error(error, expected));
+    error = sentinel;
+
+    mc_registry_block_m_view captured, missing;
+    mc_block **blocks = owner->blocks.m;
+    CHECK(mc_registry_block_m_get_failure(owner, &captured, &error) == MC_REGISTRY_OK &&
+          captured.identity == blocks && same_error(error, sentinel));
+    owner->blocks.m = NULL;
+    const mc_registry_status get = mc_registry_block_m_get_failure(owner, &missing, &error);
+    const mc_registry_status at = mc_registry_block_m_at_failure(&captured, 1, &block, &error);
+    owner->blocks.m = blocks;
+    CHECK(get == MC_REGISTRY_OK && missing.identity == NULL && at == MC_REGISTRY_OK &&
+          block == stone && same_error(error, sentinel));
+    CHECK(mc_registry_block_m_at_failure(&missing, -1, &block, &error) ==
+              MC_REGISTRY_NULL_REFERENCE &&
+          block == stone && fresh(error, MC_REGISTRY_NULL_REFERENCE));
+    CHECK(mc_registry_block_m_at_failure(&captured, -1, &block, &error) ==
+              MC_REGISTRY_INDEX_OUT_OF_RANGE &&
+          block == stone && fresh(error, MC_REGISTRY_INDEX_OUT_OF_RANGE));
+    ok = true;
+cleanup:
+    return ok;
+}
+
 static int ready_capture(mc_registry_options options) {
     int result = 1;
     fixture f = {0};
@@ -453,6 +501,7 @@ static int ready_capture(mc_registry_options options) {
           item == first && fresh(error, MC_REGISTRY_OK));
     CHECK(mc_registry_item_c_get(f.owner, &captured, NULL) == MC_REGISTRY_OK &&
           captured == source_c);
+    CHECK(block_failure_only(f.owner));
     CHECK(f.owner->items.c == source_c && f.owner->items.named[0] == source_first &&
           f.owner->allocation_bytes == bytes &&
           uniquifier(options.random_profile) == ready_random && f.owner->entered == 0 &&

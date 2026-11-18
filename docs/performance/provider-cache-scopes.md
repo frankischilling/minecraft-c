@@ -429,6 +429,42 @@ mesh compilations during the capture. The one qualified DISPLAY2 run averaged
 median. This scene gives a steady-state control for future captures of terrain
 and mesh work.
 
+#### Registry lookups in spring route searches
+
+Two sampled runs of the fixed accepted spring counted 824,345 Block static
+lookups and 84,032 material reads on the client. Samples put the static
+lookups at about 30 ms per run. In a separate measurement
+immediately after the spring, one native lighting drain took 45–48 ms and
+returned with 393 queued regions. The spring placement measurements stop
+before the drain.
+
+Fluid predicates read the live named cells and Block array in the original
+order, and Registry lookup failures still populate their diagnostic. The
+internal success paths leave the caller's record alone. An idle, ready
+Registry can capture the live Block array without repeating initialization
+admission. Ordinary fluid writes also skip initializing their outer
+diagnostic before calling a setter that supplies its own full record.
+
+The fixed Windows MSVC spring took a median of 159.32 → 136.95 ms on the
+client and 150.51 → 142.04 ms on the server regression control. Seven of
+eight client pairs and six of eight server pairs were faster. The 16 runs
+matched the recorded Chunk planes, fluid scratch, lighting order and Random
+state, and the ordinary fixture returned the same 637 checks on both builds.
+This fixture exports its provider and exercises the generic lookup path.
+
+Four separate instrumented DISPLAY2 runs qualified. Six of seven natural
+springs matched by coordinates, fluid ID and at least 500 material queries
+took less time in the candidate. The matched tick with 11,085 queries fell
+from 16.97 to 11.72 ms.
+
+All six uninstrumented DISPLAY2 runs qualified at 854×480 on Tiny. Median
+FPS fell from 31.95 to 29.78, and median p99 rose from 85.64 to 104.76 ms.
+Net resident Chunk growth ranged from 19 to 33. The two builds shared the
+local Sign screen edit in their common libraries and stayed in gameplay.
+All six runs in the separate repeat qualified. Median FPS rose from 33.45
+to 35.48, and median p99 fell from 88.34 to 85.79 ms. The longest candidate
+frames took 151 ms in the first group and 119 ms in the repeat.
+
 ## Reproduce one resident scene
 
 Configure with `-DMC_BUILD_BENCHMARKS=ON` and build the
