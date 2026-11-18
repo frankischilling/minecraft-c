@@ -95,6 +95,13 @@ class RenderReceiptTests(unittest.TestCase):
         profiles = [CPU.parse_cpu_run(wire(label), True) for label in ('public', 'failure')]
         CPU.compare_cpu_runs(profiles)
 
+    def test_revision_cohort_retains_failure_only_contract(self):
+        failure = CPU.parse_cpu_run(wire('failure'), True)
+        CPU.compare_cpu_runs([failure, copy.deepcopy(failure)], ('failure',))
+        public = CPU.parse_cpu_run(wire('public'), True)
+        with self.assertRaises(ValueError):
+            CPU.compare_cpu_runs([failure, public], ('failure',))
+
     def test_missing_and_extra_records(self):
         rows = wire().splitlines()
         for index in range(len(rows)):

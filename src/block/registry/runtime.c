@@ -196,6 +196,14 @@ mc_registry_status mc_registry_block_static_get(mc_registry_classes *classes, co
                                                 const mc_block **out, mc_registry_error *error) {
     if (name == NULL || out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "Block runtime static arguments");
+    if (classes != NULL && classes->entered == 0 && classes->blocks_phase == MC_REGISTRY_READY) {
+        size_t index;
+        if (mc_registry_block_static_index(name, &index)) {
+            /* Active use of a ready registry is synchronous and has no initializer work. */
+            *out = classes->blocks.named[index];
+            return result(error, MC_REGISTRY_OK, NULL);
+        }
+    }
     mc_registry_status status = enter_blocks(classes, error);
     if (status != MC_REGISTRY_OK)
         return status;

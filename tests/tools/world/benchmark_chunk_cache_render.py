@@ -1,8 +1,8 @@
 """Compare fixed-work EW render getters and retain every CPU attempt.
 
 Matching Release binaries must use one shared workload object. Measurements
-compare public complete diagnostics with internal failure-only diagnostics;
-they do not measure scene FPS or establish new original-game parity.
+compare the public and failure-only contracts, or two revisions of the
+failure-only path. The workload measures CPU time for fixed queries.
 """
 import argparse
 import importlib.util
@@ -95,7 +95,7 @@ def parse_cpu_run(stdout, measure):
     return dict(context=context, modes=modes, samples=samples, finish=lines[index])
 
 
-def compare_cpu_runs(profiles):
+def compare_cpu_runs(profiles, expected_adapters=('public', 'failure')):
     """Require identical semantic observations for the complete cohort."""
     require(profiles, 'Complete accessor profiles required')
     normalized, adapters = [], set()
@@ -117,8 +117,8 @@ def compare_cpu_runs(profiles):
             'samples': [{k: v for k, v in sample.items() if k not in ('ticks', 'frequency')}
                         for sample in row['samples']],
         })
-    require(adapters == {'public', 'failure'} and all(row == normalized[0] for row in normalized),
-            'Both accessors retain identical values, work, side effects and ownership')
+    require(adapters == set(expected_adapters) and all(row == normalized[0] for row in normalized),
+            'Compared runs must retain their accessor contracts, values, work and side effects')
     return normalized[0]
 
 
@@ -141,7 +141,8 @@ def main():
     support = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(support)
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--executable', action='append', required=True, metavar='public=PATH|failure=PATH')
+    parser.add_argument('--executable', action='append', required=True, metavar='LABEL=PATH',
+                        help='Pass public=PATH and failure=PATH, or before=PATH and after=PATH')
     parser.add_argument('--artifacts', type=Path, required=True)
     parser.add_argument('--rounds', type=int, default=4)
     parser.add_argument('--mode', choices=('measure', 'controls'), default='measure')
@@ -150,7 +151,10 @@ def main():
     require(1 <= args.rounds <= 10 and len(pairs) == 2 and all(len(p) == 2 for p in pairs),
             'Two bounded accessor profiles')
     executables = {label: Path(path).resolve(strict=True) for label, path in pairs}
-    require(set(executables) == {'public', 'failure'}, 'One public and one failure executable')
+    adapters = {'before': 'failure', 'after': 'failure'} if set(executables) == {'before', 'after'} else {
+        'public': 'public', 'failure': 'failure'}
+    require(set(executables) == adapters.keys(), 'Expected public/failure or before/after executables')
+    order = tuple(adapters)
     names = ['tests/benchmarks/chunk_cache_render' + suffix
              for suffix in ('.c', '_adapter.h', '_public.c', '_failure.c')]
     names += ['tests/benchmarks/chunk_cache_error_equal.inc', 'tests/benchmarks/world_queries.c',
@@ -173,7 +177,7 @@ def main():
     saving = support.load('render_cpu_saved_inputs', ROOT / 'tests/tools/world/test_source_saving.py')
     try:
         for round_index in range(args.rounds):
-            for label in (('public', 'failure') if round_index % 2 == 0 else ('failure', 'public')):
+            for label in (order if round_index % 2 == 0 else reversed(order)):
                 folder = output / f'{round_index}-{label}'
                 folder.mkdir()
                 process = {'round': round_index, 'label': label, 'status': 'FAIL'}
@@ -197,7 +201,7 @@ def main():
                     (folder / 'native.stderr').write_bytes(stderr)
                     require(code == 0 and not stderr, 'Native process failed; exact streams retained')
                     process.update(parse_cpu_run(stdout.decode('ascii'), args.mode == 'measure'))
-                    require(process['context']['adapter'] == label, 'Executable adapter identity')
+                    require(process['context']['adapter'] == adapters[label], 'Executable adapter identity')
                     after = support.inventory(folder / 'world')
                     authored = process['authored_inputs']
                     require(set(after) == set(authored) | {'session.lock'} and
@@ -208,7 +212,7 @@ def main():
                     process['error'] = {'type': type(error).__name__, 'message': str(error)}
                 (output / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
         require(all(p['status'] == 'PASS' for p in report['processes']), 'A retained process failed')
-        report['semantic_identity'] = compare_cpu_runs(report['processes'])
+        report['semantic_identity'] = compare_cpu_runs(report['processes'], adapters.values())
         report.update(status='PASS', summary={label: summarize(report['processes'], label)
                                             for label in executables})
     finally:

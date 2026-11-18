@@ -1,5 +1,17 @@
 # Build and tests
 
+## Chunk lighting query measurements
+
+Two fixed-work Windows comparisons measured 42 samples per build and query.
+Median brightness query time fell by 42–56% and minimum-brightness query time
+fell by 41–43%. Material-query medians rose and several other getters varied
+between runs. All 24 benchmark processes passed their state and ownership checks.
+
+Four of six frame runs lost the fixed camera pose, invalidating the FPS
+comparison. A separate save/reselection scenario passed 1,775 checks across 49
+frames on `DISPLAY2`. The focused Windows and Linux selections passed 11 and
+eight tests, respectively. [Measurements and reproduction](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/chunk-rendering.md#packed-light-and-registry-lookups).
+
 ## Loaded MobSpawner preview
 
 The full MSVC Release build and all 1,345 configured Windows tests pass in

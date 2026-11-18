@@ -1,5 +1,54 @@
 # Chunk rendering and EW diagnostics
 
+## Packed light and registry lookups
+
+Chunk-cache reads use local block indices after checking the height. A light
+read computes that index once for both packed planes, with separate bounds
+checks and the SkyLight side effect between reads. Chunk coordinates round down
+at negative positions. Named-block reads use the live registry slot directly
+when the registry is ready and idle. Other states and unknown names go through
+the existing initialization and error path.
+
+Two Windows MSVC Release comparisons on an Intel Core i9-10900F measured the
+same failure-only accessor on each build. Each comparison ran six alternating
+rounds with 42 samples per build and operation. Each sample made 65,536 queries.
+Every process passed 4,238,612 checks, including output, light side effects,
+ownership and save integrity. The second comparison pinned the benchmark
+process tree to one logical processor at Above Normal priority.
+
+| Query | Default median before / after (ns) | Pinned median before / after (ns) |
+| --- | ---: | ---: |
+| Brightness | 357.8 / 205.8 | 360.7 / 157.7 |
+| Minimum brightness | 357.7 / 204.1 | 333.7 / 196.9 |
+| Material | 75.8 / 91.1 | 65.7 / 76.9 |
+| Opaque | 112.1 / 93.8 | 79.8 / 93.0 |
+| Normal cube | 99.4 / 103.9 | 110.4 / 108.0 |
+| Biome manager | 29.7 / 33.7 | 28.0 / 31.0 |
+
+Both brightness medians fell in every round. Material medians rose in both
+comparisons, opaque and normal-cube results changed direction, and the manager
+control varied by 11–14%. The cause of the slower material results remains
+undetermined.
+
+All six native frame runs returned with active simulation, valid foreground
+and clean shutdown. Four runs drifted from the authored camera pose, which
+invalidated the FPS and frame-time comparison. A separate Windows
+save/reselection scenario passed 1,775 checks across 49 frames and verified
+that both game windows stayed within `DISPLAY2` at opening and after reload.
+The focused Windows selection passed 11 tests. The Linux Clang selection passed
+eight with ASan, UBSan and leak detection.
+
+Run the fixed-work comparison with the failure-only target from each build.
+
+```sh
+python -B tests/tools/world/benchmark_chunk_cache_render.py \
+  --executable before=BASELINE/mc_benchmark_chunk_cache_render_failure.exe \
+  --executable after=CANDIDATE/mc_benchmark_chunk_cache_render_failure.exe \
+  --rounds 6 --artifacts .local/render-revision-comparison
+```
+
+## Failure-only getter diagnostics
+
 Six internal EW render getters leave caller diagnostics untouched on success.
 Public brightness, minimum brightness, material, opaque, normal-cube and biome
 manager getters retain complete success and failure records. Both contracts

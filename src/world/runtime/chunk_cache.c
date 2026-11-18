@@ -349,12 +349,19 @@ static mc_client_chunk_cache_status finish(mc_client_chunk_cache *c, mc_client_c
     return copy_error(out, e);
 }
 
+static int32_t chunk_coordinate(int32_t block) {
+    const int32_t width = (int32_t)MC_CHUNK_WIDTH;
+    /* C division truncates toward zero. A negative remainder belongs to the previous chunk. */
+    return block / width - (block % width < 0);
+}
+
 /* Check only when the actual source reaches the corresponding array load. */
 static mc_client_chunk_cache_occurrence *cell_at(mc_client_chunk_cache *c, int32_t x, int32_t z,
                                                  unsigned int outer_pc, unsigned int inner_pc,
                                                  mc_client_chunk_cache_error *e) {
-    const int32_t row = mc_java_i32_sub(mc_java_i32_shr(x, 4), c->state.a);
-    const int32_t column = mc_java_i32_sub(mc_java_i32_shr(z, 4), c->state.b);
+    /* Both origins and coordinates are int32_t block coordinates divided by 16. */
+    const int32_t row = chunk_coordinate(x) - c->state.a;
+    const int32_t column = chunk_coordinate(z) - c->state.b;
     if (c->state.c == NULL) {
         fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL, "actual ew null outer array", outer_pc, false);
         return NULL;
@@ -377,18 +384,24 @@ static bool chunk_required(mc_client_chunk_cache_occurrence *cell, unsigned int 
             fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL, "actual ew null Chunk receiver", pc, false));
 }
 
-static bool nibble(const mc_world_chunk_nibble *n, int32_t x, int32_t y, int32_t z, int32_t *out,
-                   unsigned int child_pc, mc_client_chunk_cache_error *e) {
+/* Callers admit Y before forming an index into the packed chunk planes. */
+static size_t block_index(int32_t x, int32_t y, int32_t z) {
+    const uint32_t local_x = (uint32_t)x & (MC_CHUNK_WIDTH - 1u);
+    const uint32_t local_z = (uint32_t)z & (MC_CHUNK_WIDTH - 1u);
+    return (local_x * MC_CHUNK_WIDTH + local_z) * MC_CHUNK_HEIGHT + (uint32_t)y;
+}
+
+static bool nibble(const mc_world_chunk_nibble *n, size_t cell, int32_t *out, unsigned int child_pc,
+                   mc_client_chunk_cache_error *e) {
     e->child_bytecode = child_pc;
     if (n == NULL || n->a == NULL)
         return fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL, "actual Chunk null Nibble backing",
                     e->bytecode, false);
-    const int32_t cell = mc_java_i32_shl(x, 11) | mc_java_i32_shl(z, 7) | y;
-    const int32_t index = mc_java_i32_shr(cell, 1);
-    if (index < 0 || (size_t)index >= n->length)
+    const size_t index = cell / 2u;
+    if (index >= n->length)
         return fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_INDEX, "actual Chunk Nibble index", e->bytecode,
                     false);
-    *out = (int32_t)(((uint32_t)n->a[index] >> (((uint32_t)y & 1u) * 4u)) & 15u);
+    *out = (int32_t)(((uint32_t)n->a[index] >> ((cell & 1u) * 4u)) & 15u);
     e->child_bytecode = 0;
     return true;
 }
@@ -401,8 +414,8 @@ static bool block_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t 
         *out = 0;
         return true;
     }
-    const int32_t row = mc_java_i32_sub(mc_java_i32_shr(x, 4), c->state.a);
-    const int32_t col = mc_java_i32_sub(mc_java_i32_shr(z, 4), c->state.b);
+    const int32_t row = chunk_coordinate(x) - c->state.a;
+    const int32_t col = chunk_coordinate(z) - c->state.b;
     if (row < 0) {
         *out = 0;
         return true;
@@ -423,7 +436,7 @@ static bool block_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t 
     e->bytecode = 100;
     e->child_bytecode = 15;
     const mc_world_chunk *chunk = cell->object;
-    const size_t index = ((uint32_t)x & 15u) * 2048u + ((uint32_t)z & 15u) * 128u + (uint32_t)y;
+    const size_t index = block_index(x, y, z);
     if (chunk->data == NULL || chunk->data->blocks == NULL)
         return fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL, "actual Chunk null block array", 100,
                     false);
@@ -502,7 +515,7 @@ static void metadata_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32
         if (chunk_required(cell, 54, e)) {
             int32_t value = 0;
             e->bytecode = 54;
-            if (cell->state->blank || nibble(cell->object->e, x & 15, y, z & 15, &value, 10, e))
+            if (cell->state->blank || nibble(cell->object->e, block_index(x, y, z), &value, 10, e))
                 *out = value;
         }
     }
@@ -686,13 +699,14 @@ static bool light_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t 
         return true;
     }
     int32_t sky, block;
+    const size_t index = block_index(x, y, z);
     e->bytecode = 274;
-    if (!nibble(cell->object->f, x & 15, y, z & 15, &sky, 7, e))
+    if (!nibble(cell->object->f, index, &sky, 7, e))
         return false;
     if (sky > 0)
         c->state.d->classes->chunk_a = true;
     sky = mc_java_i32_sub(sky, subtraction);
-    if (!nibble(cell->object->g, x & 15, y, z & 15, &block, 35, e))
+    if (!nibble(cell->object->g, index, &block, 35, e))
         return false;
     *out = sky > block ? sky : block;
     return true;
