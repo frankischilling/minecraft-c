@@ -814,6 +814,57 @@ cleanup:
     return ok;
 }
 
+static bool live_route_obstacles(fixture *f, size_t slot) {
+    bool ok = false;
+    mc_world_runtime *world = f->worlds[slot];
+    mc_registry_classes *registry = f->registry[slot];
+    mc_block *stone = registry->blocks.m[1];
+    const patch *source = location(SOURCE);
+    static const char *const names[] = {"aF", "aM", "aE", "aG", "aY"};
+    static const unsigned int field_pc[] = {15, 26, 37, 48, 59};
+    size_t slots[COUNT(names)];
+    mc_world_mutation_error error;
+    schedule_state before;
+    CHECK(stone != NULL && at(world, source->x, source->y, source->z, 9, 0) &&
+          at(world, source->x, source->y - 1, source->z, 1, 0) && scheduled(world, &before));
+    const mc_java_random world_random = *world->fields.r;
+    for (size_t i = 0; i < COUNT(names); ++i)
+        CHECK(mc_registry_block_static_index(names[i], &slots[i]) &&
+              registry->blocks.named[slots[i]] != NULL);
+
+    for (size_t i = 0; i < COUNT(names); ++i) {
+        mc_block **named = &registry->blocks.named[slots[i]];
+        mc_block *original = *named;
+        *named = NULL;
+        const mc_world_storage_status refused = tick(f, slot, 8, source, NULL, &error);
+        *named = original;
+        CHECK(refused == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+              error.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.operation != NULL &&
+              strcmp(error.operation, "Fluid live Block field receiver") == 0 &&
+              error.hook_bytecode == 406 && error.cause_hook_bytecode == field_pc[i] &&
+              same_cause(&error.cause, mc_world_runtime_last_error(world)));
+
+        if (i + 1 < COUNT(names)) {
+            /* A live replacement matches the stone before the next null field is reached. */
+            mc_block **next = &registry->blocks.named[slots[i + 1]];
+            mc_block *later = *next;
+            *named = stone;
+            *next = NULL;
+            const mc_world_storage_status matched = tick(f, slot, 8, source, NULL, &error);
+            *next = later;
+            *named = original;
+            CHECK(matched == MC_WORLD_STORAGE_OK && error.hook_bytecode == 0 &&
+                  error.cause_hook_bytecode == 0);
+        }
+    }
+    CHECK(at(world, source->x, source->y, source->z, 9, 0) && delta(world, &before, 0, 0) &&
+          mc_test_java_random_equal(world->fields.r, &world_random) && world->active_calls == 0 &&
+          world->local_leases == 0);
+    ok = true;
+cleanup:
+    return ok;
+}
+
 static bool still_conversions(fixture *f, size_t slot) {
     bool ok = false, value = false;
     mc_world_runtime *w = f->worlds[slot];
@@ -1338,6 +1389,7 @@ int main(int argc, char **argv) {
         CHECK(synchronous_channel(f, side));
         CHECK(source_and_below(f, side));
         CHECK(routes_and_regeneration(f, side));
+        CHECK(live_route_obstacles(f, side));
         CHECK(still_conversions(f, side));
         CHECK(lava_randoms(f, side));
         CHECK(mixing(f, side));

@@ -467,12 +467,30 @@ static bool fluid_blocked(mc_world_runtime *world, mc_block *block, int32_t x, i
     int32_t id;
     if (!fluid_id(&frame, 5, x, y, z, &id))
         return false;
-    static const char *const names[5] = {"aF", "aM", "aE", "aG", "aY"};
-    static const unsigned int load_pc[5] = {12, 23, 34, 45, 56};
-    static const unsigned int field_pc[5] = {15, 26, 37, 48, 59};
-    for (size_t i = 0; i < 5; ++i) {
+
+    static const struct {
+        const char *name;
+        size_t slot;
+        unsigned int load_pc, field_pc;
+    } obstacles[] = {{"aF", 63, 12, 15},
+                     {"aM", 70, 23, 26},
+                     {"aE", 62, 34, 37},
+                     {"aG", 64, 45, 48},
+                     {"aY", 82, 56, 59}};
+
+    const mc_registry_classes *ready = block->classes;
+    if (ready == NULL || ready->entered != 0 || ready->blocks_phase != MC_REGISTRY_READY)
+        ready = NULL;
+    for (size_t i = 0; i < sizeof(obstacles) / sizeof(obstacles[0]); ++i) {
         int32_t special;
-        if (!fluid_static_id(&frame, names[i], load_pc[i], field_pc[i], &special))
+        /* Ready static reads cannot call back. Compare each live field before the next read. */
+        if (ready != NULL) {
+            const mc_block *obstacle = ready->blocks.named[obstacles[i].slot];
+            if (obstacle == NULL)
+                return fluid_fail(&frame, obstacles[i].field_pc, "Fluid live Block field receiver");
+            special = obstacle->fields.bn;
+        } else if (!fluid_static_id(&frame, obstacles[i].name, obstacles[i].load_pc,
+                                    obstacles[i].field_pc, &special))
             return false;
         if (id == special) {
             *out = true;

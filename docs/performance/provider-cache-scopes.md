@@ -465,6 +465,46 @@ All six runs in the separate repeat qualified. Median FPS rose from 33.45
 to 35.48, and median p99 fell from 88.34 to 85.79 ms. The longest candidate
 frames took 151 ms in the first group and 119 ms in the repeat.
 
+#### Live Block fields in spring flow searches
+
+The flow search reads the five named Block fields directly when the Registry
+is ready and idle. It checks readiness after the World Block ID read, which
+can call back. It still compares one live field at a time and stops at the
+first match. Other Registry states use the regular active-use path. Native
+client and server tests exercise all five null fields and replacements that
+match before a later null field.
+
+The fixed MSVC Release workload used the same accepted spring in all runs.
+Each group measured eight alternating pairs with matching Chunk data, fluid
+scratch, lighting order and Random state.
+
+| Fixed spring | Median before / after (ms) | Candidate faster |
+| --- | ---: | ---: |
+| Client, exported provider | 59.56 / 47.68 | 8 of 8 |
+| Client, source-owned provider | 56.73 / 45.98 | 5 of 8 |
+| Client, source-owned provider, pinned to one logical CPU | 55.17 / 45.16 | 7 of 8 |
+| Server regression, exported provider | 59.55 / 46.43 | 8 of 8 |
+
+All source-owned runs kept the cache unexported during measurement and
+observed 296,020 owned cache hits in the checked interval. The recorded
+result had 115 water cells, one deferred entry in each scheduler collection
+and 199 ordered light regions.
+
+Six sampled DISPLAY2 runs yielded nine springs with matching coordinates,
+fluid ID and per-operation counts. All nine immediate ticks were faster at
+their matching group medians. The largest match made 29,274 obstacle checks.
+Its median immediate tick fell from 10.86 to 8.80 ms, with sampled time in
+the obstacle checks falling from 4.04 to 2.68 ms. The samples add overhead.
+
+All 12 uninstrumented DISPLAY2 runs qualified at Tiny distance and 854×480.
+Both builds shared the local Sign screen edit. Four of six pairs had higher
+FPS, and three of six had lower p99. The longest candidate frame took 107.35 ms.
+
+| Scene group | Median FPS before / after | Median p95 frame time (ms) | Median p99 frame time (ms) |
+| --- | ---: | ---: | ---: |
+| First | 51.76 / 52.78 | 35.16 / 31.88 | 56.89 / 67.36 |
+| Repeat | 38.40 / 42.64 | 51.91 / 43.61 | 89.30 / 70.96 |
+
 ### Generic resident Chunk lookups
 
 After a provider exports its live cache, ordinary GETs fully validate the
