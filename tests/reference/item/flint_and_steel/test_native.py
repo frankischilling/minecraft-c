@@ -73,8 +73,11 @@ def fixture(mode,originals):
     rows=[('FLINT_STATE ',raw_state(profile,original['before'],'before',False))]
     rows += [('FLINT_EVENT ',{k:copy.deepcopy(v) for k,v in event.items() if k!='stack_trace'}) for event in original['events']]
     rows.append(('FLINT_OUTCOME ',outcome))
+    after=raw_state(profile,original['after'],'after',True)
     for phase in ('after','retired','cleanup'):
-        rows.append(('FLINT_STATE ',raw_state(profile,original['after'],phase,True)))
+        state=copy.deepcopy(after)
+        state['phase']=phase
+        rows.append(('FLINT_STATE ',state))
         if phase=='retired' and N.receipt_expected(profile):
             rows.append(('FLINT_RECEIPT ',dict(busy_before=9,before_holds=2,after_busy_holds=2,after_call_holds=1,retire=0,
                 same_identity=True,selected_source=True,exception=exception,attempts=2)))
@@ -95,21 +98,30 @@ def update_after(rows,action):
 
 class NativeReader(unittest.TestCase):
     @classmethod
-    def setUpClass(cls):cls.originals={row['mode']:row for row in W.read_reference()['rows']}
+    def setUpClass(cls):
+        cls.originals={row['mode']:row for row in W.read_reference()['rows']}
+        cls.fixture_wire={}
+
+    def fresh_fixture(self, mode):
+        if mode not in self.fixture_wire:
+            rows = fixture(mode, self.originals)
+            self.fixture_wire[mode] = json.dumps(rows, separators=(',', ':')).encode('utf-8')
+        return [(prefix, value) for prefix, value in json.loads(self.fixture_wire[mode])]
+
     def check(self,rows,mode):return N.validate(N.parse(text(rows,mode),mode),mode,self.originals)
     def rejected(self,mode,action):
-        rows=fixture(mode,self.originals);action(rows)
+        rows=self.fresh_fixture(mode);action(rows)
         with self.assertRaises(ValueError):self.check(rows,mode)
 
     def test_all_sealed_pairs_and_canonical_arguments(self):
         self.assertEqual(set(N.MODES),set(self.originals))
         for mode in N.MODES:
             with self.subTest(mode=mode):
-                self.assertTrue(self.check(fixture(mode,self.originals),mode)['matched'])
+                self.assertTrue(self.check(self.fresh_fixture(mode),mode)['matched'])
                 self.assertEqual(len(N.command('native.exe',N.profile_for(mode),N.HERE/'world',self.originals[mode]['prepared_class'])),40)
 
     def test_closed_protocol_duplicate_json_footer_and_exit(self):
-        mode=N.MODES[0];value=text(fixture(mode,self.originals),mode)
+        mode=N.MODES[0];value=text(self.fresh_fixture(mode),mode)
         for bad in (value.rstrip('\n'),value+'noise\n',value+value,value.replace('PASS: 101','PASS: 0'),
                     value.replace('FLINT_OUTCOME {','FLINT_OUTCOME {"mode":"duplicate",',1),value.replace('FLINT_STATE ','UNKNOWN ',1)):
             with self.subTest(case=bad[-100:]),self.assertRaises(ValueError):N.parse(bad,mode)
@@ -132,6 +144,10 @@ class NativeReader(unittest.TestCase):
 
     def test_complete_prepared_and_changed_planes(self):
         mode='flint-wrapper'
+        first = self.fresh_fixture(mode)
+        original = text(first, mode)
+        states(first)[0]['chunk_planes'].clear()
+        self.assertEqual(text(self.fresh_fixture(mode), mode), original)
         for after in (False,True):
             for plane in N.N.PLANES:
                 def change(rows,after=after,plane=plane):
@@ -197,8 +213,8 @@ class NativeReader(unittest.TestCase):
 
     def test_only_true_null_invocation_boundary_waives_original_pc(self):
         mode='flint-wrapper-stack-null'
-        self.assertTrue(self.check(fixture(mode,self.originals),mode)['invocation_boundary_scope'])
-        self.assertFalse(self.check(fixture('flint-direct-stack-null',self.originals),'flint-direct-stack-null')['invocation_boundary_scope'])
+        self.assertTrue(self.check(self.fresh_fixture(mode),mode)['invocation_boundary_scope'])
+        self.assertFalse(self.check(self.fresh_fixture('flint-direct-stack-null'),'flint-direct-stack-null')['invocation_boundary_scope'])
         self.assertFalse(self.originals['flint-ob-stack-null']['result'])
         self.rejected('flint-direct-stack-null',lambda r:outcome(r)['progress']['item'].update(pc=1))
         for mode in ('flint-fire-null','flint-wrapper-provider-null','flint-ob-provider-null'):
@@ -217,12 +233,12 @@ class NativeReader(unittest.TestCase):
         mode='flint-portal-range-error-second'
         self.assertEqual(N.profile_for(mode)['range_error_at'],2)
         self.assertFalse(N.receipt_expected(N.profile_for(mode)))
-        self.assertTrue(self.check(fixture(mode,self.originals),mode)['matched'])
+        self.assertTrue(self.check(self.fresh_fixture(mode),mode)['matched'])
         def invented(rows):
             rows.insert(-2,('FLINT_RECEIPT ',dict(busy_before=9,before_holds=2,after_busy_holds=2,after_call_holds=1,retire=0,
                 same_identity=True,selected_source=True,exception='java/lang/IllegalStateException',attempts=2)))
         self.rejected(mode,invented)
-        mode=modes[0];rows=fixture(mode,self.originals)
+        mode=modes[0];rows=self.fresh_fixture(mode)
         rows[:]=[entry for entry in rows if entry[0]!='FLINT_RECEIPT ']
         outcome(rows).update(raw=11,returned=False,result=None,exception=None,native_policy=True,source_exception=False)
         actual=N.parse(text(rows,mode),mode) # Structurally valid native stop, with no invented source producer.

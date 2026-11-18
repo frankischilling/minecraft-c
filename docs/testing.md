@@ -10531,6 +10531,12 @@ source-witness and cleanup changes. A configured but unreached second Portal
 range callback correctly produces no receipt. Structurally valid native stops
 remain rejected by original comparison.
 
+The reader builds one serialized fixture per mode and decodes a fresh copy for
+each corruption. The after, retired and cleanup rows each keep their own copy
+of the same expected state. All 104 valid fixture streams remained byte-for-byte
+equal. In two Windows runs per mode, median elapsed time fell from 27.27 to
+10.58 seconds in normal Python and from 27.06 to 11.03 seconds with `-O`.
+
 One null IZ receiver fails at the authored probe invocation before any original
 IZ method enters. Its genuine exception and zero effects are paired; the
 native facade's internal boundary PC is explicitly unpaired for that one mode.
