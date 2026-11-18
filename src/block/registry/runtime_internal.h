@@ -56,6 +56,12 @@ mc_registry_status mc_registry_block_q_get(mc_registry_classes *classes,
                                            mc_registry_block_q_view *out, mc_registry_error *error);
 mc_registry_status mc_registry_block_q_at(const mc_registry_block_q_view *array, int32_t index,
                                           int32_t *out, mc_registry_error *error);
+/* Same captured reference and reached failures. Success preserves error,
+ * including a successful capture of NULL. */
+mc_registry_status mc_registry_block_q_get_failure(mc_registry_classes *,
+                                                   mc_registry_block_q_view *, mc_registry_error *);
+mc_registry_status mc_registry_block_q_at_failure(const mc_registry_block_q_view *, int32_t,
+                                                  int32_t *, mc_registry_error *);
 
 /* For an immediate element read with no intervening work. These complete the
  * read when the live Registry is ready and idle and its array/index is valid.

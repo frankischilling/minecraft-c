@@ -28,10 +28,14 @@ static bool capture_q(mc_world_runtime *world, mc_world_mutation_chunk_execution
     error->height_bytecode = pc;
     mc_registry_classes *classes =
         execution == NULL ? mc_world_runtime_registry(world) : execution->registry;
-    mc_registry_error cause = registry_error(MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
-                                             "Chunk incremental height Registry binding");
-    const mc_registry_status status =
-        classes == NULL ? cause.status : mc_registry_block_q_get(classes, out, &cause);
+    mc_registry_error cause;
+    mc_registry_status status;
+    if (classes == NULL) {
+        cause = registry_error(MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
+                               "Chunk incremental height Registry binding");
+        status = cause.status;
+    } else
+        status = mc_registry_block_q_get_failure(classes, out, &cause);
     if (status != MC_REGISTRY_OK)
         return mc_world_mutation_registry_fail(world, error, &cause,
                                                "Chunk incremental height opacity capture");
@@ -41,8 +45,8 @@ static bool capture_q(mc_world_runtime *world, mc_world_mutation_chunk_execution
 static bool opacity_at(mc_world_runtime *world, const mc_registry_block_q_view *array, int32_t id,
                        unsigned int pc, int32_t *out, mc_world_mutation_error *error) {
     error->height_bytecode = pc;
-    mc_registry_error cause = registry_error(MC_REGISTRY_OK, NULL);
-    if (mc_registry_block_q_at(array, id, out, &cause) != MC_REGISTRY_OK)
+    mc_registry_error cause;
+    if (mc_registry_block_q_at_failure(array, id, out, &cause) != MC_REGISTRY_OK)
         return mc_world_mutation_registry_fail(world, error, &cause,
                                                "Chunk incremental height opacity element");
     return true;

@@ -1,6 +1,7 @@
 #include "mc/resources/translation/translation.h"
 #include "mc/world/runtime/chunks.h"
 
+#include "../../../src/block/registry/registry_internal.h"
 #include "../../../src/block/registry/runtime_internal.h"
 #include "../../../src/core/java/random_profile_internal.h"
 #include "../../../src/world/runtime/chunk_provider_internal.h"
@@ -368,8 +369,10 @@ static bool native_q_error(const mc_registry_error *error) {
 }
 
 static bool test_q(fixture *f) {
-    bool ok = false;
+    bool ok = false, rebound = false;
+    int32_t *original = NULL;
     mc_registry_error error;
+    uint8_t poison[sizeof(error)];
     mc_registry_block_view before, after;
     CHECK(mc_registry_classes_inspect_blocks(f->registries[0], &before, NULL) == MC_REGISTRY_OK &&
           before.phase == MC_REGISTRY_COLD && before.q == NULL);
@@ -394,21 +397,60 @@ static bool test_q(fixture *f) {
     CHECK(profile_u(f) == u && f->resources[0].opens == 0);
     CHECK(mc_registry_classes_inspect_blocks(f->registries[0], &after, NULL) == MC_REGISTRY_OK &&
           after.phase == MC_REGISTRY_COLD && after.q == NULL);
-    CHECK(mc_registry_block_q_get(f->registries[0], &f->q, &error) == MC_REGISTRY_OK);
+    memset(&error, 0xa5, sizeof(error));
+    memcpy(poison, &error, sizeof(poison));
+    CHECK(mc_registry_block_q_get_failure(f->registries[0], &f->q, &error) == MC_REGISTRY_OK &&
+          memcmp(&error, poison, sizeof(error)) == 0);
     CHECK(mc_registry_classes_inspect_blocks(f->registries[0], &after, NULL) == MC_REGISTRY_OK &&
           after.phase == MC_REGISTRY_READY && f->q.classes == f->registries[0] &&
           f->q.identity == after.q && f->q.identity != NULL && f->q.length == 256 &&
           f->resources[0].opens == 3 && f->resources[0].closes == 1 && !f->resources[0].bad);
     mc_registry_block_q_view again = {0};
+    CHECK(mc_registry_block_q_get_failure(f->registries[0], &again, &error) == MC_REGISTRY_OK &&
+          again.classes == f->q.classes && again.identity == f->q.identity &&
+          again.length == f->q.length && memcmp(&error, poison, sizeof(error)) == 0);
+    CHECK(mc_registry_block_q_at_failure(&again, 1, &value, &error) == MC_REGISTRY_OK &&
+          value == again.identity[1] && memcmp(&error, poison, sizeof(error)) == 0);
     CHECK(mc_registry_block_q_get(f->registries[0], &again, &error) == MC_REGISTRY_OK &&
           again.classes == f->q.classes && again.identity == f->q.identity &&
-          again.length == f->q.length);
+          again.length == f->q.length && error.status == MC_REGISTRY_OK && error.message == NULL &&
+          native_q_error(&error));
     value = 731;
     CHECK(mc_registry_block_q_at(&f->q, 0, &value, &error) == MC_REGISTRY_OK && value == 0);
     CHECK(mc_registry_block_q_at(&f->q, 1, &value, &error) == MC_REGISTRY_OK &&
           value == f->q.identity[1]);
+    /* The captured reference outlives an exclusive reassignment of live q. */
+    int32_t replacement[MC_REGISTRY_BLOCK_SLOTS] = {0};
+    replacement[1] = INT32_MIN;
+    original = f->registries[0]->blocks.q;
+    f->registries[0]->blocks.q = replacement;
+    rebound = true;
+    memset(&error, 0xa5, sizeof(error));
+    CHECK(mc_registry_block_q_at_failure(&f->q, 1, &value, &error) == MC_REGISTRY_OK &&
+          value == original[1] && memcmp(&error, poison, sizeof(error)) == 0);
+    CHECK(mc_registry_block_q_get_failure(f->registries[0], &again, &error) == MC_REGISTRY_OK &&
+          again.identity == replacement && again.length == MC_REGISTRY_BLOCK_SLOTS &&
+          memcmp(&error, poison, sizeof(error)) == 0);
+    CHECK(mc_registry_block_q_at_failure(&again, 1, &value, &error) == MC_REGISTRY_OK &&
+          value == INT32_MIN && memcmp(&error, poison, sizeof(error)) == 0);
+    f->registries[0]->blocks.q = NULL;
+    CHECK(mc_registry_block_q_get_failure(f->registries[0], &again, &error) == MC_REGISTRY_OK &&
+          again.classes == f->registries[0] && again.identity == NULL && again.length == 0 &&
+          memcmp(&error, poison, sizeof(error)) == 0);
+    value = 731;
+    CHECK(mc_registry_block_q_at_failure(&again, -1, &value, &error) ==
+              MC_REGISTRY_NULL_REFERENCE &&
+          value == 731 && error.status == MC_REGISTRY_NULL_REFERENCE && native_q_error(&error) &&
+          strcmp(error.message, "Block runtime captured q array is null") == 0);
+    f->registries[0]->blocks.q = original;
+    rebound = false;
+    CHECK(mc_registry_block_q_get(f->registries[0], &again, &error) == MC_REGISTRY_OK &&
+          again.identity == original && error.status == MC_REGISTRY_OK && error.message == NULL &&
+          native_q_error(&error));
     ok = true;
 cleanup:
+    if (rebound)
+        f->registries[0]->blocks.q = original;
     return ok;
 }
 
@@ -448,6 +490,22 @@ static bool test_finish_source(fixture *f) {
     memset(data->skylight, 0x66, sizeof(data->skylight));
     memset(data->heightmap, 0xee, sizeof(data->heightmap));
     data->minimum_height = -73;
+    /* The reached Block read lies between capture and the opacity element
+     * access. A captured null q must not displace the earlier Block failure. */
+    uint8_t *blocks = data->blocks;
+    int32_t *opacity = f->registries[0]->blocks.q;
+    data->blocks = NULL;
+    f->registries[0]->blocks.q = NULL;
+    const bool block_failed = mc_world_runtime_chunk_finish(f->chunks[1].object, &error) ==
+                                  MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+                              error.bytecode == 53 && error.registry.status == MC_REGISTRY_OK;
+    data->blocks = blocks;
+    const mc_world_storage_status opacity_failure =
+        mc_world_runtime_chunk_finish(f->chunks[1].object, &error);
+    f->registries[0]->blocks.q = opacity;
+    CHECK(block_failed && opacity_failure != MC_WORLD_STORAGE_OK && error.bytecode == 58 &&
+          error.registry.status == MC_REGISTRY_NULL_REFERENCE && native_q_error(&error.registry) &&
+          bytes_are(data->heightmap, sizeof(data->heightmap), 0xee) && data->minimum_height == -73);
     CHECK(mc_world_chunk_fields_get(f->chunks[1].object, &before) == MC_WORLD_STORAGE_OK);
     CHECK(mc_world_runtime_construct_default_random(f->worlds[0], NULL) ==
           MC_JAVA_RANDOM_PROFILE_INVALID_ARGUMENT);
@@ -645,8 +703,12 @@ static bool test_registry_failure(fixture *f) {
     source->watch_world = f->worlds[6];
     source->watch_chunk = state;
     CHECK(source->opens == 0);
-    CHECK(mc_world_runtime_chunk_finish(f->chunks[9].object, &first) ==
-          MC_WORLD_STORAGE_UNSUPPORTED_STATE);
+    uint8_t *blocks = state->data->blocks;
+    state->data->blocks = NULL;
+    const mc_world_storage_status status =
+        mc_world_runtime_chunk_finish(f->chunks[9].object, &first);
+    state->data->blocks = blocks;
+    CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE);
     CHECK(first.bytecode == 39 && first.column_bytecode == 0 && first.interval_bytecode == 0 &&
           first.registry.status == MC_REGISTRY_IO_FAILED && first.registry.constructor_pc == 23 &&
           first.registry.active_initializer_pc == 4 &&
@@ -665,6 +727,12 @@ static bool test_registry_failure(fixture *f) {
     mc_registry_block_q_view out = f->q;
     const uint64_t u = profile_u(f);
     CHECK(mc_registry_block_q_get(f->registries[1], &out, &cached) ==
+              MC_REGISTRY_FAILED_INITIALIZATION &&
+          out.classes == f->q.classes && out.identity == f->q.identity &&
+          out.length == f->q.length && cached.status == MC_REGISTRY_FAILED_INITIALIZATION &&
+          same_registry(&first.registry, &cached));
+    memset(&cached, 0xa5, sizeof(cached));
+    CHECK(mc_registry_block_q_get_failure(f->registries[1], &out, &cached) ==
               MC_REGISTRY_FAILED_INITIALIZATION &&
           out.classes == f->q.classes && out.identity == f->q.identity &&
           out.length == f->q.length && cached.status == MC_REGISTRY_FAILED_INITIALIZATION &&
