@@ -1,4 +1,4 @@
-#include "mc/client/world/frustum_culling.h"
+#include "frustum_internal.h"
 
 #include "../render/model_graph_internal.h"
 #include "source_chunk_renderer_internal.h"
@@ -116,10 +116,10 @@ mc_client_frustum_status mc_client_source_frustum_recenter(mc_client_source_frus
     return result(e, MC_CLIENT_FRUSTUM_OK, NULL, "sr", "a", "(DDD)V", 16, false);
 }
 
-mc_client_frustum_status mc_client_source_frustum_box(mc_client_source_frustum *o, double x0,
-                                                      double y0, double z0, double x1, double y1,
-                                                      double z1, bool *out,
-                                                      mc_client_culling_error *e) {
+static mc_client_frustum_status source_frustum_box(mc_client_source_frustum *o, double x0,
+                                                   double y0, double z0, double x1, double y1,
+                                                   double z1, bool *out, mc_client_culling_error *e,
+                                                   bool report_success) {
     if (out == NULL)
         return result(e, MC_CLIENT_FRUSTUM_ARGUMENT, "sr disjoint box output", NULL, NULL, NULL, 0,
                       true);
@@ -140,10 +140,13 @@ mc_client_frustum_status mc_client_source_frustum_box(mc_client_source_frustum *
         relative[i] = _mm_cvtsd_f64(_mm_sub_sd(_mm_set_sd(input[i]), _mm_set_sd(origin)));
     }
     mc_client_frustum_error child;
-    status = mc_client_frustum_box(d, relative[0], relative[1], relative[2], relative[3],
-                                   relative[4], relative[5], out, &child);
+    status = mc_client_frustum_box_test(d, relative[0], relative[1], relative[2], relative[3],
+                                        relative[4], relative[5], out, &child,
+                                        report_success && e != NULL);
     o->state.source_pc = status == MC_CLIENT_FRUSTUM_OK ? 47 : 44;
     o->state.active = false;
+    if (status == MC_CLIENT_FRUSTUM_OK && (!report_success || e == NULL))
+        return status;
     result(e, status, child.operation, "sr", "a", "(DDDDDD)Z", o->state.source_pc,
            child.native_policy);
     if (e != NULL) {
@@ -153,17 +156,31 @@ mc_client_frustum_status mc_client_source_frustum_box(mc_client_source_frustum *
     return status;
 }
 
-mc_client_frustum_status mc_client_source_frustum_bounds(mc_client_source_frustum *o,
-                                                         const mc_entity_bounds *box, bool *out,
-                                                         mc_client_culling_error *e) {
+mc_client_frustum_status mc_client_source_frustum_box(mc_client_source_frustum *o, double x0,
+                                                      double y0, double z0, double x1, double y1,
+                                                      double z1, bool *out,
+                                                      mc_client_culling_error *e) {
+    return source_frustum_box(o, x0, y0, z0, x1, y1, z1, out, e, true);
+}
+
+mc_client_frustum_status mc_client_source_frustum_bounds_test(mc_client_source_frustum *o,
+                                                              const mc_entity_bounds *box,
+                                                              bool *out, mc_client_culling_error *e,
+                                                              bool report_success) {
     if (o == NULL)
         return result(e, MC_CLIENT_FRUSTUM_SOURCE_NULL, "actual sr null receiver", "sr", "a",
                       "(Leq;)Z", 0, false);
     if (box == NULL)
         return result(e, MC_CLIENT_FRUSTUM_SOURCE_NULL, "actual sr null bounds", "sr", "a",
                       "(Leq;)Z", 2, false);
-    return mc_client_source_frustum_box(o, box->min_x, box->min_y, box->min_z, box->max_x,
-                                        box->max_y, box->max_z, out, e);
+    return source_frustum_box(o, box->min_x, box->min_y, box->min_z, box->max_x, box->max_y,
+                              box->max_z, out, e, report_success);
+}
+
+mc_client_frustum_status mc_client_source_frustum_bounds(mc_client_source_frustum *o,
+                                                         const mc_entity_bounds *box, bool *out,
+                                                         mc_client_culling_error *e) {
+    return mc_client_source_frustum_bounds_test(o, box, out, e, true);
 }
 
 mc_client_frustum_status mc_client_source_frustum_retire(mc_client_source_frustum **slot,
@@ -268,8 +285,8 @@ static bool cull_body(mc_client_culling_call *c) {
             c->failure.child = (mc_client_graphics_site){"dk", "a", "(Lyn;)V", 6};
             return false;
         }
-        const mc_client_frustum_status status =
-            mc_client_source_frustum_bounds(c->state.frustum, dk->fields.v, &visible, &child);
+        const mc_client_frustum_status status = mc_client_source_frustum_bounds_test(
+            c->state.frustum, dk->fields.v, &visible, &child, false);
         if (status != MC_CLIENT_FRUSTUM_OK) {
             cull_fail(c, status, child.operation, 54, child.native_policy);
             c->failure.child = child.site;

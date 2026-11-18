@@ -1,4 +1,4 @@
-#include "mc/client/world/frustum.h"
+#include "frustum_internal.h"
 
 #include "../display/world_frame_surface.h"
 #include "../render/model_graph_internal.h"
@@ -380,10 +380,11 @@ static inline bool box_max_corner_visible(const float *coefficients, double min_
                               coefficients[2] > 0.0f ? max_z : min_z);
 }
 
-mc_client_frustum_status mc_client_frustum_box(const mc_client_source_dr *d, double min_x,
-                                               double min_y, double min_z, double max_x,
-                                               double max_y, double max_z, bool *out,
-                                               mc_client_frustum_error *error) {
+mc_client_frustum_status mc_client_frustum_box_test(const mc_client_source_dr *d, double min_x,
+                                                    double min_y, double min_z, double max_x,
+                                                    double max_y, double max_z, bool *out,
+                                                    mc_client_frustum_error *error,
+                                                    bool report_success) {
     if (out == NULL)
         return result(error, MC_CLIENT_FRUSTUM_ARGUMENT, "frustum box output");
     if (d == NULL || d->a == NULL) {
@@ -425,11 +426,19 @@ mc_client_frustum_status mc_client_frustum_box(const mc_client_source_dr *d, dou
         }
         if (!visible) {
             *out = false;
-            return result(error, MC_CLIENT_FRUSTUM_OK, NULL);
+            return result(report_success ? error : NULL, MC_CLIENT_FRUSTUM_OK, NULL);
         }
     }
     *out = true;
-    return result(error, MC_CLIENT_FRUSTUM_OK, NULL);
+    return result(report_success ? error : NULL, MC_CLIENT_FRUSTUM_OK, NULL);
+}
+
+mc_client_frustum_status mc_client_frustum_box(const mc_client_source_dr *d, double min_x,
+                                               double min_y, double min_z, double max_x,
+                                               double max_y, double max_z, bool *out,
+                                               mc_client_frustum_error *error) {
+    return mc_client_frustum_box_test(d, min_x, min_y, min_z, max_x, max_y, max_z, out, error,
+                                      true);
 }
 
 mc_client_frustum_status mc_client_frustum_namespace_retire(mc_client_render_classes *models,

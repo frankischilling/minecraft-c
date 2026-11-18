@@ -6419,7 +6419,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938028,
-      "sha256": "d32b32b443bd6373243e0ceae49d2a5a1f6fb24e8b96c36443f83bccd5546ab7"
+      "sha256": "aada1e1e6f0e9cc6ab9a702bae148f8b8a014655a9f7171a11be79758eb258ba"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6483,7 +6483,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067982,
-      "sha256": "094eff3bb6fdb98c2333677d7e7345717f4274e3f6a7eabdf7a985f046b67069"
+      "sha256": "d3ffc461fef93f283112e2e4e1c9483a5bca19d78b47c5f98624cc39bf0c019b"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6615,7 +6615,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934853,
-      "sha256": "f057768d0e4538bcea27b7dacd3d4415f72556b843604b0395b9fc6bc063f6ec"
+      "sha256": "5c982ce7761fd393a1bcfde10d20b88544e319d7a75a71a5875ee820cb5832c1"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -10822,8 +10822,8 @@
       "sha256": "38cfd702201a4e06c474e9faaefca525a81ef54de8fd1ec67f507a3f3cce1eac"
     },
     "docs/client/renderer-frames.md": {
-      "bytes": 24709,
-      "sha256": "1b1db1c808aaabb31e2732f2f7d585d8cc9efd3b9f1398cc48cf2cdbd20d3f69"
+      "bytes": 25988,
+      "sha256": "b05e4477cdce9b689482035656a0378c11dde1b1f6e06d7144e80b49fb44f4a4"
     },
     "docs/world/ticking.md": {
       "bytes": 6406,
@@ -11106,8 +11106,8 @@
       "sha256": "410ab56706abf7ff30a9bc13a1d64b092cc2161d26adc3c88c8a42682dc86994"
     },
     "src/client/world/frustum.c": {
-      "bytes": 20290,
-      "sha256": "90c90282d4109c6df81cbc10aef12b8258394f0b9c2d54492575cf5ed112703a"
+      "bytes": 20914,
+      "sha256": "29b0d4539c2bb168fe528aa0450257bc54f8cb6dd5bf6fdd4c4458bb530401d6"
     },
     "src/world/biome/sky_color.c": {
       "bytes": 6501,
@@ -11130,8 +11130,8 @@
       "sha256": "5bf9d46abb30c1a835877c26a094532d7e69dd088b856b3bdc86e88d0ea9a15c"
     },
     "tests/client/world/test_frustum.c": {
-      "bytes": 20718,
-      "sha256": "a80164eead880c03699997a7a3351fd313fa8c99dda6fafd11682b9dbfdf1081"
+      "bytes": 21506,
+      "sha256": "f6bd0668b32cdf7b51397751f09e66726b3b0e29dc0bfcde2634d82d9c7cfdfa"
     },
     "tests/client/world/test_renderer_camera.c": {
       "bytes": 8221,
@@ -11314,8 +11314,8 @@
       "sha256": "f577fc5410983a7bf2c121b4719264341fa79cddc8259c2907cc7ec2fd8eeafb"
     },
     "src/client/world/frustum_culling.c": {
-      "bytes": 16479,
-      "sha256": "2adc4760b7c0d9eab31828e6424f2c07230d94eac990c2d89ab2f0edc8bf00ca"
+      "bytes": 17527,
+      "sha256": "fbaa16b5a9c4a41ca175eeabe4f543e2afb41e79e6fdcd58442a3f1c27c15012"
     },
     "src/client/world/render_global_sky_draw.c": {
       "bytes": 30194,
@@ -11338,8 +11338,8 @@
       "sha256": "4c8e87ab583eb20b5c1a4237c6158d01e9cdf8d0ce73de062c5586d4cdb31e62"
     },
     "tests/client/world/test_frustum_culling.c": {
-      "bytes": 11324,
-      "sha256": "f6910106bc6c703f857fc38a766a7c7df594b6b2c3f079b98cd5e4a6d66d37cf"
+      "bytes": 12288,
+      "sha256": "bf58f29a062dfff8bf7074c172fd903e3ff8d681df65f5f1def4779a70a1840f"
     },
     "tests/client/world/test_render_global_sky_cpu.c": {
       "bytes": 5811,
@@ -12802,12 +12802,12 @@
       "sha256": "216171013d1f7205770cae1b398df8cbf5ad1cda5e10fe02f9c6cdb379c0dfe7"
     },
     "src/client/world/render_global_entities.c": {
-      "bytes": 32330,
-      "sha256": "cfc2f93fe1af6a9d92756a473788a789515fceab4238e21e20d0505a75a87b28"
+      "bytes": 32360,
+      "sha256": "9266dbe0696f9befa5e7872d1ed3e182262aaa817c3647224d242ba81e3d3421"
     },
     "src/client/world/render_global_entities/body.inc": {
-      "bytes": 28775,
-      "sha256": "026d23d3e86f35d534f74dcb0b30b637208e7763446456a0fd1f5bc1002242c3"
+      "bytes": 28824,
+      "sha256": "a6e36a72e5a839546bccf1ceb594db632e188b26fdc6ccca4df6737dd4dc197f"
     },
     "src/entity/living/sleeping.c": {
       "bytes": 2570,

@@ -1,5 +1,6 @@
 #include "mc/client/world/render_global_entities.h"
 #include "entity_renderer/held_stack_parent_internal.h"
+#include "frustum_internal.h"
 
 #include "../../entity/entity_internal.h"
 #include "../application_state.h"

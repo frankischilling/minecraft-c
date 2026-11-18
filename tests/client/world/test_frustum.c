@@ -2,7 +2,7 @@
 #include "client/display/world_frame_surface.h"
 #include "client/render_engine/ge.h"
 #include "client/render_engine/internal.h"
-#include "mc/client/world/frustum.h"
+#include "client/world/frustum_internal.h"
 
 #include <emmintrin.h>
 #include <float.h>
@@ -88,6 +88,13 @@ static bool box_compare(float planes[6][4], const double box[6], unsigned int ou
           !error.native_policy && error.site.class_name == NULL && error.site.method == NULL &&
           error.site.descriptor == NULL && error.site.pc == 0 && error.parent.class_name == NULL &&
           error.parent.method == NULL && error.parent.descriptor == NULL && error.parent.pc == 0);
+    unsigned char sentinel[sizeof(error)];
+    memset(sentinel, 0xa5, sizeof(sentinel));
+    memcpy(&error, sentinel, sizeof(error));
+    visible = !expected;
+    CHECK(mc_client_frustum_box_test(&dr, box[0], box[1], box[2], box[3], box[4], box[5], &visible,
+                                     &error, false) == MC_CLIENT_FRUSTUM_OK &&
+          visible == expected && memcmp(&error, sentinel, sizeof(error)) == 0);
     ++outcomes[expected ? 1 : 0];
     return true;
 }
@@ -181,6 +188,11 @@ static bool box_differential_controls(void) {
     CHECK(mc_client_frustum_box(&dr, 0, 0, 0, 1, 1, 1, &visible, &error) ==
               MC_CLIENT_FRUSTUM_SOURCE_NULL &&
           visible && !error.native_policy && error.site.pc == 16);
+    memset(&error, 0xa5, sizeof(error));
+    CHECK(mc_client_frustum_box_test(&dr, 0, 0, 0, 1, 1, 1, &visible, &error, false) ==
+              MC_CLIENT_FRUSTUM_SOURCE_NULL &&
+          visible && error.status == MC_CLIENT_FRUSTUM_SOURCE_NULL && error.operation != NULL &&
+          !error.native_policy && error.site.pc == 16 && error.parent.class_name == NULL);
     dr.a = rows;
     _mm_setcsr(control | 0x8000u);
     const mc_client_frustum_status fp_status =

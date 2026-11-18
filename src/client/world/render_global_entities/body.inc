@@ -233,16 +233,18 @@ static bool weather(mc_client_render_global_entities_call *c) {
 }
 
 static bool entity_frustum(mc_client_render_global_entities_call *c, bool *out) {
-    mc_entity_snapshot entity;
-    c->failure.entity.status = mc_entity_get_snapshot(c->current, &entity);
-    if (c->failure.entity.status != MC_ENTITY_OK)
+    if (c->current == NULL) {
+        c->failure.entity.status = MC_ENTITY_INVALID_ARGUMENT;
         return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE, "N actual Entity bounds field", 387,
                     true);
+    }
+    c->failure.entity.status = MC_ENTITY_OK;
+    const mc_entity_bounds *bounds = c->current->bounds;
     if (c->state.frustum == NULL)
         return fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE, "actual N YN receiver", 390, false);
     ++c->state.frustum_checks;
-    const mc_client_frustum_status status = mc_client_source_frustum_bounds(
-        (mc_client_source_frustum *)c->state.frustum, entity.bounds, out, &c->culling);
+    const mc_client_frustum_status status = mc_client_source_frustum_bounds_test(
+        (mc_client_source_frustum *)c->state.frustum, bounds, out, &c->culling, false);
     if (status == MC_CLIENT_FRUSTUM_OK)
         return true;
     fail(c,

@@ -3530,8 +3530,8 @@
       "sha256": "410ab56706abf7ff30a9bc13a1d64b092cc2161d26adc3c88c8a42682dc86994"
     },
     "src/client/world/frustum.c": {
-      "bytes": 20290,
-      "sha256": "90c90282d4109c6df81cbc10aef12b8258394f0b9c2d54492575cf5ed112703a"
+      "bytes": 20914,
+      "sha256": "29b0d4539c2bb168fe528aa0450257bc54f8cb6dd5bf6fdd4c4458bb530401d6"
     },
     "src/world/biome/biome_internal.h": {
       "bytes": 3874,
@@ -3558,8 +3558,8 @@
       "sha256": "5bf9d46abb30c1a835877c26a094532d7e69dd088b856b3bdc86e88d0ea9a15c"
     },
     "tests/client/world/test_frustum.c": {
-      "bytes": 20718,
-      "sha256": "a80164eead880c03699997a7a3351fd313fa8c99dda6fafd11682b9dbfdf1081"
+      "bytes": 21506,
+      "sha256": "f6bd0668b32cdf7b51397751f09e66726b3b0e29dc0bfcde2634d82d9c7cfdfa"
     },
     "tests/client/world/test_renderer_camera.c": {
       "bytes": 8221,
@@ -3654,8 +3654,8 @@
       "sha256": "f577fc5410983a7bf2c121b4719264341fa79cddc8259c2907cc7ec2fd8eeafb"
     },
     "src/client/world/frustum_culling.c": {
-      "bytes": 16479,
-      "sha256": "2adc4760b7c0d9eab31828e6424f2c07230d94eac990c2d89ab2f0edc8bf00ca"
+      "bytes": 17527,
+      "sha256": "fbaa16b5a9c4a41ca175eeabe4f543e2afb41e79e6fdcd58442a3f1c27c15012"
     },
     "src/client/world/render_global_sky_draw.c": {
       "bytes": 30194,
@@ -3682,8 +3682,8 @@
       "sha256": "4c8e87ab583eb20b5c1a4237c6158d01e9cdf8d0ce73de062c5586d4cdb31e62"
     },
     "tests/client/world/test_frustum_culling.c": {
-      "bytes": 11324,
-      "sha256": "f6910106bc6c703f857fc38a766a7c7df594b6b2c3f079b98cd5e4a6d66d37cf"
+      "bytes": 12288,
+      "sha256": "bf58f29a062dfff8bf7074c172fd903e3ff8d681df65f5f1def4779a70a1840f"
     },
     "tests/client/world/test_render_global_sky_cpu.c": {
       "bytes": 5811,
@@ -4474,12 +4474,12 @@
       "sha256": "216171013d1f7205770cae1b398df8cbf5ad1cda5e10fe02f9c6cdb379c0dfe7"
     },
     "src/client/world/render_global_entities.c": {
-      "bytes": 32330,
-      "sha256": "cfc2f93fe1af6a9d92756a473788a789515fceab4238e21e20d0505a75a87b28"
+      "bytes": 32360,
+      "sha256": "9266dbe0696f9befa5e7872d1ed3e182262aaa817c3647224d242ba81e3d3421"
     },
     "src/client/world/render_global_entities/body.inc": {
-      "bytes": 28775,
-      "sha256": "026d23d3e86f35d534f74dcb0b30b637208e7763446456a0fd1f5bc1002242c3"
+      "bytes": 28824,
+      "sha256": "a6e36a72e5a839546bccf1ceb594db632e188b26fdc6ccca4df6737dd4dc197f"
     },
     "src/entity/living/sleeping.c": {
       "bytes": 2570,

@@ -137,7 +137,9 @@ static bool run(void) {
             CHECK(mc_entity_bounds_create(entities, b[i][0], b[i][1], b[i][2], b[i][3], b[i][4],
                                           b[i][5], &box, NULL) == MC_ENTITY_OK);
             CHECK(mc_client_source_frustum_bounds(sr, box, &c, &error) == MC_CLIENT_FRUSTUM_OK &&
-                  a == c);
+                  a == c && error.status == MC_CLIENT_FRUSTUM_OK && error.operation == NULL &&
+                  error.site.pc == 47 && !error.native_policy &&
+                  error.frustum.status == MC_CLIENT_FRUSTUM_OK && error.frustum.operation == NULL);
             CHECK(mc_entity_bounds_release(entities, box) == MC_ENTITY_OK);
             if (a)
                 mask |= 1u << i;
@@ -190,6 +192,17 @@ static bool run(void) {
           n->fields.j == 0 && error.child.pc == 14);
     CHECK(mc_client_render_global_cull_retire(&call, &error) == MC_CLIENT_FRUSTUM_OK);
     n->fields.o[1]->fields.E = false;
+    mc_entity_bounds *saved_bounds = n->fields.o[1]->fields.v;
+    n->fields.o[1]->fields.v = NULL;
+    const mc_client_frustum_status missing =
+        mc_client_render_global_cull_begin(n, sr, 0, &call, &error);
+    n->fields.o[1]->fields.v = saved_bounds;
+    mc_client_culling_state failed_state;
+    CHECK(missing == MC_CLIENT_FRUSTUM_SOURCE_NULL && n->fields.j == 0 && error.site.pc == 54 &&
+          error.child.pc == 2 && !error.native_policy &&
+          mc_client_render_global_cull_inspect(call, &failed_state) && !failed_state.returned &&
+          failed_state.index == 1 && failed_state.tested == 1 && failed_state.stores == 0);
+    CHECK(mc_client_render_global_cull_retire(&call, &error) == MC_CLIENT_FRUSTUM_OK);
     CHECK(mc_client_render_global_cull_begin(n, NULL, 0, &call, &error) ==
               MC_CLIENT_FRUSTUM_SOURCE_NULL &&
           error.child.pc == 6 && n->fields.j == 0);

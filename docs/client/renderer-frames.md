@@ -208,6 +208,31 @@ compare aggregate rates. The two moving pairs without phase instrumentation
 shared 215 World ticks. Their median FPS moved from 63.97 to 63.78 and p99
 frame time moved from 21.16 to 21.33 ms.
 
+### Frustum diagnostics during rendering
+
+Chunk and Entity drawing now request frustum diagnostics only on failure.
+Entity drawing reads the bounds from the retained actor without copying
+a full snapshot. The same box test still decides visibility and the
+public calls still populate the full record. The native controls check
+visible and culled boxes, untouched private diagnostics on success, and
+partial culling state when a box is missing.
+
+Each fixed CPU run visits 4,096 authored chunk bounds per pass over 1,100
+passes. Visit and test counts, throttle counts, and visibility checksums
+matched in 12 alternating pairs on each host.
+[WSL2 pairs](../../tests/benchmarks/frustum_culling_linux.json) ·
+[Windows pairs](../../tests/benchmarks/frustum_culling_windows.json)
+
+| Host and camera workload | Box tests per run | Baseline median | Candidate median | Change |
+| --- | ---: | ---: | ---: | ---: |
+| WSL2, steady | 244,603 | 42.882 ms | 28.697 ms | -33.1% |
+| WSL2, sweeping | 1,766,917 | 152.566 ms | 53.975 ms | -64.6% |
+| Windows, steady | 244,603 | 66.057 ms | 43.645 ms | -33.9% |
+| Windows, sweeping | 1,766,917 | 239.051 ms | 76.137 ms | -68.2% |
+
+These timings cover the Chunk culling loop. Entity drawing and gameplay
+FPS have no timing result for this change.
+
 ### Display-list capacity during movement
 
 Two forward-input runs reached the old 32 MiB display-list budget after
