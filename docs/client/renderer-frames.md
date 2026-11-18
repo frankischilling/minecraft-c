@@ -268,6 +268,32 @@ diverged in World Random and scheduling receipts after Chunk acquisition.
 The 32 MiB runs generated 40 and 41 Chunks during play. The 64 MiB runs
 generated 64 and 70. These frame times describe the observed moving routes.
 
+### Frame cost after loading the moving save
+
+A separate eight-second DISPLAY2 trace loaded the retained save at World
+time 13,399 and sent ordinary forward input. It returned 98 frames and
+166 World ticks with valid focus and pose checks. Mean host frame time
+was 82.46 ms. These are inclusive host spans grouped by returned frame.
+The 166 timed ticks reached 17,261 Entity dispatches, about 104 per tick.
+
+| Span | Mean ms per frame |
+| --- | ---: |
+| Main tick batch | 58.26 |
+| Entity tick within the batch | 41.34 |
+| Scheduler within the batch | 15.19 |
+| Random block work within the scheduler | 13.29 |
+| World rendering | 18.37 |
+| Entity drawing within World rendering | 8.54 |
+| Dirty mesh compilation within World rendering | 3.32 |
+
+The trace includes 42 Chunk generations. A longer run with the
+[Watcher Byte change](../entity/movement.md#movement-diagnostic-cost)
+completed 406 World ticks after loading the same save. It stopped at
+the missing Bubble allocation when the Player entered water. The
+client released the input and closed the window with valid focus and
+pose checks. Independent NBT readback matched the earlier run's autosave
+at World time 13,799, including all Player position and rotation bits.
+
 ## Evidence and limits
 
 The [full-fog fixture](../../tests/reference/client/world_frame/README.md)

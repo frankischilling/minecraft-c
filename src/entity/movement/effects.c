@@ -96,36 +96,48 @@ static mc_entity_status fail(mc_entity_effect_error *error, mc_entity_status sta
     return status;
 }
 
-static bool enter_domain(mc_entity *entity, mc_entity_effect_error *error, bool inherited_arrow) {
-    if (entity == NULL) {
-        fail(error, MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_EFFECT_CAUSE_OWNER,
-             "Entity effect receiver", 0);
-        return false;
-    }
-    if (entity->phase != MC_ENTITY_READY) {
-        fail(error, MC_ENTITY_INVALID_PHASE, MC_ENTITY_EFFECT_CAUSE_OWNER,
-             "Entity effect READY admission", 0);
-        return false;
-    }
-    if (entity->classes == NULL || entity->holds == 0) {
-        fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_OWNER, "Entity effect held owner",
-             0);
-        return false;
-    }
+typedef struct effect_admission {
+    mc_entity_status status;
+    mc_entity_effect_cause cause;
+    const char *operation;
+    bool hold_failed;
+} effect_admission;
+
+static effect_admission admit(mc_entity *entity, bool inherited_arrow) {
+    if (entity == NULL)
+        return (effect_admission){MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_EFFECT_CAUSE_OWNER,
+                                  "Entity effect receiver", false};
+    if (entity->phase != MC_ENTITY_READY)
+        return (effect_admission){MC_ENTITY_INVALID_PHASE, MC_ENTITY_EFFECT_CAUSE_OWNER,
+                                  "Entity effect READY admission", false};
+    if (entity->classes == NULL || entity->holds == 0)
+        return (effect_admission){MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_OWNER,
+                                  "Entity effect held owner", false};
     if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
         !mc_entity_has_moving_particle(entity) &&
         !(inherited_arrow && mc_entity_has_arrow(entity)) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
-        !(mc_entity_has_mob(entity) && mc_entity_is_kind(entity, entity->class_literal->kind))) {
-        fail(error, MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
-             "Entity effect unsupported canonical virtual", 0);
-        return false;
-    }
+        !(mc_entity_has_mob(entity) && mc_entity_is_kind(entity, entity->class_literal->kind)))
+        return (effect_admission){MC_ENTITY_STATE_ERROR, MC_ENTITY_EFFECT_CAUSE_UNSUPPORTED_VIRTUAL,
+                                  "Entity effect unsupported canonical virtual", false};
     const mc_entity_status status = mc_entity_retain(entity);
-    if (status != MC_ENTITY_OK) {
-        error->entity = (mc_entity_error){.status = status, .operation = "Entity effect hold"};
-        fail(error, status, MC_ENTITY_EFFECT_CAUSE_OWNER, "Entity effect hold", 0);
+    if (status != MC_ENTITY_OK)
+        return (effect_admission){status, MC_ENTITY_EFFECT_CAUSE_OWNER, "Entity effect hold", true};
+    return (effect_admission){0};
+}
+
+static void publish_admission_failure(effect_admission admission, mc_entity_effect_error *error) {
+    if (admission.hold_failed)
+        error->entity =
+            (mc_entity_error){.status = admission.status, .operation = admission.operation};
+    (void)fail(error, admission.status, admission.cause, admission.operation, 0);
+}
+
+static bool enter_domain(mc_entity *entity, mc_entity_effect_error *error, bool inherited_arrow) {
+    const effect_admission admission = admit(entity, inherited_arrow);
+    if (admission.status != MC_ENTITY_OK) {
+        publish_admission_failure(admission, error);
         return false;
     }
     return true;
@@ -250,18 +262,26 @@ static bool flag(mc_entity *entity, int32_t bit, bool *out, mc_entity_effect_err
 
 mc_entity_status mc_entity_effect_watcher_byte(mc_entity *entity, int32_t index, int8_t *out,
                                                mc_entity_effect_error *error) {
-    mc_entity_effect_error frame;
-    mc_entity_effect_error_init(&frame);
-    if (out == NULL)
-        fail(&frame, MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_EFFECT_CAUSE_OWNER,
-             "Watcher Byte output", 0);
-    else if (enter_arrow_base(entity, &frame)) {
-        int8_t value;
-        if (mc_entity_effect_watcher_byte_entered(entity, index, &value, &frame))
-            *out = value;
-        mc_entity_release(entity);
+    const effect_admission admission =
+        out == NULL ? (effect_admission){MC_ENTITY_INVALID_ARGUMENT, MC_ENTITY_EFFECT_CAUSE_OWNER,
+                                         "Watcher Byte output", false}
+                    : admit(entity, true);
+    if (admission.status != MC_ENTITY_OK) {
+        if (error != NULL) {
+            mc_entity_effect_error_init(error);
+            publish_admission_failure(admission, error);
+        }
+        return admission.status;
     }
-    return finish(&frame, error);
+
+    mc_entity_watcher_byte_error leaf;
+    (void)mc_entity_watcher_byte_read_entered(entity, index, out, &leaf);
+    mc_entity_release(entity);
+    if (error != NULL) {
+        mc_entity_effect_error_init(error);
+        mc_entity_effect_watcher_byte_apply(&leaf, error);
+    }
+    return leaf.status;
 }
 
 mc_entity_status mc_entity_effect_flag(mc_entity *entity, int32_t bit, bool *out,

@@ -386,8 +386,8 @@
       "sha256": "a641b8e8b1cd20ead567a0a6491a1cc3d74a0f551a3146b65dfa3cd5cae058e6"
     },
     "docs/entity/movement.md": {
-      "bytes": 10196,
-      "sha256": "32b940a72ebb9984d1b492c08d2e240b8788c0d7fac8060f721d2da284ac7544"
+      "bytes": 10857,
+      "sha256": "acde89a2b1d6d8deaa26a863e4cdd8f31b983f5952fab67010b4097328824a69"
     },
     "docs/entity/nbt.md": {
       "bytes": 13556,
@@ -4010,8 +4010,8 @@
       "sha256": "ffeff1e593667e16efd2d0ec820aac3de624807991fc709fee291826f05b09e8"
     },
     "src/entity/movement/effects.c": {
-      "bytes": 90251,
-      "sha256": "d21ef9147c843c7fc28d5dc1d5fe6c8eada881eb801d5dcd58320300f638ac34"
+      "bytes": 91296,
+      "sha256": "d24ed3223002be592ee03c8c2510c119a6caf0c4762786eb8d4edf02aec94d36"
     },
     "src/entity/movement/environment.c": {
       "bytes": 29826,
@@ -6014,8 +6014,8 @@
       "sha256": "4bf58bd795caeb654b69d449e78e99e6d486b249b6469007dc58995de75a37b4"
     },
     "tests/entity/movement/test_effects.c": {
-      "bytes": 14761,
-      "sha256": "eb5ac51a10cb30f2ca0c57f4593b2bcb6674e607ba9ad85cf4918277acae9073"
+      "bytes": 15329,
+      "sha256": "6e3523c97c48c21248070b994d0188a6772d41e80836631e7f5023dc2fcec3a6"
     },
     "tests/entity/movement/test_environment.c": {
       "bytes": 34049,
@@ -6419,7 +6419,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938028,
-      "sha256": "fa25e9e5d50e270d56d73fa33d6fccd861443f157289b596deb8c2a5c12a7401"
+      "sha256": "db71f7f260332f572859f9c72cc1181ee76b52d70fec668bdb2e52a02ad79f38"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6483,7 +6483,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067981,
-      "sha256": "b13af54fa3de365b718baf02a8f153058121d06e22b26dc836ead99bbc243ec0"
+      "sha256": "19cfac04f43a798ef0d92637f957d98d4c8af66395461daafc57ab5309d3b2fd"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6615,7 +6615,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934853,
-      "sha256": "a20cfcf5475e060b210cb7880e010976c8f6f6113d6c5c2841824167de02da3b"
+      "sha256": "69ee3cfb5ca7afd3aeb58c4199816e4d7144a94c0731f607965931588c2f20e6"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -10822,8 +10822,8 @@
       "sha256": "38cfd702201a4e06c474e9faaefca525a81ef54de8fd1ec67f507a3f3cce1eac"
     },
     "docs/client/renderer-frames.md": {
-      "bytes": 22813,
-      "sha256": "980b054d1f570dd1c9f4411e9074c66e514f0136aae48174eddf6fa0a8e184e8"
+      "bytes": 24040,
+      "sha256": "7d6046c312f09cea53c367d67fe1dff45a8ee4ccbd69490b22a1191ba231fa6b"
     },
     "docs/world/ticking.md": {
       "bytes": 6406,
@@ -23539,11 +23539,11 @@
     },
     "tests/tools/world/arrow_natural_flight_bundle.json": {
       "bytes": 8022,
-      "sha256": "787f0b2a7867e6914bca5e37cbf76ba7c35ec6c9252564769e3e9252c299c403"
+      "sha256": "efc8055e796c6bd0be813bf5c7702018480b210696f94420250729d2b19444fd"
     },
     "tests/tools/world/test_arrow_natural_flight.py": {
       "bytes": 16754,
-      "sha256": "307bc6562e01a56eaeaca132562a34732bb57a5e586676193e9cc9949adc1cfa"
+      "sha256": "6eef588c745818dd96fff55fcec3dbbc19a65ca49fe23790e9ca3fc11da18e5a"
     },
     "tests/world/runtime/test_arrow_natural_flight.c": {
       "bytes": 19352,
@@ -23559,11 +23559,11 @@
     },
     "tests/tools/client/arrow_world_tick_cleanup_bundle.json": {
       "bytes": 9794,
-      "sha256": "53356c2a78f446b0419b26b583653fe9b95c6c72c5f6ad849817562fa61fb88f"
+      "sha256": "10d8b4d2d75f7eb8eef926ad256752bb687c89144f84b10aea810adcc5d0df13"
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "a14a235109925643ad1ca30a06f415026b4acc4386b75647bd54db8e0d133e37"
+      "sha256": "d9c6dc70a78affb703aabb34c3c38aa555d4851216c33853f8414a003eefd347"
     },
     "docs/entity/arrow-flight.md": {
       "bytes": 12048,

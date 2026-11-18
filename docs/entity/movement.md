@@ -136,6 +136,18 @@ World ticks in each scene, covering 16,425 and 3,780 actor dispatches.
 | Heavy | 44.27 → 52.98 | 39.50 → 33.54 |
 | Lighter | 61.50 → 62.55 | 26.53 → 25.65 |
 
+The typed Watcher Byte read keeps its admission result and lookup
+diagnostic in small local values. It publishes the full diagnostic
+directly to the caller when requested. The getter keeps the Entity hold
+through the lookup, preserves its failure PC and leaves the Byte output
+untouched on failure.
+
+In Windows Release, an isolated benchmark alternated a client Item and
+a server Falling Sand Entity. Each of four fresh processes per variant
+timed 12 batches of 300,000 reads in each diagnostic mode. Median time
+per read fell from 1.581 to 0.947 µs with a diagnostic, and from 0.957 µs
+to 14.3 ns without one. The Byte sums, holds and Random state matched.
+
 ## Verification scope
 
 Focused MSVC, GCC and Clang receipts pass five cases: `entity.movement` with 544

@@ -165,11 +165,20 @@ static bool movement_effects(mc_entity *entity, mc_entity *other, bool item) {
     /* Declared wire metadata does not select the Object returned by ma.b(). */
     const int32_t declared = record->type;
     record->type = 2;
+    error.entity.status = MC_ENTITY_BUSY;
+    error.math.source_pc = 617;
     const mc_entity_status metadata_only = mc_entity_effect_watcher_byte(entity, 0, &byte, &error);
     record->type = declared;
     CHECK(metadata_only == MC_ENTITY_OK && byte == saved_byte &&
-          record->payload_kind == saved_kind);
+          record->payload_kind == saved_kind && error.status == MC_ENTITY_OK &&
+          error.watcher_index == -1 && error.watcher_bytecode == 0 &&
+          error.entity.status == MC_ENTITY_OK && error.math.source_pc == -1);
+    byte = saved_byte == 37 ? 38 : 37;
+    CHECK(mc_entity_effect_watcher_byte(entity, 0, &byte, NULL) == MC_ENTITY_OK &&
+          byte == saved_byte && entity->holds == 1);
     byte = 37;
+    CHECK(mc_entity_effect_watcher_byte(entity, 91, &byte, NULL) == MC_ENTITY_STATE_ERROR &&
+          byte == 37 && entity->holds == 1);
     record->payload_kind = MC_ENTITY_WATCH_PAYLOAD_NULL;
     const mc_entity_status null_payload = mc_entity_effect_watcher_byte(entity, 0, &byte, &error);
     record->payload_kind = saved_kind;
