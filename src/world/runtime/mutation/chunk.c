@@ -269,22 +269,27 @@ static bool hook(mc_world_chunk *chunk, int32_t id, int32_t x, int32_t y, int32_
     mc_world_runtime *world = execution == NULL ? chunk->d : execution->initiating_world;
     mc_registry_classes *classes =
         execution == NULL ? mc_world_runtime_registry(world) : execution->registry;
-    mc_registry_error cause = mc_world_mutation_empty_registry();
-    mc_registry_block_m_view array;
-    error->chunk_bytecode = capture_pc;
-    if (classes == NULL) {
-        cause.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
-        cause.message = "Chunk setter Registry binding";
-        return mc_world_mutation_registry_fail(world, error, &cause, cause.message);
-    }
-    if (mc_registry_block_m_get(classes, &array, &cause) != MC_REGISTRY_OK)
-        return mc_world_mutation_registry_fail(world, error, &cause,
-                                               "Chunk setter Block.m active use");
     const mc_block *block;
+    /* No callback separates the array capture and element read. */
+    if (!mc_registry_block_m_read_ready(classes, id, &block)) {
+        error->chunk_bytecode = capture_pc;
+        mc_registry_error cause;
+        if (classes == NULL) {
+            cause = mc_world_mutation_empty_registry();
+            cause.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
+            cause.message = "Chunk setter Registry binding";
+            return mc_world_mutation_registry_fail(world, error, &cause, cause.message);
+        }
+        mc_registry_block_m_view array;
+        if (mc_registry_block_m_get_failure(classes, &array, &cause) != MC_REGISTRY_OK)
+            return mc_world_mutation_registry_fail(world, error, &cause,
+                                                   "Chunk setter Block.m active use");
+        error->chunk_bytecode = element_pc;
+        if (mc_registry_block_m_at_failure(&array, id, &block, &cause) != MC_REGISTRY_OK)
+            return mc_world_mutation_registry_fail(world, error, &cause,
+                                                   "Chunk setter Block.m element");
+    }
     error->chunk_bytecode = element_pc;
-    if (mc_registry_block_m_at(&array, id, &block, &cause) != MC_REGISTRY_OK)
-        return mc_world_mutation_registry_fail(world, error, &cause,
-                                               "Chunk setter Block.m element");
     mc_world_runtime *receiver = chunk->d;
     if (execution != NULL) {
         const unsigned int world_pc = execution->setter_body == MC_WORLD_MUTATION_CHUNK_ID_METADATA

@@ -4,6 +4,7 @@
 
 #include "../../../block/registry/registry_internal.h"
 #include "../../../block/registry/runtime_internal.h"
+#include "../../chunk/object_state_internal.h"
 #include "../../storage/objects_internal.h"
 #include "../blocks_execution_internal.h"
 #include "../construction_internal.h"
@@ -647,24 +648,23 @@ static bool quiet(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, int3
             world->last_error = frame->cause;
         return completed;
     }
-    mc_world_chunk_fields fields;
-    if (chunk == NULL || mc_world_chunk_fields_get(chunk, &fields) != MC_WORLD_STORAGE_OK ||
-        fields.d == NULL || fields.d->construction.mode != MC_WORLD_RUNTIME_GAME ||
-        fields.d->construction.phase == MC_WORLD_RUNTIME_RETIRED || fields.d->fields.w != store)
+    mc_world_runtime *binding = chunk == NULL ? NULL : chunk->d;
+    if (binding == NULL || binding->construction.mode != MC_WORLD_RUNTIME_GAME ||
+        binding->construction.phase == MC_WORLD_RUNTIME_RETIRED || binding->fields.w != store)
         return mc_world_mutation_fail(world, frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "World mutation concrete Chunk binding");
 
     mc_world_storage_error cause = {0};
-    if (mc_world_runtime_call_enter(fields.d, &cause) != MC_WORLD_STORAGE_OK)
+    if (mc_world_runtime_call_enter(binding, &cause) != MC_WORLD_STORAGE_OK)
         return storage_fail(world, frame, cause);
     if (mc_world_store_lease_chunk(store, state, &cause) != MC_WORLD_STORAGE_OK) {
-        mc_world_runtime_call_leave(fields.d);
+        mc_world_runtime_call_leave(binding);
         return storage_fail(world, frame, cause);
     }
     const bool completed = mc_world_mutation_chunk_piston_set(code, chunk, local_x, y, local_z, id,
                                                               with_metadata, metadata, out, frame);
     (void)mc_world_store_release_chunk(store, state, NULL);
-    mc_world_runtime_call_leave(fields.d);
+    mc_world_runtime_call_leave(binding);
     if (!completed)
         world->last_error = frame->cause;
     else

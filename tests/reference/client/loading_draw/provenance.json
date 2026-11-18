@@ -1034,12 +1034,12 @@
       "sha256": "5e0fecf6208f2281079aa214be720f44e6ec7f0c2ab582bab976d4bd4e43882e"
     },
     "src/block/registry/runtime.c": {
-      "bytes": 32550,
-      "sha256": "f6249d56efb3233189c4698919ed162e852f43a8fc2e2121a1a806ec0c8b9e36"
+      "bytes": 32896,
+      "sha256": "86af8851ad7b3d5005626803d4e7a34d151bc9a108fa05e2ca0eaf4cf14e2cb5"
     },
     "src/block/registry/runtime_internal.h": {
-      "bytes": 13748,
-      "sha256": "e8340b6eef1e4a184fe63471618af870b20598839249f4c81ee0c5c592ee5481"
+      "bytes": 13842,
+      "sha256": "2734a9f5e8e5e65c8b54403d34421323f53fe0340e3cbe321d2df3e1cb6c52d0"
     },
     "src/block/registry/step_sound.c": {
       "bytes": 8271,
@@ -3310,8 +3310,8 @@
       "sha256": "254e167c898907879c70fccca62c635d37bba596bfe1fe764239bde52a0e983e"
     },
     "src/world/runtime/mutation/chunk.c": {
-      "bytes": 34338,
-      "sha256": "a0fcb3fcd71c12114a9094d8901659e98ddc88fd34579fa479388a026d7bb7d7"
+      "bytes": 34611,
+      "sha256": "00278b4b3a2f99db61dbb2096c1d894a7434b247e70cef45b8bf53471e20ab92"
     },
     "src/world/runtime/mutation/drops.c": {
       "bytes": 48811,
@@ -3458,8 +3458,8 @@
       "sha256": "42d2c4461e92aaba39949b8a9377255c77b01e7895fe8d1cc2172b4aedbb808e"
     },
     "src/world/runtime/mutation/world.c": {
-      "bytes": 87794,
-      "sha256": "44872602ad6392157041c01fa101a2cd1e0efa83fcf738a0c673f92dbff97e86"
+      "bytes": 87772,
+      "sha256": "89f456fa4556a22f3b59abf38a345937a734226d399d54dc44143d690f13f3d8"
     },
     "src/world/runtime/plants.c": {
       "bytes": 31190,
@@ -11723,7 +11723,7 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76652,
-      "sha256": "f75a3d53ab270725d26dec08bfb8cda147c1b58fecf8b4fc9f878f2b8dbaf91e"
+      "sha256": "df820a60318aa66550651dd5f022f2a2d950632f3eb6533053b1e37321a0ca53"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -11899,7 +11899,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "3ee166f6e8b09936152fdef86aefc159fde6e082e2522324681f2bd4fcfe069b"
+      "sha256": "10e2046f288f3c05692061c61438ffda3f335b680e1e7e1e31df87b71482d911"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,

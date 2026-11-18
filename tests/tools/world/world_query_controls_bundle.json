@@ -539,8 +539,8 @@
       "sha256": "216975455c0984a86a98feb04d54db5b9020964342ff941a46141319e7cfdf4e"
     },
     "src/world/runtime/mutation/world.c": {
-      "bytes": 87794,
-      "sha256": "44872602ad6392157041c01fa101a2cd1e0efa83fcf738a0c673f92dbff97e86"
+      "bytes": 87772,
+      "sha256": "89f456fa4556a22f3b59abf38a345937a734226d399d54dc44143d690f13f3d8"
     },
     "src/world/runtime/mutation/world_execution_internal.h": {
       "bytes": 18567,

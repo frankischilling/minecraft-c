@@ -208,6 +208,15 @@ bool mc_registry_block_q_read_ready(const mc_registry_classes *classes, int32_t 
     return blocks_ready_idle(classes) && ready_block_int_element(classes->blocks.q, index, out);
 }
 
+bool mc_registry_block_m_read_ready(const mc_registry_classes *classes, int32_t index,
+                                    const mc_block **out) {
+    if (!blocks_ready_idle(classes) || classes->blocks.m == NULL ||
+        (uint32_t)index >= MC_REGISTRY_BLOCK_SLOTS)
+        return false;
+    *out = classes->blocks.m[index];
+    return true;
+}
+
 bool mc_registry_block_s_read_ready(const mc_registry_classes *classes, int32_t index,
                                     int32_t *out) {
     return blocks_ready_idle(classes) && ready_block_int_element(classes->blocks.s, index, out);

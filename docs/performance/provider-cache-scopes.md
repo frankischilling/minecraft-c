@@ -543,6 +543,32 @@ median p99 fell from 52.18 to 41.23 ms. Two pairs had lower p99. The
 longest frame fell from 78.37 to 64.37 ms. Both builds shared the local
 Sign edits and the amount of World work varied across runs.
 
+### Quiet World setter and Chunk hook reads
+
+The ordinary World setter reads the selected Chunk's current World
+binding directly. It holds that captured World through the concrete
+setter and releases the same World after releasing the Chunk lease.
+The Chunk Block hooks read a ready Registry's `Block.m` element where
+the capture and element read are adjacent. A cold or busy Registry, a
+null array, or an out-of-range ID still takes the ordinary capture and
+element path with its original failure sites. A null element can still
+reach the hook's receiver check.
+
+Eight alternating fixed ore pairs per side matched all four populated
+Chunk receipts with seeded World Random. On Windows MSVC Release the
+client median fell from 27.88 to 27.21 ms, with seven of eight pairs
+faster. The server regression median fell from 27.93 to 27.08 ms, with
+six of eight pairs faster.
+
+The six uninstrumented DISPLAY2 runs that preserved object link order
+used 854×480 on Tiny. Median FPS went from 54.73 to 54.08. Median p95
+fell from 27.50 to 25.91 ms and median p99 fell from 49.07 to 45.21 ms.
+Two pairs had lower p99 and one had higher FPS. Peak frame time fell
+from 78.84 to 70.20 ms. Fourteen earlier runs moved the replaced objects
+in the candidate link order. Median FPS fell in both earlier cohorts
+and their p99 results went in opposite directions. Both builds shared
+the local Sign edits. World work varied across runs.
+
 ### Spring fluid diagnostics
 
 Two DISPLAY2 traces separated spring placement from the immediate flowing
