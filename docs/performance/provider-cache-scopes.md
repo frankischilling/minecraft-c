@@ -197,7 +197,8 @@ population calls took 201 ms in total and generation took 7 ms. The sampled
 Chunk itself was already resident. Two finer captures recorded 62 population
 calls. Median ore placement times were 20.9 and 21.6 ms per call in the two
 processes. Spring work usually took about 1 ms, with a maximum of 96 ms in one
-capture. These nested timings attribute the frame stalls to reached work in the
+capture. The four longest spring spans in each process contained no nested
+generation or population calls. These timings attribute the stalls in this
 fixed scene.
 
 Population mutations check Chunk presence while publishing and updating chunks.
@@ -237,6 +238,47 @@ measurements cover this scene and leave the spring spikes open.
 Ten focused tests passed on each host, including the 17 owned-cache profiles,
 natural population, lighting and random ticks. Linux ran with Clang, ASan,
 UBSan and leak detection.
+
+### Ore placement and lighting diagnostics
+
+Two more DISPLAY2 traces timed samples from over 915,000 ore candidate reads
+and 107,000 quiet setter calls. The setters took most of the sampled time.
+Direct lighting submissions and column updates were both substantial parts of
+the setter. Each changed ore cell can query four neighboring heights and submit
+multiple lighting regions.
+
+Ordinary height and light submission now request acquisition diagnostics only
+when the underlying Chunk lookup fails. Ore and clay use the same quiet ID
+setter body with a failure-only diagnostic. The ore and clay feature frame
+starts with a canonical diagnostic, and a failed write immediately passes it
+back. The public setters continue to return canonical success diagnostics.
+
+A private Windows MSVC Release comparison timed the ore phase in four Chunk
+population calls per process. It reused the native ring fixture and seeded the
+live World Random after construction so whole output files could be compared.
+The fixture exports the provider and exercises the generic cache path. Each
+side ran four fresh processes per variant with balanced order. All 32 processes
+produced byte-identical native observations within their side, including Chunk
+planes and Random continuations. Times are median sums of the four ore phases.
+
+| Runtime changes | Client | Server regression control |
+| --- | ---: | ---: |
+| Baseline | 112.51 ms | 108.93 ms |
+| Lighting acquisition | 96.55 ms | 96.64 ms |
+| Quiet setter | 98.79 ms | 96.06 ms |
+| Both | 86.53 ms | 91.46 ms |
+
+All six uninstrumented DISPLAY2 runs qualified. The two products again shared
+the local Sign screen edit in the common libraries. In the fixed Tiny scene,
+median FPS rose from 37.87 to 38.89. Median run p95 fell from 52.72 to 49.98 ms,
+and median run p99 fell from 108.68 to 91.84 ms. All three pairs had a lower
+p95. One pair lost FPS, one had a higher p99, and the longest candidate frame
+still took 161 ms.
+
+The full Windows build and 18 focused CTests passed. A targeted Linux build
+passed 22 checks with Clang, ASan and UBSan after the full sanitizer build ran
+out of disk space. Both selections cover the shared cache fixture's save-stage
+and projection consumers, the light queue, failed mutations and population.
 
 ## Reproduce one resident scene
 

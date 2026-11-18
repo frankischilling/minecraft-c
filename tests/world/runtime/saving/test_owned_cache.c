@@ -45,7 +45,7 @@ static int oc_presence_read(mc_world_runtime *world, int32_t x, int32_t z, bool 
 
 /* Keep the existing source-save Registry/File/Handler setup, while constructing
  * this World without the old fixture helper's deliberate raw cache export. */
-static int oc_open(source_save_fixture *s, size_t budget, size_t chunks) {
+static int oc_open_with_limit(source_save_fixture *s, size_t budget, size_t chunks) {
     fixture *f = &s->game;
     mc_world_info_name *folder = ss_name("world");
     VERIFY(folder != NULL &&
@@ -79,6 +79,10 @@ static int oc_open(source_save_fixture *s, size_t budget, size_t chunks) {
            observed.insertion_count == 0 && observed.mutation_depth == 0 &&
            observed.raw_exports == 0);
     return 0;
+}
+
+static int oc_open(source_save_fixture *s, size_t budget) {
+    return oc_open_with_limit(s, budget, 8);
 }
 
 static int oc_get(source_save_fixture *s, size_t coordinate, mc_chunk_state **out) {
@@ -678,7 +682,7 @@ static int oc_budget(source_save_fixture *s) {
     VERIFY(oc_observe(s->game.worlds[0], &initial) == 0 && initial.owned &&
            initial.index_bytes > 0 && initial.direct_bytes > initial.index_bytes);
     const size_t base = initial.direct_bytes - initial.index_bytes;
-    VERIFY(oc_stop(s) == 0 && oc_open(s, base, 8) == 0 &&
+    VERIFY(oc_stop(s) == 0 && oc_open(s, base) == 0 &&
            oc_observe(s->game.worlds[0], &absent) == 0 && !absent.owned &&
            absent.index_capacity == 0 && absent.index_bytes == 0 && absent.direct_bytes == base &&
            absent.raw_exports == 0);
@@ -1121,7 +1125,8 @@ int MC_OWNED_CACHE_FIXTURE_MAIN(int argc, char **argv) {
            owner_callback || scope_live || scope_presence || callback_invalid || escape);
     source_save_fixture *source = calloc(1, sizeof(*source));
     VERIFY(source != NULL && ss_setup(source, argv[1]) == 0 &&
-           oc_open(source, SIZE_MAX, scope_presence ? 16u : 8u) == 0);
+           (scope_presence ? oc_open_with_limit(source, SIZE_MAX, 16)
+                           : oc_open(source, SIZE_MAX)) == 0);
     const int result = owner_rebind                  ? oc_owner_rebind(source)
                        : owner_callback              ? oc_owner_callback(source)
                        : scope_live                  ? oc_scope_live(source)

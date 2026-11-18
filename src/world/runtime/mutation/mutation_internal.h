@@ -12,6 +12,10 @@
 mc_registry_error mc_world_mutation_empty_registry(void);
 void mc_world_mutation_error_init(mc_world_mutation_error *error);
 mc_world_mutation_error mc_world_mutation_empty_error(void);
+/* The quiet ID setter writes its diagnostic only on failure. */
+mc_world_storage_status mc_world_runtime_block_set_quiet_failure(mc_world_runtime *, int32_t,
+                                                                 int32_t, int32_t, int32_t, bool *,
+                                                                 mc_world_mutation_error *);
 /* Actual client dp.b(World,IIII): full metadata selects only one support read,
  * then inherited drop precedes the notifying air setter on support loss. */
 bool mc_world_mutation_ladder_neighbor(mc_world_runtime *, const mc_block *, int32_t, int32_t,

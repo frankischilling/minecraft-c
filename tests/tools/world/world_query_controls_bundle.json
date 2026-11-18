@@ -539,8 +539,8 @@
       "sha256": "216975455c0984a86a98feb04d54db5b9020964342ff941a46141319e7cfdf4e"
     },
     "src/world/runtime/mutation/world.c": {
-      "bytes": 86820,
-      "sha256": "f244e48f264bb8dc34e1374f25a9ca59408155d0718f655e690a4ce63ac112d3"
+      "bytes": 87400,
+      "sha256": "b4920afbc31e826ddfb3390f5a64f7b8ffb665bc30876892829534cf99455e91"
     },
     "src/world/runtime/mutation/world_execution_internal.h": {
       "bytes": 18567,
@@ -559,8 +559,8 @@
       "sha256": "639ac190e500585a0975a820f021bb2e0929ba57af96c7e0a35c5c2fd29b1d31"
     },
     "src/world/runtime/mutation/mutation_internal.h": {
-      "bytes": 20503,
-      "sha256": "719f4a63d86f42fd63dcc2983da0c390e7632bec544ceacdb747498959e45d73"
+      "bytes": 20855,
+      "sha256": "7a34674c89ba0c91f2a324ca32ba0a885fb333cb6901fff0ed7f425fdec7f8f6"
     },
     "src/world/runtime/mutation/notifications_execution_internal.h": {
       "bytes": 3786,

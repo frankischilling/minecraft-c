@@ -577,6 +577,11 @@ static bool public_cached(fixture *f) {
                                             INT32_MAX, &error) == MC_WORLD_STORAGE_OK &&
               p->cache->count == 0 && mc_world_store_chunk_count(f->stores[0]) == before);
     }
+    memset(&error, 0xa5, sizeof(error));
+    out = true;
+    CHECK(mc_world_runtime_block_set_quiet_failure(f->worlds[0], 0, 128, 0, INT32_MAX, &out,
+                                                   &error) == MC_WORLD_STORAGE_OK &&
+          !out && bytes_are((const uint8_t *)&error, sizeof(error), 0xa5) && p->cache->count == 0);
     /* The ordinary provider generates/publishes this one far Chunk; its seven
      * caller-selected cells are prepared through REAL quiet setters. The six
      * neighbors fit inside that same Chunk, avoiding accidental population. */
@@ -596,6 +601,15 @@ static bool public_cached(fixture *f) {
     CHECK(mc_world_runtime_block_set(f->worlds[0], 136, 120, 8, 1, &out, &error) ==
               MC_WORLD_STORAGE_OK &&
           out && f->cached->data->blocks[cell(8, 120, 8)] == 1);
+    memset(&error, 0xa5, sizeof(error));
+    out = false;
+    CHECK(mc_world_runtime_block_set_quiet_failure(f->worlds[0], 136, 120, 8, 4, &out, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          out && f->cached->data->blocks[cell(8, 120, 8)] == 4 &&
+          bytes_are((const uint8_t *)&error, sizeof(error), 0xa5));
+    CHECK(mc_world_runtime_block_set_quiet_failure(f->worlds[0], 136, 120, 8, 4, &out, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          !out && bytes_are((const uint8_t *)&error, sizeof(error), 0xa5));
     /* Seed a genuine earlier World diagnostic through the late full-ID m
      * failure, then reach a DIFFERENT coherent cache-capacity failure at48.
      * Neither source failure may be replaced by the older retained cause. */
@@ -608,7 +622,7 @@ static bool public_cached(fixture *f) {
           same_storage(&error.cause, mc_world_runtime_last_error(f->worlds[0])));
     const mc_world_storage_error old_cause = *mc_world_runtime_last_error(f->worlds[0]);
     out = true;
-    CHECK(mc_world_runtime_block_set_quiet(f->worlds[0], 152, 120, 8, 1, &out, &error) ==
+    CHECK(mc_world_runtime_block_set_quiet_failure(f->worlds[0], 152, 120, 8, 1, &out, &error) ==
               MC_WORLD_STORAGE_LIMIT &&
           out && error.bytecode == 48 && error.chunk_bytecode == 0 &&
           error.cause.status == MC_WORLD_STORAGE_LIMIT && old_cause.status != error.cause.status &&

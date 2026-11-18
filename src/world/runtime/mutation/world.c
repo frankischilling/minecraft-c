@@ -752,13 +752,14 @@ static bool set_body(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, i
 static mc_world_storage_status set(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
                                    int32_t id, bool with_metadata, int32_t metadata, bool notify,
                                    bool *out, mc_world_mutation_error *error,
-                                   mc_world_runtime_classes *code) {
+                                   mc_world_runtime_classes *code, bool project_success) {
     const mc_world_storage_status admission = admit(world, out != NULL, error);
     if (admission != MC_WORLD_STORAGE_OK)
         return admission;
     if (!in_domain(x, y, z)) {
         *out = false;
-        mc_world_mutation_error_init(error);
+        if (project_success)
+            mc_world_mutation_error_init(error);
         return MC_WORLD_STORAGE_OK;
     }
     mc_world_mutation_error *frame = workspace(world, error);
@@ -766,14 +767,21 @@ static mc_world_storage_status set(mc_world_runtime *world, int32_t x, int32_t y
         return MC_WORLD_STORAGE_ALLOCATION_FAILED;
     const bool completed = set_body(world, x, y, z, id, with_metadata, metadata, notify, out, frame,
                                     NULL, MUTATION_SUCCESS_PROJECT_CALLER, code);
-    return result(error, frame, completed);
+    return result(project_success || !completed ? error : NULL, frame, completed);
 }
 
 mc_world_storage_status mc_world_runtime_block_set_quiet(mc_world_runtime *world, int32_t x,
                                                          int32_t y, int32_t z, int32_t id,
                                                          bool *out,
                                                          mc_world_mutation_error *error) {
-    return set(world, x, y, z, id, false, 0, false, out, error, NULL);
+    return set(world, x, y, z, id, false, 0, false, out, error, NULL, true);
+}
+
+mc_world_storage_status mc_world_runtime_block_set_quiet_failure(mc_world_runtime *world, int32_t x,
+                                                                 int32_t y, int32_t z, int32_t id,
+                                                                 bool *out,
+                                                                 mc_world_mutation_error *error) {
+    return set(world, x, y, z, id, false, 0, false, out, error, NULL, false);
 }
 
 mc_world_storage_status mc_world_runtime_block_metadata_set_quiet(mc_world_runtime *world,
@@ -781,20 +789,20 @@ mc_world_storage_status mc_world_runtime_block_metadata_set_quiet(mc_world_runti
                                                                   int32_t id, int32_t metadata,
                                                                   bool *out,
                                                                   mc_world_mutation_error *error) {
-    return set(world, x, y, z, id, true, metadata, false, out, error, NULL);
+    return set(world, x, y, z, id, true, metadata, false, out, error, NULL, true);
 }
 
 mc_world_storage_status mc_world_runtime_block_set(mc_world_runtime *world, int32_t x, int32_t y,
                                                    int32_t z, int32_t id, bool *out,
                                                    mc_world_mutation_error *error) {
-    return set(world, x, y, z, id, false, 0, true, out, error, NULL);
+    return set(world, x, y, z, id, false, 0, true, out, error, NULL, true);
 }
 
 mc_world_storage_status mc_world_runtime_block_metadata_set(mc_world_runtime *world, int32_t x,
                                                             int32_t y, int32_t z, int32_t id,
                                                             int32_t metadata, bool *out,
                                                             mc_world_mutation_error *error) {
-    return set(world, x, y, z, id, true, metadata, true, out, error, NULL);
+    return set(world, x, y, z, id, true, metadata, true, out, error, NULL, true);
 }
 
 static bool scalar_result(mc_world_mutation_execution_call *owned, mc_world_runtime *world,
@@ -1733,7 +1741,7 @@ mc_world_storage_status mc_world_runtime_piston_set(mc_world_runtime_classes *co
                                                     int32_t z, int32_t id, bool with_metadata,
                                                     int32_t metadata, bool notify, bool *out,
                                                     mc_world_mutation_error *error) {
-    return set(world, x, y, z, id, with_metadata, metadata, notify, out, error, code);
+    return set(world, x, y, z, id, with_metadata, metadata, notify, out, error, code, true);
 }
 
 mc_world_storage_status mc_world_runtime_metadata_set(mc_world_runtime *world, int32_t x, int32_t y,

@@ -117,8 +117,9 @@ static mc_chunk_acquire_status light_get_legacy(mc_world_runtime *world, int32_t
                                                 mc_world_storage_error *cause,
                                                 mc_world_population_context *population) {
     mc_world_runtime_acquisition_error detail;
+    /* Only a failed acquisition contributes to the light diagnostic. */
     const mc_chunk_acquire_status acquired =
-        mc_world_runtime_get_detailed(world, x, z, chunk, &detail);
+        mc_world_runtime_get_failure(world, x, z, chunk, &detail);
     light_acquisition_cause(acquired, &detail, cause, population);
     return acquired;
 }

@@ -3390,8 +3390,8 @@
       "sha256": "476af52bb256f13e8fe9a066459b20fafd5ffec8d84803019ee64572ee66448a"
     },
     "src/world/runtime/mutation/mutation_internal.h": {
-      "bytes": 20503,
-      "sha256": "719f4a63d86f42fd63dcc2983da0c390e7632bec544ceacdb747498959e45d73"
+      "bytes": 20855,
+      "sha256": "7a34674c89ba0c91f2a324ca32ba0a885fb333cb6901fff0ed7f425fdec7f8f6"
     },
     "src/world/runtime/world_tick.c": {
       "bytes": 65285,
@@ -5958,8 +5958,8 @@
       "sha256": "94353150799a171e6e6ed0454437132690d4abf44687dbc2ca4b543e95334c2e"
     },
     "tests/world/runtime/saving/test_owned_cache.c": {
-      "bytes": 65698,
-      "sha256": "ea764e34f1bf627420f3f8521e8697c5ba9b8c0922f5cc7130b6653096439f40"
+      "bytes": 65876,
+      "sha256": "b01e58e14771eea7f59ca0e179b9bdbd1106415a0fbb1716e579370d44270f31"
     },
     "src/world/storage/chunk_lookup.inc": {
       "bytes": 8386,
@@ -8534,8 +8534,8 @@
       "sha256": "2946206e5ba383bdebff3f3e25f0fc2250cc3b0172dd6e0c6cb5d920ae26a721"
     },
     "src/world/runtime/lighting.c": {
-      "bytes": 26246,
-      "sha256": "4ae25aa176e1278755b70f8e6917e2fdbe23713eb27ff78d8d83cb30db2bb1ba"
+      "bytes": 26318,
+      "sha256": "be53927a63ddc34911cd53e5df4272959dfcd369347ba0cca92b64ba05097c15"
     },
     "src/world/runtime/lighting_internal.h": {
       "bytes": 980,
@@ -9851,7 +9851,7 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76652,
-      "sha256": "e1cc53016defa56c397c508e6f235830474d8b24fb85788d49455d2c0926915b"
+      "sha256": "87bdd8bc2e4c86b4611ef98218edef71ca75539d7edcb6bc9f8eb592cea8b2dd"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -10031,7 +10031,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "e6431a5f570b2f92e11fdeece709a68963f7dbae0d4e3e144946c223dc484b5d"
+      "sha256": "ae31ec69082933c7bb241d246422676283b68b56c34cf97111456532a0b1568f"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,
@@ -12398,8 +12398,8 @@
       "sha256": "b67dcd4e240c071a0f431a8039d14b8d52a970a01a2a2e3dd47155ce4f63d161"
     },
     "tests/world/runtime/test_mutations.c": {
-      "bytes": 38724,
-      "sha256": "cab8a60dbf4d6fc636423e2cf82b6b082d9993b53cb3005ea7605360ce3e11f3"
+      "bytes": 39605,
+      "sha256": "6fcedcdb3bb724801bc0c03df4abe28d96343229b3b014bb0f7387bf76bb9bfd"
     },
     "include/mc/world/runtime/registry_failure.h": {
       "bytes": 1339,
