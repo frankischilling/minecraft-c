@@ -24,6 +24,13 @@ Branch-specific Block reads perform the actual Registry active use, then read
 the selected receiver's full `bn`. Signed byte comparisons and later narrowing
 remain separate operations.
 
+An idle, ready Registry supplies the live named slot directly to base fill,
+surface replacement and cave carving. Every reached read uses the current
+Registry and reads the full Block ID. Cold and busy Registry paths still go
+through the ordinary active-use helper. The native test changes the Stone
+ID between reads and separately verifies null and busy failures at their
+respective field and static-read positions.
+
 Direct sampling captures the current World/Dimension manager and publishes
 the returned actual `v` only after success. Base interpolation independently
 captures the current temperature array. Density independently captures current
@@ -101,3 +108,16 @@ height-query trace or World constructor route, and does not execute a new JVM
 observation. Existing numerical fixture replays separately cover all four
 seeds and nine-call sequences. The [reference notes](../reference/generation.md)
 describe that retained corpus and its limits.
+
+## Generation cost on the retained save
+
+Two before-and-after pairs ran for eight seconds on DISPLAY2 at Far distance
+and 854×480. All four runs matched Player motion, Entity dispatches and
+scheduler records over 165 World ticks. Digests of Block, metadata, sky light,
+block light and height bytes matched for all 42 timed Chunks before activation.
+
+Median total generation time fell from 209.58 to 132.35 ms across those 42
+Chunks. Generation inside the longest random-block burst fell from 65–66 to
+41–42 ms for the same 14 Chunks. The saved-world interval measures live
+generation. All 42 new Chunk slots were absent from the final region files
+in this short run.

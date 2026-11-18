@@ -344,6 +344,28 @@ was 75.00 → 74.56 ms. A separate six-run repeat measured 31.00 → 31.66 FPS,
 frames took 113 ms and 144 ms, respectively. Both builds shared the local
 Sign screen edit and stayed in gameplay during timing.
 
+#### Ore and clay setter storage
+
+Ore and clay pass their existing diagnostic frame to the quiet setter.
+Each feature invocation owns its frame through synchronous descendants.
+The setter resets it to the canonical state after success and keeps the
+reached child diagnostic on failure. This removes a separate allocation
+for each candidate that reaches the setter.
+
+The retained-save trace ran at Far distance and 854×480 on DISPLAY2.
+It recorded 2,952 placements, 548,068 substrate reads and 57,068 ore
+writes across 36 Chunk population calls. Sampled setter time was about
+135 ms of 197 ms in ore placements. Setter timings include their children.
+
+Two pairs with the generation and setter changes matched Player motion,
+Entity and scheduler records for the first 38 timed World ticks. Median
+ore placement time fell from 111.10 to 101.76 ms across 1,640 placements
+and 31,376 writes. The longest matched random-block tick fell from
+191.02 to 161.43 ms while generating and populating 14 Chunks. One replay
+differed in a scheduler record after the matched interval. The native
+controls cover late setter failures after completed writes and verify
+the preserved Random, lighting and Chunk state.
+
 #### Height and light diagnostics in Chunk mutations
 
 The ordinary Chunk mutation callers now request diagnostics only when a

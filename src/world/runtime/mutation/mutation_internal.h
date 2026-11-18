@@ -16,6 +16,11 @@ mc_world_mutation_error mc_world_mutation_empty_error(void);
 mc_world_storage_status mc_world_runtime_block_set_quiet_failure(mc_world_runtime *, int32_t,
                                                                  int32_t, int32_t, int32_t, bool *,
                                                                  mc_world_mutation_error *);
+/* The caller supplies an exclusive, canonical frame. Success leaves it
+ * canonical for the next write. Failure leaves the reached frame in place. */
+mc_world_storage_status mc_world_runtime_block_set_quiet_in_place(mc_world_runtime *, int32_t,
+                                                                  int32_t, int32_t, int32_t, bool *,
+                                                                  mc_world_mutation_error *);
 mc_world_storage_status
 mc_world_runtime_block_metadata_set_quiet_failure(mc_world_runtime *, int32_t, int32_t, int32_t,
                                                   int32_t, int32_t, bool *,

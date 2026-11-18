@@ -784,6 +784,24 @@ mc_world_storage_status mc_world_runtime_block_set_quiet_failure(mc_world_runtim
     return set(world, x, y, z, id, false, 0, false, out, error, NULL, false);
 }
 
+mc_world_storage_status mc_world_runtime_block_set_quiet_in_place(mc_world_runtime *world,
+                                                                  int32_t x, int32_t y, int32_t z,
+                                                                  int32_t id, bool *out,
+                                                                  mc_world_mutation_error *frame) {
+    if (frame == NULL)
+        return MC_WORLD_STORAGE_INVALID_ARGUMENT;
+    const mc_world_storage_status admission = admit(world, out != NULL, frame);
+    if (admission != MC_WORLD_STORAGE_OK)
+        return admission;
+    if (!in_domain(x, y, z)) {
+        *out = false;
+        return MC_WORLD_STORAGE_OK;
+    }
+    const bool completed = set_body(world, x, y, z, id, false, 0, false, out, frame, NULL,
+                                    MUTATION_SUCCESS_RESET_RETAINED, NULL);
+    return completed ? MC_WORLD_STORAGE_OK : frame->status;
+}
+
 mc_world_storage_status mc_world_runtime_block_metadata_set_quiet(mc_world_runtime *world,
                                                                   int32_t x, int32_t y, int32_t z,
                                                                   int32_t id, int32_t metadata,

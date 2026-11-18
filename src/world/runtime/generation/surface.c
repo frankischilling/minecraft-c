@@ -92,7 +92,7 @@ bool mc_world_generation_surface(mc_chunk_provider *provider, int32_t x, int32_t
                 (void)mc_java_random_next_bounded(random, 5, &bedrock); /*328*/
                 int32_t id;
                 if (y <= bedrock) {
-                    if (!mc_world_generation_block(provider, "A", 338, 341,
+                    if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_BEDROCK, 338, 341,
                                                    &error->surface_bytecode, &id, error))
                         return false;
                     blocks[index] = (uint8_t)mc_java_i8_narrow(id); /*344/345*/
@@ -104,8 +104,8 @@ bool mc_world_generation_surface(mc_chunk_provider *provider, int32_t x, int32_t
                     remaining = -1;
                     continue;
                 }
-                if (!mc_world_generation_block(provider, "u", 368, 371, &error->surface_bytecode,
-                                               &id, error))
+                if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_STONE, 368, 371,
+                                               &error->surface_bytecode, &id, error))
                     return false;
                 if (block != id)
                     continue;
@@ -113,8 +113,8 @@ bool mc_world_generation_surface(mc_chunk_provider *provider, int32_t x, int32_t
                 if (remaining == -1) {
                     if (thickness <= 0) {
                         top = 0;
-                        if (!mc_world_generation_block(provider, "u", 391, 394,
-                                                       &error->surface_bytecode, &id, error))
+                        if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_STONE, 391,
+                                                       394, &error->surface_bytecode, &id, error))
                             return false;
                         filler = (int32_t)mc_java_i8_narrow(id); /*397*/
                     } else if (y >= 60 && y <= 65) {
@@ -128,25 +128,29 @@ bool mc_world_generation_surface(mc_chunk_provider *provider, int32_t x, int32_t
                         filler = (int32_t)biome_fields->q;
                         if (gravel) {
                             top = 0;
-                            if (!mc_world_generation_block(provider, "G", 448, 451,
-                                                           &error->surface_bytecode, &id, error))
+                            if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_GRAVEL,
+                                                           448, 451, &error->surface_bytecode, &id,
+                                                           error))
                                 return false;
                             filler = (int32_t)mc_java_i8_narrow(id); /*454*/
                         }
                         if (sand) {
-                            if (!mc_world_generation_block(provider, "F", 462, 465,
-                                                           &error->surface_bytecode, &id, error))
+                            if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_SAND, 462,
+                                                           465, &error->surface_bytecode, &id,
+                                                           error))
                                 return false;
                             top = (int32_t)mc_java_i8_narrow(id); /*468*/
-                            if (!mc_world_generation_block(provider, "F", 476, 479,
-                                                           &error->surface_bytecode, &id, error))
+                            if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_SAND, 476,
+                                                           479, &error->surface_bytecode, &id,
+                                                           error))
                                 return false;
                             filler = (int32_t)mc_java_i8_narrow(id); /*482*/
                         }
                     }
                     if (y < 64 && top == 0) {
-                        if (!mc_world_generation_block(provider, "C", 497, 500,
-                                                       &error->surface_bytecode, &id, error))
+                        if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_STILL_WATER,
+                                                       497, 500, &error->surface_bytecode, &id,
+                                                       error))
                             return false;
                         top = (int32_t)mc_java_i8_narrow(id); /*503*/
                     }
@@ -156,13 +160,14 @@ bool mc_world_generation_surface(mc_chunk_provider *provider, int32_t x, int32_t
                     --remaining;
                     blocks[index] = (uint8_t)filler; /*550 precedes F558*/
                     if (remaining == 0) {
-                        if (!mc_world_generation_block(provider, "F", 558, 561,
+                        if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_SAND, 558, 561,
                                                        &error->surface_bytecode, &id, error))
                             return false;
                         if (filler == id) {
                             (void)mc_java_random_next_bounded(random, 4, &remaining); /*572*/
-                            if (!mc_world_generation_block(provider, "R", 577, 580,
-                                                           &error->surface_bytecode, &id, error))
+                            if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_SANDSTONE,
+                                                           577, 580, &error->surface_bytecode, &id,
+                                                           error))
                                 return false;
                             filler = (int32_t)mc_java_i8_narrow(id); /*583*/
                         }

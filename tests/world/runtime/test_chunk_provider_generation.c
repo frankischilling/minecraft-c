@@ -1,10 +1,12 @@
 #include "mc/resources/translation/translation.h"
 #include "mc/world/runtime/lighting.h"
 
+#include "../../../src/block/registry/registry_internal.h"
 #include "../../../src/core/java/random_profile_internal.h"
 #include "../../../src/world/biome/biome_internal.h"
 #include "../../../src/world/runtime/chunk_provider_internal.h"
 #include "../../../src/world/runtime/generation/generation_internal.h"
+#include "../../../src/world/runtime/runtime_internal.h"
 #include "../../../src/world/storage/files.h"
 #include "../../../src/world/storage/generated_internal.h"
 #include "../../support/java_random.h"
@@ -830,6 +832,53 @@ static bool decode_path(const char *hex, char *out, size_t capacity) {
     return true;
 }
 
+static bool check_live_stone_field(fixture *f) {
+    bool ok = false;
+    mc_registry_classes *const registry = f->registry[0];
+    mc_chunk_provider *const provider = f->providers[0];
+    mc_world_runtime *const world = f->worlds[0];
+    mc_block **const slot = &registry->blocks.named[MC_WORLD_GENERATION_STONE];
+    mc_block *const stone = *slot;
+    CHECK(stone != NULL && stone->fields.bn == 1 && registry->entered == 0);
+    const int32_t saved_block_id = stone->fields.bn;
+    const mc_world_storage_error saved_error = world->last_error;
+    const mc_registry_error saved_registry = world->last_registry_error;
+    const mc_java_random generation = provider->generator.generator_random;
+    const mc_java_random caves = provider->generator.cave_random;
+    const uint64_t uniquifier = profile_u(f);
+    mc_world_generation_error error = {0};
+    unsigned int first_pc = 0, changed_pc = 0, null_pc = 0, entered_pc = 0;
+    int32_t first = 0, changed = 0, null_value = -19, entered_value = -23;
+    const bool first_ok = mc_world_generation_block(provider, MC_WORLD_GENERATION_STONE, 530, 533,
+                                                    &first_pc, &first, &error);
+    stone->fields.bn = 4097;
+    const bool changed_ok = mc_world_generation_block(provider, MC_WORLD_GENERATION_STONE, 530, 533,
+                                                      &changed_pc, &changed, &error);
+    stone->fields.bn = saved_block_id;
+    *slot = NULL;
+    const bool null_ok = mc_world_generation_block(provider, MC_WORLD_GENERATION_STONE, 530, 533,
+                                                   &null_pc, &null_value, &error);
+    *slot = stone;
+    const bool null_cause = error.registry.status == MC_REGISTRY_NULL_REFERENCE &&
+                            error.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+    registry->entered = 1;
+    const bool entered_ok = mc_world_generation_block(provider, MC_WORLD_GENERATION_STONE, 530, 533,
+                                                      &entered_pc, &entered_value, &error);
+    registry->entered = 0;
+    world->last_error = saved_error;
+    world->last_registry_error = saved_registry;
+    CHECK(first_ok && changed_ok && !null_ok && first == 1 && changed == 4097 && first_pc == 533 &&
+          changed_pc == 533 && null_pc == 533 && null_value == -19 && null_cause);
+    CHECK(!entered_ok && entered_pc == 530 && entered_value == -23 &&
+          error.registry.status == MC_REGISTRY_BUSY && error.status == MC_WORLD_STORAGE_BUSY);
+    CHECK(mc_test_java_random_equal(&generation, &provider->generator.generator_random) &&
+          mc_test_java_random_equal(&caves, &provider->generator.cave_random) &&
+          profile_u(f) == uniquifier);
+    ok = true;
+cleanup:
+    return ok;
+}
+
 int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
@@ -867,6 +916,7 @@ int main(int argc, char **argv) {
     CHECK(create_world(f, 0, 0, 0));
     CHECK(check_array_captures());
     CHECK(check_success(f, root));
+    CHECK(check_live_stone_field(f));
     CHECK(check_limits(f, root));
     CHECK(check_wrapped_scheduler(f));
     CHECK(check_resource_failure(f));

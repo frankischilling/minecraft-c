@@ -37,8 +37,8 @@ static bool water_scan(mc_chunk_provider *provider, uint8_t *blocks,
                 error->cave_path_bytecode = 812;
                 int32_t block = byte_load(blocks, index);
                 int32_t id;
-                if (!mc_world_generation_block(provider, "B", 813, 816, &error->cave_path_bytecode,
-                                               &id, error))
+                if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_FLOWING_WATER, 813,
+                                               816, &error->cave_path_bytecode, &id, error))
                     return false;
                 if (block == id) {
                     water = true;
@@ -46,8 +46,8 @@ static bool water_scan(mc_chunk_provider *provider, uint8_t *blocks,
                     /* A distinct baload825 follows the first active use. */
                     error->cave_path_bytecode = 825;
                     block = byte_load(blocks, index);
-                    if (!mc_world_generation_block(provider, "C", 826, 829,
-                                                   &error->cave_path_bytecode, &id, error))
+                    if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_STILL_WATER, 826,
+                                                   829, &error->cave_path_bytecode, &id, error))
                         return false;
                     if (block == id)
                         water = true;
@@ -82,24 +82,24 @@ static bool carve(mc_chunk_provider *provider, uint8_t *blocks,
                 error->cave_path_bytecode = 1069;
                 const int32_t block = byte_load(blocks, index);
                 int32_t id;
-                if (!mc_world_generation_block(provider, "v", 1074, 1077,
+                if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_GRASS, 1074, 1077,
                                                &error->cave_path_bytecode, &id, error))
                     return false;
                 if (block == id)
                     found_grass = true;
 
-                if (!mc_world_generation_block(provider, "u", 1088, 1091,
+                if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_STONE, 1088, 1091,
                                                &error->cave_path_bytecode, &id, error))
                     return false;
                 bool replace = block == id;
                 if (!replace) {
-                    if (!mc_world_generation_block(provider, "w", 1099, 1102,
+                    if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_DIRT, 1099, 1102,
                                                    &error->cave_path_bytecode, &id, error))
                         return false;
                     replace = block == id;
                 }
                 if (!replace) {
-                    if (!mc_world_generation_block(provider, "v", 1110, 1113,
+                    if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_GRASS, 1110, 1113,
                                                    &error->cave_path_bytecode, &id, error))
                         return false;
                     replace = block == id;
@@ -108,8 +108,8 @@ static bool carve(mc_chunk_provider *provider, uint8_t *blocks,
                     continue;
 
                 if (y < 10) {
-                    if (!mc_world_generation_block(provider, "D", 1129, 1132,
-                                                   &error->cave_path_bytecode, &id, error))
+                    if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_FLOWING_LAVA, 1129,
+                                                   1132, &error->cave_path_bytecode, &id, error))
                         return false;
                     blocks[(size_t)index] = (uint8_t)mc_java_i8_narrow((int64_t)id);
                 } else {
@@ -118,12 +118,14 @@ static bool carve(mc_chunk_provider *provider, uint8_t *blocks,
                         const int32_t below = mc_java_i32_sub(index, 1);
                         error->cave_path_bytecode = 1155;
                         const int32_t block_below = byte_load(blocks, below);
-                        if (!mc_world_generation_block(provider, "w", 1156, 1159,
-                                                       &error->cave_path_bytecode, &id, error))
+                        if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_DIRT, 1156,
+                                                       1159, &error->cave_path_bytecode, &id,
+                                                       error))
                             return false;
                         if (block_below == id) {
-                            if (!mc_world_generation_block(provider, "v", 1170, 1173,
-                                                           &error->cave_path_bytecode, &id, error))
+                            if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_GRASS,
+                                                           1170, 1173, &error->cave_path_bytecode,
+                                                           &id, error))
                                 return false;
                             blocks[(size_t)below] = (uint8_t)mc_java_i8_narrow((int64_t)id);
                         }

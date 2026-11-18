@@ -224,8 +224,8 @@ static bool candidate(feature_frame *frame, const int32_t *target, bool clay, in
     const int32_t replacement = *target;
     frame->error.bytecode = clay ? 514u : 519u;
     bool ignored;
-    if (mc_world_runtime_block_set_quiet_failure(frame->world, x, y, z, replacement, &ignored,
-                                                 &frame->error.mutation) != MC_WORLD_STORAGE_OK) {
+    if (mc_world_runtime_block_set_quiet_in_place(frame->world, x, y, z, replacement, &ignored,
+                                                  &frame->error.mutation) != MC_WORLD_STORAGE_OK) {
         frame->error.registry = frame->error.mutation.registry;
         return storage_fail(frame, &frame->error.mutation.cause);
     }

@@ -1,5 +1,7 @@
 #include "generation_internal.h"
 
+#include "../../../block/registry/registry_internal.h"
+#include "../../../block/registry/runtime_internal.h"
 #include "../../biome/biome_internal.h"
 #include "../../storage/generated_internal.h"
 #include "../../terrain/terrain_internal.h"
@@ -41,31 +43,38 @@ bool mc_world_generation_registry_fail(mc_chunk_provider *provider,
     return false;
 }
 
-bool mc_world_generation_block(mc_chunk_provider *provider, const char *name,
+bool mc_world_generation_block(mc_chunk_provider *provider, mc_world_generation_block_slot slot,
                                unsigned int static_pc, unsigned int field_pc,
                                unsigned int *inner_pc, int32_t *out,
                                mc_world_generation_error *error) {
     *inner_pc = static_pc;
     mc_registry_classes *registry = mc_world_runtime_registry(provider->world);
-    mc_registry_error cause = registry_error(MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
-                                             "Overworld generation Registry binding");
-    const mc_block *block = NULL;
-    mc_registry_status status = registry == NULL
-                                    ? cause.status
-                                    : mc_registry_block_static_get(registry, name, &block, &cause);
-    if (status == MC_REGISTRY_OK) {
-        *inner_pc = field_pc;
-        const mc_block_fields *fields = mc_block_fields_get(block);
-        if (fields != NULL) {
-            *out = fields->bn;
-            return true;
-        }
-        status = MC_REGISTRY_NULL_REFERENCE;
-        cause = registry_error(status, "Overworld generation Block receiver");
+    if (registry == NULL) {
+        error->registry = registry_error(MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY,
+                                         "Overworld generation Registry binding");
+        return mc_world_generation_registry_fail(provider, error, error->registry.status,
+                                                 "Overworld generation Block field");
     }
-    error->registry = cause;
-    return mc_world_generation_registry_fail(provider, error, status,
-                                             "Overworld generation Block field");
+    const mc_block *block;
+    if (registry->entered == 0 && registry->blocks_phase == MC_REGISTRY_READY)
+        block = registry->blocks.named[slot];
+    else {
+        const char *name = mc_registry_block_static_name((size_t)slot);
+        const mc_registry_status status =
+            mc_registry_block_static_get_failure(registry, name, &block, &error->registry);
+        if (status != MC_REGISTRY_OK)
+            return mc_world_generation_registry_fail(provider, error, status,
+                                                     "Overworld generation Block field");
+    }
+    *inner_pc = field_pc;
+    if (block == NULL) {
+        error->registry =
+            registry_error(MC_REGISTRY_NULL_REFERENCE, "Overworld generation Block receiver");
+        return mc_world_generation_registry_fail(provider, error, error->registry.status,
+                                                 "Overworld generation Block field");
+    }
+    *out = block->fields.bn;
+    return true;
 }
 
 bool mc_world_generation_seed(mc_chunk_provider *provider, unsigned int pc, unsigned int *inner_pc,
@@ -236,15 +245,16 @@ static bool base(mc_chunk_provider *provider, int32_t x, int32_t z, uint8_t *blo
         int32_t block = 0;
         if (voxel.y < 64) {
             if (heat < 0.5 && voxel.y >= 63) {
-                if (!mc_world_generation_block(provider, "aU", 504, 507, &error->base_bytecode,
-                                               &block, error))
+                if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_ICE, 504, 507,
+                                               &error->base_bytecode, &block, error))
                     return false;
-            } else if (!mc_world_generation_block(provider, "C", 515, 518, &error->base_bytecode,
-                                                  &block, error))
+            } else if (!mc_world_generation_block(provider, MC_WORLD_GENERATION_STILL_WATER, 515,
+                                                  518, &error->base_bytecode, &block, error))
                 return false;
         }
-        if (voxel.density > 0.0 && !mc_world_generation_block(provider, "u", 530, 533,
-                                                              &error->base_bytecode, &block, error))
+        if (voxel.density > 0.0 &&
+            !mc_world_generation_block(provider, MC_WORLD_GENERATION_STONE, 530, 533,
+                                       &error->base_bytecode, &block, error))
             return false;
         blocks[voxel.index] = (uint8_t)((uint32_t)block & 255u);
         mc_terrain_overworld_base_cursor_advance(&cursor);

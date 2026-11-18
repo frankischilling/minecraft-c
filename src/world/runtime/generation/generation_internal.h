@@ -51,10 +51,25 @@ bool mc_world_generation_surface(mc_chunk_provider *provider, int32_t x, int32_t
 bool mc_world_generation_caves(mc_chunk_provider *provider, int32_t x, int32_t z, uint8_t *blocks,
                                mc_world_generation_error *error);
 
+/* Declaring Block static slots in Registry order, independent of Block IDs. */
+typedef enum mc_world_generation_block_slot {
+    MC_WORLD_GENERATION_STONE = 0,
+    MC_WORLD_GENERATION_GRASS = 1,
+    MC_WORLD_GENERATION_DIRT = 2,
+    MC_WORLD_GENERATION_BEDROCK = 6,
+    MC_WORLD_GENERATION_FLOWING_WATER = 7,
+    MC_WORLD_GENERATION_STILL_WATER = 8,
+    MC_WORLD_GENERATION_FLOWING_LAVA = 9,
+    MC_WORLD_GENERATION_SAND = 11,
+    MC_WORLD_GENERATION_GRAVEL = 12,
+    MC_WORLD_GENERATION_SANDSTONE = 23,
+    MC_WORLD_GENERATION_ICE = 78,
+} mc_world_generation_block_slot;
+
 /* Actual ordinary Block active use, then the selected receiver's full bn.
- * Keep source getstatic and getfield failure PCs distinct. Callers themselves
- * perform reached signed comparisons/i2b/byte stores; no palette caching. */
-bool mc_world_generation_block(mc_chunk_provider *provider, const char *name,
+ * Read the live slot at every invocation. Keep source getstatic and getfield
+ * failure PCs distinct. Callers perform signed comparisons and byte stores. */
+bool mc_world_generation_block(mc_chunk_provider *provider, mc_world_generation_block_slot slot,
                                unsigned int static_pc, unsigned int field_pc,
                                unsigned int *inner_pc, int32_t *out,
                                mc_world_generation_error *error);
