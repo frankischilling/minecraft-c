@@ -3326,8 +3326,8 @@
       "sha256": "aa78548af630be908e7f97f0bef511227609696dc549df1c337d571564c0ca5f"
     },
     "src/world/runtime/mutation/height.c": {
-      "bytes": 14912,
-      "sha256": "3778e9ffaa4a81dc03a79cef4387f75bc973a8e9cd478f4e7bbd2754a2d5771c"
+      "bytes": 14255,
+      "sha256": "b1c08f72fc0244b187719a69ae65e984a5c48207ce0ac79cb50f1ab3d3c4df1e"
     },
     "src/world/runtime/mutation/hooks.c": {
       "bytes": 40577,
@@ -3490,8 +3490,8 @@
       "sha256": "bacc7ddec33c18c8c484aa8a6e998169632db66ea505b007d1bfd08fd0f07de2"
     },
     "src/world/runtime/population/trees.c": {
-      "bytes": 51803,
-      "sha256": "07cca944d9c8eb1121d27eb36da213b6eb98a8647298a2e4e3d69b86b12b692d"
+      "bytes": 51800,
+      "sha256": "113bcf23d9ad08cd85e26323d453e34d8316a885cae07a7a90e4b0dd8e796621"
     },
     "src/world/runtime/power/blocks.c": {
       "bytes": 22754,
@@ -12746,8 +12746,8 @@
       "sha256": "8187c1e9306f53ee4a16fb4700e09ae815d347eddda53ae72ef9529be4bf46ea"
     },
     "tests/world/runtime/test_mutation_height_execution.c": {
-      "bytes": 14768,
-      "sha256": "22fe72ec1b1660bb5de6a8a1b4251418ff6552302d66b543f94451eb830dd3ae"
+      "bytes": 15679,
+      "sha256": "ee99b9c268a360dfaf4dcbbde3e8bfbb5c9aecfda05ca43750f547043a84fc2d"
     },
     "src/world/runtime/mutation/drops/execution.c": {
       "bytes": 8094,

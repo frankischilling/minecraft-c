@@ -10642,8 +10642,8 @@
       "sha256": "8187c1e9306f53ee4a16fb4700e09ae815d347eddda53ae72ef9529be4bf46ea"
     },
     "tests/world/runtime/test_mutation_height_execution.c": {
-      "bytes": 14768,
-      "sha256": "22fe72ec1b1660bb5de6a8a1b4251418ff6552302d66b543f94451eb830dd3ae"
+      "bytes": 15679,
+      "sha256": "ee99b9c268a360dfaf4dcbbde3e8bfbb5c9aecfda05ca43750f547043a84fc2d"
     },
     "tests/reference/entity/bed_foot_wake/FootWakeObservation.java": {
       "bytes": 8510,

@@ -647,7 +647,7 @@ static bool big_rows_allocate(mc_world_tree_big_oak *state, int32_t count, unsig
         bytes > state->max_allocation_bytes - state->allocation_bytes)
         return tree_fail(context, MC_WORLD_STORAGE_LIMIT, "Big oak coordinate allocation limit",
                          true);
-    int32_t (*rows)[4] = calloc((size_t)count, sizeof(*rows));
+    int32_t(*rows)[4] = calloc((size_t)count, sizeof(*rows));
     if (rows == NULL)
         return tree_fail(context, MC_WORLD_STORAGE_ALLOCATION_FAILED,
                          "Big oak coordinate allocation", true);
@@ -855,7 +855,7 @@ static bool big_plan(mc_world_tree_big_oak *state) {
         per_layer = 1;
     }
     const int32_t capacity = mc_java_i32_mul(per_layer, state->height_limit);
-    int32_t (*candidate)[4] = NULL;
+    int32_t(*candidate)[4] = NULL;
     if (!big_rows_allocate(state, capacity, 76, &candidate))
         return false;
     int32_t sample_y =
@@ -948,7 +948,7 @@ static bool big_plan(mc_world_tree_big_oak *state) {
         sample_y = mc_java_i32_sub(sample_y, 1);
         layer = mc_java_i32_sub(layer, 1);
     }
-    int32_t (*retained)[4] = NULL;
+    int32_t(*retained)[4] = NULL;
     if (!big_rows_allocate(state, used, 542, &retained)) {
         big_rows_free(state, candidate, capacity);
         return false;

@@ -419,6 +419,42 @@ World and render work varied across processes.
 | First | 53.06 / 52.15 | 30.03 / 28.62 | 55.72 / 55.37 |
 | Repeat | 54.61 / 52.24 | 28.28 / 27.83 | 50.65 / 53.34 |
 
+### Heightmap reads during Block updates
+
+Incremental height updates read the live Chunk fields they need and
+capture the heightmap again after the range callback. The minimum-height
+scan uses the array validated by the preceding store. It keeps the source
+X/Z traversal and the initial minimum of 127. The retained execution
+test clears the heightmap from a successful range callback. The setter
+reports the missing array at the height store, keeps the earlier Block
+and metadata writes, and releases both holds.
+
+The same 146 fixed-work receipts matched across 16 Windows processes.
+All eight pairs were faster for both the small-tree workload and the
+large oak on each side.
+
+| Fixed workload | Before (ms) | After (ms) |
+| --- | ---: | ---: |
+| Client, 20 small trees | 10.80 | 7.89 |
+| Client, one large oak | 1.54 | 1.17 |
+| Server regression control, 20 small trees | 10.85 | 7.86 |
+| Server regression control, one large oak | 1.56 | 1.20 |
+
+Four instrumented DISPLAY2 runs found 14 count-matched successful tree
+groups and all 14 were faster. For the largest tree, with 1,159 writes,
+the placement median fell from 6.33 to 3.46 ms. Full Chunk field reads
+fell from 163,355 to 17,467. Sampled height time fell from 4.40 to 1.28 ms.
+These are instrumented observations and the phase times overlap.
+
+The following groups each contained six uninstrumented DISPLAY2
+runs at 854×480 on Tiny. Both builds shared the local Sign screen edit.
+Whole-scene medians varied as World and render work changed across runs.
+
+| Scene group | Median FPS before / after | Median p95 frame time (ms) | Median p99 frame time (ms) |
+| --- | ---: | ---: | ---: |
+| Heightmap only | 54.27 / 53.14 | 27.50 / 28.22 | 46.08 / 49.30 |
+| Both tree changes | 53.21 / 50.40 | 27.66 / 33.37 | 55.52 / 54.18 |
+
 ### Spring fluid diagnostics
 
 Two DISPLAY2 traces separated spring placement from the immediate flowing

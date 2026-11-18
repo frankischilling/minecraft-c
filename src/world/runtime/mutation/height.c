@@ -2,6 +2,7 @@
 #include "mutation_internal.h"
 
 #include "../../../block/registry/runtime_internal.h"
+#include "../../chunk/object_state_internal.h"
 #include "mc/core/java/java.h"
 
 static int32_t or_bits(int32_t a, int32_t b) {
@@ -50,34 +51,32 @@ static bool opacity_at(mc_world_runtime *world, const mc_registry_block_q_view *
 static bool height_byte(mc_world_chunk *chunk, mc_world_runtime *world, int32_t index,
                         unsigned int field_pc, unsigned int access_pc, int32_t *out,
                         mc_world_mutation_error *error) {
-    mc_world_chunk_fields fields;
     error->height_bytecode = field_pc;
-    (void)mc_world_chunk_fields_get(chunk, &fields);
+    const uint8_t *heights = chunk->h;
     error->height_bytecode = access_pc;
-    if (fields.h == NULL)
+    if (heights == NULL)
         return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "Chunk incremental height array is null");
     if (index < 0 || (uint32_t)index >= MC_CHUNK_HEIGHTMAP_BYTES)
         return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "Chunk incremental height array index");
-    *out = (int32_t)fields.h[(size_t)index]; /* Source baload followed by &255. */
+    *out = (int32_t)heights[(size_t)index]; /* Source baload followed by &255. */
     return true;
 }
 
 static bool block_byte(mc_world_chunk *chunk, mc_world_runtime *world, int32_t index,
                        unsigned int field_pc, unsigned int access_pc, int32_t *out,
                        mc_world_mutation_error *error) {
-    mc_world_chunk_fields fields;
     error->height_bytecode = field_pc;
-    (void)mc_world_chunk_fields_get(chunk, &fields);
+    const uint8_t *blocks = chunk->data->blocks;
     error->height_bytecode = access_pc;
-    if (fields.b == NULL)
+    if (blocks == NULL)
         return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "Chunk incremental block array is null");
     if (index < 0 || (uint32_t)index >= MC_CHUNK_BLOCKS)
         return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "Chunk incremental block array index");
-    *out = (int32_t)fields.b[(size_t)index]; /* Source baload followed by &255. */
+    *out = (int32_t)blocks[(size_t)index]; /* Source baload followed by &255. */
     return true;
 }
 
@@ -92,12 +91,10 @@ static bool block_get(mc_world_chunk *chunk, mc_world_runtime *world, int32_t x,
 static bool height_world(mc_world_chunk *chunk, mc_world_mutation_chunk_execution *execution,
                          unsigned int pc, mc_world_runtime **out, mc_world_mutation_error *error) {
     error->height_bytecode = pc;
-    mc_world_chunk_fields fields;
-    (void)mc_world_chunk_fields_get(chunk, &fields);
-    *out = fields.d;
+    *out = chunk->d;
     return execution == NULL ||
            mc_world_mutation_chunk_capture(
-               execution, fields.d,
+               execution, *out,
                mc_world_mutation_chunk_site(execution, MC_WORLD_MUTATION_CHUNK_HEIGHT, pc));
 }
 
@@ -128,9 +125,7 @@ static bool incremental_height(mc_world_chunk *chunk, int32_t x, int32_t y, int3
     /* Enclosing concrete setter already holds this World and exact Chunk.
      * This passive binding supplies the native Registry/error context only;
      * each reached source field below is still evaluated at its own point. */
-    mc_world_chunk_fields fields;
-    (void)mc_world_chunk_fields_get(chunk, &fields);
-    mc_world_runtime *world = execution == NULL ? fields.d : execution->initiating_world;
+    mc_world_runtime *world = execution == NULL ? chunk->d : execution->initiating_world;
     const int32_t column = or_bits(mc_java_i32_shl(z, 4), x);
     int32_t old_height;
     if (!height_byte(chunk, world, column, 1, 9, &old_height, error))
@@ -166,53 +161,46 @@ static bool incremental_height(mc_world_chunk *chunk, int32_t x, int32_t y, int3
         world = receiver;
 
     error->height_bytecode = 96;
-    (void)mc_world_chunk_fields_get(chunk, &fields);
+    uint8_t *heights = chunk->h;
     error->height_bytecode = 107;
-    if (fields.h == NULL)
+    if (heights == NULL)
         return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "Chunk incremental height store array is null");
     if (column < 0 || (uint32_t)column >= MC_CHUNK_HEIGHTMAP_BYTES)
         return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "Chunk incremental height store index");
-    fields.h[(size_t)column] = (uint8_t)mc_java_i8_narrow(height);
+    heights[(size_t)column] = (uint8_t)mc_java_i8_narrow(height);
 
     error->height_bytecode = 111;
-    (void)mc_world_chunk_fields_get(chunk, &fields);
-    if (height < fields.i) {
+    if (height < chunk->data->minimum_height) {
         error->height_bytecode = 120;
-        mc_world_chunk_state(chunk)->data->minimum_height = height;
+        chunk->state->data->minimum_height = height;
     } else {
         int32_t minimum = 127;
-        for (int32_t local_x = 0; local_x < 16; local_x = mc_java_i32_add(local_x, 1)) {
-            for (int32_t local_z = 0; local_z < 16; local_z = mc_java_i32_add(local_z, 1)) {
-                const int32_t index = or_bits(mc_java_i32_shl(local_z, 4), local_x);
-                int32_t value;
-                if (!height_byte(chunk, world, index, 151, 161, &value, error))
-                    return false;
-                if (value < minimum) {
-                    if (!height_byte(chunk, world, index, 172, 182, &value, error))
-                        return false;
+        /* The checked store holds this heightmap through the callback-free
+         * scan. The bounded indices preserve the source X/Z traversal. */
+        for (size_t local_x = 0; local_x < 16; ++local_x) {
+            for (size_t local_z = 0; local_z < 16; ++local_z) {
+                const int32_t value = (int32_t)heights[(local_z << 4u) | local_x];
+                if (value < minimum)
                     minimum = value;
-                }
             }
         }
         error->height_bytecode = 204;
-        mc_world_chunk_state(chunk)->data->minimum_height = minimum;
+        chunk->state->data->minimum_height = minimum;
     }
 
     error->height_bytecode = 208;
-    (void)mc_world_chunk_fields_get(chunk, &fields);
-    const int32_t world_x = mc_java_i32_add(mc_java_i32_mul(fields.j, 16), x);
+    const int32_t world_x = mc_java_i32_add(mc_java_i32_mul(chunk->state->x, 16), x);
     error->height_bytecode = 219;
-    (void)mc_world_chunk_fields_get(chunk, &fields);
-    const int32_t world_z = mc_java_i32_add(mc_java_i32_mul(fields.k, 16), z);
+    const int32_t world_z = mc_java_i32_add(mc_java_i32_mul(chunk->state->z, 16), z);
 
     if (height < old_height) {
         for (int32_t fill_y = height; fill_y < old_height; fill_y = mc_java_i32_add(fill_y, 1)) {
             error->height_bytecode = 248;
-            (void)mc_world_chunk_fields_get(chunk, &fields);
+            mc_world_chunk_nibble *sky = chunk->f;
             error->height_bytecode = 257;
-            if (!mc_world_mutation_nibble_set(fields.f, x, fill_y, z, 15, error))
+            if (!mc_world_mutation_nibble_set(sky, x, fill_y, z, 15, error))
                 return false;
         }
     } else {
@@ -232,9 +220,9 @@ static bool incremental_height(mc_world_chunk *chunk, int32_t x, int32_t y, int3
             return false;
         for (int32_t fill_y = old_height; fill_y < height; fill_y = mc_java_i32_add(fill_y, 1)) {
             error->height_bytecode = 303;
-            (void)mc_world_chunk_fields_get(chunk, &fields);
+            mc_world_chunk_nibble *sky = chunk->f;
             error->height_bytecode = 311;
-            if (!mc_world_mutation_nibble_set(fields.f, x, fill_y, z, 0, error))
+            if (!mc_world_mutation_nibble_set(sky, x, fill_y, z, 0, error))
                 return false;
         }
     }
@@ -256,9 +244,9 @@ static bool incremental_height(mc_world_chunk *chunk, int32_t x, int32_t y, int3
         if (light < 0)
             light = 0;
         error->height_bytecode = 379;
-        (void)mc_world_chunk_fields_get(chunk, &fields);
+        mc_world_chunk_nibble *sky = chunk->f;
         error->height_bytecode = 388;
-        if (!mc_world_mutation_nibble_set(fields.f, x, height, z, light, error))
+        if (!mc_world_mutation_nibble_set(sky, x, height, z, light, error))
             return false;
     }
     while (height > 0) {
@@ -288,7 +276,7 @@ static bool incremental_height(mc_world_chunk *chunk, int32_t x, int32_t y, int3
             return false;
     }
     error->height_bytecode = 461;
-    mc_world_chunk_state(chunk)->dirty = true;
+    chunk->state->dirty = true;
     error->height_bytecode = 0; /* Ordinary return464; caller's frame is retained. */
     return true;
 }

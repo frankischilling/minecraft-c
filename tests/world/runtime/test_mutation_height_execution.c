@@ -4,11 +4,18 @@ int mc_mutation_height_unused_main(int, char **);
 #include "test_mutations.c"
 #undef main
 
+#include "../../../src/world/chunk/object_state_internal.h"
 #include "../../../src/world/runtime/mutation/chunk_execution_internal.h"
 #include "../../../src/world/runtime/world_access_internal.h"
 #include "mc/world/chunk/nibbles.h"
 
-typedef enum height_mode { HEIGHT_RISE, HEIGHT_FALL, HEIGHT_THROW, HEIGHT_SCOPE_DRIFT } height_mode;
+typedef enum height_mode {
+    HEIGHT_RISE,
+    HEIGHT_FALL,
+    HEIGHT_THROW,
+    HEIGHT_SCOPE_DRIFT,
+    HEIGHT_NULL_MAP
+} height_mode;
 
 typedef struct height_attempt {
     mc_entity_tick_execution execution;
@@ -18,6 +25,7 @@ typedef struct height_attempt {
     mc_entity_tick_execution_world_token root, external;
     mc_world_runtime *world;
     mc_chunk_state *state;
+    mc_world_chunk *chunk;
     mc_world_access *listener;
     mc_world_access_receipt *receipt;
     int32_t x, z;
@@ -76,6 +84,8 @@ static mc_world_storage_status height_range(void *context, mc_world_runtime *wor
         a->external_open = status == MC_WORLD_STORAGE_OK;
         return status;
     }
+    if (a->mode == HEIGHT_NULL_MAP)
+        a->chunk->h = NULL;
     return MC_WORLD_STORAGE_OK;
 }
 
@@ -130,6 +140,7 @@ static bool run_height(fixture *f, int32_t x, int32_t z, height_mode mode) {
     mc_entity_tick_execution_init(&a->execution, NULL);
     a->world = f->worlds[0];
     a->state = f->chunks[0].state;
+    a->chunk = f->chunks[0].object;
     a->x = x;
     a->z = z;
     a->mode = mode;
@@ -167,9 +178,12 @@ static bool run_height(fixture *f, int32_t x, int32_t z, height_mode mode) {
     mc_world_mutation_error_init(&a->error);
     mc_world_storage_status raw = MC_WORLD_STORAGE_LIMIT;
     bool changed = !ordinary;
+    uint8_t *saved_map = a->chunk->h;
     const bool completed = mc_world_mutation_chunk_block_in_execution(
-        &a->call, a->world, f->stores[0], a->state, f->chunks[0].object, x, 4, z, falling ? 0 : 1,
-        &changed, &a->error, &raw);
+        &a->call, a->world, f->stores[0], a->state, a->chunk, x, 4, z, falling ? 0 : 1, &changed,
+        &a->error, &raw);
+    if (mode == HEIGHT_NULL_MAP)
+        a->chunk->h = saved_map;
     CHECK(a->valid && a->ranges == 1 && a->call.height_observer.callbacks_returned == 1 &&
           mc_world_runtime_light_list_get(a->world, &after, NULL) == MC_WORLD_STORAGE_OK &&
           before.identity == after.identity && data->blocks[target] == (falling ? 0 : 1) &&
@@ -191,6 +205,13 @@ static bool run_height(fixture *f, int32_t x, int32_t z, height_mode mode) {
         if (!falling)
             CHECK(height_region(a->world, before.count, MC_LIGHT_SKY, &vertical) &&
                   height_region(a->world, before.count + 2u, MC_LIGHT_BLOCK, &block));
+    } else if (mode == HEIGHT_NULL_MAP) {
+        CHECK(!completed && changed && raw == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+              !a->call.source_returned && !a->call.lease_held && !a->call.binding_held &&
+              a->call.world_captures == 1 && a->owned.ownership_status == MC_WORLD_STORAGE_OK &&
+              a->error.chunk_bytecode == 156 && a->error.height_bytecode == 107 &&
+              data->heightmap[column] == 2 && nibble(data->skylight, target) == prior_sky &&
+              !a->state->dirty && before.count == after.count);
     } else {
         const mc_world_notification_execution *observer =
             mc_world_mutation_chunk_failure_observer(&a->call);
@@ -265,7 +286,7 @@ int main(int argc, char **argv) {
     published = true;
     CHECK(run_height(f, 8, 8, HEIGHT_RISE) && run_height(f, 8, 8, HEIGHT_FALL) &&
           run_height(f, 4, 4, HEIGHT_THROW) && run_height(f, 12, 12, HEIGHT_SCOPE_DRIFT) &&
-          !r->bad);
+          run_height(f, 4, 12, HEIGHT_NULL_MAP) && !r->bad);
     ok = true;
 cleanup:
     if (published) {
