@@ -169,19 +169,18 @@ static bool fluid_material(const fluid_frame *frame, unsigned int pc, int32_t x,
         return mc_world_mutation_execution_material(frame->owned, frame->world, x, y, z, out,
                                                     frame->error, fluid_site(frame, pc));
     }
-    /* Reserve the independent error before the read. Only a failure exposes it. */
-    mc_world_mutation_error *lower = fluid_allocate_error(frame, pc);
-    if (lower == NULL)
-        return false;
+    /* A failed leaf replaces the caller's diagnostic. Keep it untouched
+     * while a World read or Registry initializer can still call back. */
     mc_world_storage_error cause = {0};
     int32_t id;
     if (mc_world_runtime_block_get(frame->world, x, y, z, &id, &cause) != MC_WORLD_STORAGE_OK) {
-        mc_world_mutation_error_init(lower);
-        lower->bytecode = 4;
-        lower->status = cause.status;
-        lower->operation = cause.operation;
-        lower->cause = cause;
-        return fluid_child_result(frame, pc, lower, false);
+        mc_world_mutation_error *error = frame->error;
+        mc_world_mutation_error_init(error);
+        error->bytecode = 4;
+        error->status = cause.status;
+        error->operation = cause.operation;
+        error->cause = cause;
+        return fluid_nested(frame, pc, error);
     }
     mc_registry_classes *classes = mc_world_runtime_registry(frame->world);
     mc_registry_error registry = mc_world_mutation_empty_registry();
@@ -215,16 +214,16 @@ static bool fluid_material(const fluid_frame *frame, unsigned int pc, int32_t x,
         }
     }
     if (status != MC_REGISTRY_OK) {
-        mc_world_mutation_error_init(lower);
-        lower->bytecode = bytecode;
-        (void)mc_world_mutation_registry_fail(frame->world, lower, &registry, operation);
-        return fluid_child_result(frame, pc, lower, false);
+        mc_world_mutation_error *error = frame->error;
+        mc_world_mutation_error_init(error);
+        error->bytecode = bytecode;
+        (void)mc_world_mutation_registry_fail(frame->world, error, &registry, operation);
+        return fluid_nested(frame, pc, error);
     }
     /* Match the existing actual World material operation's success diagnostic. */
     (void)mc_world_runtime_registry_result(frame->world, status, &registry,
-                                           "World material registry", &cause);
+                                           "World material registry", NULL);
     *out = material; /* Nullable bA is a normal field result. */
-    free(lower);
     return true;
 }
 

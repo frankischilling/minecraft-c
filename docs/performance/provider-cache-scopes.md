@@ -505,6 +505,53 @@ FPS, and three of six had lower p99. The longest candidate frame took 107.35 ms.
 | First | 51.76 / 52.78 | 35.16 / 31.88 | 56.89 / 67.36 |
 | Repeat | 38.40 / 42.64 | 51.91 / 43.61 | 89.30 / 70.96 |
 
+#### Material diagnostics during fluid ticks
+
+Ordinary fluid Material reads keep the caller's diagnostic untouched while
+the World query and Registry lookup run. A failed lookup fills the same
+canonical diagnostic in the caller's storage after the lookup returns.
+Previously each read reserved and freed a separate heap diagnostic. Removing
+that reservation also removes its native allocation-failure point. Retained
+execution continues to use its owned diagnostics. Native client and server
+controls verify canonical reset of poisoned diagnostics and the later
+failure site when a successful lookup reads a null Material field.
+
+Two instrumented DISPLAY2 captures separated the remaining Material costs.
+In the largest timed spring, 13,045 Material reads took an estimated 9.57 ms
+of a 15.98 ms immediate fluid tick. Samples attributed 4.05 ms to diagnostic
+reservation, 1.12 ms to World Block reads, 0.62 ms to Registry selection
+and 3.30 ms to successful publication and release. The samples add overhead.
+
+Each fixed MSVC Release workload used eight alternating pairs.
+
+| Accepted spring | Median before / after (ms) |
+| --- | ---: |
+| Client, source-owned cache, pinned to one logical CPU | 90.19 / 55.41 |
+| Client, exported cache | 89.27 / 61.94 |
+| Server regression, exported cache | 89.69 / 64.42 |
+
+All pairs were faster. The source-owned fixture retained 296,020 cache hits,
+115 water cells, one deferred entry in each scheduler collection and 199
+ordered light regions. All recorded Chunk planes, fluid scratch and Random
+state matched.
+
+Six instrumented DISPLAY2 runs yielded 14 springs matched by position,
+fluid ID and operation counts, apart from the diagnostic allocation count.
+All 14 immediate fluid ticks took less time in the candidate. The largest
+match repeated 13,045 Material reads. Its median immediate tick fell from
+16.50 to 10.74 ms, and sampled Material time fell from 7.52 to 1.94 ms.
+
+All 12 uninstrumented DISPLAY2 runs qualified at Tiny distance and 854×480.
+Both builds shared the local Sign screen edit. All six pairs had lower
+candidate FPS, and five had higher p99. Whole-scene timing differed from
+the fixed and matched spring results. The longest candidate frame was
+230.70 ms.
+
+| Scene group | Median FPS before / after | Median p95 frame time (ms) | Median p99 frame time (ms) |
+| --- | ---: | ---: | ---: |
+| First | 24.00 / 23.55 | 88.58 / 92.42 | 132.66 / 149.70 |
+| Repeat | 36.37 / 35.69 | 59.30 / 55.86 | 82.86 / 87.63 |
+
 ### Generic resident Chunk lookups
 
 After a provider exports its live cache, ordinary GETs fully validate the

@@ -9162,8 +9162,8 @@
       "sha256": "21a8c0072d46153e4901f53e2d523cacfc00b3d6e042690a0380d678048baac1"
     },
     "tests/world/runtime/test_fluids.c": {
-      "bytes": 66161,
-      "sha256": "36ef5eb8765538fd847a22e48f2ff25a8ccccf75ffa0f7f512a2334685d6441d"
+      "bytes": 67032,
+      "sha256": "3df0a0313e27eb41beb196832659dff074c02f8aa64386f2b4f903f82ddebc2e"
     },
     "tests/world/runtime/tile_entities/test_tile_entities.c": {
       "bytes": 68642,

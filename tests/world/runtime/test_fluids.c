@@ -640,6 +640,11 @@ static bool material_failures(fixture *f, size_t slot) {
         mc_java_random_seed(&random, 31);
         const mc_java_random initial = random;
         mc_world_mutation_error error = mc_world_mutation_empty_error();
+        error.bytecode = 999;
+        error.registry.initializer_pc = 999;
+        error.batch.index = 0;
+        error.load_entity.index = 0;
+        error.cause_hook_class = "old fluid hook";
         CHECK(mc_world_runtime_call_enter(w, &error.cause) == MC_WORLD_STORAGE_OK);
         if (i == 0)
             w->fields.v = NULL;
@@ -857,6 +862,17 @@ static bool live_route_obstacles(fixture *f, size_t slot) {
                   error.cause_hook_bytecode == 0);
         }
     }
+    /* The Material lookup returns a null bA. The later obstacle predicate
+     * reaches the first operation that actually needs a Material receiver. */
+    mc_material *material = stone->fields.bA;
+    CHECK(material != NULL);
+    stone->fields.bA = NULL;
+    const mc_world_storage_status null_material = tick(f, slot, 8, source, NULL, &error);
+    stone->fields.bA = material;
+    CHECK(null_material == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.operation != NULL &&
+          strcmp(error.operation, "Fluid blocked Material receiver") == 0 &&
+          error.hook_bytecode == 406 && error.cause_hook_bytecode == 87 &&
+          error.registry.status == MC_REGISTRY_OK);
     CHECK(at(world, source->x, source->y, source->z, 9, 0) && delta(world, &before, 0, 0) &&
           mc_test_java_random_equal(world->fields.r, &world_random) && world->active_calls == 0 &&
           world->local_leases == 0);
