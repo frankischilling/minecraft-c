@@ -192,9 +192,13 @@ static int si_queries(si_work *w) {
     mc_world_store_chunk_lookup_view before, after;
     VERIFY(si_observe(w, &before) == 0 && w->foreign != NULL);
     const mc_chunk_state *foreign = mc_stored_chunk_state(w->foreign);
+    mc_world_chunk *object = w->entries[0].object;
     VERIFY(!mc_world_store_owns_chunk(store, foreign) &&
            mc_world_store_chunk_object(store, foreign) == NULL &&
-           mc_world_store_generated_chunk(store, foreign) == NULL);
+           mc_world_store_generated_chunk(store, foreign) == NULL &&
+           mc_world_store_lease_chunk_object(store, foreign, &object, &w->source.error) ==
+               MC_WORLD_STORAGE_OK &&
+           object == NULL);
     size_t objects = 0;
     for (size_t round = 0; round < 3; ++round) {
         for (size_t i = 0; i < w->count; ++i) {
@@ -207,8 +211,15 @@ static int si_queries(si_work *w) {
                    mc_world_store_chunk_object(store, actual) == entry->object &&
                    mc_world_store_generated_chunk(store, actual) ==
                        (entry->generated ? entry->object : NULL));
-            if (round == 0 && entry->object != NULL)
-                ++objects;
+            if (round == 0) {
+                object = w->entries[0].object;
+                VERIFY(mc_world_store_lease_chunk_object(store, actual, &object,
+                                                         &w->source.error) == MC_WORLD_STORAGE_OK &&
+                       object == entry->object);
+                VERIFY(mc_world_store_release_chunk(store, actual, &w->source.error) ==
+                       (object == NULL ? MC_WORLD_STORAGE_INVALID_ARGUMENT : MC_WORLD_STORAGE_OK));
+                objects += object != NULL;
+            }
         }
     }
     mc_chunk_state *sentinel = w->entries[0].state;
@@ -241,8 +252,10 @@ static int si_busy(si_work *w) {
     memcpy(snapshot, f->worlds[0], world_bytes);
     memcpy(snapshot + world_bytes, owner_before.failure, error_bytes);
     memcpy(snapshot + world_bytes + error_bytes, owner_before.cleanup, error_bytes);
-    VERIFY(mc_world_store_lease_chunk(f->stores[0], entry->state, &w->source.error) ==
-           MC_WORLD_STORAGE_OK);
+    mc_world_chunk *object = NULL;
+    VERIFY(mc_world_store_lease_chunk_object(f->stores[0], entry->state, &object,
+                                             &w->source.error) == MC_WORLD_STORAGE_OK &&
+           object == entry->object);
     si_visit visits = {.work = w};
     VERIFY(mc_world_store_retire_chunk(f->stores[0], entry->state, &w->source.error) ==
                MC_WORLD_STORAGE_BUSY &&

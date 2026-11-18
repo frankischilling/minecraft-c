@@ -116,8 +116,9 @@ static void query_selected_view(mc_world_query_execution *execution) {
 /* World.c(II) invokes the provider's b getter, preserving pending on a hit
  * and the dedicated denied-load fallback. Store leases protect the captured
  * source local across later Registry active use, without blocking reentry. */
-static bool acquire_query(mc_world_runtime *world, int32_t x, int32_t z, query_chunk *out,
-                          mc_world_query_error *error, mc_world_query_execution *execution) {
+static bool acquire_query(mc_world_runtime *world, int32_t chunk_x, int32_t chunk_z,
+                          query_chunk *out, mc_world_query_error *error,
+                          mc_world_query_execution *execution) {
     error->provider_bytecode = 6;
     if (world->fields.v == NULL) {
         error->source_null = true;
@@ -134,13 +135,13 @@ static bool acquire_query(mc_world_runtime *world, int32_t x, int32_t z, query_c
     mc_world_runtime_acquisition_error *const detail =
         execution == NULL ? &legacy : &execution->acquisition;
     if (execution == NULL)
-        error->acquisition = mc_world_runtime_get_failure(
-            world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &out->state, detail);
+        error->acquisition =
+            mc_world_runtime_get_failure(world, chunk_x, chunk_z, &out->state, detail);
     else {
         execution->get_entered = true;
         error->acquisition = mc_world_runtime_get_failure_in_execution(
-            execution->execution, world, execution->code, mc_java_i32_shr(x, 4),
-            mc_java_i32_shr(z, 4), &out->state, detail, execution->owned);
+            execution->execution, world, execution->code, chunk_x, chunk_z, &out->state, detail,
+            execution->owned);
         execution->get_status = error->acquisition;
         execution->get_returned = true;
         /* Successful failure-only output remains untouched. Only an actually
@@ -184,30 +185,34 @@ static bool acquire_query(mc_world_runtime *world, int32_t x, int32_t z, query_c
     if (out->state->blank)
         return true;
     out->store = world->fields.w;
-    out->object = mc_world_store_chunk_object(out->store, out->state);
+    mc_world_storage_error cause;
+    if (mc_world_store_lease_chunk_object(out->store, out->state, &out->object, &cause) !=
+        MC_WORLD_STORAGE_OK)
+        return storage_fail(error, &cause);
     if (out->object == NULL)
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World query concrete Chunk");
-    mc_world_storage_error cause;
-    if (mc_world_store_lease_chunk(out->store, out->state, &cause) != MC_WORLD_STORAGE_OK)
-        return storage_fail(error, &cause);
     out->leased = true;
     return true;
 }
 
 static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, query_chunk *out,
                     mc_world_query_error *error) {
-    return acquire_query(world, x, z, out, error, NULL);
+    return acquire_query(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), out, error, NULL);
 }
 
-static bool nibble(const mc_world_chunk_nibble *owner, int32_t x, int32_t y, int32_t z,
-                   int32_t *out, mc_world_query_error *error) {
+/* Every caller has already clamped or rejected Y. */
+static size_t light_cell(int32_t x, int32_t y, int32_t z) {
+    return (((uint32_t)x & 15u) << 11u) | (((uint32_t)z & 15u) << 7u) | (uint32_t)y;
+}
+
+static bool nibble(const mc_world_chunk_nibble *owner, size_t cell, int32_t *out,
+                   mc_world_query_error *error) {
     if (owner == NULL || owner->a == NULL)
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Chunk query Nibble backing");
-    const int32_t cell = mc_java_i32_shl(x, 11) | mc_java_i32_shl(z, 7) | y;
-    const int32_t index = mc_java_i32_shr(cell, 1);
-    if (index < 0 || (size_t)index >= owner->length)
+    const size_t index = cell >> 1u;
+    if (index >= owner->length)
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Chunk query Nibble index");
-    *out = (int32_t)(((uint32_t)owner->a[(size_t)index] >> (((uint32_t)y & 1u) * 4u)) & 15u);
+    *out = (int32_t)(((uint32_t)owner->a[index] >> ((cell & 1u) * 4u)) & 15u);
     return true;
 }
 
@@ -324,9 +329,9 @@ static mc_world_storage_status saved_light(mc_world_runtime *world, const mc_wor
     }
     frame->bytecode = 74;
     frame->provider_bytecode = 6;
+    const int32_t chunk_x = mc_java_i32_shr(x, 4), chunk_z = mc_java_i32_shr(z, 4);
     bool present;
-    if (mc_world_runtime_chunk_provider_contains(world, mc_java_i32_shr(x, 4),
-                                                 mc_java_i32_shr(z, 4), &present,
+    if (mc_world_runtime_chunk_provider_contains(world, chunk_x, chunk_z, &present,
                                                  &frame->cause) != MC_WORLD_STORAGE_OK) {
         (void)storage_fail(frame, &frame->cause);
         goto done;
@@ -335,7 +340,7 @@ static mc_world_storage_status saved_light(mc_world_runtime *world, const mc_wor
     if (!present)
         goto done;
     frame->bytecode = 87;
-    if (!acquire(world, x, z, &chunk, frame))
+    if (!acquire_query(world, chunk_x, chunk_z, &chunk, frame, NULL))
         goto done;
     frame->bytecode = 105;
     if (chunk.state->blank)
@@ -349,8 +354,7 @@ static mc_world_storage_status saved_light(mc_world_runtime *world, const mc_wor
     }
     if (type == selected) {
         frame->chunk_bytecode = 15;
-        (void)nibble(chunk.object->f, (int32_t)((uint32_t)x & 15u), y, (int32_t)((uint32_t)z & 15u),
-                     &value, frame);
+        (void)nibble(chunk.object->f, light_cell(x, y, z), &value, frame);
         goto done;
     }
     frame->chunk_bytecode = 20;
@@ -361,8 +365,7 @@ static mc_world_storage_status saved_light(mc_world_runtime *world, const mc_wor
     }
     if (type == selected) {
         frame->chunk_bytecode = 34;
-        (void)nibble(chunk.object->g, (int32_t)((uint32_t)x & 15u), y, (int32_t)((uint32_t)z & 15u),
-                     &value, frame);
+        (void)nibble(chunk.object->g, light_cell(x, y, z), &value, frame);
     }
 done:
     if (frame->status == MC_WORLD_STORAGE_OK)
@@ -410,15 +413,16 @@ static mc_world_storage_status plant_light(mc_world_runtime *world, int32_t x, i
     if (y >= 128)
         y = 127;
     frame.bytecode = 23;
-    if (!acquire_query(world, x, z, &chunk, &frame, execution))
+    if (!acquire_query(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &chunk, &frame,
+                       execution))
         goto done;
     frame.bytecode = 36;
     if (chunk.state->blank)
         goto done;
     frame.chunk_bytecode = 7;
+    const size_t cell = light_cell(x, y, z);
     int32_t sky, block;
-    if (!nibble(chunk.object->f, (int32_t)((uint32_t)x & 15u), y, (int32_t)((uint32_t)z & 15u),
-                &sky, &frame))
+    if (!nibble(chunk.object->f, cell, &sky, &frame))
         goto done;
     if (sky > 0) {
         mc_world_runtime_classes *const classes =
@@ -426,8 +430,7 @@ static mc_world_storage_status plant_light(mc_world_runtime *world, int32_t x, i
         classes->chunk_a = true;
     }
     frame.chunk_bytecode = 35;
-    if (!nibble(chunk.object->g, (int32_t)((uint32_t)x & 15u), y, (int32_t)((uint32_t)z & 15u),
-                &block, &frame))
+    if (!nibble(chunk.object->g, cell, &block, &frame))
         goto done;
     value = sky > block ? sky : block;
 done:
@@ -535,8 +538,6 @@ static bool block_light_value(mc_world_runtime *world, int32_t x, int32_t y, int
     error->bytecode = 215;
     if (!acquire(world, x, z, chunk, error))
         return false;
-    const int32_t local_x = (int32_t)((uint32_t)x & 15u);
-    const int32_t local_z = (int32_t)((uint32_t)z & 15u);
     const int32_t subtraction = world->fields.f;
     error->bytecode = 239;
     if (chunk->state->blank) {
@@ -544,14 +545,15 @@ static bool block_light_value(mc_world_runtime *world, int32_t x, int32_t y, int
         return true;
     }
     error->chunk_bytecode = 7;
+    const size_t cell = light_cell(x, y, z);
     int32_t sky, block;
-    if (!nibble(chunk->object->f, local_x, y, local_z, &sky, error))
+    if (!nibble(chunk->object->f, cell, &sky, error))
         return false;
     if (sky > 0)
         world->classes->chunk_a = true;
     sky = mc_java_i32_sub(sky, subtraction);
     error->chunk_bytecode = 35;
-    if (!nibble(chunk->object->g, local_x, y, local_z, &block, error))
+    if (!nibble(chunk->object->g, cell, &block, error))
         return false;
     *out = sky > block ? sky : block;
     return true;
@@ -585,7 +587,8 @@ static mc_world_storage_status sky_visible(mc_world_runtime *world, int32_t x, i
     query_chunk chunk = {0};
     bool value = false;
     frame.bytecode = 7;
-    if (!acquire_query(world, x, z, &chunk, &frame, execution))
+    if (!acquire_query(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &chunk, &frame,
+                       execution))
         goto done;
     frame.bytecode = 19;
     if (!chunk.state->blank) {

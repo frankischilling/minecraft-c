@@ -212,6 +212,15 @@ mc_world_storage_status mc_world_store_game_save_end(mc_world_store *store,
 mc_world_chunk *mc_world_store_chunk_object(const mc_world_store *store,
                                             const mc_chunk_state *state);
 
+/* Look up the concrete object and lease its Store entry in one callback-free
+ * operation. A missing concrete object returns OK and NULL before lease
+ * admission. out is required and remains unchanged on lease failure. Release
+ * a returned object's lease with mc_world_store_release_chunk. */
+mc_world_storage_status mc_world_store_lease_chunk_object(mc_world_store *store,
+                                                          const mc_chunk_state *state,
+                                                          mc_world_chunk **out,
+                                                          mc_world_storage_error *error);
+
 /* Allocation-free actual d guard, including bound loaded objects. Retiring a
  * World is allowed first; every such Chunk must retire before freeing World. */
 bool mc_world_store_has_chunks_for_world(const mc_world_store *store,

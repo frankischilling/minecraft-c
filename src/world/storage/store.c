@@ -821,12 +821,15 @@ mc_world_chunk *mc_world_store_generated_chunk(const mc_world_store *store,
     return entry != NULL && entry->kind == STORE_CHUNK_GENERATED ? entry->owner.generated : NULL;
 }
 
-mc_world_chunk *mc_world_store_chunk_object(const mc_world_store *store,
-                                            const mc_chunk_state *state) {
-    const store_chunk *entry = store_find_chunk(store, state);
+static mc_world_chunk *store_chunk_object(const store_chunk *entry) {
     return entry == NULL                          ? NULL
            : entry->kind == STORE_CHUNK_GENERATED ? entry->owner.generated
                                                   : entry->loaded_binding;
+}
+
+mc_world_chunk *mc_world_store_chunk_object(const mc_world_store *store,
+                                            const mc_chunk_state *state) {
+    return store_chunk_object(store_find_chunk(store, state));
 }
 
 bool mc_world_store_has_chunks_for_world(const mc_world_store *store,
@@ -1101,6 +1104,37 @@ bool mc_world_store_owns_chunk(const mc_world_store *store, const mc_chunk_state
     return store_find_chunk(store, chunk) != NULL;
 }
 
+static mc_world_storage_status lease_chunk_entry(store_chunk *entry,
+                                                 mc_world_storage_error *error) {
+    if (entry == NULL)
+        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign chunk identity");
+    if (entry->leases == SIZE_MAX)
+        return store_error(error, MC_WORLD_STORAGE_LIMIT, "chunk lease count");
+    ++entry->leases;
+    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+}
+
+mc_world_storage_status mc_world_store_lease_chunk_object(mc_world_store *store,
+                                                          const mc_chunk_state *state,
+                                                          mc_world_chunk **out,
+                                                          mc_world_storage_error *error) {
+    store_chunk *entry = store_find_chunk(store, state);
+    mc_world_chunk *object = store_chunk_object(entry);
+    if (object == NULL) {
+        *out = NULL;
+        return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+    }
+    if (store->source != NULL) {
+        const mc_world_storage_status admission = store_source_native_admit(store, error);
+        if (admission != MC_WORLD_STORAGE_OK)
+            return admission;
+    }
+    const mc_world_storage_status status = lease_chunk_entry(entry, error);
+    if (status == MC_WORLD_STORAGE_OK)
+        *out = object;
+    return status;
+}
+
 mc_world_storage_status mc_world_store_lease_chunk(mc_world_store *store,
                                                    const mc_chunk_state *chunk,
                                                    mc_world_storage_error *error) {
@@ -1109,13 +1143,7 @@ mc_world_storage_status mc_world_store_lease_chunk(mc_world_store *store,
         if (admission != MC_WORLD_STORAGE_OK)
             return admission;
     }
-    store_chunk *entry = store_find_chunk(store, chunk);
-    if (entry == NULL)
-        return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign chunk identity");
-    if (entry->leases == SIZE_MAX)
-        return store_error(error, MC_WORLD_STORAGE_LIMIT, "chunk lease count");
-    ++entry->leases;
-    return store_error(error, MC_WORLD_STORAGE_OK, NULL);
+    return lease_chunk_entry(store_find_chunk(store, chunk), error);
 }
 
 mc_world_storage_status mc_world_store_release_chunk(mc_world_store *store,

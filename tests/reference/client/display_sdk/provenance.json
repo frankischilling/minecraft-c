@@ -2594,8 +2594,8 @@
       "sha256": "7a20e4a5979b0facd0835f0d5f3271e5d5e577e90e9a4cbf7435b62bff8c03a1"
     },
     "src/world/storage/objects_internal.h": {
-      "bytes": 15362,
-      "sha256": "eaa87b0a21eaf18b208992686e57bd685a0015bc07db14de288e419ef257ff08"
+      "bytes": 15997,
+      "sha256": "2d3bda9a11b9feb7452e4d0011067e91f4395bd5052457e80eb44fe5d830e230"
     },
     "src/world/storage/source_chunk_loader.c": {
       "bytes": 36221,
@@ -3870,8 +3870,8 @@
       "sha256": "fed826a2e36dc16e765335a682932deebbcab0ebc90b91fa017f9872c43841ad"
     },
     "src/world/storage/store.c": {
-      "bytes": 136011,
-      "sha256": "d1edb41c43279b917fe056a756b0e48454aa4323983cc5ea7ab1f2d792856c9e"
+      "bytes": 137183,
+      "sha256": "035be44066ea95453f554adc9e0cc7d680c8abe68397d6dcdbe525565e1a2728"
     },
     "src/world/storage/store_source.inc": {
       "bytes": 38510,
@@ -6022,8 +6022,8 @@
       "sha256": "06c29a13c2d31b4ba0266ffb0463dae80ef5eeafc0adc39a8a2f6c7c6d191143"
     },
     "tests/world/storage/test_chunk_lookup.c": {
-      "bytes": 24815,
-      "sha256": "c379275ccb554ef787eabcc2af7eb69d38b252499806156abc16b5bb1aa53733"
+      "bytes": 25620,
+      "sha256": "e5d289adadf6d7cfc86ea1b242d4af758f4674b8dd42255951b55fff30a01c5a"
     },
     "cmake/client_mining.cmake": {
       "bytes": 9430,

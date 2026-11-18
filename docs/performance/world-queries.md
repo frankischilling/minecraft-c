@@ -317,6 +317,45 @@ validation of pending state, loading, callbacks or owner holds. Mutation scopes,
 raw exports, changed descriptors and caller-owned storage keep the existing live
 linear membership check.
 
+### Saved light and Store leases
+
+World queries and light propagation resolve the concrete Chunk and acquire its
+Store lease with one identity lookup. The Store still distinguishes missing
+objects, source admission failures and lease limits. Saved-light presence and
+GET still run separately, using the same converted Chunk coordinates. Light
+reads use the checked local cell index for both packed light planes.
+
+Two instrumented DISPLAY2 captures measured median drains of 13.71 and
+10.78 ms. The longest drains took 74.03 and 76.95 ms, inside 116.35 and
+136.23 ms frames. Those drains made 214,409 and 234,712 saved-light calls.
+Sampling one call in 32 put their inclusive cost at 56.86 and 61.27 ms.
+The samples include instrumentation overhead.
+
+In eight alternating Windows MSVC Release rounds with three builds, the
+fixed drain median was 9.30 ms at baseline, 8.99 ms with the fused Store
+lookup, and 8.28 ms with both changes. The baseline and combined build p95
+were 12.61 and 13.20 ms. All 168 samples matched the recorded World state,
+queue, ownership, Random, failure diagnostics and 37,924 owned GETs per
+sample. The benchmark processes 499 queued regions and 3,992 cells using
+nine authored Chunks.
+
+Median saved-light query time fell from 269.55 to 243.63 ns with one indexed
+Chunk and from 286.35 to 253.19 ns with 289. Each comparison ran six fresh
+process pairs at 65,536 calls per sample. All operations matched their
+checksums and state checks. Block, metadata, GET and presence medians varied
+in both directions.
+
+Four further instrumented DISPLAY2 runs qualified. Across drains with more
+than 10,000 saved-light reads, median estimated cost per read moved from
+273 and 276 ns to 241 and 236 ns in the two pairs. Three drain workloads
+matched all nine recorded call counts. Their drain times moved from 25.47
+to 26.14 ms, 37.03 to 30.52 ms, and 28.20 to 25.91 ms.
+
+All six uninstrumented DISPLAY2 runs qualified with the same local Sign
+screen edit in both builds. In the authored 854×480 Tiny scene, median FPS
+fell from 19.86 to 19.02 and median p99 rose from 145.01 to 163.98 ms. Two
+pairs moved in that direction and one moved in the other direction.
+
 ## Controlled Windows measurement
 
 The fixed-work CPU benchmark uses authored saved Chunks, an actual constructed

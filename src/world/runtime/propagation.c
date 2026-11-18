@@ -183,12 +183,12 @@ static bool acquire(mc_world_runtime *world, int32_t chunk_x, int32_t chunk_z, l
     if (out->state->blank)
         return true;
     out->store = world->fields.w;
-    out->object = mc_world_store_chunk_object(out->store, out->state);
+    if (mc_world_store_lease_chunk_object(out->store, out->state, &out->object, &cause) !=
+        MC_WORLD_STORAGE_OK)
+        return storage_failed(frame, cause);
     if (out->object == NULL)
         return failed(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World propagation concrete Chunk");
-    if (mc_world_store_lease_chunk(out->store, out->state, &cause) != MC_WORLD_STORAGE_OK)
-        return storage_failed(frame, cause);
     out->leased = true;
     return true;
 }
