@@ -234,6 +234,40 @@ Two longer attempts ended at a Player environment tick and a Skeleton Arrow
 publication, after 66.3 and 46.5 seconds respectively. The 75-second target
 remains open.
 
+A fresh load from the saved 66-second run verified the saved World time
+and exact Player pose. Two repeats stopped 26 World ticks later while drawing
+a Falling Sand Entity. The retained failure identifies renderer `gn` at
+method entry. With Arrow publication fixed and the larger vertex cache, a
+separate 75-second attempt completed 946 ticks before the Player action failed.
+Reloading its save reproduced that failure in the nearby pickup dispatch.
+
+### GPU vertex cache during movement
+
+The vertex cache holds converted draws from committed display lists. It
+allocates buffer storage as draws arrive. Its byte budget is 64 MiB, and the
+existing 4,096 slots and eviction rule still apply. Cache identity still uses
+the recorded draw bytes, context generation, and relevant current attributes.
+
+One profiled run at each budget used the 30-second DISPLAY2 route described
+above. In the last ten seconds, the 32 MiB cache reached its budget and hit on
+1.1% of eligible draws. The 64 MiB cache hit on 91.8% of those draws. The
+larger cache cut evictions from 108,095 to 359 and the mean terrain replay
+span from 16.50 to 1.96 ms per frame. Phase stamps measure host-side spans.
+
+A fixed device workload replayed the same 80 recorded lists and 45 MiB of
+converted vertices per pass under both budgets. Across four alternating
+processes per budget, median synchronized replay time fell from 15.43 to
+0.64 ms. Each process checked draw counts, recorded bytes, framebuffer
+readback and list retirement. This workload isolates retained vertex replay.
+
+Two pairs of ordinary Windows Release runs at 854 × 480 and Far finished
+with 600 World ticks each, valid focus and camera checks, and checked save
+and close. Median FPS moved from 51.55 to 56.20, and median p99 frame time
+moved from 47.59 to 44.27 ms. The initial save and assets matched. The runs
+diverged in World Random and scheduling receipts after Chunk acquisition.
+The 32 MiB runs generated 40 and 41 Chunks during play. The 64 MiB runs
+generated 64 and 70. These frame times describe the observed moving routes.
+
 ## Evidence and limits
 
 The [full-fog fixture](../../tests/reference/client/world_frame/README.md)

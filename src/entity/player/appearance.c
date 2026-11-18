@@ -19,6 +19,7 @@ mc_player_status mc_entity_update_cloak(mc_entity *entity, mc_player_error *erro
                               NULL, NULL, NULL, 0);
     const bool player = mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER);
     if (!player && !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
+        !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ARROW) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_MINECART) &&
         !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE) &&

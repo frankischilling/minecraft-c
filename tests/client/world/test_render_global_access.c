@@ -7,6 +7,7 @@
 #include "client/world/render_global_access.h"
 #include "client/world/render_global_internal.h"
 #include "mc/entity/appearance.h"
+#include "mc/entity/arrow/construction.h"
 #include "mc/world/dimension/world_provider.h"
 #include "mc/world/runtime/presentation.h"
 #include "world/runtime/world_access_internal.h"
@@ -30,6 +31,7 @@ int main(int argc, char **argv) {
     mc_player_session *session = NULL;
     mc_player_string *username = NULL;
     mc_entity *player = NULL;
+    mc_entity *arrow = NULL;
     char root[8192];
     const uint16_t title[] = {'A', 'c', 'c', 'e', 's', 's'};
     if (argc != 3 || strcmp(argv[1], "world-access") != 0 ||
@@ -185,10 +187,32 @@ int main(int argc, char **argv) {
     CHECK(mc_render_global_access_callback_inspect(owner->access, &captured_processor, &callback) &&
           callback.processors[0] != NULL && world->persistent_bindings == baseline_bindings + 2u);
     mc_world_access_failure_release(&captured_processor);
+
+    /* A newly fired Arrow follows the same WorldAccess publication path with
+     * inherited Entity appearance and no skin or cloak download. */
+    CHECK(mc_arrow_allocate(f->entity_classes[0], &arrow, NULL) == MC_ENTITY_OK);
+    CHECK(mc_arrow_construct_position(arrow, world, .5, inserted_player.base.y, .5, NULL) ==
+          MC_ENTITY_OK);
+    mc_world_entity_error arrow_publication = {0};
+    bool arrow_inserted = false;
+    CHECK(mc_world_runtime_insert_entity(world, arrow, &arrow_inserted, &arrow_publication) ==
+          MC_WORLD_STORAGE_OK);
+    mc_entity *published_entities[] = {player, arrow};
+    CHECK(arrow_inserted && arrow_publication.world_access_failure.receipt == NULL &&
+          world_is(f, 0, published_entities, COUNT(published_entities)) &&
+          membership(arrow, world, inserted_player.base.bH) &&
+          slice_is(f, 0, (size_t)inserted_player.base.bH, published_entities,
+                   COUNT(published_entities)));
+    CHECK(world->fields.d->count == 1 && world->fields.d->items[0] == player &&
+          world->persistent_bindings == baseline_bindings + 3u &&
+          mc_entity_skin_url(arrow) == NULL && mc_entity_cloak_url(arrow) == NULL &&
+          mc_render_global_access_inspect(owner->access, &access_state) &&
+          access_state.active_callbacks == 0 && access_state.retained_failures == 3);
+
     CHECK(mc_render_global_access_detach_all(owner->access, &error) == MC_CLIENT_RENDER_GLOBAL_OK);
     CHECK(world->fields.u->count == 1 && world->world_accesses.identities[0] == foreign &&
           world->world_accesses.entries[0] == identity &&
-          world->persistent_bindings == baseline_bindings + 1u);
+          world->persistent_bindings == baseline_bindings + 2u);
     CHECK(mc_render_global_access_retire(&owner->access, &error) == MC_CLIENT_RENDER_GLOBAL_BUSY &&
           owner->access != NULL && original.render_global->source_pc == 22);
     CHECK(mc_render_global_access_inspect(owner->access, &access_state) &&
@@ -196,7 +220,10 @@ int main(int argc, char **argv) {
     CHECK(mc_world_runtime_retire_entity_containers(world, NULL) == MC_WORLD_STORAGE_OK);
     f->terminal[0] = true;
     CHECK(world->fields.u->count == 0 && identity->memberships == 0 &&
-          world->persistent_bindings == baseline_bindings + 1u);
+          world->persistent_bindings == baseline_bindings + 2u);
+    mc_entity_release(arrow);
+    arrow = NULL;
+    CHECK(world->persistent_bindings == baseline_bindings + 1u);
     CHECK(mc_render_global_access_retire(&owner->access, &error) == MC_CLIENT_RENDER_GLOBAL_OK &&
           owner->access == NULL);
     result = 0;
@@ -217,6 +244,7 @@ cleanup:
         (render_classes != NULL &&
          mc_client_render_engine_classes_release(render_classes) != MC_CLIENT_RENDER_ENGINE_OK))
         return 1;
+    mc_entity_release(arrow);
     mc_entity_release(player);
     mc_player_session_retire(&session);
     mc_player_string_release(username);

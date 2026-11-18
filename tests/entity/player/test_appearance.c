@@ -1,6 +1,7 @@
 #include "../../../src/core/java/random_profile_internal.h"
 #include "../../../src/entity/player/player_internal.h"
 #include "mc/entity/appearance.h"
+#include "mc/entity/arrow/construction.h"
 #include "mc/entity/minecart/minecart.h"
 #include "mc/entity/particles/particle.h"
 
@@ -92,11 +93,12 @@ typedef mc_entity_status (*allocate_entity)(mc_entity_classes *, mc_entity **, m
 static bool base_dispatch(mc_entity_classes *classes, mc_player_error *error) {
     bool result = false;
     mc_entity *entity = NULL;
-    const allocate_entity allocators[] = {mc_item_entity_allocate, mc_falling_entity_allocate,
-                                          mc_minecart_entity_allocate, mc_pickup_particle_allocate};
+    const allocate_entity allocators[] = {mc_item_entity_allocate, mc_arrow_allocate,
+                                          mc_falling_entity_allocate, mc_minecart_entity_allocate,
+                                          mc_pickup_particle_allocate};
     const mc_entity_class_kind kinds[] = {
-        MC_ENTITY_CLASS_KIND_ITEM, MC_ENTITY_CLASS_KIND_FALLING_SAND, MC_ENTITY_CLASS_KIND_MINECART,
-        MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE};
+        MC_ENTITY_CLASS_KIND_ITEM, MC_ENTITY_CLASS_KIND_ARROW, MC_ENTITY_CLASS_KIND_FALLING_SAND,
+        MC_ENTITY_CLASS_KIND_MINECART, MC_ENTITY_CLASS_KIND_PICKUP_PARTICLE};
     for (size_t i = 0; i < sizeof(allocators) / sizeof(allocators[0]); ++i) {
         CHECK(allocators[i](classes, &entity, NULL) == MC_ENTITY_OK);
         mc_entity_class_literal_view literal;

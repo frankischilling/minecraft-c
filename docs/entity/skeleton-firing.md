@@ -72,3 +72,17 @@ retains the failed fixture build and the 600-byte NBT layout regression before
 the private-observer correction. These component observations do not establish
 Arrow ticking, collision, pickup, a natural Skeleton encounter, a returned
 game frame, original audio or FPS.
+
+## Arrow publication to RenderGlobal
+
+RenderGlobal calls `Entity.u_()` when the World publishes an Entity. The
+original Arrow class `sl` extends `sn` and inherits its empty `u_()` body.
+The native appearance dispatch now admits the canonical Arrow class through
+that inherited path. An ordinary Arrow has neither a skin nor a cloak URL.
+
+The WorldAccess regression constructs a real Arrow and inserts it into a
+loaded World with RenderGlobal attached. Before the fix, publication stopped
+at the RenderGlobal callback on both Windows and Linux. With the fix, the
+same Arrow appears in the World and Chunk lists, the Player list is unchanged,
+and neither listener retains a new failure. The test also checks retirement
+of the Arrow's independent World binding.

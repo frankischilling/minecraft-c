@@ -4,7 +4,7 @@
 #include "mc/entity/player/player.h"
 
 /* Actual client sn.u_ virtual dispatch for the currently concrete native
- * owners: Item/FallingSand/Minecart/pickup particle and the eleven concrete
+ * owners: Item/Arrow/FallingSand/Minecart/pickup particle and the eleven concrete
  * Spider/Zombie/Skeleton/Creeper/Slime/Pig/Sheep/Cow/Chicken/Wolf/Squid owners
  * inherit sn's empty return;
  * LocalPlayer inherits gs.u_. Dispatch uses the SAME canonical Class literal,

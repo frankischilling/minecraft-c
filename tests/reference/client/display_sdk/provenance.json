@@ -951,7 +951,7 @@
     },
     "src/client/display/source_vertex_cache.inc": {
       "bytes": 6755,
-      "sha256": "9d916c2df10a77a95b036263afe7f446ba791d81bbcc06d92088a7b709fccce5"
+      "sha256": "9570ec06d24e82fc72da058c2883a1e478d53a5633501a6a176a44803baec578"
     },
     "src/client/display/source_viewport.inc": {
       "bytes": 3343,
@@ -2690,8 +2690,8 @@
       "sha256": "7ab713ea3eec80f9790b0a7d9935dd200c25dba0b7c113a63aaff43653c16738"
     },
     "include/mc/entity/appearance.h": {
-      "bytes": 1973,
-      "sha256": "bb2e41c53c8f757af4b4db7749f5b2661a19c3ae276a31612135b795a14901af"
+      "bytes": 1979,
+      "sha256": "59b477c7416d4488abae6dd2f24eeede7de2140eedde2dbc491070f806b2006e"
     },
     "include/mc/entity/minecart/classes.h": {
       "bytes": 1368,
@@ -2774,8 +2774,8 @@
       "sha256": "c9763cd8c50906e54563e375c78ceb2b78cb9661b617f483113be7490f504cd8"
     },
     "src/entity/player/appearance.c": {
-      "bytes": 3952,
-      "sha256": "38326eebab2bc4108ecfccd0b3a60c8ed9af11a1aea6533755da0fc5e99eb598"
+      "bytes": 4018,
+      "sha256": "277beb7e5191a68b5c0d59d5cf6c140ad1df9ceceb9dc8b2cd4e5e8a8e47100f"
     },
     "src/world/runtime/loading/player.c": {
       "bytes": 12549,
@@ -2802,16 +2802,16 @@
       "sha256": "316b3fa1673bbd931545d87d160ee1a8733e0c233967451d75a45c1377fd4938"
     },
     "tests/client/world/test_render_global_access.c": {
-      "bytes": 14300,
-      "sha256": "9f4c1d7ec23326305ce537bcce8e51fbdb3a4ca938a6ed54f47442f8b8beb270"
+      "bytes": 15871,
+      "sha256": "277ebef741bd01e08976a8fc0aa785ada45fd01660a6fbc6512d2f3934aedf76"
     },
     "tests/client/world/test_render_global_world.c": {
       "bytes": 39883,
       "sha256": "34859be1da1e9bd9b0cd70bf0cba457e1cb8cd31fcf81e8ecdac63ce62113b65"
     },
     "tests/entity/player/test_appearance.c": {
-      "bytes": 9415,
-      "sha256": "1650302f92fde60a285e454ca0cd4874e0721850e5d70b3e2a3ca86dc21cff54"
+      "bytes": 9546,
+      "sha256": "415a0049f54daec68c3e35c9bb71bf77f49673285f2e9d56053367bb94b8bbff"
     },
     "tests/support/java_random.h": {
       "bytes": 937,
