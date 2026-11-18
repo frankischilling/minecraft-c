@@ -186,6 +186,152 @@ static mc_registry_status grid_climate(void *owner, int32_t x, int32_t z, double
 
 static uint32_t grass[65536], foliage[65536];
 
+typedef struct coordinate_trace {
+    size_t count;
+    int32_t positions[9][3], blocks[9];
+    char operations[9];
+    mc_material *material;
+} coordinate_trace;
+
+static size_t trace_coordinate(coordinate_trace *trace, char operation, int32_t x, int32_t y,
+                               int32_t z) {
+    const size_t index = trace->count++;
+    if (index < 9) {
+        trace->operations[index] = operation;
+        trace->positions[index][0] = x;
+        trace->positions[index][1] = y;
+        trace->positions[index][2] = z;
+    }
+    return index;
+}
+
+static int32_t traced_block(void *owner, int32_t x, int32_t y, int32_t z) {
+    coordinate_trace *trace = owner;
+    const size_t index = trace_coordinate(trace, 'B', x, y, z);
+    return index < 9 ? trace->blocks[index] : 0;
+}
+
+static int32_t traced_metadata(void *owner, int32_t x, int32_t y, int32_t z) {
+    (void)trace_coordinate(owner, 'D', x, y, z);
+    return 0;
+}
+
+static mc_material *traced_material(void *owner, int32_t x, int32_t y, int32_t z) {
+    coordinate_trace *trace = owner;
+    (void)trace_coordinate(trace, 'M', x, y, z);
+    return trace->material;
+}
+
+static bool traced_opaque(void *owner, int32_t x, int32_t y, int32_t z) {
+    (void)trace_coordinate(owner, 'O', x, y, z);
+    return true;
+}
+
+static bool coordinate_trace_matches(const coordinate_trace *trace, char operation,
+                                     const int32_t (*positions)[3], size_t count) {
+    CHECK(trace->count == count);
+    for (size_t i = 0; i < count; ++i)
+        CHECK(trace->operations[i] == operation &&
+              memcmp(trace->positions[i], positions[i], sizeof(trace->positions[i])) == 0);
+    return true;
+}
+
+static bool wrapped_block_coordinates(mc_materials *materials) {
+    static const struct {
+        int32_t x, z, west[2], east[2], north[2], south[2];
+    } edges[] = {{INT32_MIN,
+                  INT32_MAX,
+                  {INT32_MAX, INT32_MAX - 1},
+                  {INT32_MIN + 1, INT32_MIN + 2},
+                  {INT32_MAX - 1, INT32_MAX - 2},
+                  {INT32_MIN, INT32_MIN + 1}},
+                 {INT32_MAX,
+                  INT32_MIN,
+                  {INT32_MAX - 1, INT32_MAX - 2},
+                  {INT32_MIN, INT32_MIN + 1},
+                  {INT32_MAX, INT32_MAX - 1},
+                  {INT32_MIN + 1, INT32_MIN + 2}}};
+
+    mc_registry_classes classes = {0};
+    classes.options.materials = materials;
+    mc_block block = {.classes = &classes, .kind = MC_BLOCK_PORTAL, .fields = {.bn = 90}};
+    coordinate_trace trace = {0};
+    mc_block_render_access access = {.owner = &trace,
+                                     .block = traced_block,
+                                     .metadata = traced_metadata,
+                                     .material = traced_material,
+                                     .opaque = traced_opaque};
+    for (size_t i = 0; i < sizeof(edges) / sizeof(*edges); ++i) {
+        const int32_t x = edges[i].x, y = INT32_MAX, z = edges[i].z;
+        const int32_t bounds_positions[2][3] = {{edges[i].west[0], y, z}, {edges[i].east[0], y, z}};
+        for (int mode = 0; mode < 3; ++mode) {
+            trace = (coordinate_trace){0};
+            trace.blocks[mode == 1 ? 1 : 0] = mode == 2 ? 0 : 90;
+            CHECK(mc_block_render_update_bounds(&block, &access, x, y, z) == MC_REGISTRY_OK);
+            CHECK(coordinate_trace_matches(&trace, 'B', bounds_positions, mode == 0 ? 1 : 2));
+            CHECK(block.fields.bs == (mode == 2 ? .375 : 0) &&
+                  block.fields.bv == (mode == 2 ? .625 : 1) &&
+                  block.fields.bu == (mode == 2 ? 0 : .375) &&
+                  block.fields.bx == (mode == 2 ? 1 : .625));
+        }
+        const int32_t complete[9][3] = {{x, y, z},
+                                        {edges[i].west[0], y, z},
+                                        {edges[i].west[1], y, z},
+                                        {edges[i].east[0], y, z},
+                                        {edges[i].east[1], y, z},
+                                        {x, y, edges[i].north[0]},
+                                        {x, y, edges[i].north[1]},
+                                        {x, y, edges[i].south[0]},
+                                        {x, y, edges[i].south[1]}};
+        const int32_t first_neighbors[5][3] = {{x, y, z},
+                                               {edges[i].west[0], y, z},
+                                               {edges[i].east[0], y, z},
+                                               {x, y, edges[i].north[0]},
+                                               {x, y, edges[i].south[0]}};
+        for (int side = 0; side < 6; ++side) {
+            trace = (coordinate_trace){.blocks = {0, 90, 0, 90, 0, 90, 0, 90, 0}};
+            bool visible = true;
+            CHECK(mc_block_render_side(&block, &access, x, y, z, side, &visible) ==
+                      MC_REGISTRY_OK &&
+                  visible == (side >= 2));
+            CHECK(coordinate_trace_matches(&trace, 'B', complete, 9));
+            trace = (coordinate_trace){0};
+            CHECK(mc_block_render_side(&block, &access, x, y, z, side, &visible) ==
+                      MC_REGISTRY_OK &&
+                  !visible);
+            CHECK(coordinate_trace_matches(&trace, 'B', first_neighbors, 5));
+            trace = (coordinate_trace){.blocks = {90}};
+            CHECK(mc_block_render_side(&block, &access, x, y, z, side, &visible) ==
+                      MC_REGISTRY_OK &&
+                  !visible);
+            CHECK(coordinate_trace_matches(&trace, 'B', complete, 1));
+        }
+    }
+    block.kind = MC_BLOCK_GRASS;
+    static const int32_t heights[2][2] = {{INT32_MAX, INT32_MIN}, {INT32_MIN, INT32_MIN + 1}};
+    const mc_material_id material_ids[3] = {MC_MATERIAL_t, MC_MATERIAL_u, MC_MATERIAL_e};
+    for (size_t i = 0; i < sizeof(heights) / sizeof(*heights); ++i) {
+        int32_t texture = -1;
+        trace = (coordinate_trace){0};
+        CHECK(mc_block_render_texture(&block, &access, INT32_MIN, heights[i][0], INT32_MAX, 0,
+                                      &texture) == MC_REGISTRY_OK &&
+              texture == 2 && trace.count == 0);
+        CHECK(mc_block_render_texture(&block, &access, INT32_MIN, heights[i][0], INT32_MAX, 1,
+                                      &texture) == MC_REGISTRY_OK &&
+              texture == 0 && trace.count == 0);
+        const int32_t above[1][3] = {{INT32_MIN, heights[i][1], INT32_MAX}};
+        for (size_t material = 0; material < 3; ++material) {
+            trace =
+                (coordinate_trace){.material = mc_materials_get(materials, material_ids[material])};
+            CHECK(mc_block_render_texture(&block, &access, INT32_MIN, heights[i][0], INT32_MAX, 2,
+                                          &texture) == MC_REGISTRY_OK &&
+                  texture == (material < 2 ? 68 : 3));
+            CHECK(coordinate_trace_matches(&trace, 'M', above, 1));
+        }
+    }
+    return true;
+}
+
 static bool block_predicates(mc_materials *materials) {
     /* Authored closed-kind receivers exercise pure virtual method contracts.
      * No source initializer or actual GAME owner is claimed by this fixture. */
@@ -291,7 +437,8 @@ int main(void) {
     mc_materials *materials = NULL;
     if (!mc_materials_create(&materials))
         return 1;
-    bool ok = faces() && ambient_occlusion() && block_predicates(materials);
+    bool ok = faces() && ambient_occlusion() && block_predicates(materials) &&
+              wrapped_block_coordinates(materials);
     mc_materials_destroy(materials);
     if (!ok)
         return 1;

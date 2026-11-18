@@ -126,6 +126,71 @@ static bool ao_registry_controls(mc_registry_classes *registry, mc_client_chunk_
     return true;
 }
 
+static bool ao_repeated_registry_controls(mc_registry_classes *registry,
+                                          mc_client_chunk_cache *cache) {
+    mc_client_render_blocks fields;
+    mc_client_render_blocks_construct_fields(&fields, cache, true);
+    mc_cv_context query = {.fields = &fields, .cache = cache, .registry = registry};
+    query.failure.registry = (mc_registry_error){.status = MC_REGISTRY_LIMIT, .block_id = 12};
+    int32_t id;
+    CHECK(mc_client_chunk_cache_block(cache, 8, 64, 8, &id, NULL) == MC_CLIENT_CHUNK_CACHE_OK &&
+          id >= 0 && id < 256 && registry->blocks.r != NULL);
+    bool flag = false;
+    CHECK(mc_cv_ao_flag(&query, 8, 64, 8, 10, 20, 30, &flag) && !query.failed &&
+          flag == registry->blocks.r[id] && query.source_pc == 20);
+    mc_registry_error canonical;
+    memcpy(&canonical, &query.failure.registry, sizeof(canonical));
+
+    bool *saved_r = registry->blocks.r;
+    bool replacement[256];
+    memcpy(replacement, saved_r, sizeof(replacement));
+    replacement[id] = !saved_r[id];
+    registry->blocks.r = replacement;
+    const bool reread = mc_cv_ao_flag_repeated(&query, 8, 64, 8, 40, 50, 60, &flag);
+    registry->blocks.r = saved_r;
+    CHECK(reread && !query.failed && flag == replacement[id] && query.source_pc == 50 &&
+          memcmp(&query.failure.registry, &canonical, sizeof(canonical)) == 0);
+
+    fields.c = NULL;
+    flag = true;
+    CHECK(!mc_cv_ao_flag_repeated(&query, 8, 64, 8, 70, 80, 90, &flag) && flag &&
+          query.source_pc == 80 && query.failure.status == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE &&
+          !query.failure.native_policy &&
+          memcmp(&query.failure.registry, &canonical, sizeof(canonical)) == 0);
+
+    fields.c = cache;
+    mc_cv_context limit = {.fields = &fields, .cache = cache, .registry = registry};
+    CHECK(mc_cv_ao_flag(&limit, 8, 64, 8, 10, 20, 30, &flag));
+    const size_t allocations = registry->allocation_bytes;
+    const size_t managed = registry->managed_current_bytes;
+    registry->allocation_bytes = SIZE_MAX;
+    registry->managed_current_bytes = 1;
+    flag = true;
+    const bool admitted = mc_cv_ao_flag_repeated(&limit, 8, 64, 8, 40, 50, 60, &flag);
+    registry->managed_current_bytes = managed;
+    registry->allocation_bytes = allocations;
+    CHECK(!admitted && flag && limit.source_pc == 40 && limit.failure.native_policy &&
+          limit.failure.status == MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE &&
+          limit.failure.registry.status == MC_REGISTRY_LIMIT &&
+          strcmp(limit.failure.registry.message, "registry view allocation total") == 0);
+
+    mc_cv_context brightness = {.fields = &fields, .cache = cache, .registry = registry};
+    const mc_block *stone = registry->blocks.m[1];
+    float light;
+    CHECK(mc_cv_brightness(&brightness, stone, 8, 64, 8, 60, &light));
+    memcpy(&canonical, &brightness.failure.registry, sizeof(canonical));
+    int32_t *saved_s = registry->blocks.s;
+    registry->blocks.s = NULL;
+    light = -1.0f;
+    const bool lit = mc_cv_brightness_repeated(&brightness, stone, 7, 64, 8, 78, &light);
+    registry->blocks.s = saved_s;
+    CHECK(!lit && light == -1.0f && brightness.source_pc == 12 && brightness.depth == 1 &&
+          brightness.failure.status == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE &&
+          !brightness.failure.native_policy);
+    CHECK(memcmp(&brightness.failure.registry, &canonical, sizeof(canonical)) == 0);
+    return true;
+}
+
 static bool ao_controls(picking_fixture *f, const char *profiles) {
     mc_client_chunk_cache *cache = NULL, *edge_cache = NULL;
     mc_client_chunk_cache_error cache_error;
@@ -134,7 +199,8 @@ static bool ao_controls(picking_fixture *f, const char *profiles) {
           MC_CLIENT_CHUNK_CACHE_OK);
     CHECK(mc_client_chunk_cache_create(f->base.world, 0, 0, 0, 15, 127, 15, &edge_cache,
                                        &cache_error) == MC_CLIENT_CHUNK_CACHE_OK);
-    CHECK(ao_neighbor_axis_controls() && ao_registry_controls(f->base.registry, cache));
+    CHECK(ao_neighbor_axis_controls() && ao_registry_controls(f->base.registry, cache) &&
+          ao_repeated_registry_controls(f->base.registry, cache));
     mc_client_model_error model_error;
     CHECK(mc_client_render_blocks_active_use(f->models, &model_error));
     const bool prior_overlay = f->models->cv_a;

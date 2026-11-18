@@ -220,14 +220,18 @@ typedef struct ao_coordinates {
 } ao_coordinates;
 
 static bool sample(mc_cv_context *c, const mc_block *block, const ao_coordinates *coordinates,
-                   const ao_sample *s) {
+                   const ao_sample *s, bool repeated) {
     if (s->flag_a >= 0 && !c->fields->ab_to_am[s->flag_a] && !c->fields->ab_to_am[s->flag_b]) {
         light_store(c, s->slot, c->fields->n_to_N[s->fallback], s->pc + 14u);
         return true;
     }
     float value;
-    if (!mc_cv_brightness(c, block, coordinates->x[s->dx + 1], coordinates->y[s->dy + 1],
-                          coordinates->z[s->dz + 1], s->pc, &value))
+    const int32_t x = coordinates->x[s->dx + 1];
+    const int32_t y = coordinates->y[s->dy + 1];
+    const int32_t z = coordinates->z[s->dz + 1];
+    const bool read = repeated ? mc_cv_brightness_repeated(c, block, x, y, z, s->pc, &value)
+                               : mc_cv_brightness(c, block, x, y, z, s->pc, &value);
+    if (!read)
         return false;
     light_store(c, s->slot, value, s->pc + 3u);
     return true;
@@ -317,8 +321,9 @@ bool mc_source_cv_ambient_occlusion(mc_cv_context *c, const mc_block *block, int
         {L_p, 0, -1, 0, -1, -1, 0, 96}, {L_q, 0, 0, -1, -1, -1, 0, 114},
         {L_r, 1, 0, 0, -1, -1, 0, 132}, {L_s, 0, 1, 0, -1, -1, 0, 150},
         {L_t, 0, 0, 1, -1, -1, 0, 168}};
+    const bool held_cache = c->cache != NULL && c->world == NULL;
     for (size_t i = 0; i < 7; ++i)
-        if (!sample(c, block, &coordinates, &initial[i]))
+        if (!sample(c, block, &coordinates, &initial[i], held_cache && i != 0))
             return false;
 
     static const struct {
@@ -331,8 +336,14 @@ bool mc_source_cv_ambient_occlusion(mc_cv_context *c, const mc_block *block, int
     for (unsigned int i = 0; i < 12; ++i) {
         bool value;
         const unsigned int pc = 175u + i * 25u;
-        if (!mc_cv_ao_flag(c, coordinates.x[flags[i].dx + 1], coordinates.y[flags[i].dy + 1],
-                           coordinates.z[flags[i].dz + 1], pc, pc + 15u, pc + 20u, &value))
+        const int32_t nx = coordinates.x[flags[i].dx + 1];
+        const int32_t ny = coordinates.y[flags[i].dy + 1];
+        const int32_t nz = coordinates.z[flags[i].dz + 1];
+        const bool read =
+            held_cache && i != 0
+                ? mc_cv_ao_flag_repeated(c, nx, ny, nz, pc, pc + 15u, pc + 20u, &value)
+                : mc_cv_ao_flag(c, nx, ny, nz, pc, pc + 15u, pc + 20u, &value);
+        if (!read)
             return false;
         c->fields->ab_to_am[flags[i].slot] = value;
         mc_cv_store(c, pc + 21u);
@@ -353,7 +364,7 @@ bool mc_source_cv_ambient_occlusion(mc_cv_context *c, const mc_block *block, int
             continue;
         if (c->fields->O > 0) {
             for (size_t i = 0; i < 8; ++i)
-                if (!sample(c, block, &coordinates, &face->samples[i]))
+                if (!sample(c, block, &coordinates, &face->samples[i], false))
                     return false;
             if (!averages(c, face, corner))
                 return false;

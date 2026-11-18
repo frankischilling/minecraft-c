@@ -452,3 +452,47 @@ All 23 focused tests passed on Windows MSVC Release and Linux Clang Debug
 with ASan and UBSan. The native ChunkCache replay passed 9,234 checks,
 including the 950 original rows. Settings, owner, ambient-occlusion, flat
 lighting, face and Chunk compile checks passed in the same selection.
+
+## Registry reads and wrapped render neighbors
+
+With a held ChunkCache, the first ambient-occlusion brightness sample and
+first neighbor flag establish the Registry success record for their sequences.
+Later initial brightness samples and neighbor flags reuse that record on the
+ready path. They still reach the class admission check, read the live `uu.s`
+or `uu.r` array and issue the original access call. Cold and refused admission
+use the regular initializer and diagnostic path.
+
+Portal bounds and side checks and the Grass upper-neighbor texture lookup
+use signed Java wraparound for adjacent coordinates. Tests force both signed
+endpoints and verify the coordinates and order of every reached callback,
+including short-circuit cases. The ambient-occlusion tests replace the live
+flag array between reads and exercise later null receivers, null brightness
+arrays and Registry allocation overflow.
+
+The Windows Release builds used the same link order. In two profiled moving
+pairs on DISPLAY2, 1,095 meshes matched on position, Block sequence, operation
+counts and held Chunk snapshots. Each process made 2,424,832 matching
+ambient-occlusion selections. Median total CPU compile time fell from
+4,114.52 to 4,047.40 ms, a 1.6% reduction. Median compile time for the longest
+three-mesh burst fell from 22.03 to 20.85 ms. The separately sampled flag
+span fell from 1,232 to 1,101 ms across matched meshes. Sampled spans overlap
+other timers. Profiled moving p99 changed from 22.37 to 23.93 ms.
+
+All native windows ran at 854×480 with Far render distance. The uninstrumented
+moving pairs matched input and simulation over 214 World ticks. Both cave
+pairs matched actor, random and scheduler state over 200 ticks each.
+
+| Uninstrumented workload | Before FPS | After FPS | Before p99 (ms) | After p99 (ms) |
+| --- | ---: | ---: | ---: | ---: |
+| Moving, two pairs | 65.68 | 65.34 | 21.81 | 20.59 |
+| Heavy cave, one pair | 54.18 | 55.45 | 31.18 | 29.77 |
+| Lighter cave, one pair | 63.89 | 62.38 | 23.29 | 23.56 |
+
+A separate trial deferred Tessellator cleanup diagnostic initialization.
+Its isolated cloud pass took longer in both profiled pairs, with median time
+moving from 2.26 to 2.32 ms. The trial was dropped.
+
+All 22 focused tests passed on Windows MSVC Release and Linux Clang Debug
+with ASan and UBSan. They include 843 CPU mesher checks, 48 original
+ambient-occlusion rows, 1,680 original face rows, 950 original ChunkCache
+rows, 18,938 Chunk compilation checks and graphics ownership controls.

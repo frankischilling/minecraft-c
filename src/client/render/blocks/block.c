@@ -58,8 +58,8 @@ bool mc_cv_brightness(mc_cv_context *c, const mc_block *b, int32_t x, int32_t y,
     return mc_cv_brightness_bound(c, b, c->fields->c, x, y, z, pc, out);
 }
 
-bool mc_cv_brightness_bound(mc_cv_context *c, const mc_block *b, const void *receiver, int32_t x,
-                            int32_t y, int32_t z, unsigned int pc, float *out) {
+static bool brightness_bound(mc_cv_context *c, const mc_block *b, const void *receiver, int32_t x,
+                             int32_t y, int32_t z, unsigned int pc, float *out, bool repeated) {
     const char *name =
         b != NULL && b->kind == MC_BLOCK_STAIRS ? "ss"
         : b != NULL && (b->kind == MC_BLOCK_FLOWING_FLUID || b->kind == MC_BLOCK_STILL_FLUID)
@@ -79,7 +79,7 @@ bool mc_cv_brightness_bound(mc_cv_context *c, const mc_block *b, const void *rec
             return false;
         value = below > above ? below : above;
     } else {
-        if (!mc_cv_block_statics(c, 5))
+        if (!(repeated ? mc_cv_block_statics_repeated(c, 5) : mc_cv_block_statics(c, 5)))
             return false;
         const int32_t *s = c->registry->blocks.s;
         if (s == NULL)
@@ -98,6 +98,16 @@ bool mc_cv_brightness_bound(mc_cv_context *c, const mc_block *b, const void *rec
     mc_cv_pop(c);
     *out = value;
     return true;
+}
+
+bool mc_cv_brightness_bound(mc_cv_context *c, const mc_block *b, const void *receiver, int32_t x,
+                            int32_t y, int32_t z, unsigned int pc, float *out) {
+    return brightness_bound(c, b, receiver, x, y, z, pc, out, false);
+}
+
+bool mc_cv_brightness_repeated(mc_cv_context *c, const mc_block *b, int32_t x, int32_t y, int32_t z,
+                               unsigned int pc, float *out) {
+    return brightness_bound(c, b, c->fields->c, x, y, z, pc, out, true);
 }
 
 static bool base_side(mc_cv_context *c, const mc_block *b, int32_t x, int32_t y, int32_t z,

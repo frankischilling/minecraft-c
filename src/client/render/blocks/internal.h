@@ -139,8 +139,13 @@ bool mc_cv_min_brightness_bound(mc_cv_context *, const void *, int32_t, int32_t,
 bool mc_cv_opaque(mc_cv_context *, int32_t, int32_t, int32_t, unsigned int, bool *);
 bool mc_cv_solid(mc_cv_context *, int32_t, int32_t, int32_t, unsigned int, bool *);
 bool mc_cv_block_statics(mc_cv_context *, unsigned int);
+/* The caller already holds the canonical Registry success record. */
+bool mc_cv_block_statics_repeated(mc_cv_context *, unsigned int);
 bool mc_cv_brightness(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, unsigned int,
                       float *);
+/* Same Block and held EW after a successful initial AO brightness sample. */
+bool mc_cv_brightness_repeated(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t,
+                               unsigned int, float *);
 bool mc_cv_brightness_bound(mc_cv_context *, const mc_block *, const void *, int32_t, int32_t,
                             int32_t, unsigned int, float *);
 bool mc_cv_side(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, int32_t, unsigned int,
@@ -155,6 +160,10 @@ bool mc_cv_update_bounds_bound(mc_cv_context *, const mc_block *, const void *, 
 bool mc_cv_grass(mc_cv_context *, unsigned int, const mc_block **);
 bool mc_cv_ao_flag(mc_cv_context *, int32_t, int32_t, int32_t, unsigned int static_pc,
                    unsigned int query_pc, unsigned int index_pc, bool *);
+/* Subsequent flags in one AO call through the held EW. The first flag set the
+ * Registry success record and successful EW Block reads leave it intact. */
+bool mc_cv_ao_flag_repeated(mc_cv_context *, int32_t, int32_t, int32_t, unsigned int static_pc,
+                            unsigned int query_pc, unsigned int index_pc, bool *);
 bool mc_cv_block_color(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, unsigned int,
                        int32_t *);
 

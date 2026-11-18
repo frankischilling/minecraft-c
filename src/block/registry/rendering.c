@@ -1,5 +1,6 @@
 #include "mc/block/registry/rendering.h"
 #include "mc/block/registry/runtime.h"
+#include "mc/core/java/java.h"
 #include "registry_internal.h"
 #include "rendering_internal.h"
 #include "runtime_internal.h"
@@ -343,8 +344,8 @@ mc_registry_status mc_block_render_update_bounds(mc_block *block, const mc_block
         case MC_BLOCK_PORTAL:
             if (a->block == NULL)
                 return MC_REGISTRY_INVALID_ARGUMENT;
-            if (a->block(a->owner, x - 1, y, z) == block->fields.bn ||
-                a->block(a->owner, x + 1, y, z) == block->fields.bn)
+            if (a->block(a->owner, mc_java_i32_sub(x, 1), y, z) == block->fields.bn ||
+                a->block(a->owner, mc_java_i32_add(x, 1), y, z) == block->fields.bn)
                 mc_registry_block_bounds(block, 0, 0, .375f, 1, 1, .625f);
             else
                 mc_registry_block_bounds(block, .375f, 0, 0, .625f, 1, 1);
@@ -778,7 +779,7 @@ mc_registry_status mc_block_render_texture(const mc_block *b, const mc_block_ren
             else if (side == 0)
                 t = 2;
             else {
-                mc_material *above = a->material(a->owner, x, y + 1, z);
+                mc_material *above = a->material(a->owner, x, mc_java_i32_add(y, 1), z);
                 t = above == mc_materials_get(b->classes->options.materials, MC_MATERIAL_t) ||
                             above == mc_materials_get(b->classes->options.materials, MC_MATERIAL_u)
                         ? 68
@@ -887,14 +888,14 @@ mc_registry_status mc_block_render_side(const mc_block *b, const mc_block_render
         if (a->block(a->owner, x, y, z) == b->fields.bn)
             value = false;
         else {
-            bool west = a->block(a->owner, x - 1, y, z) == b->fields.bn &&
-                        a->block(a->owner, x - 2, y, z) != b->fields.bn;
-            bool east = a->block(a->owner, x + 1, y, z) == b->fields.bn &&
-                        a->block(a->owner, x + 2, y, z) != b->fields.bn;
-            bool north = a->block(a->owner, x, y, z - 1) == b->fields.bn &&
-                         a->block(a->owner, x, y, z - 2) != b->fields.bn;
-            bool south = a->block(a->owner, x, y, z + 1) == b->fields.bn &&
-                         a->block(a->owner, x, y, z + 2) != b->fields.bn;
+            bool west = a->block(a->owner, mc_java_i32_sub(x, 1), y, z) == b->fields.bn &&
+                        a->block(a->owner, mc_java_i32_sub(x, 2), y, z) != b->fields.bn;
+            bool east = a->block(a->owner, mc_java_i32_add(x, 1), y, z) == b->fields.bn &&
+                        a->block(a->owner, mc_java_i32_add(x, 2), y, z) != b->fields.bn;
+            bool north = a->block(a->owner, x, y, mc_java_i32_sub(z, 1)) == b->fields.bn &&
+                         a->block(a->owner, x, y, mc_java_i32_sub(z, 2)) != b->fields.bn;
+            bool south = a->block(a->owner, x, y, mc_java_i32_add(z, 1)) == b->fields.bn &&
+                         a->block(a->owner, x, y, mc_java_i32_add(z, 2)) != b->fields.bn;
             value = ((west || east) && (side == 4 || side == 5)) ||
                     ((north || south) && (side == 2 || side == 3));
         }

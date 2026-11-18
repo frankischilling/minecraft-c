@@ -497,6 +497,11 @@ bool mc_cv_block_statics(mc_cv_context *c, unsigned int pc) {
            block_statics_slow(c, pc);
 }
 
+bool mc_cv_block_statics_repeated(mc_cv_context *c, unsigned int pc) {
+    mc_cv_pc(c, pc);
+    return mc_registry_block_statics_ready(c->registry, NULL) || block_statics_slow(c, pc);
+}
+
 bool mc_cv_grass(mc_cv_context *c, unsigned int pc, const mc_block **out) {
     if (mc_registry_block_static_get(c->registry, "v", out, &c->failure.registry) != MC_REGISTRY_OK)
         return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED, c->failure.registry.message,
@@ -504,10 +509,8 @@ bool mc_cv_grass(mc_cv_context *c, unsigned int pc, const mc_block **out) {
     return true;
 }
 
-bool mc_cv_ao_flag(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned int static_pc,
-                   unsigned int query_pc, unsigned int index_pc, bool *out) {
-    if (!mc_cv_block_statics(c, static_pc))
-        return false;
+static bool ao_flag_read(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned int query_pc,
+                         unsigned int index_pc, bool *out) {
     /* Java captures this exact array before evaluating the xp.a argument. */
     const bool *r = c->registry->blocks.r;
     int32_t id;
@@ -524,6 +527,18 @@ bool mc_cv_ao_flag(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned i
     }
     *out = r[id];
     return true;
+}
+
+bool mc_cv_ao_flag(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned int static_pc,
+                   unsigned int query_pc, unsigned int index_pc, bool *out) {
+    return mc_cv_block_statics(c, static_pc) && ao_flag_read(c, x, y, z, query_pc, index_pc, out);
+}
+
+bool mc_cv_ao_flag_repeated(mc_cv_context *c, int32_t x, int32_t y, int32_t z,
+                            unsigned int static_pc, unsigned int query_pc, unsigned int index_pc,
+                            bool *out) {
+    return mc_cv_block_statics_repeated(c, static_pc) &&
+           ao_flag_read(c, x, y, z, query_pc, index_pc, out);
 }
 
 bool mc_cv_face(mc_cv_context *c, int32_t side, const mc_block *block, double x, double y, double z,
