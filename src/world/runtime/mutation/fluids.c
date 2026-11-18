@@ -102,15 +102,19 @@ static bool fluid_nested(const fluid_frame *frame, unsigned int pc,
 /* Keep child diagnostics independent without retaining their large values in
  * every synchronous fluid ancestor. Allocation precedes the selected child;
  * a failure preserves the caller's reached site and earlier game effects. */
-static mc_world_mutation_error *fluid_workspace(const fluid_frame *frame, unsigned int pc) {
+static mc_world_mutation_error *fluid_allocate_error(const fluid_frame *frame, unsigned int pc) {
     mc_world_mutation_error *lower = malloc(sizeof(*lower));
     if (lower == NULL) {
         fluid_at(frame, pc);
         (void)mc_world_mutation_fail(frame->world, frame->error, MC_WORLD_STORAGE_ALLOCATION_FAILED,
                                      "Fluid child diagnostic allocation");
-    } else {
-        mc_world_mutation_error_init(lower);
     }
+    return lower;
+}
+
+static mc_world_mutation_error *fluid_workspace(const fluid_frame *frame, unsigned int pc) {
+    mc_world_mutation_error *lower = fluid_allocate_error(frame, pc);
+    mc_world_mutation_error_init(lower);
     return lower;
 }
 
@@ -165,13 +169,15 @@ static bool fluid_material(const fluid_frame *frame, unsigned int pc, int32_t x,
         return mc_world_mutation_execution_material(frame->owned, frame->world, x, y, z, out,
                                                     frame->error, fluid_site(frame, pc));
     }
-    mc_world_mutation_error *lower = fluid_workspace(frame, pc);
+    /* Reserve the independent error before the read. Only a failure exposes it. */
+    mc_world_mutation_error *lower = fluid_allocate_error(frame, pc);
     if (lower == NULL)
         return false;
     mc_world_storage_error cause = {0};
     int32_t id;
-    lower->bytecode = 4;
     if (mc_world_runtime_block_get(frame->world, x, y, z, &id, &cause) != MC_WORLD_STORAGE_OK) {
+        mc_world_mutation_error_init(lower);
+        lower->bytecode = 4;
         lower->status = cause.status;
         lower->operation = cause.operation;
         lower->cause = cause;
@@ -179,40 +185,39 @@ static bool fluid_material(const fluid_frame *frame, unsigned int pc, int32_t x,
     }
     mc_registry_classes *classes = mc_world_runtime_registry(frame->world);
     mc_registry_error registry = mc_world_mutation_empty_registry();
-    lower->bytecode = id == 0 ? 14u : 18u;
-    if (classes == NULL) {
-        registry.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
-        registry.message = "World fluid material Registry binding";
-        (void)mc_world_mutation_registry_fail(frame->world, lower, &registry, registry.message);
-        return fluid_child_result(frame, pc, lower, false);
-    }
+    unsigned int bytecode = id == 0 ? 14u : 18u;
+    const char *operation = "World fluid material Registry";
     mc_material *material = NULL;
     mc_registry_status status;
-    if (id == 0) {
+    if (classes == NULL) {
+        status = registry.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
+        registry.message = "World fluid material Registry binding";
+        operation = registry.message;
+    } else if (id == 0) {
         status = mc_registry_material_get(classes, MC_MATERIAL_a, &material, &registry);
     } else {
         mc_registry_block_m_view array;
         status = mc_registry_block_m_get(classes, &array, &registry);
         if (status == MC_REGISTRY_OK) {
             const mc_block *selected;
-            lower->bytecode = 23;
+            bytecode = 23;
             status = mc_registry_block_m_at(&array, id, &selected, &registry);
             if (status == MC_REGISTRY_OK) {
-                lower->bytecode = 24;
+                bytecode = 24;
                 if (selected == NULL) {
-                    registry.status = MC_REGISTRY_NULL_REFERENCE;
+                    status = registry.status = MC_REGISTRY_NULL_REFERENCE;
                     registry.message = "World material Block receiver";
-                    (void)mc_world_mutation_registry_fail(frame->world, lower, &registry,
-                                                          "World material registry");
-                    return fluid_child_result(frame, pc, lower, false);
+                    operation = "World material registry";
+                } else {
+                    material = selected->fields.bA;
                 }
-                material = selected->fields.bA;
             }
         }
     }
     if (status != MC_REGISTRY_OK) {
-        (void)mc_world_mutation_registry_fail(frame->world, lower, &registry,
-                                              "World fluid material Registry");
+        mc_world_mutation_error_init(lower);
+        lower->bytecode = bytecode;
+        (void)mc_world_mutation_registry_fail(frame->world, lower, &registry, operation);
         return fluid_child_result(frame, pc, lower, false);
     }
     /* Match the existing actual World material operation's success diagnostic. */

@@ -4802,8 +4802,8 @@
       "sha256": "93b58c6004fe6c87a09b2b66393b5926cc17b8cc8d79c848a08d6950e8b4fa0d"
     },
     "src/world/runtime/mutation/fluids.c": {
-      "bytes": 56017,
-      "sha256": "685bcfdee547faf7e3ab34a408fa7d20c8be1b639490fe3e2ef4a4019b3767f1"
+      "bytes": 56133,
+      "sha256": "a6b865695dbea5547fbccc9965d1f261139af598da998e963222dc204cfb032d"
     },
     "src/world/runtime/mutation/height.c": {
       "bytes": 14912,
@@ -6411,7 +6411,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 937705,
-      "sha256": "17445edaf8b889ea8ab2ccaff9c453c2bec0486ede56f9a3e06b5f51a84dd251"
+      "sha256": "aec664578e70a7da35b3c372bb2e0a2cfc41a5d4e9a1f850bad0ec312368364e"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6475,7 +6475,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067658,
-      "sha256": "f2e987c7c0885714ca2de6d0183985fdb4481a427905b104d1d68d6fdb86e0cb"
+      "sha256": "5443433c5c80146c66caf97d438ada5fac6dddfa05fd03b93cbeb7fe7a9bb7ec"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6607,7 +6607,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934530,
-      "sha256": "e61da42f983483e95745c135d06e92b5a6d123836eff8e88caeee2a73b97ba82"
+      "sha256": "545810659c449b59db060eac9d1677b05e9821348a1d33800cf6c8732b161734"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9238,8 +9238,8 @@
       "sha256": "2f44eb40f99735c8e8b9ea194cbad66ee8bfc63d6180222fb7b00fa2c78c75e8"
     },
     "tests/world/runtime/test_fluids.c": {
-      "bytes": 60684,
-      "sha256": "93b8efdc7ed280db1e60124dde9a058d477e4b971375dc4b2e3bc13b071d0dd7"
+      "bytes": 63661,
+      "sha256": "0da7e73c2cfd115f937d5790dd5f295cd380e5a490d6b6d1b57e64195f0e4206"
     },
     "tests/world/runtime/test_game_world.c": {
       "bytes": 57436,

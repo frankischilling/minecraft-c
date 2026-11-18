@@ -280,6 +280,56 @@ passed 22 checks with Clang, ASan and UBSan after the full sanitizer build ran
 out of disk space. Both selections cover the shared cache fixture's save-stage
 and projection consumers, the light queue, failed mutations and population.
 
+### Spring fluid diagnostics
+
+Two DISPLAY2 traces separated spring placement from the immediate flowing
+Block tick. One tick took 129 ms and made 37,441 fluid material queries. Sampled
+allocation and initialization of their diagnostic workspaces accounted for an
+estimated 85 ms. The initial placement took 0.028 ms in that trace.
+
+Ordinary fluid material reads now initialize the full diagnostic only on
+failure. The workspace allocation still precedes the lookup. Failures retain
+the reached site, cause and canonical fields, and successful queries still
+update the World's registry diagnostics. Native client and server controls
+cover a missing provider, missing Registry binding, null Block array and null
+selected Block.
+
+A fixed MSVC Release workload placed an accepted spring into an open shelf
+with a lower basin. Each process ran the same authored layout on both sides
+with fresh loaded Chunks and seeded supplied Random. Eight alternating pairs
+compared the baseline and candidate with only the fluid object replaced.
+Median client time fell from 296.95 to 140.15 ms, and server regression time
+fell from 292.55 to 139.04 ms. Every process observed 115 water cells, 225
+scheduling requests, one deferred entry in each scheduler collection, and
+199 ordered lighting regions. The Chunk planes, fluid scratch state, queued
+light bounds and checked Random state matched. The full native fluid controls
+returned identical output with 636 checks per executable.
+
+Four instrumented DISPLAY2 processes also observed natural springs. All
+13 matched springs with at least 500 material queries took less time in
+the candidate. Matches use coordinates, the fluid ID and the query counts.
+The spring that made 37,441 immediate-tick queries took 119.86 ms before
+and 36.19 ms after. That compares the reached fluid tick. Each process can
+still do different generation and rendering work across the full interval.
+
+All eight uninstrumented DISPLAY2 runs in the first cohort qualified. Median
+FPS went from 41.17 to 39.38, and median run p99 rose from 77.59 to 96.62 ms.
+The candidate's resident map grew by a median of 25 Chunks during measurement,
+compared with 21.5 for the baseline. In a separate six-run repeat, median FPS
+went from 29.27 to 28.46, and p99 fell from 154.05 to 139.78 ms.
+Both frame products shared the local Sign screen edit in their common archives.
+
+Nineteen focused tests passed on Windows and on Linux with Clang, ASan, UBSan
+and leak detection. They include the fluid fixture's other consumers and the
+population, scheduling, lighting and random-tick paths.
+
+A separate resident diagnostic used 441 authored flat Chunks around the saved
+camera. The live map stayed at 361 Chunks, with zero generation, population or
+mesh compilations during the capture. The one qualified DISPLAY2 run averaged
+295 FPS at 854×480, with a 9.43 ms p95. Opaque submission took 0.33 ms at the
+median. This scene gives a steady-state control for future captures of terrain
+and mesh work.
+
 ## Reproduce one resident scene
 
 Configure with `-DMC_BUILD_BENCHMARKS=ON` and build the

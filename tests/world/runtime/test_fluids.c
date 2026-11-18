@@ -35,8 +35,8 @@
 /* Native constructed fluid contracts, not original observations. Every World,
  * Registry/Entity class, Chunk and queue is genuinely constructed. All fixed
  * block/metadata input below is serialized BEFORE loading; source effects and
- * shared om/jc scratch are never reset for the next scenario. The only later
- * temporary source-field control is the actual World immediate flag. */
+ * shared om/jc scratch are never reset for the next scenario. Immediate
+ * scheduling and material failure cases use temporary source-field controls. */
 static unsigned int checks;
 static mc_math_trig trig;
 static const uint32_t fixture_timestamp = UINT32_C(0xfedcba98);
@@ -610,6 +610,69 @@ static mc_java_random math_snapshot(const fixture *f) {
 static bool math_is(const fixture *f, const mc_java_random *expected) {
     const mc_java_random actual = math_snapshot(f);
     return mc_test_java_random_equal(&actual, expected);
+}
+
+static bool material_failures(fixture *f, size_t slot) {
+    bool ok = false;
+    mc_world_runtime *w = f->worlds[slot];
+    mc_chunk_provider *provider = w->fields.v;
+    mc_registry_classes *registry = w->classes->registry;
+    mc_block **blocks = registry->blocks.m;
+    mc_block *stone = blocks[1];
+    const mc_block *flow = blocks[8]; /* Select the receiver before applying each fault. */
+    const patch *p = location(SOURCE);
+    const int32_t x = p->x - 1;
+
+    const struct {
+        unsigned int bytecode;
+        mc_registry_status registry;
+        const char *operation;
+    } cases[] = {
+        {4, MC_REGISTRY_OK, "World block provider receiver"},
+        {18, MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY, "World fluid material Registry binding"},
+        {23, MC_REGISTRY_NULL_REFERENCE, "World fluid material Registry"},
+        {24, MC_REGISTRY_NULL_REFERENCE, "World material registry"}};
+
+    CHECK(at(w, x, p->y, p->z, 1, 0) && flow != NULL && stone != NULL);
+    const mc_java_random world_random = *w->fields.r;
+    for (size_t i = 0; i < COUNT(cases); ++i) {
+        mc_java_random random;
+        mc_java_random_seed(&random, 31);
+        const mc_java_random initial = random;
+        mc_world_mutation_error error = mc_world_mutation_empty_error();
+        CHECK(mc_world_runtime_call_enter(w, &error.cause) == MC_WORLD_STORAGE_OK);
+        if (i == 0)
+            w->fields.v = NULL;
+        else if (i == 1)
+            w->classes->registry = NULL;
+        else if (i == 2)
+            registry->blocks.m = NULL;
+        else
+            blocks[1] = NULL;
+        const bool completed =
+            mc_world_mutation_fluid_tick(w, flow, x, p->y, p->z, &random, &error);
+        w->fields.v = provider;
+        w->classes->registry = registry;
+        registry->blocks.m = blocks;
+        blocks[1] = stone;
+        mc_world_runtime_call_leave(w);
+        CHECK(!completed && error.status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+              error.bytecode == cases[i].bytecode && error.operation != NULL &&
+              strcmp(error.operation, cases[i].operation) == 0 &&
+              error.registry.status == cases[i].registry && error.registry.initializer_pc == -1 &&
+              error.batch.index == SIZE_MAX && error.load_entity.index == SIZE_MAX &&
+              error.hook_class != NULL && strcmp(error.hook_class, slot == 0 ? "om" : "jc") == 0 &&
+              error.hook_bytecode == 6 && error.cause_hook_class != NULL &&
+              strcmp(error.cause_hook_class, slot == 0 ? "rp" : "kv") == 0 &&
+              error.cause_hook_bytecode == 5 &&
+              same_cause(&error.cause, mc_world_runtime_last_error(w)));
+        CHECK(at(w, x, p->y, p->z, 1, 0) && mc_test_java_random_equal(&random, &initial) &&
+              mc_test_java_random_equal(w->fields.r, &world_random) && w->active_calls == 0 &&
+              w->local_leases == 0);
+    }
+    ok = true;
+cleanup:
+    return ok;
 }
 
 static bool synchronous_channel(fixture *f, size_t slot) {
@@ -1271,6 +1334,7 @@ int main(int argc, char **argv) {
               MC_JAVA_RANDOM_HOLDER_READY &&
           f->profile->math != NULL);
     for (size_t side = 0; side < 2; ++side) {
+        CHECK(material_failures(f, side));
         CHECK(synchronous_channel(f, side));
         CHECK(source_and_below(f, side));
         CHECK(routes_and_regeneration(f, side));
