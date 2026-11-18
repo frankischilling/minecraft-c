@@ -95,9 +95,11 @@ typedef struct mc_entity_class_literal_view {
  * identities; separate owners also denote separate loaded classes.
  *
  * limits==NULL selects 64MiB and SIZE_MAX live entities. The ledger charges all
- * direct class/entity/bounds/Random/watcher/map/record requests before malloc at
- * their reached point. External stack/world/profile owners, allocator overhead
- * and C stack are excluded. Failure preserves out. All access is exclusive;
+ * required direct class/entity/bounds/Random/watcher/map/record requests before
+ * malloc at their reached point. The optional Bounds identity table uses a
+ * separate 1 MiB peak budget including simultaneous old and new tables.
+ * External stack/world/profile owners, allocator overhead and C stack are
+ * excluded. Failure preserves out. All access is exclusive;
  * the profile must outlive every dependent class/entity and concurrent user.
  * create alone performs no game-class initialization or entropy draw. The 36
  * passive canonical literal cells are charged in this actual native header. */

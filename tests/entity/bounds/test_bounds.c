@@ -891,6 +891,128 @@ cleanup:
     return result;
 }
 
+static int test_lookup_lifecycle(mc_entity_source source) {
+    int result = 1;
+    fixture test = {0}, other = {0};
+    mc_entity_bounds *pooled[64], *direct[9], *foreign = NULL;
+    CHECK(fixture_open(&test, source) == 0 && fixture_open(&other, source) == 0);
+    CHECK(mc_entity_bounds_create(other.classes, 0, 0, 0, 1, 1, 1, &foreign, NULL) == MC_ENTITY_OK);
+    for (size_t i = 0; i < 64; ++i)
+        CHECK(mc_entity_bounds_pool_get(test.classes, (double)i, 0, 0, 1, 1, 1, &pooled[i], NULL) ==
+              MC_ENTITY_OK);
+    mc_entity_bounds_pool *const pool = test.classes->bounds_pool;
+    CHECK(pool->lookup != NULL && !pool->lookup_disabled);
+    for (size_t i = 0; i < 9; ++i)
+        CHECK(mc_entity_bounds_create(test.classes, 0, 0, 0, (double)i, 1, 1, &direct[i], NULL) ==
+              MC_ENTITY_OK);
+    CHECK(mc_entity_bounds_release(test.classes, direct[8]) == MC_ENTITY_OK &&
+          mc_entity_bounds_release(test.classes, direct[4]) == MC_ENTITY_OK &&
+          mc_entity_bounds_release(test.classes, direct[0]) == MC_ENTITY_OK);
+    CHECK(mc_entity_bounds_native_holds(test.classes, foreign) == 0 &&
+          mc_entity_bounds_retain(test.classes, foreign) == MC_ENTITY_INVALID_ARGUMENT &&
+          mc_entity_bounds_release(test.classes, foreign) == MC_ENTITY_INVALID_ARGUMENT);
+    for (size_t i = 0; i < 64; ++i)
+        CHECK(mc_entity_bounds_native_holds(test.classes, pooled[i]) == 1 &&
+              pooled[i]->min_x == (double)i);
+    for (size_t i = 1; i < 64; ++i)
+        CHECK(mc_entity_bounds_release(test.classes, pooled[i]) == MC_ENTITY_OK);
+    CHECK(mc_entity_bounds_retain(test.classes, pooled[63]) == MC_ENTITY_OK &&
+          mc_entity_bounds_native_holds(test.classes, pooled[63]) == 1 &&
+          mc_entity_bounds_release(test.classes, pooled[63]) == MC_ENTITY_OK);
+    const size_t holds = test.classes->bounds_holds;
+    test.classes->bounds_holds = SIZE_MAX;
+    mc_entity_bounds *refused = NULL;
+    mc_entity_bounds_error error;
+    const mc_entity_status status =
+        mc_entity_bounds_pool_get(test.classes, 0, 0, 0, 1, 1, 1, &refused, &error);
+    test.classes->bounds_holds = holds;
+    CHECK(status == MC_ENTITY_LIMIT && error.bytecode == 65 && refused == NULL &&
+          pool->length == 65 &&
+          mc_entity_bounds_retain(test.classes, pool->elements[64]) == MC_ENTITY_OK &&
+          mc_entity_bounds_release(test.classes, pool->elements[64]) == MC_ENTITY_OK);
+    mc_entity_bounds *reused = NULL;
+    CHECK(mc_entity_bounds_pool_reset(test.classes, NULL) == MC_ENTITY_OK &&
+          mc_entity_bounds_pool_get(test.classes, -1, -2, -3, 1, 2, 3, &reused, NULL) ==
+              MC_ENTITY_OK &&
+          reused == pooled[0] && mc_entity_bounds_native_holds(test.classes, reused) == 2 &&
+          pool->lookup != NULL);
+    if (source == MC_ENTITY_CLIENT) {
+        CHECK(mc_entity_bounds_pool_clear_client(test.classes, NULL) == MC_ENTITY_OK &&
+              pool->length == 0 && pool->lookup == NULL);
+        for (size_t i = 0; i < 16; ++i) {
+            mc_entity_bounds *fresh = NULL;
+            CHECK(mc_entity_bounds_pool_get(test.classes, 0, 0, 0, 1, 1, 1, &fresh, NULL) ==
+                      MC_ENTITY_OK &&
+                  fresh != reused && mc_entity_bounds_release(test.classes, fresh) == MC_ENTITY_OK);
+        }
+        CHECK(pool->lookup != NULL && mc_entity_bounds_native_holds(test.classes, reused) == 2);
+    }
+    for (size_t i = 1; i < 8; ++i) {
+        if (i == 4)
+            continue;
+        CHECK(mc_entity_bounds_native_holds(test.classes, direct[i]) == 1 &&
+              direct[i]->max_x == (double)i &&
+              mc_entity_bounds_release(test.classes, direct[i]) == MC_ENTITY_OK);
+    }
+    CHECK(mc_entity_bounds_release(test.classes, reused) == MC_ENTITY_OK &&
+          mc_entity_bounds_release(test.classes, reused) == MC_ENTITY_OK);
+    CHECK(mc_entity_bounds_release(other.classes, foreign) == MC_ENTITY_OK);
+    result = 0;
+cleanup:
+    result = fixture_close(&other, result);
+    return fixture_close(&test, result);
+}
+
+static int test_lookup_fallback(mc_entity_source source) {
+    int result = 1;
+    fixture test = {0};
+    mc_entity_bounds *held[17];
+    CHECK(fixture_open(&test, source) == 0);
+    for (size_t i = 0; i < 16; ++i)
+        CHECK(mc_entity_bounds_pool_get(test.classes, 0, 0, 0, 1, 1, 1, &held[i], NULL) ==
+              MC_ENTITY_OK);
+    mc_entity_bounds_pool *const pool = test.classes->bounds_pool;
+    CHECK(pool->lookup != NULL && pool->capacity >= 17);
+    test.classes->limits.max_allocation_bytes =
+        test.classes->allocated_bytes + sizeof(mc_entity_bounds_object);
+    CHECK(mc_entity_bounds_pool_get(test.classes, 0, 0, 0, 1, 1, 1, &held[16], NULL) ==
+              MC_ENTITY_OK &&
+          pool->lookup == NULL && pool->lookup_disabled && pool->length == 17 &&
+          test.classes->allocated_bytes == test.classes->limits.max_allocation_bytes);
+    for (size_t i = 0; i < 17; ++i)
+        CHECK(mc_entity_bounds_native_holds(test.classes, held[i]) == 1 &&
+              mc_entity_bounds_release(test.classes, held[i]) == MC_ENTITY_OK);
+    result = 0;
+cleanup:
+    return fixture_close(&test, result);
+}
+
+static int test_lookup_large(void) {
+    int result = 1;
+    fixture test = {0};
+    CHECK(fixture_open(&test, MC_ENTITY_CLIENT) == 0);
+    for (size_t i = 0; i < 20000; ++i) {
+        mc_entity_bounds *bounds = NULL;
+        CHECK(mc_entity_bounds_pool_get(test.classes, (double)i, 0, 0, 1, 1, 1, &bounds, NULL) ==
+                  MC_ENTITY_OK &&
+              mc_entity_bounds_release(test.classes, bounds) == MC_ENTITY_OK);
+    }
+    mc_entity_bounds_pool *const pool = test.classes->bounds_pool;
+    CHECK(pool->length == 20000 && pool->lookup != NULL && !pool->lookup_disabled);
+    const size_t samples[] = {0, 8192, 16384, 19999};
+    for (size_t i = 0; i < sizeof(samples) / sizeof(*samples); ++i) {
+        mc_entity_bounds *const bounds = pool->elements[samples[i]];
+        CHECK(mc_entity_bounds_retain(test.classes, bounds) == MC_ENTITY_OK &&
+              bounds->min_x == (double)samples[i] &&
+              mc_entity_bounds_release(test.classes, bounds) == MC_ENTITY_OK);
+    }
+    CHECK(mc_entity_bounds_pool_clear_client(test.classes, NULL) == MC_ENTITY_OK &&
+          pool->lookup == NULL && pool->length == 0 && test.classes->bounds_objects == NULL);
+    result = 0;
+cleanup:
+    return fixture_close(&test, result);
+}
+
 int main(void) {
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
         fprintf(stderr, "bounds tests require the qualified strict SSE environment\n");
@@ -901,10 +1023,11 @@ int main(void) {
         if (test_standalone(source) || test_standalone_limits(source) ||
             test_standalone_class_failure(source) || test_lifecycle(source) ||
             test_budgets(source) || test_class_failure(source) || test_invariant_prefixes(source) ||
-            test_transforms(source) || test_nan_payloads(source))
+            test_transforms(source) || test_nan_payloads(source) || test_lookup_lifecycle(source) ||
+            test_lookup_fallback(source))
             return 1;
     }
-    if (test_geometry())
+    if (test_lookup_large() || test_geometry())
         return 1;
     printf("Entity bounds: %u checks passed (native contracts and invariant controls)\n", checks);
     return 0;

@@ -123,7 +123,109 @@ static mc_entity_status result(mc_entity_bounds_error *error, mc_entity_status s
     return status;
 }
 
-static mc_entity_bounds_object *find(mc_entity_classes *classes, const mc_entity_bounds *bounds) {
+/* The linked owner list remains authoritative. The optional table contains
+ * borrowed owner pointers and starts once the pool has enough boxes to index.
+ * Bound old and new tables together so growth cannot consume the ordinary
+ * class allocation budget or change a factory's reached failure point. */
+enum { BOUNDS_LOOKUP_START = 16, BOUNDS_LOOKUP_PEAK = 1024u * 1024u };
+
+typedef struct mc_entity_bounds_lookup {
+    size_t capacity, count;
+    mc_entity_bounds_object *slots[];
+} mc_entity_bounds_lookup;
+
+static size_t lookup_slot(const mc_entity_bounds_lookup *lookup, const mc_entity_bounds *bounds) {
+    uint64_t hash = (uintptr_t)bounds;
+    hash ^= hash >> 33u;
+    hash *= UINT64_C(0xff51afd7ed558ccd);
+    hash ^= hash >> 33u;
+    const size_t mask = lookup->capacity - 1u;
+    size_t slot = (size_t)hash & mask;
+    while (lookup->slots[slot] != NULL && &lookup->slots[slot]->value != bounds)
+        slot = (slot + 1u) & mask;
+    return slot;
+}
+
+static void lookup_insert(mc_entity_bounds_lookup *lookup, mc_entity_bounds_object *object) {
+    lookup->slots[lookup_slot(lookup, &object->value)] = object;
+    ++lookup->count;
+}
+
+static size_t lookup_bytes(size_t capacity) {
+    return sizeof(mc_entity_bounds_lookup) + capacity * sizeof(mc_entity_bounds_object *);
+}
+
+static void lookup_clear(mc_entity_bounds_pool *pool) {
+    free(pool->lookup);
+    pool->lookup = NULL;
+}
+
+static void lookup_grow(mc_entity_classes *classes) {
+    mc_entity_bounds_pool *const pool = classes->bounds_pool;
+    const mc_entity_bounds_lookup *const old = pool->lookup;
+    const size_t old_bytes = old == NULL ? 0 : lookup_bytes(old->capacity);
+    size_t capacity = old == NULL ? 2u * BOUNDS_LOOKUP_START : old->capacity * 2u;
+    if (old == NULL) {
+        size_t count = 0;
+        for (const mc_entity_bounds_object *object = classes->bounds_objects; object != NULL;
+             object = object->next)
+            ++count;
+        while (capacity / 2u < count && lookup_bytes(capacity) < BOUNDS_LOOKUP_PEAK)
+            capacity *= 2u;
+    }
+    const size_t bytes = lookup_bytes(capacity);
+    const size_t available = classes->limits.max_allocation_bytes - classes->allocated_bytes;
+    const size_t limit = available < BOUNDS_LOOKUP_PEAK ? available : BOUNDS_LOOKUP_PEAK;
+    mc_entity_bounds_lookup *next = NULL;
+    if (old_bytes <= limit && bytes <= limit - old_bytes)
+        next = calloc(1, bytes);
+    if (next == NULL) {
+        lookup_clear(pool);
+        pool->lookup_disabled = true;
+        return;
+    }
+    next->capacity = capacity;
+    for (mc_entity_bounds_object *object = classes->bounds_objects; object != NULL;
+         object = object->next)
+        lookup_insert(next, object);
+    lookup_clear(pool);
+    pool->lookup = next;
+}
+
+static void publish(mc_entity_classes *classes, mc_entity_bounds_object *object) {
+    object->next = classes->bounds_objects;
+    classes->bounds_objects = object;
+    mc_entity_bounds_pool *const pool = classes->bounds_pool;
+    if (pool->lookup_disabled)
+        return;
+    if (pool->lookup != NULL && pool->lookup->count < pool->lookup->capacity / 2u)
+        lookup_insert(pool->lookup, object);
+    else if (pool->length >= BOUNDS_LOOKUP_START)
+        lookup_grow(classes);
+}
+
+static void lookup_remove(mc_entity_bounds_lookup *lookup, const mc_entity_bounds *bounds) {
+    if (lookup == NULL)
+        return;
+    const size_t mask = lookup->capacity - 1u;
+    size_t slot = lookup_slot(lookup, bounds);
+    lookup->slots[slot] = NULL;
+    --lookup->count;
+    /* Repair just this probe cluster before the old owner is retired. */
+    for (slot = (slot + 1u) & mask; lookup->slots[slot] != NULL; slot = (slot + 1u) & mask) {
+        mc_entity_bounds_object *const object = lookup->slots[slot];
+        lookup->slots[slot] = NULL;
+        --lookup->count;
+        lookup_insert(lookup, object);
+    }
+}
+
+static mc_entity_bounds_object *find(const mc_entity_classes *classes,
+                                     const mc_entity_bounds *bounds) {
+    const mc_entity_bounds_pool *const pool = classes->bounds_pool;
+    const mc_entity_bounds_lookup *const lookup = pool == NULL ? NULL : pool->lookup;
+    if (lookup != NULL)
+        return lookup->slots[lookup_slot(lookup, bounds)];
     for (mc_entity_bounds_object *object = classes->bounds_objects; object != NULL;
          object = object->next)
         if (&object->value == bounds)
@@ -170,8 +272,7 @@ mc_entity_status mc_entity_bounds_create(mc_entity_classes *classes, double min_
         retire(classes, object, sizeof(*object));
         return result(error, status, "bounds factory return hold", 17);
     }
-    object->next = classes->bounds_objects;
-    classes->bounds_objects = object;
+    publish(classes, object);
     *out = &object->value;
     return result(error, MC_ENTITY_OK, NULL, 0);
 }
@@ -180,11 +281,8 @@ size_t mc_entity_bounds_native_holds(const mc_entity_classes *classes,
                                      const mc_entity_bounds *bounds) {
     if (classes == NULL || bounds == NULL)
         return 0;
-    for (const mc_entity_bounds_object *object = classes->bounds_objects; object != NULL;
-         object = object->next)
-        if (&object->value == bounds)
-            return object->holds;
-    return 0;
+    const mc_entity_bounds_object *const object = find(classes, bounds);
+    return object == NULL ? 0 : object->holds;
 }
 
 mc_entity_status mc_entity_bounds_retain(mc_entity_classes *classes, mc_entity_bounds *bounds) {
@@ -199,16 +297,25 @@ mc_entity_status mc_entity_bounds_retain(mc_entity_classes *classes, mc_entity_b
 mc_entity_status mc_entity_bounds_release(mc_entity_classes *classes, mc_entity_bounds *bounds) {
     if (classes == NULL || bounds == NULL)
         return MC_ENTITY_INVALID_ARGUMENT;
+    mc_entity_bounds_lookup *const lookup =
+        classes->bounds_pool == NULL ? NULL : classes->bounds_pool->lookup;
     mc_entity_bounds_object **link = &classes->bounds_objects;
-    while (*link != NULL && &(*link)->value != bounds)
-        link = &(*link)->next;
-    mc_entity_bounds_object *object = *link;
+    mc_entity_bounds_object *object;
+    if (lookup == NULL) {
+        while (*link != NULL && &(*link)->value != bounds)
+            link = &(*link)->next;
+        object = *link;
+    } else
+        object = lookup->slots[lookup_slot(lookup, bounds)];
     if (object == NULL || object->holds == 0)
         return MC_ENTITY_INVALID_ARGUMENT;
     --object->holds;
     --classes->bounds_holds;
     if (object->holds == 0 && !object->pooled) {
+        while (*link != object)
+            link = &(*link)->next;
         *link = object->next;
+        lookup_remove(lookup, bounds);
         retire(classes, object, sizeof(*object));
     }
     return MC_ENTITY_OK;
@@ -273,9 +380,8 @@ mc_entity_status mc_entity_bounds_pool_get(mc_entity_classes *classes, double mi
             return result(error, status, operation, 26);
         }
         object->pooled = true;
-        object->next = classes->bounds_objects;
-        classes->bounds_objects = object;
         pool->elements[pool->length++] = &object->value;
+        publish(classes, object);
     }
     const int32_t index = classes->bounds_cursor;
     classes->bounds_cursor = mc_java_i32_add(index, 1); /* PC41 precedes get44. */
@@ -314,6 +420,8 @@ static mc_entity_status reset(mc_entity_classes *classes, bool clear,
         return result(error, status, operation, 0);
     if (clear) {
         mc_entity_bounds_pool *pool = classes->bounds_pool;
+        lookup_clear(pool);
+        pool->lookup_disabled = false;
         for (size_t index = 0; index < pool->length; ++index)
             pool->elements[index] = NULL;
         pool->length = 0;
@@ -351,6 +459,7 @@ void mc_entity_bounds_dispose(mc_entity_classes *classes) {
         object = next;
     }
     if (classes->bounds_pool != NULL) {
+        lookup_clear(classes->bounds_pool);
         retire(classes, classes->bounds_pool->elements,
                classes->bounds_pool->capacity * sizeof(*classes->bounds_pool->elements));
         retire(classes, classes->bounds_pool, sizeof(*classes->bounds_pool));

@@ -394,8 +394,8 @@
       "sha256": "4cd33f11935846d9e978f46732b36ce88452d377e67bcbd3e0320c9284d59339"
     },
     "include/mc/entity/classes/classes.h": {
-      "bytes": 7303,
-      "sha256": "e77454c2bb0a5070c5ef6a632dd044f91b0003b6cdc9fae568e86b225fd2ebf3"
+      "bytes": 7430,
+      "sha256": "ce896b514c3551e73d273d502ec3c3213cf878adec2e7b8c374062b2ae52a089"
     },
     "include/mc/entity/entity.h": {
       "bytes": 10262,
@@ -2422,8 +2422,8 @@
       "sha256": "2ca442e2a82d8fb504be645df58c1b6ccd98721c4b2de738515bfcc5de12d9d1"
     },
     "src/entity/bounds/bounds.c": {
-      "bytes": 22811,
-      "sha256": "92519565276eb30d8a6cff886c9d63f378cc6b2c3385a57826eaff24d5a05d3d"
+      "bytes": 27229,
+      "sha256": "b49a4433efd2c5b55e26ce5a552eb1761af575778e779b6683750f5170dee066"
     },
     "src/entity/bounds/bounds_internal.h": {
       "bytes": 1097,
@@ -2434,8 +2434,8 @@
       "sha256": "3fab4fbbc6995fd85db93e86be5bb5f17c7499a97d6acda39c2e65dec3305556"
     },
     "src/entity/classes/classes_internal.h": {
-      "bytes": 3413,
-      "sha256": "df82a84481ba16f4e4d47d6409140a4b6a70ec11d9794e0c8481d3987649e09e"
+      "bytes": 3483,
+      "sha256": "44ac2f0e484544631e61f98f13edae317fd7daeb5bddc0087b4d712d982d83cf"
     },
     "src/entity/classes/memory.c": {
       "bytes": 1308,
@@ -4426,8 +4426,8 @@
       "sha256": "6e0371948558c17776c0e4e8d9131bcfd22b353be03fe79e89a95232a2aecfdb"
     },
     "tests/entity/bounds/test_bounds.c": {
-      "bytes": 52758,
-      "sha256": "b817a55e0bb3953d5e49fcaba3d37802e6829eef58d7a8d545d01d0244fab442"
+      "bytes": 59265,
+      "sha256": "2d82bfd012258865c9c845b45753ffa2cc4ad9a8be9ef34c050146148a61df4a"
     },
     "tests/entity/bounds/values_probe.c": {
       "bytes": 9791,

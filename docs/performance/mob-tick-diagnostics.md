@@ -249,3 +249,58 @@ The complete intervals returned 169–177 World ticks. At 854×480, the median
 run FPS changed from 9.94 to 10.04 and median run p99 from 767.54 to 765.81 ms.
 Two pairs had higher FPS and one had lower FPS. The fixed-work tick savings
 are reproducible in this sample. The whole-frame benefit remains unresolved.
+
+### Bounds ownership during collision and clipping
+
+The heavy cave trace attributed most of the collision and clipping cost to
+walking the list of native Bounds owners. A class namespace now builds an
+address index once its pool reaches 16 entries. It grows at half occupancy
+and indexes every live owner, including standalone and detached held Bounds.
+The list still governs ownership and retirement. A normal pool reset retains
+the index, and client clear drops it before retiring the unheld owners.
+
+The index has a separate 1 MiB peak limit across both tables during growth.
+A growth attempt also checks the remaining direct allocation budget. If the
+attempt fails, lookups use the owner list until client clear. The pool header
+adds 16 bytes on x64. Tests cover client and server namespaces, foreign
+addresses, the return-hold failure after publishing a pooled entry, growth
+with 20,000 live Bounds, and lookup after an optional allocation refusal.
+
+At 854×480 on DISPLAY2, the heavy and lighter Far scenes both had higher FPS
+and lower p99 frame time in every pair. These whole-frame runs used fixed
+constructor clock inputs and the ordinary World and Mob loops. On the shared
+timed ticks, ordered entity state, actor and World RNG, and the observed
+scheduler work matched. The timing windows included different numbers of
+World ticks because the timer grouped the work differently. The heavy runs
+completed 42–43 before indexing and 200–201 after it. The lighter runs
+completed 174–175 before indexing and 200 after it.
+
+| Scene | Run pairs | Common timed ticks | Dispatches per run over common ticks | Median FPS, baseline → indexed | Median p99 frame ms, baseline → indexed |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Heavy cave | 3 | 19 | 1,577 | 2.78 → 22.60 | 1,487.69 → 57.23 |
+| Lighter cave | 2 | 173 | 2,997 | 11.64 → 57.34 | 724.43 → 31.15 |
+
+Two additional heavy pairs recorded nested stage timings over 24 common
+World ticks. Each run repeated 1,991 entity dispatches and collision-box
+queries, 10,200 Block contributions, and 5,973 clip calls. The table reports
+the median of each variant's per-run tick medians.
+
+| Stage | Baseline ms per World tick | Indexed ms per World tick |
+| --- | ---: | ---: |
+| World entity loop | 234.314 | 27.466 |
+| Entity movement | 156.812 | 4.964 |
+| Collision-box queries | 77.122 | 0.409 |
+| Block contributions | 52.611 | 0.079 |
+| Axis clipping | 54.637 | 0.036 |
+
+At the end of each indexed heavy run, the table held 14,875 live owners in
+32,768 slots and occupied 262,160 bytes. The comparison isolates the index
+by building both variants with the same pool header layout. The results
+apply to these fixed-camera scenes and workloads.
+
+The same pinned Windows Release workload had 14 measured intervals per
+variant and Zombie count. The baseline and candidate used the same pool header
+layout for the allocation and ownership digests. Those digests, the actor
+tick words, simulation state, World RNG, and Chunk digests matched. The median
+tick cost went from 3.150 to 3.194 ms with eight Zombies and from 24.043 to
+24.040 ms with 64 Zombies.

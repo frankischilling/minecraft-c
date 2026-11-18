@@ -20,6 +20,8 @@ struct mc_mob_class_namespace;
 typedef struct mc_entity_bounds_pool {
     struct mc_entity_bounds **elements;
     size_t length, capacity;
+    struct mc_entity_bounds_lookup *lookup;
+    bool lookup_disabled;
 } mc_entity_bounds_pool;
 
 typedef struct mc_entity_vector_pool {
