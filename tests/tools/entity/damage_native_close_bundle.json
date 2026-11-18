@@ -65,8 +65,8 @@
       "sha256": "254e167c898907879c70fccca62c635d37bba596bfe1fe764239bde52a0e983e"
     },
     "src/world/runtime/runtime.c": {
-      "bytes": 73891,
-      "sha256": "18deadb22252e6b967ad7b1b46b754bc0652bb752704d954251ec55a362b6d87"
+      "bytes": 74469,
+      "sha256": "2046f11be4cb9f54477671343362c01e9eea7f1b0f4f177d415eea59a1f98ba0"
     },
     "src/world/runtime/runtime_execution.c": {
       "bytes": 20205,
@@ -81,8 +81,8 @@
       "sha256": "1117c8c216bbab76f4f89f1e2184ebc31fce5e66daeb9809e0d45be0329b671e"
     },
     "src/world/cache/acquire.c": {
-      "bytes": 17523,
-      "sha256": "d823bdbbbcc5011aa3f97e3d5e90f48d79363b5bddfe05e697e7869390311ffa"
+      "bytes": 18004,
+      "sha256": "a3b7842001d2eac590df82d896ce9864b7027dbe8977295f89b938258fba4e36"
     },
     "tests/reference/client/statistics/support.py": {
       "bytes": 7123,

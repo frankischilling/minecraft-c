@@ -222,20 +222,33 @@ static mc_chunk_acquire_status activate(const mc_chunk_acquire_context *context,
     return MC_CHUNK_ACQUIRE_OK;
 }
 
-mc_chunk_acquire_status mc_chunk_acquire_get(const mc_chunk_acquire_context *context, int32_t x,
-                                             int32_t z, mc_chunk_state **out) {
-    if (out == NULL || !mc_chunk_acquire_validate(context))
-        return MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
+bool mc_chunk_acquire_get_without_loading(const mc_chunk_acquire_context *context, int32_t x,
+                                          int32_t z, mc_chunk_state **out,
+                                          mc_chunk_acquire_status *status) {
+    if (out == NULL || !mc_chunk_acquire_validate(context)) {
+        *status = MC_CHUNK_ACQUIRE_INVALID_ARGUMENT;
+        return true;
+    }
     mc_chunk_state *chunk;
     if (mc_chunk_cache_lookup(context->cache, x, z, &chunk)) {
         *out = chunk;
-        return MC_CHUNK_ACQUIRE_OK;
+        *status = MC_CHUNK_ACQUIRE_OK;
+        return true;
     }
     if (context->policy == MC_CHUNK_ACQUIRE_DEDICATED && !*context->world_force_load &&
         !*context->provider_force_load) {
         *out = context->fallback;
-        return MC_CHUNK_ACQUIRE_OK;
+        *status = MC_CHUNK_ACQUIRE_OK;
+        return true;
     }
+    return false;
+}
+
+mc_chunk_acquire_status mc_chunk_acquire_get(const mc_chunk_acquire_context *context, int32_t x,
+                                             int32_t z, mc_chunk_state **out) {
+    mc_chunk_acquire_status status;
+    if (mc_chunk_acquire_get_without_loading(context, x, z, out, &status))
+        return status;
     return mc_chunk_acquire(context, x, z, out);
 }
 

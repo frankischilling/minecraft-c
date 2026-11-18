@@ -1,4 +1,5 @@
 /* Genuine source World/Store ownership; no provider or validity flag is forged. */
+#include "../../../support/java_random.h"
 #include "mc/world/runtime/world_access.h"
 #include "mob_nbt_source_support.inc"
 #include "world/runtime/acquisition_internal.h"
@@ -160,7 +161,7 @@ static int oc_diagnostics(source_save_fixture *s, mc_chunk_state *expected) {
     mc_chunk_state *got = NULL;
     memset(&first, 0xa5, sizeof(first));
     memset(&second, 0x5a, sizeof(second));
-    VERIFY(oc_observe(world, &before) == 0 && before.owned);
+    VERIFY(oc_observe(world, &before) == 0);
     VERIFY(mc_world_runtime_get_detailed(world, 0, 0, &got, &first) == MC_CHUNK_ACQUIRE_OK &&
            got == expected);
     VERIFY(mc_world_runtime_get_detailed(world, 0, 0, &got, &second) == MC_CHUNK_ACQUIRE_OK &&
@@ -209,16 +210,18 @@ static int oc_diagnostics(source_save_fixture *s, mc_chunk_state *expected) {
         mc_world_runtime_get_failure(world, 0, 0, &got, &second);
     world->active_calls = active;
     VERIFY(private_limited == limited && got == &world->fallback);
-    VERIFY(oc_diagnostics_equal(&first, &second) && oc_observe(world, &after) == 0 && after.owned &&
-           after.hits == before.hits + 4 && after.misses == before.misses &&
-           after.generic_gets == before.generic_gets && after.raw_exports == before.raw_exports &&
-           after.rebuilds == before.rebuilds && after.map_count == before.map_count &&
-           after.insertion_count == before.insertion_count && world->active_calls == active &&
-           world->acquisition_error == outer && world->lifecycle_error == lifecycle &&
-           world->last_error.status == last.status &&
+    VERIFY(oc_diagnostics_equal(&first, &second) && oc_observe(world, &after) == 0 &&
+           after.owned == before.owned && after.hits == before.hits + (before.owned ? 4u : 0u) &&
+           after.misses == before.misses &&
+           after.generic_gets == before.generic_gets + (before.owned ? 0u : 6u) &&
+           after.raw_exports == before.raw_exports && after.rebuilds == before.rebuilds &&
+           after.map_count == before.map_count && after.insertion_count == before.insertion_count &&
+           world->active_calls == active && world->acquisition_error == outer &&
+           world->lifecycle_error == lifecycle && world->last_error.status == last.status &&
            world->last_error.operation == last.operation);
-    puts("OWNED_CACHE_DIAGNOSTICS poison-reset=1 descendant-sentinels=1 nullable-output=1 "
-         "invalid-output=1 hold-limit=1 one-probe=1 scopes-restored=1 failure-only=1");
+    if (before.owned)
+        puts("OWNED_CACHE_DIAGNOSTICS poison-reset=1 descendant-sentinels=1 nullable-output=1 "
+             "invalid-output=1 hold-limit=1 one-probe=1 scopes-restored=1 failure-only=1");
     return 0;
 }
 
@@ -450,6 +453,50 @@ oc_capture_progress(void *owner, const mc_world_save_context *context, mc_world_
     return MC_CHUNK_CALLBACK_FATAL; /* Before session/metadata/auxiliary/Chunk writes. */
 }
 
+static int oc_generic_validation(source_save_fixture *s, mc_chunk_cache *cache,
+                                 mc_chunk_state *selected, mc_chunk_state *nonselected) {
+    mc_world_runtime *world = s->game.worlds[0];
+    mc_chunk_pending *pending = world->acquisition.pending;
+    const int32_t key = mc_chunk_cache_key(0, 0);
+    bool changed;
+    VERIFY(mc_chunk_pending_add(pending, key, &changed) == MC_CHUNK_ACQUIRE_OK && changed);
+    const size_t pending_count = pending->count;
+    const mc_java_random random = *world->fields.r;
+    VERIFY(oc_diagnostics(s, selected) == 0 && pending->count == pending_count &&
+           mc_chunk_pending_contains(pending, key) &&
+           mc_test_java_random_equal(world->fields.r, &random));
+
+    mc_chunk_state *out = &world->fallback;
+    mc_world_runtime_acquisition_error error;
+    memset(&error, 0xa5, sizeof(error));
+    mc_chunk_data *data = nonselected->data;
+    nonselected->data = NULL;
+    const mc_chunk_acquire_status invalid_payload =
+        mc_world_runtime_get_failure(world, 0, 0, &out, &error);
+    nonselected->data = data;
+    VERIFY(invalid_payload == MC_CHUNK_ACQUIRE_INVALID_ARGUMENT && out == &world->fallback &&
+           error.status == invalid_payload && error.cause.status == MC_WORLD_STORAGE_OK &&
+           oc_acquisition_empty_children(&error));
+
+    mc_chunk_state *insertion = cache->insertions[1];
+    cache->insertions[1] = NULL;
+    const mc_chunk_acquire_status invalid_insertion =
+        mc_world_runtime_get_detailed(world, 0, 0, &out, &error);
+    cache->insertions[1] = insertion;
+    VERIFY(invalid_insertion == invalid_payload && out == &world->fallback &&
+           error.status == invalid_insertion && oc_acquisition_empty_children(&error));
+
+    pending->count = pending->capacity + 1u;
+    const mc_chunk_acquire_status invalid_pending =
+        mc_world_runtime_get_detailed(world, 0, 0, &out, &error);
+    pending->count = pending_count;
+    VERIFY(invalid_pending == invalid_payload && out == &world->fallback &&
+           error.status == invalid_pending && oc_acquisition_empty_children(&error) &&
+           mc_chunk_pending_contains(pending, key) &&
+           mc_chunk_pending_remove(pending, key, &changed) == MC_CHUNK_ACQUIRE_OK && changed);
+    return 0;
+}
+
 static int oc_export(source_save_fixture *s, const char *mode) {
     mc_world_runtime *world = s->game.worlds[0];
     mc_chunk_state *states[2] = {0}, *got = NULL;
@@ -493,6 +540,7 @@ static int oc_export(source_save_fixture *s, const char *mode) {
         escaped = raw.cache;
     }
     VERIFY(oc_presence_contracts(world, states[0]) == 0);
+    VERIFY(oc_generic_validation(s, escaped, states[0], states[1]) == 0);
     VERIFY(escaped->count == 2 && escaped->insertion_count == 2 &&
            mc_chunk_cache_publish(escaped, 32768, 0, states[1]) && escaped->insertion_count == 3 &&
            escaped->insertions[2] == states[1] && oc_get(s, 0, &got) == 0 && got == states[1]);

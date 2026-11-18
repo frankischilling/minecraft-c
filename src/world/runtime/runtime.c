@@ -1,3 +1,4 @@
+#include "../cache/acquire_internal.h"
 #include "../storage/generated_internal.h"
 #include "../storage/metadata_internal.h"
 #include "../storage/objects_internal.h"
@@ -1054,12 +1055,24 @@ acquire_attempt(mc_world_runtime *runtime, int32_t x, int32_t z, mc_chunk_state 
     mc_world_storage_error cause = {0};
     mc_chunk_acquire_status status = enter_acquire(runtime, &cause);
     if (status == MC_CHUNK_ACQUIRE_OK) {
-        /* This checked adapter has no Source/user callbacks. A miss is probed
-         * exactly once, then the already-held cold coordinator owns the call.
-         * Do not initialize descendant diagnostics before a common cache hit. */
-        if (operation != ACQUISITION_GET ||
-            !mc_chunk_provider_cache_get(runtime->fields.v, &runtime->acquisition, x, z, out,
-                                         &status))
+        bool completed = false;
+        if (operation == ACQUISITION_GET) {
+            mc_chunk_provider *provider = runtime->fields.v;
+            completed =
+                mc_chunk_provider_cache_get(provider, &runtime->acquisition, x, z, out, &status);
+            /* A live generic provider has no index mutation scope to rebuild.
+             * Validate it just as GET would, before reserving a diagnostic for
+             * callbacks. Only a miss that needs loading enters acquisition. */
+            if (!completed && execution == NULL && provider != NULL &&
+                provider->owned_cache == NULL &&
+                provider == context_cache_owner(runtime, runtime->acquisition.cache)) {
+                completed =
+                    mc_chunk_acquire_get_without_loading(&runtime->acquisition, x, z, out, &status);
+                if (!completed)
+                    operation = ACQUISITION_ACQUIRE;
+            }
+        }
+        if (!completed)
             return acquire_entered(runtime, x, z, out, operation, error, clear_success,
                                    &runtime->acquisition, execution, code, result,
                                    execution == NULL ? NULL : &attempt);

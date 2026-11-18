@@ -465,6 +465,45 @@ All six runs in the separate repeat qualified. Median FPS rose from 33.45
 to 35.48, and median p99 fell from 88.34 to 85.79 ms. The longest candidate
 frames took 151 ms in the first group and 119 ms in the repeat.
 
+### Generic resident Chunk lookups
+
+After a provider exports its live cache, ordinary GETs fully validate the
+cache and pending list on every call. A completed lookup can now return
+before setting up the acquisition frame used by callbacks. A miss that needs
+loading enters the existing coordinator after the same validation. Owned
+index scopes, rebound providers and retained execution keep their existing
+dispatch. Public success diagnostics and failure-only outputs keep their
+respective contracts.
+
+A private variant of the resident workload exported the provider once before
+timing. Seven samples of 65,536 calls in each fresh process checked exact
+Chunk identities, packed aliases, diagnostics, Random state, cache and pending
+contents, and ownership. Four alternating process pairs ran at each size.
+Entries below are median process medians on Windows MSVC Release.
+
+| Resident Chunks | Before | After |
+| --- | ---: | ---: |
+| 8 | 29.42 ms | 5.06 ms |
+| 64 | 45.97 ms | 24.80 ms |
+| 256 | 139.13 ms | 106.42 ms |
+
+The fixed spring also uses an exported provider. In eight alternating pairs,
+median client time fell from 226.85 to 102.30 ms. The server regression control
+fell from 206.18 to 101.53 ms. The 16 runs matched the recorded Chunk planes,
+Random state, fluid scratch, schedule counters and ordered light regions.
+
+In a separate set of eight alternating pairs, the first lighting drain after
+that spring fell from 87.91 to 37.33 ms at the median. All runs matched both
+recorded light planes and the order and bounds of the 393 remaining regions.
+
+All six runs in the frozen-input DISPLAY2 repeat qualified at 854×480 on Tiny.
+Median FPS moved from 20.56 to 22.86 and median p99 moved from 153.51 to
+138.45 ms. Two pairs had lower FPS and higher p99. Both builds shared the
+local Sign screen edit and stayed in gameplay. Two separate diagnostic runs
+kept the owned index and counted zero calls to the new shortcut during
+measurement, so the scene provides no FPS attribution for the shortcut.
+A source-binding update during the initial attempt invalidated its last run.
+
 ## Reproduce one resident scene
 
 Configure with `-DMC_BUILD_BENCHMARKS=ON` and build the

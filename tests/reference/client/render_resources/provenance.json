@@ -5750,8 +5750,8 @@
       "sha256": "42d05cc4a5c34a152dbf8b713f052d2e90d8e7ff488f48bc62062b7083012597"
     },
     "src/world/cache/acquire_internal.h": {
-      "bytes": 362,
-      "sha256": "84786c930812caeb696bf777e2abb70177827376a6d72d6b15bd009933fde2b1"
+      "bytes": 707,
+      "sha256": "cf7dc5ea927d06aa75a21b81fe971c26f78030ee35b1d942b2f4ff88308b3897"
     },
     "src/world/runtime/chunk_provider_owned.inc": {
       "bytes": 14083,
@@ -5762,8 +5762,8 @@
       "sha256": "94353150799a171e6e6ed0454437132690d4abf44687dbc2ca4b543e95334c2e"
     },
     "tests/world/runtime/saving/test_owned_cache.c": {
-      "bytes": 65876,
-      "sha256": "b01e58e14771eea7f59ca0e179b9bdbd1106415a0fbb1716e579370d44270f31"
+      "bytes": 68355,
+      "sha256": "eebe9e57a04e7ad2ec3681ff6623fb8655bd7169f8b86c5b65c5897d38e1394b"
     },
     "src/world/storage/chunk_lookup.inc": {
       "bytes": 8386,
@@ -8182,8 +8182,8 @@
       "sha256": "216f95ded403c80994a57bc6dc6007e8c9a34dc24ea10fa2e920c0994898d9a2"
     },
     "src/world/runtime/runtime.c": {
-      "bytes": 73891,
-      "sha256": "18deadb22252e6b967ad7b1b46b754bc0652bb752704d954251ec55a362b6d87"
+      "bytes": 74469,
+      "sha256": "2046f11be4cb9f54477671343362c01e9eea7f1b0f4f177d415eea59a1f98ba0"
     },
     "tests/client/gui/test_gui_ingame_chat.c": {
       "bytes": 19028,
@@ -9651,7 +9651,7 @@
     },
     "tests/tools/world/test_kernel_execution.py": {
       "bytes": 25708,
-      "sha256": "737d642e62c446a4113b0e3032e17307422c9e4eec5cb37b1fa089d72935e70c"
+      "sha256": "f7703806b312ca9a27e737ab61ff5ab6e4f8ecce84d3cc72c646a1844fe33120"
     },
     "cmake/tests/world_query_controls.cmake": {
       "bytes": 9329,
@@ -9667,7 +9667,7 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76652,
-      "sha256": "87bdd8bc2e4c86b4611ef98218edef71ca75539d7edcb6bc9f8eb592cea8b2dd"
+      "sha256": "4575f5f39870037234458d658c83f479fce8f9c0793d43bd2a0853eb3c4887d0"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -9847,7 +9847,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "ae31ec69082933c7bb241d246422676283b68b56c34cf97111456532a0b1568f"
+      "sha256": "192cb05bd7719456b96fceedfd509f1e8ff2a4c570262c16b70aac34c3310891"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,
@@ -9855,7 +9855,7 @@
     },
     "tests/tools/entity/test_damage_native_close.py": {
       "bytes": 17605,
-      "sha256": "a9356b0ab4c45a616b33e896f436cfd92b1915a7ec81d2d8724bdbbe46f4421f"
+      "sha256": "faecbaee2d01e22535d0b63a1a9434f156629994b994e52ba0a7bcea8f0ea197"
     },
     "tests/world/runtime/world_access/test_damage_close_execution.c": {
       "bytes": 30398,
