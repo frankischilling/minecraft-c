@@ -595,24 +595,25 @@ static mc_registry_classes *registry(mc_client_chunk_cache *c) {
     return mc_world_runtime_registry(c->state.d);
 }
 
-static bool registry_result(cache_query_error *e, mc_registry_status status, unsigned int pc) {
-    return status == MC_REGISTRY_OK ||
-           query_fail(
-               e,
-               status == MC_REGISTRY_NULL_REFERENCE && e->registry->initializer_pc < 0
-                   ? MC_CLIENT_CHUNK_CACHE_SOURCE_NULL
-               : status == MC_REGISTRY_INDEX_OUT_OF_RANGE && e->registry->initializer_pc < 0
-                   ? MC_CLIENT_CHUNK_CACHE_SOURCE_INDEX
-                   : MC_CLIENT_CHUNK_CACHE_CHILD_FAILED,
-               e->registry->message == NULL ? "ew canonical Registry binding"
-                                            : e->registry->message,
-               pc,
-               !(e->registry->initializer_pc < 0 && (status == MC_REGISTRY_NULL_REFERENCE ||
-                                                     status == MC_REGISTRY_INDEX_OUT_OF_RANGE)));
+static bool registry_result(cache_query_error *e, mc_registry_status status, unsigned int pc,
+                            mc_registry_error *registry_error) {
+    if (status == MC_REGISTRY_OK)
+        return true;
+    e->registry = registry_error;
+    const bool source = registry_error->initializer_pc < 0;
+    const bool null = source && status == MC_REGISTRY_NULL_REFERENCE;
+    const bool index = source && status == MC_REGISTRY_INDEX_OUT_OF_RANGE;
+    return query_fail(e,
+                      null    ? MC_CLIENT_CHUNK_CACHE_SOURCE_NULL
+                      : index ? MC_CLIENT_CHUNK_CACHE_SOURCE_INDEX
+                              : MC_CLIENT_CHUNK_CACHE_CHILD_FAILED,
+                      registry_error->message == NULL ? "ew canonical Registry binding"
+                                                      : registry_error->message,
+                      pc, !(null || index));
 }
 
 static bool light_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z, bool neighbors,
-                        int32_t *out, cache_query_error *e) {
+                        int32_t *out, cache_query_error *e, mc_registry_error *registry_error) {
     e->method = "a";
     e->descriptor = "(IIIZ)I";
     if (x < -32000000 || z < -32000000 || x >= 32000000 || z > 32000000) {
@@ -643,8 +644,8 @@ static bool light_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t 
                 shape = ready->blocks.named[shapes[i].slot];
             else if (!registry_result(e,
                                       mc_registry_block_static_get_failure(
-                                          registry(c), shapes[i].name, &shape, e->registry),
-                                      shapes[i].load_pc))
+                                          registry(c), shapes[i].name, &shape, registry_error),
+                                      shapes[i].load_pc, registry_error))
                 return false;
             if (shape == NULL)
                 return query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL,
@@ -665,7 +666,8 @@ static bool light_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t 
             static const unsigned int call_pc[5] = {92, 107, 119, 131, 143};
             for (size_t i = 0; i < 5; ++i) {
                 int32_t value;
-                if (!light_value(c, xyz[i][0], xyz[i][1], xyz[i][2], false, &value, e)) {
+                if (!light_value(c, xyz[i][0], xyz[i][1], xyz[i][2], false, &value, e,
+                                 registry_error)) {
                     wrap(e, "a", "(IIIZ)I", call_pc[i]);
                     return false;
                 }
@@ -723,11 +725,11 @@ mc_client_chunk_cache_status mc_client_chunk_cache_light(mc_client_chunk_cache *
                                                          mc_client_chunk_cache_error *error) {
     cache_query_error e;
     mc_registry_error registry_error;
-    query_error_init(&e, "a", "(IIIZ)I", &registry_error);
+    query_error_init(&e, "a", "(IIIZ)I", NULL);
     if (!enter(c, out != NULL, &e))
         return query_result(error, &e, false);
     int32_t value;
-    if (light_value(c, x, y, z, neighbors, &value, &e))
+    if (light_value(c, x, y, z, neighbors, &value, &e, &registry_error))
         *out = value;
     return finish(c, &e, error, false);
 }
@@ -776,7 +778,7 @@ static mc_client_chunk_cache_status brightness(mc_client_chunk_cache *c, int32_t
                                                bool failure_only) {
     cache_query_error e;
     mc_registry_error registry_error;
-    query_error_init(&e, minimum ? "a" : "c", minimum ? "(IIII)F" : "(III)F", &registry_error);
+    query_error_init(&e, minimum ? "a" : "c", minimum ? "(IIII)F" : "(III)F", NULL);
     if (!enter(c, out != NULL, &e))
         return query_result(error, &e, failure_only);
     mc_world_provider *dimension = NULL;
@@ -785,7 +787,7 @@ static mc_client_chunk_cache_status brightness(mc_client_chunk_cache *c, int32_t
     /* c captures d.t.f BEFORE d(III); a(IIII) performs d(III) first. */
     bool ok = minimum || table_capture(c, 4, 7, &dimension, &table, &e);
     if (ok) {
-        ok = light_value(c, x, y, z, true, &light, &e);
+        ok = light_value(c, x, y, z, true, &light, &e, &registry_error);
         if (!ok) {
             wrap(&e, "d", "(III)I", 5);
             wrap(&e, minimum ? "a" : "c", minimum ? "(IIII)F" : "(III)F", minimum ? 4u : 14u);
@@ -832,11 +834,12 @@ static mc_client_chunk_cache_status material_value(mc_client_chunk_cache *c, int
     if (block_child(c, x, y, z, &id, "f", "(III)Lln;", 4, &e)) {
         if (id == 0) {
             (void)registry_result(
-                &e, mc_registry_material_get(registry(c), MC_MATERIAL_a, out, &registry_error), 14);
+                &e, mc_registry_material_get(registry(c), MC_MATERIAL_a, out, &registry_error), 14,
+                &registry_error);
         } else {
             const mc_block *block = NULL;
             if (registry_result(&e, mc_registry_block_get(registry(c), id, &block, &registry_error),
-                                18)) {
+                                18, &registry_error)) {
                 const mc_block_fields *f = mc_block_fields_get(block);
                 if (f == NULL)
                     query_fail(&e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL,
@@ -859,30 +862,43 @@ static mc_client_chunk_cache_status predicate(mc_client_chunk_cache *c, int32_t 
                                               bool failure_only) {
     cache_query_error e;
     mc_registry_error registry_error;
-    query_error_init(&e, normal ? "h" : "g", "(III)Z", &registry_error);
+    query_error_init(&e, normal ? "h" : "g", "(III)Z", NULL);
     if (!enter(c, out != NULL, &e))
         return query_result(error, &e, failure_only);
+    mc_registry_classes *classes = registry(c);
     mc_registry_block_m_view array;
-    if (registry_result(&e, mc_registry_block_m_get_failure(registry(c), &array, &registry_error),
-                        0)) {
-        int32_t id;
-        const mc_block *block;
-        if (block_child(c, x, y, z, &id, normal ? "h" : "g", "(III)Z", 7, &e) &&
-            registry_result(&e, mc_registry_block_m_at_failure(&array, id, &block, &registry_error),
-                            10)) {
-            if (block == NULL)
-                *out = false;
-            else if (!normal)
-                *out = mc_block_render_opaque(block);
-            else {
-                mc_material *material = block->fields.bA;
-                if (material == NULL)
-                    query_fail(&e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL,
-                               "actual ew normal cube null Material receiver", 25, false);
-                else
-                    *out = mc_material_c(material) && normal_block(block);
-            }
-        }
+    /* Capture m before the argument read, including a null array. A ready idle
+     * class has no initializer to run. A failed element read still publishes
+     * the Registry diagnostic after the block argument succeeds. */
+    if (classes != NULL && classes->entered == 0 && classes->blocks_phase == MC_REGISTRY_READY) {
+        mc_block *const *identity = classes->blocks.m;
+        array = (mc_registry_block_m_view){classes, identity,
+                                           identity == NULL ? 0u : MC_REGISTRY_BLOCK_SLOTS};
+    } else if (!registry_result(&e,
+                                mc_registry_block_m_get_failure(classes, &array, &registry_error),
+                                0, &registry_error))
+        return finish(c, &e, error, failure_only);
+    int32_t id;
+    if (!block_child(c, x, y, z, &id, normal ? "h" : "g", "(III)Z", 7, &e))
+        return finish(c, &e, error, failure_only);
+    const mc_block *block;
+    if (array.identity != NULL && (uint32_t)id < array.length)
+        block = array.identity[id];
+    else if (!registry_result(&e,
+                              mc_registry_block_m_at_failure(&array, id, &block, &registry_error),
+                              10, &registry_error))
+        return finish(c, &e, error, failure_only);
+    if (block == NULL)
+        *out = false;
+    else if (!normal)
+        *out = mc_block_render_opaque(block);
+    else {
+        mc_material *material = block->fields.bA;
+        if (material == NULL)
+            query_fail(&e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL,
+                       "actual ew normal cube null Material receiver", 25, false);
+        else
+            *out = mc_material_c(material) && normal_block(block);
     }
     return finish(c, &e, error, failure_only);
 }

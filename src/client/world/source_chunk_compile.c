@@ -671,13 +671,14 @@ static bool body(mc_source_dk_compile *c) {
         return fail(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED, "actual RenderBlocks active use",
                     164, true);
     mc_client_render_blocks_construct_fields(&c->state.renderer, c->cache, true);
-    c->render_blocks = (mc_cv_context){.fields = &c->state.renderer,
-                                       .cache = c->cache,
-                                       .code_classes = app->world_classes,
-                                       .registry = c->world_classes->registry,
-                                       .models = app->render_classes,
-                                       .graphics = dk->owner->classes,
-                                       .application = app};
+    /* The compile call already owns a zeroed context, including diagnostics. */
+    c->render_blocks.fields = &c->state.renderer;
+    c->render_blocks.cache = c->cache;
+    c->render_blocks.code_classes = app->world_classes;
+    c->render_blocks.registry = c->world_classes->registry;
+    c->render_blocks.models = app->render_classes;
+    c->render_blocks.graphics = dk->owner->classes;
+    c->render_blocks.application = app;
     c->state.render_blocks = &c->render_blocks;
     for (c->state.pass = 0; c->state.pass < 2; ++c->state.pass) {
         c->state.needs_later_pass = false;

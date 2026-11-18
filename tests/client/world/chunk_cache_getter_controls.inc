@@ -331,6 +331,17 @@ static bool ew_getter_failure_controls(picking_fixture *f) {
                          false, &no, NULL) &&
           ew_getter_pair(f, cache, EW_GET_NORMAL, 8, 64, 8, 7, true, MC_CLIENT_CHUNK_CACHE_OK, 0,
                          false, &no, NULL));
+    /* The last unsigned Block ID is a real slot, including when it is empty. */
+    object->data->blocks[index] = UINT8_MAX;
+    mc_block **const block_slots = f->base.registry->blocks.m;
+    mc_block *const saved_last = block_slots[UINT8_MAX];
+    block_slots[UINT8_MAX] = block_slots[1];
+    CHECK(ew_getter_pair(f, cache, EW_GET_OPAQUE, 8, 64, 8, 7, true, MC_CLIENT_CHUNK_CACHE_OK, 0,
+                         false, &wanted[EW_GET_OPAQUE], NULL));
+    block_slots[UINT8_MAX] = NULL;
+    CHECK(ew_getter_pair(f, cache, EW_GET_OPAQUE, 8, 64, 8, 7, true, MC_CLIENT_CHUNK_CACHE_OK, 0,
+                         false, &no, NULL));
+    block_slots[UINT8_MAX] = saved_last;
     object->data->blocks[index] = 1;
     /* Both false->true and already-true lm.a cases; no output or class effect
      * is repaired until after each observed independent call has completed. */

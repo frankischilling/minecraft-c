@@ -74,6 +74,44 @@ the failure preserves the output and held count, then cancels every reservation.
 The Windows World-selection control checks the Provider limit after opening
 the save through the graphical client's normal load path.
 
+## Dirty Chunk compilation at Far distance
+
+Two heavy cave runs on DISPLAY2 at 854×480 spent a median 6.97–6.99 ms
+in dirty Chunk updates on frames with zero World ticks. Mesh compilation
+accounted for 6.77–6.80 ms. Dirty queue classification and compaction
+together took about 0.22–0.24 ms. The trace samples individual block and
+light query timings inside the compile call.
+
+The ChunkCache opacity and normal-cube queries now read directly from the
+captured Block array when the class is already initialized and idle. They
+capture that array before reading the Block ID. Cold classes still run the
+reached initializer, and failed reads publish the Registry diagnostic. Light
+queries only attach a Registry record when that child fails. Chunk compilation
+binds the fields of its fresh, zeroed RenderBlocks context in place.
+
+The pinned Windows Release getter benchmark matched each result and its
+World, Chunk, Random, and ownership receipts. Each variant ran 28 samples
+of 65,536 calls per operation against nine leased Chunks.
+
+| Query | Baseline median ns per call | Candidate median ns per call |
+| --- | ---: | ---: |
+| Brightness | 60.05 | 58.43 |
+| Minimum brightness | 60.59 | 58.35 |
+| Opaque | 26.90 | 23.02 |
+| Normal cube | 31.21 | 25.24 |
+
+Separate instrumented Far runs matched 411 mesh groups by section position
+and counts of cell reads, rendered Blocks, minimum-light queries, opacity
+queries, and ambient occlusion flags. Each group had at least two samples per
+variant. The median of the group medians fell from 6.69 to 6.51 ms, and 373
+groups compiled faster.
+
+Two uninstrumented pairs per scene matched actor state and observed World
+work on shared ticks. The heavy cave went from 26.47 to 26.74 median FPS and
+52.35 to 51.40 ms median p99 frame time. The lighter cave went from 57.46 to
+56.90 median FPS and 30.10 to 29.61 ms median p99. Whole-frame benefit remains
+unresolved across these scenes.
+
 ## GPU contract
 
 Vertices contain section-local float XYZ, UV and ARGB. The upload converts color
