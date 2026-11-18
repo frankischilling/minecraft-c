@@ -199,6 +199,43 @@ FPS measurement. Original geometry replays and loaded scenes cover the callers.
 
 ## Random Chunk reads
 
+### Active Chunk indexing and registry reads
+
+Random ticks build a 2 KiB ordinal index while gathering active Chunks. It
+avoids scanning the coordinate ledger for each insert and traversal step.
+The Set still determines traversal order, and the scheduler still checks the
+iterator version before reading the ledger. The lookup returns to the linear
+scan when the probe limit is reached or the index would exceed half capacity.
+Registry reads from the same loop skip the initialization call when the Block
+registry is already ready and idle.
+
+Eight alternating pairs per workload on an i9-10900F with MSVC Release
+measured 112 samples per build and workload. Each timed tick visited 361
+Chunks and completed all 28,880 samples. Before and after passed the same
+15 World controls and matched all 75 binary observations and the full native
+transcript. A one-probe build exercised the fallback and matched the controls.
+Four focused Windows tests and six Linux Clang tests passed. The Linux run
+enabled ASan, UBSan and leak detection.
+
+| Workload | Median before / after (ms) | p95 before / after (ms) |
+| --- | ---: | ---: |
+| Air, ambient cooldown active | 3.545 / 3.415 | 4.173 / 3.745 |
+| Stone, ambient checks active | 3.581 / 3.404 | 4.498 / 4.008 |
+
+Phase instrumentation measured gather at 58.15 µs before and 39.85 µs after
+indexing. The coordinate lookup total fell from 40.65 to 10.00 µs. This probe
+adds timers around each lookup. The full-tick table above uses ordinary builds.
+The index-only cohort had mixed medians, and the same-executable control varied
+by 2–4%, so the aggregate timing applies to the combined change.
+
+Four matched Windows pairs in the fixed-input Tiny scene passed on `DISPLAY2`.
+Median FPS rose from 42.98 to 44.06, and median run p95 frame time rose from
+40.06 to 41.80 ms. Two of four pairs had higher FPS. A repeat cohort kept all
+eight camera poses fixed. Two baseline runs lost foreground and paused
+simulation, which invalidated that comparison. The frame results are mixed.
+
+### Raw Block reads
+
 The World scheduler's random-Chunk child uses an internal failure-only raw Block
 accessor. It shares the public accessor's admission and checked read body, reloads
 the current data and Block array on every read, and preserves captured normal and

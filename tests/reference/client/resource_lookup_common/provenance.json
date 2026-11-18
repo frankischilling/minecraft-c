@@ -2514,8 +2514,8 @@
       "sha256": "5e0fecf6208f2281079aa214be720f44e6ec7f0c2ab582bab976d4bd4e43882e"
     },
     "src/block/registry/runtime.c": {
-      "bytes": 28503,
-      "sha256": "cdff943ecb7a211b252eb5ba42f895931fe3a668f47abeea2030616a4bd827a6"
+      "bytes": 28694,
+      "sha256": "3d46748ffa166e495e71a79b9d9d19b713e26ffac0158774c03c3313134e32b1"
     },
     "src/block/registry/runtime_internal.h": {
       "bytes": 11787,
@@ -6411,7 +6411,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 937705,
-      "sha256": "69eff093b1e24f3d196d81b4f43f164cc9aef60342530d546c171b79e8445590"
+      "sha256": "dc9147b7bf98efab883e0c3ce1b3fceb08e4f8c342db0cbbb42af47cf12c1047"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6475,7 +6475,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067658,
-      "sha256": "bfd32efaf1acf2f67e888fa726f31ac7f729f10daa3386df8047be1784a723f8"
+      "sha256": "47948904f9f68246a408c1cc9d35afb4d18b4c639eb2a43ef37cbf335cd93320"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6607,7 +6607,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934530,
-      "sha256": "26647c78184893c3987b7ce01003fab4533a811dda88913cd401fbb832f72a94"
+      "sha256": "7a7244103f823ea7ef448798dbe1f04f668ae1e931b2b4671f1f3825946ec92b"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -13338,8 +13338,8 @@
       "sha256": "95a24a00bb4793f293899c51bdb32bfa1716939bcab7e3890609adfdb3e8041c"
     },
     "src/world/runtime/world_tick_random.c": {
-      "bytes": 49062,
-      "sha256": "f886163d002637807f272bbd04bd492188e70a3d451b7505609d602f7d051dba"
+      "bytes": 50971,
+      "sha256": "9aaea47987d08eb7439de586ea081b24d7f94d09b6d34cf61e7ac1fedb89cedb"
     },
     "src/world/runtime/world_tick_random_internal.h": {
       "bytes": 562,
@@ -17202,8 +17202,8 @@
       "sha256": "b2d6ac38897342c4b5976947b8b64337dfa3287144b44c062605ca98068bfffe"
     },
     "docs/performance/world-queries.md": {
-      "bytes": 27022,
-      "sha256": "6cd48025659b93a1f1dfc9d8f520681cbaf852ce98e2dd8272c5e0d86b6c7f5b"
+      "bytes": 29063,
+      "sha256": "389d906fd517f0ef896a91a8b23035f77db98daaf086a4dad50b47114bd525be"
     },
     "include/mc/item/mining/destroy.h": {
       "bytes": 1894,

@@ -1034,8 +1034,8 @@
       "sha256": "5e0fecf6208f2281079aa214be720f44e6ec7f0c2ab582bab976d4bd4e43882e"
     },
     "src/block/registry/runtime.c": {
-      "bytes": 28503,
-      "sha256": "cdff943ecb7a211b252eb5ba42f895931fe3a668f47abeea2030616a4bd827a6"
+      "bytes": 28694,
+      "sha256": "3d46748ffa166e495e71a79b9d9d19b713e26ffac0158774c03c3313134e32b1"
     },
     "src/block/registry/runtime_internal.h": {
       "bytes": 11787,
@@ -7334,8 +7334,8 @@
       "sha256": "95a24a00bb4793f293899c51bdb32bfa1716939bcab7e3890609adfdb3e8041c"
     },
     "src/world/runtime/world_tick_random.c": {
-      "bytes": 49062,
-      "sha256": "f886163d002637807f272bbd04bd492188e70a3d451b7505609d602f7d051dba"
+      "bytes": 50971,
+      "sha256": "9aaea47987d08eb7439de586ea081b24d7f94d09b6d34cf61e7ac1fedb89cedb"
     },
     "src/world/runtime/world_tick_random_internal.h": {
       "bytes": 562,

@@ -164,19 +164,61 @@ static bool set_valid(mc_world_random_tick_call *c, const mc_world_active_chunks
     return true;
 }
 
-static bool set_add(mc_world_random_tick_call *c, mc_world_active_chunks *set, int32_t x,
-                    int32_t z) {
+enum { CANDIDATE_INDEX_BITS = 10, CANDIDATE_INDEX_SIZE = 1 << CANDIDATE_INDEX_BITS };
+
+/* This index belongs to one call, starting with the successful Set.clear.
+ * Ordinals survive ledger reallocations. The Set still owns traversal order. */
+typedef struct candidate_index {
+    uint16_t slots[CANDIDATE_INDEX_SIZE];
+    bool complete;
+} candidate_index;
+
+static uint16_t *candidate_slot(candidate_index *index, const mc_world_active_chunks *set,
+                                int32_t hash) {
+    if (!index->complete)
+        return NULL;
+    const uint32_t mixed = (uint32_t)hash * UINT32_C(0x9e3779b1);
+    size_t slot = mixed >> (32 - CANDIDATE_INDEX_BITS);
+    for (unsigned int probe = 0; probe < 16; ++probe) {
+        const size_t ordinal = index->slots[slot];
+        if (ordinal == 0)
+            return &index->slots[slot];
+        if (ordinal > set->count)
+            return NULL;
+        if (set->entries[ordinal - 1].hash == hash)
+            return &index->slots[slot];
+        slot = (slot + 1) & (CANDIDATE_INDEX_SIZE - 1);
+    }
+    return NULL;
+}
+
+static const mc_world_chunk_candidate *linear_candidate(const mc_world_active_chunks *set,
+                                                        int32_t hash) {
+    for (size_t i = 0; i < set->count; ++i)
+        if (set->entries[i].hash == hash)
+            return &set->entries[i];
+    return NULL;
+}
+
+static bool set_add(mc_world_random_tick_call *c, mc_world_active_chunks *set,
+                    candidate_index *index, int32_t x, int32_t z) {
     at(c, 111);
     if (!set_valid(c, set))
         return false;
     const int32_t hash = pair_hash(x, z);
-    for (size_t i = 0; i < set->count; ++i) {
-        if (set->entries[i].hash == hash) {
-            if (set->entries[i].x == x && set->entries[i].z == z)
-                return true;
-            return fail(c, MC_WORLD_STORAGE_LIMIT, "World random tick same-hash yy boundary", true,
-                        NULL);
-        }
+    uint16_t *slot = candidate_slot(index, set, hash);
+    const mc_world_chunk_candidate *entry = NULL;
+    if (slot == NULL) {
+        index->complete = false;
+        entry = linear_candidate(set, hash);
+    } else if (*slot != 0) {
+        entry = &set->entries[*slot - 1u];
+    }
+    if (entry != NULL) {
+        if (entry->x == x && entry->z == z)
+            return true;
+        return fail(c, MC_WORLD_STORAGE_LIMIT, "World random tick same-hash yy boundary", true,
+                    NULL);
     }
     if (set->count == 65536)
         return fail(c, MC_WORLD_STORAGE_LIMIT, "World random tick candidate ceiling", true, NULL);
@@ -197,6 +239,10 @@ static bool set_add(mc_world_random_tick_call *c, mc_world_active_chunks *set, i
                                                                 : MC_WORLD_STORAGE_LIMIT,
                     "World random tick HashSet add", true, NULL);
     set->entries[set->count++] = (mc_world_chunk_candidate){x, z, hash};
+    if (set->count > CANDIDATE_INDEX_SIZE / 2)
+        index->complete = false;
+    if (slot != NULL && index->complete)
+        *slot = (uint16_t)set->count;
     ++set->version;
     return true;
 }
@@ -248,7 +294,7 @@ mc_world_storage_status mc_world_random_tick_active_set_clear(mc_world_runtime *
     return status;
 }
 
-static bool gather(mc_world_random_tick_call *c) {
+static bool gather(mc_world_random_tick_call *c, candidate_index *index) {
     mc_world_runtime *w = c->state.world;
     at(c, 4);
     if (mc_world_random_tick_active_set_clear(w, &c->error) != MC_WORLD_STORAGE_OK)
@@ -285,7 +331,7 @@ static bool gather(mc_world_random_tick_call *c) {
         const int32_t z = mc_math_floor_double(divided_z);
         for (int32_t dx = -9; dx <= 9; ++dx)
             for (int32_t dz = -9; dz <= 9; ++dz)
-                if (!set_add(c, w->fields.P, mc_java_i32_add(x, dx), mc_java_i32_add(z, dz)))
+                if (!set_add(c, w->fields.P, index, mc_java_i32_add(x, dx), mc_java_i32_add(z, dz)))
                     return false;
     }
     c->state.candidates_returned = true;
@@ -936,7 +982,8 @@ static bool samples(mc_world_random_tick_call *c) {
 }
 
 static bool body(mc_world_random_tick_call *c) {
-    if (!gather(c))
+    candidate_index lookup = {.complete = true};
+    if (!gather(c, &lookup))
         return false;
     at(c, 156);
     mc_world_active_chunks *set = c->state.world->fields.P;
@@ -970,12 +1017,10 @@ static bool body(mc_world_random_tick_call *c) {
             ok = false;
             break;
         }
-        const mc_world_chunk_candidate *entry = NULL;
-        for (size_t i = 0; i < set->count; ++i)
-            if (set->entries[i].hash == order[index]) {
-                entry = &set->entries[i];
-                break;
-            }
+        const uint16_t *slot = candidate_slot(&lookup, set, order[index]);
+        const mc_world_chunk_candidate *entry = slot != NULL && *slot != 0
+                                                    ? &set->entries[*slot - 1u]
+                                                    : linear_candidate(set, order[index]);
         if (entry == NULL) {
             ok = fail(c, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                       "World random tick candidate coordinate ledger", true, NULL);
