@@ -362,7 +362,8 @@ static bool living_body(mc_entity *p, const mc_player_action_context *context,
                            "Action actual Player travel virtual", 459))
             return false;
     } else {
-        mc_player_travel_error_init(&e->travel);
+        /* The fresh action initialized travel. Jump only sets its source names,
+         * which both travel branches set again before source work. */
         if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_SQUID)) {
             e->travel.source_class = "xt";
             e->travel.source_method = "a_(FF)V";

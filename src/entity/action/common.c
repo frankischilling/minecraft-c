@@ -1,9 +1,13 @@
 #include "action_internal.h"
+#include <stddef.h>
 
 void mc_player_action_error_init(mc_player_action_error *e) {
     if (e == NULL)
         return;
-    memset(e, 0, sizeof(*e));
+    /* Travel clears its own storage. The suffix includes any unused union tail. */
+    const size_t travel_end = offsetof(mc_player_action_error, travel) + sizeof(e->travel);
+    memset(e, 0, offsetof(mc_player_action_error, travel));
+    memset((unsigned char *)e + travel_end, 0, sizeof(*e) - travel_end);
     e->nearby_index = SIZE_MAX;
     mc_player_travel_error_init(&e->travel);
     e->registry = e->travel.registry;

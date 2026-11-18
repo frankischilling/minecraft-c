@@ -14,6 +14,7 @@
 #include "mc/world/runtime/blocks.h"
 #include "travel_internal.h"
 #include "travel_math_internal.h"
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -28,7 +29,10 @@ typedef struct travel_scope {
 void mc_player_travel_error_init(mc_player_travel_error *e) {
     if (e == NULL)
         return;
-    memset(e, 0, sizeof(*e));
+    /* The movement initializer clears the complete movement record. */
+    const size_t movement_end = offsetof(mc_player_travel_error, movement) + sizeof(e->movement);
+    memset(e, 0, offsetof(mc_player_travel_error, movement));
+    memset((unsigned char *)e + movement_end, 0, sizeof(*e) - movement_end);
     e->statistic_error.writer.index = SIZE_MAX;
     e->statistic_error.writer.text_offset = SIZE_MAX;
     mc_entity_environment_error_init(&e->environment);

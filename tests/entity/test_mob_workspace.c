@@ -216,7 +216,28 @@ static mc_mob_tick_limits ws_limits(void) {
     return result;
 }
 
+static bool ws_fresh_action_diagnostics(ws_fixture *f) {
+    mc_player_action_error *actual = &f->scratch->action;
+    memset(actual, 0xa5, sizeof(*actual));
+    mc_player_action_error_init(actual);
+    CHECK(actual->status == MC_ENTITY_OK && actual->operation == NULL &&
+          actual->source_class == NULL && actual->source_method == NULL &&
+          actual->max_loop_work == 0 && actual->nearby_index == SIZE_MAX &&
+          actual->child_kind == MC_PLAYER_ACTION_CHILD_NONE &&
+          actual->travel.status == MC_ENTITY_OK && actual->travel.source_method == NULL &&
+          actual->travel.statistic_error.writer.index == SIZE_MAX &&
+          actual->travel.statistic_error.writer.text_offset == SIZE_MAX &&
+          actual->travel.movement.status == MC_ENTITY_OK && actual->travel.movement.bytecode == 0 &&
+          !actual->travel.movement.source_null && actual->travel.movement.source_null_pc == 0 &&
+          actual->travel.movement.registry.constructor_pc == actual->registry.constructor_pc &&
+          actual->environment.status == MC_ENTITY_OK &&
+          actual->collision.nearby.query.status == MC_WORLD_STORAGE_OK &&
+          actual->nearby.index == SIZE_MAX);
+    return true;
+}
+
 static bool ws_reset_failures(ws_fixture *f) {
+    CHECK(ws_fresh_action_diagnostics(f));
     const mc_entity_class_kind initial = (mc_entity_class_kind)0;
     memset(f->working, 0xa5, sizeof(*f->working));
     CHECK(mt_tick_in_place(NULL, f->base.app.registry, f->math, NULL, f->working, f->scratch) ==
@@ -285,6 +306,32 @@ static bool ws_reset_failures(ws_fixture *f) {
     CHECK(memcmp(f->saved, f->working, sizeof(*f->saved)) == 0 &&
           mc_mob_tick_error_retire(f->working));
     f->actor->mob->living.an = 0; /* New declared call input. */
+
+    /* A successful grounded jump reaches ordinary travel, which must publish
+     * its own source site and pending movement failure. */
+    limits = ws_limits();
+    limits.movement.max_loop_work = 0;
+    f->actor->mob->living.V = true;
+    f->actor->mob->living.az = true;
+    f->actor->base.aX = true;
+    f->actor->base.velocity_y = 0;
+    const size_t actor_holds = f->actor->holds;
+    memset(f->scratch, 0x5a, sizeof(*f->scratch));
+    CHECK(mt_tick_in_place(f->actor, f->base.app.registry, f->math, &limits, f->working,
+                           f->scratch) == MC_ENTITY_LIMIT);
+    const mc_player_action_error *jumped = &f->working->detail.action;
+    CHECK(f->working->child == MC_MOB_TICK_CHILD_ACTION && f->working->state.environment_returned &&
+          !f->working->state.action_returned && jumped->living_bytecode == 459 &&
+          jumped->child_kind == MC_PLAYER_ACTION_CHILD_TRAVEL &&
+          jumped->travel.source_method != NULL &&
+          strcmp(jumped->travel.source_method, "a_(FF)V") == 0 &&
+          jumped->travel.living_bytecode == 571 && jumped->travel.movement.bytecode == 1841 &&
+          jumped->travel.movement.status == MC_ENTITY_LIMIT &&
+          f->actor->base.velocity_y == 0.41999998688697815 && f->actor->holds == actor_holds &&
+          memcmp(jumped, &f->scratch->action, sizeof(*jumped)) == 0 &&
+          mc_mob_tick_error_retire(f->working));
+    f->actor->mob->living.V = false;
+    f->actor->mob->living.az = false;
 
     /* A literal native allocation budget refuses a reached real path. It is
      * not a claim that malloc itself failed. Fresh hurt state stays empty. */

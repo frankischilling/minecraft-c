@@ -8190,8 +8190,8 @@
       "sha256": "9e261466fe34462be35557f3ac3bbc595b5880c918382317f6b45c6de886d93a"
     },
     "src/entity/living/travel.c": {
-      "bytes": 28276,
-      "sha256": "139c7de05834cc7b7c94d89b0e48477d9812a84cf05f438e4ff4e1427da6a966"
+      "bytes": 28575,
+      "sha256": "052655c5fd5683a5b25aaec028477dc12fed522495f6f983ffe8ec8123261f8c"
     },
     "src/entity/movement/movement.c": {
       "bytes": 34579,
@@ -9454,8 +9454,8 @@
       "sha256": "22baeaf7b3a5c5654a4ec2d649927167bd73b8eed9bef6dcd43bffd8863a2559"
     },
     "tests/entity/test_mob_workspace.c": {
-      "bytes": 27821,
-      "sha256": "d67645a7cad8d33c5ab16dcd48cd8c649a42bb9152ce9d2e868486cfb1a97362"
+      "bytes": 30548,
+      "sha256": "c1ed1948cf6cbb1539c52abb82dffd1796afd40d72208e08a9947ca9b3fae339"
     },
     "tests/tools/entity/benchmark_mob_tick_diagnostics.py": {
       "bytes": 48971,
@@ -9851,7 +9851,7 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76652,
-      "sha256": "c8601982d09e5bf803d880f17273c975388ec99806c3ed6761fdba04e5d51bfd"
+      "sha256": "4a9d827ef5f91c45469af02fcb1b361519b25e0dc910cf7a9e251adea28056b1"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -10031,7 +10031,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "9aceec666f74caaa89cb102bcb63daf037e48234d9606cd0f72dce4932a9eb63"
+      "sha256": "2e20bb42c6908fa40297df17761676ed39192e6976ea74527c1e2e90663a40d1"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,

@@ -47,8 +47,12 @@ static bool fail(mc_entity_environment_error *e, mc_entity_status status,
 
 static mc_entity_status result(mc_entity_environment_error *out,
                                const mc_entity_environment_error *e) {
-    if (out != NULL)
-        *out = *e;
+    if (out != NULL) {
+        if (e->status == MC_ENTITY_OK)
+            mc_entity_environment_error_init(out);
+        else
+            *out = *e;
+    }
     return e->status;
 }
 
@@ -250,8 +254,6 @@ static mc_entity_status liquid(mc_entity *entity, mc_registry_classes *registry,
     }
     if (completed)
         *out = value;
-    if (e.status == MC_ENTITY_OK)
-        mc_entity_environment_error_init(&e);
     return result(error, &e);
 }
 
@@ -353,8 +355,6 @@ mc_entity_status mc_entity_environment_stored_in_water(mc_entity *entity, bool *
             *out = entity->base.bx;
         mc_entity_release(entity);
     }
-    if (e.status == MC_ENTITY_OK)
-        mc_entity_environment_error_init(&e);
     return result(error, &e);
 }
 
@@ -395,8 +395,6 @@ mc_entity_status mc_entity_environment_in_water(mc_entity *entity, mc_registry_c
     }
     if (completed)
         *out = value;
-    if (e.status == MC_ENTITY_OK)
-        mc_entity_environment_error_init(&e);
     return result(error, &e);
 }
 
@@ -461,8 +459,6 @@ mc_entity_status mc_entity_environment_clearance(mc_entity *entity, double x, do
     }
     if (complete)
         *out = value;
-    if (e.status == MC_ENTITY_OK)
-        mc_entity_environment_error_init(&e);
     return result(error, &e);
 }
 
@@ -523,7 +519,5 @@ mc_entity_status mc_entity_environment_relative(mc_entity *entity, const mc_math
         (void)relative(entity, trig, strafe, forward, friction, &e);
         mc_entity_release(entity);
     }
-    if (e.status == MC_ENTITY_OK)
-        mc_entity_environment_error_init(&e);
     return result(error, &e);
 }

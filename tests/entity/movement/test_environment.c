@@ -104,8 +104,13 @@ static bool probes(fixture *f, size_t side, size_t kind, mc_entity *entity) {
         CHECK(mc_entity_set_velocity(entity, 0, 2) == MC_ENTITY_OK &&
               mc_entity_set_velocity(entity, 1, -3) == MC_ENTITY_OK &&
               mc_entity_set_velocity(entity, 2, 4) == MC_ENTITY_OK);
+        memset(&error, 0xa5, sizeof(error));
         CHECK(mc_entity_environment_lava(entity, f->registry[side], NULL, &value, &error) ==
-              MC_ENTITY_OK);
+                  MC_ENTITY_OK &&
+              error.status == MC_ENTITY_OK && error.operation == NULL && error.bytecode == 0 &&
+              error.material.status == MC_WORLD_STORAGE_OK && error.material.cell_work == 0 &&
+              error.material.block.nearby.index == SIZE_MAX &&
+              error.collision.nearby.index == SIZE_MAX);
         CHECK(record_probe("LAVA", side, kind, c, value, entity));
         CHECK(((c != 0 && c != 3) || !value) && entity->base.velocity_x == 2 &&
               entity->base.velocity_y == -3 && entity->base.velocity_z == 4);
@@ -113,8 +118,12 @@ static bool probes(fixture *f, size_t side, size_t kind, mc_entity *entity) {
     const bool saved = entity->base.bx;
     for (int flag = 0; flag < 2; ++flag) {
         entity->base.bx = flag != 0;
+        memset(&error, 0xa5, sizeof(error));
         CHECK(mc_entity_environment_stored_in_water(entity, &value, &error) == MC_ENTITY_OK &&
-              value == (flag != 0));
+              value == (flag != 0) && error.status == MC_ENTITY_OK && error.source_class == NULL &&
+              error.material.status == MC_WORLD_STORAGE_OK &&
+              error.material.block.nearby.index == SIZE_MAX &&
+              error.collision.nearby.index == SIZE_MAX);
         CHECK(printf("FLAG %zu %zu %d %d\n", side, kind, flag, value) > 0);
     }
     entity->base.bx = saved;

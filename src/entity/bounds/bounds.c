@@ -131,7 +131,7 @@ enum { BOUNDS_LOOKUP_START = 16, BOUNDS_LOOKUP_PEAK = 1024u * 1024u };
 
 typedef struct mc_entity_bounds_lookup {
     size_t capacity, count;
-    mc_entity_bounds_object *slots[];
+    mc_entity_bounds_object **slots; /* Tail storage in the same allocation. */
 } mc_entity_bounds_lookup;
 
 static size_t lookup_slot(const mc_entity_bounds_lookup *lookup, const mc_entity_bounds *bounds) {
@@ -185,6 +185,7 @@ static void lookup_grow(mc_entity_classes *classes) {
         return;
     }
     next->capacity = capacity;
+    next->slots = (mc_entity_bounds_object **)(void *)(next + 1);
     for (mc_entity_bounds_object *object = classes->bounds_objects; object != NULL;
          object = object->next)
         lookup_insert(next, object);

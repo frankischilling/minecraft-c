@@ -304,3 +304,50 @@ layout for the allocation and ownership digests. Those digests, the actor
 tick words, simulation state, World RNG, and Chunk digests matched. The median
 tick cost went from 3.150 to 3.194 ms with eight Zombies and from 24.043 to
 24.040 ms with 64 Zombies.
+
+### Living action diagnostics after Bounds indexing
+
+Two heavy and two lighter Far runs on DISPLAY2 timed the indexed build with
+per-frame and per-World-tick counters. The counters record in memory and emit
+their results after capture. Both launches in each scene matched ordered actor
+state and observed scheduler work over 200 timed World ticks. In the heavy
+scene, action diagnostic initialization took 3.16–3.19 ms per World tick.
+Lava queries across all callers took 6.54–6.61 ms, including their child
+work. Monster brightness queries took 0.37–0.38 ms.
+
+On heavy frames with zero World ticks, median render time was 16.89–16.92 ms.
+Dirty Chunk updates took 6.86–7.05 ms, opaque terrain submission 4.05–4.40 ms,
+and clouds 2.22–2.23 ms. Median buffer swap was 0.02–0.03 ms. These are CPU
+wall-clock spans around the actual calls, including their synchronous work.
+
+Living action and travel now clear the storage outside their largest child
+and let that child's initializer clear its own record. Mob travel reuses the
+record prepared by action. The grounded-jump control reaches a movement limit
+after the jump and checks the reached travel method, action and movement
+positions, vertical velocity, and retained failure. Ordinary environment
+success initializes the caller's diagnostic directly. A failure still copies
+the completed local diagnostic after releasing its borrows.
+
+The pinned Windows Release workload matched actor tick words and published
+simulation, RNG, Chunk, and ownership digests for 14 intervals per variant at
+each size. Both variants used the portable Bounds index layout.
+
+| Zombies | Baseline median ms per World entity tick | Candidate median ms per World entity tick |
+| ---: | ---: | ---: |
+| 8 | 3.058 | 2.789 |
+| 64 | 23.482 | 20.854 |
+
+In two heavy Far pairs at 854×480 on DISPLAY2, median FPS rose from 24.28
+to 26.91, and median p99 frame time fell from 53.28 to 50.79 ms. Each launch
+completed 200 World ticks. Ordered actor state and observed World work matched
+across 199 common timed ticks and 16,342 entity dispatches per run.
+
+Two additional instrumented pairs matched the same timed work. Travel
+initializations fell from 33,082 to 16,939 per run, one fewer per Mob action.
+Median World entity loop time fell from 27.19 to 23.96 ms per tick. Median
+action time fell from 21.08 to 17.89 ms per tick. These are medians of the
+per-run tick medians.
+
+The Bounds index stores its slots after its header in the same allocation,
+using the Store index layout. This also compiles with the strict MSVC C17
+warning settings used by Windows CI.
