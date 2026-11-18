@@ -509,6 +509,40 @@ fell from 30.21 to 27.49 ms, and median p99 fell from 51.75 to
 46.36 ms. FPS increased in all three pairs and p99 fell in two.
 The longest observed frame rose from 72.12 to 85.27 ms.
 
+### Named Block reads during population and lighting
+
+Ore and clay placement read the live substrate slot after the World
+Block lookup. The World light query takes the same approach for the four
+Block shapes that select neighbor samples. Both paths read these slots
+directly from a ready, idle Registry and use the ordinary named lookup
+for initialization. The light query retains its own shape order and
+still stops at the first match or the first reached null receiver.
+
+Two baseline DISPLAY2 traces recorded 490,522 and 289,009 ore
+candidates. The sampled estimates for the Registry reads across those
+intervals were 11.97 and 8.04 ms. Setters accounted for more time.
+
+The fixed Windows Grass workload used the same failure-only tick adapter
+in both builds. All eight pairs were faster, with a median per-call time
+of 1,001.20 to 901.16 ns. Chunk planes, ordered mutations and events,
+Random state, ownership and the light queues matched.
+
+Eight fixed ore pairs per side matched the four populated Chunk
+receipts. The client ore phase median moved from 29.43 to 29.04 ms.
+The server regression control moved from 28.58 to 28.87 ms.
+
+Four instrumented DISPLAY2 runs matched 427 ore groups by position
+and read and write counts. Placement time fell in 261 groups.
+The median across groups moved from 0.234 to 0.230 ms. Average sampled
+Registry time was 23.90–25.80 ns per read in the two baseline runs
+and 21.42–21.78 ns in the candidate runs.
+
+In six uninstrumented DISPLAY2 runs at 854×480 on Tiny, median FPS
+rose from 52.30 to 54.59. Median p95 fell from 27.68 to 26.89 ms and
+median p99 fell from 52.18 to 41.23 ms. Two pairs had lower p99. The
+longest frame fell from 78.37 to 64.37 ms. Both builds shared the local
+Sign edits and the amount of World work varied across runs.
+
 ### Spring fluid diagnostics
 
 Two DISPLAY2 traces separated spring placement from the immediate flowing

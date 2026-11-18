@@ -1,5 +1,6 @@
 #include "mc/world/runtime/population/ore_clay.h"
 
+#include "../../../block/registry/registry_internal.h"
 #include "../../../block/registry/runtime_internal.h"
 #include "../construction_internal.h"
 #include "../mutation/mutation_internal.h"
@@ -101,13 +102,15 @@ static mc_world_storage_status finish(feature_frame *frame, bool completed, bool
     return frame->error.status;
 }
 
-static bool static_id(feature_frame *frame, const char *name, unsigned int load_pc,
+static bool static_id(feature_frame *frame, const char *name, size_t slot, unsigned int load_pc,
                       unsigned int field_pc, int32_t *out) {
     frame->error.bytecode = load_pc;
-    const mc_block *block = NULL;
+    mc_registry_classes *classes = mc_world_runtime_registry(frame->world);
+    const mc_block *block;
     mc_registry_error cause;
-    if (mc_registry_block_static_get_failure(mc_world_runtime_registry(frame->world), name, &block,
-                                             &cause) != MC_REGISTRY_OK)
+    if (classes != NULL && classes->entered == 0 && classes->blocks_phase == MC_REGISTRY_READY)
+        block = classes->blocks.named[slot];
+    else if (mc_registry_block_static_get_failure(classes, name, &block, &cause) != MC_REGISTRY_OK)
         return registry_fail(frame, &cause, "Ore/clay Block static active use");
     frame->error.bytecode = field_pc;
     if (block == NULL) {
@@ -116,7 +119,7 @@ static bool static_id(feature_frame *frame, const char *name, unsigned int load_
         cause.message = "Ore/clay Block.bn receiver";
         return registry_fail(frame, &cause, cause.message);
     }
-    *out = mc_block_fields_get(block)->bn;
+    *out = block->fields.bn;
     return true;
 }
 
@@ -212,7 +215,8 @@ static bool candidate(feature_frame *frame, const int32_t *target, bool clay, in
     if (mc_world_runtime_block_get(frame->world, x, y, z, &existing, &cause) != MC_WORLD_STORAGE_OK)
         return storage_fail(frame, &cause);
     int32_t replaceable;
-    if (!static_id(frame, clay ? "F" : "u", clay ? 494u : 499u, clay ? 497u : 502u, &replaceable))
+    if (!static_id(frame, clay ? "F" : "u", clay ? 11u : 0u, clay ? 494u : 499u, clay ? 497u : 502u,
+                   &replaceable))
         return false;
     if (existing != replaceable)
         return true;
@@ -408,7 +412,7 @@ mc_world_storage_status mc_population_clay_feature_init(mc_population_clay_featu
     if (!begin(&frame, feature, world, NULL, NULL, false, true, "<init>"))
         return finish(&frame, false, false, NULL, error);
     int32_t id;
-    if (!static_id(&frame, "aX", 5, 8, &id))
+    if (!static_id(&frame, "aX", 81, 5, 8, &id))
         return finish(&frame, false, false, NULL, error);
     feature->a = id;   /* ms/ib.<init>11 */
     feature->b = size; /* ms/ib.<init>16 */

@@ -3474,8 +3474,8 @@
       "sha256": "82da4a51c13cf49827ed8e3a1abf52d1881875f4ada1aa730f3e48cca51fcbe0"
     },
     "src/world/runtime/population/ore_clay.c": {
-      "bytes": 20121,
-      "sha256": "6096bb694cfb957282b80c1a1c0fa10f6266b12e6fd15a544b68da167683b57d"
+      "bytes": 20353,
+      "sha256": "94c284d72b51ac281fb55b9cb5116c152ef5bd9262e6b2177f10b83be01bd9d6"
     },
     "src/world/runtime/population/overworld.c": {
       "bytes": 47976,
@@ -3522,8 +3522,8 @@
       "sha256": "c3e7063fe9dc8850df29aebe41e09c4f0fa330ffadcb1ee9bc0c244dc1fa19f1"
     },
     "src/world/runtime/queries.c": {
-      "bytes": 31018,
-      "sha256": "d3fa9c2dd8fc4dddd6e623aba997e741af94942d8e1deac41d880eed080c2657"
+      "bytes": 31404,
+      "sha256": "3530ac898716b709e2d9f339601fdd9ae19526e796402c426df8733f42ada839"
     },
     "src/world/runtime/registry.c": {
       "bytes": 19814,
@@ -5174,8 +5174,8 @@
       "sha256": "35af6587602a520ee621c43c4eb35a63c2ff836fe61143ab7718f97bd4fd55be"
     },
     "tests/world/runtime/test_queries.c": {
-      "bytes": 107201,
-      "sha256": "fdfd72643bc7c83dd26b3395092a1dd6dc844018f493cd1d3318fb0b32733e38"
+      "bytes": 108559,
+      "sha256": "eceb3eee041827544dfa91a4b69d7ace5eec148c1b300e03a1ef5487ec60fff1"
     },
     "tests/world/runtime/test_runtime.c": {
       "bytes": 41670,

@@ -1,5 +1,6 @@
 #include "mc/world/runtime/queries.h"
 
+#include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
 #include "../chunk/object_state_internal.h"
 #include "../storage/objects_internal.h"
@@ -453,24 +454,28 @@ mc_world_storage_status mc_world_runtime_plant_light(mc_world_runtime *world, in
     return plant_light(world, x, y, z, out, error, NULL);
 }
 
-static bool block_light_static(mc_world_runtime *world, const char *name, unsigned int capture_pc,
-                               unsigned int field_pc, int32_t *out, mc_world_query_error *error) {
+static bool block_light_static(mc_world_runtime *world, const char *name, size_t slot,
+                               unsigned int capture_pc, unsigned int field_pc, int32_t *out,
+                               mc_world_query_error *error) {
     error->bytecode = capture_pc;
     mc_registry_classes *classes = mc_world_runtime_registry(world);
-    mc_registry_error cause = empty_error.registry;
-    if (classes == NULL) {
-        cause.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
-        cause.message = "World block-light Registry binding";
-        return registry_fail(world, error, &cause, cause.message);
-    }
     const mc_block *selected;
-    if (mc_registry_block_static_get(classes, name, &selected, &cause) != MC_REGISTRY_OK)
-        return registry_fail(world, error, &cause, "World block-light Block static active use");
+    if (classes != NULL && classes->entered == 0 && classes->blocks_phase == MC_REGISTRY_READY)
+        selected = classes->blocks.named[slot];
+    else {
+        mc_registry_error cause = empty_error.registry;
+        if (classes == NULL) {
+            cause.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
+            cause.message = "World block-light Registry binding";
+            return registry_fail(world, error, &cause, cause.message);
+        }
+        if (mc_registry_block_static_get(classes, name, &selected, &cause) != MC_REGISTRY_OK)
+            return registry_fail(world, error, &cause, "World block-light Block static active use");
+    }
     error->bytecode = field_pc;
-    const mc_block_fields *fields = mc_block_fields_get(selected);
-    if (fields == NULL)
+    if (selected == NULL)
         return registry_null(world, error, "World block-light static Block receiver");
-    *out = fields->bn;
+    *out = selected->fields.bn;
     return true;
 }
 
@@ -490,14 +495,20 @@ static bool block_light_value(mc_world_runtime *world, int32_t x, int32_t y, int
         mc_world_storage_error cause = {0};
         if (mc_world_runtime_block_get(world, x, y, z, &id, &cause) != MC_WORLD_STORAGE_OK)
             return storage_fail(error, &cause);
-        static const char *const names[4] = {"al", "aB", "aI", "au"};
-        static const unsigned int capture_pc[4] = {43, 54, 65, 76};
-        static const unsigned int field_pc[4] = {46, 57, 68, 79};
+
+        static const struct {
+            const char *name;
+            size_t slot;
+            unsigned int capture_pc, field_pc;
+        } shapes[] = {
+            {"al", 43, 43, 46}, {"aB", 59, 54, 57}, {"aI", 66, 65, 68}, {"au", 52, 76, 79}};
+
         bool samples_neighbors = false;
-        for (size_t index = 0; index < 4; ++index) {
+        for (size_t index = 0; index < sizeof(shapes) / sizeof(*shapes); ++index) {
             int32_t candidate = 0;
-            if (!block_light_static(world, names[index], capture_pc[index], field_pc[index],
-                                    &candidate, error))
+            if (!block_light_static(world, shapes[index].name, shapes[index].slot,
+                                    shapes[index].capture_pc, shapes[index].field_pc, &candidate,
+                                    error))
                 return false;
             if (id == candidate) {
                 samples_neighbors = true;

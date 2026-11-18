@@ -1837,6 +1837,7 @@ static void block_light_nibble(mc_world_chunk_nibble *owner, size_t cell, uint8_
 
 static bool block_light_contracts(fixture *f, size_t side) {
     bool ok = false;
+    mc_registry_classes *cold = NULL;
     mc_world_runtime *w = f->worlds[side];
     mc_registry_classes *r = f->registry[side];
     mc_world_chunk *c = mc_world_store_chunk_object(f->stores[side], f->normal[side][0]);
@@ -1958,6 +1959,26 @@ static bool block_light_contracts(fixture *f, size_t side) {
               failure_is(w, &e, field_pc[i], 0, MC_REGISTRY_NULL_REFERENCE) &&
               w->active_calls == 0 && w->local_leases == 0);
     }
+    /* An in-domain column at negative Y reaches Block active use before
+     * the ordinary zero. Exhaust a separate cold Registry's allocation
+     * budget so the reached initializer failure is distinct from a null slot. */
+    const mc_registry_options limited = {r->options.side, f->profile, f->materials, sizeof(*cold),
+                                         NULL};
+    CHECK(mc_registry_classes_allocate(&limited, &cold, NULL) == MC_REGISTRY_OK &&
+          cold->blocks_phase == MC_REGISTRY_COLD);
+    mc_chunk_provider *cold_provider = w->fields.v;
+    w->fields.v = NULL;
+    w->classes->registry = cold;
+    value = 777;
+    status = mc_world_runtime_block_light(w, 8, INT32_MIN, 8, &value, &e);
+    w->classes->registry = r;
+    w->fields.v = cold_provider;
+    CHECK(status != MC_WORLD_STORAGE_OK && value == 777 && e.bytecode == 43 &&
+          e.provider_bytecode == 0 && e.chunk_bytecode == 0 &&
+          cold->blocks_phase == MC_REGISTRY_FAILED && e.registry.status != MC_REGISTRY_OK &&
+          e.registry.status == cold->block_failure.status && e.registry.message != NULL &&
+          e.registry.message == cold->block_failure.message && w->active_calls == 0 &&
+          w->local_leases == 0);
     /* All later samples remain required when the first already returns 15.
      * The second sample crosses into the other genuinely loaded Chunk, whose
      * BlockLight receiver fails after the completed first sample. */
@@ -2020,6 +2041,8 @@ static bool block_light_contracts(fixture *f, size_t side) {
           mc_chunk_pending_contains(f->providers[side].pending, mc_chunk_cache_key(0, 0)));
     ok = true;
 cleanup:
+    if (cold != NULL && mc_registry_classes_free(cold, NULL) != MC_REGISTRY_OK)
+        return false;
     return ok;
 }
 
