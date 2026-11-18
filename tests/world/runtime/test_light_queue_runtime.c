@@ -427,6 +427,15 @@ static bool test_merge_list_faults(fixture *f) {
     const size_t count = list->count;
     const mc_world_light_type *sky = f->types[0][0];
 
+    unsigned char poison[sizeof(error)];
+    memset(poison, 0xa5, sizeof(poison));
+    memcpy(&error, poison, sizeof(error));
+    CHECK(mc_world_runtime_light_submit_failure(world, sky, &point, true, &outcome, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          outcome == MC_LIGHT_SUBMIT_MERGED && memcmp(&error, poison, sizeof(error)) == 0 &&
+          list_is(world, list, count) && depth_is(f, 0));
+    outcome = MC_LIGHT_SUBMIT_CLEARED;
+
     world->fields.C = NULL;
     mc_world_storage_status status =
         mc_world_runtime_light_submit(world, sky, &point, true, &outcome, &error);
@@ -444,12 +453,15 @@ static bool test_merge_list_faults(fixture *f) {
 
     void *newest = list->items[count - 1u];
     list->items[count - 1u] = NULL;
-    status = mc_world_runtime_light_submit(world, sky, &point, true, &outcome, &error);
+    memcpy(&error, poison, sizeof(error));
+    status = mc_world_runtime_light_submit_failure(world, sky, &point, true, &outcome, &error);
     list->items[count - 1u] = newest;
     CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && error.bytecode == 175 &&
           strcmp(error.operation, "World light region receiver") == 0 &&
           same_error(&error.cause, mc_world_runtime_last_error(world)) &&
-          outcome == MC_LIGHT_SUBMIT_CLEARED && list_is(world, list, count) && depth_is(f, 0));
+          error.acquisition == MC_CHUNK_ACQUIRE_OK && !error.population.reached &&
+          error.population.current.method == NULL && outcome == MC_LIGHT_SUBMIT_CLEARED &&
+          list_is(world, list, count) && depth_is(f, 0));
     ok = true;
 cleanup:
     return ok;
@@ -809,7 +821,11 @@ static bool test_owned_leaf(fixture *f, bool submit, owned_light_case mode) {
                : (mc_entity_tick_execution_site){"lm", "f", "(III)V", 1};
     const mc_world_runtime_execution_code code = {{"lm", "e", "()V", 6}, {"lm", "e", "()V", 33}};
     const mc_world_storage_error marker = {MC_WORLD_STORAGE_IO_ERROR, "owned light sentinel", 7};
-    mc_world_light_error error = {.status = marker.status, .bytecode = 999, .cause = marker};
+    mc_world_light_error error = {
+        .status = marker.status,
+        .bytecode = 999,
+        .cause = marker,
+        .population = {.reached = true, .current = {.method = "sentinel"}}};
     mc_world_storage_status raw = MC_WORLD_STORAGE_LIMIT;
     mc_light_submit_result submitted = MC_LIGHT_SUBMIT_FULL;
     int32_t height = -123;
@@ -846,6 +862,8 @@ static bool test_owned_leaf(fixture *f, bool submit, owned_light_case mode) {
               leaf->result.ownership_status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
               raw == MC_WORLD_STORAGE_LIMIT && error.status == marker.status &&
               error.bytecode == 999 && same_error(&error.cause, &marker) &&
+              error.population.reached &&
+              strcmp(error.population.current.method, "sentinel") == 0 &&
               submitted == MC_LIGHT_SUBMIT_FULL && height == -123);
     } else if (mode == OWNED_LIGHT_LOADER_BUSY) {
         CHECK(!completed && leaf->frame.entered && leaf->frame.get_entered &&
@@ -854,14 +872,16 @@ static bool test_owned_leaf(fixture *f, bool submit, owned_light_case mode) {
               leaf->result.ownership_status == MC_WORLD_STORAGE_BUSY &&
               raw == MC_WORLD_STORAGE_BUSY && error.status == raw &&
               error.bytecode == (submit ? 87u : 48u) && error.provider_bytecode == 6 &&
-              error.acquisition == MC_CHUNK_ACQUIRE_STATE_ERROR &&
-              submitted == MC_LIGHT_SUBMIT_FULL && height == -123);
+              error.acquisition == MC_CHUNK_ACQUIRE_STATE_ERROR && !error.population.reached &&
+              error.population.current.method == NULL && submitted == MC_LIGHT_SUBMIT_FULL &&
+              height == -123);
     } else {
         const bool present = mode == OWNED_LIGHT_PRESENT;
         CHECK(completed && leaf->frame.entered && leaf->frame.completed &&
               leaf->frame.get_entered == present && leaf->frame.get_returned == present &&
               !leaf->frame.native_stopped && leaf->result.ownership_status == MC_WORLD_STORAGE_OK &&
               raw == MC_WORLD_STORAGE_OK && error.status == MC_WORLD_STORAGE_OK &&
+              !error.population.reached && error.population.current.method == NULL &&
               (present ? leaf->frame.get_status == MC_CHUNK_ACQUIRE_OK : error.bytecode == 0));
         CHECK(submit ? submitted == (present ? MC_LIGHT_SUBMIT_APPENDED : MC_LIGHT_SUBMIT_SKIPPED)
                      : height == (present ? 73 : 0));

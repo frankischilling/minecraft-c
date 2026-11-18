@@ -25,20 +25,6 @@ static mc_world_storage_status storage_result(mc_world_storage_error *error,
     return status;
 }
 
-static mc_world_storage_status result(mc_world_light_error *error,
-                                      const mc_world_storage_error *cause, unsigned int bytecode,
-                                      unsigned int provider_bytecode,
-                                      mc_chunk_acquire_status acquisition) {
-    if (error != NULL)
-        *error = (mc_world_light_error){.status = cause->status,
-                                        .operation = cause->operation,
-                                        .bytecode = bytecode,
-                                        .provider_bytecode = provider_bytecode,
-                                        .acquisition = acquisition,
-                                        .cause = *cause};
-    return cause->status;
-}
-
 static bool light_records_quiet(const mc_world_runtime_execution_result *owned) {
     if (owned->root_pending || owned->math_failed)
         return false;
@@ -373,32 +359,32 @@ static bool same_class_type(const mc_world_runtime_classes *classes,
 static mc_world_storage_status
 light_submit(mc_world_runtime *runtime, const mc_world_light_type *type,
              const mc_light_bounds *bounds, bool coalesce, mc_light_submit_result *out,
-             mc_world_light_error *error, mc_world_light_execution *execution) {
+             mc_world_light_error *error, mc_world_light_execution *execution,
+             bool project_success) {
     if (runtime == NULL || bounds == NULL || out == NULL || runtime->classes == NULL) {
         const mc_world_storage_error cause =
             native_error(MC_WORLD_STORAGE_INVALID_ARGUMENT, "World light submit arguments");
-        return result(error, &cause, 0, 0, MC_CHUNK_ACQUIRE_OK);
+        return mc_world_light_result(error, &cause, 0, 0, MC_CHUNK_ACQUIRE_OK);
     }
     if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME ||
         runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED) {
         const mc_world_storage_error cause =
             native_error(MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World light submit phase");
-        return result(error, &cause, 0, 0, MC_CHUNK_ACQUIRE_OK);
+        return mc_world_light_result(error, &cause, 0, 0, MC_CHUNK_ACQUIRE_OK);
     }
     if (!same_class_type(runtime->classes, type)) {
         const mc_world_storage_error cause =
             native_error(MC_WORLD_STORAGE_INVALID_ARGUMENT, "World light type class");
-        return result(error, &cause, 0, 0, MC_CHUNK_ACQUIRE_OK);
+        return mc_world_light_result(error, &cause, 0, 0, MC_CHUNK_ACQUIRE_OK);
     }
     const mc_light_bounds requested = *bounds;
     mc_world_storage_error cause = {0};
     mc_world_storage_status status = mc_world_runtime_call_enter(runtime, &cause);
     if (status != MC_WORLD_STORAGE_OK)
-        return result(error, &cause, 0, 0, MC_CHUNK_ACQUIRE_OK);
+        return mc_world_light_result(error, &cause, 0, 0, MC_CHUNK_ACQUIRE_OK);
 
     unsigned int bytecode = 4, provider_bytecode = 0;
     mc_chunk_acquire_status acquisition = MC_CHUNK_ACQUIRE_OK;
-    mc_world_population_context population = {0};
     mc_light_submit_result submitted = MC_LIGHT_SUBMIT_SKIPPED;
     bool depth_entered = false;
     mc_world_light_region *unpublished = NULL;
@@ -442,8 +428,10 @@ light_submit(mc_world_runtime *runtime, const mc_world_light_type *type,
         goto failed;
     }
     mc_chunk_state *chunk = NULL;
+    mc_world_population_context discarded;
+    mc_world_population_context *population = error == NULL ? &discarded : &error->population;
     acquisition =
-        mc_world_light_get_chunk(execution, runtime, chunk_x, chunk_z, &chunk, &cause, &population);
+        mc_world_light_get_chunk(execution, runtime, chunk_x, chunk_z, &chunk, &cause, population);
     if (acquisition != MC_CHUNK_ACQUIRE_OK) {
         if (cause.status == MC_WORLD_STORAGE_OK)
             cause =
@@ -455,7 +443,7 @@ light_submit(mc_world_runtime *runtime, const mc_world_light_type *type,
         goto failed;
     }
     if (execution != NULL && execution->native_stopped) {
-        status = result(error, &cause, bytecode, provider_bytecode, acquisition);
+        status = mc_world_light_result(error, &cause, bytecode, provider_bytecode, acquisition);
         goto leave;
     }
     bytecode = 90;
@@ -536,13 +524,11 @@ light_submit(mc_world_runtime *runtime, const mc_world_light_type *type,
 success:
     cause = native_error(MC_WORLD_STORAGE_OK, NULL);
     *out = submitted;
-    status = result(error, &cause, 0, 0, acquisition);
+    status = mc_world_light_result(project_success ? error : NULL, &cause, 0, 0, acquisition);
     goto leave;
 failed:
     runtime->last_error = cause;
-    status = result(error, &cause, bytecode, provider_bytecode, acquisition);
-    if (error != NULL)
-        error->population = population;
+    status = mc_world_light_result(error, &cause, bytecode, provider_bytecode, acquisition);
 leave:
     retire(runtime, unpublished, sizeof(*unpublished));
     if (depth_entered)
@@ -556,7 +542,14 @@ mc_world_storage_status mc_world_runtime_light_submit(mc_world_runtime *runtime,
                                                       const mc_light_bounds *bounds, bool coalesce,
                                                       mc_light_submit_result *out,
                                                       mc_world_light_error *error) {
-    return light_submit(runtime, type, bounds, coalesce, out, error, NULL);
+    return light_submit(runtime, type, bounds, coalesce, out, error, NULL, true);
+}
+
+mc_world_storage_status
+mc_world_runtime_light_submit_failure(mc_world_runtime *runtime, const mc_world_light_type *type,
+                                      const mc_light_bounds *bounds, bool coalesce,
+                                      mc_light_submit_result *out, mc_world_light_error *error) {
+    return light_submit(runtime, type, bounds, coalesce, out, error, NULL, false);
 }
 
 bool mc_world_runtime_light_submit_in_execution(
@@ -566,6 +559,6 @@ bool mc_world_runtime_light_submit_in_execution(
     if (!mc_world_light_execution_enter(frame, world, out, error, status))
         return false;
     const mc_world_storage_status actual =
-        light_submit(world, type, bounds, coalesce, out, error, frame);
+        light_submit(world, type, bounds, coalesce, out, error, frame, true);
     return mc_world_light_execution_finish(frame, actual, status);
 }

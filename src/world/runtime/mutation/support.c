@@ -204,7 +204,7 @@ bool mc_world_mutation_chunk_submit(mc_world_mutation_chunk_execution *execution
     *bytecode = call_pc;
     mc_light_submit_result submitted;
     if (execution == NULL) {
-        if (mc_world_runtime_light_submit(world, type, bounds, true, &submitted, error) ==
+        if (mc_world_runtime_light_submit_failure(world, type, bounds, true, &submitted, error) ==
             MC_WORLD_STORAGE_OK)
             return true;
         *cause = error->cause;

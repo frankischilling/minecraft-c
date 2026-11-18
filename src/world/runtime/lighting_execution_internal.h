@@ -43,7 +43,35 @@ bool mc_world_runtime_light_submit_in_execution(mc_world_light_execution *, mc_w
                                                 mc_light_submit_result *, mc_world_light_error *,
                                                 mc_world_storage_status *);
 
+/* Ordinary callers that inspect the diagnostic only when the call fails. */
+mc_world_storage_status mc_world_runtime_height_failure(mc_world_runtime *, int32_t, int32_t,
+                                                        int32_t *, mc_world_light_error *);
+mc_world_storage_status mc_world_runtime_light_submit_failure(mc_world_runtime *,
+                                                              const mc_world_light_type *,
+                                                              const mc_light_bounds *, bool,
+                                                              mc_light_submit_result *,
+                                                              mc_world_light_error *);
+
 /* Shared native plumbing for these two translation units. */
+static inline mc_world_storage_status mc_world_light_result(mc_world_light_error *error,
+                                                            const mc_world_storage_error *cause,
+                                                            unsigned int bytecode,
+                                                            unsigned int provider_bytecode,
+                                                            mc_chunk_acquire_status acquisition) {
+    if (error != NULL) {
+        error->status = cause->status;
+        error->operation = cause->operation;
+        error->bytecode = bytecode;
+        error->provider_bytecode = provider_bytecode;
+        error->acquisition = acquisition;
+        error->cause = *cause;
+        /* A failed acquisition has already written its population detail. */
+        if (acquisition == MC_CHUNK_ACQUIRE_OK)
+            error->population = (mc_world_population_context){0};
+    }
+    return cause->status;
+}
+
 bool mc_world_light_execution_enter(mc_world_light_execution *, mc_world_runtime *, const void *,
                                     const mc_world_light_error *, const mc_world_storage_status *);
 bool mc_world_light_execution_finish(mc_world_light_execution *, mc_world_storage_status,

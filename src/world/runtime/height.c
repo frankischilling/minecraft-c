@@ -5,46 +5,32 @@
 #include "mc/core/java/java.h"
 #include "runtime_internal.h"
 
-static mc_world_storage_status result(mc_world_light_error *error,
-                                      const mc_world_storage_error *cause, unsigned int bytecode,
-                                      unsigned int provider_bytecode,
-                                      mc_chunk_acquire_status acquisition) {
-    if (error != NULL)
-        *error = (mc_world_light_error){.status = cause->status,
-                                        .operation = cause->operation,
-                                        .bytecode = bytecode,
-                                        .provider_bytecode = provider_bytecode,
-                                        .acquisition = acquisition,
-                                        .cause = *cause};
-    return cause->status;
-}
-
 static mc_world_storage_error native_error(mc_world_storage_status status, const char *operation) {
     return (mc_world_storage_error){status, operation, 0};
 }
 
 static mc_world_storage_status height_get(mc_world_runtime *runtime, int32_t x, int32_t z,
                                           int32_t *out, mc_world_light_error *error,
-                                          mc_world_light_execution *execution) {
+                                          mc_world_light_execution *execution,
+                                          bool project_success) {
     if (runtime == NULL || out == NULL) {
         const mc_world_storage_error cause =
             native_error(MC_WORLD_STORAGE_INVALID_ARGUMENT, "World height owner/output");
-        return result(error, &cause, 0, 0, MC_CHUNK_ACQUIRE_OK);
+        return mc_world_light_result(error, &cause, 0, 0, MC_CHUNK_ACQUIRE_OK);
     }
     if (runtime->construction.mode != MC_WORLD_RUNTIME_GAME ||
         runtime->construction.phase == MC_WORLD_RUNTIME_RETIRED) {
         const mc_world_storage_error cause =
             native_error(MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World height phase");
-        return result(error, &cause, 0, 0, MC_CHUNK_ACQUIRE_OK);
+        return mc_world_light_result(error, &cause, 0, 0, MC_CHUNK_ACQUIRE_OK);
     }
     mc_world_storage_error cause = {0};
     mc_world_storage_status status = mc_world_runtime_call_enter(runtime, &cause);
     if (status != MC_WORLD_STORAGE_OK)
-        return result(error, &cause, 0, 0, MC_CHUNK_ACQUIRE_OK);
+        return mc_world_light_result(error, &cause, 0, 0, MC_CHUNK_ACQUIRE_OK);
 
     unsigned int bytecode = 0, provider_bytecode = 0;
     mc_chunk_acquire_status acquisition = MC_CHUNK_ACQUIRE_OK;
-    mc_world_population_context population = {0};
     int32_t height = 0;
     if (x < -32000000 || x >= 32000000 || z < -32000000 || z > 32000000)
         goto success;
@@ -69,8 +55,10 @@ static mc_world_storage_status height_get(mc_world_runtime *runtime, int32_t x, 
         goto failed;
     }
     mc_chunk_state *chunk = NULL;
+    mc_world_population_context discarded;
+    mc_world_population_context *population = error == NULL ? &discarded : &error->population;
     acquisition =
-        mc_world_light_get_chunk(execution, runtime, chunk_x, chunk_z, &chunk, &cause, &population);
+        mc_world_light_get_chunk(execution, runtime, chunk_x, chunk_z, &chunk, &cause, population);
     if (acquisition != MC_CHUNK_ACQUIRE_OK) {
         if (cause.status == MC_WORLD_STORAGE_OK)
             cause =
@@ -82,7 +70,7 @@ static mc_world_storage_status height_get(mc_world_runtime *runtime, int32_t x, 
         goto failed;
     }
     if (execution != NULL && execution->native_stopped) {
-        status = result(error, &cause, bytecode, provider_bytecode, acquisition);
+        status = mc_world_light_result(error, &cause, bytecode, provider_bytecode, acquisition);
         goto leave;
     }
     bytecode = 61;
@@ -100,13 +88,11 @@ static mc_world_storage_status height_get(mc_world_runtime *runtime, int32_t x, 
 success:
     *out = height;
     cause = native_error(MC_WORLD_STORAGE_OK, NULL);
-    status = result(error, &cause, 0, 0, acquisition);
+    status = mc_world_light_result(project_success ? error : NULL, &cause, 0, 0, acquisition);
     goto leave;
 failed:
     runtime->last_error = cause;
-    status = result(error, &cause, bytecode, provider_bytecode, acquisition);
-    if (error != NULL)
-        error->population = population;
+    status = mc_world_light_result(error, &cause, bytecode, provider_bytecode, acquisition);
 leave:
     mc_world_runtime_call_leave(runtime);
     return status;
@@ -114,7 +100,13 @@ leave:
 
 mc_world_storage_status mc_world_runtime_height(mc_world_runtime *runtime, int32_t x, int32_t z,
                                                 int32_t *out, mc_world_light_error *error) {
-    return height_get(runtime, x, z, out, error, NULL);
+    return height_get(runtime, x, z, out, error, NULL, true);
+}
+
+mc_world_storage_status mc_world_runtime_height_failure(mc_world_runtime *runtime, int32_t x,
+                                                        int32_t z, int32_t *out,
+                                                        mc_world_light_error *error) {
+    return height_get(runtime, x, z, out, error, NULL, false);
 }
 
 bool mc_world_runtime_height_in_execution(mc_world_light_execution *frame, mc_world_runtime *world,
@@ -123,6 +115,6 @@ bool mc_world_runtime_height_in_execution(mc_world_light_execution *frame, mc_wo
                                           mc_world_storage_status *status) {
     if (!mc_world_light_execution_enter(frame, world, out, error, status))
         return false;
-    const mc_world_storage_status actual = height_get(world, x, z, out, error, frame);
+    const mc_world_storage_status actual = height_get(world, x, z, out, error, frame, true);
     return mc_world_light_execution_finish(frame, actual, status);
 }

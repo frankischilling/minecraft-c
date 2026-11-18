@@ -3138,8 +3138,8 @@
       "sha256": "e7bbede6091db250381021556edda2fac8325608926f0ad1b1af87e5916cbb93"
     },
     "src/world/runtime/chunks.c": {
-      "bytes": 15072,
-      "sha256": "11082fa238c562d7b1ab467afd37e46049db9d54b108c51d7a3355737e35994b"
+      "bytes": 15092,
+      "sha256": "d699e65b3f1aa062f1a12e589f808b32eaae4f89206c014a29721d68727d2b82"
     },
     "src/world/runtime/chunks_internal.h": {
       "bytes": 574,
@@ -3274,12 +3274,12 @@
       "sha256": "832ffb4977ba516ef192aac2a3b68c999c801998cd56dad809c4dd33ea4d3374"
     },
     "src/world/runtime/height.c": {
-      "bytes": 5709,
-      "sha256": "8a18b56af45dd9af9ebbf21e4472efe56994363c4993559e2a1bac05d1c028c3"
+      "bytes": 5484,
+      "sha256": "c95a3f33d1a960b2368be4bd4bcff3b55d07955be2dba6cc9d94a62c2afa8ae3"
     },
     "src/world/runtime/lighting.c": {
-      "bytes": 26023,
-      "sha256": "64317a7c7520e63a73fb7548e905bcb433500685eeb4c6b79e58acaeeab86a2f"
+      "bytes": 25846,
+      "sha256": "8eb138b22ce1753b4a230196671eaf33c87cf1c155a382d3d70935f935be5280"
     },
     "src/world/runtime/lighting_internal.h": {
       "bytes": 980,
@@ -3450,8 +3450,8 @@
       "sha256": "190ad3de5c65ed49047d876e908375a5db6bbcba0e33f48e8b9866e748f2fec8"
     },
     "src/world/runtime/mutation/support.c": {
-      "bytes": 14110,
-      "sha256": "694bc23fd795b4474538c44a74d7d7499a20f3e9536339b1bdc8b84370f1fdfa"
+      "bytes": 14118,
+      "sha256": "1108624326adb6316428dffba14e2804030baab0ba526dd9f0c346b69d2bd34e"
     },
     "src/world/runtime/mutation/ticks.c": {
       "bytes": 6957,
@@ -5150,12 +5150,12 @@
       "sha256": "fbbbdf08f9e513074940a44362cd86558dc805d51eebc544fef888677aa82fbc"
     },
     "tests/world/runtime/test_light_queue_runtime.c": {
-      "bytes": 55498,
-      "sha256": "b5a848b68bb9edac25412e447a862e7778cfc2a9d6516d8972958f8c129cb5da"
+      "bytes": 56523,
+      "sha256": "f5e928c961893c94c504681ef51d7dee6b47397822e64b68854c62a4e396d2a9"
     },
     "tests/world/runtime/test_lighting_runtime.c": {
-      "bytes": 26757,
-      "sha256": "20737c377bf09c8c72ce7b6c49ad04a79b8f0ecdd6c013e4e8e42871b88fb8d1"
+      "bytes": 28041,
+      "sha256": "e45402eef795b39666f3b39afd8f5c8f4f9cee62c353becda58846a7e7bc6285"
     },
     "tests/world/runtime/test_maintenance.c": {
       "bytes": 7279,
@@ -12710,8 +12710,8 @@
       "sha256": "da04a124bd5e66cb2be762dbb5764e8a861b35f71eb3f9214f9f9d746c8e583b"
     },
     "src/world/runtime/lighting_execution_internal.h": {
-      "bytes": 3310,
-      "sha256": "a2653b526707e828b901a570eecbe0cac7b32de6ce4adb88cc63ed95d03eda59"
+      "bytes": 4974,
+      "sha256": "b695d5ec6551dbf3f740460f626d4290822985fe88afd92554bad1b6bdeeddd1"
     },
     "src/world/runtime/mutation/chunk_execution_internal.h": {
       "bytes": 7116,

@@ -130,7 +130,8 @@ static bool interval(mc_world_chunk *chunk, int32_t x, int32_t z, int32_t local_
     }
     frame->interval_bytecode = 6;
     if (execution == NULL) {
-        if (mc_world_runtime_height(world, x, z, &height, &frame->light) != MC_WORLD_STORAGE_OK) {
+        if (mc_world_runtime_height_failure(world, x, z, &height, &frame->light) !=
+            MC_WORLD_STORAGE_OK) {
             frame->cause = frame->light.cause;
             return false;
         }

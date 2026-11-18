@@ -344,6 +344,41 @@ was 75.00 → 74.56 ms. A separate six-run repeat measured 31.00 → 31.66 FPS,
 frames took 113 ms and 144 ms, respectively. Both builds shared the local
 Sign screen edit and stayed in gameplay during timing.
 
+#### Height and light diagnostics in Chunk mutations
+
+The ordinary Chunk mutation callers now request diagnostics only when a
+neighboring height read or a light submission fails. Both calls still check
+presence and then use the current provider for the separate Chunk lookup.
+The lookup writes its population detail directly to the diagnostic on
+failure. Public and retained execution calls still return their full
+diagnostics, including the site when the native continuation stops.
+
+Two fixed Windows MSVC workloads used three million calls per process and
+eight alternating process pairs. Median time was 805.25 → 726.72 ms for
+height reads over the fixture's present, blank, absent and aliased Chunks
+and border coordinates. The light submission workload repeatedly merged
+into the same region and took 972.85 → 947.99 ms. All processes returned the
+same checked outcomes within each workload.
+
+In the four-Chunk population workload, median client ore time was
+72.19 ms before, 66.32 ms with the height change, 72.50 ms with the
+submission change, and 69.27 ms with both. The server regression control
+went from 66.02 to 67.67 ms with both. All 64 processes produced identical
+native reports within each side. The combined workload showed a small
+client gain and a small server regression in this sample.
+
+All six DISPLAY2 runs in the initial comparison qualified at 854×480 on
+Tiny. Median FPS was 30.19 → 36.23, median p95 was 67.21 → 51.36 ms, and
+median p99 was 98.12 → 88.55 ms. One pair lost FPS and had a higher p99, and
+the longest candidate frame took 141 ms. Net resident Chunk growth ranged
+from 15 to 29 across runs. Both builds shared the local Sign screen edit
+and stayed in gameplay during timing.
+
+All six runs in the separate repeat also qualified. Median FPS was
+41.21 → 43.43 and median p95 was 50.38 → 43.06 ms. Median p99 went from
+63.88 to 64.47 ms. Two of three pairs had a higher p99, and the longest
+candidate frame took 102 ms.
+
 ### Spring fluid diagnostics
 
 Two DISPLAY2 traces separated spring placement from the immediate flowing

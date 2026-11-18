@@ -2,6 +2,7 @@
 
 #include "../../../src/core/java/random_profile_internal.h"
 #include "../../../src/world/runtime/chunk_provider_internal.h"
+#include "../../../src/world/runtime/lighting_execution_internal.h"
 #include "../../support/java_random.h"
 
 #include <stdio.h>
@@ -186,6 +187,13 @@ static bool test_raw(fixture *f) {
         CHECK(same_storage_error(mc_world_runtime_last_error(f->raw), &error.cause));
     }
     const mc_world_storage_error saved = *mc_world_runtime_last_error(f->raw);
+    memset(&error, 0xa5, sizeof(error));
+    out = -731;
+    CHECK(mc_world_runtime_height_failure(f->raw, 0, 0, &out, &error) ==
+          MC_WORLD_STORAGE_UNSUPPORTED_STATE);
+    CHECK(out == -731 && error.bytecode == 33 && error.provider_bytecode == 6 &&
+          error.acquisition == MC_CHUNK_ACQUIRE_OK && !error.population.reached &&
+          error.population.current.method == NULL && same_storage_error(&error.cause, &saved));
     out = -731;
     CHECK(mc_world_runtime_height(f->raw, 32000000, 0, &out, &error) == MC_WORLD_STORAGE_OK &&
           out == 0);
@@ -376,9 +384,21 @@ static bool test_present(fixture *f) {
                                   {0, 32000001, 0}};
     for (size_t i = 0; i < COUNT(queries); ++i) {
         int32_t out = -731;
+        memset(&error, 0xa5, sizeof(error));
         CHECK(mc_world_runtime_height(f->world, queries[i][0], queries[i][1], &out, &error) ==
                   MC_WORLD_STORAGE_OK &&
-              out == queries[i][2]);
+              out == queries[i][2] && error.status == MC_WORLD_STORAGE_OK &&
+              error.operation == NULL && error.bytecode == 0 && error.provider_bytecode == 0 &&
+              error.acquisition == MC_CHUNK_ACQUIRE_OK && !error.population.reached &&
+              error.population.current.method == NULL);
+        CHECK(snapshot_same(f, &before));
+        unsigned char poison[sizeof(error)];
+        memset(poison, 0xa5, sizeof(poison));
+        memcpy(&error, poison, sizeof(error));
+        out = -731;
+        CHECK(mc_world_runtime_height_failure(f->world, queries[i][0], queries[i][1], &out,
+                                              &error) == MC_WORLD_STORAGE_OK &&
+              out == queries[i][2] && memcmp(&error, poison, sizeof(error)) == 0);
         CHECK(snapshot_same(f, &before));
     }
     CHECK(mc_chunk_cache_key(0, 0) == mc_chunk_cache_key(32768, 0));
