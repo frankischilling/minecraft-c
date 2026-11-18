@@ -189,6 +189,55 @@ compilation covers the two changed runtime units, native fixture and benchmark.
 The [test record](../testing.md#provider-cache-scopes-and-owner-rebinding)
 preserves their exact source and result scope.
 
+## Chunk presence during population
+
+The Windows DISPLAY2 trace at `c4153f33` found random ticks calling into
+neighboring Chunk generation and population. In one 230 ms frame, two
+population calls took 201 ms in total and generation took 7 ms. The sampled
+Chunk itself was already resident. Two finer captures recorded 62 population
+calls. Median ore placement times were 20.9 and 21.6 ms per call in the two
+processes. Spring work usually took about 1 ms, with a maximum of 96 ms in one
+capture. These nested timings attribute the frame stalls to reached work in the
+fixed scene.
+
+Population mutations check Chunk presence while publishing and updating chunks.
+For an owned cache with more than eight entries, these checks can now accept
+the same bounded ordinal hint as a scoped GET. The current map key must match
+before the hint proves presence. An absent or stale hint falls back to the
+live scan, as do smaller scoped maps. Presence reads key membership and leaves
+the table, payloads and World state alone. The `scope-presence` control covers
+packed aliases, a null value behind a present key, compaction, an appended
+key and an absent key at two levels of nesting.
+
+A private MSVC Release comparison linked one workload object and a shared
+set of dependency archives. The baseline provider came from `c4153f33`. The
+candidate replaced just that object. Four alternating pairs per cache size
+and depth produced 48 fresh processes. Each produced seven samples of 65,536
+checks for resident keys and seven for a 75% hit mix. Each process checked
+every answer, packed aliases, diagnostics, cache counters, saved fixture files
+and Chunk planes. The four eight-entry medians shifted by −0.5% to +2.3%.
+Times below are per sample.
+
+| Resident entries | Scope depth | Resident keys, base → candidate | 75% hit mix, base → candidate |
+| --- | --- | ---: | ---: |
+| 64 | 1 | 1.639 → 0.718 ms | 1.985 → 1.270 ms |
+| 64 | 2 | 1.645 → 0.715 ms | 1.984 → 1.269 ms |
+| 256 | 1 | 4.799 → 0.838 ms | 5.824 → 2.884 ms |
+| 256 | 2 | 4.730 → 0.861 ms | 5.674 → 3.004 ms |
+
+Six uninstrumented `DISPLAY2` runs passed the fixed-camera, foreground and
+World-work checks. The two products shared the observer and dependencies,
+which included the local Sign screen edit. The timed scene stayed in gameplay.
+Median FPS was 34.39 before and 35.76 after. Median run p95 fell from 72.12
+to 61.23 ms, while median run p99 rose from 129.92 to 139.41 ms. One of three
+pairs lost FPS and had a higher p95. An earlier instrumented comparison with
+the initial candidate lost foreground and could not qualify. The frame
+measurements cover this scene and leave the spring spikes open.
+
+Ten focused tests passed on each host, including the 17 owned-cache profiles,
+natural population, lighting and random ticks. Linux ran with Clang, ASan,
+UBSan and leak detection.
+
 ## Reproduce one resident scene
 
 Configure with `-DMC_BUILD_BENCHMARKS=ON` and build the

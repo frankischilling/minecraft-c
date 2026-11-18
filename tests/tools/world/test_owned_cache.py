@@ -13,7 +13,7 @@ import zlib
 sys.dont_write_bytecode = True
 MODES = ('owned', 'provider', 'acquisition', 'lifecycle', 'saving', 'get', 'acquire',
          'progress', 'callback', 'callback-export', 'budget', 'owner-null', 'owner-rebind',
-         'owner-callback', 'scope-live', 'callback-invalid')
+         'owner-callback', 'scope-live', 'scope-presence', 'callback-invalid')
 BOUND = 1024 * 1024
 
 
@@ -171,6 +171,10 @@ def main():
                         'packed-alias', 'compaction', 'same-count-reinsert', 'live-replacement',
                         'capacity-atomic', 'insertion-history', 'nested-scope', 'one-final-rebuild',
                         'sentinels'), '1')), 'live scoped map inputs preserve exact lookup and publication semantics')
+            elif mode == 'scope-presence':
+                require(case == dict(mode=mode, **dict.fromkeys(('packed-alias', 'key-only',
+                        'live-compaction', 'new-key', 'miss', 'nested-scope', 'sentinels'), '1')),
+                        'scoped presence reads current packed membership without side effects')
             elif mode == 'callback-invalid':
                 require(case == dict(mode=mode, **dict.fromkeys(('real-entity-callback', 'nested-read',
                         'nonselected-invalid', 'outer-full-validation', 'output-preserved',

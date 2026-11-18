@@ -45,7 +45,7 @@ static int oc_presence_read(mc_world_runtime *world, int32_t x, int32_t z, bool 
 
 /* Keep the existing source-save Registry/File/Handler setup, while constructing
  * this World without the old fixture helper's deliberate raw cache export. */
-static int oc_open(source_save_fixture *s, size_t budget) {
+static int oc_open(source_save_fixture *s, size_t budget, size_t chunks) {
     fixture *f = &s->game;
     mc_world_info_name *folder = ss_name("world");
     VERIFY(folder != NULL &&
@@ -55,7 +55,7 @@ static int oc_open(source_save_fixture *s, size_t budget) {
                MC_WORLD_SOURCE_OK);
     mc_world_info_name_release(folder);
     mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
-    limits.max_provider_chunks = 8;
+    limits.max_provider_chunks = chunks;
     limits.max_scheduled_entries = 0;
     if (budget != SIZE_MAX)
         limits.max_provider_allocation_bytes = budget;
@@ -678,7 +678,7 @@ static int oc_budget(source_save_fixture *s) {
     VERIFY(oc_observe(s->game.worlds[0], &initial) == 0 && initial.owned &&
            initial.index_bytes > 0 && initial.direct_bytes > initial.index_bytes);
     const size_t base = initial.direct_bytes - initial.index_bytes;
-    VERIFY(oc_stop(s) == 0 && oc_open(s, base) == 0 &&
+    VERIFY(oc_stop(s) == 0 && oc_open(s, base, 8) == 0 &&
            oc_observe(s->game.worlds[0], &absent) == 0 && !absent.owned &&
            absent.index_capacity == 0 && absent.index_bytes == 0 && absent.direct_bytes == base &&
            absent.raw_exports == 0);
@@ -982,6 +982,45 @@ static int oc_scope_live(source_save_fixture *s) {
     return 0;
 }
 
+static int oc_scope_presence(source_save_fixture *s) {
+    mc_world_runtime *world = s->game.worlds[0];
+    mc_chunk_provider *provider = world->fields.v;
+    mc_chunk_state *resident = NULL;
+    mc_chunk_provider_fields fields;
+    mc_chunk_provider_cache_observation before, after;
+    VERIFY(oc_get(s, 0, &resident) == 0 &&
+           mc_chunk_provider_internal_fields(provider, &fields, NULL) == MC_WORLD_STORAGE_OK);
+    mc_chunk_cache *cache = fields.cache;
+    mc_chunk_provider_cache_mutation_begin(provider);
+    for (int32_t x = 1; x <= 9; ++x)
+        VERIFY(mc_chunk_cache_publish(cache, x, 0, resident));
+    mc_chunk_provider_cache_mutation_end(provider);
+    VERIFY(oc_observe(world, &before) == 0 && before.owned && before.map_count == 10);
+
+    mc_chunk_provider_cache_mutation_begin(provider);
+    mc_chunk_provider_cache_mutation_begin(provider);
+    VERIFY(oc_presence_read(world, 32768, 0, true) == 0 &&
+           oc_presence_read(world, 10, 0, false) == 0);
+    /* Presence is key membership even when an entry has a malformed value. */
+    cache->entries[0].chunk = NULL;
+    const int null_value = oc_presence_read(world, 0, 0, true);
+    cache->entries[0].chunk = resident;
+    VERIFY(null_value == 0);
+
+    memmove(cache->entries, cache->entries + 1, 9 * sizeof(*cache->entries));
+    --cache->count;
+    VERIFY(oc_presence_read(world, 0, 0, false) == 0 && oc_presence_read(world, 1, 0, true) == 0 &&
+           mc_chunk_cache_publish(cache, 10, 0, resident) &&
+           oc_presence_read(world, 10, 0, true) == 0 && oc_presence_read(world, 0, 0, false) == 0);
+    mc_chunk_provider_cache_mutation_end(provider);
+    mc_chunk_provider_cache_mutation_end(provider);
+    VERIFY(oc_observe(world, &after) == 0 && after.owned && after.mutation_depth == 0 &&
+           after.rebuilds == before.rebuilds + 1 && after.map_count == before.map_count);
+    puts("OWNED_CACHE_CASE mode=scope-presence packed-alias=1 key-only=1 live-compaction=1 "
+         "new-key=1 miss=1 nested-scope=1 sentinels=1");
+    return 0;
+}
+
 typedef struct oc_invalid_callback_state {
     source_save_fixture *source;
     mc_chunk_state *outer, *nested;
@@ -1072,18 +1111,21 @@ int MC_OWNED_CACHE_FIXTURE_MAIN(int argc, char **argv) {
     const bool owner_rebind = strcmp(mode, "owner-rebind") == 0,
                owner_callback = strcmp(mode, "owner-callback") == 0;
     const bool scope_live = strcmp(mode, "scope-live") == 0,
+               scope_presence = strcmp(mode, "scope-presence") == 0,
                callback_invalid = strcmp(mode, "callback-invalid") == 0;
     const bool escape = strcmp(mode, "provider") == 0 || strcmp(mode, "acquisition") == 0 ||
                         strcmp(mode, "lifecycle") == 0 || strcmp(mode, "saving") == 0 ||
                         strcmp(mode, "get") == 0 || strcmp(mode, "acquire") == 0 ||
                         strcmp(mode, "progress") == 0;
     VERIFY(owned || budget || callback || callback_export || owner_null || owner_rebind ||
-           owner_callback || scope_live || callback_invalid || escape);
+           owner_callback || scope_live || scope_presence || callback_invalid || escape);
     source_save_fixture *source = calloc(1, sizeof(*source));
-    VERIFY(source != NULL && ss_setup(source, argv[1]) == 0 && oc_open(source, SIZE_MAX) == 0);
+    VERIFY(source != NULL && ss_setup(source, argv[1]) == 0 &&
+           oc_open(source, SIZE_MAX, scope_presence ? 16u : 8u) == 0);
     const int result = owner_rebind                  ? oc_owner_rebind(source)
                        : owner_callback              ? oc_owner_callback(source)
                        : scope_live                  ? oc_scope_live(source)
+                       : scope_presence              ? oc_scope_presence(source)
                        : callback_invalid            ? oc_callback_invalid(source)
                        : owner_null                  ? oc_owner_null(source)
                        : owned                       ? oc_owned(source)

@@ -6411,7 +6411,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 937705,
-      "sha256": "dc9147b7bf98efab883e0c3ce1b3fceb08e4f8c342db0cbbb42af47cf12c1047"
+      "sha256": "b5a3b3a35a5b7a3ab4bc4606a699db08fd51a242bb292a9f35aee0148f22a91e"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6475,7 +6475,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067658,
-      "sha256": "47948904f9f68246a408c1cc9d35afb4d18b4c639eb2a43ef37cbf335cd93320"
+      "sha256": "05061680eadfcd8fc427f9363e8d7611ba8d0143ea6d3f346f1da16a2b60927c"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6607,7 +6607,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934530,
-      "sha256": "7a7244103f823ea7ef448798dbe1f04f668ae1e931b2b4671f1f3825946ec92b"
+      "sha256": "56f955676fd51b284d1993fdc8667fcdf0433dd2ed7cc6064aff1759e2802d98"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -15098,16 +15098,16 @@
       "sha256": "84786c930812caeb696bf777e2abb70177827376a6d72d6b15bd009933fde2b1"
     },
     "src/world/runtime/chunk_provider_owned.inc": {
-      "bytes": 13742,
-      "sha256": "77699de4b41cd462f53a883a1e2ddd63bb3eda9ef8d312695f55d53ceb112350"
+      "bytes": 14083,
+      "sha256": "1aa5c8f36f9fd120d1dff61cc4e6515adae4ee3f31de8e0495f931e079ecd463"
     },
     "tests/tools/world/test_owned_cache.py": {
-      "bytes": 13529,
-      "sha256": "111b84c4fd1469e61aa8dc80fe33dfe44bb26d6d9f7f789af2ea024d63acc380"
+      "bytes": 13878,
+      "sha256": "94353150799a171e6e6ed0454437132690d4abf44687dbc2ca4b543e95334c2e"
     },
     "tests/world/runtime/saving/test_owned_cache.c": {
-      "bytes": 63430,
-      "sha256": "360e87bb44c08bb1ee0a571ef30cb5f5c2bfe433a2d895a592329155863bba26"
+      "bytes": 65698,
+      "sha256": "ea764e34f1bf627420f3f8521e8697c5ba9b8c0922f5cc7130b6653096439f40"
     },
     "src/world/storage/chunk_lookup.inc": {
       "bytes": 8386,

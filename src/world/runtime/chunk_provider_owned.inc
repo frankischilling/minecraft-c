@@ -242,18 +242,28 @@ bool mc_chunk_provider_cache_get(mc_chunk_provider *provider,
 static bool owned_cache_contains(const mc_chunk_provider *provider, int32_t x, int32_t z,
                                  bool *out) {
     const mc_source_owned_cache *owner = provider->owned_cache;
-    if (owner == NULL || owner->mutation_depth != 0)
+    if (owner == NULL)
         return false;
     const mc_chunk_cache *cache = &provider->cache;
-    if (cache->entries != owner->entries || cache->insertions != owner->insertions ||
-        cache->capacity != owner->capacity ||
-        cache->insertion_capacity != owner->insertion_capacity || cache->count != owner->count ||
-        cache->insertion_count != owner->insertion_count)
+    const bool mutating = owner->mutation_depth != 0;
+    /* A short live scan costs less than hashing a small scoped map. */
+    if ((mutating && cache->count <= 8u) || cache->entries != owner->entries ||
+        cache->insertions != owner->insertions || cache->capacity != owner->capacity ||
+        cache->insertion_capacity != owner->insertion_capacity ||
+        (!mutating &&
+         (cache->count != owner->count || cache->insertion_count != owner->insertion_count)))
         return false;
     /* Presence is packed-key membership only. Unlike GET it does not inspect
      * values, pending or acquisition bindings, and changes no diagnostics or
      * counters. Unknown/stale native index state falls back to live lookup. */
     const int32_t key = mc_chunk_cache_key(x, z);
+    if (mutating) {
+        size_t hinted;
+        if (!owned_cache_scoped_hint(owner, cache, key, &hinted))
+            return false;
+        *out = true;
+        return true;
+    }
     size_t slot = owned_cache_hash(key, owner->slots_count - 1);
     for (size_t inspected = 0; inspected < owner->slots_count; ++inspected) {
         const uint32_t word = owner->slots[slot];
