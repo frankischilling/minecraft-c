@@ -3030,8 +3030,8 @@
       "sha256": "d6fa4bcc01e3fcb0ca196b0abc9b289fc42176d3436e3280c7e9f6ac93e45d77"
     },
     "src/world/runtime/presence_internal.h": {
-      "bytes": 1145,
-      "sha256": "5e1f353806f8030c36e3b1e5b7d7348287430a877b9ebb89912d5c590dec3a28"
+      "bytes": 1693,
+      "sha256": "190f4a5401f95cac844ce69a832bf5a2978894b6d04470d78ed925cd80dd5b7b"
     },
     "tests/client/controller/test_render_interpolation.c": {
       "bytes": 9216,
@@ -9675,7 +9675,7 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76652,
-      "sha256": "84c014be304d223148c0b955bedbcd27fa35b6d57ef5b9dc93f6e5590929466c"
+      "sha256": "21697a422eb708c0b13aab4b613ccaefe37252590534ec7bf7c8959abc448aad"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -9839,7 +9839,7 @@
     },
     "tests/tools/world/test_arrow_natural_flight.py": {
       "bytes": 16754,
-      "sha256": "cb4b33412926cd74aed635aaeb8accffea04f104dd3dfba807fc6bc0b75bc712"
+      "sha256": "347afc68918170c160357c702070241593d00d70ff7230964562c6bd60fb9411"
     },
     "tests/world/runtime/test_arrow_natural_flight.c": {
       "bytes": 19352,
@@ -9855,7 +9855,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "1349a81b4dfe635c7bf4afaa9b14b4536e876b74974604d5a8a3477805df8f11"
+      "sha256": "411bb33597b5f1bd2d9b3d212f74d1e5ee23f1836ef6778db6015817e1059c3b"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,
@@ -9863,7 +9863,7 @@
     },
     "tests/tools/entity/test_damage_native_close.py": {
       "bytes": 17605,
-      "sha256": "b5f4c7d77d4c42b945bff008b1709480ba494a23ab9e7a36ea93fdb7e382af7d"
+      "sha256": "468a117f8c5481e8de89bd968df584adc040b7fcc4193e8099c665b0b5dd4690"
     },
     "tests/world/runtime/world_access/test_damage_close_execution.c": {
       "bytes": 30398,
@@ -10210,8 +10210,8 @@
       "sha256": "255dd0b05f85742528504cd7f2775926e6500d16b1ac64592001aa8e2d195705"
     },
     "src/world/runtime/movement.c": {
-      "bytes": 30414,
-      "sha256": "7ad45e1f710854e1afc32d62f7e72edc62db30954633a19536f2bbdc7ccf289b"
+      "bytes": 31415,
+      "sha256": "2dd892a12cca78b088e0a754a25760fa61524155f8620a4bc3be64bc3a77fe8e"
     },
     "src/world/runtime/mutation/ladder.c": {
       "bytes": 8815,

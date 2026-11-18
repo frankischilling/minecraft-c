@@ -6,6 +6,7 @@
 
 #include "../../../src/core/java/random_profile_internal.h"
 #include "mc/world/dimension/world_chunk_manager.h"
+#include "mc/world/runtime/material_movement.h"
 #include "mc/world/runtime/movement.h"
 
 #include <emmintrin.h>
@@ -97,11 +98,129 @@ cleanup:
     return ok;
 }
 
+static bool world_move_area_failures(fixture *f, size_t side) {
+    bool ok = false;
+    mc_world_runtime *const world = f->worlds[side];
+    mc_chunk_provider *const provider = world->fields.v;
+    mc_chunk_cache *const cache = f->providers[side].cache;
+    const size_t count = cache->count, calls = world->active_calls;
+    const mc_world_runtime_mode mode = world->construction.mode;
+    const mc_world_runtime_phase phase = world->construction.phase;
+    const mc_world_storage_error saved = world->last_error;
+    const mc_world_storage_error sentinel = {MC_WORLD_STORAGE_IO_ERROR,
+                                             "area prior diagnostic sentinel", 37};
+    const mc_java_random random = *world->fields.r;
+    mc_world_movement_error error;
+
+    static const struct {
+        mc_world_storage_status status;
+        const char *operation;
+    } denied[] = {{MC_WORLD_STORAGE_INVALID_ARGUMENT, "World movement arguments"},
+                  {MC_WORLD_STORAGE_INVALID_ARGUMENT, "World movement arguments"},
+                  {MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World movement phase"},
+                  {MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World movement phase"},
+                  {MC_WORLD_STORAGE_LIMIT, "World operation admission"}};
+
+    for (size_t i = 0; i < COUNT(denied); ++i) {
+        bool value = true;
+        world->last_error = sentinel;
+        world->fields.v = NULL; /* Denied outer entry must not reach presence. */
+        if (i == 2)
+            world->construction.mode = MC_WORLD_RUNTIME_COMPOSITION;
+        if (i == 3)
+            world->construction.phase = MC_WORLD_RUNTIME_RETIRED;
+        if (i == 4)
+            world->active_calls = SIZE_MAX;
+        memset(&error, 0xa5, sizeof(error));
+        const mc_world_storage_status status = mc_world_runtime_area_loaded(
+            i == 0 ? NULL : world, 0, 0, 0, 15, 127, 15, i == 1 ? NULL : &value, &error);
+        const size_t after_calls = world->active_calls;
+        world->fields.v = provider;
+        world->construction.mode = mode;
+        world->construction.phase = phase;
+        world->active_calls = calls;
+        CHECK(status == denied[i].status && value && error.status == status &&
+              error.operation != NULL && strcmp(error.operation, denied[i].operation) == 0 &&
+              error.bytecode == 0 && error.area_bytecode == 0 && error.presence_bytecode == 0 &&
+              error.provider_bytecode == 0 && error.cause.status == status &&
+              error.cause.operation == error.operation && error.cause.system_error == 0 &&
+              error.block.nearby.index == SIZE_MAX &&
+              error.presentation.registry.initializer_pc == -1 &&
+              after_calls == (i == 4 ? SIZE_MAX : calls) &&
+              world->last_error.status == sentinel.status &&
+              world->last_error.operation == sentinel.operation &&
+              world->last_error.system_error == sentinel.system_error && world_move_idle(f, side));
+    }
+    CHECK(cache->capacity != SIZE_MAX);
+    const mc_entity_bounds bounds = {8.125, 64.125, 8.125, 8.875, 64.875, 8.875};
+    mc_material *const water = mc_materials_get(f->materials, MC_MATERIAL_g);
+    for (unsigned fault = 0; fault < 2; ++fault) {
+        const char *const operation = fault == 0 ? "World provider presence receiver"
+                                                 : "World provider presence cache metadata";
+        for (unsigned material = 0; material < 2; ++material) {
+            const bool initial = fault != 0;
+            bool value = initial;
+            mc_world_material_movement_error child;
+            world->last_error = sentinel;
+            if (fault == 0)
+                world->fields.v = NULL;
+            else
+                cache->count = cache->capacity + 1;
+            const mc_world_storage_status status =
+                material
+                    ? mc_world_runtime_material_accelerate(world, &bounds, water, NULL, NULL,
+                                                           &value, &child)
+                    : mc_world_runtime_area_loaded(world, 0, 0, 0, 15, 127, 15, &value, &error);
+            world->fields.v = provider;
+            cache->count = count;
+            const mc_world_movement_error *const area = material ? &child.area : &error;
+            CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && value == initial &&
+                  area->status == status && area->bytecode == 69 && area->area_bytecode == 69 &&
+                  area->presence_bytecode == 6 && area->provider_bytecode == 6 &&
+                  area->operation != NULL && strcmp(area->operation, operation) == 0 &&
+                  area->cause.status == status && area->cause.operation == area->operation &&
+                  area->cause.system_error == 0 && area->block.nearby.index == SIZE_MAX &&
+                  area->presentation.registry.initializer_pc == -1 &&
+                  world->last_error.status == status &&
+                  world->last_error.operation == area->operation &&
+                  world->last_error.system_error == 0 && world_move_idle(f, side));
+            CHECK(!material ||
+                  (child.status == status && child.bytecode == 73 && child.cell_work == 0 &&
+                   child.operation == area->operation && child.cause.status == status &&
+                   child.cause.operation == area->operation && child.cause.system_error == 0 &&
+                   child.block.nearby.index == SIZE_MAX));
+        }
+    }
+    CHECK(mc_test_java_random_equal(&random, world->fields.r));
+    ok = true;
+cleanup:
+    world->fields.v = provider;
+    cache->count = count;
+    world->construction.mode = mode;
+    world->construction.phase = phase;
+    world->active_calls = calls;
+    world->last_error = saved;
+    return ok;
+}
+
 static bool world_move_rain_threshold(fixture *f, size_t side) {
     bool ok = false, value = true;
     mc_world_runtime *world = f->worlds[side];
     mc_world_movement_error error;
     mc_chunk_provider *saved_v = world->fields.v;
+    const mc_world_storage_error previous_error = world->last_error;
+    const unsigned int mxcsr = _mm_getcsr();
+    _mm_setcsr(mxcsr | 0x6000u);
+    const mc_world_storage_status invalid_fp =
+        world_move_rain(f, side, 8, 64, 8, 0.0f, 0.0f, &value, &error);
+    _mm_setcsr(mxcsr);
+    const mc_world_storage_error fp_failure = world->last_error;
+    world->last_error = previous_error;
+    CHECK(invalid_fp == MC_WORLD_STORAGE_UNSUPPORTED_STATE && value && error.bytecode == 1 &&
+          error.raining_bytecode == 2 && error.rain_strength_bytecode == 12 &&
+          error.query.bytecode == 0 && error.registry.initializer_pc == -1 &&
+          error.cause.status == invalid_fp && fp_failure.status == error.cause.status &&
+          fp_failure.operation == error.cause.operation && world_move_idle(f, side));
     world->fields.v = NULL;
     bool dry = true, below = true, nan = true;
     const mc_world_storage_status a = world_move_rain(f, side, 8, 64, 8, 1.0f, 0.0f, &dry, &error);
@@ -513,8 +632,9 @@ int main(int argc, char **argv) {
         CHECK(boxes_open_store(f, side, root) && boxes_create_world(f, side));
     }
     for (size_t side = 0; side < 2; ++side)
-        CHECK(world_move_area(f, side) && world_move_rain_threshold(f, side) &&
-              world_move_rain_sources(f, side) && world_move_burning(f, side) &&
+        CHECK(world_move_area(f, side) && world_move_area_failures(f, side) &&
+              world_move_rain_threshold(f, side) && world_move_rain_sources(f, side) &&
+              world_move_burning(f, side) &&
               world_move_burning_read_failure_after_success(f, side) && world_move_sound(f, side));
     result = 0;
 cleanup:

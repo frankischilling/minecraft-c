@@ -10,6 +10,7 @@
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
+#include "presence_internal.h"
 #include "runtime_internal.h"
 
 #include <stddef.h>
@@ -457,7 +458,7 @@ static bool execute(mc_world_runtime *w, const mc_entity_bounds *b, mc_material 
     if (kind == 2) {
         e->bytecode = 73;
         bool loaded;
-        if (mc_world_runtime_area_loaded(w, lx, ly, lz, hx, hy, hz, &loaded, &e->area) !=
+        if (mc_world_runtime_area_loaded_in_place(w, lx, ly, lz, hx, hy, hz, &loaded, &e->area) !=
             MC_WORLD_STORAGE_OK)
             return cause(e, e->area.cause);
         if (!loaded) {

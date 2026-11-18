@@ -103,6 +103,34 @@ ticks, with 16,342 and 3,779 matching actor dispatches, respectively.
 | Heavy | 35.33 → 44.41 | 45.67 → 40.37 |
 | Lighter | 59.20 → 61.66 | 29.08 → 27.13 |
 
+## Loaded-area and dry-weather checks
+
+The ordinary material scan reuses the same held loaded-area query as other
+World operations. The query checks chunks in X/Z order and returns at the
+first missing chunk. A failed admission or provider check publishes the full
+diagnostic. The material scan retains its canonical child on success. Burning
+uses the same held presence body. Dry weather returns after the actual rain
+strength check and skips an intermediate World diagnostic.
+
+The controls check a denied World call, null provider, invalid cache count,
+and failed rain FP admission. Denied entry preserves the previous World error.
+A reached provider or rain-strength failure records its exact source positions,
+preserves the Boolean output, and releases the World hold.
+
+Two heavy and two lighter pairs on DISPLAY2 used Far distance and 854×480.
+The heavy cave measured 55.51 → 55.34 FPS and 31.13 → 30.65 ms p99. The lighter
+cave measured 63.56 → 65.33 FPS and 24.65 → 22.79 ms p99. Both lighter pairs
+improved. Actor, random, and scheduler receipts matched over the shared ticks.
+Separate heavy profiles counted 585,072 → 498,423 World movement
+diagnostic initializations.
+
+The moving comparison used ordinary forward input in a saved Far scene on
+DISPLAY2. Both builds moved about 47 blocks per interval, crossed two chunk
+boundaries, and changed the renderer center ten times.
+Input, motion, actor state, random state, and scheduler receipts matched over
+220 shared World ticks. Across two pairs, median FPS was 66.98 → 66.82 and
+p99 frame time was 21.77 → 22.46 ms. The route stayed within the saved footprint.
+
 ## Reference and native verification
 
 The source-pins metadata records both complete JAR hashes, 31 class identities,

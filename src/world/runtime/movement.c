@@ -10,6 +10,7 @@
 #include "mc/core/math/math.h"
 #include "mc/world/runtime/environment.h"
 #include "mutation/mutation_internal.h"
+#include "presence_internal.h"
 #include "runtime_execution_internal.h"
 #include "runtime_internal.h"
 #include "world_access_internal.h"
@@ -105,16 +106,22 @@ static mc_world_storage_status entity_status(mc_entity_status status) {
                                                    : MC_WORLD_STORAGE_UNSUPPORTED_STATE;
 }
 
-static bool enter(mc_world_runtime *world, bool has_output, mc_world_movement_error *frame) {
+static mc_world_storage_error movement_admission(mc_world_runtime *world, bool has_output) {
     if (world == NULL || !has_output)
-        return fail(frame, MC_WORLD_STORAGE_INVALID_ARGUMENT, "World movement arguments");
+        return (mc_world_storage_error){MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                        "World movement arguments", 0};
     if (world->construction.mode != MC_WORLD_RUNTIME_GAME ||
         world->construction.phase == MC_WORLD_RUNTIME_RETIRED)
-        return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World movement phase");
+        return (mc_world_storage_error){MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World movement phase",
+                                        0};
     mc_world_storage_error cause = {0};
-    if (mc_world_runtime_call_enter(world, &cause) != MC_WORLD_STORAGE_OK)
-        return storage_failure(frame, cause);
-    return true;
+    (void)mc_world_runtime_call_enter(world, &cause);
+    return cause;
+}
+
+static bool enter(mc_world_runtime *world, bool has_output, mc_world_movement_error *frame) {
+    const mc_world_storage_error cause = movement_admission(world, has_output);
+    return cause.status == MC_WORLD_STORAGE_OK || storage_failure(frame, cause);
 }
 
 static mc_world_storage_status result(mc_world_movement_error *error,
@@ -142,58 +149,48 @@ static bool fp_ready(mc_world_movement_error *frame, const char *operation) {
     return fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, operation);
 }
 
-/* Complete fd/dj.a(IIIIII)Z and private f/g(II)Z. The caller already holds
- * this World. No Y payload, acquiring getter or Registry use is performed. */
-static bool area_loaded_held(mc_world_runtime *world, int32_t min_x, int32_t min_y, int32_t min_z,
-                             int32_t max_x, int32_t max_y, int32_t max_z, bool *value,
-                             mc_world_movement_error *frame) {
-    if (max_y < 0 || min_y >= 128) {
-        *value = false;
-        return true;
-    }
-    min_x = mc_java_i32_shr(min_x, 4);
-    min_y = mc_java_i32_shr(min_y, 4);
-    min_z = mc_java_i32_shr(min_z, 4);
-    max_x = mc_java_i32_shr(max_x, 4);
-    max_y = mc_java_i32_shr(max_y, 4);
-    max_z = mc_java_i32_shr(max_z, 4);
-    (void)min_y;
-    (void)max_y;
-    for (int32_t x = min_x; x <= max_x; x = mc_java_i32_add(x, 1)) {
-        for (int32_t z = min_z; z <= max_z; z = mc_java_i32_add(z, 1)) {
-            frame->area_bytecode = 69;
-            frame->presence_bytecode = 6;
-            frame->provider_bytecode = 6;
-            bool present;
-            mc_world_storage_error cause = {0};
-            if (mc_world_runtime_chunk_provider_contains(world, x, z, &present, &cause) !=
-                MC_WORLD_STORAGE_OK)
-                return storage_failure(frame, cause);
-            frame->area_bytecode = frame->presence_bytecode = frame->provider_bytecode = 0;
-            if (!present) {
-                *value = false;
-                return true;
-            }
+static bool area_failure(mc_world_movement_error *error, const mc_world_presence_error *area) {
+    error->area_bytecode = area->bytecode;
+    error->presence_bytecode = area->provider_bytecode;
+    error->provider_bytecode = area->provider_bytecode;
+    return storage_failure(error, area->cause);
+}
+
+mc_world_storage_status
+mc_world_runtime_area_loaded_in_place(mc_world_runtime *world, int32_t min_x, int32_t min_y,
+                                      int32_t min_z, int32_t max_x, int32_t max_y, int32_t max_z,
+                                      bool *out, mc_world_movement_error *error) {
+    const mc_world_storage_error admission = movement_admission(world, out != NULL);
+    if (admission.status != MC_WORLD_STORAGE_OK) {
+        if (error != NULL) {
+            mc_world_movement_error_init(error);
+            (void)storage_failure(error, admission);
         }
+        return admission.status;
     }
-    *value = true;
-    return true;
+    mc_world_presence_error area;
+    const mc_world_storage_status status = mc_world_runtime_region_present_held(
+        world, min_x, min_y, min_z, max_x, max_y, max_z, out, &area);
+    if (status != MC_WORLD_STORAGE_OK)
+        world->last_error = area.cause;
+    mc_world_runtime_call_leave(world);
+    if (status != MC_WORLD_STORAGE_OK && error != NULL) {
+        mc_world_movement_error_init(error);
+        error->bytecode = area.bytecode;
+        (void)area_failure(error, &area);
+    }
+    return status;
 }
 
 mc_world_storage_status mc_world_runtime_area_loaded(mc_world_runtime *world, int32_t min_x,
                                                      int32_t min_y, int32_t min_z, int32_t max_x,
                                                      int32_t max_y, int32_t max_z, bool *out,
                                                      mc_world_movement_error *error) {
-    mc_world_movement_error frame;
-    mc_world_movement_error_init(&frame);
-    if (!enter(world, out != NULL, &frame))
-        return result(error, &frame);
-    bool value;
-    if (area_loaded_held(world, min_x, min_y, min_z, max_x, max_y, max_z, &value, &frame))
-        *out = value;
-    else
-        frame.bytecode = frame.area_bytecode;
-    return finish(world, &frame, error);
+    const mc_world_storage_status status = mc_world_runtime_area_loaded_in_place(
+        world, min_x, min_y, min_z, max_x, max_y, max_z, out, error);
+    if (status == MC_WORLD_STORAGE_OK)
+        mc_world_movement_error_init(error);
+    return status;
 }
 
 static bool query_failure(mc_world_movement_error *frame) {
@@ -267,20 +264,8 @@ leave:
     return completed;
 }
 
-static bool rain_at_held(mc_world_runtime *world, int32_t x, int32_t y, int32_t z, bool *value,
-                         mc_world_movement_error *frame) {
-    frame->bytecode = 1;
-    frame->raining_bytecode = 2;
-    frame->rain_strength_bytecode = 12;
-    float rain;
-    mc_world_storage_error cause = {0};
-    if (mc_world_runtime_rain_strength(world, 1.0f, &rain, &cause) != MC_WORLD_STORAGE_OK)
-        return storage_failure(frame, cause);
-    frame->raining_bytecode = frame->rain_strength_bytecode = 0;
-    if (!((double)rain > 0.2)) {
-        *value = false;
-        return true;
-    }
+static bool rain_at_position_held(mc_world_runtime *world, int32_t x, int32_t y, int32_t z,
+                                  bool *value, mc_world_movement_error *frame) {
     frame->bytecode = 13;
     bool visible;
     if (mc_world_runtime_sky_visible(world, x, y, z, &visible, &frame->query) !=
@@ -301,17 +286,47 @@ static bool rain_at_held(mc_world_runtime *world, int32_t x, int32_t y, int32_t 
     return rain_biome(world, x, z, value, frame);
 }
 
+static mc_world_storage_status rain_at_position(mc_world_runtime *world, int32_t x, int32_t y,
+                                                int32_t z, bool *out,
+                                                mc_world_movement_error *error) {
+    mc_world_movement_error frame;
+    mc_world_movement_error_init(&frame);
+    bool value;
+    if (rain_at_position_held(world, x, y, z, &value, &frame))
+        *out = value;
+    return finish(world, &frame, error);
+}
+
 mc_world_storage_status mc_world_runtime_rain_at(mc_world_runtime *world, int32_t x, int32_t y,
                                                  int32_t z, bool *out,
                                                  mc_world_movement_error *error) {
-    mc_world_movement_error frame;
-    mc_world_movement_error_init(&frame);
-    if (!enter(world, out != NULL, &frame))
-        return result(error, &frame);
-    bool value;
-    if (rain_at_held(world, x, y, z, &value, &frame))
-        *out = value;
-    return finish(world, &frame, error);
+    mc_world_storage_error cause = movement_admission(world, out != NULL);
+    if (cause.status != MC_WORLD_STORAGE_OK) {
+        if (error != NULL) {
+            mc_world_movement_error_init(error);
+            (void)storage_failure(error, cause);
+        }
+        return cause.status;
+    }
+    float rain;
+    if (mc_world_runtime_rain_strength(world, 1.0f, &rain, &cause) != MC_WORLD_STORAGE_OK) {
+        world->last_error = cause;
+        mc_world_runtime_call_leave(world);
+        if (error != NULL) {
+            mc_world_movement_error_init(error);
+            error->bytecode = 1;
+            error->raining_bytecode = 2;
+            error->rain_strength_bytecode = 12;
+            (void)storage_failure(error, cause);
+        }
+        return cause.status;
+    }
+    if ((double)rain > 0.2)
+        return rain_at_position(world, x, y, z, out, error);
+    *out = false;
+    mc_world_runtime_call_leave(world);
+    mc_world_movement_error_init(error);
+    return MC_WORLD_STORAGE_OK;
 }
 
 static bool burning_static_id(mc_world_runtime *world, const char *name, unsigned int static_pc,
@@ -353,8 +368,10 @@ static bool burning_held(mc_world_runtime *world, const mc_entity_bounds *bounds
     const int32_t high_z = mc_math_floor_double(bounds->max_z + 1.0);
     frame->bytecode = 69;
     bool loaded;
-    if (!area_loaded_held(world, low_x, low_y, low_z, high_x, high_y, high_z, &loaded, frame))
-        return false;
+    mc_world_presence_error area;
+    if (mc_world_runtime_region_present_held(world, low_x, low_y, low_z, high_x, high_y, high_z,
+                                             &loaded, &area) != MC_WORLD_STORAGE_OK)
+        return area_failure(frame, &area);
     if (!loaded) {
         *value = false;
         return true;

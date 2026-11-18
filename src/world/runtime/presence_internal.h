@@ -3,6 +3,8 @@
 
 #include "mc/world/runtime/runtime.h"
 
+struct mc_world_movement_error;
+
 typedef struct mc_world_presence_error {
     unsigned int bytecode, provider_bytecode;
     mc_world_storage_error cause;
@@ -18,5 +20,12 @@ mc_world_storage_status mc_world_runtime_region_present_held(mc_world_runtime *w
                                                              int32_t max_x, int32_t max_y,
                                                              int32_t max_z, bool *out,
                                                              mc_world_presence_error *error);
+
+/* Ordinary World admission around the same presence body. Success leaves an
+ * already canonical caller diagnostic ready for its next operation. */
+mc_world_storage_status mc_world_runtime_area_loaded_in_place(mc_world_runtime *, int32_t, int32_t,
+                                                              int32_t, int32_t, int32_t, int32_t,
+                                                              bool *,
+                                                              struct mc_world_movement_error *);
 
 #endif

@@ -399,8 +399,8 @@
       "sha256": "de1645d2d89f27f6975ec7bdda43167b25532df96d7b121123ce67e22422a89c"
     },
     "src/world/runtime/material_movement.c": {
-      "bytes": 30275,
-      "sha256": "693c8333e04f810ddd24dfd9067759eeb750a2acc617a4278bce7de22cd9c827"
+      "bytes": 30315,
+      "sha256": "a9508d927963bc0fc0488cf475173386d0f96f63fd806dd770884d3c9a8ac328"
     },
     "src/world/runtime/material_movement_execution_internal.h": {
       "bytes": 4749,
@@ -483,8 +483,8 @@
       "sha256": "1015bc8d556470005c26ee710a7c02bc1f191b81a6f8719ed8eab465b2bf23f5"
     },
     "src/world/runtime/movement.c": {
-      "bytes": 30414,
-      "sha256": "7ad45e1f710854e1afc32d62f7e72edc62db30954633a19536f2bbdc7ccf289b"
+      "bytes": 31415,
+      "sha256": "2dd892a12cca78b088e0a754a25760fa61524155f8620a4bc3be64bc3a77fe8e"
     },
     "src/world/runtime/presentation.c": {
       "bytes": 23797,

@@ -61,8 +61,8 @@
       "sha256": "00a015fae9fb9fd4524bdc4ca3a003ae3ec649f4cab10bced2b5f3f7b53e2d8e"
     },
     "src/world/runtime/movement.c": {
-      "bytes": 30414,
-      "sha256": "7ad45e1f710854e1afc32d62f7e72edc62db30954633a19536f2bbdc7ccf289b"
+      "bytes": 31415,
+      "sha256": "2dd892a12cca78b088e0a754a25760fa61524155f8620a4bc3be64bc3a77fe8e"
     },
     "src/world/runtime/runtime.c": {
       "bytes": 76524,

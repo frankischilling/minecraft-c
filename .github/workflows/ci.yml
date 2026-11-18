@@ -96,18 +96,23 @@ jobs:
         id: configure
         run: |
           df -h "$GITHUB_WORKSPACE"
-          # Native configuration does not use the hosted Android or .NET SDKs.
-          # Join cleanup even if configuration fails; neither may outlive this step.
-          # Delete directly; df reports space without a second walk of each SDK.
-          (
-            if [ -d /usr/local/lib/android ]; then
-              sudo rm -rf -- /usr/local/lib/android
-            fi
-            if [ -d /usr/share/dotnet ]; then
-              sudo rm -rf -- /usr/share/dotnet
-            fi
-          ) &
-          cleanup_pid=$!
+          # Recent sanitizer builds consumed up to 44 GiB. Keep headroom for
+          # the test working directories before skipping hosted SDK cleanup.
+          available_kib=$(df -Pk "$GITHUB_WORKSPACE" | awk 'NR == 2 {print $4}')
+          cleanup_pid=
+          if [ "$available_kib" -lt $((80 * 1024 * 1024)) ]; then
+            (
+              if [ -d /usr/local/lib/android ]; then
+                sudo rm -rf -- /usr/local/lib/android || exit
+              fi
+              if [ -d /usr/share/dotnet ]; then
+                sudo rm -rf -- /usr/share/dotnet || exit
+              fi
+            ) &
+            cleanup_pid=$!
+          else
+            echo "Keeping hosted SDKs with $available_kib KiB available"
+          fi
           set +e
           python -B scripts/development/configure_with_retry.py -- cmake -S . -B build -G Ninja \
             -DCMAKE_C_COMPILER=${{ matrix.compiler }} \
@@ -125,8 +130,11 @@ jobs:
             -DMC_ENABLE_APPLICATION_STARTUP_TESTS=ON \
             -DMC_ENABLE_RESOURCE_LOOKUP_OBSERVERS=ON
           configure_status=$?
-          wait "$cleanup_pid"
-          cleanup_status=$?
+          cleanup_status=0
+          if [ -n "$cleanup_pid" ]; then
+            wait "$cleanup_pid"
+            cleanup_status=$?
+          fi
           set -e
           df -h "$GITHUB_WORKSPACE"
           if [ "$configure_status" -ne 0 ]; then
@@ -174,7 +182,9 @@ jobs:
         run: xvfb-run -a -s "-screen 0 1280x1024x24 -noreset" env LIBGL_ALWAYS_SOFTWARE=1 ctest --test-dir build --parallel 4 --output-on-failure
       - name: Report terrain test scopes and failures
         if: always()
-        run: python -B scripts/development/report_terrain_tests.py --build build
+        run: |
+          df -h "$GITHUB_WORKSPACE"
+          python -B scripts/development/report_terrain_tests.py --build build
       - name: Retain failed native test evidence
         if: always() && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
