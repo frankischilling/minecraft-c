@@ -9,7 +9,7 @@ Compare already-built observers from two revisions:
 
 The fixed scene uses seed 123, Tiny distance, 854x480 and saved Rotation 180,-30.
 Each fresh process warms up naturally for 2s and measures 10s of ordinary Source
-frames. All attempts, including focus/frontier failures, remain in artifacts.
+frames on DISPLAY2 with fixed input. All attempts remain in artifacts.
 There is no universal FPS or original-game parity claim and no FPS threshold.
 """
 import argparse

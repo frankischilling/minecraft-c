@@ -226,11 +226,13 @@ def summarize(stdout):
     ledger = work_ledger(raw, result, row_version,
                          [fields(s) for s in stdout.splitlines() if s.startswith('PERF_WORK ')])
     duration_complete = end - start >= 10 * hz
+    stationary = context.get('input-policy') == 'fixed-input'
+    pose_valid = not stationary or unsigned(result['pose-invalid'], 'Pose failures') == 0
     valid = (result['healthy'] == '1' and result['capacity'] == '0' and
              result['focus-invalid'] == '0' and finish['cleanup'] == '1' and
              int(context['view-distance']) == 3 and all(r[12] == 1 for r in raw) and
              all(r[11] == -1 and r[10] == 1 for r in raw) and native_foreground_valid and
-             actual_rotation_valid and (row_version == 1 or len(split_rows) == len(raw)))
+             actual_rotation_valid and pose_valid and (row_version == 1 or len(split_rows) == len(raw)))
     gpu = {key: next((s.split(' ', 1)[1] for s in stdout.splitlines()
                       if s.startswith('PERF_GPU_' + key.upper() + ' ')), None)
            for key in ('vendor', 'renderer', 'version')}
@@ -282,6 +284,8 @@ def main():
     mining = module('perf_mining_inputs', 'tests/tools/client/test_mining_loop.py')
     selected = module('perf_selected_inputs', 'tests/tools/client/test_block_selection.py')
     world = module('perf_world_inputs', 'tests/tools/client/test_world_selection_loop.py')
+    monitor = module('perf_monitor', 'tests/tools/client/test_bed_sleep.py').second_monitor()
+    bounds = ','.join(map(str, monitor['selected']['work']))
     exe, assets = args.executable.resolve(strict=True), args.assets.resolve(strict=True)
     args.artifacts.mkdir(parents=True, exist_ok=True)
     evidence = Path(tempfile.mkdtemp(prefix='release-sky-play-', dir=args.artifacts.resolve()))
@@ -297,6 +301,7 @@ def main():
     before = {str(path): mining.digest(path) for path in sorted(inputs)}
     asset_before = world.snapshot(assets)
     report = {'status': 'FAIL', 'scope': __doc__, 'inputs_before': before,
+              'monitor': monitor,
               'assets_before': asset_before, 'read_only_source_clock_observations': True,
               'audio_backend': 'existing SDK fixture OpenAL null driver; Source sound work unchanged',
               'per_frame_test_screenshots_disk_checks_assertion_helpers': False,
@@ -341,6 +346,7 @@ def main():
         report['save_before'] = world.snapshot(saves)
         environment = os.environ.copy()
         environment.update(APPDATA=str(home), LOCALAPPDATA=str(home), USERPROFILE=str(home),
+            SDL_DISPLAY_USABLE_BOUNDS=bounds, MC_WORLD_SELECTION_MONITOR_BOUNDS=bounds,
             ALSOFT_DRIVERS='null', MC_WORLD_RELOAD_SAVES=str(saves),
             MC_WORLD_SAVE_TITLE_SAVES=str(saves),
             MC_WORLD_SAVE_TITLE_SNAPSHOTS=str(evidence / 'snapshots'),
@@ -360,7 +366,18 @@ def main():
         (evidence / 'stderr.txt').write_bytes(result.stderr)
         report['ended_ns'] = time.time_ns()
         report['returncode'] = result.returncode
-        report['summary'] = summarize(result.stdout.decode('utf8', errors='strict'))
+        stdout = result.stdout.decode('utf8', errors='strict')
+        report['summary'] = summarize(stdout)
+        if report['summary']['context'].get('input-policy') != 'fixed-input':
+            raise ValueError('Use an observer built for the fixed-input workload')
+        monitor_rows = [fields(line) for line in stdout.splitlines()
+                        if line.startswith('WORLD_SELECTION_MONITOR stage=perf-')]
+        if ([(row['stage'], row['window']) for row in monitor_rows] !=
+                [(stage, window) for stage in ('perf-open', 'perf-timed-returned')
+                 for window in ('frame', 'canvas')] or
+                any(row['target'] != bounds for row in monitor_rows)):
+            raise ValueError('Missing monitor 2 window receipts')
+        report['monitor_windows'] = monitor_rows
         report['save_after'] = world.snapshot(saves)
         report['save_changed_by_normal_source_execution'] = report['save_before'] != report['save_after']
         if result.returncode != 0 or not report['summary']['comparison_qualified']:

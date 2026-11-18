@@ -38,8 +38,36 @@ characterize unrestricted play, Far distance, other hardware or frame-time
 stability. Earlier rejected frame cohorts retain their own limits in the
 [Chunk-rendering record](chunk-rendering.md).
 
-The existing observer accepts already-built executables and alternates their
-order across rounds. A future comparison should retain every attempt, match
-the authored scene and camera, require active World work, and distinguish
-fixed-work CPU results from deadline-driven Source frames. Read physical
-monitor topology and set `SDL_DISPLAY_USABLE_BOUNDS` before opening test windows.
+## Fixed-input observer
+
+Build both comparison executables with the same observer source. The runner
+selects physical `DISPLAY2` before launching and checks the bounds of the
+Frame and Canvas before world selection and after timing. It alternates the
+executable order and retains every attempt.
+
+The observer drops nonzero mouse deltas during setup, then filters gameplay
+keyboard and mouse events during warmup and timing. Window focus and close
+events still reach the client. Normal tick, draw and swap paths run, and each
+timed frame checks the Player's position and rotation against the entry pose.
+This measures steady frames for a stationary scene. Input latency and active
+play require separate measurements.
+
+Three alternating Windows MSVC Release pairs on the i9-10900F and RTX 3060
+passed with matching poses, active World work and both windows on `DISPLAY2`.
+The baseline rebuilt two objects from before the lookup optimization. Both
+executables shared the observer, the other runtime objects and the resource
+fixture. All six runs used Tiny distance at 854×480.
+
+| Round | Before FPS | After FPS | Before p95 (ms) | After p95 (ms) |
+| --- | ---: | ---: | ---: | ---: |
+| 1 | 27.12 | 26.89 | 90.79 | 86.82 |
+| 2 | 21.11 | 26.60 | 111.77 | 83.61 |
+| 3 | 24.03 | 28.03 | 108.40 | 74.36 |
+| Median | 24.03 | 26.89 | 108.40 | 83.61 |
+
+The first round's FPS fell slightly, while p95 improved in all three rounds.
+The sample covers one stationary scene on one machine.
+
+A second cohort balanced executable order over four pairs. All eight runs
+kept the timed camera pose, but one baseline run lost native foreground and
+paused World simulation. That cohort has no aggregate FPS comparison.

@@ -28,6 +28,33 @@ typedef struct perf_fps {
     bool truncated;
 } perf_fps;
 
+typedef struct perf_camera {
+    uint64_t x, y, z;
+    uint32_t yaw, pitch;
+} perf_camera;
+
+static bool SDLCALL perf_stationary_mouse(void *userdata, SDL_Event *event) {
+    const SDL_WindowID canvas = *(const SDL_WindowID *)userdata;
+    return event->type != SDL_EVENT_MOUSE_MOTION || event->motion.windowID != canvas ||
+           (event->motion.xrel == 0.0f && event->motion.yrel == 0.0f);
+}
+
+static bool SDLCALL perf_fixed_input(void *userdata, SDL_Event *event) {
+    (void)userdata;
+    switch (event->type) {
+        case SDL_EVENT_KEY_DOWN:
+        case SDL_EVENT_KEY_UP:
+        case SDL_EVENT_TEXT_INPUT:
+        case SDL_EVENT_MOUSE_MOTION:
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
+        case SDL_EVENT_MOUSE_BUTTON_UP:
+        case SDL_EVENT_MOUSE_WHEEL:
+            return false;
+        default:
+            return true;
+    }
+}
+
 static uint64_t perf_ft(FILETIME x) {
     return (uint64_t)x.dwLowDateTime | ((uint64_t)x.dwHighDateTime << 32);
 }
@@ -40,22 +67,31 @@ static bool perf_qpc(int64_t *out) {
     return true;
 }
 
-/* Passive scalar reads only, outside warmup/timing. The same saved Rotation
- * is authored on disk for both candidates; no source pose is repaired here. */
-static int perf_pose(fixture *f, const char *stage) {
-    CHECK(f->app->h != NULL);
+static bool perf_read_camera(const fixture *f, perf_camera *pose) {
+    if (f->app->h == NULL)
+        return false;
     const mc_entity_base_fields *p = &f->app->h->base;
-    uint64_t x, y, z;
-    uint32_t yaw, pitch;
-    memcpy(&x, &p->x, sizeof(x));
-    memcpy(&y, &p->y, sizeof(y));
-    memcpy(&z, &p->z, sizeof(z));
-    memcpy(&yaw, &p->yaw, sizeof(yaw));
-    memcpy(&pitch, &p->aT, sizeof(pitch));
+    memcpy(&pose->x, &p->x, sizeof(pose->x));
+    memcpy(&pose->y, &p->y, sizeof(pose->y));
+    memcpy(&pose->z, &p->z, sizeof(pose->z));
+    memcpy(&pose->yaw, &p->yaw, sizeof(pose->yaw));
+    memcpy(&pose->pitch, &p->aT, sizeof(pose->pitch));
+    return true;
+}
+
+static bool perf_camera_matches(const fixture *f, const perf_camera *expected) {
+    perf_camera actual;
+    return perf_read_camera(f, &actual) && actual.x == expected->x && actual.y == expected->y &&
+           actual.z == expected->z && actual.yaw == expected->yaw &&
+           actual.pitch == expected->pitch;
+}
+
+/* The saved Rotation is authored on disk for both candidates. Take passive
+ * scalar readings so the observer cannot repair a changed camera. */
+static void perf_pose(const perf_camera *pose, const char *stage) {
     printf("PERF_POSE stage=%s x=%016" PRIx64 " y=%016" PRIx64 " z=%016" PRIx64 " yaw=%08" PRIx32
            " pitch=%08" PRIx32 "\n",
-           stage, x, y, z, yaw, pitch);
-    return 0;
+           stage, pose->x, pose->y, pose->z, pose->yaw, pose->pitch);
 }
 
 /* Copy completed-loop counters and live World time outside the timed section.
@@ -186,10 +222,15 @@ static int perf_world_ready(fixture *f) {
 }
 
 static int perf_run(fixture *f) {
+    uint32_t frame_id = 0, canvas_id = 0;
     CHECK(mc_client_menu_loop_create(f->bootstrap, &f->loop) &&
           mc_client_menu_loop_inspect(f->loop, &f->state) &&
           repeat_statistics_controls(f, true) == 0 && save_title_focus(f) == 0 &&
-          ticks(f, 2) == 0 && perf_choose(f) == 0 && perf_world_ready(f) == 0);
+          ticks(f, 2) == 0 && save_title_host(f, "perf-open", false, &frame_id, &canvas_id) == 0 &&
+          perf_choose(f) == 0 && perf_world_ready(f) == 0);
+    /* Keep window focus and close events live during the stationary workload.
+     * The observer is a separate process, so this affects only its input queue. */
+    SDL_SetEventFilter(perf_fixed_input, NULL);
     CHECK(perf_cache_receipt(f, "setup-returned") == 0);
     mc_game_settings_state settings;
     CHECK(mc_game_settings_read_state(f->app->settings, &settings));
@@ -198,11 +239,13 @@ static int perf_run(fixture *f) {
     printf("PERF_GPU_VENDOR %s\nPERF_GPU_RENDERER %s\nPERF_GPU_VERSION %s\n", gpu->vendor,
            gpu->renderer, gpu->version);
     printf("PERF_CONTEXT major=%d minor=%d profile=%d swap-zero=%d width=%d height=%d "
-           "view-distance=%d performance-mode=%d\n",
+           "view-distance=%d performance-mode=%d input-policy=fixed-input\n",
            gpu->gl_major, gpu->gl_minor, gpu->profile, (int)gpu->swap_interval_zero, f->app->d,
            f->app->e, settings.values.render_distance, settings.values.performance_mode);
     CHECK(settings.values.render_distance == 3 && f->app->r == NULL && f->app->N);
-    CHECK(perf_pose(f, "pre-warmup") == 0);
+    perf_camera pose;
+    CHECK(perf_read_camera(f, &pose));
+    perf_pose(&pose, "pre-warmup");
     perf_row *rows = calloc(PERF_ROWS, sizeof(*rows));
     perf_fps *fps = calloc(PERF_FPS_ROWS, sizeof(*fps));
     LARGE_INTEGER frequency;
@@ -230,7 +273,8 @@ static int perf_run(fixture *f) {
     }
     CHECK(healthy && mc_client_menu_loop_inspect(f->loop, &f->state));
     CHECK(perf_cache_receipt(f, "warmup-returned") == 0);
-    CHECK(perf_pose(f, "timed-entry") == 0);
+    CHECK(perf_read_camera(f, &pose));
+    perf_pose(&pose, "timed-entry");
     const uint64_t ticks_before = f->state.world_tick_returns;
     perf_work(f, "timed-entry");
     FILETIME pc0, pe0, pk0, pu0, pc1, pe1, pk1, pu1;
@@ -238,6 +282,7 @@ static int perf_run(fixture *f) {
     CHECK(perf_qpc(&start));
     end = start;
     uintptr_t last_fps = 0;
+    size_t pose_invalid = 0;
     /* TIMED SECTION: QPC, actual normal frame, shallow scalar observations.
      * No assertions, prints, captures, filesystem checks or fixture callbacks.
      * Inherent Source diagnostics/autosaves/sound/pacing remain ordinary work. */
@@ -277,6 +322,8 @@ static int perf_run(fixture *f) {
         (void)GetWindowThreadProcessId((HWND)r->foreground, &r->foreground_pid);
         r->source_focus = f->app->N;
         r->screen = f->app->r == NULL ? -1 : (int32_t)f->app->r->kind;
+        if (!perf_camera_matches(f, &pose))
+            ++pose_invalid;
         const uintptr_t current_fps = (uintptr_t)f->app->K;
         if (current_fps != last_fps && fps_count < PERF_FPS_ROWS) {
             mc_player_string_view text;
@@ -300,7 +347,10 @@ static int perf_run(fixture *f) {
     capacity = count == PERF_ROWS && end - start < 10 * hz;
     CHECK(GetProcessTimes(GetCurrentProcess(), &pc1, &pe1, &pk1, &pu1));
     CHECK(perf_cache_receipt(f, "timed-returned") == 0);
-    CHECK(perf_pose(f, "timed-returned") == 0);
+    perf_camera final_pose;
+    CHECK(perf_read_camera(f, &final_pose));
+    perf_pose(&final_pose, "timed-returned");
+    CHECK(save_title_host(f, "perf-timed-returned", false, &frame_id, &canvas_id) == 0);
     CHECK(mc_client_menu_loop_inspect(f->loop, &f->state));
     perf_work(f, "timed-returned");
     size_t focus_invalid = 0;
@@ -309,13 +359,14 @@ static int perf_run(fixture *f) {
             (rows[i].flags & (SDL_WINDOW_MINIMIZED | SDL_WINDOW_HIDDEN)) || !rows[i].source_focus ||
             rows[i].screen != -1)
             ++focus_invalid;
-    printf("PERF_RESULT row-version=2 qpc-hz=%" PRId64 " start=%" PRId64 " end=%" PRId64
-           " warmup-frames=%" PRIu64 " frames=%zu world-ticks=%" PRIu64
-           " healthy=%d capacity=%d focus-invalid=%zu process-kernel-100ns=%" PRIu64
-           " process-user-100ns=%" PRIu64 "\n",
-           hz, start, end, warm_frames, count, f->state.world_tick_returns - ticks_before,
-           (int)healthy, (int)capacity, focus_invalid, perf_ft(pk1) - perf_ft(pk0),
-           perf_ft(pu1) - perf_ft(pu0));
+    printf(
+        "PERF_RESULT row-version=2 qpc-hz=%" PRId64 " start=%" PRId64 " end=%" PRId64
+        " warmup-frames=%" PRIu64 " frames=%zu world-ticks=%" PRIu64
+        " healthy=%d capacity=%d focus-invalid=%zu pose-invalid=%zu process-kernel-100ns=%" PRIu64
+        " process-user-100ns=%" PRIu64 "\n",
+        hz, start, end, warm_frames, count, f->state.world_tick_returns - ticks_before,
+        (int)healthy, (int)capacity, focus_invalid, pose_invalid, perf_ft(pk1) - perf_ft(pk0),
+        perf_ft(pu1) - perf_ft(pu0));
     if (!healthy)
         fprintf(stderr, "PERF_FRONTIER %s.%s:%" PRId64 " %s\n",
                 f->state.source_class == NULL ? "native" : f->state.source_class,
@@ -345,7 +396,7 @@ static int perf_run(fixture *f) {
     free(fps);
     free(rows);
     fflush(stdout);
-    return healthy && !capacity && focus_invalid == 0 && count > 0 ? 0 : 1;
+    return healthy && !capacity && focus_invalid == 0 && pose_invalid == 0 && count > 0 ? 0 : 1;
 }
 
 static int perf_quit(fixture *f, uint32_t frame_id) {
@@ -370,7 +421,7 @@ static int perf_quit(fixture *f, uint32_t frame_id) {
 }
 
 int main(int argc, char **argv) {
-    CHECK(argc == 3);
+    CHECK(argc == 3 && SDL_getenv("MC_WORLD_SELECTION_MONITOR_BOUNDS") != NULL);
     fixture *f = calloc(1, sizeof(*f));
     workbench = calloc(1, sizeof(*workbench));
     automatic = calloc(1, sizeof(*automatic));
@@ -390,8 +441,19 @@ int main(int argc, char **argv) {
           mc_client_source_frame_inspect(mc_client_bootstrap_frame(f->bootstrap), &host) &&
           host.frame_window != NULL && host.canvas_window != NULL);
     const uint32_t frame_id = SDL_GetWindowID(host.frame_window);
-    const uint32_t canvas_id = SDL_GetWindowID(host.canvas_window);
-    int result = perf_run(f);
+    SDL_WindowID canvas_id = SDL_GetWindowID(host.canvas_window);
+    int result = 1;
+    if (!SDL_GetEventFilter(NULL, NULL)) {
+        SDL_SetEventFilter(perf_stationary_mouse, &canvas_id);
+        /* A nonzero delta for this Canvas must never reach the SDK queue. */
+        SDL_Event probe = {0};
+        probe.type = SDL_EVENT_MOUSE_MOTION;
+        probe.motion.windowID = canvas_id;
+        probe.motion.xrel = 1.0f;
+        if (!SDL_PushEvent(&probe))
+            result = perf_run(f);
+        SDL_SetEventFilter(NULL, NULL);
+    }
     if (perf_quit(f, frame_id) != 0)
         result = 1;
     mining_extra_before_frame = NULL;

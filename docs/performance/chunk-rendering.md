@@ -27,8 +27,13 @@ process tree to one logical processor at Above Normal priority.
 
 Both brightness medians fell in every round. Material medians rose in both
 comparisons, opaque and normal-cube results changed direction, and the manager
-control varied by 11–14%. The cause of the slower material results remains
-undetermined.
+control varied by 11–14%.
+
+A later pinned control using the same executable on both sides measured
+45.52 and 45.53 ns per Material read. A fresh six-round comparison of the
+earlier and current lookup code measured 57.65 and 46.78 ns per Material
+read. Five of six paired round medians favored the current code. The direction
+reversal across cohorts leaves the earlier Material slowdown unconfirmed.
 
 All six native frame runs returned with active simulation, valid foreground
 and clean shutdown. Four runs drifted from the authored camera pose, which

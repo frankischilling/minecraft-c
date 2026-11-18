@@ -90,6 +90,14 @@ def work_receipt(wire=None):
 
 
 class FrameWorkObservations(unittest.TestCase):
+    def test_stationary_camera_rejects_excursion_between_matching_endpoints(self):
+        wire = work_receipt().replace('performance-mode=1',
+                                      'performance-mode=1 input-policy=fixed-input')
+        wire = wire.replace('focus-invalid=0', 'focus-invalid=0 pose-invalid=0')
+        self.assertTrue(FRAMES.summarize(wire)['comparison_qualified'])
+        self.assertFalse(FRAMES.summarize(wire.replace('pose-invalid=0', 'pose-invalid=1'))[
+            'comparison_qualified'])
+
     def test_independent_work_checkpoints_qualify(self):
         summary = FRAMES.summarize(work_receipt())
         self.assertTrue(summary['comparison_qualified'])
