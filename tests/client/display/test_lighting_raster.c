@@ -690,6 +690,148 @@ static void submitted_list_normals(float out[9]) {
     submitted_attribute(3, 3, out);
 }
 
+enum { COMPILED_CONTROL_VERTICES = 96 };
+
+typedef struct compiled_submission {
+    GLint vao, buffer;
+    float vertices[COMPILED_CONTROL_VERTICES][12];
+} compiled_submission;
+
+static void compiled_submission_read(compiled_submission *out) {
+#define COMPILED_OBSERVATION_PROC(type, name, symbol)                                              \
+    type name = NULL;                                                                              \
+    do {                                                                                           \
+        SDL_FunctionPointer address = SDL_GL_GetProcAddress(symbol);                               \
+        _Static_assert(sizeof(name) == sizeof(address), "GL observation pointer representation");  \
+        CHECK(address != NULL);                                                                    \
+        memcpy(&name, &address, sizeof(name));                                                     \
+    } while (0)
+    COMPILED_OBSERVATION_PROC(mc_client_gl_get_integer_fn, get_integer, "glGetIntegerv");
+    COMPILED_OBSERVATION_PROC(mc_client_gl_get_error_fn, get_error, "glGetError");
+    COMPILED_OBSERVATION_PROC(PFNGLGETVERTEXATTRIBIVPROC, get_attribute, "glGetVertexAttribiv");
+    COMPILED_OBSERVATION_PROC(PFNGLGETVERTEXATTRIBPOINTERVPROC, get_pointer,
+                              "glGetVertexAttribPointerv");
+    COMPILED_OBSERVATION_PROC(PFNGLGETBUFFERPARAMETERIVPROC, get_buffer, "glGetBufferParameteriv");
+    COMPILED_OBSERVATION_PROC(PFNGLGETBUFFERSUBDATAPROC, read_buffer, "glGetBufferSubData");
+#undef COMPILED_OBSERVATION_PROC
+    CHECK(get_error() == GL_NO_ERROR);
+    get_integer(GL_VERTEX_ARRAY_BINDING, &out->vao);
+    get_integer(GL_ARRAY_BUFFER_BINDING, &out->buffer);
+    GLint capacity = 0;
+    get_buffer(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &capacity);
+    CHECK(out->vao > 0 && out->buffer > 0 && capacity >= (GLint)sizeof(out->vertices));
+    static const GLint components[4] = {3, 2, 4, 3};
+    static const size_t offsets[4] = {0, 12, 20, 36};
+    for (GLuint location = 0; location < 4; ++location) {
+        GLint enabled = 0, size = 0, type = 0, stride = 0, normalized = 0, buffer = 0;
+        void *pointer = NULL;
+        get_attribute(location, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &enabled);
+        get_attribute(location, GL_VERTEX_ATTRIB_ARRAY_SIZE, &size);
+        get_attribute(location, GL_VERTEX_ATTRIB_ARRAY_TYPE, &type);
+        get_attribute(location, GL_VERTEX_ATTRIB_ARRAY_STRIDE, &stride);
+        get_attribute(location, GL_VERTEX_ATTRIB_ARRAY_NORMALIZED, &normalized);
+        get_attribute(location, GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, &buffer);
+        get_pointer(location, GL_VERTEX_ATTRIB_ARRAY_POINTER, &pointer);
+        CHECK(enabled == GL_TRUE && size == components[location] && type == GL_FLOAT &&
+              normalized == GL_FALSE && stride == 48 && buffer == out->buffer &&
+              (size_t)(uintptr_t)pointer == offsets[location]);
+    }
+    /* Read only the submitted prefix; the retained store may have more capacity. */
+    read_buffer(GL_ARRAY_BUFFER, 0, (GLsizeiptr)sizeof(out->vertices), out->vertices);
+    CHECK(get_error() == GL_NO_ERROR);
+}
+
+static void compiled_submission_expect(const compiled_submission *submitted, const uint8_t *bytes,
+                                       const float color[4], const float normal[3]) {
+    for (size_t vertex = 0; vertex < COMPILED_CONTROL_VERTICES; ++vertex) {
+        float expected[12] = {0};
+        memcpy(expected, bytes + vertex * 32, 3u * sizeof(float));
+        memcpy(expected + 5, color, 4u * sizeof(float));
+        memcpy(expected + 9, normal, 3u * sizeof(float));
+        CHECK(memcmp(submitted->vertices[vertex], expected, sizeof(expected)) == 0);
+    }
+}
+
+static void compiled_cache_controls(mc_client_display *display,
+                                    mc_client_display_context_lease *lease,
+                                    mc_client_display_list_range **range, int32_t id) {
+    setup(display, true);
+    CHECK(mc_client_display_source_lighting_enable(display, false, &display_error));
+    static const float color[2][4] = {{.125f, .25f, .5f, .75f}, {.75f, .5f, .25f, .125f}};
+    static const float normal[2][3] = {{.25f, -.5f, .75f}, {-.75f, .5f, -.25f}};
+    CHECK(mc_client_display_source_color(display, color[0][0], color[0][1], color[0][2],
+                                         color[0][3], &display_error));
+    CHECK(mc_client_display_source_normal(display, normal[0][0], normal[0][1], normal[0][2],
+                                          &display_error));
+    uint8_t triangle[192], bytes[COMPILED_CONTROL_VERTICES * 32], recorded[sizeof(bytes)];
+    CHECK(geometry(triangle, false, false, false) == 3);
+    for (size_t vertex = 0; vertex < COMPILED_CONTROL_VERTICES; ++vertex)
+        memcpy(bytes + vertex * 32, triangle + (vertex % 3u) * 32, 32);
+    arrays(display, lease, bytes, false, false, false);
+    CHECK(mc_client_display_lists_begin(display, id, &display_error));
+    CHECK(mc_client_display_source_batch(lease, bytes, bytes, sizeof(bytes),
+                                         COMPILED_CONTROL_VERTICES, GL_TRIANGLES, &display_error));
+    CHECK(mc_client_display_lists_end(display, &display_error));
+    memcpy(recorded, bytes, sizeof(recorded));
+    /* Poison the caller storage after compilation, then reuse it for direct draws. */
+    for (size_t vertex = 0; vertex < COMPILED_CONTROL_VERTICES; ++vertex) {
+        float x;
+        memcpy(&x, bytes + vertex * 32, sizeof(x));
+        x += .125f;
+        memcpy(bytes + vertex * 32, &x, sizeof(x));
+    }
+    compiled_submission first, repeated, changed, direct;
+    CHECK(mc_client_display_list_call(display, id, &display_error));
+    compiled_submission_read(&first);
+    compiled_submission_expect(&first, recorded, color[0], normal[0]);
+    CHECK(mc_client_display_list_call(display, id, &display_error));
+    compiled_submission_read(&repeated);
+    CHECK(first.vao == repeated.vao && first.buffer == repeated.buffer &&
+          memcmp(first.vertices, repeated.vertices, sizeof(first.vertices)) == 0);
+    CHECK(mc_client_display_source_color(display, color[1][0], color[1][1], color[1][2],
+                                         color[1][3], &display_error));
+    CHECK(mc_client_display_list_call(display, id, &display_error));
+    compiled_submission_read(&changed);
+    compiled_submission_expect(&changed, recorded, color[1], normal[0]);
+    CHECK(memcmp(first.vertices, changed.vertices, sizeof(first.vertices)) != 0);
+    CHECK(mc_client_display_source_normal(display, normal[1][0], normal[1][1], normal[1][2],
+                                          &display_error));
+    CHECK(mc_client_display_list_call(display, id, &display_error));
+    compiled_submission_read(&first);
+    compiled_submission_expect(&first, recorded, color[1], normal[1]);
+    CHECK(memcmp(first.vertices, changed.vertices, sizeof(first.vertices)) != 0);
+    CHECK(mc_client_display_source_batch(lease, bytes, bytes, sizeof(bytes),
+                                         COMPILED_CONTROL_VERTICES, GL_TRIANGLES, &display_error));
+    compiled_submission_read(&direct);
+    compiled_submission_expect(&direct, bytes, color[1], normal[1]);
+    CHECK(first.vao != direct.vao && first.buffer != direct.buffer);
+    CHECK(mc_client_display_list_call(display, id, &display_error));
+    compiled_submission_read(&repeated);
+    compiled_submission_expect(&repeated, recorded, color[1], normal[1]);
+    CHECK(first.vao == repeated.vao && first.buffer == repeated.buffer &&
+          memcmp(first.vertices, repeated.vertices, sizeof(first.vertices)) == 0);
+    /* Same-sized replacement may reuse native names, but must upload the new positions. */
+    CHECK(mc_client_display_lists_begin(display, id, &display_error));
+    CHECK(mc_client_display_source_batch(lease, bytes, bytes, sizeof(bytes),
+                                         COMPILED_CONTROL_VERTICES, GL_TRIANGLES, &display_error));
+    CHECK(mc_client_display_lists_end(display, &display_error));
+    CHECK(mc_client_display_list_call(display, id, &display_error));
+    compiled_submission_read(&changed);
+    compiled_submission_expect(&changed, bytes, color[1], normal[1]);
+    CHECK(memcmp(first.vertices, changed.vertices, sizeof(first.vertices)) != 0);
+    CHECK(mc_client_display_lists_retire(range, &display_error));
+    CHECK(mc_client_display_lists_generate(display, 1, 8, range, &id, &display_error));
+    arrays(display, lease, recorded, false, false, false);
+    CHECK(mc_client_display_lists_begin(display, id, &display_error));
+    CHECK(mc_client_display_source_batch(lease, recorded, recorded, sizeof(recorded),
+                                         COMPILED_CONTROL_VERTICES, GL_TRIANGLES, &display_error));
+    CHECK(mc_client_display_lists_end(display, &display_error));
+    CHECK(mc_client_display_list_call(display, id, &display_error));
+    compiled_submission_read(&repeated);
+    compiled_submission_expect(&repeated, recorded, color[1], normal[1]);
+    CHECK(memcmp(changed.vertices, repeated.vertices, sizeof(changed.vertices)) != 0);
+}
+
 static void list_controls(mc_client_display *display, mc_client_display_context_lease **lease,
                           mc_client_display_list_range **range) {
     CHECK(mc_client_display_source_matrix_mode(display, GL_PROJECTION, &display_error));
@@ -780,6 +922,7 @@ static void list_controls(mc_client_display *display, mc_client_display_context_
     list_state(display, "before_repeat");
     CHECK(mc_client_display_list_call(display, id, &display_error));
     list_state(display, "after_repeat");
+    compiled_cache_controls(display, *lease, range, id);
 }
 
 static bool direct_normal_retained(mc_client_display *display) {

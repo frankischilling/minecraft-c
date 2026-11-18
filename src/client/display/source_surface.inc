@@ -75,7 +75,7 @@ static void source_attribute_colors(const uint8_t rgba[4], bool multiply, float 
 static void source_attribute_batch_complete(mc_client_source_state *s,
                                             mc_client_source_attribute_profile profile,
                                             unsigned arrays, bool compiled, int32_t count,
-                                            const mc_client_source_gpu_vertex *vertices) {
+                                            const mc_client_source_gpu_vertex *last) {
     const unsigned color_bit = 1u << MC_CLIENT_SOURCE_COLOR_ARRAY;
     const unsigned normal_bit = 1u << MC_CLIENT_SOURCE_NORMAL_ARRAY;
     /* Mesa list array draws retain the prior current attributes, including
@@ -90,7 +90,7 @@ static void source_attribute_batch_complete(mc_client_source_state *s,
                                       profile == SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8;
     if ((arrays & color_bit) != 0) {
         if (adopt) {
-            memcpy(s->color, vertices[count - 1].color, sizeof(s->color));
+            memcpy(s->color, last->color, sizeof(s->color));
             s->color_known = true;
             source_material_color(&s->fog, s->color, true);
         } else if (!compiled) {
@@ -101,7 +101,7 @@ static void source_attribute_batch_complete(mc_client_source_state *s,
     }
     if ((arrays & normal_bit) != 0) {
         if (adopt) {
-            memcpy(s->fog.normal, vertices[count - 1].normal, sizeof(s->fog.normal));
+            memcpy(s->fog.normal, last->normal, sizeof(s->fog.normal));
             s->fog.normal_known = true;
         } else if (!compiled && !retain_direct_normal) {
             s->fog.normal_known = false;
@@ -379,6 +379,24 @@ static mc_client_source_command *source_append(mc_client_display *display,
 #include "source_lighting_numeric.h"
 #include "source_lighting_shader.h"
 
+static void source_gpu_vertex_layout(mc_client_display *display) {
+    const GLsizei stride = (GLsizei)sizeof(mc_client_source_gpu_vertex);
+    display->gl.EnableVertexAttribArray(0);
+    display->gl.VertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride,
+                                    (const void *)offsetof(mc_client_source_gpu_vertex, position));
+    display->gl.EnableVertexAttribArray(1);
+    display->gl.VertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride,
+                                    (const void *)offsetof(mc_client_source_gpu_vertex, uv));
+    display->gl.EnableVertexAttribArray(2);
+    display->gl.VertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride,
+                                    (const void *)offsetof(mc_client_source_gpu_vertex, color));
+    display->gl.EnableVertexAttribArray(3);
+    display->gl.VertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, stride,
+                                    (const void *)offsetof(mc_client_source_gpu_vertex, normal));
+}
+
+#include "source_vertex_cache.inc"
+
 static bool source_gpu_construct(mc_client_display *display, mc_client_display_error *error) {
     mc_client_source_state *s = &display->source;
     if (s->program != 0 && s->vao != 0 && s->vbo != 0)
@@ -450,19 +468,7 @@ static bool source_gpu_construct(mc_client_display *display, mc_client_display_e
         return fail(error, MC_CLIENT_DISPLAY_GL_ERROR, "source GPU vertex storage", "zero name", 0);
     display->gl.BindVertexArray(s->vao);
     display->gl.BindBuffer(GL_ARRAY_BUFFER, s->vbo);
-    const GLsizei stride = (GLsizei)sizeof(mc_client_source_gpu_vertex);
-    display->gl.EnableVertexAttribArray(0);
-    display->gl.VertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride,
-                                    (const void *)offsetof(mc_client_source_gpu_vertex, position));
-    display->gl.EnableVertexAttribArray(1);
-    display->gl.VertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride,
-                                    (const void *)offsetof(mc_client_source_gpu_vertex, uv));
-    display->gl.EnableVertexAttribArray(2);
-    display->gl.VertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride,
-                                    (const void *)offsetof(mc_client_source_gpu_vertex, color));
-    display->gl.EnableVertexAttribArray(3);
-    display->gl.VertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, stride,
-                                    (const void *)offsetof(mc_client_source_gpu_vertex, normal));
+    source_gpu_vertex_layout(display);
     return gl_check(display, "source GPU vertex layout", error);
 }
 
@@ -548,13 +554,24 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
         !source_normal_transform(&candidate, normal_matrix, &normal_scale, error))
         return false;
     const size_t allocation = (size_t)count * sizeof(mc_client_source_gpu_vertex);
-    mc_client_source_gpu_vertex *vertices = allocation == 0 ? NULL : malloc(allocation);
-    if (allocation != 0 && vertices == NULL)
+    const float *current_color = (arrays & color_bit) == 0 ? candidate.color : NULL;
+    const float *current_normal = (arrays & normal_bit) == 0 ? candidate.fog.normal : NULL;
+    source_cached_vertices *entry = NULL;
+    if (compiled && !candidate.lighting_enabled && count >= SOURCE_CACHE_MIN_VERTICES &&
+        allocation <= SOURCE_CACHE_BYTES)
+        entry = source_vertex_cache_slot(display, data);
+    const bool hit = entry != NULL &&
+                     source_vertex_cache_matches(entry, data, display->native_context_generation,
+                                                 attribute_profile, current_color, current_normal);
+    /* Unlit replay can use the converted buffer and its final attributes. */
+    const size_t conversion_count = hit ? 0 : (size_t)count;
+    mc_client_source_gpu_vertex *vertices = conversion_count == 0 ? NULL : malloc(allocation);
+    if (conversion_count != 0 && vertices == NULL)
         return fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "source draw conversion",
                     "allocation failed", 0);
     const bool multiply_color =
         attribute_profile == SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8 ? !compiled : compiled;
-    for (size_t i = 0; i < (size_t)count; ++i) {
+    for (size_t i = 0; i < conversion_count; ++i) {
         const uint8_t *raw = data + i * 32u;
         memcpy(vertices[i].position, raw, 3u * sizeof(float));
         if ((arrays & uv_bit) != 0)
@@ -581,19 +598,31 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
     bool ok = source_gpu_create(display, error);
     if (ok) {
         display->gl.UseProgram(s->program);
-        display->gl.BindVertexArray(s->vao);
-        display->gl.BindBuffer(GL_ARRAY_BUFFER, s->vbo);
-        if (allocation > s->vbo_bytes) {
-            display->gl.BufferData(GL_ARRAY_BUFFER, (GLsizeiptr)allocation, vertices,
-                                   GL_STREAM_DRAW);
-            if (!gl_check(display, "source VBO allocation/upload", error)) {
-                s->vbo_capacity_uncertain = true;
-                ok = false;
-            } else
-                s->vbo_bytes = allocation;
-        } else if (allocation != 0) {
-            display->gl.BufferSubData(GL_ARRAY_BUFFER, 0, (GLsizeiptr)allocation, vertices);
-            ok = gl_check(display, "source VBO upload", error);
+        if (entry != NULL) {
+            entry->last_used = ++display->source_cache->sequence;
+            if (hit) {
+                source_vertex_cache_bind(display, entry);
+                ok = gl_check(display, "source VBO upload", error);
+            } else {
+                ok = source_vertex_cache_upload(display, entry, data, allocation, attribute_profile,
+                                                current_color, current_normal, vertices,
+                                                (size_t)count, error);
+            }
+        } else {
+            display->gl.BindVertexArray(s->vao);
+            display->gl.BindBuffer(GL_ARRAY_BUFFER, s->vbo);
+            if (allocation > s->vbo_bytes) {
+                display->gl.BufferData(GL_ARRAY_BUFFER, (GLsizeiptr)allocation, vertices,
+                                       GL_STREAM_DRAW);
+                if (!gl_check(display, "source VBO allocation/upload", error)) {
+                    s->vbo_capacity_uncertain = true;
+                    ok = false;
+                } else
+                    s->vbo_bytes = allocation;
+            } else if (allocation != 0) {
+                display->gl.BufferSubData(GL_ARRAY_BUFFER, 0, (GLsizeiptr)allocation, vertices);
+                ok = gl_check(display, "source VBO upload", error);
+            }
         }
     }
     if (ok) {
@@ -616,7 +645,10 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
         display->gl.ProvokingVertex(GL_LAST_VERTEX_CONVENTION);
         /* Preserve inherited blend/depth/viewport/scissor/cull/clear state. */
         display->gl.DrawArrays((GLenum)mode, 0, count);
-        source_attribute_batch_complete(s, attribute_profile, arrays, compiled, count, vertices);
+        const mc_client_source_gpu_vertex *last = NULL;
+        if (count > 0)
+            last = hit ? &entry->last_vertex : &vertices[count - 1];
+        source_attribute_batch_complete(s, attribute_profile, arrays, compiled, count, last);
         ok = gl_check(display, "source interleaved draw", error);
         if (ok)
             display->frame_started = true;
@@ -747,6 +779,8 @@ static void source_free_commands(mc_client_display_list_range *range,
                                  mc_client_source_command *command) {
     while (command != NULL) {
         mc_client_source_command *next = command->next;
+        if (command->kind == SOURCE_COMMAND_DRAW)
+            source_vertex_cache_invalidate(range->display, command->value.draw.bytes);
         range->display->source.command_bytes -= command->charge;
         --range->command_count;
         free(command);
@@ -1146,6 +1180,7 @@ bool mc_client_display_lists_retire(mc_client_display_list_range **slot,
 static void source_gpu_retire(mc_client_display *display, bool *ok,
                               mc_client_display_error *first) {
     mc_client_source_state *s = &display->source;
+    source_vertex_cache_retire(display, ok, first);
     if (display->context_lost)
         return;
     if (s->vbo != 0) {

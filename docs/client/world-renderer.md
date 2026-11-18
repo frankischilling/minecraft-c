@@ -151,6 +151,49 @@ draw. It measured 26.94 median FPS in the heavy scene and 56.27 in the
 lighter scene, with median p99 of 50.99 and 30.04 ms. The results did not show
 a consistent benefit across the two scenes.
 
+Three subsequent 10-second DISPLAY2 traces timed individual GL calls on the
+same build. In the heavy cave, the upload span averaged 3.56–3.60 ms per
+frame. The data transfer call accounted for 0.48–0.49 ms, and the following
+GL error check accounted for 3.02–3.07 ms. The active texture query took
+1.14–1.19 ms, and the post-draw error check took 1.23–1.24 ms. In the
+lighter cave, the transfer call took 1.17 ms and its error check took
+0.15 ms. These CPU wall-clock timings include driver waits, which can move
+between calls as the GPU queue fills.
+
+An offline replay counted reuse by recorded command lifetime, native
+context generation, array state, attribute profile, and the exact current
+color and normal when their arrays were disabled. For unlit recorded draws
+of at least 96 vertices, a 16 MiB least-recently-used model reused 96.4% of
+all recorded upload bytes in both heavy runs and 79.8% in the lighter run.
+The 32 MiB model reused 96.4% and 97.4%, respectively. The model counted
+bytes from cold start within each measured interval and removed entries on
+command retirement.
+
+Display now retains converted vertices for eligible unlit recorded draws
+of at least 96 vertices. The cache is local to one Display and caps
+retained GL buffer storage at 32 MiB. Retiring or replacing a recorded
+command invalidates its entry. Replay still performs native texture and
+floating-point admission, applies current uniforms, issues each draw in
+order, and publishes the final vertex attributes according to the driver
+profile. The native tests read back the real buffer and attribute layout
+across reuse, ambient attribute changes, intervening direct draws, and
+list replacement and retirement. A separate control introduces a real
+binding error on a cache hit and verifies that replay stops before drawing.
+
+Three paired runs per scene compared the cache with the preceding build
+at 854×480 on DISPLAY2. Each run captured 10 seconds of fixed-pose Far
+gameplay. Ordered actor state and scheduler work matched over 198 common
+World ticks and 16,259 dispatches in the heavy cave, and 199 ticks and
+3,779 dispatches in the lighter cave.
+
+| Scene | Median FPS, baseline → cache | Median p99 frame ms, baseline → cache |
+| --- | ---: | ---: |
+| Heavy cave | 26.78 → 32.48 | 51.58 → 46.69 |
+| Lighter cave | 57.49 → 55.26 | 31.38 → 29.95 |
+
+The heavy cave gained about 21% FPS. The lighter cave lost about 4% FPS.
+The p99 frame time improved in every pair in both scenes.
+
 ### Rendering and context ownership
 
 Vertices contain section-local float XYZ, UV and ARGB. The upload converts color

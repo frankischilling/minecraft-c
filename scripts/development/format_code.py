@@ -109,6 +109,7 @@ def main():
                  "src/storage/nbt/stream_support.inc",
                  "src/client/display/source_surface.inc",
                  "src/client/display/source_lighting_draw.inc",
+                 "src/client/display/source_vertex_cache.inc",
                  "src/storage/nbt/stream_owner.inc",
                  "src/client/display/source_world_list_surface.inc",
                  "src/client/display/world_frame_surface.inc",

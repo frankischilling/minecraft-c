@@ -15,6 +15,8 @@ static mc_client_gl_clear_fn real_clear;
 static mc_client_gl_get_integer_fn real_integer;
 static mc_client_gl_draw_arrays_fn real_draw;
 static mc_client_gl_get_error_fn real_error;
+static mc_client_gl_enable_fn real_enable;
+static PFNGLBINDBUFFERPROC real_bind_buffer;
 
 static GLenum GLAPIENTRY error_then_controls(void) {
     const GLenum value = real_error();
@@ -48,6 +50,11 @@ static void GLAPIENTRY draw_then_controls(GLenum mode, GLint first, GLsizei coun
     ++draw_calls;
     _mm_setcsr(callback_controls);
     pending_controls = true;
+}
+
+static void GLAPIENTRY bind_then_error(GLenum target, GLuint buffer) {
+    real_bind_buffer(target, buffer);
+    real_enable((GLenum)UINT32_MAX);
 }
 
 #define CHECK(condition)                                                                           \
@@ -90,6 +97,8 @@ int main(int argc, char **argv) {
     real_integer = display->gl.GetIntegerv;
     real_draw = display->gl.DrawArrays;
     real_error = display->gl.GetError;
+    real_enable = display->gl.Enable;
+    real_bind_buffer = display->gl.BindBuffer;
     display->gl.GetError = error_then_controls;
     CHECK(mc_client_display_loading_projection(display, 64, 64, &stage, &error));
     float projection[16];
@@ -150,11 +159,18 @@ int main(int argc, char **argv) {
           display->source.vbo == 0 && display->source.active_calls == 0);
 
     CHECK(mc_client_display_loading_clear_color_depth(display, &error));
+    uint8_t list_bytes[32 * 96];
+    for (size_t offset = 0; offset < sizeof(list_bytes); offset += sizeof(bytes))
+        memcpy(list_bytes + offset, bytes, sizeof(bytes));
+    CHECK(mc_client_display_source_pointer(lease, MC_CLIENT_SOURCE_VERTEX_ARRAY, list_bytes, 0,
+                                           &error));
+    CHECK(mc_client_display_source_pointer(lease, MC_CLIENT_SOURCE_COLOR_ARRAY, list_bytes, 20,
+                                           &error));
     int32_t id = 0;
     CHECK(mc_client_display_lists_generate(display, 1, 4, &range, &id, &error));
     CHECK(mc_client_display_lists_begin(display, id, &error));
-    CHECK(
-        mc_client_display_source_batch(lease, bytes, bytes, sizeof bytes, 3, GL_TRIANGLES, &error));
+    CHECK(mc_client_display_source_batch(lease, list_bytes, list_bytes, sizeof(list_bytes), 96,
+                                         GL_TRIANGLES, &error));
     /* Compilation copies this command; there is no matrix arithmetic yet. */
     _mm_setcsr(0x9fc0u);
     const bool compiled_translation = mc_client_display_source_translate(display, 2, 3, 0, &error);
@@ -203,6 +219,22 @@ int main(int argc, char **argv) {
           (direct_controls & 0xffc0u) == 0x9fc0u && display->source.active_calls == 0);
     CHECK(memcmp(&before_draw, &display->source.modelview, sizeof before_draw) == 0);
 
+    /* A native error after binding cached vertices must stop before DrawArrays. */
+    mc_client_source_batch_view recorded;
+    CHECK(mc_client_display_list_batch(display, id, 0, &recorded) &&
+          display->source_cache != NULL &&
+          display->source_cache->slots[source_vertex_cache_index(recorded.bytes)].data ==
+              recorded.bytes);
+    display->gl.BindBuffer = bind_then_error;
+    display->gl.DrawArrays = draw_then_controls;
+    const bool invalid_binding = mc_client_display_lists_call(display, &id, 1, &error);
+    display->gl.BindBuffer = real_bind_buffer;
+    display->gl.DrawArrays = real_draw;
+    CHECK(!invalid_binding && error.status == MC_CLIENT_DISPLAY_GL_ERROR &&
+          error.gl_error == GL_INVALID_ENUM && strcmp(error.operation, "source VBO upload") == 0);
+    CHECK(draw_calls == 1 && display->source.active_calls == 0 &&
+          memcmp(&before_draw, &display->source.modelview, sizeof before_draw) == 0);
+
     /* A real draw that changes sticky flags only permits the later command. */
     callback_controls = 0x1fbfu;
     display->gl.DrawArrays = draw_then_controls;
@@ -221,6 +253,7 @@ cleanup:
         display->gl.GetIntegerv = real_integer;
         display->gl.DrawArrays = real_draw;
         display->gl.GetError = real_error;
+        display->gl.BindBuffer = real_bind_buffer;
     }
     mc_client_capture_free(&capture);
     if (!mc_client_display_lists_retire(&range, &error))

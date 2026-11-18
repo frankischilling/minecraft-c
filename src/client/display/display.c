@@ -58,6 +58,8 @@ typedef struct display_occlusion_capability {
     PFNGLGETQUERYOBJECTUIVARBPROC GetQueryObjectuiv;
 } display_occlusion_capability;
 
+typedef struct source_vertex_cache source_vertex_cache;
+
 struct mc_client_display {
     SDL_Window *window;
     SDL_GLContext context;
@@ -73,6 +75,7 @@ struct mc_client_display {
     size_t texture_count, texture_bytes;
     size_t texture_resource_count, texture_resource_calls;
     mc_client_source_state source;
+    source_vertex_cache *source_cache;
     bool native_retiring, native_cleanup_issued, sdk_profile, stage_active, class_initialized,
         window_created;
     mc_client_display_phase stage_phase;
@@ -1309,6 +1312,8 @@ static bool destroy_native(mc_client_display *display, bool preserve_context, bo
      * consumed. Never retry destruction through a stale context after a later
      * checked Canvas release retains the native Display owner. */
     display->context = NULL;
+    free(display->source_cache);
+    display->source_cache = NULL;
     if (display->parent != NULL || display->listener_parent != NULL ||
         display->replaced_parent != NULL) {
         mc_client_canvas_error canvas_error = {0};

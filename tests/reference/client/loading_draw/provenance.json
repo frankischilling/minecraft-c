@@ -1090,8 +1090,8 @@
       "sha256": "49671f8a17d39c58006c819b8cfc5e6de352858edc2f9cbe8ce6f8c53ef43913"
     },
     "src/client/display/display.c": {
-      "bytes": 66332,
-      "sha256": "2110b9fd44fa89b3780a1a610f1b7f2b98af61f9161c3412db5b22c4195164a9"
+      "bytes": 66495,
+      "sha256": "8d9c2bd71b05d0af92adf3df007bab2d3bad3441919a5960f79ef5ec15cfa513"
     },
     "src/client/display/display.h": {
       "bytes": 14865,
@@ -1254,8 +1254,12 @@
       "sha256": "7b02fadfaf8310e34b2649de9dc5a7c9b79b2773185f035ff5681d9077a8e5e1"
     },
     "src/client/display/source_surface.inc": {
-      "bytes": 57926,
-      "sha256": "ab042f7cc9558b567e203af62e0b60a5cc6cafbad5629d6313e04948360fe926"
+      "bytes": 59792,
+      "sha256": "7fff42082a8091ed267f3c4762310329d436d0c554224a4ce50582c48f01286e"
+    },
+    "src/client/display/source_vertex_cache.inc": {
+      "bytes": 6755,
+      "sha256": "9d916c2df10a77a95b036263afe7f446ba791d81bbcc06d92088a7b709fccce5"
     },
     "src/client/display/source_viewport.inc": {
       "bytes": 3343,
@@ -3978,8 +3982,8 @@
       "sha256": "06a7aed7805d4ffc116b59f180c128beee859a00abf9cb0b03fbb1e3b01265bc"
     },
     "tests/client/render_engine/test_source_fp.c": {
-      "bytes": 11917,
-      "sha256": "4fdfebafdfb1194bd71a166bd434ff24bad5ecc9ead440e39eba0395e96bcbf0"
+      "bytes": 13768,
+      "sha256": "2811a5aee5eb0a8bd8d230cf663d3abc78e8a7c8fb33b78d683b47065832de6e"
     },
     "tests/client/render_engine/test_source_resources.c": {
       "bytes": 12780,
@@ -6874,8 +6878,8 @@
       "sha256": "00eec8d86c8edfd5f2c99b9c26ed1c561a42ef4549d1b3a734c8ae3a865e0867"
     },
     "tests/client/display/test_lighting_raster.c": {
-      "bytes": 72395,
-      "sha256": "c1c1308fa7b42134da26f5a4ea1c0825c4ed5e0ca64ec4562e03ba972d60420e"
+      "bytes": 81553,
+      "sha256": "03fae9d45bc2d949cc3cfd922ac3c5e77c50f7c870ee7e0cd8f2f570a8b03c2c"
     },
     "tests/client/render_engine/test_nw_normals.c": {
       "bytes": 10068,
@@ -10382,8 +10386,8 @@
       "sha256": "e0170ea87f2ac80048ebaec09ed5d9019807ab31022778f79733edeba39f5736"
     },
     "scripts/development/format_code.py": {
-      "bytes": 8435,
-      "sha256": "c46f1fd60047389b44395a3eeaa03eb22494cdcbfc7dfb10d7b68517e354f9d2"
+      "bytes": 8498,
+      "sha256": "a951d1b150afdc9ab037be8d5fd5fa289b1139ad33fd38f1db06891c17c1f8d9"
     },
     "src/client/gui/source_death_drawing.c": {
       "bytes": 9366,
