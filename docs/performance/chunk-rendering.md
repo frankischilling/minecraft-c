@@ -1,5 +1,32 @@
 # Chunk rendering and EW diagnostics
 
+## Sky-change dirty marking
+
+The sky-change callback now checks the Chunk renderer's fixed owner on
+each reached array read. It still appends each clean, sky-lit renderer to
+the dirty list before setting its dirty flag. The foreign-owner test
+keeps the two earlier appends and flags, then retains the original
+failure across a later successful call.
+
+The fixed MSVC Release workload invokes the actual WorldAccess callback
+on a live World. One quarter of the renderers are eligible for marking.
+All eight alternating pinned pairs preserved the complete dirty-list
+order and flags. The 5,408-renderer median fell from 198.54 to 0.028 ms.
+The 200-renderer median fell from 0.0347 to 0.00157 ms.
+
+Two ordinary Far traces had no sky change. A separate Far dusk scene
+started at World time 12,420 and reached the same sky-change callback
+at tick 12,541 in all four instrumented DISPLAY2 runs. Callback times
+were 122.54 and 131.66 ms before, and 0.095 and 0.133 ms after.
+The frames containing that callback fell from 186.13 to 61.62 ms and
+from 202.20 to 59.43 ms. Entity work varied across processes.
+
+Six uninstrumented DISPLAY2 runs of the same dusk scene at 854×480
+went from 27.88 to 31.72 median FPS and from 80.61 to 64.34 ms median
+p99. Two pairs improved on both measures. The longest frame was lower
+in all three pairs. These intervals completed 190 to 201 World ticks
+and both builds shared the local Sign edits.
+
 ## Chunk renderer ownership and Block lookup
 
 Culling and dirty-list reads use the Chunk renderer's fixed native owner.

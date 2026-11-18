@@ -5974,8 +5974,8 @@
       "sha256": "4c27a952596ec7d60c0c0e851c4c7f200defcac1c6a00bcbed87a1d270c4e287"
     },
     "src/client/world/render_global_access.c": {
-      "bytes": 68377,
-      "sha256": "991d3e4ced7cc10c6a7e6bcb34c6e9485f8810ab9f993d3ec811e2149f1ba234"
+      "bytes": 68267,
+      "sha256": "a5c1c041d65b705dfedc1b7858badbfcb1a39c1a458df8063cfe8718a0594a0f"
     },
     "src/client/world/render_global_access.h": {
       "bytes": 6118,
@@ -6666,8 +6666,8 @@
       "sha256": "52ef7ca9bb9ee83be989bcffc05e80f1a3a787d5b089a916d8d68f02314199cb"
     },
     "tests/client/world/test_sky_changed.h": {
-      "bytes": 7345,
-      "sha256": "03274ad3455cb65673e3a20a1724c4997dedc84aea75c11b108227b8f32e3a05"
+      "bytes": 9398,
+      "sha256": "281c03d9dab577e18a386ef715c7e5f0759df5e95596f3a9dcedd7ab24ccd31a"
     },
     "cmake/client_render_block_colors.cmake": {
       "bytes": 2937,

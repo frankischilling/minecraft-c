@@ -5,14 +5,14 @@
 static bool sky_changed_controls(mc_client_render_engine_classes *graphics, mc_world_runtime *world,
                                  mc_entity_classes *entities) {
     bool result = false;
-    mc_client_render_global *owner = NULL;
+    mc_client_render_global *owner = NULL, *foreign = NULL;
     mc_client_render_global_error *error = calloc(1, sizeof(*error));
     client_application *app = calloc(1, sizeof(*app));
     mc_world_access_failure captured = {0};
     CHECK(error != NULL && app != NULL);
     app->entities = entities;
     const size_t original_memberships = world->world_accesses.count;
-    for (unsigned int mode = 0; mode < 9; ++mode) {
+    for (unsigned int mode = 0; mode < 10; ++mode) {
         CHECK(mc_client_render_global_allocate(graphics, NULL, &owner, error) ==
               MC_CLIENT_RENDER_GLOBAL_OK);
         owner->fields.t = app;
@@ -81,6 +81,16 @@ static bool sky_changed_controls(mc_client_render_engine_classes *graphics, mc_w
                 owner->fields.m->entries[i] = all[1];
             owner->arena.options.max_constructor_allocations = owner->arena.allocations;
         }
+        mc_client_source_dk *foreign_chunk = NULL;
+        if (mode == 9) {
+            CHECK(mc_client_render_global_allocate(graphics, NULL, &foreign, error) ==
+                  MC_CLIENT_RENDER_GLOBAL_OK);
+            foreign_chunk = mc_source_dk_allocate(foreign, error);
+            CHECK(foreign_chunk != NULL && foreign_chunk->owner == foreign);
+            owner->o_length = 3;
+            owner->fields.o[2] = foreign_chunk;
+            all[0]->fields.A = all[1]->fields.A = true;
+        }
         CHECK(mc_render_global_access_create(owner, &owner->access, error) ==
               MC_CLIENT_RENDER_GLOBAL_OK);
         CHECK(mc_render_global_access_source_add(owner->access, world, error) ==
@@ -90,7 +100,9 @@ static bool sky_changed_controls(mc_client_render_engine_classes *graphics, mc_w
         mc_world_access_failure failure = {0};
         const mc_world_storage_status status =
             mc_world_access_call_sky_changed(identity, world, &cause, &failure);
-        const bool failed = mode == 3 || mode == 4 || mode == 5 || mode == 8;
+        if (mode == 9)
+            owner->fields.o[2] = all[2];
+        const bool failed = mode == 3 || mode == 4 || mode == 5 || mode == 8 || mode == 9;
         CHECK((status != MC_WORLD_STORAGE_OK) == failed);
         unsigned int mask = 0, code = 0;
         for (size_t i = 0; i < 12; ++i)
@@ -109,20 +121,32 @@ static bool sky_changed_controls(mc_client_render_engine_classes *graphics, mc_w
             printf("SKY_CHANGED %u %u %d %u %u\n", mode, failed ? 1u : 0u,
                    queue == NULL ? -1 : (int)queue->count, mask, code);
         if (failed) {
-            const unsigned int pc = mode == 3 ? 7u : mode == 4 ? 17u : 45u;
+            const unsigned int pc = mode == 3 ? 7u : mode == 4 ? 17u : mode == 9 ? 16u : 45u;
             CHECK(failure.receipt != NULL && failure.render_global != NULL &&
                   failure.render_global->source_pc == pc &&
                   strcmp(failure.render_global->source_method, "e") == 0 &&
                   strcmp(failure.render_global->source_descriptor, "()V") == 0);
             const char *exception = NULL;
-            CHECK(mc_world_access_failure_source_exception(&failure, &exception) == (mode != 8));
-            if (mode != 8)
+            CHECK(mc_world_access_failure_source_exception(&failure, &exception) == (mode < 8));
+            if (mode < 8)
                 CHECK(strcmp(exception, "java/lang/NullPointerException") == 0 &&
                       !failure.render_global->native_policy);
-            else
+            else if (mode == 8)
                 CHECK(failure.render_global->status == MC_CLIENT_RENDER_GLOBAL_LIMIT &&
                       failure.render_global->native_policy && queue->count == 8 &&
                       !all[0]->fields.u);
+            else
+                CHECK(status == MC_WORLD_STORAGE_INVALID_ARGUMENT && cause.status == status &&
+                      cause.system_error == 0 &&
+                      cause.operation == failure.render_global->operation &&
+                      strcmp(cause.operation, "sky-change native DK occurrence provenance") == 0 &&
+                      failure.render_global->status == MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT &&
+                      failure.render_global->native_policy && queue->count == 2 &&
+                      queue->entries[0] == all[0] && queue->entries[1] == all[1] &&
+                      all[0]->fields.u && all[1]->fields.u && !all[2]->fields.u &&
+                      !foreign_chunk->fields.A && !foreign_chunk->fields.u && foreign->holds == 1);
+            const mc_client_render_global_status captured_status = failure.render_global->status;
+            const char *captured_operation = failure.render_global->operation;
             CHECK(mc_world_access_failure_retain(&failure, &captured) == MC_WORLD_STORAGE_OK);
             CHECK(mc_render_global_access_detach_all(owner->access, error) ==
                   MC_CLIENT_RENDER_GLOBAL_BUSY);
@@ -136,6 +160,9 @@ static bool sky_changed_controls(mc_client_render_engine_classes *graphics, mc_w
             CHECK(mc_world_access_call_sky_changed(identity, world, &cause, &later) ==
                       MC_WORLD_STORAGE_OK &&
                   later.receipt == NULL && captured.render_global->source_pc == pc);
+            CHECK(captured.render_global->status == captured_status &&
+                  captured.render_global->operation == captured_operation &&
+                  mc_world_access_failure_source_exception(&captured, &exception) == (mode < 8));
             owner->fields.o = saved;
             owner->o_length = length;
             mc_world_access_failure_release(&captured);
@@ -143,6 +170,8 @@ static bool sky_changed_controls(mc_client_render_engine_classes *graphics, mc_w
             CHECK(failure.receipt == NULL && cause.status == MC_WORLD_STORAGE_OK);
         CHECK(mc_client_render_global_retire(&owner, error) == MC_CLIENT_RENDER_GLOBAL_OK &&
               owner == NULL);
+        CHECK(mc_client_render_global_retire(&foreign, error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+              foreign == NULL);
         CHECK(world->world_accesses.count == original_memberships);
     }
     result = true;
@@ -150,6 +179,8 @@ cleanup:
     mc_world_access_failure_release(&captured);
     if (owner != NULL)
         (void)mc_client_render_global_release(&owner, error);
+    if (foreign != NULL)
+        (void)mc_client_render_global_release(&foreign, error);
     free(error);
     free(app);
     return result;

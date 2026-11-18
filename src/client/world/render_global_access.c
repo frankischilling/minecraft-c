@@ -400,11 +400,9 @@ static mc_client_source_dk *sky_chunk(mc_client_render_global *owner, access_cal
              "actual sky-change null DK receiver", "e", "()V", field_pc, false);
         return NULL;
     }
-    if (chunk == NULL)
-        return NULL; /* A nullable List.add argument is not dereferenced by aaload. */
-    for (mc_client_source_dk *owned = owner->chunk_owners; owned != NULL; owned = owned->next)
-        if (owned == chunk)
-            return chunk;
+    /* The List.add operand may be null. A live DK carries its fixed owner. */
+    if (chunk == NULL || chunk->owner == owner)
+        return chunk;
     fail(&call->error, MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT,
          "sky-change native DK occurrence provenance", "e", "()V", array_pc, true);
     return NULL;
