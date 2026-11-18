@@ -1,5 +1,49 @@
 # Chunk rendering and EW diagnostics
 
+## Working diagnostics in Chunk-cache getters
+
+Chunk-cache getters keep the reached call frames and Registry diagnostic
+on the stack. They build the full error record when a public caller
+requests it or when a failure-only getter fails. This keeps each reached
+receiver and child diagnostic, including a TileEntity lookup's result.
+The constructor and retirement still hold their full diagnostics.
+
+The Windows MSVC Release assembly for the brightness body reserves 528
+bytes of stack, down from 8,112 bytes, and omits the stack probe. The
+public error record still occupies 7,888 bytes on this build.
+
+The fixed-work comparison ran eight alternating process pairs pinned to
+logical CPU 4. Each process measured seven samples of 65,536 calls per
+getter over the same nine leased Chunks. All eight pairs had lower
+medians for all six getters. Outputs, reported errors, light side
+effects, World and Random state, and ownership matched.
+
+| Query | Before (ns) | After (ns) |
+| --- | ---: | ---: |
+| Brightness | 66.35 | 61.93 |
+| Minimum brightness | 67.31 | 62.13 |
+| Material | 46.21 | 40.37 |
+| Opaque | 33.69 | 27.13 |
+| Normal cube | 37.23 | 31.06 |
+| Biome Manager | 14.39 | 7.86 |
+
+Four instrumented DISPLAY2 runs found three Chunk compile groups with
+matching counts for all seven recorded operations. All three were
+faster. The largest group used 30,720 minimum-brightness and 24,576
+opaque queries per compile. It fell from 7.59 to 7.17 ms at the median
+across 781 baseline and 884 candidate compiles. The other two groups
+fell from 7.63 to 7.22 ms and 7.19 to 6.78 ms. Instrumentation adds
+overhead to both builds.
+
+Each group below used six uninstrumented runs on DISPLAY2 at 854×480
+on Tiny. Both builds shared the local Sign screen edit. Whole-scene
+medians also reflect changes in World and render work between runs.
+
+| Scene group | Median FPS before / after | Median p95 frame time (ms) | Median p99 frame time (ms) |
+| --- | ---: | ---: | ---: |
+| Chunk-cache getters | 54.02 / 53.90 | 28.83 / 27.23 | 50.95 / 51.10 |
+| Getters and [Chunk setters](provider-cache-scopes.md#live-field-reads-in-chunk-setters) | 54.46 / 52.52 | 29.77 / 30.20 | 54.26 / 50.61 |
+
 ## Registry reads in the Block renderer
 
 When the Registry is ready and idle, the Block renderer checks the same

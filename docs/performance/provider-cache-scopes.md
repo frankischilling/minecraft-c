@@ -455,6 +455,25 @@ Whole-scene medians varied as World and render work changed across runs.
 | Heightmap only | 54.27 / 53.14 | 27.50 / 28.22 | 46.08 / 49.30 |
 | Both tree changes | 53.21 / 50.40 | 27.66 / 33.37 | 55.52 / 54.18 |
 
+### Live field reads in Chunk setters
+
+Block and metadata setters read the Chunk fields they use at each step.
+The World receiver is read again after Registry access and before each
+light submission. A retained execution check clears the metadata backing
+from a successful height observer. The second metadata write reports
+the missing backing after the earlier Block, metadata, height and
+lighting work. Both native holds close on this path.
+
+All 146 fixed-work receipts matched in each of the eight Windows
+process pairs. The client median for 20 small trees moved from 7.79 to
+7.83 ms, and the large oak moved from 1.156 to 1.154 ms.
+
+Eight of nine count-matched trees in four instrumented DISPLAY2 runs
+were faster. The largest tree took 3.66 to 3.96 ms in its single
+matched pair, with 17,467 to 7,477 copies of the full Chunk view.
+The next largest matched placement, with 1,011 writes, fell from
+3.15 to 3.00 ms at the median.
+
 ### Spring fluid diagnostics
 
 Two DISPLAY2 traces separated spring placement from the immediate flowing

@@ -14,7 +14,8 @@ typedef enum height_mode {
     HEIGHT_FALL,
     HEIGHT_THROW,
     HEIGHT_SCOPE_DRIFT,
-    HEIGHT_NULL_MAP
+    HEIGHT_NULL_MAP,
+    HEIGHT_NULL_METADATA
 } height_mode;
 
 typedef struct height_attempt {
@@ -52,20 +53,21 @@ static mc_world_storage_status height_range(void *context, mc_world_runtime *wor
     const bool falling = a->mode == HEIGHT_FALL;
     const size_t target = cell(a->x, 4, a->z);
     const size_t column = (size_t)a->z * 16u + (size_t)a->x;
-    a->valid = ++a->ranges == 1 && world == a->world && min_x == a->x && max_x == a->x &&
-               min_z == a->z && max_z == a->z && min_y == 2 && max_y == 5 &&
-               a->state->data->heightmap[column] == (falling ? 5 : 2) &&
-               a->state->data->blocks[target] == (falling ? 0 : 1) &&
-               nibble(a->state->data->metadata, target) == 0 && !a->state->dirty &&
-               a->call.active && a->call.lease_held && a->call.binding_held &&
-               a->call.height_observer.entered && a->call.height_observer.range &&
-               mc_entity_tick_execution_current_world(&a->execution, &current) &&
-               same_world_token(current, a->call.height_observer.world) &&
-               !same_world_token(current, a->root) &&
-               mc_entity_tick_execution_read_world(&a->execution, &current, &captured) &&
-               captured == world && a->call.height_observer.receiver_site.pc == 83 &&
-               mc_world_runtime_light_list_get(world, &list, NULL) == MC_WORLD_STORAGE_OK &&
-               list.count == a->light_count;
+    a->valid =
+        ++a->ranges == 1 && world == a->world && min_x == a->x && max_x == a->x && min_z == a->z &&
+        max_z == a->z && min_y == 2 && max_y == 5 &&
+        a->state->data->heightmap[column] == (falling ? 5 : 2) &&
+        a->state->data->blocks[target] == (falling ? 0 : 1) &&
+        nibble(a->state->data->metadata, target) == (a->mode == HEIGHT_NULL_METADATA ? 6 : 0) &&
+        !a->state->dirty && a->call.active && a->call.lease_held && a->call.binding_held &&
+        a->call.height_observer.entered && a->call.height_observer.range &&
+        mc_entity_tick_execution_current_world(&a->execution, &current) &&
+        same_world_token(current, a->call.height_observer.world) &&
+        !same_world_token(current, a->root) &&
+        mc_entity_tick_execution_read_world(&a->execution, &current, &captured) &&
+        captured == world && a->call.height_observer.receiver_site.pc == 83 &&
+        mc_world_runtime_light_list_get(world, &list, NULL) == MC_WORLD_STORAGE_OK &&
+        list.count == a->light_count;
     if (!a->valid)
         return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
     if (a->mode == HEIGHT_THROW) {
@@ -86,6 +88,8 @@ static mc_world_storage_status height_range(void *context, mc_world_runtime *wor
     }
     if (a->mode == HEIGHT_NULL_MAP)
         a->chunk->h = NULL;
+    if (a->mode == HEIGHT_NULL_METADATA)
+        a->chunk->e = NULL;
     return MC_WORLD_STORAGE_OK;
 }
 
@@ -146,6 +150,7 @@ static bool run_height(fixture *f, int32_t x, int32_t z, height_mode mode) {
     a->mode = mode;
     const bool falling = mode == HEIGHT_FALL;
     const bool ordinary = mode == HEIGHT_RISE || falling;
+    const bool with_metadata = mode == HEIGHT_NULL_METADATA;
     const size_t target = cell(x, 4, z), column = (size_t)z * 16u + (size_t)x;
     mc_chunk_data *const data = a->state->data;
     a->state->dirty = false;
@@ -154,7 +159,7 @@ static bool run_height(fixture *f, int32_t x, int32_t z, height_mode mode) {
         data->heightmap[column] = 2;
         CHECK(mc_chunk_nibbles_set(data->metadata, MC_CHUNK_NIBBLE_BYTES, x, 4, z, 7));
     }
-    if (ordinary) {
+    if (ordinary || with_metadata) {
         const uint8_t adjacent = falling ? 2 : 5;
         data->heightmap[column - 1] = data->heightmap[column + 1] = adjacent;
         data->heightmap[column - 16] = data->heightmap[column + 16] = adjacent;
@@ -168,7 +173,9 @@ static bool run_height(fixture *f, int32_t x, int32_t z, height_mode mode) {
     CHECK(mc_world_access_add_receipted(a->world, a->listener, &a->occurrence, NULL) ==
           MC_WORLD_STORAGE_OK);
     a->registered = true;
-    const mc_entity_tick_execution_site caller = {"fd", "c", "(IIII)Z", 66};
+    const mc_entity_tick_execution_site caller = {"fd", with_metadata ? "a" : "c",
+                                                  with_metadata ? "(IIIII)Z" : "(IIII)Z",
+                                                  with_metadata ? 68 : 66};
     const mc_world_runtime_execution_code code = {{"lm", "e", "()V", 6}, {"lm", "e", "()V", 33}};
     CHECK(mc_entity_tick_execution_push_world(&a->execution, a->world, caller, &a->root) ==
           MC_WORLD_STORAGE_OK);
@@ -179,15 +186,23 @@ static bool run_height(fixture *f, int32_t x, int32_t z, height_mode mode) {
     mc_world_storage_status raw = MC_WORLD_STORAGE_LIMIT;
     bool changed = !ordinary;
     uint8_t *saved_map = a->chunk->h;
-    const bool completed = mc_world_mutation_chunk_block_in_execution(
-        &a->call, a->world, f->stores[0], a->state, a->chunk, x, 4, z, falling ? 0 : 1, &changed,
-        &a->error, &raw);
+    mc_world_chunk_nibble *saved_metadata = a->chunk->e;
+    const bool completed =
+        with_metadata
+            ? mc_world_mutation_chunk_block_metadata_in_execution(&a->call, a->world, f->stores[0],
+                                                                  a->state, a->chunk, x, 4, z, 1, 6,
+                                                                  &changed, &a->error, &raw)
+            : mc_world_mutation_chunk_block_in_execution(&a->call, a->world, f->stores[0], a->state,
+                                                         a->chunk, x, 4, z, falling ? 0 : 1,
+                                                         &changed, &a->error, &raw);
     if (mode == HEIGHT_NULL_MAP)
         a->chunk->h = saved_map;
+    if (with_metadata)
+        a->chunk->e = saved_metadata;
     CHECK(a->valid && a->ranges == 1 && a->call.height_observer.callbacks_returned == 1 &&
           mc_world_runtime_light_list_get(a->world, &after, NULL) == MC_WORLD_STORAGE_OK &&
           before.identity == after.identity && data->blocks[target] == (falling ? 0 : 1) &&
-          nibble(data->metadata, target) == 0);
+          nibble(data->metadata, target) == (with_metadata ? 6 : 0));
     if (ordinary) {
         const int32_t wx = a->state->x * 16 + x, wz = a->state->z * 16 + z;
         const mc_light_bounds wide = {wx - 1, falling ? 0 : 2, wz - 1,
@@ -205,6 +220,26 @@ static bool run_height(fixture *f, int32_t x, int32_t z, height_mode mode) {
         if (!falling)
             CHECK(height_region(a->world, before.count, MC_LIGHT_SKY, &vertical) &&
                   height_region(a->world, before.count + 2u, MC_LIGHT_BLOCK, &block));
+    } else if (with_metadata) {
+        const int32_t wx = a->state->x * 16 + x, wz = a->state->z * 16 + z;
+        const mc_light_bounds vertical = {wx, 2, wz, wx, 5, wz};
+        const mc_light_bounds wide = {wx - 1, 2, wz - 1, wx + 1, 5, wz + 1};
+        const mc_light_bounds block = {wx, 4, wz, wx, 4, wz};
+        CHECK(!completed && changed && raw == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+              !a->call.source_returned && !a->call.completed && !a->call.lease_held &&
+              !a->call.binding_held && a->call.world_captures == 9 &&
+              a->call.setter_body == MC_WORLD_MUTATION_CHUNK_ID_METADATA &&
+              a->owned.ownership_status == MC_WORLD_STORAGE_OK && !a->owned.root_pending &&
+              !a->owned.selection_ready && a->error.chunk_bytecode == 271 &&
+              a->error.height_bytecode == 0 && a->error.column_bytecode == 0 &&
+              a->error.interval_bytecode == 0 && a->error.hook_class == NULL &&
+              a->error.hook_bytecode == 0 &&
+              same_storage(&a->error.cause, mc_world_runtime_last_error(a->world)) &&
+              data->heightmap[column] == 5 && a->state->dirty &&
+              nibble(data->skylight, target) == 0 && after.count == before.count + 3);
+        CHECK(height_region(a->world, before.count, MC_LIGHT_SKY, &vertical) &&
+              height_region(a->world, before.count + 1u, MC_LIGHT_SKY, &wide) &&
+              height_region(a->world, before.count + 2u, MC_LIGHT_BLOCK, &block));
     } else if (mode == HEIGHT_NULL_MAP) {
         CHECK(!completed && changed && raw == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
               !a->call.source_returned && !a->call.lease_held && !a->call.binding_held &&
@@ -286,7 +321,8 @@ int main(int argc, char **argv) {
     published = true;
     CHECK(run_height(f, 8, 8, HEIGHT_RISE) && run_height(f, 8, 8, HEIGHT_FALL) &&
           run_height(f, 4, 4, HEIGHT_THROW) && run_height(f, 12, 12, HEIGHT_SCOPE_DRIFT) &&
-          run_height(f, 4, 12, HEIGHT_NULL_MAP) && !r->bad);
+          run_height(f, 4, 12, HEIGHT_NULL_MAP) && run_height(f, 12, 4, HEIGHT_NULL_METADATA) &&
+          !r->bad);
     ok = true;
 cleanup:
     if (published) {

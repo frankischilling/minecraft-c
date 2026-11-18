@@ -5,7 +5,7 @@
 
 #include "../../../block/registry/registry_internal.h"
 #include "../../../block/registry/runtime_internal.h"
-#include "../../chunk/object_internal.h"
+#include "../../chunk/object_state_internal.h"
 #include "../../storage/objects_internal.h"
 #include "../construction_internal.h"
 #include "../execution_children_internal.h"
@@ -216,46 +216,47 @@ static bool initial(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int3
     if (!mc_world_chunk_source_enabled(chunk))
         return mc_world_mutation_fail(NULL, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "Chunk mutation source is disabled");
-    mc_world_chunk_fields fields;
-    (void)mc_world_chunk_fields_get(chunk, &fields);
+    const uint8_t *heights = chunk->h;
+    mc_world_runtime *world = chunk->d;
     const int32_t column = mc_java_i32_shl(z, 4) | x;
     error->chunk_bytecode = 14;
-    if (fields.h == NULL || column < 0 || (uint32_t)column >= MC_CHUNK_HEIGHTMAP_BYTES)
-        return mc_world_mutation_fail(fields.d, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+    if (heights == NULL || column < 0 || (uint32_t)column >= MC_CHUNK_HEIGHTMAP_BYTES)
+        return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "Chunk setter old height element");
-    *height = (int32_t)fields.h[(size_t)column];
+    *height = (int32_t)heights[(size_t)column];
 
-    (void)mc_world_chunk_fields_get(chunk, &fields);
+    const uint8_t *blocks = chunk->data->blocks;
+    world = chunk->d;
     const int32_t cell = mc_java_i32_shl(x, 11) | mc_java_i32_shl(z, 7) | y;
     error->chunk_bytecode = 36;
-    if (fields.b == NULL || cell < 0 || (uint32_t)cell >= MC_CHUNK_BLOCKS)
-        return mc_world_mutation_fail(fields.d, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+    if (blocks == NULL || cell < 0 || (uint32_t)cell >= MC_CHUNK_BLOCKS)
+        return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "Chunk setter old block element");
-    *old = (int32_t)fields.b[(size_t)cell];
+    *old = (int32_t)blocks[(size_t)cell];
     return true;
 }
 
 static bool put(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int32_t id, unsigned int pc,
                 mc_world_mutation_error *error) {
-    mc_world_chunk_fields fields;
-    (void)mc_world_chunk_fields_get(chunk, &fields);
+    uint8_t *blocks = chunk->data->blocks;
+    mc_world_runtime *world = chunk->d;
     const int32_t cell = mc_java_i32_shl(x, 11) | mc_java_i32_shl(z, 7) | y;
     error->chunk_bytecode = pc;
-    if (fields.b == NULL || cell < 0 || (uint32_t)cell >= MC_CHUNK_BLOCKS)
-        return mc_world_mutation_fail(fields.d, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+    if (blocks == NULL || cell < 0 || (uint32_t)cell >= MC_CHUNK_BLOCKS)
+        return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "Chunk setter block store");
-    fields.b[(size_t)cell] = (uint8_t)((uint32_t)id & 255u);
+    blocks[(size_t)cell] = (uint8_t)((uint32_t)id & 255u);
     return true;
 }
 
 static bool metadata(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int32_t value,
                      unsigned int pc, mc_world_mutation_error *error) {
-    mc_world_chunk_fields fields;
-    (void)mc_world_chunk_fields_get(chunk, &fields);
+    const mc_world_chunk_nibble *nibble = chunk->e;
+    mc_world_runtime *world = chunk->d;
     error->chunk_bytecode = pc;
-    if (!mc_world_mutation_nibble_set(fields.e, x, y, z, value, error)) {
-        if (fields.d != NULL)
-            fields.d->last_error = error->cause;
+    if (!mc_world_mutation_nibble_set(nibble, x, y, z, value, error)) {
+        if (world != NULL)
+            world->last_error = error->cause;
         return false;
     }
     return true;
@@ -265,9 +266,7 @@ static bool hook(mc_world_chunk *chunk, int32_t id, int32_t x, int32_t y, int32_
                  unsigned int capture_pc, unsigned int element_pc, unsigned int invoke_pc,
                  mc_world_mutation_error *error, mc_world_mutation_chunk_execution *execution,
                  mc_world_runtime_classes *code) {
-    mc_world_chunk_fields fields;
-    (void)mc_world_chunk_fields_get(chunk, &fields);
-    mc_world_runtime *world = execution == NULL ? fields.d : execution->initiating_world;
+    mc_world_runtime *world = execution == NULL ? chunk->d : execution->initiating_world;
     mc_registry_classes *classes =
         execution == NULL ? mc_world_runtime_registry(world) : execution->registry;
     mc_registry_error cause = mc_world_mutation_empty_registry();
@@ -286,14 +285,14 @@ static bool hook(mc_world_chunk *chunk, int32_t id, int32_t x, int32_t y, int32_
     if (mc_registry_block_m_at(&array, id, &block, &cause) != MC_REGISTRY_OK)
         return mc_world_mutation_registry_fail(world, error, &cause,
                                                "Chunk setter Block.m element");
-    (void)mc_world_chunk_fields_get(chunk, &fields);
+    mc_world_runtime *receiver = chunk->d;
     if (execution != NULL) {
         const unsigned int world_pc = execution->setter_body == MC_WORLD_MUTATION_CHUNK_ID_METADATA
                                           ? (added ? 286u : 134u)
                                           : (added ? 245u : 109u);
         error->chunk_bytecode = world_pc;
         if (!mc_world_mutation_chunk_capture(
-                execution, fields.d,
+                execution, receiver,
                 mc_world_mutation_chunk_site(execution, execution->setter_body, world_pc)))
             return false;
         error->chunk_bytecode = invoke_pc;
@@ -312,7 +311,7 @@ static bool hook(mc_world_chunk *chunk, int32_t id, int32_t x, int32_t y, int32_
                                                                  .code = execution->code,
                                                                  .result = execution->owned,
                                                                  .world = execution->scope.token};
-            completed = mc_world_mutation_execution_added(&context, fields.d, block, x, y, z,
+            completed = mc_world_mutation_execution_added(&context, receiver, block, x, y, z,
                                                           &execution->hook, error, site);
         } else if (!added && block != NULL && block->kind == MC_BLOCK_SIGN) {
             const mc_world_mutation_execution_context context = {.execution = execution->execution,
@@ -321,35 +320,33 @@ static bool hook(mc_world_chunk *chunk, int32_t id, int32_t x, int32_t y, int32_
                                                                  .code = execution->code,
                                                                  .result = execution->owned,
                                                                  .world = execution->scope.token};
-            completed = mc_world_mutation_execution_removed(&context, fields.d, block, x, y, z,
+            completed = mc_world_mutation_execution_removed(&context, receiver, block, x, y, z,
                                                             &execution->hook, error, site);
         } else
             completed = added ? mc_world_mutation_block_added_in_execution(
-                                    fields.d, block, x, y, z, error, execution->owned, site)
+                                    receiver, block, x, y, z, error, execution->owned, site)
                               : mc_world_mutation_block_removed_in_execution(
-                                    fields.d, block, x, y, z, error, execution->owned, site);
+                                    receiver, block, x, y, z, error, execution->owned, site);
         return mc_world_mutation_chunk_close(execution, completed);
     }
     error->chunk_bytecode = invoke_pc;
-    return added ? mc_world_mutation_block_added_with_code(code, fields.d, block, x, y, z, error)
-                 : mc_world_mutation_block_removed_with_code(code, fields.d, block, x, y, z, error);
+    return added ? mc_world_mutation_block_added_with_code(code, receiver, block, x, y, z, error)
+                 : mc_world_mutation_block_removed_with_code(code, receiver, block, x, y, z, error);
 }
 
 static bool height(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int32_t id,
                    int32_t old_height, unsigned int capture_pc, unsigned int element_pc,
                    unsigned int raise_pc, unsigned int lower_pc, mc_world_mutation_error *error,
                    mc_world_mutation_chunk_execution *execution) {
-    mc_world_chunk_fields fields;
-    (void)mc_world_chunk_fields_get(chunk, &fields);
+    mc_world_runtime *world = execution == NULL ? chunk->d : execution->initiating_world;
     const int32_t narrowed = (int32_t)((uint32_t)id & 255u);
     int32_t opacity;
-    const bool opacity_read =
-        execution == NULL
-            ? mc_world_mutation_q(fields.d, narrowed, &error->chunk_bytecode, capture_pc,
-                                  element_pc, &opacity, error)
-            : mc_world_mutation_chunk_q(execution->initiating_world, execution->registry, narrowed,
-                                        &error->chunk_bytecode, capture_pc, element_pc, &opacity,
-                                        error);
+    const bool opacity_read = execution == NULL
+                                  ? mc_world_mutation_q(world, narrowed, &error->chunk_bytecode,
+                                                        capture_pc, element_pc, &opacity, error)
+                                  : mc_world_mutation_chunk_q(world, execution->registry, narrowed,
+                                                              &error->chunk_bytecode, capture_pc,
+                                                              element_pc, &opacity, error);
     if (!opacity_read)
         return false;
     const bool raises = opacity != 0 && y >= old_height;
@@ -365,17 +362,16 @@ static bool height(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, int32
 static bool submit(mc_world_chunk *chunk, mc_light_kind kind, int32_t x, int32_t y, int32_t z,
                    unsigned int world_pc, unsigned int type_pc, unsigned int call_pc,
                    mc_world_mutation_error *error, mc_world_mutation_chunk_execution *execution) {
-    mc_world_chunk_fields fields;
-    (void)mc_world_chunk_fields_get(chunk, &fields);
+    mc_world_runtime *world = chunk->d;
     if (execution != NULL) {
         error->chunk_bytecode = world_pc;
         if (!mc_world_mutation_chunk_capture(
-                execution, fields.d,
+                execution, world,
                 mc_world_mutation_chunk_site(execution, execution->setter_body, world_pc)))
             return false;
     }
     const mc_light_bounds bounds = {x, y, z, x, y, z};
-    return mc_world_mutation_submit_scoped(execution, fields.d, kind, &bounds,
+    return mc_world_mutation_submit_scoped(execution, world, kind, &bounds,
                                            execution == NULL ? MC_WORLD_MUTATION_CHUNK_ID
                                                              : execution->setter_body,
                                            &error->chunk_bytecode, type_pc, call_pc, error);
@@ -393,10 +389,8 @@ static bool chunk_block(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, 
         *out = false;
         return true;
     }
-    mc_world_chunk_fields fields;
-    (void)mc_world_chunk_fields_get(chunk, &fields);
-    const int32_t world_x = mc_java_i32_add(mc_java_i32_mul(fields.j, 16), x);
-    const int32_t world_z = mc_java_i32_add(mc_java_i32_mul(fields.k, 16), z);
+    const int32_t world_x = mc_java_i32_add(mc_java_i32_mul(chunk->state->x, 16), x);
+    const int32_t world_z = mc_java_i32_add(mc_java_i32_mul(chunk->state->z, 16), z);
     if (!put(chunk, x, y, z, id, 96, error))
         return false;
     if (old != 0 &&
@@ -414,15 +408,15 @@ static bool chunk_block(mc_world_chunk *chunk, int32_t x, int32_t y, int32_t z, 
     if (!column_completed)
         return false;
     if (id != 0) {
-        (void)mc_world_chunk_fields_get(chunk, &fields);
+        mc_world_runtime *world = chunk->d;
         error->chunk_bytecode = 232;
-        if (execution != NULL && fields.d == NULL) {
+        if (execution != NULL && world == NULL) {
             mc_world_mutation_chunk_null(execution, MC_WORLD_MUTATION_CHUNK_ID, 232);
             return mc_world_mutation_fail(execution->initiating_world, error,
                                           MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                           "Chunk setter current World remote field receiver");
         }
-        if (!fields.d->fields.B &&
+        if (!world->fields.B &&
             !hook(chunk, id, world_x, y, world_z, true, 238, 243, 253, error, execution, code))
             return false;
     }
@@ -578,14 +572,14 @@ static bool chunk_block_metadata(mc_world_chunk *chunk, int32_t x, int32_t y, in
     int32_t old_height, old;
     if (!initial(chunk, x, y, z, &old_height, &old, error))
         return false;
-    mc_world_chunk_fields fields;
     if (old == id) {
         int32_t previous;
-        (void)mc_world_chunk_fields_get(chunk, &fields);
+        const mc_world_chunk_nibble *nibble = chunk->e;
+        mc_world_runtime *world = chunk->d;
         error->chunk_bytecode = 57;
-        if (!mc_world_mutation_nibble_get(fields.e, x, y, z, &previous, error)) {
-            if (fields.d != NULL)
-                fields.d->last_error = error->cause;
+        if (!mc_world_mutation_nibble_get(nibble, x, y, z, &previous, error)) {
+            if (world != NULL)
+                world->last_error = error->cause;
             return false;
         }
         if (previous == value) {
@@ -594,39 +588,38 @@ static bool chunk_block_metadata(mc_world_chunk *chunk, int32_t x, int32_t y, in
             return true;
         }
     }
-    (void)mc_world_chunk_fields_get(chunk, &fields);
-    const int32_t world_x = mc_java_i32_add(mc_java_i32_mul(fields.j, 16), x);
-    const int32_t world_z = mc_java_i32_add(mc_java_i32_mul(fields.k, 16), z);
+    const int32_t world_x = mc_java_i32_add(mc_java_i32_mul(chunk->state->x, 16), x);
+    const int32_t world_z = mc_java_i32_add(mc_java_i32_mul(chunk->state->z, 16), z);
     if (!put(chunk, x, y, z, id, 111, error))
         return false;
     if (old != 0) {
-        (void)mc_world_chunk_fields_get(chunk, &fields);
+        mc_world_runtime *world = chunk->d;
         error->chunk_bytecode = 121;
-        if (execution != NULL && fields.d == NULL) {
+        if (execution != NULL && world == NULL) {
             mc_world_mutation_chunk_null(execution, MC_WORLD_MUTATION_CHUNK_ID_METADATA, 121);
             return mc_world_mutation_fail(execution->initiating_world, error,
                                           MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                           "Chunk metadata setter current World remote receiver");
         }
-        if (!fields.d->fields.B &&
+        if (!world->fields.B &&
             !hook(chunk, old, world_x, y, world_z, false, 127, 132, 142, error, execution, code))
             return false;
     }
     if (!metadata(chunk, x, y, z, value, 154, error))
         return false;
-    (void)mc_world_chunk_fields_get(chunk, &fields);
+    mc_world_runtime *world = chunk->d;
     mc_world_provider_fields dimension;
     error->chunk_bytecode = 164;
-    if (execution != NULL && (fields.d == NULL || fields.d->fields.t == NULL)) {
-        const unsigned int pc = fields.d == NULL ? 161u : 164u;
+    if (execution != NULL && (world == NULL || world->fields.t == NULL)) {
+        const unsigned int pc = world == NULL ? 161u : 164u;
         error->chunk_bytecode = pc;
         mc_world_mutation_chunk_null(execution, MC_WORLD_MUTATION_CHUNK_ID_METADATA, pc);
         return mc_world_mutation_fail(execution->initiating_world, error,
                                       MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "Chunk metadata setter current Dimension receiver");
     }
-    if (mc_world_provider_fields_get(fields.d->fields.t, &dimension) != MC_WORLD_PROVIDER_OK)
-        return mc_world_mutation_fail(fields.d, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+    if (mc_world_provider_fields_get(world->fields.t, &dimension) != MC_WORLD_PROVIDER_OK)
+        return mc_world_mutation_fail(world, error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                       "Chunk setter current Dimension");
     if (!dimension.e &&
         (!height(chunk, x, y, z, id, old_height, 170, 179, 195, 213, error, execution) ||
