@@ -383,8 +383,8 @@
       "sha256": "635ef27e7b4ff14f78dc8e27b9ecbeae86251009abd8d7db547987267f6792da"
     },
     "src/block/registry/registry.c": {
-      "bytes": 31393,
-      "sha256": "e34a1128384433aa4c7040040f414a05ba37e899380d2597cf56518ccebab7fd"
+      "bytes": 31854,
+      "sha256": "4e62c35cda13d9b415ea360c4d6a632ba6de372a5d7abdd44d281bc780973be4"
     },
     "src/block/registry/registry_internal.h": {
       "bytes": 14777,

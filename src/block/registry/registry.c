@@ -3,6 +3,7 @@
 #include "../../item/registry/stacks_internal.h"
 #include "managed_internal.h"
 #include "registry_internal.h"
+#include "runtime_internal.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -353,12 +354,24 @@ mc_registry_status mc_registry_blocks_active_use(mc_registry_classes *classes) {
     return status;
 }
 
+static bool block_view_fits(const mc_registry_classes *classes) {
+    return classes->managed_current_bytes <= SIZE_MAX - classes->allocation_bytes;
+}
+
+bool mc_registry_block_statics_ready(const mc_registry_classes *classes, mc_registry_error *error) {
+    if (classes == NULL || classes->entered != 0 || classes->blocks_phase != MC_REGISTRY_READY ||
+        !block_view_fits(classes))
+        return false;
+    (void)result(error, MC_REGISTRY_OK, NULL);
+    return true;
+}
+
 mc_registry_status mc_registry_classes_inspect_blocks(const mc_registry_classes *classes,
                                                       mc_registry_block_view *out,
                                                       mc_registry_error *error) {
     if (classes == NULL || out == NULL)
         return result(error, MC_REGISTRY_INVALID_ARGUMENT, "registry view arguments");
-    if (classes->managed_current_bytes > SIZE_MAX - classes->allocation_bytes)
+    if (!block_view_fits(classes))
         return result(error, MC_REGISTRY_LIMIT, "registry view allocation total");
     *out = (mc_registry_block_view){.phase = classes->blocks_phase,
                                     .initializer_pc = classes->block_initializer_pc,

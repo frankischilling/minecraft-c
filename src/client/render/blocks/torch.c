@@ -1,5 +1,6 @@
 #include "internal.h"
 
+#include "../../../block/registry/registry_internal.h"
 #include "../../../entity/player/tick_math_internal.h"
 
 /* Actual cv.a(Block,DDDDD). The texture virtual runs even with an override.
@@ -74,11 +75,13 @@ bool mc_cv_torch(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y, 
     float brightness;
     if (!mc_cv_brightness(c, block, x, y, z, 29, &brightness))
         return false;
-    mc_registry_block_view view;
-    const mc_block_fields *fields;
-    if (!mc_cv_registry(c, 34, &view) || !mc_cv_fields(c, block, 38, &fields))
+    if (!mc_cv_block_statics(c, 34))
         return false;
-    if (view.s == NULL)
+    const int32_t *emission_array = c->registry->blocks.s;
+    const mc_block_fields *fields;
+    if (!mc_cv_fields(c, block, 38, &fields))
+        return false;
+    if (emission_array == NULL)
         return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
                           "actual Torch uu.s emission array", 41, false);
     if (fields->bn < 0 || fields->bn >= 256) {
@@ -87,7 +90,7 @@ bool mc_cv_torch(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y, 
         return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
                           "actual Torch uu.s emission index", 41, false);
     }
-    if (view.s[fields->bn] > 0)
+    if (emission_array[fields->bn] > 0)
         brightness = 1;
     if (!mc_cv_color(c, brightness, brightness, brightness, 56) || !mc_cv_fp(c, 69))
         return false;

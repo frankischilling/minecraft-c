@@ -1,5 +1,43 @@
 # Chunk rendering and EW diagnostics
 
+## Registry reads in the Block renderer
+
+When the Registry is ready and idle, the Block renderer checks the same
+allocation totals and records the canonical success diagnostic before
+reading live Block statics. It avoids copying the full Registry view.
+Other Registry states and invalid allocation totals use the existing
+initializer and inspection. Ambient occlusion captures its array before
+the neighbor Block lookup. Brightness keeps the null-array and index
+checks at their original sites.
+
+The fixed Windows MSVC Release run used each actual renderer call across a
+prepared 3×3×3 neighborhood. Eight alternating process pairs each measured
+seven samples of 131,072 calls per operation after warm-up. All eight pairs
+had lower medians for both operations. Checksums, ownership and diagnostics
+matched, along with all 48 original AO field and vertex rows in every process.
+
+| Query | Before (ns) | After (ns) |
+| --- | ---: | ---: |
+| Ambient occlusion flag | 45.54 | 27.43 |
+| Block brightness | 92.71 | 74.30 |
+
+Four instrumented DISPLAY2 runs found three groups with equal counts for
+all nine recorded Chunk compile operations. All improved. The largest
+group had 79,872 Registry reads and 49,152 AO reads per compile. Its
+median fell from 10.25 to 8.79 ms across 431 baseline and 563 candidate
+observations. The other groups fell from 10.70 to 8.74 ms and from 9.60
+to 8.33 ms. The instrumented runs include sampling overhead.
+
+The 12 uninstrumented runs used 854×480 on Tiny and the same local Sign
+screen edit in both builds. The first group had higher FPS and lower p99
+frame time, and the repeat moved in the opposite direction. The amounts
+of World and render work varied across these runs.
+
+| Scene group | Median FPS before / after | Median p95 frame time (ms) | Median p99 frame time (ms) |
+| --- | ---: | ---: | ---: |
+| First | 48.98 / 53.03 | 33.04 / 33.56 | 64.77 / 61.47 |
+| Repeat | 52.98 / 52.26 | 29.70 / 34.92 | 53.24 / 61.93 |
+
 ## Live Block fields during Chunk compilation
 
 Brightness reads the four live named Block slots in order when the Registry

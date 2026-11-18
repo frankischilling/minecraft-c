@@ -2,10 +2,9 @@
  * source argument, never a sequence of unchecked callback return values. */
 static bool chest_o(mc_cv_context *c, int32_t id, unsigned int getstatic_pc, unsigned int load_pc,
                     bool *out) {
-    mc_registry_block_view view;
-    if (!mc_cv_registry(c, getstatic_pc, &view))
+    if (!mc_cv_block_statics(c, getstatic_pc))
         return false;
-    const bool *o = view.o;
+    const bool *o = c->registry->blocks.o;
     if (o == NULL)
         return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE, "actual Chest uu.o array",
                           load_pc, false);

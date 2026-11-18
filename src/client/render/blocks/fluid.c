@@ -283,16 +283,14 @@ static bool fluid_angle(mc_cv_context *c, int32_t x, int32_t y, int32_t z, mc_ma
     if (!fluid_material(c, MC_MATERIAL_g, 5, &water))
         return false;
     if (material == water) {
-        mc_registry_block_view view;
-        if (!mc_cv_registry(c, 11, &view) ||
+        if (!mc_cv_block_statics(c, 11) ||
             !fluid_vector(c, c->registry->blocks.named[7], x, y, z, 21, &value))
             return false;
     }
     if (!fluid_material(c, MC_MATERIAL_h, 28, &lava))
         goto failed;
     if (material == lava) {
-        mc_registry_block_view view;
-        if (!mc_cv_registry(c, 34, &view))
+        if (!mc_cv_block_statics(c, 34))
             goto failed;
         mc_entity_vector *next = NULL;
         if (!fluid_vector(c, c->registry->blocks.named[9], x, y, z, 44, &next))

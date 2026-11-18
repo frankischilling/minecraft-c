@@ -8,6 +8,7 @@ int mc_ao_picking_fixture_main(int argc, char **argv);
 #include "../world/test_picking.c"
 #undef main
 
+#include "block/registry/registry_internal.h"
 #include "client/render/blocks/internal.h"
 #include "client/render/model_graph_internal.h"
 #include "client/render_engine/nw.h"
@@ -71,6 +72,39 @@ static bool ao_observe(unsigned int index, const int profile[7], const mc_client
     return true;
 }
 
+static bool ao_registry_controls(mc_registry_classes *registry, mc_client_chunk_cache *cache) {
+    mc_client_render_blocks fields;
+    mc_client_render_blocks_construct_fields(&fields, NULL, true);
+    mc_cv_context query = {.fields = &fields, .cache = cache, .registry = registry};
+    query.failure.registry = (mc_registry_error){.status = MC_REGISTRY_LIMIT, .block_id = 12};
+    bool flag = true;
+    bool *saved_r = registry->blocks.r;
+    registry->blocks.r = NULL;
+    const bool queried = mc_cv_ao_flag(&query, 8, 64, 8, 10, 20, 30, &flag);
+    registry->blocks.r = saved_r;
+    CHECK(!queried && flag && query.source_pc == 20 &&
+          query.failure.status == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE &&
+          !query.failure.native_policy && query.failure.registry.status == MC_REGISTRY_OK &&
+          query.failure.registry.message == NULL && query.failure.registry.initializer_pc == -1 &&
+          query.failure.registry.block_id == -1 && query.failure.registry.constructor_pc == -1 &&
+          query.failure.registry.active_initializer_pc == -1 &&
+          query.failure.registry.item_argument == -1);
+
+    mc_cv_context limit = {.fields = &fields, .cache = cache, .registry = registry};
+    const size_t allocations = registry->allocation_bytes;
+    const size_t managed = registry->managed_current_bytes;
+    registry->allocation_bytes = SIZE_MAX;
+    registry->managed_current_bytes = 1;
+    const bool captured = mc_cv_ao_flag(&limit, 8, 64, 8, 10, 20, 30, &flag);
+    registry->managed_current_bytes = managed;
+    registry->allocation_bytes = allocations;
+    CHECK(!captured && flag && limit.source_pc == 10 && limit.failure.native_policy &&
+          limit.failure.status == MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE &&
+          limit.failure.registry.status == MC_REGISTRY_LIMIT &&
+          strcmp(limit.failure.registry.message, "registry view allocation total") == 0);
+    return true;
+}
+
 static bool ao_controls(picking_fixture *f, const char *profiles) {
     mc_client_chunk_cache *cache = NULL, *edge_cache = NULL;
     mc_client_chunk_cache_error cache_error;
@@ -79,6 +113,7 @@ static bool ao_controls(picking_fixture *f, const char *profiles) {
           MC_CLIENT_CHUNK_CACHE_OK);
     CHECK(mc_client_chunk_cache_create(f->base.world, 0, 0, 0, 15, 127, 15, &edge_cache,
                                        &cache_error) == MC_CLIENT_CHUNK_CACHE_OK);
+    CHECK(ao_registry_controls(f->base.registry, cache));
     mc_client_model_error model_error;
     CHECK(mc_client_render_blocks_active_use(f->models, &model_error));
     const bool prior_overlay = f->models->cv_a;

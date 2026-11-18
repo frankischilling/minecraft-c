@@ -79,10 +79,9 @@ bool mc_cv_brightness_bound(mc_cv_context *c, const mc_block *b, const void *rec
             return false;
         value = below > above ? below : above;
     } else {
-        mc_registry_block_view view;
-        if (!mc_cv_registry(c, 5, &view))
+        if (!mc_cv_block_statics(c, 5))
             return false;
-        const int32_t *s = view.s;
+        const int32_t *s = c->registry->blocks.s;
         if (s == NULL)
             return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
                               "actual uu.s brightness array", 12, false);

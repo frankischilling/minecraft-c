@@ -137,7 +137,7 @@ bool mc_cv_min_brightness_bound(mc_cv_context *, const void *, int32_t, int32_t,
                                 unsigned int, float *);
 bool mc_cv_opaque(mc_cv_context *, int32_t, int32_t, int32_t, unsigned int, bool *);
 bool mc_cv_solid(mc_cv_context *, int32_t, int32_t, int32_t, unsigned int, bool *);
-bool mc_cv_registry(mc_cv_context *, unsigned int, mc_registry_block_view *);
+bool mc_cv_block_statics(mc_cv_context *, unsigned int);
 bool mc_cv_brightness(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, unsigned int,
                       float *);
 bool mc_cv_brightness_bound(mc_cv_context *, const mc_block *, const void *, int32_t, int32_t,

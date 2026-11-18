@@ -1,5 +1,7 @@
 #include "internal.h"
 
+#include "../../../block/registry/registry_internal.h"
+#include "../../../block/registry/runtime_internal.h"
 #include "../../../entity/player/tick_math_internal.h"
 #include "../../../world/runtime/chunk_cache_internal.h"
 #include "../../render_engine/internal.h"
@@ -476,17 +478,23 @@ bool mc_cv_solid(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned int
         c, mc_client_chunk_cache_normal_cube_failure(c->cache, x, y, z, out, &c->cache_error), pc);
 }
 
-bool mc_cv_registry(mc_cv_context *c, unsigned int pc, mc_registry_block_view *view) {
+static bool block_statics_slow(mc_cv_context *c, unsigned int pc) {
     /* A cold class can invoke resource callbacks before returning its fields. */
-    mc_cv_pc(c, pc);
     if (mc_registry_classes_initialize_blocks(c->registry, &c->failure.registry) != MC_REGISTRY_OK)
         return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED, c->failure.registry.message,
                           pc, true);
-    if (mc_registry_classes_inspect_blocks(c->registry, view, &c->failure.registry) !=
+    mc_registry_block_view view;
+    if (mc_registry_classes_inspect_blocks(c->registry, &view, &c->failure.registry) !=
         MC_REGISTRY_OK)
         return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE, "actual CV Block class storage",
                           pc, true);
     return true;
+}
+
+bool mc_cv_block_statics(mc_cv_context *c, unsigned int pc) {
+    mc_cv_pc(c, pc);
+    return mc_registry_block_statics_ready(c->registry, &c->failure.registry) ||
+           block_statics_slow(c, pc);
 }
 
 bool mc_cv_grass(mc_cv_context *c, unsigned int pc, const mc_block **out) {
@@ -498,11 +506,10 @@ bool mc_cv_grass(mc_cv_context *c, unsigned int pc, const mc_block **out) {
 
 bool mc_cv_ao_flag(mc_cv_context *c, int32_t x, int32_t y, int32_t z, unsigned int static_pc,
                    unsigned int query_pc, unsigned int index_pc, bool *out) {
-    mc_registry_block_view view;
-    if (!mc_cv_registry(c, static_pc, &view))
+    if (!mc_cv_block_statics(c, static_pc))
         return false;
     /* Java captures this exact array before evaluating the xp.a argument. */
-    const bool *r = view.r;
+    const bool *r = c->registry->blocks.r;
     int32_t id;
     if (!mc_cv_block(c, x, y, z, query_pc, &id))
         return false;

@@ -196,6 +196,23 @@ static bool flat_controls(picking_fixture *f, const char *profiles) {
     /* Source m=false precedes both actual NW use and the first FP product. */
     mc_client_render_blocks fields;
     mc_client_render_blocks_construct_fields(&fields, cache, true);
+    const mc_block *stone;
+    CHECK(mc_registry_block_get(f->base.registry, 1, &stone, NULL) == MC_REGISTRY_OK && stone);
+    mc_cv_context emission = {.fields = &fields, .cache = cache, .registry = f->base.registry};
+    int32_t *saved_s = f->base.registry->blocks.s;
+    mc_block_fields *stone_fields = &((mc_block *)stone)->fields;
+    const int32_t saved_id = stone_fields->bn;
+    f->base.registry->blocks.s = NULL;
+    stone_fields->bn = INT32_MAX;
+    float light = 0.25f;
+    const bool read_emission = mc_cv_brightness(&emission, stone, 8, 64, 8, 9, &light);
+    stone_fields->bn = saved_id;
+    f->base.registry->blocks.s = saved_s;
+    CHECK(!read_emission && light == 0.25f && emission.source_pc == 12 &&
+          emission.failure.status == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE &&
+          emission.failure.registry.status == MC_REGISTRY_OK &&
+          emission.failure.registry.block_id == -1);
+
     fields.m = true;
     mc_cv_context fp = {.fields = &fields,
                         .cache = cache,

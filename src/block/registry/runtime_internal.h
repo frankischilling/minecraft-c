@@ -3,6 +3,11 @@
 
 #include "mc/block/registry/registry.h"
 
+/* Ready, idle Block statics with the same accounting check and success
+ * diagnostic as initialize followed by inspect. False leaves error intact
+ * so the caller can run those operations at their reached site. */
+bool mc_registry_block_statics_ready(const mc_registry_classes *, mc_registry_error *);
+
 /* Read-only admission for ordinary classes_release: reject NULL, entered
  * initialization, then zero runtime borrows, with fresh caller diagnostics.
  * No owner mutation, class use, allocation, release or callback occurs. The
