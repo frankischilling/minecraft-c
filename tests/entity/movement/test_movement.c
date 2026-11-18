@@ -2,6 +2,7 @@
 #define MC_COLLISION_BOXES_MAIN mc_movement_boxes_fixture_main
 #include "../../world/runtime/collision/test_boxes.c"
 #undef MC_COLLISION_BOXES_MAIN
+#include "../../../src/entity/movement/movement_internal.h"
 #include "../../../src/world/runtime/collision/entities_internal.h"
 #include "../../support/java_random.h"
 #include "mc/entity/movement/movement.h"
@@ -84,6 +85,125 @@ cleanup:
 }
 
 #include "test_effects.c"
+
+static bool movement_empty_children(const mc_entity_move_error *error) {
+    return error->registry.initializer_pc == -1 &&
+           error->collision.nearby.query.status == MC_WORLD_STORAGE_OK &&
+           error->collision.nearby.slice == SIZE_MAX && error->collision.nearby.index == SIZE_MAX &&
+           error->block_read.nearby.index == SIZE_MAX &&
+           error->world.status == MC_WORLD_STORAGE_OK &&
+           error->world.block.nearby.index == SIZE_MAX &&
+           error->world.presentation.registry.initializer_pc == -1 &&
+           error->contact.status == MC_WORLD_STORAGE_OK &&
+           error->contact.metadata.nearby.index == SIZE_MAX &&
+           error->contact.effect.watcher_index == -1 &&
+           error->contact.effect.math.source_pc == -1 &&
+           error->contact.mutation.registry.initializer_pc == -1 &&
+           error->step.status == MC_WORLD_STORAGE_OK && error->step.particle_face == -1 &&
+           error->step.block_read.nearby.index == SIZE_MAX &&
+           error->step.mutation.registry.initializer_pc == -1 &&
+           error->effect.watcher_index == -1 && error->effect.status == MC_ENTITY_OK &&
+           error->effect.math.source_pc == -1 &&
+           error->effect.statistic_error.writer.index == SIZE_MAX &&
+           error->effect.statistic_error.writer.text_offset == SIZE_MAX &&
+           error->effect.world.block.nearby.index == SIZE_MAX;
+}
+
+static bool movement_fresh_error(mc_entity_move_error *error) {
+    bool ok = false;
+    memset(error, 0xa5, sizeof(*error));
+    mc_entity_move_error_init(error);
+    CHECK(error->status == MC_ENTITY_OK && error->operation == NULL && error->bytecode == 0 &&
+          error->loop_work == 0 && error->max_loop_work == 0 && !error->source_null &&
+          error->source_null_pc == 0 && movement_empty_children(error));
+    ok = true;
+cleanup:
+    return ok;
+}
+
+static bool movement_private_frame(fixture *f, size_t side, mc_entity *e) {
+    bool ok = false;
+    mc_entity_move_error *public_error = malloc(sizeof(*public_error));
+    mc_entity_move_error *private_error = malloc(sizeof(*private_error));
+    const mc_java_random random = *e->random, world_random = *f->worlds[side]->fields.r;
+    mc_entity_bounds *const permanent = e->bounds;
+    const mc_entity_move_limits one = {1};
+    CHECK(public_error != NULL && private_error != NULL);
+    for (size_t c = 0; c < 3; ++c) {
+        movement_air(f, side);
+        if (c == 2)
+            movement_floor(f, side);
+        CHECK(movement_input(e, 8.5, c == 2 ? 9 : 8, 8.5));
+        if (c == 0) {
+            e->base.bq = e->base.bc = true;
+            e->base.bk = 2.5f;
+            e->base.bv = 17;
+            e->base.y_size = .5f;
+        }
+        const double x = c == 2 ? 0 : 1,
+                     y = c == 0   ? -1
+                         : c == 1 ? .25
+                                  : -2,
+                     z = c == 0   ? 2
+                         : c == 1 ? -.5
+                                  : 0;
+        const mc_entity_move_limits *const limits = c == 2 ? &one : NULL;
+        const mc_entity_base_fields before = e->base;
+        const mc_entity_bounds before_bounds = *permanent;
+        memset(public_error, 0xa5, sizeof(*public_error));
+        const mc_entity_status public_status = mc_entity_move(e, x, y, z, limits, public_error);
+        const mc_entity_base_fields public_base = e->base;
+        const mc_entity_bounds public_bounds = *permanent;
+        CHECK(movement_quiet(f, side, e, 0));
+        /* Replay the same native input on the existing owner. No collision answer,
+         * callback or World observation is supplied by the test. */
+        e->base = before;
+        mc_entity_bounds_assign(permanent, &before_bounds);
+        CHECK(movement_fresh_error(private_error));
+        const mc_entity_status private_status =
+            mc_entity_move_in_place(e, NULL, NULL, x, y, z, limits, private_error);
+        CHECK(public_status == (c == 2 ? MC_ENTITY_LIMIT : MC_ENTITY_OK) &&
+              private_status == public_status &&
+              public_error->bytecode == (c == 0   ? 88u
+                                         : c == 1 ? 2028u
+                                                  : 520u) &&
+              (c != 2 || (public_error->loop_work == 1 && public_error->max_loop_work == 1)) &&
+              private_error->status == public_error->status &&
+              private_error->bytecode == public_error->bytecode &&
+              private_error->loop_work == public_error->loop_work &&
+              private_error->max_loop_work == public_error->max_loop_work &&
+              (private_error->operation == public_error->operation ||
+               (private_error->operation != NULL && public_error->operation != NULL &&
+                strcmp(private_error->operation, public_error->operation) == 0)) &&
+              !public_error->source_null && !private_error->source_null &&
+              public_error->source_null_pc == 0 && private_error->source_null_pc == 0 &&
+              private_error->bounds.status == public_error->bounds.status &&
+              private_error->bounds.bytecode == public_error->bounds.bytecode &&
+              private_error->bounds.factory.status == public_error->bounds.factory.status &&
+              private_error->bounds.pool.status == public_error->bounds.pool.status &&
+              private_error->collision.world_bytecode == public_error->collision.world_bytecode &&
+              private_error->collision.block_bytecode == public_error->collision.block_bytecode &&
+              movement_empty_children(public_error) && movement_empty_children(private_error) &&
+              e->base.x == public_base.x && e->base.y == public_base.y &&
+              e->base.z == public_base.z && e->base.velocity_x == public_base.velocity_x &&
+              e->base.velocity_y == public_base.velocity_y &&
+              e->base.velocity_z == public_base.velocity_z && e->base.aX == public_base.aX &&
+              e->base.aY == public_base.aY && e->base.aZ == public_base.aZ &&
+              e->base.ba == public_base.ba && e->base.bb == public_base.bb &&
+              e->base.bc == public_base.bc && e->base.bq == public_base.bq &&
+              e->base.y_size == public_base.y_size && e->base.bk == public_base.bk &&
+              e->base.bv == public_base.bv && e->base.world == public_base.world &&
+              boxes_coordinates(permanent, &public_bounds) && e->bounds == permanent &&
+              mc_test_java_random_equal(e->random, &random) &&
+              mc_test_java_random_equal(f->worlds[side]->fields.r, &world_random) &&
+              movement_quiet(f, side, e, 0));
+    }
+    ok = true;
+cleanup:
+    free(private_error);
+    free(public_error);
+    return ok;
+}
 
 static bool movement_axes(fixture *f, size_t side, mc_entity *e) {
     bool ok = false;
@@ -583,13 +703,13 @@ int main(int argc, char **argv) {
         for (size_t kind = 0; kind < 2; ++kind) {
             mc_entity *e = bound[side][kind];
             const mc_entity_bounds *const permanent = e->bounds;
-            CHECK(movement_axes(f, side, e) && movement_steps(f, side, e) &&
-                  movement_ledge(f, side, e) && movement_web(f, side, e) &&
-                  movement_prefixes(f, side, e, bound[side][1u - kind]) &&
-                  movement_contacts(f, side, e, kind == 0) &&
-                  movement_fire(f, side, e, kind == 0) &&
-                  movement_null_world(f, side, unbound[side][kind]) &&
-                  movement_effects(unbound[side][kind], unbound[side][1u - kind], kind == 0));
+            CHECK(
+                movement_private_frame(f, side, e) && movement_axes(f, side, e) &&
+                movement_steps(f, side, e) && movement_ledge(f, side, e) &&
+                movement_web(f, side, e) && movement_prefixes(f, side, e, bound[side][1u - kind]) &&
+                movement_contacts(f, side, e, kind == 0) && movement_fire(f, side, e, kind == 0) &&
+                movement_null_world(f, side, unbound[side][kind]) &&
+                movement_effects(unbound[side][kind], unbound[side][1u - kind], kind == 0));
             CHECK(e->bounds == permanent && e->phase == MC_ENTITY_READY &&
                   e->base.world == f->worlds[side] && movement_quiet(f, side, e, 0));
         }

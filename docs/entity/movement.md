@@ -1,10 +1,11 @@
 # Entity movement
 
 The [movement interface](../../include/mc/entity/movement/movement.h) implements
-the base movement body for actual READY Item and FallingSand instances. It uses
-their existing coordinates, watcher, Random, counted World binding and permanent
-bounds. The [source map](../reference/entity-movement.md) distinguishes complete
-source bodies, original observations and native verification.
+the base movement body for READY Item, Falling Sand, moving particle, LocalPlayer,
+and represented Mob owners. It uses their existing coordinates, watcher, Random,
+counted World binding and permanent bounds. The
+[source map](../reference/entity-movement.md) distinguishes complete source bodies,
+original observations and native verification.
 
 ## Movement order
 
@@ -26,9 +27,9 @@ including ties. Kept-step smoothing uses Java integer truncation of minY rather
 than mathematical floor.
 
 Final coordinates and collision flags precede the actual fall callback; changed
-axis velocities reset only after that callback returns. Both current concrete
-kinds return false from their real walking predicate, so walking effects are
-skipped through actual virtual dispatch. Loaded-area and Block contact traversal
+axis velocities reset only after that callback returns. Item and Falling Sand
+return false from their walking predicate. The mover evaluates that predicate
+through the actual virtual dispatch. Loaded-area and Block contact traversal
 then precede wet, burning, damage, fire-counter and extinguishing behavior.
 
 Extinguishing resolves the actual code literal before two Entity Random draws.
@@ -103,6 +104,37 @@ The implementation requires strict x86-64 binary32/binary64 evaluation. Inputs
 are not clamped to finite values, and source association, narrowing, signed zero
 and wrapped integer behavior remain significant. Numerical source review and
 original observations do not themselves qualify every compiled composition.
+
+## Movement diagnostic cost
+
+Living travel runs its movement body in the private frame it already
+owns. The public entry still publishes its diagnostic on return. Both
+entries share the same movement code, including the return PC, work
+counts, reached child diagnostics, and cleanup. The native fixture
+compares no-clip, ordinary movement, and a pending clip failure on the
+same restored Entity and bounds.
+
+Movement, travel, World, and effect initializers leave each initialized
+child to write its own fields and sentinels. A successful World movement
+query initializes the returned diagnostic directly. Burning scans keep
+their private scalar frame across successful cells. A failure on the
+second cell retains its coordinates and World/Chunk read PCs, with earlier
+effects and the Boolean output preserved.
+
+Two paired heavy-cave profiles recorded about 16,425 movement calls per
+run. Median movement time per World tick fell from 5.25–5.36 to 2.28 ms.
+Each baseline initialized its movement record about 33,450 times per run.
+The candidate initialized it 17,025 times. Median initializer time fell
+from 2.59–2.66 to 0.72 ms per tick. The measured spans overlap.
+
+Two separate pairs per scene ran 10 seconds of Far gameplay at 854×480 on
+DISPLAY2. Ordered actor state and scheduler work matched over 200 shared
+World ticks in each scene, covering 16,425 and 3,780 actor dispatches.
+
+| Cave | Median FPS, before → after | Median p99 frame ms, before → after |
+| --- | ---: | ---: |
+| Heavy | 44.27 → 52.98 | 39.50 → 33.54 |
+| Lighter | 61.50 → 62.55 | 26.53 → 25.65 |
 
 ## Verification scope
 

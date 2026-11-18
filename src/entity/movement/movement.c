@@ -1,4 +1,4 @@
-#include "mc/entity/movement/movement.h"
+#include "movement_internal.h"
 
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
@@ -13,6 +13,7 @@
 
 #include <float.h>
 #include <limits.h>
+#include <stddef.h>
 #include <string.h>
 
 #if !defined(__SSE2__) && !defined(_M_X64)
@@ -65,7 +66,10 @@ static float negate(float value) {
 void mc_entity_move_error_init(mc_entity_move_error *error) {
     if (error == NULL)
         return;
-    memset(error, 0, sizeof(*error));
+    /* The consecutive children from collision through effect initialize themselves. */
+    const size_t children_end = offsetof(mc_entity_move_error, effect) + sizeof(error->effect);
+    memset(error, 0, offsetof(mc_entity_move_error, collision));
+    memset((unsigned char *)error + children_end, 0, sizeof(*error) - children_end);
     mc_world_collision_error_init(&error->collision);
     mc_world_collision_error_init(&error->block_read);
     mc_world_movement_error_init(&error->world);
@@ -522,43 +526,42 @@ static bool finish_environment(mc_entity *entity, mc_registry_classes *code_regi
     return true;
 }
 
-mc_entity_status mc_entity_move_with_math(mc_entity *entity, mc_registry_classes *code_registry,
-                                          mc_math_classes *math, double x, double y, double z,
-                                          const mc_entity_move_limits *limits,
-                                          mc_entity_move_error *error) {
-    mc_entity_move_error frame;
-    mc_entity_move_error_init(&frame);
-    frame.max_loop_work = limits == NULL ? MC_ENTITY_MOVE_DEFAULT_LOOP_WORK : limits->max_loop_work;
+mc_entity_status mc_entity_move_in_place(mc_entity *entity, mc_registry_classes *code_registry,
+                                         mc_math_classes *math, double x, double y, double z,
+                                         const mc_entity_move_limits *limits,
+                                         mc_entity_move_error *frame) {
+    frame->max_loop_work =
+        limits == NULL ? MC_ENTITY_MOVE_DEFAULT_LOOP_WORK : limits->max_loop_work;
     if (entity == NULL)
-        fail(&frame, MC_ENTITY_INVALID_ARGUMENT, "Entity movement owner");
+        fail(frame, MC_ENTITY_INVALID_ARGUMENT, "Entity movement owner");
     else if (entity->phase != MC_ENTITY_READY)
-        fail(&frame, MC_ENTITY_INVALID_PHASE, "Entity movement phase");
+        fail(frame, MC_ENTITY_INVALID_PHASE, "Entity movement phase");
     else if (!mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_ITEM) &&
              !mc_entity_has_moving_particle(entity) &&
              !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_FALLING_SAND) &&
              !mc_entity_is_kind(entity, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER) &&
              !(mc_entity_has_mob(entity) && mc_entity_is_kind(entity, entity->class_literal->kind)))
-        fail(&frame, MC_ENTITY_STATE_ERROR, "Entity movement concrete virtuals");
+        fail(frame, MC_ENTITY_STATE_ERROR, "Entity movement concrete virtuals");
     else if ((_mm_getcsr() & 0xffc0u) != 0x1f80u)
-        fail(&frame, MC_ENTITY_UNSUPPORTED_FP, "Entity movement FP admission");
+        fail(frame, MC_ENTITY_UNSUPPORTED_FP, "Entity movement FP admission");
     else {
         const mc_entity_status held = mc_entity_retain(entity);
         if (held != MC_ENTITY_OK)
-            fail(&frame, held, "Entity movement owner hold");
+            fail(frame, held, "Entity movement owner hold");
         else {
             mc_world_collision_list_view list = {0};
             mc_entity_bounds *initial = NULL, *flat = NULL;
             if (entity->base.bq) {
-                frame.bytecode = 15;
+                frame->bytecode = 15;
                 if (entity->bounds == NULL) {
-                    frame.source_null = true;
-                    frame.source_null_pc = 15;
-                    fail(&frame, MC_ENTITY_STATE_ERROR, "Entity movement null permanent bounds");
+                    frame->source_null = true;
+                    frame->source_null_pc = 15;
+                    fail(frame, MC_ENTITY_STATE_ERROR, "Entity movement null permanent bounds");
                     goto done;
                 }
                 mc_entity_bounds_translate(entity->bounds, x, y, z);
                 position_from_bounds(entity);
-                frame.bytecode = 88;
+                frame->bytecode = 88;
                 goto done;
             }
             entity->base.y_size =
@@ -574,42 +577,42 @@ mc_entity_status mc_entity_move_with_math(mc_entity *entity, mc_registry_classes
                 entity->base.velocity_z = 0.0;
             }
             double original_x = x, original_y = y, original_z = z;
-            frame.bytecode = 173;
+            frame->bytecode = 173;
             if (entity->bounds == NULL) {
-                frame.source_null = true;
-                frame.source_null_pc = 173;
-                fail(&frame, MC_ENTITY_STATE_ERROR, "Entity movement null permanent bounds");
+                frame->source_null = true;
+                frame->source_null_pc = 173;
+                fail(frame, MC_ENTITY_STATE_ERROR, "Entity movement null permanent bounds");
                 goto done;
             }
             mc_entity_status copied =
-                mc_entity_bounds_copy(entity->classes, entity->bounds, &initial, &frame.bounds);
+                mc_entity_bounds_copy(entity->classes, entity->bounds, &initial, &frame->bounds);
             if (copied != MC_ENTITY_OK) {
-                fail(&frame, copied, "Entity initial pooled bounds copy");
+                fail(frame, copied, "Entity initial pooled bounds copy");
                 goto done;
             }
             bool sneaking = false;
             if (entity->base.aX) {
-                frame.bytecode = 186;
-                if (!effect_result(&frame,
-                                   mc_entity_effect_sneaking(entity, &sneaking, &frame.effect)))
+                frame->bytecode = 186;
+                if (!effect_result(frame,
+                                   mc_entity_effect_sneaking(entity, &sneaking, &frame->effect)))
                     goto done;
             }
-            if (sneaking && (!ledge(entity, 0, &x, &original_x, &list, &frame) ||
-                             !ledge(entity, 2, &z, &original_z, &list, &frame)))
+            if (sneaking && (!ledge(entity, 0, &x, &original_x, &list, frame) ||
+                             !ledge(entity, 2, &z, &original_z, &list, frame)))
                 goto done;
-            if (!transform_query(entity, x, y, z, false, 391, 394, &list, &frame) ||
-                !clip(entity, &list, 1, &y, 406, 418, 431, &frame))
+            if (!transform_query(entity, x, y, z, false, 391, 394, &list, frame) ||
+                !clip(entity, &list, 1, &y, 406, 418, 431, frame))
                 goto done;
             mc_entity_bounds_translate(entity->bounds, 0.0, y, 0.0);
             if (!entity->base.bd && original_y != y)
                 x = y = z = 0.0;
             const bool grounded = entity->base.aX || (original_y != y && original_y < 0.0);
-            if (!clip(entity, &list, 0, &x, 508, 520, 533, &frame))
+            if (!clip(entity, &list, 0, &x, 508, 520, 533, frame))
                 goto done;
             mc_entity_bounds_translate(entity->bounds, x, 0.0, 0.0);
             if (!entity->base.bd && original_x != x)
                 x = y = z = 0.0;
-            if (!clip(entity, &list, 2, &z, 582, 594, 608, &frame))
+            if (!clip(entity, &list, 2, &z, 582, 594, 608, frame))
                 goto done;
             mc_entity_bounds_translate(entity->bounds, 0.0, 0.0, z);
             if (!entity->base.bd && original_z != z)
@@ -620,26 +623,26 @@ mc_entity_status mc_entity_move_with_math(mc_entity *entity, mc_registry_classes
                 x = original_x;
                 y = widen(entity->base.bp);
                 z = original_z;
-                frame.bytecode = 724;
+                frame->bytecode = 724;
                 copied =
-                    mc_entity_bounds_copy(entity->classes, entity->bounds, &flat, &frame.bounds);
+                    mc_entity_bounds_copy(entity->classes, entity->bounds, &flat, &frame->bounds);
                 if (copied != MC_ENTITY_OK) {
-                    fail(&frame, copied, "Entity flat pooled bounds copy");
+                    fail(frame, copied, "Entity flat pooled bounds copy");
                     goto done;
                 }
                 mc_entity_bounds_assign(entity->bounds, initial);
-                if (!transform_query(entity, x, y, z, false, 751, 754, &list, &frame) ||
-                    !clip(entity, &list, 1, &y, 766, 778, 791, &frame))
+                if (!transform_query(entity, x, y, z, false, 751, 754, &list, frame) ||
+                    !clip(entity, &list, 1, &y, 766, 778, 791, frame))
                     goto done;
                 mc_entity_bounds_translate(entity->bounds, 0.0, y, 0.0);
                 if (!entity->base.bd && original_y != y)
                     x = y = z = 0.0;
-                if (!clip(entity, &list, 0, &x, 840, 852, 865, &frame))
+                if (!clip(entity, &list, 0, &x, 840, 852, 865, frame))
                     goto done;
                 mc_entity_bounds_translate(entity->bounds, x, 0.0, 0.0);
                 if (!entity->base.bd && original_x != x)
                     x = y = z = 0.0;
-                if (!clip(entity, &list, 2, &z, 914, 926, 940, &frame))
+                if (!clip(entity, &list, 2, &z, 914, 926, 940, frame))
                     goto done;
                 mc_entity_bounds_translate(entity->bounds, 0.0, 0.0, z);
                 if (!entity->base.bd && original_z != z)
@@ -648,7 +651,7 @@ mc_entity_status mc_entity_move_with_math(mc_entity *entity, mc_registry_classes
                     x = y = z = 0.0;
                 else {
                     y = widen(negate(entity->base.bp));
-                    if (!clip(entity, &list, 1, &y, 1023, 1035, 1048, &frame))
+                    if (!clip(entity, &list, 1, &y, 1023, 1035, 1048, frame))
                         goto done;
                     mc_entity_bounds_translate(entity->bounds, 0.0, y, 0.0);
                 }
@@ -672,10 +675,10 @@ mc_entity_status mc_entity_move_with_math(mc_entity *entity, mc_registry_classes
             entity->base.aZ = original_y != y;
             entity->base.aX = original_y != y && original_y < 0.0;
             entity->base.ba = entity->base.aY || entity->base.aZ;
-            frame.bytecode = 1319;
+            frame->bytecode = 1319;
             if (!effect_result(
-                    &frame, mc_entity_effect_fall_state_with_math(entity, code_registry, math, y,
-                                                                  entity->base.aX, &frame.effect)))
+                    frame, mc_entity_effect_fall_state_with_math(entity, code_registry, math, y,
+                                                                 entity->base.aX, &frame->effect)))
                 goto done;
             if (original_x != x)
                 entity->base.velocity_x = 0.0;
@@ -687,12 +690,12 @@ mc_entity_status mc_entity_move_with_math(mc_entity *entity, mc_registry_classes
              * the current concrete n=false bodies skip all walking effects. */
             volatile double walked_x = subtract(entity->base.x, old_x);
             volatile double walked_z = subtract(entity->base.z, old_z);
-            if (!walking(entity, code_registry, walked_x, walked_z, sneaking, &frame))
+            if (!walking(entity, code_registry, walked_x, walked_z, sneaking, frame))
                 goto done;
-            if (!contacts(entity, code_registry, math, &frame) ||
-                !finish_environment(entity, code_registry, math, &list, &frame))
+            if (!contacts(entity, code_registry, math, frame) ||
+                !finish_environment(entity, code_registry, math, &list, frame))
                 goto done;
-            frame.bytecode = 2028;
+            frame->bytecode = 2028;
         done:
             mc_world_collision_list_view_release(&list);
             if (flat != NULL)
@@ -702,9 +705,20 @@ mc_entity_status mc_entity_move_with_math(mc_entity *entity, mc_registry_classes
             mc_entity_release(entity);
         }
     }
+    return frame->status;
+}
+
+mc_entity_status mc_entity_move_with_math(mc_entity *entity, mc_registry_classes *code_registry,
+                                          mc_math_classes *math, double x, double y, double z,
+                                          const mc_entity_move_limits *limits,
+                                          mc_entity_move_error *error) {
+    mc_entity_move_error frame;
+    mc_entity_move_error_init(&frame);
+    const mc_entity_status status =
+        mc_entity_move_in_place(entity, code_registry, math, x, y, z, limits, &frame);
     if (error != NULL)
         *error = frame;
-    return frame.status;
+    return status;
 }
 
 mc_entity_status mc_entity_move_in_context(mc_entity *entity, mc_registry_classes *code_registry,

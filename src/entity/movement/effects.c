@@ -40,6 +40,7 @@
 #include <float.h>
 #include <limits.h>
 #include <math.h>
+#include <stddef.h>
 #include <string.h>
 
 #if !defined(_M_X64) && !defined(_M_AMD64) && !defined(__x86_64__)
@@ -61,10 +62,16 @@ _Static_assert(CHAR_BIT == 8 && sizeof(float) == sizeof(uint32_t) &&
                "strict binary32/binary64 storage and evaluation required");
 
 void mc_entity_effect_error_init(mc_entity_effect_error *error) {
-    static const mc_entity_effect_error zero = {0};
     if (error == NULL)
         return;
-    *error = zero;
+    const size_t world = offsetof(mc_entity_effect_error, world);
+    const size_t world_end = world + sizeof(error->world);
+    const size_t armor = offsetof(mc_entity_effect_error, armor);
+    const size_t armor_end = armor + sizeof(error->armor);
+    unsigned char *const bytes = (unsigned char *)error;
+    memset(bytes, 0, world);
+    memset(bytes + world_end, 0, armor - world_end);
+    memset(bytes + armor_end, 0, sizeof(*error) - armor_end);
     error->watcher_index = -1;
     error->statistic_error.writer.index = SIZE_MAX;
     error->statistic_error.writer.text_offset = SIZE_MAX;

@@ -6,6 +6,7 @@
 #include "../../world/runtime/runtime_internal.h"
 #include "../mob/internal.h"
 #include "../mob/tick/internal.h"
+#include "../movement/movement_internal.h"
 #include "../player/player_internal.h"
 #include "../player/statistics_status_internal.h"
 #include "fields_internal.h"
@@ -29,10 +30,14 @@ typedef struct travel_scope {
 void mc_player_travel_error_init(mc_player_travel_error *e) {
     if (e == NULL)
         return;
-    /* The movement initializer clears the complete movement record. */
-    const size_t movement_end = offsetof(mc_player_travel_error, movement) + sizeof(e->movement);
-    memset(e, 0, offsetof(mc_player_travel_error, movement));
-    memset((unsigned char *)e + movement_end, 0, sizeof(*e) - movement_end);
+    const size_t environment_end =
+        offsetof(mc_player_travel_error, environment) + sizeof(e->environment);
+    const size_t effect_end = offsetof(mc_player_travel_error, effect) + sizeof(e->effect);
+    unsigned char *const bytes = (unsigned char *)e;
+    memset(bytes, 0, offsetof(mc_player_travel_error, environment));
+    memset(bytes + environment_end, 0,
+           offsetof(mc_player_travel_error, movement) - environment_end);
+    memset(bytes + effect_end, 0, sizeof(*e) - effect_end);
     e->statistic_error.writer.index = SIZE_MAX;
     e->statistic_error.writer.text_offset = SIZE_MAX;
     mc_entity_environment_error_init(&e->environment);
@@ -254,7 +259,8 @@ static bool accelerate(travel_scope *s, float strafe, float forward, float amoun
 
 static bool move(travel_scope *s, mc_player_travel_error *e) {
     mc_entity *p = s->entity;
-    const mc_entity_status status = mc_entity_move_with_math(
+    /* The three Living branches each reach movement at most once. */
+    const mc_entity_status status = mc_entity_move_in_place(
         p, s->registry,
         s->mob != NULL       ? s->mob->math
         : s->context == NULL ? NULL

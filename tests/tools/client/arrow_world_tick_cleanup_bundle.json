@@ -110,8 +110,8 @@
       "sha256": "5601732b52306d176047e197f8f55938874a6d0fc6e0b57b08dd9775161e7b74"
     },
     "src/entity/movement/effects.c": {
-      "bytes": 89851,
-      "sha256": "a8f828b0a01603d5c957dfdf18a0062b1ed28928703bff4fd108605f4c36efe0"
+      "bytes": 90251,
+      "sha256": "d21ef9147c843c7fc28d5dc1d5fe6c8eada881eb801d5dcd58320300f638ac34"
     },
     "src/entity/player/death.c": {
       "bytes": 32084,
@@ -146,8 +146,8 @@
       "sha256": "95245feaae82fc2f972c831c48ff6fffc0380e9e687de3ecd084bb9a6dce2182"
     },
     "src/world/runtime/movement.c": {
-      "bytes": 29943,
-      "sha256": "254e167c898907879c70fccca62c635d37bba596bfe1fe764239bde52a0e983e"
+      "bytes": 30414,
+      "sha256": "7ad45e1f710854e1afc32d62f7e72edc62db30954633a19536f2bbdc7ccf289b"
     },
     "src/world/runtime/presentation.c": {
       "bytes": 23797,
@@ -177,7 +177,7 @@
   "helpers": {
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76652,
-      "sha256": "a0bbbdf5af9b6aec18e36163772071d04a0194d8189b0e32dd2e21bf24f5e0de"
+      "sha256": "a375a0d2f28e7a7bc79800493289db7b5142aed164c63b4ccdce72deb7e5b1d4"
     },
     "tests/tools/world/test_execution_ownership.py": {
       "bytes": 8350,

@@ -17,6 +17,7 @@
 #include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 #if !defined(_M_X64) && !defined(_M_AMD64) && !defined(__x86_64__)
 #error "World movement dependencies require x86-64/SSE2"
@@ -36,10 +37,16 @@ static mc_registry_error empty_registry(void) {
 }
 
 void mc_world_movement_error_init(mc_world_movement_error *error) {
-    static const mc_world_movement_error zero = {0};
     if (error == NULL)
         return;
-    *error = zero;
+    const size_t block = offsetof(mc_world_movement_error, block);
+    const size_t block_end = block + sizeof(error->block);
+    const size_t presentation = offsetof(mc_world_movement_error, presentation);
+    const size_t presentation_end = presentation + sizeof(error->presentation);
+    unsigned char *const bytes = (unsigned char *)error;
+    memset(bytes, 0, block);
+    memset(bytes + block_end, 0, presentation - block_end);
+    memset(bytes + presentation_end, 0, sizeof(*error) - presentation_end);
     mc_world_mutation_error_init(&error->presentation);
     mc_world_collision_error_init(&error->block);
     error->registry = error->presentation.registry;
@@ -119,11 +126,13 @@ static mc_world_storage_status result(mc_world_movement_error *error,
 
 static mc_world_storage_status finish(mc_world_runtime *world, mc_world_movement_error *frame,
                                       mc_world_movement_error *error) {
-    if (frame->status == MC_WORLD_STORAGE_OK)
-        mc_world_movement_error_init(frame);
-    else
+    if (frame->status != MC_WORLD_STORAGE_OK)
         world->last_error = frame->cause;
     mc_world_runtime_call_leave(world);
+    if (frame->status == MC_WORLD_STORAGE_OK) {
+        mc_world_movement_error_init(error);
+        return MC_WORLD_STORAGE_OK;
+    }
     return result(error, frame);
 }
 
@@ -355,10 +364,9 @@ static bool burning_held(mc_world_runtime *world, const mc_entity_bounds *bounds
             for (int32_t z = low_z; z < high_z; z = mc_java_i32_add(z, 1)) {
                 frame->bytecode = 113;
                 int32_t id;
-                /* The shared getter resets its complete lower attempt frame
-                 * before acquisition; only this call's full child survives. */
-                if (mc_world_collision_block_value_held(world, x, y, z, false, &id,
-                                                        &frame->block) != MC_WORLD_STORAGE_OK) {
+                /* The scan keeps its private lower frame ready for each cell. */
+                if (mc_world_collision_block_value_in_place(world, x, y, z, false, &id,
+                                                            &frame->block) != MC_WORLD_STORAGE_OK) {
                     frame->query = frame->block.nearby.query;
                     frame->provider_bytecode = frame->query.provider_bytecode;
                     return query_failure(frame);

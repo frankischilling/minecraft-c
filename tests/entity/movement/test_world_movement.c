@@ -340,6 +340,76 @@ cleanup:
     return ok;
 }
 
+static bool world_move_burning_read_failure_after_success(fixture *f, size_t side) {
+    bool ok = false;
+    mc_world_runtime *const world = f->worlds[side];
+    mc_chunk_data *const data = f->states[side]->data;
+    const size_t first = boxes_index(6, 64, 6), second = boxes_index(6, 64, 7);
+    const uint8_t saved = data->blocks[first];
+    const size_t capacity = data->blocks_capacity;
+    const mc_entity_bounds bounds = {6.125, 64.125, 6.125, 6.875, 64.875, 7.875};
+    const mc_java_random random = *world->fields.r;
+    for (uint8_t id = 0; id <= 1; ++id) {
+        data->blocks[first] = id;
+        /* Air and Stone complete all three static comparisons. The next Z
+         * voxel reaches the real Chunk's shortened Block backing. */
+        data->blocks_capacity = second;
+        const bool sentinel = id != 0;
+        bool value = sentinel;
+        mc_world_movement_error error;
+        memset(&error, 0xa5, sizeof(error));
+        const mc_world_storage_status status =
+            mc_world_runtime_burning(world, &bounds, &value, &error);
+        data->blocks_capacity = capacity;
+        const mc_world_nearby_error *const nearby = &error.block.nearby;
+        const mc_world_storage_error *const reached = mc_world_runtime_last_error(world);
+        CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && value == sentinel &&
+              error.status == status && error.bytecode == 113 && error.area_bytecode == 0 &&
+              error.presence_bytecode == 0 && error.provider_bytecode == 0 && error.block.x == 6 &&
+              error.block.y == 64 && error.block.z == 7 && error.block.world_bytecode == 0 &&
+              error.block.block_bytecode == 0 && error.block.block_class == NULL &&
+              error.query.bytecode == 60 && error.query.provider_bytecode == 0 &&
+              error.query.chunk_bytecode == 15 && error.query.acquisition == MC_CHUNK_ACQUIRE_OK &&
+              error.query.source_chunk == NULL && !error.query.source_null && !error.source_null &&
+              nearby->query.status == status && nearby->query.bytecode == 60 &&
+              nearby->query.provider_bytecode == 0 && nearby->query.chunk_bytecode == 15 &&
+              nearby->query.acquisition == MC_CHUNK_ACQUIRE_OK &&
+              nearby->query.source_chunk == NULL && !nearby->query.source_null);
+        CHECK(error.operation != NULL &&
+              strcmp(error.operation, "Collision Chunk block backing/index") == 0 &&
+              error.cause.status == status && error.cause.operation == error.operation &&
+              error.cause.system_error == 0 && error.query.status == status &&
+              error.query.cause.status == status &&
+              error.query.cause.operation == error.operation &&
+              error.query.cause.system_error == 0 && nearby->query.cause.status == status &&
+              nearby->query.cause.operation == error.operation &&
+              nearby->query.cause.system_error == 0 && reached->status == status &&
+              reached->operation == error.operation && reached->system_error == 0);
+        CHECK(
+            error.registry.status == MC_REGISTRY_OK && error.registry.message == NULL &&
+            error.registry.initializer_pc == -1 && error.registry.block_id == -1 &&
+            error.registry.constructor_pc == -1 && error.registry.active_initializer_pc == -1 &&
+            error.registry.item_argument == -1 && nearby->query.registry.status == MC_REGISTRY_OK &&
+            nearby->query.registry.initializer_pc == -1 && nearby->query.registry.block_id == -1 &&
+            nearby->query.registry.constructor_pc == -1 &&
+            nearby->query.registry.active_initializer_pc == -1 &&
+            nearby->query.registry.item_argument == -1 && nearby->slice == SIZE_MAX &&
+            nearby->index == SIZE_MAX && nearby->batch.index == SIZE_MAX &&
+            nearby->load_entity.index == SIZE_MAX &&
+            nearby->tile_entity.registry.initializer_pc == -1 &&
+            nearby->tile_entity.tile_entity.item_index == SIZE_MAX &&
+            nearby->activation_bytecode == 0 && nearby->activation_world_bytecode == 0 &&
+            nearby->load_bytecode == 0 && nearby->load_builder_bytecode == 0);
+        CHECK(world_move_idle(f, side) && mc_test_java_random_equal(&random, world->fields.r) &&
+              data->blocks[first] == id);
+    }
+    ok = true;
+cleanup:
+    data->blocks_capacity = capacity;
+    data->blocks[first] = saved;
+    return ok;
+}
+
 static bool world_move_sound(fixture *f, size_t side) {
     bool ok = false;
     mc_world_runtime *world = f->worlds[side];
@@ -445,7 +515,7 @@ int main(int argc, char **argv) {
     for (size_t side = 0; side < 2; ++side)
         CHECK(world_move_area(f, side) && world_move_rain_threshold(f, side) &&
               world_move_rain_sources(f, side) && world_move_burning(f, side) &&
-              world_move_sound(f, side));
+              world_move_burning_read_failure_after_success(f, side) && world_move_sound(f, side));
     result = 0;
 cleanup:
     if (!cleanup_fixture(f)) {
