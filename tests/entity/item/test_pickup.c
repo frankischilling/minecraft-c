@@ -2,6 +2,9 @@
 #define main mc_item_pickup_app_fixture_main
 #include "../../client/statistics/test_player_dispatch.c"
 #undef main
+#include "../../../src/client/particles/application.h"
+#include "../../../src/entity/action/action_internal.h"
+#include "../../../src/entity/arrow/internal.h"
 #include "../../../src/inventory/internal.h"
 #include "../../../src/item/stack/source_internal.h"
 #include "../../../src/world/runtime/runtime_internal.h"
@@ -271,9 +274,11 @@ static mc_world_storage_status sound_sink(void *context, mc_world_runtime *world
     s->volume = volume;
     s->pitch = pitch;
     s->dead_at_sound = s->item->base.be;
-    if (mc_item_stack_fields_get(s->item->stack, &fields) != MC_ITEM_STACK_OK)
-        return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
-    s->count_at_sound = fields.count;
+    if (s->item->stack != NULL) {
+        if (mc_item_stack_fields_get(s->item->stack, &fields) != MC_ITEM_STACK_OK)
+            return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+        s->count_at_sound = fields.count;
+    }
     if (mc_item_stack_fields_get(s->inventory->main_slots[0], &fields) != MC_ITEM_STACK_OK)
         return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
     s->first_slot_count = fields.count;
@@ -475,13 +480,81 @@ static bool connected(fixture *f) {
     return true;
 }
 
+#define CHECK_COLLECT(condition)                                                                   \
+    do {                                                                                           \
+        ++checks;                                                                                  \
+        if (!(condition)) {                                                                        \
+            fprintf(stderr, "Arrow collection:%d: %s\n", __LINE__, #condition);                    \
+            goto cleanup;                                                                          \
+        }                                                                                          \
+    } while (0)
+
+static bool arrow_collect(fixture *f) {
+    bool ok = false, registered = false, removed = false;
+    mc_entity *arrow = NULL;
+    mc_world_access *access = NULL;
+    mc_player_action_error *error = malloc(sizeof(*error));
+    mc_inventory_player *inventory = f->player->local_player->fields.player.c;
+    CHECK_COLLECT(error != NULL && clear_inventory(inventory) &&
+                  mc_client_application_publish_world(&f->app, f->world) == MC_EFFECT_RENDERER_OK &&
+                  mc_client_application_construct_effect_renderer(&f->app, NULL, NULL) ==
+                      MC_EFFECT_RENDERER_OK);
+    CHECK_COLLECT(mc_arrow_allocate(f->app.entities, &arrow, NULL) == MC_ENTITY_OK &&
+                  mc_arrow_construct_position(arrow, f->world, 8, 64, 8, NULL) == MC_ENTITY_OK);
+    arrow->arrow->fields.i = arrow->arrow->fields.a = true;
+    sound_observation observed = {.item = arrow, .inventory = inventory};
+    const mc_world_access_callbacks callbacks = {.sound = sound_sink};
+    CHECK_COLLECT(mc_world_access_create(&callbacks, &observed, &access, NULL) ==
+                      MC_WORLD_STORAGE_OK &&
+                  mc_world_runtime_add_world_access(f->world, access, NULL) == MC_WORLD_STORAGE_OK);
+    registered = true;
+    mc_java_random expected = *arrow->random;
+    const float first = mc_java_random_next_float(&expected);
+    const float second = mc_java_random_next_float(&expected);
+    volatile float difference = first - second, scaled = difference * .7f;
+    volatile float shifted = scaled + 1.0f, pitch = shifted * 2.0f;
+    mc_player_action_error_init(error);
+    CHECK_COLLECT(mc_action_pickup(arrow, f->player, f->app.registry, error) &&
+                  error->child_kind == MC_PLAYER_ACTION_CHILD_NONE);
+    mc_item_stack_fields inserted;
+    CHECK_COLLECT(
+        mc_item_stack_fields_get(inventory->main_slots[0], &inserted) == MC_ITEM_STACK_OK &&
+        inserted.id == 262 && inserted.count == 1 && inserted.damage == 0 && arrow->base.be);
+    CHECK_COLLECT(observed.calls == 1 && observed.first_slot_count == 1 &&
+                  !observed.dead_at_sound && observed.volume == .2f && observed.pitch == pitch &&
+                  arrow->random->state == expected.state);
+    mc_effect_renderer_snapshot effects;
+    mc_particle_snapshot pickup;
+    CHECK_COLLECT(mc_client_effect_renderer_read(f->app.effect_renderer, &effects) &&
+                  effects.world == f->world && effects.sizes[3] == 1 &&
+                  mc_particle_read(mc_client_effect_renderer_particle(f->app.effect_renderer, 3, 0),
+                                   &pickup) &&
+                  pickup.pickup.a == arrow && pickup.pickup.o == f->player);
+    ok = true;
+cleanup:
+    if (registered && (mc_world_runtime_remove_world_access(f->world, access, &removed, NULL) !=
+                           MC_WORLD_STORAGE_OK ||
+                       !removed))
+        ok = false;
+    if (mc_world_access_free(access, NULL) != MC_WORLD_STORAGE_OK ||
+        mc_client_application_retire_effect_renderer(&f->app) != MC_EFFECT_RENDERER_OK ||
+        mc_client_application_publish_world(&f->app, NULL) != MC_EFFECT_RENDERER_OK)
+        ok = false;
+    mc_entity_release(arrow);
+    free(error);
+    return ok;
+}
+
+#undef CHECK_COLLECT
+
 int main(int argc, char **argv) {
     if (argc != 4 || CD(argv[2]) != 0 || !mc_math_trig_init(&trig))
         return 2;
     reference_rows = strcmp(argv[3], "reference") == 0;
     fixture *f = calloc(1, sizeof(*f));
     if (f == NULL || !setup(f, argv[1], "pickup", true) || !clone_controls() || !insertions(f) ||
-        !connected(f) || !achievement_pickups(f) || !nullable_prefixes(f) || !teardown(f))
+        !connected(f) || !achievement_pickups(f) || !nullable_prefixes(f) ||
+        (!reference_rows && !arrow_collect(f)) || !teardown(f))
         return 1;
     free(f);
     printf("Item pickup: %zu checks\n", checks);

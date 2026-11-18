@@ -2,8 +2,8 @@
   "scope": "Current authored real-owner loading draw/update/yield/retirement controls; native results are recorded separately for their exact tested snapshots.",
   "native_sources": {
     "CMakeLists.txt": {
-      "bytes": 354125,
-      "sha256": "e757259d2a121ec0c33736c90f3221f18face9cc63e7a22fea4adf22b3d42bc3"
+      "bytes": 354155,
+      "sha256": "6fdeb27ac6ff4753748c7db45c2dd8e2447be3e3f5f03d5ec09cf09875c498d8"
     },
     "cmake/client_controllers.cmake": {
       "bytes": 1093,
@@ -2422,8 +2422,8 @@
       "sha256": "f32d96dd344e77e14f0bedf1bb75698d6f83902e3c9fde0fa17205fb4973eb40"
     },
     "src/entity/action/push.c": {
-      "bytes": 8949,
-      "sha256": "2ca442e2a82d8fb504be645df58c1b6ccd98721c4b2de738515bfcc5de12d9d1"
+      "bytes": 9241,
+      "sha256": "1e560129b30c125065cf47ed3ab436508b6565b63b04fae30e4bbd8919dd3a3c"
     },
     "src/entity/bounds/bounds.c": {
       "bytes": 27831,
@@ -4430,8 +4430,8 @@
       "sha256": "8367a0fb54d51ea3ca09869b591e0553eef4b4e83e59883cd89015d6c07e2ecf"
     },
     "tests/entity/action/test_action.c": {
-      "bytes": 22165,
-      "sha256": "6e0371948558c17776c0e4e8d9131bcfd22b353be03fe79e89a95232a2aecfdb"
+      "bytes": 31478,
+      "sha256": "81e954504638c9c2b1bcd69816bd738846dc3ce062b8a99c73043d410ccace12"
     },
     "tests/entity/bounds/test_bounds.c": {
       "bytes": 65702,
@@ -4450,8 +4450,8 @@
       "sha256": "52684ff7712d2d7650df14e966fd2a648d7ea4b6db66f5ed4e7acc72dc49331c"
     },
     "tests/entity/item/test_pickup.c": {
-      "bytes": 21279,
-      "sha256": "8dc02806be65b21e61d18c847145c6d7f77033162b101d4f86884105fe2ced4a"
+      "bytes": 25516,
+      "sha256": "f71cd1c101507e98d25e588983f878ec1a76d650ff3998cb987eaa8204656ce1"
     },
     "tests/entity/item/test_tick.c": {
       "bytes": 23134,
@@ -11378,8 +11378,8 @@
       "sha256": "05f163fdcd177576472e7feb3cb1cba8ad8285b595fe54be5a46014ed90267f5"
     },
     "src/entity/arrow/internal.h": {
-      "bytes": 2085,
-      "sha256": "ba74e695188cdf04de5cf52e12f59e82cc6439c6d9153c95580443eb52b1e9e2"
+      "bytes": 2425,
+      "sha256": "d4837a976155f9502e7c25e70e1f9c8343785c954b960b1923c2eb1cfbacf276"
     },
     "src/entity/arrow/references.c": {
       "bytes": 2582,
@@ -11891,7 +11891,7 @@
     },
     "tests/tools/world/test_arrow_natural_flight.py": {
       "bytes": 16754,
-      "sha256": "347afc68918170c160357c702070241593d00d70ff7230964562c6bd60fb9411"
+      "sha256": "307bc6562e01a56eaeaca132562a34732bb57a5e586676193e9cc9949adc1cfa"
     },
     "tests/world/runtime/test_arrow_natural_flight.c": {
       "bytes": 19352,
@@ -11907,7 +11907,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "411bb33597b5f1bd2d9b3d212f74d1e5ee23f1836ef6778db6015817e1059c3b"
+      "sha256": "a14a235109925643ad1ca30a06f415026b4acc4386b75647bd54db8e0d133e37"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,
@@ -11915,7 +11915,7 @@
     },
     "tests/tools/entity/test_damage_native_close.py": {
       "bytes": 17605,
-      "sha256": "468a117f8c5481e8de89bd968df584adc040b7fcc4193e8099c665b0b5dd4690"
+      "sha256": "55e212bfb3038aac4cd1613cc85b814077554ac0e6cb1a135008541204dab8d2"
     },
     "tests/world/runtime/world_access/test_damage_close_execution.c": {
       "bytes": 30398,

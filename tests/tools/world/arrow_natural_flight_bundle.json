@@ -16,8 +16,8 @@
       "sha256": "a41bf2a1ea33311699a0e658e6004dc1f528647248a5801c99ef748ee965cdfd"
     },
     "src/entity/arrow/internal.h": {
-      "bytes": 2085,
-      "sha256": "ba74e695188cdf04de5cf52e12f59e82cc6439c6d9153c95580443eb52b1e9e2"
+      "bytes": 2425,
+      "sha256": "d4837a976155f9502e7c25e70e1f9c8343785c954b960b1923c2eb1cfbacf276"
     },
     "src/entity/arrow/tick.c": {
       "bytes": 39737,

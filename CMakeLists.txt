@@ -778,6 +778,7 @@ add_library(mc_simulation STATIC
     src/world/dimension/temperature.c
     src/entity/entity.c
     src/entity/arrow/construction.c
+    src/entity/arrow/pickup.c
     src/entity/arrow/references.c
     src/entity/arrow/tick.c
     src/entity/arrow/tick_body.c

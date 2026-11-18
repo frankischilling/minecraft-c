@@ -1,6 +1,7 @@
 #define MC_PLAYER_MOVEMENT_MAIN mc_action_movement_fixture_main
 #include "../movement/test_player_movement.c"
 #undef MC_PLAYER_MOVEMENT_MAIN
+#include "../../../src/entity/arrow/internal.h"
 #include "../../../src/item/stack/source_internal.h"
 #include "mc/entity/action/action.h"
 #include "mc/entity/minecart/minecart.h"
@@ -353,6 +354,156 @@ cleanup:
     return ok;
 }
 
+static bool arrow_contacts(fixture *f, mc_entity *p, mc_entity *other, mc_entity *cart,
+                           mc_entity *item, mc_movement_input *input) {
+    bool ok = false;
+    mc_entity *arrow = NULL;
+    mc_item_stack *full = NULL;
+    const mc_player_action_context context = {
+        .travel = {.code_registry = f->registry[0], .trig = &trig}};
+    mc_inventory_player *inventory = p->local_player->fields.player.c;
+    CHECK(f->entity_count < COUNT(f->entities) &&
+          mc_arrow_allocate(f->entity_classes[0], &arrow, NULL) == MC_ENTITY_OK);
+    f->entities[f->entity_count++] = arrow;
+    CHECK(mc_arrow_construct_position(arrow, f->worlds[0], 9.1, 8, 8.5, NULL) == MC_ENTITY_OK &&
+          arrow->phase == MC_ENTITY_READY && mc_entity_has_arrow(arrow));
+    bool inserted = false;
+    CHECK(mc_world_runtime_insert_entity(f->worlds[0], arrow, &inserted, NULL) ==
+              MC_WORLD_STORAGE_OK &&
+          inserted);
+    CHECK(mc_item_stack_allocate(&full) == MC_ITEM_STACK_OK &&
+          mc_item_stack_construct(full, 262, 64, 0) == MC_ITEM_STACK_OK);
+
+    static const struct {
+        bool remote, grounded, player_fired, full_inventory;
+        int32_t shake;
+    } cases[] = {{true, true, true, false, 0},   {false, false, false, false, 0},
+                 {false, false, true, false, 0}, {false, true, false, false, 0},
+                 {false, true, true, false, 1},  {false, true, true, false, INT32_MAX},
+                 {false, true, true, true, 0},   {false, true, true, true, -1}};
+
+    for (size_t i = 0; i < COUNT(cases); ++i) {
+        CHECK(reset_action(f, p, input));
+        mc_entity *actors[] = {other, cart, item};
+        for (size_t j = 0; j < COUNT(actors); ++j)
+            CHECK(mc_entity_set_position(actors[j], 14, 8, 14) == MC_ENTITY_OK);
+        for (int32_t slot = 0; slot < 36; ++slot)
+            CHECK(mc_inventory_player_set(inventory, slot, cases[i].full_inventory ? full : NULL,
+                                          NULL) == MC_INVENTORY_OK);
+        f->worlds[0]->fields.B = cases[i].remote;
+        arrow->arrow->fields.i = cases[i].grounded;
+        arrow->arrow->fields.a = cases[i].player_fired;
+        arrow->arrow->fields.b = cases[i].shake;
+        const mc_world_entity_list_ledger *nearby = &f->worlds[0]->nearby_entities;
+        CHECK(nearby->list != NULL && nearby->list == f->worlds[0]->fields.R &&
+              nearby->count == nearby->list->count && nearby->count <= nearby->capacity &&
+              nearby->capacity == nearby->list->capacity);
+        size_t previous_occurrences = 0;
+        for (size_t j = 0; j < nearby->count; ++j) {
+            CHECK(nearby->entries != NULL && nearby->list->items != NULL &&
+                  nearby->entries[j] != NULL && nearby->entries[j] == nearby->list->items[j]);
+            previous_occurrences += nearby->entries[j] == arrow;
+        }
+        CHECK(arrow->holds >= previous_occurrences);
+        const size_t expected_arrow_holds = arrow->holds - previous_occurrences + 1u;
+        unsigned char entity_before[sizeof(*arrow)], fields_before[sizeof(arrow->arrow->fields)];
+        memcpy(entity_before, arrow, sizeof(entity_before));
+        /* The final actual World.R query owns one occurrence after its local
+         * view lease is released. Replace only that independently checked hold. */
+        memcpy(entity_before + offsetof(mc_entity, holds), &expected_arrow_holds,
+               sizeof(expected_arrow_holds));
+        memcpy(fields_before, &arrow->arrow->fields, sizeof(fields_before));
+        const mc_java_random arrow_random = *arrow->random, player_random = *p->random;
+        const size_t player_holds = p->holds, borrows = f->registry[0]->runtime_borrows;
+        mc_inventory_player_state before, after;
+        mc_item_stack *main_before[36], *armor_before[4];
+        CHECK(mc_inventory_player_read_state(inventory, &before));
+        memcpy(main_before, before.main_slots, sizeof(main_before));
+        memcpy(armor_before, before.armor_slots, sizeof(armor_before));
+        mc_player_action_error error;
+        const mc_entity_status status = mc_player_action(p, &context, NULL, &error);
+        const bool nearby_arrow = nearby->list == f->worlds[0]->fields.R && nearby->list != NULL &&
+                                  nearby->count == 1 && nearby->list->count == 1 &&
+                                  nearby->entries != NULL && nearby->list->items != NULL &&
+                                  nearby->entries[0] == arrow && nearby->list->items[0] == arrow;
+        const bool entity_same = memcmp(entity_before, arrow, sizeof(entity_before)) == 0;
+        const bool fields_same =
+            memcmp(fields_before, &arrow->arrow->fields, sizeof(fields_before)) == 0;
+        const bool arrow_random_same = mc_test_java_random_equal(&arrow_random, arrow->random);
+        const bool player_random_same = mc_test_java_random_equal(&player_random, p->random);
+        if (status != MC_ENTITY_OK || error.child_kind != MC_PLAYER_ACTION_CHILD_NONE ||
+            !nearby_arrow || !entity_same || !fields_same || !arrow_random_same ||
+            !player_random_same || p->holds != player_holds ||
+            f->registry[0]->runtime_borrows != borrows || f->worlds[0]->active_calls != 0 ||
+            f->worlds[0]->local_leases != 0)
+            fprintf(
+                stderr,
+                "Arrow contact%zu status%d %s child%d header%d fields%d random%d,%d "
+                "nearby%d Arrow-holds%zu/%zu Player-holds%zu/%zu registry%zu/%zu scopes%zu,%zu\n",
+                i, (int)status, error.operation == NULL ? "-" : error.operation,
+                (int)error.child_kind, entity_same, fields_same, arrow_random_same,
+                player_random_same, nearby_arrow, arrow->holds, expected_arrow_holds, p->holds,
+                player_holds, f->registry[0]->runtime_borrows, borrows, f->worlds[0]->active_calls,
+                f->worlds[0]->local_leases);
+        CHECK(status == MC_ENTITY_OK);
+        CHECK(error.child_kind == MC_PLAYER_ACTION_CHILD_NONE);
+        CHECK(nearby_arrow);
+        CHECK(arrow->holds == expected_arrow_holds);
+        CHECK(entity_same);
+        CHECK(fields_same);
+        CHECK(arrow_random_same);
+        CHECK(player_random_same);
+        CHECK(p->holds == player_holds);
+        CHECK(f->registry[0]->runtime_borrows == borrows);
+        CHECK(f->worlds[0]->active_calls == 0 && f->worlds[0]->local_leases == 0);
+        CHECK(mc_inventory_player_read_state(inventory, &after) && after.player == before.player &&
+              after.selected == before.selected && after.changed == before.changed &&
+              after.cursor == before.cursor && after.bound_containers == before.bound_containers &&
+              after.allocation_bytes == before.allocation_bytes &&
+              memcmp(main_before, after.main_slots, sizeof(main_before)) == 0 &&
+              memcmp(armor_before, after.armor_slots, sizeof(armor_before)) == 0);
+        mc_item_stack_fields stack;
+        CHECK(mc_item_stack_fields_get(full, &stack) == MC_ITEM_STACK_OK && stack.id == 262 &&
+              stack.count == 64 && stack.damage == 0 && stack.animation == 0);
+    }
+    /* The real fixture has no notification renderer j. The eligible contact
+     * must insert and play its source Random prefix before that reached refusal. */
+    CHECK(reset_action(f, p, input));
+    for (int32_t slot = 0; slot < 36; ++slot)
+        CHECK(mc_inventory_player_set(inventory, slot, NULL, NULL) == MC_INVENTORY_OK);
+    arrow->arrow->fields.i = true;
+    arrow->arrow->fields.a = true;
+    arrow->arrow->fields.b = 0;
+    const size_t arrow_holds = arrow->holds, player_holds = p->holds,
+                 borrows = f->registry[0]->runtime_borrows;
+    const mc_java_random player_random = *p->random;
+    mc_java_random expected = *arrow->random;
+    (void)mc_java_random_next_float(&expected);
+    (void)mc_java_random_next_float(&expected);
+    mc_player_action_error error;
+    CHECK(mc_player_action(p, &context, NULL, &error) == MC_ENTITY_STATE_ERROR &&
+          error.child_kind == MC_PLAYER_ACTION_CHILD_PICKUP && error.player_bytecode == 242 &&
+          error.contact_bytecode == 2 && error.pickup_bytecode == 90 &&
+          error.pickup.notification_bytecode == 4 &&
+          mc_test_java_random_equal(&expected, arrow->random) &&
+          mc_test_java_random_equal(&player_random, p->random) && !arrow->base.be &&
+          arrow->holds == arrow_holds && p->holds == player_holds &&
+          f->registry[0]->runtime_borrows == borrows && f->worlds[0]->active_calls == 0 &&
+          f->worlds[0]->local_leases == 0);
+    mc_inventory_player_state stored;
+    mc_item_stack_fields collected;
+    CHECK(mc_inventory_player_read_state(inventory, &stored) && stored.main_slots[0] != NULL &&
+          mc_item_stack_fields_get(stored.main_slots[0], &collected) == MC_ITEM_STACK_OK &&
+          collected.id == 262 && collected.count == 1 && collected.damage == 0 &&
+          collected.animation == 5);
+    for (int32_t slot = 0; slot < 36; ++slot)
+        CHECK(mc_inventory_player_set(inventory, slot, NULL, NULL) == MC_INVENTORY_OK);
+    ok = true;
+cleanup:
+    mc_item_stack_release(full);
+    return ok;
+}
+
 int main(int argc, char **argv) {
     int result = 1;
     fixture *f = NULL;
@@ -422,7 +573,8 @@ int main(int argc, char **argv) {
                   MC_WORLD_STORAGE_OK &&
               inserted);
     CHECK(mc_movement_input_create(&input, NULL) == MC_MOVEMENT_INPUT_OK &&
-          input_cases(f, p, input) && action_cases(f, p, other, cart, item, input));
+          input_cases(f, p, input) && action_cases(f, p, other, cart, item, input) &&
+          arrow_contacts(f, p, other, cart, item, input));
     result = 0;
 cleanup:
     (void)mc_movement_input_retire(&input, NULL);

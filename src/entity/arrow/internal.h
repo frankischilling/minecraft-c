@@ -5,6 +5,7 @@
 #include "mc/entity/arrow/construction.h"
 
 struct mc_arrow_tick_call;
+struct mc_item_pickup_error;
 
 typedef struct mc_arrow_entity_state {
     mc_arrow_fields fields;
@@ -23,6 +24,11 @@ typedef struct mc_arrow_entity_object {
 } mc_arrow_entity_object;
 
 bool mc_entity_has_arrow(const mc_entity *);
+
+/* Called with the actual Arrow and Player already held by nearby dispatch.
+ * The caller initializes the active pickup detail before entering. */
+mc_entity_status mc_arrow_contact_pickup(mc_entity *, mc_entity *, mc_registry_classes *,
+                                         struct mc_item_pickup_error *);
 
 /* Optional direct-component observation, outside public errors/Arrow state.
  * Initialized on every new attempt. Values are valid only when the returned

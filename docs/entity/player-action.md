@@ -145,8 +145,31 @@ The [active Player entry](player-active-tick.md) supplies dc.o and both wrappers
 Each has separate qualification. World Entity scheduling, remaining concrete
 Entity descendants and a playable client remain unfinished.
 
-Travel and Item pickup diagnostics now share a tagged union in the Action error.
+Travel and pickup diagnostics share a tagged union in the Action error.
 A failed travel returns before pickup; reaching pickup requires completed travel
 with a fresh child. Read `.pickup` for `MC_PLAYER_ACTION_CHILD_PICKUP`, and
 `.travel` for NONE/TRAVEL. Successful calls restore the legacy fresh travel
 sentinels and NONE. Independent meaningful siblings/PCs remain separate.
+
+## Arrow contact and collection
+
+The nearby pickup loop calls the Arrow's own contact method. Remote Worlds,
+flying Arrows, Arrows fired by mobs, and Arrows with a positive shake timer
+return without collecting. A collectible Arrow uses the live Arrow Item to
+build a one-count Stack and attempts ordinary Inventory insertion. A full
+Inventory leaves the Arrow in place.
+
+After successful insertion, two draws from the Arrow's Random set the pickup
+sound pitch. The existing LocalPlayer notification enqueues the pickup
+particle. The Arrow is marked dead after the notification returns. The tagged
+pickup diagnostic preserves the reached failure and completed effects if a
+child refuses. [Native Arrow pickup body](../../src/entity/arrow/pickup.c)
+
+The Player-action fixture covers the four return conditions, full Inventory,
+and insertion followed by a notification refusal. The App fixture completes
+collection, checks the exact sound pitch and the particle's Arrow and Player
+references, and verifies the final dead flag. A retained-save reload on
+DISPLAY2 reproduced the original unsupported Arrow contact after 61 World
+ticks in two runs. The fixed build completed all eight seconds of the same
+reload test, with 165 World ticks. Independent readback matched the saved
+World time and Player position to a recorded tick.
