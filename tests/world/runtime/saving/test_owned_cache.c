@@ -185,6 +185,11 @@ static int oc_diagnostics(source_save_fixture *s, mc_chunk_state *expected) {
     memcpy(untouched, &second, sizeof(second));
     VERIFY(mc_world_runtime_get_failure(world, 0, 0, &got, &second) == MC_CHUNK_ACQUIRE_OK &&
            got == expected && memcmp(untouched, &second, sizeof(second)) == 0);
+    const mc_world_storage_error sentinel = {MC_WORLD_STORAGE_LIMIT, "old scalar cause", 77};
+    mc_world_storage_error cause = sentinel;
+    VERIFY(mc_world_runtime_get_failure_cause(world, 0, 0, &got, &cause) == MC_CHUNK_ACQUIRE_OK &&
+           got == expected && cause.status == sentinel.status &&
+           cause.operation == sentinel.operation && cause.system_error == sentinel.system_error);
     memset(&second, 0x5a, sizeof(second));
     const mc_chunk_acquire_status invalid =
         mc_world_runtime_get_detailed(world, 0, 0, NULL, &second);
@@ -193,6 +198,9 @@ static int oc_diagnostics(source_save_fixture *s, mc_chunk_state *expected) {
     memset(&second, 0xa5, sizeof(second));
     VERIFY(mc_world_runtime_get_failure(world, 0, 0, NULL, &second) == invalid &&
            oc_diagnostics_equal(&first, &second));
+    VERIFY(mc_world_runtime_get_failure_cause(world, 0, 0, NULL, &cause) == invalid &&
+           cause.status == second.cause.status && cause.operation == second.cause.operation &&
+           cause.system_error == second.cause.system_error);
     got = &world->fallback;
     world->active_calls = SIZE_MAX; /* Native admission limit, not a Source field. */
     const mc_chunk_acquire_status limited =
@@ -210,10 +218,17 @@ static int oc_diagnostics(source_save_fixture *s, mc_chunk_state *expected) {
         mc_world_runtime_get_failure(world, 0, 0, &got, &second);
     world->active_calls = active;
     VERIFY(private_limited == limited && got == &world->fallback);
+    world->active_calls = SIZE_MAX;
+    const mc_chunk_acquire_status cause_limited =
+        mc_world_runtime_get_failure_cause(world, 0, 0, &got, &cause);
+    world->active_calls = active;
+    VERIFY(cause_limited == limited && got == &world->fallback &&
+           cause.status == second.cause.status && cause.operation == second.cause.operation &&
+           cause.system_error == second.cause.system_error);
     VERIFY(oc_diagnostics_equal(&first, &second) && oc_observe(world, &after) == 0 &&
-           after.owned == before.owned && after.hits == before.hits + (before.owned ? 4u : 0u) &&
+           after.owned == before.owned && after.hits == before.hits + (before.owned ? 5u : 0u) &&
            after.misses == before.misses &&
-           after.generic_gets == before.generic_gets + (before.owned ? 0u : 6u) &&
+           after.generic_gets == before.generic_gets + (before.owned ? 0u : 8u) &&
            after.raw_exports == before.raw_exports && after.rebuilds == before.rebuilds &&
            after.map_count == before.map_count && after.insertion_count == before.insertion_count &&
            world->active_calls == active && world->acquisition_error == outer &&

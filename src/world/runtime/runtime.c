@@ -974,12 +974,13 @@ static void execution_returned(mc_entity_tick_execution *execution,
     (void)mc_world_runtime_execution_finish_pending(execution, result);
 }
 
-static MC_RUNTIME_ACQUISITION_NOINLINE mc_chunk_acquire_status acquire_entered(
-    mc_world_runtime *runtime, int32_t x, int32_t z, mc_chunk_state **out,
-    acquisition_operation operation, mc_world_runtime_acquisition_error *error, bool clear_success,
-    const mc_chunk_acquire_context *context, mc_entity_tick_execution *execution,
-    mc_world_runtime_execution_code code, mc_world_runtime_execution_result *result,
-    const mc_entity_tick_execution_loader_attempt *attempt) {
+static MC_RUNTIME_ACQUISITION_NOINLINE mc_chunk_acquire_status
+acquire_entered(mc_world_runtime *runtime, int32_t x, int32_t z, mc_chunk_state **out,
+                acquisition_operation operation, mc_world_runtime_acquisition_error *error,
+                bool clear_success, mc_world_storage_error *failure_cause,
+                const mc_chunk_acquire_context *context, mc_entity_tick_execution *execution,
+                mc_world_runtime_execution_code code, mc_world_runtime_execution_result *result,
+                const mc_entity_tick_execution_loader_attempt *attempt) {
     mc_runtime_execution_context owned;
     if (execution != NULL) {
         owned = (mc_runtime_execution_context){*context, execution, code, result};
@@ -1015,6 +1016,8 @@ static MC_RUNTIME_ACQUISITION_NOINLINE mc_chunk_acquire_status acquire_entered(
     runtime->acquisition_error = previous;
     runtime->lifecycle_error = previous_lifecycle;
     --runtime->active_calls;
+    if (frame.status != MC_CHUNK_ACQUIRE_OK && failure_cause != NULL)
+        *failure_cause = frame.cause;
     if (error != NULL) {
         if (frame.status == MC_CHUNK_ACQUIRE_OK) {
             if (clear_success)
@@ -1025,13 +1028,28 @@ static MC_RUNTIME_ACQUISITION_NOINLINE mc_chunk_acquire_status acquire_entered(
     return frame.status;
 }
 
+/* A retained admission failure needs the full unreached frame. Keep it off
+ * the stack for successful GETs, including retained hits. */
+static MC_RUNTIME_ACQUISITION_NOINLINE void
+execution_acquisition_failed(mc_entity_tick_execution *execution,
+                             mc_world_runtime_execution_result *result,
+                             const mc_entity_tick_execution_loader_attempt *attempt,
+                             mc_chunk_acquire_status status, const mc_world_storage_error *cause) {
+    mc_world_runtime_acquisition_error frame;
+    acquisition_error_init(&frame);
+    frame.status = status;
+    frame.cause = *cause;
+    execution_returned(execution, result, attempt, status, &frame);
+}
+
 #undef MC_RUNTIME_ACQUISITION_NOINLINE
 
 static mc_chunk_acquire_status
 acquire_attempt(mc_world_runtime *runtime, int32_t x, int32_t z, mc_chunk_state **out,
                 acquisition_operation operation, mc_world_runtime_acquisition_error *error,
-                bool clear_success, mc_entity_tick_execution *execution,
-                mc_world_runtime_execution_code code, mc_world_runtime_execution_result *result) {
+                bool clear_success, mc_world_storage_error *failure_cause,
+                mc_entity_tick_execution *execution, mc_world_runtime_execution_code code,
+                mc_world_runtime_execution_result *result) {
     mc_entity_tick_execution_loader_attempt attempt;
     if (execution != NULL) {
         mc_world_access_failure_lease *unused = NULL;
@@ -1074,7 +1092,7 @@ acquire_attempt(mc_world_runtime *runtime, int32_t x, int32_t z, mc_chunk_state 
         }
         if (!completed)
             return acquire_entered(runtime, x, z, out, operation, error, clear_success,
-                                   &runtime->acquisition, execution, code, result,
+                                   failure_cause, &runtime->acquisition, execution, code, result,
                                    execution == NULL ? NULL : &attempt);
         --runtime->active_calls;
     }
@@ -1083,14 +1101,11 @@ acquire_attempt(mc_world_runtime *runtime, int32_t x, int32_t z, mc_chunk_state 
          * and cache-admission failures supply their actual unreached baseline. */
         if (status == MC_CHUNK_ACQUIRE_OK)
             execution_returned(execution, result, &attempt, status, NULL);
-        else {
-            mc_world_runtime_acquisition_error frame;
-            acquisition_error_init(&frame);
-            frame.status = status;
-            frame.cause = cause;
-            execution_returned(execution, result, &attempt, status, &frame);
-        }
+        else
+            execution_acquisition_failed(execution, result, &attempt, status, &cause);
     }
+    if (status != MC_CHUNK_ACQUIRE_OK && failure_cause != NULL)
+        *failure_cause = cause;
     if (error != NULL && (clear_success || status != MC_CHUNK_ACQUIRE_OK)) {
         acquisition_error_init(error);
         error->status = status;
@@ -1127,8 +1142,8 @@ mc_world_runtime_acquire_captured_provider(mc_chunk_provider *provider, int32_t 
             context.generate = captured_generate;
         if (context.populate != NULL)
             context.populate = captured_populate;
-        return acquire_entered(runtime, x, z, out, ACQUISITION_ACQUIRE, error, true, &context, NULL,
-                               (mc_world_runtime_execution_code){0}, NULL, NULL);
+        return acquire_entered(runtime, x, z, out, ACQUISITION_ACQUIRE, error, true, NULL, &context,
+                               NULL, (mc_world_runtime_execution_code){0}, NULL, NULL);
     }
 refused:
     if (error != NULL) {
@@ -1142,7 +1157,7 @@ refused:
 mc_chunk_acquire_status mc_world_runtime_acquire(mc_world_runtime *runtime, int32_t x, int32_t z,
                                                  mc_chunk_state **out) {
     const mc_chunk_acquire_status status =
-        acquire_attempt(runtime, x, z, out, ACQUISITION_ACQUIRE, NULL, true, NULL,
+        acquire_attempt(runtime, x, z, out, ACQUISITION_ACQUIRE, NULL, true, NULL, NULL,
                         (mc_world_runtime_execution_code){0}, NULL);
     if (status == MC_CHUNK_ACQUIRE_OK)
         export_cache_bindings(runtime, runtime->acquisition.cache);
@@ -1160,25 +1175,32 @@ mc_chunk_acquire_status mc_world_runtime_get(mc_world_runtime *runtime, int32_t 
 mc_chunk_acquire_status mc_world_runtime_get_detailed(mc_world_runtime *runtime, int32_t x,
                                                       int32_t z, mc_chunk_state **out,
                                                       mc_world_runtime_acquisition_error *error) {
-    return acquire_attempt(runtime, x, z, out, ACQUISITION_GET, error, true, NULL,
+    return acquire_attempt(runtime, x, z, out, ACQUISITION_GET, error, true, NULL, NULL,
                            (mc_world_runtime_execution_code){0}, NULL);
 }
 
 mc_chunk_acquire_status mc_world_runtime_get_failure(mc_world_runtime *runtime, int32_t x,
                                                      int32_t z, mc_chunk_state **out,
                                                      mc_world_runtime_acquisition_error *error) {
-    return acquire_attempt(runtime, x, z, out, ACQUISITION_GET, error, false, NULL,
+    return acquire_attempt(runtime, x, z, out, ACQUISITION_GET, error, false, NULL, NULL,
+                           (mc_world_runtime_execution_code){0}, NULL);
+}
+
+mc_chunk_acquire_status mc_world_runtime_get_failure_cause(mc_world_runtime *runtime, int32_t x,
+                                                           int32_t z, mc_chunk_state **out,
+                                                           mc_world_storage_error *cause) {
+    return acquire_attempt(runtime, x, z, out, ACQUISITION_GET, NULL, false, cause, NULL,
                            (mc_world_runtime_execution_code){0}, NULL);
 }
 
 mc_chunk_acquire_status mc_world_runtime_populate(mc_world_runtime *runtime, int32_t x, int32_t z) {
-    return acquire_attempt(runtime, x, z, NULL, ACQUISITION_POPULATE, NULL, true, NULL,
+    return acquire_attempt(runtime, x, z, NULL, ACQUISITION_POPULATE, NULL, true, NULL, NULL,
                            (mc_world_runtime_execution_code){0}, NULL);
 }
 
 mc_chunk_acquire_status mc_world_runtime_mark_drop(mc_world_runtime *runtime, int32_t x,
                                                    int32_t z) {
-    return acquire_attempt(runtime, x, z, NULL, ACQUISITION_MARK_DROP, NULL, true, NULL,
+    return acquire_attempt(runtime, x, z, NULL, ACQUISITION_MARK_DROP, NULL, true, NULL, NULL,
                            (mc_world_runtime_execution_code){0}, NULL);
 }
 
@@ -1201,8 +1223,8 @@ acquire_in_execution(mc_entity_tick_execution *execution, mc_world_runtime *runt
         }
         return MC_CHUNK_ACQUIRE_STATE_ERROR;
     }
-    return acquire_attempt(runtime, x, z, out, operation, error, clear_success, execution, code,
-                           result);
+    return acquire_attempt(runtime, x, z, out, operation, error, clear_success, NULL, execution,
+                           code, result);
 }
 
 mc_chunk_acquire_status

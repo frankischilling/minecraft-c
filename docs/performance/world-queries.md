@@ -409,6 +409,45 @@ screen edit in both builds. In the authored 854×480 Tiny scene, median FPS
 fell from 19.86 to 19.02 and median p99 rose from 145.01 to 163.98 ms. Two
 pairs moved in that direction and one moved in the other direction.
 
+### Scalar Block acquisition diagnostics
+
+Ordinary Block and metadata reads ask the Chunk coordinator for the storage
+cause on failure. Detailed callers still receive the full acquisition record,
+and the coordinator keeps its full scoped frame when it enters callbacks. A
+retained admission failure constructs its full record in a separate function.
+
+MSVC Release reduced the stack reservation in the acquisition dispatch from
+5,184 to 256 bytes and in the ordinary scalar wrapper from 4,984 to 88 bytes.
+The generated code for both functions dropped its stack probe. The native
+owned and exported cache tests check that a hit leaves the caller's cause
+alone and that invalid output and hold limit failures match the detailed GET.
+
+Pinned Windows Release comparisons used 289 resident Chunks and eight
+alternating pairs per scope. Each build supplied 56 samples of 65,536 calls
+per operation. Recorded checksums and World state matched.
+
+| Scope and query | Median before / after (ns) | p95 before / after (ns) |
+| --- | ---: | ---: |
+| Indexed Block read | 49.01 / 39.56 | 87.28 / 65.52 |
+| Indexed metadata read | 56.41 / 48.06 | 95.20 / 90.65 |
+| Indexed owned GET | 35.05 / 27.34 | 63.54 / 50.54 |
+| Mutation-scope Block read | 50.79 / 39.18 | 95.88 / 70.54 |
+| Mutation-scope metadata read | 90.19 / 50.00 | 132.07 / 97.67 |
+| Mutation-scope owned GET | 38.41 / 29.72 | 71.01 / 56.56 |
+
+The fixed accepted spring with the source-owned cache retained its state in
+two additional eight-pair groups. Median time moved from 61.84 to 59.53 ms
+and from 64.01 to 52.44 ms, with four and six faster candidate pairs.
+
+All 12 uninstrumented DISPLAY2 runs qualified at Tiny distance and 854×480.
+Both builds shared the local Sign screen edit. Five of six pairs had higher
+FPS and four had lower p99. The longest candidate frame took 107.77 ms.
+
+| Scene group | Median FPS before / after | Median p95 frame time (ms) | Median p99 frame time (ms) |
+| --- | ---: | ---: | ---: |
+| First | 40.19 / 47.40 | 48.55 / 40.37 | 77.49 / 67.16 |
+| Repeat | 42.11 / 44.82 | 48.60 / 40.42 | 71.59 / 74.09 |
+
 ## Controlled Windows measurement
 
 The fixed-work CPU benchmark uses authored saved Chunks, an actual constructed

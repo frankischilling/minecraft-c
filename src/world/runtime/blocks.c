@@ -60,6 +60,19 @@ static void scalar_selected_view(mc_world_block_execution *execution) {
     }
 }
 
+static mc_world_storage_status block_acquisition_failure(mc_chunk_acquire_status status,
+                                                         const mc_world_storage_error *cause,
+                                                         mc_world_storage_error *error) {
+    if (cause->status != MC_WORLD_STORAGE_OK) {
+        if (error != NULL)
+            *error = *cause;
+        return cause->status;
+    }
+    if (status == MC_CHUNK_ACQUIRE_LIMIT || status == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT)
+        return result(error, MC_WORLD_STORAGE_LIMIT, "World block acquisition limit");
+    return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World block acquisition");
+}
+
 static mc_world_storage_status
 acquire_chunk_detailed(mc_world_runtime *runtime, int32_t x, int32_t z, mc_chunk_state **out,
                        mc_world_storage_error *error, mc_world_runtime_acquisition_error *detail,
@@ -107,20 +120,18 @@ acquire_chunk_detailed(mc_world_runtime *runtime, int32_t x, int32_t z, mc_chunk
     }
     if (acquisition_failed != NULL)
         *acquisition_failed = true;
-    if (detail->cause.status != MC_WORLD_STORAGE_OK) {
-        if (error != NULL)
-            *error = detail->cause;
-        return detail->cause.status;
-    }
-    if (status == MC_CHUNK_ACQUIRE_LIMIT || status == MC_CHUNK_ACQUIRE_PARTIAL_LIMIT)
-        return result(error, MC_WORLD_STORAGE_LIMIT, "World block acquisition limit");
-    return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World block acquisition");
+    return block_acquisition_failure(status, &detail->cause, error);
 }
 
 static mc_world_storage_status acquire_chunk(mc_world_runtime *runtime, int32_t x, int32_t z,
                                              mc_chunk_state **out, mc_world_storage_error *error) {
-    mc_world_runtime_acquisition_error detail;
-    return acquire_chunk_detailed(runtime, x, z, out, error, &detail, NULL, NULL, NULL);
+    if (runtime->fields.v == NULL)
+        return result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World block provider receiver");
+    mc_world_storage_error cause;
+    const mc_chunk_acquire_status status = mc_world_runtime_get_failure_cause(
+        runtime, chunk_coordinate(x), chunk_coordinate(z), out, &cause);
+    return status == MC_CHUNK_ACQUIRE_OK ? MC_WORLD_STORAGE_OK
+                                         : block_acquisition_failure(status, &cause, error);
 }
 
 static mc_world_storage_status block_get(mc_world_runtime *runtime, int32_t x, int32_t y, int32_t z,

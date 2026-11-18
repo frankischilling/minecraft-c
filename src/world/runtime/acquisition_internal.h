@@ -22,6 +22,12 @@ mc_chunk_acquire_status mc_world_runtime_get_failure(mc_world_runtime *runtime, 
                                                      int32_t z, mc_chunk_state **out,
                                                      mc_world_runtime_acquisition_error *error);
 
+/* Same GET for ordinary scalar callers that only project the storage cause.
+ * Writes cause on failure and leaves it untouched on success. */
+mc_chunk_acquire_status mc_world_runtime_get_failure_cause(mc_world_runtime *runtime, int32_t x,
+                                                           int32_t z, mc_chunk_state **out,
+                                                           mc_world_storage_error *cause);
+
 /* The ordinary block body, with the same failure-only diagnostic convention.
  * Every failed result supplies the complete acquisition/unreached baseline,
  * including failures before or after the actual provider invocation. */
