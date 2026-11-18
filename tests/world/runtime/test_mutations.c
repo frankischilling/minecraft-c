@@ -1,9 +1,11 @@
 #include "mc/resources/translation/translation.h"
 #include "mc/world/runtime/chunks.h"
 #include "mc/world/runtime/mutations.h"
+#include "mc/world/runtime/world_access.h"
 
 #include "../../../src/block/registry/registry_internal.h"
 #include "../../../src/block/registry/runtime_internal.h"
+#include "../../../src/world/chunk/object_state_internal.h"
 #include "../../../src/world/runtime/chunk_provider_internal.h"
 #include "../../../src/world/runtime/mutation/mutation_internal.h"
 #include "../../../src/world/storage/objects_internal.h"
@@ -658,6 +660,158 @@ cleanup:
     return ok;
 }
 
+typedef struct binding_range_attempt {
+    mc_world_runtime *world;
+    mc_world_chunk *chunk;
+    const uint8_t *sky;
+    mc_world_light_list_view light;
+    int32_t minimum_height;
+    size_t ranges, active_calls;
+    bool valid;
+} binding_range_attempt;
+
+static mc_world_storage_status null_binding_range(void *context, mc_world_runtime *world,
+                                                  int32_t min_x, int32_t min_y, int32_t min_z,
+                                                  int32_t max_x, int32_t max_y, int32_t max_z,
+                                                  mc_world_storage_error *cause,
+                                                  mc_world_access_failure *failure) {
+    binding_range_attempt *attempt = context;
+    const size_t target = cell(4, 4, 4);
+    mc_world_light_list_view light = {0};
+    (void)failure;
+    attempt->valid =
+        attempt->valid && ++attempt->ranges == 1 && world == attempt->world &&
+        attempt->chunk->d == world && min_x == 4 && max_x == 4 && min_y == 2 && max_y == 5 &&
+        min_z == 4 && max_z == 4 && attempt->chunk->data->blocks[target] == 1 &&
+        nibble(attempt->chunk->data->metadata, target) == 6 && attempt->chunk->h[68] == 2 &&
+        attempt->chunk->data->minimum_height == attempt->minimum_height &&
+        !attempt->chunk->state->dirty && world->active_calls > attempt->active_calls &&
+        memcmp(attempt->chunk->data->skylight, attempt->sky, MC_CHUNK_NIBBLE_BYTES) == 0 &&
+        mc_world_runtime_light_list_get(world, &light, NULL) == MC_WORLD_STORAGE_OK &&
+        light.identity == attempt->light.identity && light.count == attempt->light.count;
+    if (!attempt->valid) {
+        *cause = (mc_world_storage_error){MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                          "Ordinary height callback prefix", 0};
+        return cause->status;
+    }
+    attempt->chunk->d = NULL;
+    return MC_WORLD_STORAGE_OK;
+}
+
+typedef struct binding_light_snapshot {
+    const mc_world_light_region *identity;
+    mc_world_light_region_fields fields;
+} binding_light_snapshot;
+
+static bool ordinary_height_null_binding(fixture *f) {
+    bool ok = false, registered = false, dirty = false;
+    mc_world_chunk *chunk = NULL;
+    mc_world_runtime *binding = NULL;
+    mc_world_access *listener = NULL;
+    uint8_t *sky = NULL;
+    binding_light_snapshot *lights = NULL;
+    binding_range_attempt attempt = {.world = f->worlds[0], .valid = true};
+    mc_world_mutation_error error;
+    mc_world_light_list_view after = {0};
+    CHECK(f->cached != NULL && f->cached->active);
+    chunk = mc_world_store_chunk_object(f->stores[0], f->cached);
+    CHECK(chunk != NULL);
+    binding = chunk->d;
+    dirty = f->cached->dirty;
+    CHECK(binding == f->worlds[0]);
+    sky = malloc(MC_CHUNK_NIBBLE_BYTES);
+    CHECK(sky != NULL);
+    memcpy(sky, chunk->data->skylight, MC_CHUNK_NIBBLE_BYTES);
+    CHECK(mc_world_runtime_light_list_get(binding, &attempt.light, NULL) == MC_WORLD_STORAGE_OK);
+    if (attempt.light.count != 0) {
+        lights = calloc(attempt.light.count, sizeof(*lights));
+        CHECK(lights != NULL);
+    }
+    for (size_t i = 0; i < attempt.light.count; ++i) {
+        CHECK(mc_world_runtime_light_at(binding, i, &lights[i].identity, NULL) ==
+              MC_WORLD_STORAGE_OK);
+        const mc_world_light_region_fields *fields =
+            mc_world_runtime_light_region_fields_get(lights[i].identity);
+        CHECK(fields != NULL);
+        lights[i].fields = *fields;
+    }
+    /* Reuse the attached normal Chunk, preparing one unused source column.
+     * The rise commits Block/metadata before the actual range callback. */
+    const size_t target = cell(4, 4, 4);
+    memset(chunk->data->blocks + cell(4, 0, 4), 0, 128);
+    chunk->data->blocks[cell(4, 1, 4)] = 1;
+    chunk->data->metadata[target / 2u] =
+        (uint8_t)((chunk->data->metadata[target / 2u] & 0xf0u) | 7u);
+    chunk->h[68] = 2;
+    chunk->state->dirty = false;
+    int32_t minimum = 127;
+    for (size_t i = 0; i < MC_CHUNK_HEIGHTMAP_BYTES; ++i) {
+        const int32_t height = i == 68 ? 5 : chunk->h[i];
+        if (height < minimum)
+            minimum = height;
+    }
+    attempt.chunk = chunk;
+    attempt.sky = sky;
+    attempt.minimum_height = chunk->data->minimum_height;
+    attempt.active_calls = binding->active_calls;
+    const mc_world_access_source_callbacks callbacks = {.range = null_binding_range};
+    CHECK(mc_world_access_source_create(&callbacks, &attempt, &listener, NULL) ==
+          MC_WORLD_STORAGE_OK);
+    CHECK(mc_world_runtime_add_world_access(binding, listener, NULL) == MC_WORLD_STORAGE_OK);
+    registered = true;
+    memset(&error, 0xa5, sizeof(error));
+    bool changed = true;
+    const mc_world_storage_status status =
+        mc_world_runtime_block_metadata_set_quiet(binding, 132, 4, 4, 1, 6, &changed, &error);
+    const bool binding_is_null = chunk->d == NULL;
+    chunk->d = binding;
+    CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE && changed && binding_is_null &&
+          attempt.valid && attempt.ranges == 1 && error.bytecode == 68 &&
+          error.chunk_bytecode == 195 && error.height_bytecode == 288 &&
+          error.column_bytecode == 0 && error.interval_bytecode == 0 &&
+          error.world_access_bytecode == 0 && error.cause.status == status &&
+          error.cause.operation != NULL &&
+          strcmp(error.cause.operation, "Chunk light invocation World receiver is null") == 0 &&
+          error.light.bytecode == 0 && error.light.provider_bytecode == 0 &&
+          same_storage(&error.cause, mc_world_runtime_last_error(binding)) &&
+          binding->active_calls == attempt.active_calls && chunk->data->blocks[target] == 1 &&
+          nibble(chunk->data->metadata, target) == 6 && chunk->h[68] == 5 &&
+          chunk->data->minimum_height == minimum && !chunk->state->dirty &&
+          memcmp(chunk->data->skylight, sky, MC_CHUNK_NIBBLE_BYTES) == 0);
+    CHECK(mc_world_runtime_light_list_get(binding, &after, NULL) == MC_WORLD_STORAGE_OK &&
+          after.identity == attempt.light.identity && after.count == attempt.light.count);
+    for (size_t i = 0; i < after.count; ++i) {
+        const mc_world_light_region *identity = NULL;
+        CHECK(mc_world_runtime_light_at(binding, i, &identity, NULL) == MC_WORLD_STORAGE_OK &&
+              identity == lights[i].identity);
+        const mc_world_light_region_fields *fields =
+            mc_world_runtime_light_region_fields_get(identity);
+        const mc_light_bounds *expected = &lights[i].fields.bounds;
+        CHECK(fields != NULL && fields->a == lights[i].fields.a &&
+              fields->bounds.min_x == expected->min_x && fields->bounds.min_y == expected->min_y &&
+              fields->bounds.min_z == expected->min_z && fields->bounds.max_x == expected->max_x &&
+              fields->bounds.max_y == expected->max_y && fields->bounds.max_z == expected->max_z);
+    }
+    ok = true;
+cleanup:
+    if (chunk != NULL) {
+        chunk->d = binding;
+        chunk->state->dirty = dirty;
+    }
+    if (registered) {
+        bool removed = false;
+        if (mc_world_runtime_remove_world_access(binding, listener, &removed, NULL) !=
+                MC_WORLD_STORAGE_OK ||
+            !removed)
+            ok = false;
+    }
+    if (mc_world_access_free(listener, NULL) != MC_WORLD_STORAGE_OK)
+        ok = false;
+    free(lights);
+    free(sky);
+    return ok;
+}
+
 static bool drain_world(fixture *f, size_t index) {
     if (!f->bound[index])
         return true;
@@ -876,6 +1030,7 @@ int main(int argc, char **argv) {
     CHECK(negative_opacity(f));
     CHECK(captured_view_guards(f));
     CHECK(public_cached(f));
+    CHECK(ordinary_height_null_binding(f));
     CHECK(saved_and_unpublished(f));
     CHECK(!f->resources[0].bad && !f->resources[1].bad);
     for (size_t i = 0; i < COUNT(f->classes); ++i) {

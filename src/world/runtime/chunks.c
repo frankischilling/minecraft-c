@@ -159,13 +159,13 @@ static bool interval(mc_world_chunk *chunk, int32_t x, int32_t z, int32_t local_
 
     /* Each branch reloads d and reaches the same class's actual Sky identity
      * after the height comparison, before the six-coordinate World call. */
-    world = chunk->d;
+    mc_world_runtime *receiver = chunk->d;
     const bool raises = height > local_height;
     if (execution != NULL) {
         const unsigned int world_pc = raises ? 18u : 49u;
         frame->interval_bytecode = world_pc;
         if (!mc_world_mutation_chunk_capture(
-                execution, world,
+                execution, receiver,
                 mc_world_mutation_chunk_site(execution, MC_WORLD_MUTATION_CHUNK_INTERVAL,
                                              world_pc)))
             return false;
@@ -176,7 +176,7 @@ static bool interval(mc_world_chunk *chunk, int32_t x, int32_t z, int32_t local_
                                     .max_x = x,
                                     .max_y = raises ? height : local_height,
                                     .max_z = z};
-    if (!mc_world_mutation_chunk_submit(execution, world, MC_LIGHT_SKY, &bounds,
+    if (!mc_world_mutation_chunk_submit(execution, receiver, world, MC_LIGHT_SKY, &bounds,
                                         MC_WORLD_MUTATION_CHUNK_INTERVAL, &frame->interval_bytecode,
                                         raises ? 21u : 52u, raises ? 31u : 62u, &frame->light,
                                         &frame->cause))

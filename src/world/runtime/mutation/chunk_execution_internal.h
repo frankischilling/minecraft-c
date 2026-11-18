@@ -99,14 +99,18 @@ void mc_world_mutation_chunk_null(mc_world_mutation_chunk_execution *, mc_world_
 
 bool mc_world_mutation_chunk_q(mc_world_runtime *, mc_registry_classes *, int32_t, unsigned int *,
                                unsigned int, unsigned int, int32_t *, mc_world_mutation_error *);
+/* An ordinary caller may supply its held World for the Light static lookup
+ * when a callback has cleared the live invocation receiver. */
 bool mc_world_mutation_chunk_submit(mc_world_mutation_chunk_execution *, mc_world_runtime *,
-                                    mc_light_kind, const mc_light_bounds *,
-                                    mc_world_mutation_chunk_body, unsigned int *, unsigned int,
-                                    unsigned int, mc_world_light_error *, mc_world_storage_error *);
+                                    mc_world_runtime *definition, mc_light_kind,
+                                    const mc_light_bounds *, mc_world_mutation_chunk_body,
+                                    unsigned int *, unsigned int, unsigned int,
+                                    mc_world_light_error *, mc_world_storage_error *);
 bool mc_world_mutation_submit_scoped(mc_world_mutation_chunk_execution *, mc_world_runtime *,
-                                     mc_light_kind, const mc_light_bounds *,
-                                     mc_world_mutation_chunk_body, unsigned int *, unsigned int,
-                                     unsigned int, mc_world_mutation_error *);
+                                     mc_world_runtime *definition, mc_light_kind,
+                                     const mc_light_bounds *, mc_world_mutation_chunk_body,
+                                     unsigned int *, unsigned int, unsigned int,
+                                     mc_world_mutation_error *);
 bool mc_world_mutation_height_in_execution(mc_world_mutation_chunk_execution *, mc_world_chunk *,
                                            int32_t, int32_t, int32_t, mc_world_mutation_error *);
 bool mc_world_mutation_column_in_execution(mc_world_mutation_chunk_execution *, mc_world_chunk *,

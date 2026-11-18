@@ -260,10 +260,6 @@ bool mc_world_mutation_nibble_set(const mc_world_chunk_nibble *nibble, int32_t x
 bool mc_world_mutation_q(mc_world_runtime *world, int32_t id, unsigned int *bytecode,
                          unsigned int capture_pc, unsigned int element_pc, int32_t *out,
                          mc_world_mutation_error *error);
-bool mc_world_mutation_submit(mc_world_runtime *world, mc_light_kind kind,
-                              const mc_light_bounds *bounds, unsigned int *bytecode,
-                              unsigned int type_pc, unsigned int call_pc,
-                              mc_world_mutation_error *error);
 
 /* Concrete inherited rail and detector tick dispatch. The enclosing caller
  * keeps the actual World entry and receiver alive across all synchronous

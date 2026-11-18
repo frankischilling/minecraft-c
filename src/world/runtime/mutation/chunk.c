@@ -376,7 +376,7 @@ static bool submit(mc_world_chunk *chunk, mc_light_kind kind, int32_t x, int32_t
             return false;
     }
     const mc_light_bounds bounds = {x, y, z, x, y, z};
-    return mc_world_mutation_submit_scoped(execution, world, kind, &bounds,
+    return mc_world_mutation_submit_scoped(execution, world, NULL, kind, &bounds,
                                            execution == NULL ? MC_WORLD_MUTATION_CHUNK_ID
                                                              : execution->setter_body,
                                            &error->chunk_bytecode, type_pc, call_pc, error);

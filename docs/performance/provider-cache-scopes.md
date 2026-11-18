@@ -569,6 +569,23 @@ in the candidate link order. Median FPS fell in both earlier cohorts
 and their p99 results went in opposite directions. Both builds shared
 the local Sign edits. World work varied across runs.
 
+Two later DISPLAY2 traces of the quiet setter measured 38,174 and 39,693
+ore writes. Sampling estimated 23.23 and 24.12 ms in the ordered column
+work, including 10.98 and 11.42 ms in World height reads. The estimates
+include timing overhead and overlap. Deferring the column diagnostic
+initialization increased the fixed client median from 27.08 to 27.24 ms
+and the server control from 27.00 to 27.39 ms. The setter still initializes
+the column diagnostic before calling the shared column body.
+
+The separate [missing World receiver fix](../world/mutations.md#source-order)
+qualified all six uninstrumented DISPLAY2 runs with object link order
+preserved. Median FPS went from 53.52 to 52.04, p95 from 28.15 to
+33.40 ms and p99 from 45.96 to 48.72 ms. The comparison used the same
+Tiny scene at 854×480 and shared the local Sign edits. Eight seeded pairs
+retained identical Chunk receipts on each side. The client ore median
+went from 27.26 to 27.51 ms and the server control from 27.18 to 27.32 ms.
+The fix addresses a crash reproduced by the targeted mutation test.
+
 ### Spring fluid diagnostics
 
 Two DISPLAY2 traces separated spring placement from the immediate flowing

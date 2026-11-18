@@ -42,6 +42,12 @@ clamp before nibble masking. Retained height bytes above 128 retain the original
 additive scan and OR-indexed getter/Nibble behavior; reached array failures are
 reported without an early numerical-coordinate rejection.
 
+Height repair rereads the Chunk's World after the range callback. If the
+callback clears the binding, the raising path keeps the completed Block,
+metadata, height and minimum-height writes. It resolves Sky from the held
+World and reports the missing receiver at the light call. That path stops
+before changing skylight, adding queue work or marking the Chunk dirty.
+
 Both setters reuse the same four ordered height-neighbor operations as full
 finishing. World [height and light submission](runtime-lighting.md) retain
 nonloading presence, actual channel identities, queue effects and no-sky gates.

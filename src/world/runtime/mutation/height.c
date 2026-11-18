@@ -210,18 +210,18 @@ static bool incremental_height(mc_world_chunk *chunk, int32_t x, int32_t y, int3
     } else {
         if (!height_world(chunk, execution, 270, &receiver, error))
             return false;
-        if (execution == NULL)
-            world = receiver;
         const mc_light_bounds bounds = {.min_x = world_x,
                                         .min_y = old_height,
                                         .min_z = world_z,
                                         .max_x = world_x,
                                         .max_y = height,
                                         .max_z = world_z};
-        if (!mc_world_mutation_submit_scoped(execution, receiver, MC_LIGHT_SKY, &bounds,
+        if (!mc_world_mutation_submit_scoped(execution, receiver, world, MC_LIGHT_SKY, &bounds,
                                              MC_WORLD_MUTATION_CHUNK_HEIGHT,
                                              &error->height_bytecode, 273, 288, error))
             return false;
+        if (execution == NULL)
+            world = receiver;
         for (int32_t fill_y = old_height; fill_y < height; fill_y = mc_java_i32_add(fill_y, 1)) {
             error->height_bytecode = 303;
             mc_world_chunk_nibble *sky = chunk->f;
@@ -274,7 +274,7 @@ static bool incremental_height(mc_world_chunk *chunk, int32_t x, int32_t y, int3
                                         .max_x = mc_java_i32_add(world_x, 1),
                                         .max_y = saved_height,
                                         .max_z = mc_java_i32_add(world_z, 1)};
-        if (!mc_world_mutation_submit_scoped(execution, receiver, MC_LIGHT_SKY, &bounds,
+        if (!mc_world_mutation_submit_scoped(execution, receiver, world, MC_LIGHT_SKY, &bounds,
                                              MC_WORLD_MUTATION_CHUNK_HEIGHT,
                                              &error->height_bytecode, 433, 456, error))
             return false;

@@ -3194,8 +3194,8 @@
       "sha256": "476af52bb256f13e8fe9a066459b20fafd5ffec8d84803019ee64572ee66448a"
     },
     "src/world/runtime/mutation/mutation_internal.h": {
-      "bytes": 21131,
-      "sha256": "67f9bdc050a82ab581f0a32f8324cb15ed3a977e2994f18cd6869779f61e6e78"
+      "bytes": 20834,
+      "sha256": "f7e615e588bdac5e304b3f0809522764de0cf3df037b81204666f6198e3fe96f"
     },
     "src/world/runtime/world_tick.c": {
       "bytes": 65285,
@@ -9667,7 +9667,7 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76652,
-      "sha256": "df820a60318aa66550651dd5f022f2a2d950632f3eb6533053b1e37321a0ca53"
+      "sha256": "2692abee68fad22a9a4efc3d0f985259af41626f455368517f70f91dfafa8fc4"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -9847,7 +9847,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "10e2046f288f3c05692061c61438ffda3f335b680e1e7e1e31df87b71482d911"
+      "sha256": "f879b1a0da2a4d1304ad37e58ffb535b1787f9d8782c5043432dd7d11c92141c"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,
@@ -10426,8 +10426,8 @@
       "sha256": "b695d5ec6551dbf3f740460f626d4290822985fe88afd92554bad1b6bdeeddd1"
     },
     "src/world/runtime/mutation/chunk_execution_internal.h": {
-      "bytes": 7116,
-      "sha256": "57f3b6fd2035a550cf796ad4ec289287bf2d53f4a321ee91e5c9520f0fce8692"
+      "bytes": 7389,
+      "sha256": "264ede174ff144155256172165deb5a78266b3c6c4610187126ca42fc6569846"
     },
     "src/world/runtime/mutation/world_execution_internal.h": {
       "bytes": 18567,
@@ -12214,8 +12214,8 @@
       "sha256": "b67dcd4e240c071a0f431a8039d14b8d52a970a01a2a2e3dd47155ce4f63d161"
     },
     "tests/world/runtime/test_mutations.c": {
-      "bytes": 41885,
-      "sha256": "6e602f4ae58f7d984b51def35c33751180c05b9981b431623cb61bf549d7c90e"
+      "bytes": 49433,
+      "sha256": "6b3e24aab85159f1d25ef97c848d4d767df13f4447b7cc329578eaa565b5d629"
     },
     "include/mc/world/runtime/registry_failure.h": {
       "bytes": 1339,
