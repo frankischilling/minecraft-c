@@ -1,4 +1,5 @@
 #include "load_world.h"
+#include "chunk_budget.h"
 #include "load_world_terminal_internal.h"
 #include "respawn.h"
 
@@ -976,8 +977,10 @@ static void run(mc_client_world_load_call *call) {
         return;
     }
     call->state.last_outer_pc = 46;
+    mc_world_runtime_construction_limits limits = mc_world_runtime_default_construction_limits();
+    limits.max_provider_chunks = MC_CLIENT_WORLD_CHUNK_CAPACITY;
     if (mc_world_runtime_allocate_world(MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE, app->world_classes,
-                                        NULL, &call->state.world,
+                                        &limits, &call->state.world,
                                         &call->world_error) != MC_WORLD_STORAGE_OK) {
         call->failure.world = &call->world_error;
         fail(call, MC_CLIENT_WORLD_LOAD_CHILD_FAILED, "actual NEW fd native allocation", "a",

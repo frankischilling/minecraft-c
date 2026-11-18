@@ -62,6 +62,7 @@ typedef struct mc_world_source_error {
 typedef struct mc_world_source_options {
     size_t max_owner_bytes, max_literal_bytes, max_allocations;
     mc_java_output_options output;
+    size_t max_loaded_chunks; /* Zero selects the default Store limit. */
 } mc_world_source_options;
 
 typedef struct mc_world_source_class_state {

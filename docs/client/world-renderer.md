@@ -47,6 +47,33 @@ it cannot resume gameplay. No save, source unload or arbitrary count reset is
 substituted. World classes retire before Registry; Registry retires before Entity
 classes. Their shared profile and material resources outlive them.
 
+## Loaded Chunks at Far distance
+
+Far creates a grid 26 Chunk columns wide. The renderer's ChunkCache reads
+neighboring Blocks across section edges, so one stationary grid can need up
+to 28×28 columns. The graphical client now gives both its Provider and the
+SaveHandler room for 1,024 loaded or reserved Chunks. The Provider and Store
+still enforce their respective bounds. Other Store callers use their configured
+limit or the 512-Chunk default.
+
+A native Windows test loaded a prepopulated save spanning Chunk coordinates
+−18 through 18 on each axis. At 854×480 on DISPLAY2 with Far selected, three
+of four earlier runs stopped at 512 live cache entries during a renderer
+ChunkCache get. The three stopped runs completed 191–193 World ticks of the
+timed interval. With the higher bound, all four runs completed 200 World ticks
+and closed normally, with 517–518 cache entries at the end. Two runs used the
+ordinary Random constructor clock and two used fixed constructor inputs in
+the benchmark. The two ordinary runs measured 53.38 and 54.56 FPS. The
+comparison exercises a stationary saved world over a ten-second interval.
+The Provider reported 230,424 bytes of direct storage with the higher bound,
+up from 211,992 bytes. Chunk payloads still allocate on demand.
+
+The storage control checks both the default count limit and a configured limit
+above it. It holds every reservation until the next request fails, checks that
+the failure preserves the output and held count, then cancels every reservation.
+The Windows World-selection control checks the Provider limit after opening
+the save through the graphical client's normal load path.
+
 ## GPU contract
 
 Vertices contain section-local float XYZ, UV and ARGB. The upload converts color

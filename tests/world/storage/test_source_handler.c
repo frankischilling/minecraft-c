@@ -318,6 +318,23 @@ static int actual_io_frontier(mc_world_store_source_classes *classes, mc_java_fi
     return 0;
 }
 
+static int chunk_capacity(mc_world_store *store, size_t capacity) {
+    mc_world_store_reservation *held[513];
+    mc_world_storage_error error;
+    REQUIRE(capacity <= sizeof(held) / sizeof(*held));
+    for (size_t i = 0; i < capacity; ++i)
+        REQUIRE(mc_world_store_reserve_chunk(store, 0, &held[i], &error) == MC_WORLD_STORAGE_OK);
+    mc_world_store_reservation *out = held[0];
+    REQUIRE(mc_world_store_reserve_chunk(store, 0, &out, &error) == MC_WORLD_STORAGE_LIMIT &&
+            out == held[0] && mc_world_store_reservation_count(store) == capacity &&
+            mc_world_store_chunk_count(store) == 0);
+    for (size_t i = capacity; i != 0; --i)
+        REQUIRE(mc_world_store_cancel_reservation(store, held[i - 1], &error) ==
+                MC_WORLD_STORAGE_OK);
+    REQUIRE(mc_world_store_reservation_count(store) == 0);
+    return 0;
+}
+
 int main(int argc, char **argv) {
     REQUIRE(argc == 2);
     mc_world_source_error *e = calloc(1, sizeof(*e));
@@ -360,6 +377,7 @@ int main(int argc, char **argv) {
     REQUIRE(normal(classes, files, root, true, &with, e) == 0);
     REQUIRE(normal(classes, files, root, false, &without, e) == 0);
     REQUIRE(with != without);
+    REQUIRE(chunk_capacity(without, 512) == 0);
     mc_world_store_source_classes *same = classes;
     REQUIRE(mc_world_store_source_classes_retire(&same, e) == MC_WORLD_SOURCE_BUSY &&
             same == classes);
@@ -419,8 +437,22 @@ int main(int argc, char **argv) {
     REQUIRE(mc_world_store_source_release(&without, e) == MC_WORLD_SOURCE_OK && without == NULL);
 
     mc_world_source_options bounded = mc_world_store_source_default_options();
-    bounded.max_allocations = 0;
     mc_world_store_source_classes *limited = NULL;
+    bounded.max_loaded_chunks = 513;
+    REQUIRE(mc_world_store_source_classes_create(files, logging, &bounded, &limited, e) ==
+            MC_WORLD_SOURCE_OK);
+    name = text("without-players");
+    REQUIRE(name != NULL &&
+            mc_world_store_source_allocate(limited, &without, e) == MC_WORLD_SOURCE_OK &&
+            mc_world_store_source_construct(without, root, name, false, e) == MC_WORLD_SOURCE_OK);
+    mc_world_info_name_release(name);
+    REQUIRE(chunk_capacity(without, 513) == 0);
+    REQUIRE(mc_world_store_source_release(&without, e) == MC_WORLD_SOURCE_OK && without == NULL);
+    REQUIRE(mc_world_store_source_classes_retire(&limited, e) == MC_WORLD_SOURCE_OK &&
+            limited == NULL);
+
+    bounded = mc_world_store_source_default_options();
+    bounded.max_allocations = 0;
     REQUIRE(mc_world_store_source_classes_create(files, logging, &bounded, &limited, e) ==
             MC_WORLD_SOURCE_OK);
     REQUIRE(mc_world_store_source_allocate(limited, &out, e) == MC_WORLD_SOURCE_LIMIT &&

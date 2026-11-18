@@ -6112,6 +6112,10 @@ int main(int argc, char **argv) {
                   constructed.mode == MC_WORLD_RUNTIME_GAME &&
                   constructed.phase == MC_WORLD_RUNTIME_READY &&
                   constructed.entry == MC_WORLD_RUNTIME_CLIENT_LOAD_OR_CREATE);
+            mc_chunk_provider_fields provider;
+            CHECK(mc_chunk_provider_internal_fields(load.world->fields.v, &provider, NULL) ==
+                      MC_WORLD_STORAGE_OK &&
+                  provider.max_chunks == 1024);
             CHECK(mc_client_world_prepare_inspect(load.prepare, &prepared) &&
                   prepared.source_returned && prepared.count == 289 && prepared.total == 289 &&
                   prepared.block_samples == 289 && prepared.progress_calls == 289 &&

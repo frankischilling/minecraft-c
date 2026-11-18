@@ -183,3 +183,31 @@ counts were 413/1,637, 903/272, and 817/1,248, with 199–201 World ticks per ru
 In the first pair, Creeper dispatches alone rose from 132 to 1,167. The fixed
 Zombie workload shows a lower tick cost with matched inputs. A controlled
 gameplay FPS result still needs matched changing Mob work.
+
+### Matching natural Mob work
+
+Fixed constructor clock inputs alone were insufficient in a 17×17 saved
+Chunk square. Two runs of the same build agreed on World RNG, block-coordinate
+LCG and Entity dispatches through the start of World time 12,430. The first
+difference appeared inside the random-block tick at 12,430, before the next
+spawning pass. The World tick scans 19×19 Chunks, so the original fixture left
+parts of the active area to live loading and generation.
+
+The follow-up uses the [larger Far fixture](../client/world-renderer.md#loaded-chunks-at-far-distance)
+and fixed constructor clock inputs in a separate benchmark build. It authors
+six layers of dark air at Y=47–52 in Chunks −6 through 6 on both axes. The
+ordinary spawning and entity loops run over that saved terrain. Both collision
+variants use the same higher Chunk capacity. In all four focused DISPLAY2
+runs, the common 38 timed World ticks repeated the same 3,154 dispatches,
+including 1,140 Creeper, 760 Skeleton, 304 Spider and 912 Zombie dispatches.
+The per-tick hash of ordered entity kinds, positions and actor RNG readings
+matched. World RNG, block-coordinate LCG and recorded scheduler work also
+matched at each observed stage over the common ticks.
+
+The two baseline runs measured 2.51 and 2.72 FPS. The two candidate runs
+measured 3.14 and 3.12 FPS. The timer grouped the matched ticks into different
+frames, and the four full timed windows completed 38–44 World ticks. The
+three frames with exactly matching tick spans in the same pair had combined
+host frame times of 1,745.02 ms before and 1,751.79 ms after. The live scene
+reproduces the same Mob work with long frames. It leaves the whole-frame speed
+effect of the collision change unresolved.

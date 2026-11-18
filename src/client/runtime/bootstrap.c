@@ -11,6 +11,7 @@
 #include "../startup/application_startup_internal.h"
 #include "../startup/application_startup_menu.h"
 #include "../window/frame.h"
+#include "../world/chunk_budget.h"
 #include "bootstrap_random_internal.h"
 #include "bootstrap_terminal_internal.h"
 #include "mc/block/registry/runtime.h"
@@ -252,8 +253,11 @@ static mc_client_bootstrap_status open_world_services(mc_client_bootstrap *conte
     OPEN_OWNER(mc_world_source_regions_create(context->services.files, NULL, &context->regions,
                                               &context->region_error),
                MC_WORLD_SOURCE_OK, "shared source region namespace");
-    OPEN_OWNER(mc_world_store_source_classes_create(context->services.files, context->logging, NULL,
-                                                    &context->handlers, &context->handler_error),
+    mc_world_source_options store_options = mc_world_store_source_default_options();
+    store_options.max_loaded_chunks = MC_CLIENT_WORLD_CHUNK_CAPACITY;
+    OPEN_OWNER(mc_world_store_source_classes_create(context->services.files, context->logging,
+                                                    &store_options, &context->handlers,
+                                                    &context->handler_error),
                MC_WORLD_SOURCE_OK, "source SaveHandler namespace");
     OPEN_OWNER(mc_world_store_source_classes_bind_regions(context->handlers, context->regions,
                                                           &context->handler_error),

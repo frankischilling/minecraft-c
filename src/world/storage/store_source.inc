@@ -71,7 +71,10 @@ static mc_world_source_status source_output(mc_world_source_error *e, mc_java_ou
 }
 
 mc_world_source_options mc_world_store_source_default_options(void) {
-    return (mc_world_source_options){1048576u, 65536u, 64u, mc_java_output_default_options()};
+    return (mc_world_source_options){.max_owner_bytes = 1048576u,
+                                     .max_literal_bytes = 65536u,
+                                     .max_allocations = 64u,
+                                     .output = mc_java_output_default_options()};
 }
 
 static const char *source_method_descriptor(const char *method) {
@@ -336,6 +339,8 @@ mc_world_source_status mc_world_store_source_allocate(mc_world_store_source_clas
     source->state.last_close_pc = -1;
     store->source = source;
     store->limits = mc_world_store_default_limits();
+    if (c->options.max_loaded_chunks != 0)
+        store->limits.max_loaded_chunks = c->options.max_loaded_chunks;
     *out = store;
     return source_result(e, MC_WORLD_SOURCE_OK, NULL, NULL, NULL, NULL, -1);
 }
