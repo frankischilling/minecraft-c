@@ -230,6 +230,33 @@ per scene, with 16,342 heavy-cave dispatches and 3,779 lighter-cave dispatches.
 The combined build improved FPS and p99 in both heavy-cave rounds.
 The lighter scene varied between rounds and had nearly the same median FPS.
 
+### Vertex cache evictions
+
+The 4,096-slot vertex cache retains the oldest occupied slot in each group
+of 64. Hits, uploads, and invalidation mark the affected group when they
+change its eviction candidates. Under pressure, the cache rescans changed
+groups and compares their oldest slots. Equal timestamps still favor the
+lowest slot index, and resizing an occupied slot excludes it from eviction.
+The index adds 520 bytes per cache on x86-64.
+
+A fixed CPU workload ran the production cache and upload code with stubbed
+GL calls. All 12 WSL2 pairs matched hit and miss counts, eviction counts,
+driver check counts, and ordered deletion and final-state checksums.
+[Raw pairs and build identities](../../tests/benchmarks/vertex_cache_eviction_linux.json)
+
+| Workload | Baseline median | Candidate median | Change |
+| --- | ---: | ---: | ---: |
+| 4,194,304 hits | 9.164 ms | 10.805 ms | +0.39 ns per hit |
+| 31,744 evictions | 177.646 ms | 10.945 ms | -93.8% |
+| 525,176 hits and 31,937 evictions | 186.368 ms | 38.824 ms | -79.2% |
+
+Each process starts with 1,024 entries at the 64 MiB limit. The mixed case
+touches recent entries between uploads and varies the upload size. These
+timings cover cache bookkeeping with no GPU or game scene. The
+`client.source_vertex_cache_cpu` test checks tie order, exclusion, timestamp
+wrap, invalidation, refill under pressure, and retry after an injected driver
+error. `client.source_lists_device` covers real OpenGL draws and readback.
+
 ### Rendering and context ownership
 
 Vertices contain section-local float XYZ, UV and ARGB. The upload converts color

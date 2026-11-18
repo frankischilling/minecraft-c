@@ -608,7 +608,7 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
         if (replay == NULL || !replay->drew)
             display->gl.UseProgram(s->program);
         if (entry != NULL) {
-            entry->last_used = ++display->source_cache->sequence;
+            source_vertex_cache_touch(display->source_cache, entry);
             if (hit) {
                 if (replay->vao != entry->vao)
                     display->gl.BindVertexArray(entry->vao);

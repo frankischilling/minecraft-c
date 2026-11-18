@@ -21,6 +21,9 @@ if(BUILD_TESTING AND MC_BUILD_CLIENT AND TARGET mc_client_render_textures AND
         target_link_options(mc_test_source_lists PRIVATE
             "-Wl,-Map,${CMAKE_CURRENT_BINARY_DIR}/mc_test_source_lists.map")
     endif()
+    add_test(NAME client.source_vertex_cache_cpu COMMAND mc_test_source_lists --eviction-only)
+    set_tests_properties(client.source_vertex_cache_cpu PROPERTIES
+        LABELS "public;unit;client;graphics" TIMEOUT 30)
     if(MC_ENABLE_CLIENT_DISPLAY_TESTS)
         add_test(NAME client.source_lists_device COMMAND mc_test_source_lists)
         set_tests_properties(client.source_lists_device PROPERTIES

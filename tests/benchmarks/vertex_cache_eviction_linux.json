@@ -1,0 +1,36 @@
+{
+  "baseline_commit": "5baa96b03448b098e29d12d1868ba2205b4ee9b1",
+  "host": "Intel Core i9-10900F, WSL2 6.6.87.2-microsoft-standard-WSL2, logical CPU 0",
+  "compiler": "GCC 15.2.0, C17 -O2 -DNDEBUG -Wall -Wextra -Wpedantic -Werror",
+  "clock": "CLOCK_MONOTONIC, nanoseconds",
+  "scope": "The production cache and upload code runs with stubbed GL calls. No rendering, GPU timing, or gameplay FPS.",
+  "order": "Baseline first in odd pairs and candidate first in even pairs. Each row lists baseline then candidate.",
+  "case_order": ["hits", "pressure", "mixed"],
+  "common_work": [
+    {"case": "hits", "hits": 4194304, "misses": 0, "evictions": 0, "checks": 5120, "digest": "626a9b598c26e66c"},
+    {"case": "pressure", "hits": 1024, "misses": 31744, "evictions": 31744, "checks": 132096, "digest": "f9201ef9a4683bec"},
+    {"case": "mixed", "hits": 525176, "misses": 31744, "evictions": 31937, "checks": 131903, "digest": "5933e9c8fa1cebd5"}
+  ],
+  "sha256": {
+    "baseline_cache": "9570ec06d24e82fc72da058c2883a1e478d53a5633501a6a176a44803baec578",
+    "candidate_cache": "de0765805efdce89e73584fcbd9d3ae07018071ef65fb45adc005f54f7c826da",
+    "harness": "3486c2b6d5fd0e1ab87a7f2800d4e9761345808bb120d83909adca54f2bf022f",
+    "baseline_elf": "1d2eb7eaf62a8d92d0c167cbb84327ec68ef1a975eb8568b9971647a8eb4e240",
+    "candidate_elf": "c0c65c9af4fafe49a23c4dd5ef8e9d3b5535dba8caf7a93f059255f130da1edc"
+  },
+  "warmup_ns": [[9393700, 189297208, 180449007], [11188601, 11089700, 41789902]],
+  "paired_ns": [
+    [[9107800, 172250207, 194082008], [10834500, 10936899, 40293790]],
+    [[8993698, 177207654, 196528349], [10662897, 10674297, 38808290]],
+    [[9199198, 175494254, 182189153], [10111598, 10740897, 38145490]],
+    [[9147298, 178801953, 192011450], [10419998, 10919997, 38107590]],
+    [[8866398, 168853656, 172631955], [10578297, 11049997, 38840590]],
+    [[9864198, 173843355, 177434953], [11292397, 10847397, 38639590]],
+    [[9144098, 185267352, 171528856], [10398397, 11365897, 39418790]],
+    [[9180498, 194984449, 203871147], [10968597, 10892097, 38997690]],
+    [[10090297, 191274850, 190547550], [10775697, 10953497, 38601290]],
+    [[9248397, 169771756, 194861349], [11340897, 11208897, 38236290]],
+    [[9102897, 187150352, 177928953], [11322497, 12313097, 42552888]],
+    [[9410797, 178083854, 174043755], [11466597, 11302197, 41148589]]
+  ]
+}

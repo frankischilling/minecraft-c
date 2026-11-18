@@ -524,9 +524,142 @@ cleanup:
     return result;
 }
 
+static GLuint eviction_names[8];
+static size_t eviction_calls;
+static GLenum eviction_error;
+
+static void GLAPIENTRY observe_eviction(GLsizei count, const GLuint *names) {
+    for (GLsizei i = 0; i < count; ++i) {
+        if (eviction_calls < sizeof(eviction_names) / sizeof(*eviction_names))
+            eviction_names[eviction_calls] = names[i];
+        ++eviction_calls;
+    }
+}
+
+static GLenum GLAPIENTRY observe_eviction_error(void) {
+    const GLenum error = eviction_error;
+    eviction_error = GL_NO_ERROR;
+    return error;
+}
+
+static void GLAPIENTRY eviction_bind_vao(GLuint name) {
+    (void)name;
+}
+
+static void GLAPIENTRY eviction_bind_buffer(GLenum target, GLuint name) {
+    (void)target;
+    (void)name;
+}
+
+static void GLAPIENTRY eviction_upload(GLenum target, GLsizeiptr bytes, const void *data,
+                                       GLenum usage) {
+    (void)target;
+    (void)bytes;
+    (void)data;
+    (void)usage;
+}
+
+static bool eviction_invalidation_control(void) {
+    bool result = false;
+    mc_client_display display = {0};
+    const uint8_t key = 0;
+    source_cached_vertices *entry = source_vertex_cache_slot(&display, &key);
+    CHECK(entry != NULL);
+    source_vertex_cache *cache = display.source_cache;
+    const size_t index = source_vertex_cache_index(&key);
+    source_cached_vertices *oldest = &cache->slots[(index + 1u) % SOURCE_CACHE_SLOTS];
+    const source_cached_vertices *excluded = &cache->slots[(index + 2u) % SOURCE_CACHE_SLOTS];
+    oldest->bytes = entry->bytes = 1;
+    cache->bytes = 2;
+    entry->data = &key;
+    source_vertex_cache_touch(cache, oldest);
+    source_vertex_cache_touch(cache, entry);
+    CHECK(source_vertex_cache_oldest(cache, excluded) == oldest);
+    source_vertex_cache_invalidate(&display, &key);
+    CHECK(entry->data == NULL && entry->last_used == 0 && entry->bytes == 1 &&
+          source_vertex_cache_oldest(cache, excluded) == entry);
+    result = true;
+cleanup:
+    free(display.source_cache);
+    return result;
+}
+
+static bool eviction_controls(void) {
+    bool result = false;
+    mc_client_display display = {0};
+    source_vertex_cache *cache = calloc(1, sizeof(*cache));
+    mc_client_display_error error = {0};
+    CHECK(cache != NULL);
+    display.source_cache = cache;
+    display.gl.DeleteBuffers = observe_eviction;
+    display.gl.DeleteVertexArrays = observe_eviction;
+    display.gl.GetError = observe_eviction_error;
+    const size_t slots[] = {63, 64, 65, SOURCE_CACHE_SLOTS - 1u};
+    const size_t charge = SOURCE_CACHE_BYTES / 4u;
+    /* Synthetic charges drive pressure and injected failures without needing
+     * large device allocations. The normal test exercises real GL draws. */
+    for (size_t i = 0; i < sizeof(slots) / sizeof(*slots); ++i) {
+        source_cached_vertices *entry = &cache->slots[slots[i]];
+        entry->vbo = (GLuint)(2u * i + 1u);
+        entry->vao = (GLuint)(2u * i + 2u);
+        entry->bytes = charge;
+        cache->bytes += charge;
+        source_vertex_cache_changed(cache, entry);
+    }
+    source_cached_vertices *replaced = &cache->slots[64];
+    CHECK(source_vertex_cache_oldest(cache, &cache->slots[63]) == replaced);
+    CHECK(source_vertex_cache_oldest(cache, replaced) == &cache->slots[63]);
+    cache->sequence = UINT64_MAX;
+    source_vertex_cache_touch(cache, &cache->slots[63]);
+    CHECK(source_vertex_cache_oldest(cache, replaced) == &cache->slots[63]);
+    source_vertex_cache_touch(cache, &cache->slots[63]);
+    CHECK(source_vertex_cache_oldest(cache, replaced) == &cache->slots[65]);
+
+    eviction_error = GL_INVALID_OPERATION;
+    eviction_calls = 0;
+    CHECK(!source_vertex_cache_make_room(&display, replaced, 3u * charge, &error));
+    CHECK(error.status == MC_CLIENT_DISPLAY_GL_ERROR && cache->bytes == SOURCE_CACHE_BYTES &&
+          cache->slots[65].bytes == charge && eviction_calls == 2);
+    CHECK(source_vertex_cache_make_room(&display, replaced, 3u * charge, &error));
+    const GLuint expected[] = {5, 6, 5, 6, 7, 8};
+    CHECK(eviction_calls == sizeof(expected) / sizeof(*expected) &&
+          memcmp(eviction_names, expected, sizeof(expected)) == 0);
+    CHECK(cache->bytes == 2u * charge && replaced->bytes == charge && replaced->vbo == 3 &&
+          cache->slots[63].bytes == charge && cache->slots[65].bytes == 0 &&
+          cache->slots[SOURCE_CACHE_SLOTS - 1u].bytes == 0);
+
+    /* The room check refreshes the incoming group while it is still empty.
+     * The completed upload must refresh it again when storage is published. */
+    display.gl.BindVertexArray = eviction_bind_vao;
+    display.gl.BindBuffer = eviction_bind_buffer;
+    display.gl.BufferData = eviction_upload;
+    cache->slots[63].bytes = 3u * charge;
+    cache->bytes = SOURCE_CACHE_BYTES;
+    source_cached_vertices *incoming = &cache->slots[SOURCE_CACHE_SLOTS - 1u];
+    incoming->layout_ready = true;
+    incoming->vao = 9;
+    incoming->vbo = 10;
+    const uint8_t key = 0;
+    const mc_client_source_gpu_vertex vertex = {0};
+    source_vertex_cache_touch(cache, incoming);
+    CHECK(source_vertex_cache_upload(&display, incoming, &key, charge,
+                                     SOURCE_ATTRIBUTE_PROFILE_UNKNOWN, NULL, NULL, &vertex, 1,
+                                     &error));
+    CHECK(cache->bytes == SOURCE_CACHE_BYTES && replaced->bytes == 0 && incoming->bytes == charge &&
+          eviction_calls == 8 && eviction_names[6] == 3 && eviction_names[7] == 4 &&
+          source_vertex_cache_oldest(cache, &cache->slots[63]) == incoming);
+    result = true;
+cleanup:
+    free(cache);
+    return result;
+}
+
 int main(int argc, char **argv) {
-    (void)argc;
-    (void)argv;
+    if (argc == 2 && strcmp(argv[1], "--eviction-only") == 0) {
+        if (!eviction_controls() || !eviction_invalidation_control())
+            return 1;
+        return printf("Vertex cache eviction: %u checks\n", checks) < 0 ? 1 : 0;
+    }
     int result = 1;
     const unsigned original_controls = _mm_getcsr();
     mc_client_display *display = NULL;

@@ -1,8 +1,13 @@
 enum {
     SOURCE_CACHE_SLOTS = 4096,
+    SOURCE_CACHE_GROUP_SIZE = 64,
+    SOURCE_CACHE_GROUPS = SOURCE_CACHE_SLOTS / SOURCE_CACHE_GROUP_SIZE,
     SOURCE_CACHE_BYTES = 64 * 1024 * 1024,
     SOURCE_CACHE_MIN_VERTICES = 96
 };
+
+_Static_assert(SOURCE_CACHE_SLOTS % SOURCE_CACHE_GROUP_SIZE == 0 && SOURCE_CACHE_GROUPS <= 64,
+               "one dirty bit per complete vertex cache group");
 
 typedef struct source_cached_vertices {
     /* Recorded draw bytes identify one immutable, committed command. */
@@ -18,8 +23,9 @@ typedef struct source_cached_vertices {
 
 struct source_vertex_cache {
     source_cached_vertices slots[SOURCE_CACHE_SLOTS];
+    source_cached_vertices *oldest[SOURCE_CACHE_GROUPS];
     size_t bytes;
-    uint64_t sequence;
+    uint64_t sequence, dirty_groups;
 };
 
 static size_t source_vertex_cache_index(const uint8_t *data) {
@@ -54,6 +60,17 @@ static void source_vertex_cache_bind(mc_client_display *display,
     display->gl.BindBuffer(GL_ARRAY_BUFFER, entry->vbo);
 }
 
+static void source_vertex_cache_changed(source_vertex_cache *cache,
+                                        const source_cached_vertices *entry) {
+    const size_t index = (size_t)(entry - cache->slots);
+    cache->dirty_groups |= UINT64_C(1) << (index / SOURCE_CACHE_GROUP_SIZE);
+}
+
+static void source_vertex_cache_touch(source_vertex_cache *cache, source_cached_vertices *entry) {
+    entry->last_used = ++cache->sequence;
+    source_vertex_cache_changed(cache, entry);
+}
+
 static void source_vertex_cache_invalidate(mc_client_display *display, const uint8_t *data) {
     if (display->source_cache == NULL)
         return;
@@ -61,7 +78,42 @@ static void source_vertex_cache_invalidate(mc_client_display *display, const uin
     if (entry->data == data) {
         entry->data = NULL;
         entry->last_used = 0;
+        source_vertex_cache_changed(display->source_cache, entry);
     }
+}
+
+static source_cached_vertices *
+source_vertex_cache_group_oldest(source_vertex_cache *cache, size_t group,
+                                 const source_cached_vertices *excluded) {
+    const size_t start = group * SOURCE_CACHE_GROUP_SIZE;
+    source_cached_vertices *oldest = NULL;
+    for (size_t i = start; i < start + SOURCE_CACHE_GROUP_SIZE; ++i) {
+        source_cached_vertices *candidate = &cache->slots[i];
+        if (candidate != excluded && candidate->bytes != 0 &&
+            (oldest == NULL || candidate->last_used < oldest->last_used))
+            oldest = candidate;
+    }
+    return oldest;
+}
+
+static source_cached_vertices *source_vertex_cache_oldest(source_vertex_cache *cache,
+                                                          const source_cached_vertices *excluded) {
+    source_cached_vertices *oldest = NULL;
+    const uint64_t dirty_groups = cache->dirty_groups;
+    /* Ascending slot order breaks ties, including invalidated storage with
+     * timestamp zero. Exclusion only affects the group containing the upload. */
+    for (size_t group = 0; group < SOURCE_CACHE_GROUPS; ++group) {
+        const uint64_t bit = UINT64_C(1) << group;
+        if ((dirty_groups & bit) != 0)
+            cache->oldest[group] = source_vertex_cache_group_oldest(cache, group, NULL);
+        source_cached_vertices *candidate = cache->oldest[group];
+        if (candidate == excluded)
+            candidate = source_vertex_cache_group_oldest(cache, group, excluded);
+        if (candidate != NULL && (oldest == NULL || candidate->last_used < oldest->last_used))
+            oldest = candidate;
+    }
+    cache->dirty_groups = 0;
+    return oldest;
 }
 
 static bool source_vertex_cache_make_room(mc_client_display *display,
@@ -70,13 +122,7 @@ static bool source_vertex_cache_make_room(mc_client_display *display,
     source_vertex_cache *cache = display->source_cache;
     while (bytes > SOURCE_CACHE_BYTES - (cache->bytes - entry->bytes)) {
         /* The incoming batch fits by itself, so other slots hold the excess. */
-        source_cached_vertices *oldest = NULL;
-        for (size_t i = 0; i < SOURCE_CACHE_SLOTS; ++i) {
-            source_cached_vertices *candidate = &cache->slots[i];
-            if (candidate != entry && candidate->bytes != 0 &&
-                (oldest == NULL || candidate->last_used < oldest->last_used))
-                oldest = candidate;
-        }
+        source_cached_vertices *oldest = source_vertex_cache_oldest(cache, entry);
         oldest->data = NULL;
         display->gl.DeleteBuffers(1, &oldest->vbo);
         display->gl.DeleteVertexArrays(1, &oldest->vao);
@@ -84,6 +130,7 @@ static bool source_vertex_cache_make_room(mc_client_display *display,
             return false;
         cache->bytes -= oldest->bytes;
         *oldest = (source_cached_vertices){0};
+        source_vertex_cache_changed(cache, oldest);
     }
     return true;
 }
@@ -126,6 +173,8 @@ static bool source_vertex_cache_upload(mc_client_display *display, source_cached
             return false;
         }
         display->source_cache->bytes = display->source_cache->bytes - entry->bytes + bytes;
+        if (entry->bytes == 0)
+            source_vertex_cache_changed(display->source_cache, entry);
         entry->bytes = bytes;
     }
     entry->data = data;
