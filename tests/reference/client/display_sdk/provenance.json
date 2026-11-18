@@ -946,8 +946,8 @@
       "sha256": "7b02fadfaf8310e34b2649de9dc5a7c9b79b2773185f035ff5681d9077a8e5e1"
     },
     "src/client/display/source_surface.inc": {
-      "bytes": 57731,
-      "sha256": "3525cd7595533660cda5687956f8571e1cfd8c4bf4f453f3d4babcaaaa78aefb"
+      "bytes": 57926,
+      "sha256": "ab042f7cc9558b567e203af62e0b60a5cc6cafbad5629d6313e04948360fe926"
     },
     "src/client/display/source_viewport.inc": {
       "bytes": 3343,
@@ -1814,8 +1814,8 @@
       "sha256": "318bca925b1c22d6fd2af4a445e6ed3e5561df1b98bd5060cd69189ed0d66c2e"
     },
     "tests/client/display/test_source_gl_setup.c": {
-      "bytes": 28449,
-      "sha256": "463a727122cc2377fd81614007c692c4adfb1b3ee444959d0fcf564e10afe26a"
+      "bytes": 32142,
+      "sha256": "eaf31a579b0a633113dda4ee7b9221f2f21367085372c37f734984c949ec4794"
     },
     "tests/client/gui/test_gui_ingame.c": {
       "bytes": 29003,
@@ -4166,8 +4166,8 @@
       "sha256": "c3e3a03848d7ea8059527a9275541e63904aefdd845d45412f09497bd7da455b"
     },
     "src/client/display/source_lighting_draw.inc": {
-      "bytes": 9764,
-      "sha256": "35220d33c3e6ead298528d4751645309bddcad31814865d26cc51d02786c17cc"
+      "bytes": 9958,
+      "sha256": "2604578a6f189135296746f8316ea95f78c711784cac30c73e0d6c10b7827b69"
     },
     "src/client/display/source_lighting_numeric.h": {
       "bytes": 24594,

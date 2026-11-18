@@ -12,6 +12,7 @@ typedef void(GLAPIENTRY *get_double_fn)(GLenum, GLdouble *);
 static mc_client_gl native_gl;
 static mc_client_display *observed;
 static unsigned checks, queries, clears, draws, dispatches[8], dispatch_count;
+static unsigned normal_uniforms;
 static bool reenter, nested_busy, change_controls, pending_controls;
 static unsigned controls;
 
@@ -37,6 +38,13 @@ static void GLAPIENTRY observe_clear(GLbitfield mask) {
 static void GLAPIENTRY observe_draw(GLenum mode, GLint first, GLsizei count) {
     native_gl.DrawArrays(mode, first, count);
     ++draws;
+}
+
+static void GLAPIENTRY observe_uniform_matrix(GLint location, GLsizei count, GLboolean transpose,
+                                              const GLfloat *values) {
+    native_gl.UniformMatrix4fv(location, count, transpose, values);
+    if (location == observed->source.normal_matrix_uniform)
+        ++normal_uniforms;
 }
 
 static void GLAPIENTRY observe_clear_depth(GLclampd depth) {
@@ -150,6 +158,24 @@ static bool pixels_have_flat_pair(const mc_client_capture *capture, unsigned fir
     return saw_first && saw_second;
 }
 
+static bool color_conversion(void) {
+    for (unsigned int i = 0; i < 256; i += 4) {
+        const uint8_t rgba[4] = {(uint8_t)i, (uint8_t)(i + 1), (uint8_t)(i + 2), (uint8_t)(i + 3)};
+        float actual[4], divided[4], multiplied[4];
+        for (size_t channel = 0; channel < 4; ++channel) {
+            divided[channel] = (float)rgba[channel] / 255.0f;
+            multiplied[channel] = (float)rgba[channel] * (1.0f / 255.0f);
+        }
+        source_attribute_colors(rgba, false, actual);
+        if (memcmp(actual, divided, sizeof(actual)) != 0)
+            return false;
+        source_attribute_colors(rgba, true, actual);
+        if (memcmp(actual, multiplied, sizeof(actual)) != 0)
+            return false;
+    }
+    return true;
+}
+
 int main(int argc, char **argv) {
     (void)argc;
     (void)argv;
@@ -167,6 +193,7 @@ int main(int argc, char **argv) {
     uint8_t bytes[96], snapshot[sizeof(mc_client_source_state)];
     int32_t list = 0;
     _mm_setcsr(0x1f80u);
+    CHECK(color_conversion());
     CHECK(!mc_client_display_source_shade_model(NULL, GL_SMOOTH, &error));
     CHECK(error.status == MC_CLIENT_DISPLAY_INVALID_ARGUMENT);
     CHECK(!mc_client_display_source_clear_depth(NULL, 1.0, &error));
@@ -497,6 +524,44 @@ int main(int argc, char **argv) {
     CHECK(mc_client_display_source_batch(lease, flat_bytes, flat_bytes, sizeof(flat_bytes), 8,
                                          GL_TRIANGLES, &error));
     CHECK(draws == before_flat + 5 && display->source.shade_flat);
+
+    /* Keep one program across lit, unlit flat replay, and relit draws. The
+     * final material is written while lighting is off. */
+    const float zero[4] = {0}, red[4] = {1, 0, 0, 1}, green[4] = {0, 1, 0, 1};
+    CHECK(mc_client_display_source_color_material_enable(display, false, &error) &&
+          mc_client_display_source_light_enable(display, 0, false, &error) &&
+          mc_client_display_source_light_enable(display, 1, false, &error) &&
+          mc_client_display_source_light_model(display, GL_LIGHT_MODEL_AMBIENT, zero, 4, &error) &&
+          mc_client_display_source_normal(display, 0, 0, 1, &error) &&
+          mc_client_display_source_material(display, GL_FRONT_AND_BACK, GL_EMISSION, red, 4,
+                                            &error) &&
+          mc_client_display_source_lighting_enable(display, true, &error) &&
+          mc_client_display_source_shade_model(display, GL_SMOOTH, &error));
+    display->gl.UniformMatrix4fv = observe_uniform_matrix;
+    CHECK(mc_client_display_loading_clear_color_depth(display, &error) &&
+          mc_client_display_source_batch(lease, flat_bytes, flat_bytes, sizeof(flat_bytes), 6,
+                                         GL_TRIANGLES, &error) &&
+          normal_uniforms == 1);
+    CHECK(mc_client_display_capture_rgba(display, &capture, &error) &&
+          pixels_have_flat_pair(&capture, 0, 0));
+    mc_client_capture_free(&capture);
+    CHECK(mc_client_display_source_lighting_enable(display, false, &error) &&
+          mc_client_display_source_shade_model(display, GL_FLAT, &error) &&
+          mc_client_display_loading_clear_color_depth(display, &error) &&
+          mc_client_display_lists_call(display, &gradient_list, 1, &error) && normal_uniforms == 1);
+    CHECK(mc_client_display_capture_rgba(display, &capture, &error) &&
+          pixels_have_flat_pair(&capture, 2, 0));
+    mc_client_capture_free(&capture);
+    CHECK(mc_client_display_source_material(display, GL_FRONT_AND_BACK, GL_EMISSION, green, 4,
+                                            &error) &&
+          mc_client_display_source_lighting_enable(display, true, &error) &&
+          mc_client_display_loading_clear_color_depth(display, &error) &&
+          mc_client_display_source_batch(lease, flat_bytes, flat_bytes, sizeof(flat_bytes), 6,
+                                         GL_TRIANGLES, &error) &&
+          normal_uniforms == 2);
+    CHECK(mc_client_display_capture_rgba(display, &capture, &error) &&
+          pixels_have_flat_pair(&capture, 1, 1));
+    mc_client_capture_free(&capture);
     result = 0;
 cleanup:
     if (result != 0)

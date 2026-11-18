@@ -114,6 +114,45 @@ unresolved across these scenes.
 
 ## GPU contract
 
+### Display-list draw cost
+
+Two heavy Far cave traces at 854×480 on DISPLAY2 averaged about 360
+unlit draws and six lit draws per frame. The unlit draw bridge spent
+3.33–3.35 ms per frame binding and uploading vertex storage, 1.22–1.24 ms
+converting vertices, and about 0.065 ms uploading lighting uniforms. These
+are CPU wall-clock spans, including time spent waiting inside driver calls.
+
+The native draw bridge converts the four packed color channels together
+with SSE2. It uses the same profile-specific division or reciprocal
+multiplication as the original scalar path. Unlit draws upload the lighting
+enable and flat-shading settings. Lit draws still upload their current
+normal, light, and material settings. The hidden GL control checks all 256
+byte values against each scalar formula, unlit flat list pixels between two
+lit draws, and a material change made while lighting is off.
+
+Two further heavy pairs timed both builds. Mean unlit conversion fell from
+1.25 to 0.82 ms per frame. Unlit lighting uniform calls took 0.007–0.008 ms
+per frame, down from 0.065 ms. The builds submitted about 360–364 unlit
+draws and six lit draws per frame.
+
+Separate runs without stage timing measured both cave scenes at Far on
+DISPLAY2. Both FPS pairs improved per scene. The heavy runs matched 16,342
+entity dispatches across 199 common World ticks. The lighter runs matched
+3,780 dispatches across 200 ticks. Ordered actor state and observed scheduler
+work matched in each scene.
+
+| Scene | Median FPS, baseline → candidate | Median p99 frame ms, baseline → candidate |
+| --- | ---: | ---: |
+| Heavy cave | 26.73 → 27.57 | 52.48 → 51.69 |
+| Lighter cave | 54.27 → 56.06 | 29.45 → 27.82 |
+
+An experimental build also replaced vertex buffer storage on every nonempty
+draw. It measured 26.94 median FPS in the heavy scene and 56.27 in the
+lighter scene, with median p99 of 50.99 and 30.04 ms. The results did not show
+a consistent benefit across the two scenes.
+
+### Rendering and context ownership
+
 Vertices contain section-local float XYZ, UV and ARGB. The upload converts color
 to normalized RGBA bytes, checks finite geometry and enforces mesh/vertex/byte
 limits. Display owns the nearest-sampled atlas texture. The terrain pipeline

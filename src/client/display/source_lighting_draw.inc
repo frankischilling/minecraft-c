@@ -140,6 +140,11 @@ static void source_lighting_upload(mc_client_display *display, const float norma
     const mc_client_source_state *s = &display->source;
     const mc_client_source_fog_state *f = &s->fog;
     display->gl.Uniform1i(s->lighting_uniform, s->lighting_enabled ? 1 : 0);
+    if (!s->lighting_enabled) {
+        /* Flat vertex colors still apply with lighting disabled. */
+        display->gl.Uniform1i(s->flat_uniform, s->shade_flat ? 1 : 0);
+        return;
+    }
     display->gl.UniformMatrix4fv(s->normal_matrix_uniform, 1, GL_FALSE, normal_matrix);
     display->gl.Uniform1i(s->normalize_uniform, f->normalize_enabled ? 1 : 0);
     display->gl.Uniform1i(s->rescale_uniform, f->rescale_normal_enabled ? 1 : 0);

@@ -59,13 +59,17 @@ static float source_attribute_normal(mc_client_source_attribute_profile profile,
     return (float)replicated / 32767.0f;
 }
 
-static float source_attribute_color(mc_client_source_attribute_profile profile, bool compiled,
-                                    uint8_t byte) {
+static void source_attribute_colors(const uint8_t rgba[4], bool multiply, float color[4]) {
     /* All 256 unsigned-byte colors were captured as gl_Color for direct
      * arrays and two compiled-list replays. The profiles reverse which path
-     * uses reciprocal multiplication; 126 values distinguish the rounding. */
-    const bool multiply = profile == SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8 ? !compiled : compiled;
-    return multiply ? (float)byte * (1.0f / 255.0f) : (float)byte / 255.0f;
+     * uses reciprocal multiplication; keep that rounding in every lane. */
+    int32_t packed;
+    memcpy(&packed, rgba, sizeof(packed));
+    const __m128i zero = _mm_setzero_si128();
+    const __m128i words = _mm_unpacklo_epi8(_mm_cvtsi32_si128(packed), zero);
+    const __m128 bytes = _mm_cvtepi32_ps(_mm_unpacklo_epi16(words, zero));
+    _mm_storeu_ps(color, multiply ? _mm_mul_ps(bytes, _mm_set1_ps(1.0f / 255.0f))
+                                  : _mm_div_ps(bytes, _mm_set1_ps(255.0f)));
 }
 
 static void source_attribute_batch_complete(mc_client_source_state *s,
@@ -548,6 +552,8 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
     if (allocation != 0 && vertices == NULL)
         return fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "source draw conversion",
                     "allocation failed", 0);
+    const bool multiply_color =
+        attribute_profile == SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8 ? !compiled : compiled;
     for (size_t i = 0; i < (size_t)count; ++i) {
         const uint8_t *raw = data + i * 32u;
         memcpy(vertices[i].position, raw, 3u * sizeof(float));
@@ -556,9 +562,7 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
         else
             vertices[i].uv[0] = vertices[i].uv[1] = 0;
         if ((arrays & color_bit) != 0)
-            for (size_t channel = 0; channel < 4; ++channel)
-                vertices[i].color[channel] =
-                    source_attribute_color(attribute_profile, compiled, raw[20 + channel]);
+            source_attribute_colors(raw + 20, multiply_color, vertices[i].color);
         else
             memcpy(vertices[i].color, candidate.color, sizeof(candidate.color));
         if ((arrays & normal_bit) != 0)
