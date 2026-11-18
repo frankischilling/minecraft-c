@@ -215,13 +215,7 @@ static mc_client_source_dk *get(mc_client_culling_call *c, unsigned int pc) {
                   false);
         return NULL;
     }
-    bool owned = false;
-    for (mc_client_source_dk *p = n->chunk_owners; p != NULL; p = p->next)
-        if (p == dk) {
-            owned = true;
-            break;
-        }
-    if (!owned) {
+    if (dk->owner != n) {
         cull_fail(c, MC_CLIENT_FRUSTUM_ARGUMENT, "N DK native occurrence provenance", pc, true);
         return NULL;
     }

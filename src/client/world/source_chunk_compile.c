@@ -1,5 +1,7 @@
 #include "source_chunk_compile_internal.h"
 
+#include "../../block/registry/registry_internal.h"
+#include "../../block/registry/runtime_internal.h"
 #include "../../core/java/object_identity_profile_internal.h"
 #include "../../entity/player/tick_math_internal.h"
 #include "../../world/runtime/chunk_cache_internal.h"
@@ -377,19 +379,26 @@ static bool block(mc_source_dk_compile *c) {
     mc_client_source_dk *dk = c->state.chunk;
     mc_registry_classes *registry = c->world_classes->registry;
     if (c->state.pass == 0) {
-        if (mc_registry_classes_initialize_blocks(registry, &c->failure.registry) != MC_REGISTRY_OK)
-            return fail(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED, c->failure.registry.message,
-                        370, true);
-        mc_registry_block_view view;
-        if (mc_registry_classes_inspect_blocks(registry, &view, &c->failure.registry) !=
-            MC_REGISTRY_OK)
-            return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE, "DK canonical uu.p storage", 370,
-                        true);
-        if (view.p == NULL)
+        const bool *tile_flags;
+        if (mc_registry_block_statics_ready(registry, &c->failure.registry)) {
+            tile_flags = registry->blocks.p;
+        } else {
+            if (mc_registry_classes_initialize_blocks(registry, &c->failure.registry) !=
+                MC_REGISTRY_OK)
+                return fail(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED, c->failure.registry.message,
+                            370, true);
+            mc_registry_block_view view;
+            if (mc_registry_classes_inspect_blocks(registry, &view, &c->failure.registry) !=
+                MC_REGISTRY_OK)
+                return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE, "DK canonical uu.p storage",
+                            370, true);
+            tile_flags = view.p;
+        }
+        if (tile_flags == NULL)
             return fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE, "actual uu.p array", 375, false);
         if (c->state.block_id < 0 || c->state.block_id >= 256)
             return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE, "actual uu.p index", 375, false);
-        if (view.p[c->state.block_id]) {
+        if (tile_flags[c->state.block_id]) {
             if (!cache_result(c,
                               mc_client_chunk_cache_tile_entity(c->cache, c->state.x, c->state.y,
                                                                 c->state.z, &c->tile,
@@ -401,8 +410,14 @@ static bool block(mc_source_dk_compile *c) {
         }
     }
     const mc_block *b = NULL;
-    if (mc_registry_block_get(registry, c->state.block_id, &b, &c->failure.registry) !=
-        MC_REGISTRY_OK)
+    if (mc_registry_block_m_read_ready(registry, c->state.block_id, &b)) {
+        c->failure.registry = (mc_registry_error){.initializer_pc = -1,
+                                                  .block_id = -1,
+                                                  .constructor_pc = -1,
+                                                  .active_initializer_pc = -1,
+                                                  .item_argument = -1};
+    } else if (mc_registry_block_get(registry, c->state.block_id, &b, &c->failure.registry) !=
+               MC_REGISTRY_OK)
         return fail(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED, c->failure.registry.message, 422,
                     true);
     /* astore19 at423 overwrites the Tile local after the actual array load. */

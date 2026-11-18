@@ -7,6 +7,7 @@ int mc_chunk_compile_picker_fixture_main(int argc, char **argv);
 #include "test_picking.c"
 #undef main
 
+#include "block/registry/registry_internal.h"
 #include "client/display/source_surface.h"
 #include "client/render/blocks/internal.h"
 #include "client/render_engine/chunk_statistics.h"
@@ -757,6 +758,91 @@ static bool block_compile_controls(picking_fixture *f, mc_client_render_global *
     return true;
 }
 
+static bool ready_registry_failures(picking_fixture *f, mc_client_display *display) {
+    const size_t index = (1u << 11u) | (1u << 7u) | 64u;
+    const uint8_t old = f->chunks[0]->data->blocks[index];
+    const size_t bindings = f->base.world->persistent_bindings;
+    for (size_t which = 0; which < 2; ++which) {
+        mc_client_render_engine_classes *graphics = NULL;
+        mc_client_render_global *n = NULL;
+        mc_client_render_global_error error;
+        mc_client_display_error display_error;
+        mc_client_display_list_range *range = NULL;
+        mc_source_dk_compile *call = NULL;
+        int32_t base;
+        CHECK(mc_client_render_engine_classes_create(NULL, &graphics) ==
+                  MC_CLIENT_RENDER_ENGINE_OK &&
+              mc_client_render_global_allocate(graphics, NULL, &n, &error) ==
+                  MC_CLIENT_RENDER_GLOBAL_OK);
+        n->fields.t = f->app;
+        n->display = display;
+        n->fields.a = mc_render_global_allocate(
+            n, sizeof(*n->fields.a), (mc_client_graphics_site){"n", "<init>", "()V", 4}, &error);
+        CHECK(n->fields.a != NULL);
+        n->tile_list_origin = n->fields.a;
+        mc_client_source_dk *dk = mc_source_dk_allocate(n, &error);
+        CHECK(dk != NULL);
+        dk->fields.p = mc_render_global_allocate(
+            n, 2 * sizeof(bool), (mc_client_graphics_site){"dk", "<init>", "()V", 16}, &error);
+        dk->fields.B = mc_render_global_allocate(
+            n, sizeof(*dk->fields.B), (mc_client_graphics_site){"dk", "<init>", "()V", 32}, &error);
+        CHECK(dk->fields.p != NULL && dk->fields.B != NULL &&
+              mc_world_runtime_binding_retain(f->base.world));
+        dk->tile_list_origin = dk->fields.B;
+        dk->fields.a = f->base.world;
+        dk->world_held = true;
+        dk->fields.F = n->fields.a;
+        dk->fields.c = dk->fields.e = 1;
+        dk->fields.d = 64;
+        dk->fields.f = dk->fields.g = dk->fields.h = 1;
+        dk->fields.u = true;
+        CHECK(mc_client_display_lists_generate(display, 3, 64, &range, &base, &display_error));
+        dk->fields.C = base;
+        mc_registry_classes *registry = f->base.registry;
+        CHECK(registry->blocks_phase == MC_REGISTRY_READY && registry->entered == 0 &&
+              registry->blocks.p != NULL && !registry->blocks.p[1] && registry->blocks.m != NULL &&
+              registry->blocks.m[1] != NULL);
+        bool *flags = registry->blocks.p;
+        mc_block *stone = registry->blocks.m[1];
+        f->chunks[0]->data->blocks[index] = 1;
+        /* Each failure owns a fresh NW and pending definition. Retirement
+         * releases that prefix without continuing a failed source compile. */
+        if (which == 0)
+            registry->blocks.p = NULL;
+        else
+            registry->blocks.m[1] = NULL;
+        n->active = true;
+        const bool completed = mc_source_dk_compile_entered(dk, &call, &error);
+        n->active = false;
+        registry->blocks.p = flags;
+        registry->blocks.m[1] = stone;
+        f->chunks[0]->data->blocks[index] = old;
+        CHECK(!completed && error.status == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE &&
+              error.source_pc == (which == 0 ? 375u : 427u) && !error.native_policy &&
+              error.registry.status == MC_REGISTRY_OK && error.registry.message == NULL &&
+              error.registry.initializer_pc == -1 && error.registry.block_id == -1 &&
+              error.registry.constructor_class == NULL && error.registry.constructor_pc == -1 &&
+              error.registry.active_initializer_class == NULL &&
+              error.registry.active_initializer_pc == -1 && error.registry.item_argument == -1);
+        mc_client_chunk_compile_state state;
+        mc_client_source_list_state list;
+        CHECK(mc_source_dk_compile_inspect(call, &state) && !state.returned && state.pass == 0 &&
+              state.block_id == 1 && state.source_pc == error.source_pc && state.list_open &&
+              state.matrix_pushed && state.tessellator_started && dk->fields.u &&
+              mc_client_display_list_inspect(display, base, &list) && !list.defined &&
+              list.building && list.pending_commands == 5 && list.vertices == 0 &&
+              mc_source_dk_compile_retire(&call, &error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+              call == NULL);
+        CHECK(mc_client_display_list_inspect(display, base, &list) && list.building &&
+              !list.defined && list.pending_commands == 5 && list.vertices == 0 &&
+              mc_client_display_lists_retire(&range, &display_error) &&
+              mc_client_render_global_retire(&n, &error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+              mc_client_render_engine_classes_release(graphics) == MC_CLIENT_RENDER_ENGINE_OK &&
+              f->base.world->persistent_bindings == bindings);
+    }
+    return true;
+}
+
 static bool compile_controls(picking_fixture *f, FILE *block_input) {
     mc_client_render_global *n = NULL;
     mc_client_render_global_error error;
@@ -873,6 +959,7 @@ static bool compile_controls(picking_fixture *f, FILE *block_input) {
     CHECK(cactus_compile_controls(f, n, dk, base));
     CHECK(torch_compile_controls(f, n, dk, base));
     CHECK(block_compile_controls(f, n, dk, base, block_input));
+    CHECK(ready_registry_failures(f, n->display));
     /* A remaining family still retains a real failed compile prefix. Native
      * cleanup preserves both the earlier list and the unfinished definition. */
     const mc_block *fire = NULL;

@@ -3454,8 +3454,8 @@
       "sha256": "f577fc5410983a7bf2c121b4719264341fa79cddc8259c2907cc7ec2fd8eeafb"
     },
     "src/client/world/frustum_culling.c": {
-      "bytes": 16648,
-      "sha256": "c374ba795048f3be1bae295c1b598d9630e5dbcd8e9f7599aeac1c2622fdb9f5"
+      "bytes": 16479,
+      "sha256": "2adc4760b7c0d9eab31828e6424f2c07230d94eac990c2d89ab2f0edc8bf00ca"
     },
     "src/client/world/render_global_sky_draw.c": {
       "bytes": 30194,
@@ -3482,8 +3482,8 @@
       "sha256": "4c8e87ab583eb20b5c1a4237c6158d01e9cdf8d0ce73de062c5586d4cdb31e62"
     },
     "tests/client/world/test_frustum_culling.c": {
-      "bytes": 9499,
-      "sha256": "f7beaa596860ce274da61ac69d6d0e513005ccec56206d483d77dbee4fefc1a7"
+      "bytes": 11324,
+      "sha256": "f6910106bc6c703f857fc38a766a7c7df594b6b2c3f079b98cd5e4a6d66d37cf"
     },
     "tests/client/world/test_render_global_sky_cpu.c": {
       "bytes": 5811,
@@ -3562,8 +3562,8 @@
       "sha256": "a4df300c367dbe801d39ec34fa718512e935e0104e3a00d2329322813c673f6e"
     },
     "src/client/world/render_global_update.c": {
-      "bytes": 17534,
-      "sha256": "b23a12f80438594df54e1fc617f7dbb6cbe87664c20965303579e0905f5c1e86"
+      "bytes": 17308,
+      "sha256": "922f944619dbd6ba3b88bf8f215bc80281cc02464f4652e7c420006109864e90"
     },
     "src/client/world/render_global_update_sort.c": {
       "bytes": 15962,
@@ -3574,8 +3574,8 @@
       "sha256": "d749c65bec50c1df278d8a5c7c96ab550358fb163f54c360546b55f92d409e9f"
     },
     "src/client/world/source_chunk_compile.c": {
-      "bytes": 41066,
-      "sha256": "f9017ce0cd521de8a1906097030af1b55b2a2ce934b3cbe4ef3aaacc1b9be5e1"
+      "bytes": 41891,
+      "sha256": "33ab5bfc7721a0a9fe4ef2460701e48f5edda33c0c645feba125200b5e60ba03"
     },
     "src/client/world/source_chunk_compile_internal.h": {
       "bytes": 2862,
@@ -3590,12 +3590,12 @@
       "sha256": "1781c42f673d2f338303158088783a3d4d7dacc17672c38f7171e8c18ebbd733"
     },
     "tests/client/world/test_chunk_compile.c": {
-      "bytes": 55050,
-      "sha256": "9926d8ce694505feb61b0ba75a6866bd334eee3f01a1bf3afe95b35fae6202e4"
+      "bytes": 59984,
+      "sha256": "30067b27e48c79ea2891b3cde3ef40a0cecc8ffda4f46c396056aacb365c174b"
     },
     "tests/client/world/test_render_global_update.c": {
-      "bytes": 56453,
-      "sha256": "3184ca0e289335e2990b843cf565802ae4a6bfe0c963053ef9f0b2b9caebfd85"
+      "bytes": 59049,
+      "sha256": "7a0998c11c668e46ce9f1164822ba0f9b406f381fbbdd378a273680edfcf4659"
     },
     "tests/client/world/test_render_global_update_sort.c": {
       "bytes": 7930,

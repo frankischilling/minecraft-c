@@ -1102,6 +1102,46 @@ static bool one_case(fixture *f, size_t index) {
     return true;
 }
 
+static bool foreign_chunk_owner(fixture *f) {
+    mc_client_render_global *n = NULL, *foreign = NULL;
+    CHECK(mc_client_render_global_allocate(f->graphics, NULL, &n, f->error) ==
+          MC_CLIENT_RENDER_GLOBAL_OK);
+    CHECK(mc_client_render_global_allocate(f->graphics, NULL, &foreign, f->error) ==
+          MC_CLIENT_RENDER_GLOBAL_OK);
+    const mc_client_graphics_site prepared = {"native-test", "prepare", "()V", -1};
+    n->fields.m = mc_render_global_allocate(n, sizeof(*n->fields.m), prepared, f->error);
+    CHECK(n->fields.m != NULL);
+    mc_client_source_dk *own = mc_source_dk_allocate(n, f->error);
+    mc_client_source_dk *other = mc_source_dk_allocate(foreign, f->error);
+    CHECK(own != NULL && other != NULL && own->owner == n && other->owner == foreign);
+    own->fields.o = own->fields.u = true;
+    other->fields.u = true;
+    CHECK(mc_render_global_pointer_append(n, n->fields.m, own, prepared, f->error));
+    CHECK(mc_render_global_pointer_append(n, n->fields.m, other, prepared, f->error));
+    mc_client_render_global_update_call *call = NULL;
+    const mc_client_render_global_status status =
+        mc_client_render_global_update_begin(n, NULL, true, &call, f->error);
+    mc_client_render_global_update_state state;
+    CHECK(status == MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT && call != NULL &&
+          mc_client_render_global_update_inspect(call, &state) && !state.returned &&
+          !state.active && !n->active && state.source_pc == 225 && state.index == 1 &&
+          state.initial_count == 2 && state.near_count == 1 && state.near_length == 1 &&
+          state.near_chunks[0] == own && state.compile_attempts == 0 &&
+          state.completed_compiles == 0 && state.remaining_count == 2 &&
+          state.failure->native_policy && state.failure->operation != NULL &&
+          strcmp(state.failure->operation, "N DK native occurrence provenance") == 0 &&
+          n->fields.m->entries[0] == NULL && n->fields.m->entries[1] == other && own->fields.o &&
+          own->fields.u && !other->fields.o && other->fields.u && n->holds == 2 &&
+          foreign->holds == 1);
+    n->fields.m->entries[1] = NULL;
+    CHECK(mc_client_render_global_update_retire(&call, f->error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+          call == NULL && n->holds == 1 && n->update_call == NULL);
+    CHECK(mc_client_render_global_retire(&foreign, f->error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+          foreign == NULL);
+    CHECK(mc_client_render_global_retire(&n, f->error) == MC_CLIENT_RENDER_GLOBAL_OK && n == NULL);
+    return true;
+}
+
 static bool run(void) {
     fixture f = {0};
     f.app = calloc(1, sizeof(*f.app));
@@ -1119,6 +1159,7 @@ static bool run(void) {
     f.app->world_classes = f.world_classes;
     for (size_t i = 0; i < sizeof(inputs) / sizeof(*inputs); ++i)
         CHECK(one_case(&f, i));
+    CHECK(foreign_chunk_owner(&f));
     CHECK(mc_client_render_engine_classes_release(f.graphics) == MC_CLIENT_RENDER_ENGINE_OK);
     CHECK(mc_entity_classes_free(f.entities) == MC_ENTITY_OK);
     CHECK(mc_world_runtime_classes_free(f.world_classes, NULL) == MC_WORLD_STORAGE_OK);

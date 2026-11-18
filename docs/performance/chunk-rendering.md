@@ -1,5 +1,44 @@
 # Chunk rendering and EW diagnostics
 
+## Chunk renderer ownership and Block lookup
+
+Culling and dirty-list reads use the Chunk renderer's fixed native owner.
+Each array or list read still checks the reached element. The dirty-list
+distance comparator reads the three live camera coordinates and keeps its
+original comparison order. Two controls place a live renderer from another
+owner in the actual array or list and check the mutation prefix before the
+same reached failure.
+
+The MSVC Release culling control allocates actual renderers and marks both
+passes empty. Each call still visits every renderer and advances the culling
+counter. All eight alternating pinned pairs were faster for both grid sizes.
+
+| Empty renderers per call | Median before | Median after |
+| ---: | ---: | ---: |
+| 200 | 0.0219 ms | 0.00229 ms |
+| 5,408 | 114.15 ms | 0.0285 ms |
+
+Compilation reads the TileEntity flag array directly when the Block Registry
+is ready. It reads the live Block array after any TileEntity work. Other
+Registry states and array failures use the existing lookup path. Four
+instrumented Tiny runs matched 97 compile groups by position, Block work per
+pass and TileEntity calls. Seventy-seven groups were faster. Their median
+moved from 6.71 to 6.60 ms.
+
+The combined change qualified all six uninstrumented Far runs at 854×480 on
+DISPLAY2. Median FPS rose from 1.36 to 29.47. Median frame time fell from
+739.20 to 30.90 ms. Median run p99 fell from 786.11 to 71.78 ms. The baseline
+had 14 or 15 frames per interval, so its p99 is also its maximum. Baseline
+intervals completed 140–150 World ticks, and candidate intervals completed
+200. All three pairs used the same authored pose, assets, render distance
+and local Sign edits. The game scene includes culling, compilation, drawing
+and simulation.
+
+Six uninstrumented Tiny runs used the same resolution and pose. Median FPS
+rose from 52.81 to 54.86, while median p95 moved from 28.13 to 28.27 ms and
+p99 from 47.90 to 48.95 ms. Two pairs had higher FPS and lower p99 occurred
+in two pairs. The World completed 200 or 201 ticks per run.
+
 ## Working diagnostics in Chunk-cache getters
 
 Chunk-cache getters keep the reached call frames and Registry diagnostic

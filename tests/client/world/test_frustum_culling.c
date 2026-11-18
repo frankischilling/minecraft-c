@@ -58,6 +58,37 @@ static bool prepare(mc_client_render_engine_classes *graphics, client_applicatio
     return true;
 }
 
+static bool foreign_chunk_owner(mc_client_render_engine_classes *graphics, client_application *app,
+                                mc_client_source_frustum *sr) {
+    mc_client_render_global *n = NULL, *foreign = NULL;
+    CHECK(prepare(graphics, app, 0, &n));
+    CHECK(prepare(graphics, app, 0, &foreign));
+    mc_client_source_dk *saved = n->fields.o[2];
+    mc_client_source_dk *other = foreign->fields.o[2];
+    CHECK(saved->owner == n && other->owner == foreign && !n->fields.o[1]->fields.o &&
+          !other->fields.o);
+    n->fields.o[2] = other;
+    mc_client_culling_call *call = NULL;
+    mc_client_culling_error error;
+    const mc_client_frustum_status status =
+        mc_client_render_global_cull_begin(n, sr, 0, &call, &error);
+    n->fields.o[2] = saved;
+    mc_client_culling_state state;
+    CHECK(status == MC_CLIENT_FRUSTUM_ARGUMENT && call != NULL && error.native_policy &&
+          error.site.pc == 16 && error.operation != NULL &&
+          strcmp(error.operation, "N DK native occurrence provenance") == 0 &&
+          mc_client_render_global_cull_inspect(call, &state) && !state.returned &&
+          state.index == 2 && state.visited == 2 && state.empty_skips == 1 && state.tested == 1 &&
+          state.stores == 1 && state.chunk == n->fields.o[1] && n->fields.o[1]->fields.o &&
+          !other->fields.o && n->fields.j == 0 && foreign->fields.j == 0 && foreign->holds == 1);
+    CHECK(mc_client_render_global_cull_retire(&call, &error) == MC_CLIENT_FRUSTUM_OK &&
+          call == NULL && n->holds == 1);
+    CHECK(mc_client_render_global_retire(&foreign, NULL) == MC_CLIENT_RENDER_GLOBAL_OK &&
+          foreign == NULL);
+    CHECK(mc_client_render_global_retire(&n, NULL) == MC_CLIENT_RENDER_GLOBAL_OK && n == NULL);
+    return true;
+}
+
 static bool run(void) {
     mc_java_random_profile *profile = NULL;
     mc_entity_classes *entities = NULL;
@@ -148,6 +179,7 @@ static bool run(void) {
               call == NULL);
         CHECK(mc_client_render_global_retire(&n, NULL) == MC_CLIENT_RENDER_GLOBAL_OK && n == NULL);
     }
+    CHECK(foreign_chunk_owner(graphics, app, sr));
     /* Missing pass-array failure preserves earlier visibility stores and j. */
     mc_client_render_global *n = NULL;
     CHECK(prepare(graphics, app, 0, &n));

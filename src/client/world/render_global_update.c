@@ -1,5 +1,6 @@
 #include "mc/client/world/render_global_update.h"
 
+#include "../../entity/entity_internal.h"
 #include "../../entity/player/tick_math_internal.h"
 #include "../render_engine/internal.h"
 #include "render_global_update_sort.h"
@@ -42,11 +43,8 @@ static mc_client_render_list *list(mc_client_render_global_update_call *c, unsig
 
 static bool owned(mc_client_render_global_update_call *c, mc_client_source_dk *dk,
                   unsigned int pc) {
-    if (dk == NULL)
+    if (dk == NULL || dk->owner == c->state.owner)
         return true; /* CHECKCAST and List.get permit actual null elements. */
-    for (const mc_client_source_dk *p = c->state.owner->chunk_owners; p != NULL; p = p->next)
-        if (p == dk)
-            return true;
     return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT, "N DK native occurrence provenance",
                 pc, true);
 }
@@ -88,16 +86,13 @@ static bool distance(mc_client_render_global_update_call *c, mc_client_source_dk
                        : (mc_client_graphics_site){"md", "a", "(Ldk;Ldk;)I", (int32_t)md_pc};
         return false;
     }
-    mc_entity_snapshot camera;
-    if (mc_entity_get_snapshot(c->state.camera, &camera) != MC_ENTITY_OK)
-        return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE, "DK canonical Entity fields", parent,
-                    true);
+    const mc_entity_base_fields *camera = mc_entity_runtime_fields(c->state.camera);
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u)
         return fail(c, MC_CLIENT_RENDER_GLOBAL_UNSUPPORTED_FP, "DK distance strict FP environment",
                     parent, true);
-    const float x = at_narrow(at_sub(camera.base.x, (double)dk->fields.q));
-    const float y = at_narrow(at_sub(camera.base.y, (double)dk->fields.r));
-    const float z = at_narrow(at_sub(camera.base.z, (double)dk->fields.s));
+    const float x = at_narrow(at_sub(camera->x, (double)dk->fields.q));
+    const float y = at_narrow(at_sub(camera->y, (double)dk->fields.r));
+    const float z = at_narrow(at_sub(camera->z, (double)dk->fields.s));
     *out = at_fadd(at_fadd(at_fmul(x, x), at_fmul(y, y)), at_fmul(z, z));
     return true;
 }
