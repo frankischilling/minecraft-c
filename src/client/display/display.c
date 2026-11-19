@@ -196,6 +196,8 @@ static bool current_internal(mc_client_display *display, const char *operation,
          SDL_GL_GetCurrentWindow() != display->window) &&
         !SDL_GL_MakeCurrent(display->window, display->context))
         return sdl_failure(error, operation);
+    if (display->source.active_calls != 0)
+        display->source.native_current_reentered = true;
     return true;
 }
 

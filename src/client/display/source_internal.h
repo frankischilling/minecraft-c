@@ -100,6 +100,7 @@ typedef struct mc_client_source_attribute_staging {
 typedef struct mc_client_source_state {
     bool initialized, loading_ready, texture_enabled, alpha_test, color_known,
         internal_resource_bind;
+    bool native_current_reentered;
     bool lighting_enabled, fog_enabled;
     mc_client_source_fog_state fog;
     uint64_t fog_capability_generation;

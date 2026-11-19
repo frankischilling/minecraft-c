@@ -134,11 +134,8 @@ static bool source_texture_sampling(mc_client_display *display, GLuint texture, 
     return true;
 }
 
-static bool source_texture_bound_sampling(mc_client_display *display, bool textured, int *clamp_s,
-                                          int *clamp_t, mc_client_display_error *error) {
-    *clamp_s = *clamp_t = 0;
-    if (!textured)
-        return true;
+static bool source_texture_bound_sampling(mc_client_display *display, int *clamp_s, int *clamp_t,
+                                          mc_client_display_error *error) {
     GLint bound = 0;
     display->gl.GetIntegerv(GL_TEXTURE_BINDING_2D, &bound);
     return gl_check(display, "source texture sampling binding", error) &&

@@ -496,8 +496,10 @@ static bool source_gpu_create(mc_client_display *display, mc_client_display_erro
 
 typedef struct source_replay_state {
     bool drew, fragment_uniforms, projection_uploaded, modelview_uploaded;
+    bool texture_unit_checked, texture_sampled;
     GLuint vao, vbo;
     int clamp_s, clamp_t;
+    int sampled_clamp_s, sampled_clamp_t;
 } source_replay_state;
 
 static void source_replay_matrix_changed(source_replay_state *replay,
@@ -555,17 +557,37 @@ static bool source_execute_batch(mc_client_display *display, mc_client_source_dr
                     "native implementation has no measured source array attribute profile", 0);
     if (!source_fp_admit("source native draw conversion FP", error))
         return false;
-    GLint unit = 0;
-    display->gl.GetIntegerv(GL_ACTIVE_TEXTURE, &unit);
+    /* Replay itself makes no texture changes. Keep each draw's native error checks,
+     * and query again if an intervening Display call reached the context. */
+    GLint unit = GL_TEXTURE0;
+    if (replay == NULL || !replay->texture_unit_checked || s->native_current_reentered) {
+        unit = 0;
+        display->gl.GetIntegerv(GL_ACTIVE_TEXTURE, &unit);
+    }
     if (!gl_check(display, "source active texture unit", error))
         return false;
     if (unit != GL_TEXTURE0)
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source active texture unit",
                     "nondefault unit path", 0);
+    if (replay != NULL)
+        replay->texture_unit_checked = true;
     int clamp_s = 0, clamp_t = 0;
-    if (!source_texture_bound_sampling(display, s->texture_enabled && count > 0, &clamp_s, &clamp_t,
-                                       error))
-        return false;
+    if (s->texture_enabled && count > 0) {
+        if (replay != NULL && replay->texture_sampled && !s->native_current_reentered) {
+            if (!gl_check(display, "source texture sampling binding", error))
+                return false;
+            clamp_s = replay->sampled_clamp_s;
+            clamp_t = replay->sampled_clamp_t;
+        } else {
+            if (!source_texture_bound_sampling(display, &clamp_s, &clamp_t, error))
+                return false;
+            if (replay != NULL) {
+                replay->texture_sampled = true;
+                replay->sampled_clamp_s = clamp_s;
+                replay->sampled_clamp_t = clamp_t;
+            }
+        }
+    }
     if (!source_fp_admit("source native draw conversion FP after texture query", error))
         return false;
     float normal_matrix[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
@@ -1126,6 +1148,7 @@ static bool source_lists_execute(mc_client_display *display, const int32_t *ids,
                                  const char *operation, mc_client_display_error *error) {
     /* Native state is known only during this closed command replay. */
     source_replay_state replay = {0};
+    display->source.native_current_reentered = false;
     bool ok = true;
     if (display->source.compiling != NULL) {
         ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation, "compiled/nested-call path",

@@ -18,6 +18,8 @@ enum {
     REPLAY_PROJECTION,
     REPLAY_MODELVIEW,
     REPLAY_PROVOKING,
+    REPLAY_ACTIVE_UNIT,
+    REPLAY_TEXTURE_BINDING,
     REPLAY_TEXTURED,
     REPLAY_ALPHA,
     REPLAY_FOG,
@@ -30,6 +32,7 @@ static mc_client_gl replay_native;
 static mc_client_display *replay_display;
 static unsigned replay_calls[REPLAY_COUNTERS];
 static GLuint replay_names[3][4];
+static bool replay_change_unit, replay_reentered;
 
 static void replay_name(unsigned int kind, GLuint name) {
     if (replay_calls[kind] < 4)
@@ -55,7 +58,20 @@ static void GLAPIENTRY replay_buffer(GLenum target, GLuint buffer) {
 
 static void GLAPIENTRY replay_draw(GLenum mode, GLint first, GLsizei count) {
     replay_native.DrawArrays(mode, first, count);
-    ++replay_calls[REPLAY_DRAW];
+    if (++replay_calls[REPLAY_DRAW] == 1 && replay_change_unit) {
+        mc_client_display_error error;
+        replay_reentered = mc_client_display_make_current(replay_display, &error);
+        if (replay_reentered)
+            replay_native.ActiveTexture(GL_TEXTURE1);
+    }
+}
+
+static void GLAPIENTRY replay_get_integer(GLenum name, GLint *value) {
+    replay_native.GetIntegerv(name, value);
+    if (name == GL_ACTIVE_TEXTURE)
+        ++replay_calls[REPLAY_ACTIVE_UNIT];
+    else if (name == GL_TEXTURE_BINDING_2D)
+        ++replay_calls[REPLAY_TEXTURE_BINDING];
 }
 
 static void GLAPIENTRY replay_integer(GLint location, GLint value) {
@@ -86,7 +102,8 @@ static bool replay_payload_counts(unsigned int draws, unsigned int projections,
                                   unsigned int modelviews) {
     if (replay_calls[REPLAY_PROGRAM] != 1 || replay_calls[REPLAY_DRAW] != draws ||
         replay_calls[REPLAY_PROJECTION] != projections ||
-        replay_calls[REPLAY_MODELVIEW] != modelviews || replay_calls[REPLAY_PROVOKING] != 1)
+        replay_calls[REPLAY_MODELVIEW] != modelviews || replay_calls[REPLAY_PROVOKING] != 1 ||
+        replay_calls[REPLAY_ACTIVE_UNIT] != 1 || replay_calls[REPLAY_TEXTURE_BINDING] != 0)
         return false;
     for (unsigned int kind = REPLAY_TEXTURED; kind < REPLAY_COUNTERS; ++kind)
         if (replay_calls[kind] != 1)
@@ -404,6 +421,7 @@ static bool replay_native_controls(mc_client_display *display,
     display->gl.BindVertexArray = replay_vao;
     display->gl.BindBuffer = replay_buffer;
     display->gl.DrawArrays = replay_draw;
+    display->gl.GetIntegerv = replay_get_integer;
     display->gl.Uniform1i = replay_integer;
     display->gl.UniformMatrix4fv = replay_matrix;
     display->gl.ProvokingVertex = replay_provoking;
@@ -500,6 +518,79 @@ cleanup:
     const float white[4] = {1, 1, 1, 1};
     if (!triangle_arrays(display, lease, resume_bytes, error) ||
         !mc_client_display_source_color(display, white[0], white[1], white[2], white[3], error))
+        result = false;
+    return result;
+}
+
+static bool replay_texture_controls(mc_client_display *display,
+                                    mc_client_display_context_lease *lease,
+                                    uint8_t resume_bytes[96], mc_client_display_error *error) {
+    bool result = false, observing = false;
+    mc_client_display_list_range *range = NULL;
+    mc_client_capture capture = {0};
+    int32_t base;
+    uint8_t bytes[96];
+    triangle(bytes, 0);
+    for (size_t vertex = 0; vertex < 3; ++vertex)
+        memset(bytes + vertex * 32u + 20u, 255, 4);
+    CHECK(triangle_arrays(display, lease, bytes, error));
+    CHECK(mc_client_display_source_pointer(lease, MC_CLIENT_SOURCE_UV_ARRAY, bytes, 12, error));
+    CHECK(mc_client_display_source_array(display, MC_CLIENT_SOURCE_UV_ARRAY, true, error));
+    CHECK(mc_client_display_source_texture_enable(display, true, error));
+    CHECK(mc_client_display_lists_generate(display, 1, 2, &range, &base, error));
+    CHECK(mc_client_display_lists_begin(display, base, error));
+    CHECK(mc_client_display_source_batch(lease, bytes, bytes, 0, 0, GL_TRIANGLES, error));
+    CHECK(
+        mc_client_display_source_batch(lease, bytes, bytes, sizeof(bytes), 3, GL_TRIANGLES, error));
+    CHECK(mc_client_display_lists_end(display, error));
+
+    replay_native = display->gl;
+    replay_display = display;
+    display->gl.DrawArrays = replay_draw;
+    display->gl.GetIntegerv = replay_get_integer;
+    observing = true;
+    const int32_t ids[] = {base, base};
+    static const uint8_t pixels[2][4] = {{255, 0, 0, 255}, {0, 255, 0, 255}};
+    for (size_t i = 0; i < 2; ++i) {
+        const mc_image_view image = {1, 1, 4, pixels[i]};
+        mc_client_texture texture;
+        CHECK(mc_client_display_upload_texture(display, &image, false, &texture, error));
+        CHECK(mc_client_display_loading_clear_color_depth(display, error));
+        memset(replay_calls, 0, sizeof(replay_calls));
+        CHECK(mc_client_display_lists_call(display, ids, 2, error));
+        CHECK(replay_calls[REPLAY_DRAW] == 4 && replay_calls[REPLAY_ACTIVE_UNIT] == 1 &&
+              replay_calls[REPLAY_TEXTURE_BINDING] == 1);
+        CHECK(mc_client_display_capture_rgba(display, &capture, error) &&
+              color_pixels(&capture, (int)i) && !color_pixels(&capture, (int)(1u - i)));
+        mc_client_capture_free(&capture);
+    }
+
+    replay_change_unit = true;
+    replay_reentered = false;
+    memset(replay_calls, 0, sizeof(replay_calls));
+    CHECK(!mc_client_display_lists_call(display, ids, 2, error) && replay_reentered &&
+          error->status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL &&
+          strcmp(error->operation, "source active texture unit") == 0 &&
+          replay_calls[REPLAY_DRAW] == 1 && replay_calls[REPLAY_ACTIVE_UNIT] == 2 &&
+          replay_calls[REPLAY_TEXTURE_BINDING] == 0);
+    replay_change_unit = false;
+    memset(replay_calls, 0, sizeof(replay_calls));
+    CHECK(!mc_client_display_lists_call(display, ids, 2, error) &&
+          error->status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL && replay_calls[REPLAY_DRAW] == 0 &&
+          replay_calls[REPLAY_ACTIVE_UNIT] == 1);
+    result = true;
+cleanup:
+    replay_change_unit = false;
+    if (observing) {
+        replay_native.ActiveTexture(GL_TEXTURE0);
+        display->gl = replay_native;
+        replay_display = NULL;
+    }
+    mc_client_capture_free(&capture);
+    if (!mc_client_display_lists_retire(&range, error) ||
+        !mc_client_display_source_texture_enable(display, false, error) ||
+        !mc_client_display_source_array(display, MC_CLIENT_SOURCE_UV_ARRAY, false, error) ||
+        !triangle_arrays(display, lease, resume_bytes, error))
         result = false;
     return result;
 }
@@ -962,6 +1053,7 @@ int main(int argc, char **argv) {
     memcpy(red, bytes, sizeof(red));
     CHECK(matrix_controls(display, lease, bytes, &error));
     CHECK(replay_native_controls(display, lease, bytes, &error));
+    CHECK(replay_texture_controls(display, lease, bytes, &error));
     const unsigned before_queries = queries;
     display->gl.Enable((GLenum)UINT32_MAX); /* Genuine sticky GL error. */
     CHECK(mc_client_display_lists_begin(display, id, &error));

@@ -381,6 +381,36 @@ per scene, with 16,342 heavy-cave dispatches and 3,779 lighter-cave dispatches.
 The combined build improved FPS and p99 in both heavy-cave rounds.
 The lighter scene varied between rounds and had nearly the same median FPS.
 
+### Texture queries during replay
+
+A display-list replay samples the active texture unit on its first draw.
+It samples the binding and clamp state on the first textured draw with
+vertices. Reuse lasts for that invocation. A nested Display call makes
+the remaining draws query native state again. Each draw keeps its GL
+error and floating-point checks at their original sites. The replay
+commands leave the native texture state alone. OpenGL defines calls back
+into GL from a debug callback as undefined. [OpenGL core specification](https://registry.khronos.org/OpenGL/specs/gl/glspec43.core.pdf)
+
+On the RTX 3060 fixture with 900 draws per frame, eight instrumented
+pairs measured the texture-admission span at 80.6 to 24.9 µs with a
+procedural 2×2 texture and 38.7 to 18.7 µs without texturing. These are
+medians of per-run mean CPU spans.
+
+Ten uninstrumented Windows Release pairs ran 1,024 frames through GPU
+completion. The device, framebuffer, section order and work hashes
+matched in every pair.
+
+| Authored profile | Median frame, before → after | p95, before → after | p99, before → after |
+| --- | ---: | ---: | ---: |
+| Textured, stationary, 8,712 slots | 0.568 → 0.517 ms | 0.735 → 0.636 ms | 1.049 → 0.896 ms |
+| Textured, alternating height, 8,712 slots | 0.883 → 0.848 ms | 1.268 → 1.101 ms | 1.480 → 1.396 ms |
+| Textured, stationary, 2,312 slots | 0.180 → 0.169 ms | 0.231 → 0.209 ms | 0.409 → 0.388 ms |
+| Untextured, stationary, 8,712 slots | 0.533 → 0.516 ms | 0.665 → 0.744 ms | 1.013 → 0.959 ms |
+
+Native controls count the queries, change the texture between calls and
+check the resulting pixels. They also trigger a nested Display call and
+verify that the following draw checks the native unit again.
+
 ### Draw material snapshots
 
 An unlit list draw snapshots its current color and normal. Direct draws,
