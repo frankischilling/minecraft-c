@@ -71,7 +71,7 @@ static bool construct(mc_client_tessellator *o, mc_client_graphics_error *e) {
 
 bool mc_client_nw_active_use(mc_client_render_engine_classes *c, mc_client_graphics_site caller,
                              mc_client_tessellator **out, mc_client_graphics_error *e) {
-    *e = (mc_client_graphics_error){0};
+    memset(e, 0, sizeof(*e));
     e->entry = e->caller = caller;
     if (c == NULL || out == NULL) {
         mc_client_graphics_fail(e, MC_CLIENT_GRAPHICS_INVALID_ARGUMENT, "native nw class admission",

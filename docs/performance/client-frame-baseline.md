@@ -115,6 +115,25 @@ Section compiles took 8.96–9.06 ms at the median on zero-tick frames and
 4.45–4.51 ms on tick-bearing frames. This profile covers the stationary
 save while its renderer builds sections over successive frames.
 
+### Compile and dirty-queue timing during movement
+
+Two Windows traces at `de712fda` measured ten seconds of forward movement at
+854×480 with authored assets. Each returned 200 World ticks and completed the
+normal pause-menu save. Nested timers measured section compilation separately
+from the rest of the dirty-queue update. All 4,376 frame rows matched their
+timing and work records.
+
+| Warmup | Frames | Median frame | Median section compile | Median update outside compile | Section compile p99 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 2 s | 719 | 13.805 ms | 7.689 ms | 0.155 ms | 8.855 ms |
+| 25 s | 3,657 | 2.003 ms | 0.000 ms | 0.003 ms | 8.331 ms |
+
+The early run spent most of its median frame in section compilation. After
+25 seconds the median frame compiled no sections, and occasional compilation
+still appeared in the slowest frames. The uninstrumented early control
+completed timing and movement, then missed the save confirmation. These
+traces locate the cost inside the update and supply no speedup comparison.
+
 ### Block descriptions during section compilation
 
 Pass selection now supplies its Block description to the renderer for the

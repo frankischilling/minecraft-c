@@ -1610,8 +1610,8 @@
       "sha256": "d5bdb22affbcdf02e8cc999c2efdf0264b117c81125644f759e71b30edb4d102"
     },
     "src/client/render_engine/nw_owner.c": {
-      "bytes": 7261,
-      "sha256": "53401abea118624fe7e5a19b3289616d56ad8ff59497ce7128917df7d8e8901a"
+      "bytes": 7251,
+      "sha256": "3303f4485010b1fdd788352ebf149c54619c61eded793a384ab49b3ca0adb100"
     },
     "src/client/render_engine/owner.c": {
       "bytes": 29233,
@@ -3998,8 +3998,8 @@
       "sha256": "ec79003f4703360eec3b56585312ebdf89552c97b9b087d4db9c80e8d3adc4b6"
     },
     "tests/client/render_engine/test_source_resources.c": {
-      "bytes": 12780,
-      "sha256": "e5d853c91897f30144713b233040e9c2c2dfb6cb8b09f35d9df9a74308b3943d"
+      "bytes": 13587,
+      "sha256": "e560037b8229a9b2f58a931e70c433a73cd5c2eb3738411f1439efcfd37fdabb"
     },
     "tests/client/render_engine/test_texture_lookup.c": {
       "bytes": 18128,

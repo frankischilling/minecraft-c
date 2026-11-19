@@ -99,6 +99,16 @@ int main(void) {
     CHECK(state.fields.e->bytes == state.fields.d && state.fields.f->bytes == state.fields.d);
     CHECK((const void *)state.fields.g != (const void *)state.fields.d->data &&
           classes->bound_display == NULL);
+    const mc_client_graphics_site ready_caller = {"native-test", "ready", "()V", 42};
+    mc_client_tessellator *ready = NULL;
+    memset(&error, 0xa5, sizeof(error));
+    CHECK(mc_client_nw_active_use(classes, ready_caller, &ready, &error) && ready == nw);
+    CHECK(error.status == MC_CLIENT_GRAPHICS_OK && error.operation == NULL &&
+          error.entry.method == ready_caller.method && error.entry.pc == ready_caller.pc &&
+          error.caller.method == ready_caller.method && error.caller.pc == ready_caller.pc);
+    CHECK(error.site.class_name == NULL && error.site.pc == 0 && error.parent.class_name == NULL &&
+          error.class_cause.operation == NULL && error.dependency_class_cause.operation == NULL &&
+          !error.native_policy && error.retained_count == 0 && !error.cleanup_failed);
     /* Unchanged original nw.b(DDD) stores arbitrary binary64 values without
      * arithmetic, a begin predicate, buffer work or FP-control admission. */
     static const uint64_t offsets[][3] = {

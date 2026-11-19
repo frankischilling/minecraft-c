@@ -1,5 +1,52 @@
 # Chunk rendering and EW diagnostics
 
+## Tessellator lookup during section compilation
+
+The warmed Tessellator lookup clears the caller's graphics error record in
+place. MSVC previously cleared a 1,272-byte stack temporary and copied it into
+the caller before checking the class phase. The lookup still reads the live
+singleton and writes the call site, including on the ready path. A regression
+control poisons the error record and checks the returned owner, caller and
+cleared diagnostics.
+
+Four alternating Windows MSVC Release pairs ran 750,000 ready lookups per
+sample. Both executables used the same workload object and alternated two
+caller sites. Median time fell from 29.64 to 12.05 ns per call.
+
+A second Windows workload compiled two authored sections through the native
+compiler. Four alternating pairs per lighting mode used 30 compilations per
+sample. The table gives the median of the per-process medians after two warmup
+samples. All runs matched emitted vertex bytes, draw counts, input data and
+World binding counts.
+
+| Section | Lighting | Before | After |
+| --- | --- | ---: | ---: |
+| 16³ filled volume | Flat | 2.277 ms | 2.147 ms |
+| 16×1×16 surface | Flat | 0.311 ms | 0.293 ms |
+| 16³ filled volume | Ambient occlusion | 5.138 ms | 5.078 ms |
+| 16×1×16 surface | Ambient occlusion | 0.739 ms | 0.731 ms |
+
+Flat compile time fell in every pair. Ambient occlusion varied by pair. A
+separate trial also inlined entry to the block-render diagnostic frames. It
+added no measurable gain in these workloads and was dropped. The final code
+passed all 12 focused tests on Windows MSVC Release and on Linux Clang Debug
+with ASan and UBSan. The tests cover Chunk compilation, ambient occlusion,
+flat lighting, face geometry, inventory geometry and graphics ownership.
+
+Two alternating native Far pairs at 854×480 measured ten seconds of forward
+input after a two-second warmup. Both builds shared the observer and all
+libraries except RenderEngine. All four runs matched the authored save and
+textures, returned 200 World ticks, moved 42.91 blocks and produced the same
+saved Player position and World time through ordinary Save and Quit.
+
+| Pair | FPS before / after | Frame p95 before / after | Frame p99 before / after |
+| --- | ---: | ---: | ---: |
+| 1 | 71.32 / 72.36 | 15.71 / 15.54 ms | 16.70 / 16.54 ms |
+| 2 | 71.59 / 71.40 | 15.71 / 16.08 ms | 16.83 / 17.80 ms |
+
+The frame results vary by pair. The fixed-work improvement belongs to the
+lookup and flat section compile measurements.
+
 ## Render-distance rebuilds
 
 The authored Windows rebuild case reached its 8 MiB arena limit on the
