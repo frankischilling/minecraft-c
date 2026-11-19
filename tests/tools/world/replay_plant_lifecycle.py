@@ -5,8 +5,10 @@ import argparse
 import copy
 import importlib.util
 import json
+import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -119,6 +121,8 @@ def main():
     args.work_dir.mkdir(parents=True, exist_ok=True)
     args.work_dir = Path(tempfile.mkdtemp(prefix="capture-", dir=args.work_dir)).resolve()
     report = {"schema": 1, "passed": False, "sides": {}}
+    # Give the authored English fixture a fixed native format locale on Linux.
+    env = dict(os.environ, LC_ALL="C") if sys.platform == "linux" else None
     try:
         provenance = COMPARE.read(FIXTURES / "provenance.json")
         if provenance["extent"] != [0, 31, 0, 127, 0, 31] or provenance["cases_per_side"] != 59:
@@ -139,7 +143,7 @@ def main():
                 world = Path(temporary) / side
                 child = subprocess.run([str(args.executable.resolve()), side,
                                         str(FIXTURES / "requests.tsv"), str(world).encode("utf-8").hex(),
-                                        str(result_path)], capture_output=True, timeout=90)
+                                        str(result_path)], capture_output=True, timeout=90, env=env)
                 (args.work_dir / (side + ".stdout")).write_bytes(child.stdout)
                 (args.work_dir / (side + ".stderr")).write_bytes(child.stderr)
                 if child.returncode or child.stderr:

@@ -8978,8 +8978,8 @@
       "sha256": "44da87ce69a1f378f5bed320c3a453f7673c19c3a98ca724deb8562a38b060bc"
     },
     "tests/tools/entity/test_held_item_attack.py": {
-      "bytes": 5617,
-      "sha256": "240e9dd3ae947a7a6b9d7266f4b33739dc66713fff4228a85aacb2304c75f9a6"
+      "bytes": 5791,
+      "sha256": "a913a9591d9064e683620020746d9c1475cc8c49e8d18142a0cf553414766ebd"
     },
     "tests/tools/item/test_combat.py": {
       "bytes": 2458,

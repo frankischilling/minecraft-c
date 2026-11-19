@@ -3,6 +3,7 @@ import argparse
 import importlib.util
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -76,8 +77,10 @@ def main():
                       root / 'include/mc/entity/player/attack.h', root / 'include/mc/item/combat/combat.h']
     selected_inputs += [path for path in reference.rglob('*') if path.is_file()]
     before = snapshot(selected_inputs)
+    # Give the authored English fixture a fixed native format locale on Linux.
+    env = dict(os.environ, LC_ALL='C') if sys.platform == 'linux' else None
     result = subprocess.run([str(executable), str(resources), str(game), str(inputs)], capture_output=True,
-                            timeout=180)
+                            timeout=180, env=env)
     (output / 'stdout.txt').write_bytes(result.stdout)
     (output / 'stderr.txt').write_bytes(result.stderr)
     print(result.stderr.decode('utf-8'), end='', file=sys.stderr)

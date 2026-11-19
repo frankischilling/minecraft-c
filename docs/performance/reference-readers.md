@@ -1,5 +1,26 @@
 # Reference-reader performance
 
+## Locale selection for native replays
+
+The held-item attack and plant lifecycle drivers run their Linux native
+children with `LC_ALL=C`. Both fixtures use authored English templates.
+The statistics registry tests separately exercise `C.UTF-8` and fallback
+when a locale category is unavailable.
+
+On WSL2 with Clang ASan/UBSan, one instrumented held-item run spent 39.66
+of 42.83 seconds in the setup interval that constructs the water texture
+and triggers cold registry initialization. A second comparison used the
+same uninstrumented executables and fixtures under both locale settings.
+
+| Replay | C.UTF-8 wall time | C wall time |
+| --- | ---: | ---: |
+| Held item attack | 43.839 s | 9.092 s |
+| Plant lifecycle | 29.784 s | 12.135 s |
+
+Both settings produced the same 422 held-item rows, passed the three
+independent Cow entropy audits, and wrote identical plant native packets
+for both sides. The timings cover the complete replay commands on WSL2.
+
 ## Plant lifecycle replay
 
 The corruption controls copy only the containers along each changed path.
