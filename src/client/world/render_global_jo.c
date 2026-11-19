@@ -38,6 +38,14 @@ bool mc_render_global_jo_construct(mc_render_global_jo *j, const mc_entity *came
     return true;
 }
 
+static double squared_distance(double x, double y, double z) {
+    return at_add(at_add(at_mul(x, x), at_mul(y, y)), at_mul(z, z));
+}
+
+static int32_t compare_distances(double left, double right) {
+    return mc_java_double_to_i32(at_mul(at_sub(left, right), 1024.0));
+}
+
 bool mc_render_global_jo_compare(const mc_render_global_jo *j, const mc_client_source_dk *left,
                                  const mc_client_source_dk *right, int *out,
                                  mc_client_render_global_error *e) {
@@ -56,21 +64,52 @@ bool mc_render_global_jo_compare(const mc_render_global_jo *j, const mc_client_s
     const double xx = at_add((double)right->fields.q, j->a);
     const double yy = at_add((double)right->fields.r, j->b);
     const double zz = at_add((double)right->fields.s, j->c);
-    const double a = at_add(at_add(at_mul(x, x), at_mul(y, y)), at_mul(z, z));
-    const double b = at_add(at_add(at_mul(xx, xx), at_mul(yy, yy)), at_mul(zz, zz));
-    *out = mc_java_double_to_i32(at_mul(at_sub(a, b), 1024.0));
+    const double a = squared_distance(x, y, z);
+    const double b = squared_distance(xx, yy, zz);
+    *out = compare_distances(a, b);
     return true;
 }
+
+enum { distance_slots = 256 };
+
+typedef struct distance_entry {
+    const mc_client_source_dk *section;
+    double squared;
+} distance_entry;
 
 typedef struct compare_context {
     mc_render_global_jo fields;
     mc_client_render_global_error *error;
+    distance_entry distances[distance_slots];
 } compare_context;
 
 static bool compare(void *context, mc_client_source_dk *left, mc_client_source_dk *right,
                     int *out) {
     compare_context *c = context;
     return mc_render_global_jo_compare(&c->fields, left, right, out, c->error);
+}
+
+static double section_distance(compare_context *c, const mc_client_source_dk *section) {
+    distance_entry *entry = &c->distances[(uint32_t)section->fields.w & (distance_slots - 1u)];
+    if (entry->section == section)
+        return entry->squared;
+    const double x = at_add((double)section->fields.q, c->fields.a);
+    const double y = at_add((double)section->fields.r, c->fields.b);
+    const double z = at_add((double)section->fields.s, c->fields.c);
+    const double squared = squared_distance(x, y, z);
+    *entry = (distance_entry){section, squared};
+    return squared;
+}
+
+static bool compare_cached(void *context, mc_client_source_dk *left, mc_client_source_dk *right,
+                           int *out) {
+    compare_context *c = context;
+    if (left == NULL || right == NULL || (_mm_getcsr() & 0xffc0u) != 0x1f80u)
+        return mc_render_global_jo_compare(&c->fields, left, right, out, c->error);
+    const double a = section_distance(c, left);
+    const double b = section_distance(c, right);
+    *out = compare_distances(a, b);
+    return true;
 }
 
 bool mc_render_global_sort_at_entered(mc_client_render_global *n, const mc_entity *camera,
@@ -87,7 +126,8 @@ bool mc_render_global_sort_at_entered(mc_client_render_global *n, const mc_entit
     /* Source evaluates getfield n, then NEW JO/constructor, then Arrays.sort.
      * Even a NULL array must not skip the reached comparator constructor. */
     mc_client_source_dk **array = n->fields.n;
-    compare_context c = {.error = e};
+    compare_context c;
+    c.error = e;
     if (!mc_render_global_jo_construct(&c.fields, camera, e)) {
         e->parent = caller;
         e->parent.pc -= 3; /* Actual JO constructor296/688 precedes sort299/691. */
@@ -99,7 +139,13 @@ bool mc_render_global_sort_at_entered(mc_client_render_global *n, const mc_entit
             caller.class_name, caller.method, caller.descriptor, (unsigned int)caller.pc, false);
         return false;
     }
-    const bool ok = mc_render_global_update_sort(array, n->n_length, &c, compare, e);
+    /* The private sort only rearranges pointers. Section coordinates and the
+     * camera stay fixed for the duration of this call. */
+    const bool use_cache = n->n_length >= 64;
+    if (use_cache)
+        memset(c.distances, 0, sizeof(c.distances));
+    const bool ok = mc_render_global_update_sort(array, n->n_length, &c,
+                                                 use_cache ? compare_cached : compare, e);
     if (!ok) {
         if (e->source_class != NULL && strcmp(e->source_class, "n") == 0 &&
             e->source_descriptor != NULL && strcmp(e->source_descriptor, "(Lls;Z)Z") == 0 &&

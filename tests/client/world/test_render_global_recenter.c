@@ -15,6 +15,8 @@ int mc_recenter_picking_fixture_main(int argc, char **argv);
 #include "client/world/source_chunk_renderer_internal.h"
 #include "entity/entity_internal.h"
 
+#include <xmmintrin.h>
+
 enum { CAPACITY = 128, TRACE_CAPACITY = 8192 };
 
 typedef struct observation {
@@ -239,6 +241,55 @@ static bool rows(picking_fixture *f, const char *path) {
     return true;
 }
 
+static bool distance_cache_scope(picking_fixture *f) {
+    enum { copies = 16, length = copies * 4 };
+
+    mc_client_render_global owner = {.active = true, .n_length = length};
+    mc_client_source_dk actors[] = {
+        {.fields = {.q = -2, .w = 0}},
+        {.fields = {.q = 2, .w = 256}},
+        {.fields = {.q = 11, .w = 512}},
+        {.fields = {.q = -11, .w = 768}},
+    };
+    mc_client_source_dk *array[length];
+    owner.fields.n = array;
+    for (size_t i = 0; i < length; i += 4) {
+        array[i] = &actors[3];
+        array[i + 1] = &actors[1];
+        array[i + 2] = &actors[2];
+        array[i + 3] = &actors[0];
+    }
+    mc_entity *camera = NULL;
+    CHECK(mc_minecart_entity_allocate(f->base.entities, &camera, NULL) == MC_ENTITY_OK);
+    mc_entity_base_fields *fields = mc_entity_runtime_fields(camera);
+    fields->x = fields->y = fields->z = 0;
+    mc_client_render_global_error error;
+    CHECK(mc_render_global_sort_entered(&owner, camera, &error));
+    for (size_t i = 0; i < copies * 2; i += 2) {
+        CHECK(array[i] == &actors[1] && array[i + 1] == &actors[0]);
+        CHECK(array[copies * 2 + i] == &actors[3] && array[copies * 2 + i + 1] == &actors[2]);
+    }
+
+    fields->x = 10.0;
+    actors[1].fields.q = 50;
+    CHECK(mc_render_global_sort_entered(&owner, camera, &error));
+    for (size_t i = 0; i < copies; ++i)
+        CHECK(array[i] == &actors[2] && array[copies + i] == &actors[0] &&
+              array[copies * 2 + i] == &actors[3] && array[copies * 3 + i] == &actors[1]);
+
+    mc_client_source_dk *previous[length];
+    memcpy(previous, array, sizeof(previous));
+    const unsigned int mxcsr = _mm_getcsr();
+    _mm_setcsr(mxcsr | 0x2000u);
+    const bool returned = mc_render_global_sort_entered(&owner, camera, &error);
+    _mm_setcsr(mxcsr);
+    CHECK(!returned && error.status == MC_CLIENT_RENDER_GLOBAL_UNSUPPORTED_FP &&
+          error.source_pc == 9 && error.parent.pc == 299 &&
+          memcmp(previous, array, sizeof(previous)) == 0);
+    mc_entity_release(camera);
+    return true;
+}
+
 static bool device(picking_fixture *f) {
     mc_client_display *display = NULL;
     mc_client_display_error gl;
@@ -378,7 +429,7 @@ int main(int argc, char **argv) {
         return 1;
     f->app->entities = f->base.entities;
     f->app->registry = f->base.registry;
-    if (!rows(f, argv[3]) ||
+    if (!rows(f, argv[3]) || !distance_cache_scope(f) ||
         (!cpu_only && (!picking_case_open(f, argv[2]) || !device(f) || !picking_case_close(f))) ||
         !picking_close(f))
         return 1;

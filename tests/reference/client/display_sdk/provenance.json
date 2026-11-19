@@ -2766,12 +2766,12 @@
       "sha256": "214cee8b2669989f44b237462371f4f89b56678e9cbd073ff537066779cffb5e"
     },
     "src/client/world/source_chunk_renderer.c": {
-      "bytes": 20552,
-      "sha256": "7e88ee0534d63b3169d4134758b91e42f412df0d6b5819e8487e548ced6baa7c"
+      "bytes": 20443,
+      "sha256": "fce64423e54bb45c766b7aea2bcd0e5141ba57772fe094eb5437d664ee1e323c"
     },
     "src/client/world/source_chunk_renderer_internal.h": {
-      "bytes": 3011,
-      "sha256": "c9763cd8c50906e54563e375c78ceb2b78cb9661b617f483113be7490f504cd8"
+      "bytes": 3511,
+      "sha256": "f218b6657481cbc35fecc7aa933c543e74dbf1f035394c1580b0bd42690d64a8"
     },
     "src/entity/player/appearance.c": {
       "bytes": 4018,
@@ -4026,8 +4026,8 @@
       "sha256": "991ffc39b12b39e738eb47ce1d844a7a8b0e8fde6e297fa832ee076009def014"
     },
     "src/client/world/render_global_jo.c": {
-      "bytes": 5551,
-      "sha256": "bc7fa51146284e3ea8038dbd68e9108a2e7584ee7c77b4b3496aee064f1092e9"
+      "bytes": 7322,
+      "sha256": "5e489dfc2b1811795085825d9d88f8229bb9882f5c9a5ae29b3c71e54e897e0e"
     },
     "src/client/world/render_global_jo.h": {
       "bytes": 1334,
@@ -4038,8 +4038,8 @@
       "sha256": "2e88dbcac65a4a9def8de1fab53f107c309892f8ec0bee3e7e8a34e705852f88"
     },
     "src/client/world/render_global_recenter.c": {
-      "bytes": 5258,
-      "sha256": "2dda9508687c95c58e9cce7504fae64da4cc3c090b32efcc0b901b3101456e40"
+      "bytes": 5303,
+      "sha256": "66caf674e240f23c816f68230b520cccb412be5a16a2c73825137ff247db2d6d"
     },
     "src/client/world/render_global_recenter.h": {
       "bytes": 854,
@@ -4074,8 +4074,8 @@
       "sha256": "777e9b53e15b2f34aeb3a4eca91b99525526dd3b9d54db46d947c6a40cd73dea"
     },
     "tests/client/world/test_render_global_recenter.c": {
-      "bytes": 18753,
-      "sha256": "31b8efd8cfbb096bb4465df4f12b27a4cd50392347131f22924155cb54757149"
+      "bytes": 20849,
+      "sha256": "2a295b36c2881a78496754ec055fb758159d32ecb25508d3f58f27b1b7054098"
     },
     "tests/client/world/test_render_global_submit.c": {
       "bytes": 20574,

@@ -29,8 +29,20 @@ mc_client_source_dk *mc_source_dk_allocate(mc_client_render_global *,
 bool mc_source_dk_construct(mc_client_source_dk *, mc_world_runtime *, mc_client_render_list *,
                             int32_t, int32_t, int32_t, int32_t, int32_t,
                             mc_client_render_global_error *);
-bool mc_source_dk_position(mc_client_source_dk *, int32_t, int32_t, int32_t,
-                           mc_client_render_global_error *);
+/* The move path is entered only after comparing the current coordinates. */
+bool mc_source_dk_move(mc_client_source_dk *, int32_t, int32_t, int32_t,
+                       mc_client_render_global_error *);
+
+static inline bool mc_source_dk_position(mc_client_source_dk *section, int32_t x, int32_t y,
+                                         int32_t z, mc_client_render_global_error *error) {
+    const mc_client_source_dk_fields *fields = &section->fields;
+    if (x == fields->c && y == fields->d && z == fields->e) {
+        section->source_pc = 24;
+        return true;
+    }
+    return mc_source_dk_move(section, x, y, z, error);
+}
+
 bool mc_source_dk_clear(mc_client_source_dk *, mc_client_render_global_error *);
 bool mc_source_dk_close(mc_client_source_dk *, mc_client_render_global_error *);
 /* Whole entered dk.a(I)I, e()Z and d()V leaves. No class activation or

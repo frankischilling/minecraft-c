@@ -19,14 +19,27 @@ static bool quotient(int32_t left, int32_t right, int32_t *out, unsigned int pc,
                 "actual renderer-grid integer division by zero", pc, false);
 }
 
-static bool chunk(mc_client_render_global *n, int32_t index, mc_client_source_dk **out,
+static bool axis_position(int32_t slot, uint32_t camera, int32_t width, int32_t half, int32_t *out,
+                          unsigned int pc, mc_client_render_global_error *e) {
+    const uint32_t origin = (uint32_t)slot * 16u;
+    uint32_t delta = origin + (uint32_t)half - camera;
+    if (delta > INT32_MAX)
+        delta -= (uint32_t)width - 1u;
+    int32_t wraps;
+    if (!quotient(mc_java_i32_narrow(delta), width, &wraps, pc, e))
+        return false;
+    *out = mc_java_i32_narrow(origin - (uint32_t)wraps * (uint32_t)width);
+    return true;
+}
+
+static bool chunk(mc_client_render_global *n, uint32_t index, mc_client_source_dk **out,
                   mc_client_render_global_error *e) {
     if (n->fields.o == NULL)
         return fail(e, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE, "actual recenter spatial DK array",
                     309, false);
-    if (index < 0 || (size_t)index >= n->o_length) {
+    if (index > INT32_MAX || (size_t)index >= n->o_length) {
         e->graphics.status = MC_CLIENT_GRAPHICS_ARRAY_INDEX;
-        e->graphics.actual_index = index;
+        e->graphics.actual_index = mc_java_i32_narrow(index);
         e->graphics.site = (mc_client_graphics_site){"n", "b", "(III)V", 309};
         return fail(e, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
                     "actual recenter spatial DK array index", 309, false);
@@ -45,10 +58,9 @@ bool mc_render_global_recenter_entered(mc_client_render_global *n, int32_t x, in
     if (n == NULL || !n->active)
         return fail(e, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
                     "recenter requires the admitted actual N guard", 0, true);
-    x = mc_java_i32_sub(x, 8);
-    y = mc_java_i32_sub(y, 8);
-    z = mc_java_i32_sub(z, 8);
-    (void)y; /* Source decrements it but uses each Y-loop coordinate below. */
+    const uint32_t camera_x = (uint32_t)x - 8u;
+    const uint32_t camera_z = (uint32_t)z - 8u;
+    (void)y; /* The vertical grid uses its section slots. */
     n->fields.B = INT32_MAX;
     n->fields.C = INT32_MAX;
     n->fields.D = INT32_MAX;
@@ -56,43 +68,34 @@ bool mc_render_global_recenter_entered(mc_client_render_global *n, int32_t x, in
     n->fields.F = INT32_MIN;
     n->fields.G = INT32_MIN;
     const int32_t width = mc_java_i32_mul(n->fields.p, 16);
-    int32_t half;
-    if (!quotient(width, 2, &half, 57, e))
-        return false;
-    for (int32_t ix = 0; ix < n->fields.p; ix = mc_java_i32_add(ix, 1)) {
-        int32_t px = mc_java_i32_mul(ix, 16);
-        int32_t shift = mc_java_i32_sub(mc_java_i32_add(px, half), x);
-        if (shift < 0)
-            shift = mc_java_i32_sub(shift, mc_java_i32_sub(width, 1));
-        if (!quotient(shift, width, &shift, 106, e))
+    const int32_t half = width / 2;
+    for (int32_t ix = 0; ix < n->fields.p; ++ix) {
+        int32_t px;
+        if (!axis_position(ix, camera_x, width, half, &px, 106, e))
             return false;
-        px = mc_java_i32_sub(px, mc_java_i32_mul(shift, width));
         if (px < n->fields.B)
             n->fields.B = px;
         if (px > n->fields.E)
             n->fields.E = px;
-        for (int32_t iz = 0; iz < n->fields.r; iz = mc_java_i32_add(iz, 1)) {
-            int32_t pz = mc_java_i32_mul(iz, 16);
-            shift = mc_java_i32_sub(mc_java_i32_add(pz, half), z);
-            if (shift < 0)
-                shift = mc_java_i32_sub(shift, mc_java_i32_sub(width, 1));
-            if (!quotient(shift, width, &shift, 195, e))
+        for (int32_t iz = 0; iz < n->fields.r; ++iz) {
+            int32_t pz;
+            if (!axis_position(iz, camera_z, width, half, &pz, 195, e))
                 return false;
-            pz = mc_java_i32_sub(pz, mc_java_i32_mul(shift, width));
             if (pz < n->fields.D)
                 n->fields.D = pz;
             if (pz > n->fields.G)
                 n->fields.G = pz;
-            for (int32_t iy = 0; iy < n->fields.q; iy = mc_java_i32_add(iy, 1)) {
-                const int32_t py = mc_java_i32_mul(iy, 16);
+            for (int32_t iy = 0; iy < n->fields.q; ++iy) {
+                const uint32_t vertical = (uint32_t)iy * 16u;
+                const int32_t py =
+                    vertical <= INT32_MAX ? (int32_t)vertical : mc_java_i32_narrow(vertical);
                 if (py < n->fields.C)
                     n->fields.C = py;
                 if (py > n->fields.F)
                     n->fields.F = py;
-                const int32_t index = mc_java_i32_add(
-                    mc_java_i32_mul(mc_java_i32_add(mc_java_i32_mul(iz, n->fields.q), iy),
-                                    n->fields.p),
-                    ix);
+                const uint32_t index =
+                    ((uint32_t)iz * (uint32_t)n->fields.q + (uint32_t)iy) * (uint32_t)n->fields.p +
+                    (uint32_t)ix;
                 mc_client_source_dk *d = NULL;
                 if (!chunk(n, index, &d, e))
                     return false;

@@ -159,13 +159,9 @@ void mc_source_dk_dirty(mc_client_source_dk *o) {
     o->source_pc = 5;
 }
 
-bool mc_source_dk_position(mc_client_source_dk *o, int32_t x, int32_t y, int32_t z,
-                           mc_client_render_global_error *e) {
+bool mc_source_dk_move(mc_client_source_dk *o, int32_t x, int32_t y, int32_t z,
+                       mc_client_render_global_error *e) {
     mc_client_source_dk_fields *f = &o->fields;
-    if (x == f->c && y == f->d && z == f->e) {
-        o->source_pc = 24;
-        return true;
-    }
     if (!mc_source_dk_clear(o, e)) {
         e->parent = (mc_client_graphics_site){"dk", "a", "(III)V", 26};
         o->owner->failure = *e;
