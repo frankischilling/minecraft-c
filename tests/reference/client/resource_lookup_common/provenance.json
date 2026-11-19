@@ -318,8 +318,8 @@
       "sha256": "88cf0c24f07c5212dfada475c1647a070ae82953e83b324de188e6a2080fe7b7"
     },
     "docs/client/world-renderer.md": {
-      "bytes": 22906,
-      "sha256": "aac361acd45c636d4426406d940b4d30aef0cfcf4736b812c24dffe1796254e5"
+      "bytes": 23605,
+      "sha256": "b032188010ab8c74ba7660cfdf339a86699162b5c4485ebb3167a6bd52638bb9"
     },
     "docs/core/java-float-format.md": {
       "bytes": 4461,
@@ -2734,8 +2734,8 @@
       "sha256": "7b02fadfaf8310e34b2649de9dc5a7c9b79b2773185f035ff5681d9077a8e5e1"
     },
     "src/client/display/source_surface.inc": {
-      "bytes": 62549,
-      "sha256": "0b9171398b0575930582c8e562d47830c59a2e19ee320cde60682b6332f9c64b"
+      "bytes": 62852,
+      "sha256": "50184424d126bca6e486bfea1811bbd4d0eaf90fb1fe3a9f2ceb310d83f08ade"
     },
     "src/client/display/source_vertex_cache.inc": {
       "bytes": 10536,
@@ -6423,7 +6423,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938031,
-      "sha256": "483d7b2e8711acc4b093c6bf25448f750274bcfce09378348889183c1acfcf2b"
+      "sha256": "97ce2138224dc399882baf016475d74c9b9604e914a9093b08fef26ac9b5ebbc"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6487,7 +6487,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1068134,
-      "sha256": "634a19aed13a322ae660c510426420e3909eb867f130e9c3474004cf7d2e27f6"
+      "sha256": "147959afd7265e4b8018716743263e7e6409166459017ca179589cb1e29ce22e"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6619,7 +6619,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934856,
-      "sha256": "be58a798f058d073f0186ebf4d556ac1c110f9b79043c180782bdcd9a9683576"
+      "sha256": "119b7cb3dbe2faeea6b77e4a978e7716861ced7d2070cef502296fda97a54150"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -12414,8 +12414,8 @@
       "sha256": "c9d337cb36d581890da18be2e185815fd4d50c799a00468c678531495d6386d4"
     },
     "src/client/display/source_material_staging.h": {
-      "bytes": 20706,
-      "sha256": "1d5a2f6dc08995691f83bab76c9a82c1f0e23e5f837319eaf1d70f44bbde7904"
+      "bytes": 20810,
+      "sha256": "444e0296767d14fcb8ee218af115794de68ec8b58543366c7875142db05ce22b"
     },
     "tests/reference/client/lighting_raster/ColorConversionObservation.java": {
       "bytes": 16460,

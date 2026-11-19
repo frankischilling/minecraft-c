@@ -195,18 +195,22 @@ static void source_material_current(mc_client_source_state *s) {
                               SOURCE_STAGE_CURRENT);
 }
 
-static source_draw_state source_material_prepare_draw(const mc_client_source_state *s) {
-    source_draw_state draw = {.fog = s->fog,
-                              .attribute_staging = s->attribute_staging,
-                              .color_known = s->color_known,
-                              .lighting_enabled = s->lighting_enabled};
-    memcpy(draw.color, s->color, sizeof(draw.color));
-    memcpy(draw.modelview, s->modelview.column_major, sizeof(draw.modelview));
+static void source_material_prepare_draw(const mc_client_source_state *s, source_draw_state *draw,
+                                         bool full_snapshot) {
+    draw->color_known = s->color_known;
+    draw->lighting_enabled = s->lighting_enabled;
+    memcpy(draw->color, s->color, sizeof(draw->color));
+    if (!full_snapshot) {
+        memcpy(draw->fog.normal, s->fog.normal, sizeof(draw->fog.normal));
+        return;
+    }
+    draw->fog = s->fog;
+    draw->attribute_staging = s->attribute_staging;
+    memcpy(draw->modelview, s->modelview.column_major, sizeof(draw->modelview));
     /* llvmpipe's measured profile has allow_draw_out_of_order=false. */
-    if (source_material_is_staged(s) && draw.attribute_staging.flags != 0)
-        source_material_flush(&draw.fog, &draw.attribute_staging, draw.color, &draw.color_known,
-                              draw.attribute_staging.flags);
-    return draw;
+    if (source_material_is_staged(s) && draw->attribute_staging.flags != 0)
+        source_material_flush(&draw->fog, &draw->attribute_staging, draw->color, &draw->color_known,
+                              draw->attribute_staging.flags);
 }
 
 static void source_material_publish(mc_client_source_state *s, const source_draw_state *next) {

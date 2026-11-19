@@ -531,7 +531,11 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
                     "unsupported mode/span/client vertex state", 0);
     if (!source_material_profile_admit(display, false, "source material draw", error))
         return false;
-    const source_draw_state candidate = source_material_prepare_draw(s);
+    /* Unlit replay without pending material changes needs only current attributes. */
+    const bool full_snapshot = !compiled || s->lighting_enabled ||
+                               (source_material_is_staged(s) && s->attribute_staging.flags != 0);
+    source_draw_state candidate;
+    source_material_prepare_draw(s, &candidate, full_snapshot);
     if (!candidate.lighting_enabled && (arrays & color_bit) == 0 && !candidate.color_known)
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source current color",
                     "unspecified color after prior color-array draw", 0);
@@ -607,7 +611,8 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
         free(vertices);
         return false;
     }
-    source_material_publish(s, &candidate);
+    if (full_snapshot)
+        source_material_publish(s, &candidate);
     bool ok = source_gpu_create(display, error);
     if (ok) {
         if (replay == NULL || !replay->drew)

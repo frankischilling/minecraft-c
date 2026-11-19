@@ -308,6 +308,22 @@ per scene, with 16,342 heavy-cave dispatches and 3,779 lighter-cave dispatches.
 The combined build improved FPS and p99 in both heavy-cave rounds.
 The lighter scene varied between rounds and had nearly the same median FPS.
 
+### Draw material snapshots
+
+An unlit list draw snapshots its current color and normal. Direct draws,
+lit draws, and replay with pending Mesa material changes use the full
+snapshot and publish it at the existing draw boundary.
+
+Ten alternating Windows MSVC Release pairs per profile ran the authored
+stationary terrain benchmark on an RTX 3060. Both profiles submitted
+450 lists per pass. The framebuffer, section order and work hashes
+matched. Measurements span frames through GPU completion.
+
+| Quads per list, pass 0/1 | Median, before → after | p95, before → after |
+| --- | ---: | ---: |
+| 16/3 | 0.574 → 0.541 ms | 0.675 → 0.680 ms |
+| 3/3 | 0.567 → 0.534 ms | 0.684 → 0.634 ms |
+
 ### Vertex cache evictions
 
 The cache admits unlit recorded batches of at least 18 vertices, enough

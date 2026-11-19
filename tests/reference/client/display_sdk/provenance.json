@@ -946,8 +946,8 @@
       "sha256": "7b02fadfaf8310e34b2649de9dc5a7c9b79b2773185f035ff5681d9077a8e5e1"
     },
     "src/client/display/source_surface.inc": {
-      "bytes": 62549,
-      "sha256": "0b9171398b0575930582c8e562d47830c59a2e19ee320cde60682b6332f9c64b"
+      "bytes": 62852,
+      "sha256": "50184424d126bca6e486bfea1811bbd4d0eaf90fb1fe3a9f2ceb310d83f08ade"
     },
     "src/client/display/source_vertex_cache.inc": {
       "bytes": 10536,
@@ -4254,8 +4254,8 @@
       "sha256": "f6b77a78411595824f03752828e1c244464e08ca7db9669105a1273c42edcb65"
     },
     "src/client/display/source_material_staging.h": {
-      "bytes": 20706,
-      "sha256": "1d5a2f6dc08995691f83bab76c9a82c1f0e23e5f837319eaf1d70f44bbde7904"
+      "bytes": 20810,
+      "sha256": "444e0296767d14fcb8ee218af115794de68ec8b58543366c7875142db05ce22b"
     },
     "tests/reference/client/lighting_raster/capture_color_conversion.py": {
       "bytes": 12674,
