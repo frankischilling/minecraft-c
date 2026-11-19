@@ -97,7 +97,8 @@ typedef struct mc_client_world_leave_state {
 
 typedef struct mc_client_world_load_state {
     bool active, retiring, source_returned;
-    bool superseded; /* Reached successor f69; full source replacement proven separately. */
+    bool superseded;        /* Reached successor f69; full source replacement proven separately. */
+    bool storage_reclaimed; /* Completed older invocation with no remaining World storage. */
     bool terminal_prepare_selected, terminal_prepared; /* Native cleanup policy/progress only. */
     bool initial_detach_returned, conversion_checked, needs_conversion;
     bool handler_opened, world_constructed, world_published, player_published, input_published;
@@ -176,14 +177,17 @@ mc_client_world_load_status mc_client_world_load_leave(mc_client_world_load_call
 /* Actual next selected load after the previous same-class invocation's fully
  * returning source NULL change. Epochs are allocated as needed, with checked
  * native count overflow. Native completed
- * child records end before source entry; no N/DN field is cleared or reset.
- * All World/Player/Input/Handler graphs and source failure prefixes stay owned.
- * Every returned call (success/failure) must be consumed in LIFO order. */
-mc_client_world_load_status mc_client_world_load_begin_after(mc_client_world_load_call *previous,
-                                                             mc_world_info_name *folder,
-                                                             mc_world_info_name *display,
-                                                             int64_t seed,
-                                                             mc_client_world_load_call **out);
+ * child records end before source entry. With an actual supplied controller
+ * slot from the earlier transition, reclaim the older superseded storage when
+ * its complete native ownership is proved. Keep the supplied slot live until
+ * reclamation or retirement. Each later load retries at most one deferred
+ * graph. Borrowed storage and save diagnostics expire when reclamation starts.
+ * Every returned call remains in the LIFO chain until checked retirement. */
+mc_client_world_load_status
+mc_client_world_load_begin_after(mc_client_world_load_call *previous,
+                                 mc_client_singleplayer_controller *const *older_controller,
+                                 mc_world_info_name *folder, mc_world_info_name *display,
+                                 int64_t seed, mc_client_world_load_call **out);
 
 /* One-way native terminal prefix, not source World clear/save or full retirement.
  * For several retained epochs, the transition owner first runs terminal_records

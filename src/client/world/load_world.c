@@ -50,6 +50,7 @@ struct mc_client_world_load_classes {
     mc_client_loading_classes *gui;
     size_t calls;
     mc_client_world_load_call *latest;
+    mc_client_world_load_call *deferred_first, *deferred_last;
     bool app_borrow, active, retiring;
     mc_player_string *saving_chunks; /* Lazy actual FD constant in selected class-loader profile. */
 };
@@ -123,6 +124,9 @@ struct mc_client_world_load_call {
     mc_player_string *level_text;
     mc_entity *h_occurrence, *i_occurrence;
     bool world_slot_owned, folder_held, display_held, world_retired, cache_retired;
+    bool storage_reclaiming;
+    mc_client_world_load_call *deferred_next;
+    mc_client_singleplayer_controller *const *deferred_controller_owner;
     mc_client_render_global *render_owner;
     mc_client_render_global_world_call *render_call;
     mc_client_render_global_world_state render_state;
@@ -324,6 +328,9 @@ static bool source_app_slots(const mc_client_world_load_call *);
 static bool source_epoch_slots(const mc_client_world_load_call *);
 static bool epoch_admit(const mc_client_world_load_call *);
 static bool prepare_previous(mc_client_world_load_call *, mc_client_world_load_call *);
+static void reclaim_previous_storage(mc_client_world_load_call *,
+                                     mc_client_singleplayer_controller *const *);
+static mc_client_world_load_status finish_reclaimed_storage(mc_client_world_load_call *);
 
 static bool change_prefix_run(mc_client_world_load_call *call, mc_world_runtime *world,
                               mc_player_string *text, size_t index) {
@@ -1058,11 +1065,10 @@ static void run(mc_client_world_load_call *call) {
     call->state.source_returned = true;
 }
 
-static mc_client_world_load_status load_begin(mc_client_world_load_classes *classes,
-                                              mc_client_world_load_call *previous,
-                                              mc_world_info_name *folder,
-                                              mc_world_info_name *display, int64_t seed,
-                                              mc_client_world_load_call **out) {
+static mc_client_world_load_status
+load_begin(mc_client_world_load_classes *classes, mc_client_world_load_call *previous,
+           mc_client_singleplayer_controller *const *older_controller, mc_world_info_name *folder,
+           mc_world_info_name *display, int64_t seed, mc_client_world_load_call **out) {
     if (classes == NULL || out == NULL || *out != NULL)
         return MC_CLIENT_WORLD_LOAD_ARGUMENT;
     if (classes->calls == SIZE_MAX)
@@ -1096,8 +1102,11 @@ static mc_client_world_load_status load_begin(mc_client_world_load_classes *clas
     }
     call->state.display = display;
     call->display_held = display != NULL;
-    if (previous != NULL && !prepare_previous(previous, call))
-        goto done;
+    if (previous != NULL) {
+        if (!prepare_previous(previous, call))
+            goto done;
+        reclaim_previous_storage(previous, older_controller);
+    }
     run(call);
 done:
     call->state.active = classes->active = false;
@@ -1108,7 +1117,7 @@ mc_client_world_load_status mc_client_world_load_begin(mc_client_world_load_clas
                                                        mc_world_info_name *folder,
                                                        mc_world_info_name *display, int64_t seed,
                                                        mc_client_world_load_call **out) {
-    return load_begin(classes, NULL, folder, display, seed, out);
+    return load_begin(classes, NULL, NULL, folder, display, seed, out);
 }
 
 bool mc_client_world_load_inspect(const mc_client_world_load_call *call,
@@ -1116,6 +1125,7 @@ bool mc_client_world_load_inspect(const mc_client_world_load_call *call,
     if (call == NULL || out == NULL || call->state.active)
         return false;
     *out = call->state;
+    out->retiring |= call->storage_reclaiming;
     out->prepare = call->prepare;
     out->renderer = call->render_call == NULL ? NULL : &call->render_state;
     out->failure = &call->failure;
@@ -1286,6 +1296,8 @@ mc_client_world_load_status mc_client_world_load_terminal_prepare(mc_client_worl
     call->state.active = call->classes->active = true;
     call->cleanup = (mc_client_world_load_error){0};
     if (cleanup_prefix(call) != MC_CLIENT_WORLD_LOAD_OK)
+        return call->cleanup.status;
+    if (call->storage_reclaiming && finish_reclaimed_storage(call) != MC_CLIENT_WORLD_LOAD_OK)
         return call->cleanup.status;
     call->state.terminal_prepared = true;
     call->state.active = call->classes->active = false;
@@ -1496,6 +1508,15 @@ mc_world_storage_status mc_client_world_load_terminal_classify(
         app->startup->active)
         return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
                                          "Load terminal classification active App/call");
+    if (call->state.storage_reclaimed && call->state.superseded && call->state.source_returned &&
+        call->failure.status == MC_CLIENT_WORLD_LOAD_OK && !call->storage_reclaiming &&
+        call->state.world == NULL && call->state.handler == NULL && call->state.player == NULL &&
+        call->state.input == NULL && call->state.controller == NULL && call->leaves == NULL &&
+        call->h_occurrence == NULL && call->i_occurrence == NULL && !call->world_slot_owned &&
+        !call->render_world_owned && !call->effects_world_owned) {
+        *out = MC_CLIENT_TERMINAL_EMPTY_STORAGE;
+        return terminal_admission_result(error, MC_WORLD_STORAGE_OK, NULL);
+    }
     if (call->world_retired || call->cache_retired || call->prepare != NULL ||
         call->pending_loading != NULL || call->pending_loading_owned_call ||
         call->render_call != NULL || call->render_world_owned || call->failed_controller != NULL ||
@@ -1596,34 +1617,12 @@ mc_world_storage_status mc_client_world_load_terminal_classify(
     return terminal_admission_result(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
-mc_world_storage_status
-mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
-                                    mc_client_singleplayer_controller *const *controller_owner,
-                                    const mc_world_terminal_limits *limits,
-                                    mc_world_terminal_inventory *out,
-                                    mc_world_storage_error *error) {
-    if (call == NULL || controller_owner == NULL || out == NULL)
-        return terminal_admission_result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
-                                         "Load terminal actual owner slots and output required");
-    const mc_client_world_load_classes *classes = call->classes;
-    if (classes == NULL || classes->app == NULL)
-        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                         "Load terminal live class/App provenance");
-    client_application *app = classes->app;
-    if (call->respawn_calls != 0 || call->state.active || classes->active ||
-        (app->startup != NULL && app->startup->active))
-        return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
-                                         "Load terminal owner operation entered");
-    if (!classes->retiring || classes->calls == 0 || !call->state.terminal_prepare_selected ||
-        !call->state.terminal_prepared || !call->state.source_returned ||
-        call->failure.status != MC_CLIENT_WORLD_LOAD_OK || call->state.app != app ||
-        call->state.world == NULL || call->state.player == NULL || call->state.input == NULL ||
-        call->state.handler == NULL || call->world_retired || call->cache_retired ||
-        call->failed_controller != NULL || call->failed_candidate != NULL ||
-        call->state.failed_player != NULL || call->prepare != NULL ||
-        call->pending_loading != NULL || call->render_call != NULL || call->render_world_owned)
-        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
-                                         "Load terminal intact fully published prepared scope");
+static mc_world_storage_status
+admit_storage(const mc_client_world_load_call *call,
+              mc_client_singleplayer_controller *const *controller_owner,
+              const mc_world_terminal_limits *limits, mc_world_terminal_inventory *out,
+              mc_world_storage_error *error) {
+    client_application *app = call->classes->app;
     if (app->startup == NULL || app->startup->app != app || app->startup->rendering == NULL ||
         app->effect_renderer_constructing || app->startup->rendering->active)
         return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
@@ -1781,77 +1780,39 @@ mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
     return source_status;
 }
 
-mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_call **slot) {
-    if (slot == NULL)
-        return MC_CLIENT_WORLD_LOAD_ARGUMENT;
-    mc_client_world_load_call *call = *slot;
-    if (call == NULL)
-        return MC_CLIENT_WORLD_LOAD_OK;
-    if (call->respawn_calls != 0 || call->state.active || call->classes->active)
-        return MC_CLIENT_WORLD_LOAD_BUSY;
-    if (call != call->classes->latest)
-        return MC_CLIENT_WORLD_LOAD_BUSY; /* Borrowed epoch links require LIFO consumption. */
-    call->state.retiring = true;
-    call->state.active = call->classes->active = true;
-    call->cleanup = (mc_client_world_load_error){0};
+mc_world_storage_status
+mc_client_world_load_terminal_admit(const mc_client_world_load_call *call,
+                                    mc_client_singleplayer_controller *const *controller_owner,
+                                    const mc_world_terminal_limits *limits,
+                                    mc_world_terminal_inventory *out,
+                                    mc_world_storage_error *error) {
+    if (call == NULL || controller_owner == NULL || out == NULL)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_INVALID_ARGUMENT,
+                                         "Load terminal actual owner slots and output required");
+    const mc_client_world_load_classes *classes = call->classes;
+    if (classes == NULL || classes->app == NULL)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal live class/App provenance");
+    client_application *app = classes->app;
+    if (call->respawn_calls != 0 || call->state.active || classes->active ||
+        (app->startup != NULL && app->startup->active))
+        return terminal_admission_result(error, MC_WORLD_STORAGE_BUSY,
+                                         "Load terminal owner operation entered");
+    if (!classes->retiring || classes->calls == 0 || !call->state.terminal_prepare_selected ||
+        !call->state.terminal_prepared || !call->state.source_returned ||
+        call->failure.status != MC_CLIENT_WORLD_LOAD_OK || call->state.app != app ||
+        call->state.world == NULL || call->state.player == NULL || call->state.input == NULL ||
+        call->state.handler == NULL || call->world_retired || call->cache_retired ||
+        call->failed_controller != NULL || call->failed_candidate != NULL ||
+        call->state.failed_player != NULL || call->prepare != NULL ||
+        call->pending_loading != NULL || call->render_call != NULL || call->render_world_owned)
+        return terminal_admission_result(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
+                                         "Load terminal intact fully published prepared scope");
+    return admit_storage(call, controller_owner, limits, out, error);
+}
+
+static mc_client_world_load_status retire_storage(mc_client_world_load_call *call) {
     client_application *app = call->classes->app;
-    if (!call->state.terminal_prepared) {
-        if (cleanup_prefix(call) != MC_CLIENT_WORLD_LOAD_OK)
-            return call->cleanup.status;
-        if (call->state.terminal_prepare_selected)
-            call->state.terminal_prepared = true;
-    }
-    if (call->effects_held) {
-        if (mc_client_effect_renderer_release(call->effects_owner) != MC_EFFECT_RENDERER_OK)
-            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
-                                "captured particle manager occurrence release");
-        call->effects_held = false;
-    }
-    if (call->effects_world_owned) {
-        if (mc_client_effect_renderer_retire_world(call->effects_owner, call->state.world,
-                                                   &call->effects_cleanup) !=
-            MC_EFFECT_RENDERER_OK) {
-            call->cleanup.effects = &call->effects_cleanup;
-            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
-                                "actual particle manager World native detachment");
-        }
-        call->effects_world_owned = false;
-    }
-    if (call->failed_controller != NULL) {
-        mc_singleplayer_controller_snapshot current;
-        if (!mc_client_singleplayer_controller_read(call->failed_controller, &current) ||
-            (current.failed_player != NULL && current.failed_player != call->failed_candidate))
-            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
-                                "actual owned failed Player candidate changed");
-        if (current.failed_player != NULL &&
-            mc_client_singleplayer_controller_clear_failed_player(call->failed_controller,
-                                                                  &call->controller_cleanup) !=
-                MC_SINGLEPLAYER_CONTROLLER_OK) {
-            call->cleanup.controller = &call->controller_cleanup;
-            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
-                                "actual controller failed Player retirement");
-        }
-        call->failed_controller = NULL;
-        call->failed_candidate = NULL;
-        call->state.failed_player = NULL;
-    }
-    if (call->i_occurrence != NULL) {
-        if (app->i != call->i_occurrence)
-            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
-                                "actual owned App.i occurrence changed");
-        if (mc_client_view_slot_store(app, NULL) != MC_ENTITY_OK)
-            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
-                                "actual App.i native occurrence cleanup");
-        call->i_occurrence = NULL;
-    }
-    if (call->h_occurrence != NULL) {
-        if (app->h != call->h_occurrence)
-            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
-                                "actual owned App.h occurrence changed");
-        app->h = NULL;
-        mc_entity_release(call->h_occurrence);
-        call->h_occurrence = NULL;
-    }
     mc_entity_release(call->state.player);
     call->state.player = NULL;
     mc_entity_release(call->respawn_previous_player);
@@ -1931,6 +1892,178 @@ mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_cal
         return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
                             "actual source SaveHandler strict retirement");
     }
+    return MC_CLIENT_WORLD_LOAD_OK;
+}
+
+static mc_client_world_load_status finish_reclaimed_storage(mc_client_world_load_call *call) {
+    if (retire_storage(call) != MC_CLIENT_WORLD_LOAD_OK)
+        return call->cleanup.status;
+    call->failure = (mc_client_world_load_error){0};
+    call->cleanup = (mc_client_world_load_error){0};
+    call->storage_reclaiming = false;
+    call->state.storage_reclaimed = true;
+    return MC_CLIENT_WORLD_LOAD_OK;
+}
+
+/* Return true while this graph has work to retry at a later reload. */
+static bool reclaim_superseded(mc_client_world_load_call *old,
+                               mc_client_singleplayer_controller *const *controller_owner) {
+    if (old == NULL || controller_owner == NULL || old->state.storage_reclaimed)
+        return false;
+    if (old->storage_reclaiming)
+        goto resume;
+    if (old->successor == NULL || old->successor->render_call != NULL || old->respawn_calls != 0 ||
+        old->state.active || old->state.retiring || !old->state.superseded ||
+        !old->state.source_returned || old->failure.status != MC_CLIENT_WORLD_LOAD_OK ||
+        old->prepare != NULL || old->pending_loading != NULL || old->render_call != NULL ||
+        old->render_owner != NULL || old->render_world_owned || old->failed_controller != NULL ||
+        old->failed_candidate != NULL || old->state.failed_player != NULL ||
+        old->respawn_input_pending || old->respawn_previous_player != NULL ||
+        old->state.world == NULL || old->state.handler == NULL || old->state.player == NULL ||
+        old->state.input == NULL)
+        return false;
+    if (old->successor->storage_reclaiming)
+        return true;
+    if (!source_epoch_slots(old))
+        return false;
+    mc_world_terminal_inventory inventory;
+    if (admit_storage(old, controller_owner, NULL, &inventory, NULL) != MC_WORLD_STORAGE_OK)
+        return true;
+
+    /* prepare_previous already ended the successor's borrowed old_world view.
+     * Old save diagnostics can also contain World/Handler pointers. End only
+     * the historical records of this admitted epoch before releasing storage. */
+    old->storage_reclaiming = true;
+    old->state.controller = NULL;
+    old->state.leave.failure = NULL;
+    old->state.leave.saving = NULL;
+    while (old->leaves != NULL) {
+        source_leave *next = old->leaves->next;
+        free(old->leaves);
+        old->leaves = next;
+    }
+resume:
+    old->state.active = true;
+    old->cleanup = (mc_client_world_load_error){0};
+    const mc_client_world_load_status status = finish_reclaimed_storage(old);
+    old->state.active = false;
+    old->classes->active = true; /* cleanup_fail may have ended the older guard. */
+    return status != MC_CLIENT_WORLD_LOAD_OK;
+}
+
+static mc_client_world_load_call *take_deferred(mc_client_world_load_classes *classes) {
+    mc_client_world_load_call *old = classes->deferred_first;
+    if (old != NULL) {
+        classes->deferred_first = old->deferred_next;
+        if (classes->deferred_first == NULL)
+            classes->deferred_last = NULL;
+        old->deferred_next = NULL;
+    }
+    return old;
+}
+
+static void reclaim_or_defer(mc_client_world_load_call *old,
+                             mc_client_singleplayer_controller *const *controller_owner) {
+    if (!reclaim_superseded(old, controller_owner))
+        return;
+    mc_client_world_load_classes *classes = old->classes;
+    old->deferred_controller_owner = controller_owner;
+    if (classes->deferred_last != NULL)
+        classes->deferred_last->deferred_next = old;
+    else
+        classes->deferred_first = old;
+    classes->deferred_last = old;
+}
+
+static void reclaim_previous_storage(mc_client_world_load_call *previous,
+                                     mc_client_singleplayer_controller *const *controller_owner) {
+    /* Retry one older graph per load. A held graph goes to the back so it
+     * cannot prevent another graph from being checked. */
+    mc_client_world_load_call *deferred = take_deferred(previous->classes);
+    if (deferred != NULL) {
+        mc_client_singleplayer_controller *const *owner = deferred->deferred_controller_owner;
+        deferred->deferred_controller_owner = NULL;
+        reclaim_or_defer(deferred, owner);
+    }
+    reclaim_or_defer(previous->previous, controller_owner);
+}
+
+mc_client_world_load_status mc_client_world_load_retire(mc_client_world_load_call **slot) {
+    if (slot == NULL)
+        return MC_CLIENT_WORLD_LOAD_ARGUMENT;
+    mc_client_world_load_call *call = *slot;
+    if (call == NULL)
+        return MC_CLIENT_WORLD_LOAD_OK;
+    if (call->respawn_calls != 0 || call->state.active || call->classes->active)
+        return MC_CLIENT_WORLD_LOAD_BUSY;
+    if (call != call->classes->latest)
+        return MC_CLIENT_WORLD_LOAD_BUSY; /* Borrowed epoch links require LIFO consumption. */
+    for (mc_client_world_load_call *old = take_deferred(call->classes); old != NULL;
+         old = take_deferred(call->classes))
+        old->deferred_controller_owner = NULL;
+    call->state.retiring = true;
+    call->state.active = call->classes->active = true;
+    call->cleanup = (mc_client_world_load_error){0};
+    client_application *app = call->classes->app;
+    if (!call->state.terminal_prepared) {
+        if (cleanup_prefix(call) != MC_CLIENT_WORLD_LOAD_OK)
+            return call->cleanup.status;
+        if (call->state.terminal_prepare_selected)
+            call->state.terminal_prepared = true;
+    }
+    if (call->effects_held) {
+        if (mc_client_effect_renderer_release(call->effects_owner) != MC_EFFECT_RENDERER_OK)
+            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
+                                "captured particle manager occurrence release");
+        call->effects_held = false;
+    }
+    if (call->effects_world_owned) {
+        if (mc_client_effect_renderer_retire_world(call->effects_owner, call->state.world,
+                                                   &call->effects_cleanup) !=
+            MC_EFFECT_RENDERER_OK) {
+            call->cleanup.effects = &call->effects_cleanup;
+            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
+                                "actual particle manager World native detachment");
+        }
+        call->effects_world_owned = false;
+    }
+    if (call->failed_controller != NULL) {
+        mc_singleplayer_controller_snapshot current;
+        if (!mc_client_singleplayer_controller_read(call->failed_controller, &current) ||
+            (current.failed_player != NULL && current.failed_player != call->failed_candidate))
+            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
+                                "actual owned failed Player candidate changed");
+        if (current.failed_player != NULL &&
+            mc_client_singleplayer_controller_clear_failed_player(call->failed_controller,
+                                                                  &call->controller_cleanup) !=
+                MC_SINGLEPLAYER_CONTROLLER_OK) {
+            call->cleanup.controller = &call->controller_cleanup;
+            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
+                                "actual controller failed Player retirement");
+        }
+        call->failed_controller = NULL;
+        call->failed_candidate = NULL;
+        call->state.failed_player = NULL;
+    }
+    if (call->i_occurrence != NULL) {
+        if (app->i != call->i_occurrence)
+            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
+                                "actual owned App.i occurrence changed");
+        if (mc_client_view_slot_store(app, NULL) != MC_ENTITY_OK)
+            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
+                                "actual App.i native occurrence cleanup");
+        call->i_occurrence = NULL;
+    }
+    if (call->h_occurrence != NULL) {
+        if (app->h != call->h_occurrence)
+            return cleanup_fail(call, MC_CLIENT_WORLD_LOAD_BUSY,
+                                "actual owned App.h occurrence changed");
+        app->h = NULL;
+        mc_entity_release(call->h_occurrence);
+        call->h_occurrence = NULL;
+    }
+    if (retire_storage(call) != MC_CLIENT_WORLD_LOAD_OK)
+        return call->cleanup.status;
     for (size_t i = 0; i < call->controller_count; ++i) {
         if (call->controllers[i] != NULL) {
             if (mc_client_singleplayer_controller_release(call->controllers[i]) !=

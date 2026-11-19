@@ -15,7 +15,8 @@ static bool source_epoch_slots(const mc_client_world_load_call *call) {
     const mc_client_world_load_call *next = call->successor;
     return next != NULL && next->previous == call && next->classes == call->classes &&
            next->state.source_returned && next->failure.status == MC_CLIENT_WORLD_LOAD_OK &&
-           next->state.world != NULL && next->state.world != call->state.world &&
+           (next->state.storage_reclaimed ||
+            (next->state.world != NULL && next->state.world != call->state.world)) &&
            call->state.leave.source_returned && !call->state.leave.failed &&
            call->state.leave.i_cleared && call->state.leave.f_cleared &&
            call->state.leave.h_cleared && call->h_occurrence == NULL &&
@@ -52,14 +53,14 @@ static bool prepare_previous(mc_client_world_load_call *previous,
     return true;
 }
 
-mc_client_world_load_status mc_client_world_load_begin_after(mc_client_world_load_call *previous,
-                                                             mc_world_info_name *folder,
-                                                             mc_world_info_name *display,
-                                                             int64_t seed,
-                                                             mc_client_world_load_call **out) {
+mc_client_world_load_status
+mc_client_world_load_begin_after(mc_client_world_load_call *previous,
+                                 mc_client_singleplayer_controller *const *older_controller,
+                                 mc_world_info_name *folder, mc_world_info_name *display,
+                                 int64_t seed, mc_client_world_load_call **out) {
     if (previous == NULL)
         return MC_CLIENT_WORLD_LOAD_ARGUMENT;
-    return load_begin(previous->classes, previous, folder, display, seed, out);
+    return load_begin(previous->classes, previous, older_controller, folder, display, seed, out);
 }
 
 mc_client_world_load_status mc_client_world_load_terminal_records(mc_client_world_load_call *call) {

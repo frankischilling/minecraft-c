@@ -175,8 +175,8 @@ later refusal; callers retain the same native handles and dependency graph.
 
 Preparation alone performs none of that dispatcher retirement. Even after the
 selected-load Handler and World audits succeed, Format and other service roots
-still need outer admission. The ordinary menu path needs a retained old-World queue so
-source reference changes do not destroy a graph still held by those roots.
+still need outer admission. A superseded World can also pass its own storage
+admission during a later load, once its renderer and external owners allow it.
 The full-retire APIs remain explicitly destructive; they are not an outer
 external-root admission check.
 
@@ -214,7 +214,31 @@ not complete Format/App/service external-root admission or source shutdown.
 [RenderGlobal's Entity pass](render-global-entities.md) now adopts its actual
 delay and LL/TH frame invokes at N44/N80. N owns distinct consumer records;
 terminal detachment ends only those records before dispatcher retirement.
-Deferred old Worlds, full World frames and gameplay lifetime parity remain unfinished.
+
+## Superseded World storage during play
+
+The third load can reclaim the first load's World. It first ends the second
+load's completed renderer call, which borrows the first World during the
+renderer handover. Reclamation checks the old controller's actual owning slot,
+the source Handler and Store, and the complete World, Player, and Input
+ownership. A held Player or another extra owner leaves the old graph intact.
+Each subsequent load checks the newly eligible graph and retries at most one
+older deferred graph. An older graph that still has an extra owner goes to the
+back of the queue, allowing other graphs to be checked.
+
+Admission expires the old borrowed World, Handler, Player, Input, and save
+diagnostic views. The load's scalar source receipts and captured controller,
+Format, and name occurrences remain available to the existing LIFO shutdown.
+Terminal cleanup can resume a storage teardown that stopped partway through.
+
+Two ten-load Windows Release runs with generated test assets each finish with
+eight reclaimed graphs and two live graphs. In the deferred run, a Player hold
+keeps the first graph live through loads three and four. Load four reclaims
+the second graph, and load five reclaims the first after the hold is released.
+With the retry disabled, the test stops at the load-five ownership check. A
+separate run retains each Player through ten loads, exercises a failed
+eleventh load, and checks terminal refusal and retry. All three passing runs
+independently read the saved data for every successful load.
 
 ## Qualified native scope
 

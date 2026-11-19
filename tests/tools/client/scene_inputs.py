@@ -5,7 +5,7 @@ from pathlib import Path, PurePosixPath
 import re
 
 DECLARATION = 'tests/client/gameplay/current_scene_inputs.json'
-DECLARATION_SHA = '89acf43f4c2de8a9e9df72b8b0cf3bdee290c0b9675c8d10f7dfeaf78c0599b5'
+DECLARATION_SHA = 'addcc86a0f91eb064c9368dd444f7939b129f16b529e3748ada7eec5544eeff4'
 SCOPE = 'CURRENT_FIXTURE_INPUT_ADMISSION_ONLY'
 PROFILES = {'redstone_torch', 'lever'}
 

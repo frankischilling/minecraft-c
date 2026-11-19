@@ -32,6 +32,7 @@
 #include "client/timer/timer_internal.h"
 #include "client/window/frame.h"
 #include "client/window/frame_platform.h"
+#include "client/world/chunk_budget.h"
 #include "client/world/load_world.h"
 #include "client/world/load_world_terminal_internal.h"
 #include "client/world/prepare_world.h"
@@ -5837,7 +5838,8 @@ int main(int argc, char **argv) {
            strcmp(argv[2], "load-cactus") == 0 || strcmp(argv[2], "load-torch") == 0 ||
            strcmp(argv[2], "load-water") == 0 || strcmp(argv[2], "load-lava") == 0 ||
            strcmp(argv[2], "load-ladder") == 0 || strcmp(argv[2], "load-crops") == 0 ||
-           strcmp(argv[2], "reload-cycle") == 0 || strcmp(argv[2], "save-title") == 0 ||
+           strcmp(argv[2], "reload-cycle") == 0 || strcmp(argv[2], "reload-reclaim") == 0 ||
+           strcmp(argv[2], "reload-reclaim-retry") == 0 || strcmp(argv[2], "save-title") == 0 ||
            strcmp(argv[2], "save-title-session") == 0 || animal_profile_get(argv[2]) != NULL ||
            creature_profile_get(argv[2]) != NULL || remaining_profile_get(argv[2]) != NULL));
 #ifdef MC_TEST_PLAYER_SLEEP_NBT
@@ -5862,7 +5864,9 @@ int main(int argc, char **argv) {
                              : strcmp(argv[2], "load-lava") == 0 ? 11
                                                                  : 0;
     const bool fluid_control = fluid_id != 0;
-    const bool reload_cycle = strcmp(argv[2], "reload-cycle") == 0;
+    const bool delayed_reclaim = strcmp(argv[2], "reload-reclaim-retry") == 0;
+    const bool reload_reclaim = delayed_reclaim || strcmp(argv[2], "reload-reclaim") == 0;
+    const bool reload_cycle = reload_reclaim || strcmp(argv[2], "reload-cycle") == 0;
     const mc_client_world_load_call *left_load = NULL;
     const bool save_title = reload_cycle || strcmp(argv[2], "save-title") == 0 ||
                             strcmp(argv[2], "save-title-session") == 0;
@@ -6047,7 +6051,15 @@ int main(int argc, char **argv) {
         }
         if (loading_world &&
             (load.failure == NULL || load.failure->status != MC_CLIENT_WORLD_LOAD_OK ||
-             !load.source_returned || !load.player_published)) {
+             !load.source_returned || !load.player_published || load.last_outer_pc != 130 ||
+             load.last_change_pc != 366 || !load.renderer_returned || !load.effects_returned ||
+             !load.player_load_returned || !load.view_published)) {
+            fprintf(stderr,
+                    "World load receipts outer=%d change=%d renderer=%d effects=%d player=%d "
+                    "view=%d\n",
+                    load.last_outer_pc, load.last_change_pc, (int)load.renderer_returned,
+                    (int)load.effects_returned, (int)load.player_load_returned,
+                    (int)load.view_published);
             fprintf(stderr,
                     "World load reached status=%d %s.%s:%d child=%s:%d operation=%s terrain=%zu\n",
                     load.failure == NULL ? -1 : (int)load.failure->status,
@@ -6115,7 +6127,7 @@ int main(int argc, char **argv) {
             mc_chunk_provider_fields provider;
             CHECK(mc_chunk_provider_internal_fields(load.world->fields.v, &provider, NULL) ==
                       MC_WORLD_STORAGE_OK &&
-                  provider.max_chunks == 1024);
+                  provider.max_chunks == MC_CLIENT_WORLD_CHUNK_CAPACITY);
             CHECK(mc_client_world_prepare_inspect(load.prepare, &prepared) &&
                   prepared.source_returned && prepared.count == 289 && prepared.total == 289 &&
                   prepared.block_samples == 289 && prepared.progress_calls == 289 &&
@@ -6187,7 +6199,10 @@ int main(int argc, char **argv) {
                 puts("WORLD_TERMINAL_INPUT focused=1 pause-draw=0 immutable-inputs=1");
             }
             if (reload_cycle) {
-                CHECK(reload_cycle_controls(&f, initial, argv[3], &left_load) == 0);
+                CHECK((reload_reclaim
+                           ? reload_reclaim_controls(&f, initial, argv[3], delayed_reclaim,
+                                                     &left_load)
+                           : reload_cycle_controls(&f, initial, argv[3], &left_load)) == 0);
                 goto loaded_draw_controls_done;
             }
             if (save_title) {

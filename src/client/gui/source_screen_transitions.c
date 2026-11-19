@@ -83,6 +83,14 @@ struct mc_client_screen_transitions {
     mc_registry_error registry;
 };
 
+static mc_client_singleplayer_controller *const *older_controller(const screen_node *last) {
+    for (const screen_node *node = last == NULL ? NULL : last->next; node != NULL;
+         node = node->next)
+        if (node->load != NULL)
+            return node->load_controller_slot;
+    return NULL;
+}
+
 static mc_client_screen_status fail(mc_client_screen_transitions *r, mc_client_screen_status status,
                                     const char *operation, const char *type, const char *method,
                                     const char *descriptor, unsigned int pc) {
@@ -432,8 +440,8 @@ static bool create_action(mc_client_screen_transitions *r, mc_client_source_fj *
         return false;
     fj->last_pc = 149;
     const mc_client_world_load_status loaded =
-        reload ? mc_client_world_load_begin_after(r->last_load, n->create_folder, n->create_name,
-                                                  seed, &n->load)
+        reload ? mc_client_world_load_begin_after(r->last_load, older_controller(r->last_load_node),
+                                                  n->create_folder, n->create_name, seed, &n->load)
                : mc_client_world_load_begin(r->world_classes, n->create_folder, n->create_name,
                                             seed, &n->load);
     if (n->load != NULL) {
@@ -1198,7 +1206,8 @@ static bool select_body(mc_client_screen_transitions *r, mc_client_source_rq *rq
             ? r->fallback_display
             : fields.display_name;
     const mc_client_world_load_status loaded =
-        reload ? mc_client_world_load_begin_after(r->last_load, folder, name, 0, &invocation->load)
+        reload ? mc_client_world_load_begin_after(r->last_load, older_controller(r->last_load_node),
+                                                  folder, name, 0, &invocation->load)
                : mc_client_world_load_begin(r->world_classes, folder, name, 0, &invocation->load);
     if (invocation->load != NULL) {
         invocation->load_controller_slot = &r->controller;

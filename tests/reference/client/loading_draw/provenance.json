@@ -5726,8 +5726,8 @@
       "sha256": "a2de1a7a93eeb45db5eef8ddfc9b1ceef1d75b321d1603e5dec205159fe749f5"
     },
     "cmake/tests/client_world_selection_loop.cmake": {
-      "bytes": 11314,
-      "sha256": "db5a137cf7edb1906a8daae97c00f32ab93f17632940b1db601ba958350b415b"
+      "bytes": 12690,
+      "sha256": "fd06d1d76ee8fe44fff13ec3a70370b674ad6b6f5f225ba515e8eed6fc1c67ab"
     },
     "cmake/tests/platform_date_format.cmake": {
       "bytes": 2244,
@@ -5746,8 +5746,8 @@
       "sha256": "610682740237465ff495b5f2e339aea2c77a81aac38e0754892922a2fcbe7f02"
     },
     "src/client/gui/source_screen_transitions.c": {
-      "bytes": 100866,
-      "sha256": "0884f04607eabb7f06f6b6e2e297ab87e63e6c2b44619375c72fcb5ba8bf095e"
+      "bytes": 101293,
+      "sha256": "81ab804b44e2f398f5434c9cc41ca4f4fcdb7a93f082c456291d8d9fd04587eb"
     },
     "src/client/gui/source_screen_transitions.h": {
       "bytes": 10655,
@@ -5794,8 +5794,8 @@
       "sha256": "ea581749e0c3963b68166362d6da3593f7dde6de3524745a2750578c4278db64"
     },
     "tests/client/startup/test_world_selection_loop.c": {
-      "bytes": 400411,
-      "sha256": "fac74db5cd786bf2638210941e7a2f31a5671c093dd5a8edabda0beee46663a7"
+      "bytes": 401533,
+      "sha256": "ebd224c0bb3b1326acfdeb80011668b5fffa7b8ae0e15e71ad0a1e11b09779ba"
     },
     "tests/platform/time/test_date_format.c": {
       "bytes": 9460,
@@ -5838,12 +5838,12 @@
       "sha256": "7aca6fcbd8139daeac6da779a0c3cacc49d46cb6738167287c5b0e4d68686b5e"
     },
     "src/client/world/load_world.c": {
-      "bytes": 105001,
-      "sha256": "dfd522d9a1770e967659414b1b2106bfb929d08ec80ae31e4ac9975a9dcc013b"
+      "bytes": 111405,
+      "sha256": "ac246e1e9c2d7b0abdaa5d668810ab0f427057d443d8e4ec6787fa20a919d913"
     },
     "src/client/world/load_world.h": {
-      "bytes": 12713,
-      "sha256": "c30d81ab9100ff8d99f02e57faabc989a8f013fec8d8db33600e3f8351879eca"
+      "bytes": 12962,
+      "sha256": "6487696f77fa26ac42a26fca4a7bb4969d6358ce8d48818450bb2eccd383e6df"
     },
     "src/client/world/prepare_world.c": {
       "bytes": 19048,
@@ -8222,12 +8222,12 @@
       "sha256": "12966cd1e7de0a1453589473df940636d2ff2471e64fff22c0f7661f276cb95c"
     },
     "src/client/world/source_epoch.inc": {
-      "bytes": 4554,
-      "sha256": "a741e54a8ee496d0520750956716b08580299b43a2c9bdff47da1202ae01fabb"
+      "bytes": 4536,
+      "sha256": "2ba7f3b393ed1fa63aa770613f20eced0993b5c3326e4c6b0ad3d61927fd5f9c"
     },
     "tests/client/startup/test_world_reload.inc": {
-      "bytes": 19773,
-      "sha256": "42d05cc4a5c34a152dbf8b713f052d2e90d8e7ff488f48bc62062b7083012597"
+      "bytes": 24902,
+      "sha256": "79445812857fc09299a2d3cce11ab554ba41619ccbd533c69cacda05985e5278"
     },
     "src/world/cache/acquire_internal.h": {
       "bytes": 707,
@@ -10483,7 +10483,7 @@
     },
     "tests/tools/client/scene_inputs.py": {
       "bytes": 3861,
-      "sha256": "819093b91140ac73cda2a99f299295119c03c91371893c7ab708e1f9d9647275"
+      "sha256": "2accfce167b4603614a54f6383e33ae774a3691f72084e0420bb7bbdcdbb43bb"
     },
     "tests/tools/client/test_death_respawn.py": {
       "bytes": 4935,

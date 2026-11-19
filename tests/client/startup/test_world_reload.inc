@@ -100,7 +100,8 @@ static int reload_capture_epoch(fixture *f, reload_epoch *epoch) {
           load.world == f->app->active_world && load.player == f->app->h &&
           f->app->i == load.player && load.handler != NULL && load.input != NULL &&
           load.controller == f->app->controller && load.renderer != NULL &&
-          load.renderer->source_returned && load.renderer->source_pc == 73 && !load.superseded);
+          load.renderer->source_returned && load.renderer->source_pc == 73 && !load.superseded &&
+          !load.storage_reclaimed);
     *epoch = (reload_epoch){transitions.world_load, load.world, load.player,
                             load.handler,           load.input, load.controller};
     return 0;
@@ -249,6 +250,8 @@ static int reload_cycle_controls(fixture *f, mc_client_source_da *initial, const
     for (size_t i = 0; i < RELOAD_EPOCHS; ++i) {
         if (i != 0)
             CHECK(reload_choose(f, f->app->r, folders[i], &epochs[i - 1], &epochs[i], i + 1) == 0);
+        /* Keep each graph externally rooted before a later successor can reclaim it. */
+        CHECK(mc_entity_retain(epochs[i].player) == MC_ENTITY_OK);
         CHECK(f->app->g == n && f->app->effect_renderer == dn);
         char before[32], after[32];
         CHECK(snprintf(before, sizeof(before), "before-%zu", i + 1) > 0 &&
@@ -304,16 +307,17 @@ static int reload_cycle_controls(fixture *f, mc_client_source_da *initial, const
           f->app->active_world == NULL && f->app->h == NULL && f->app->i == NULL);
     puts("WORLD_RELOAD_FAILED epoch=11 folder=bravo conversion=1 acquired-storage=0 "
          "preserved-prefix=1");
-    /* Retain a genuine predecessor root before true outer preparation. All
-     * ten Worlds must remain READY when its passive audit refuses. */
+    /* Leave only the first extra root for the original passive refusal. */
+    for (size_t i = 1; i < RELOAD_EPOCHS; ++i)
+        mc_entity_release(epochs[i].player);
+    /* All ten Worlds must remain READY when the passive audit refuses. */
     mc_client_achievement_notice *actual_notice = f->app->achievement_notice;
     const mc_client_achievement_notice_fields *notice_fields =
         mc_client_achievement_notice_fields_get(actual_notice);
     unsigned char notice_before[sizeof(*notice_fields)];
     CHECK(notice_fields != NULL);
     memcpy(notice_before, notice_fields, sizeof(notice_before));
-    CHECK(mc_entity_retain(epochs[0].player) == MC_ENTITY_OK &&
-          !mc_client_menu_loop_terminal_retire(&f->loop) &&
+    CHECK(!mc_client_menu_loop_terminal_retire(&f->loop) &&
           mc_client_menu_loop_inspect(f->loop, &f->state) && !f->state.terminal_tail_entered &&
           f->state.notice == NULL && f->app->achievement_notice == actual_notice &&
           memcmp(notice_before, mc_client_achievement_notice_fields_get(actual_notice),
@@ -348,5 +352,88 @@ static int reload_cycle_controls(fixture *f, mc_client_source_da *initial, const
     *left_load = epochs[RELOAD_EPOCHS - 1].call;
     puts("WORLD_RELOAD_TERMINAL epochs=10 old-root-busy=1 all-worlds-ready=1 passive-invariant=1 "
          "released-root-retry=1 all-epoch-audit=1");
+    return 0;
+}
+
+static int reload_reclaimed_epoch(const reload_epoch *epoch, size_t selected, size_t index) {
+    mc_client_world_load_state retired;
+    CHECK(mc_client_world_load_inspect(epoch->call, &retired) && retired.storage_reclaimed &&
+          retired.superseded && retired.source_returned && retired.last_outer_pc == 130 &&
+          retired.leave.source_returned && retired.leave.i_cleared && retired.leave.f_cleared &&
+          retired.leave.h_cleared && retired.failure != NULL &&
+          retired.failure->status == MC_CLIENT_WORLD_LOAD_OK && retired.world == NULL &&
+          retired.player == NULL && retired.handler == NULL && retired.input == NULL &&
+          retired.controller == NULL && retired.renderer == NULL);
+    printf("WORLD_RECLAIM_STORAGE epoch=%zu retired-epoch=%zu storage-reclaimed=1 "
+           "source-scalars-retained=1 graph-fields-null=1\n",
+           selected + 1, index + 1);
+    return 0;
+}
+
+static int reload_reclaim_controls(fixture *f, mc_client_source_da *initial,
+                                   const char *capture_path, bool delayed,
+                                   const mc_client_world_load_call **left_load) {
+    reload_epoch epochs[RELOAD_EPOCHS];
+    const char *folders[] = {"alpha", "alpha", "older", "alpha", "older",
+                             "alpha", "older", "alpha", "older", "alpha"};
+    _Static_assert(sizeof(folders) / sizeof(folders[0]) == RELOAD_EPOCHS, "reclaim folder count");
+    CHECK(reload_capture_epoch(f, &epochs[0]) == 0);
+    if (delayed)
+        CHECK(mc_entity_retain(epochs[0].player) == MC_ENTITY_OK);
+    mc_client_render_global *n = f->app->g;
+    mc_client_effect_renderer *dn = f->app->effect_renderer;
+    for (size_t i = 0; i < RELOAD_EPOCHS; ++i) {
+        if (i != 0)
+            CHECK(reload_choose(f, f->app->r, folders[i], &epochs[i - 1], &epochs[i], i + 1) == 0);
+        CHECK(f->app->g == n && f->app->effect_renderer == dn);
+        for (size_t prior = 0; prior < i; ++prior)
+            CHECK(epochs[i].call != epochs[prior].call);
+        if (delayed && (i == 2 || i == 3)) {
+            mc_client_world_load_state held;
+            CHECK(mc_client_world_load_inspect(epochs[0].call, &held) && held.superseded &&
+                  !held.storage_reclaimed && held.world == epochs[0].world &&
+                  held.player == epochs[0].player && held.handler == epochs[0].handler &&
+                  held.input == epochs[0].input);
+            printf("WORLD_RECLAIM_DEFERRED epoch=%zu held-epoch=1 storage-live=1\n", i + 1);
+        }
+        if (delayed && i == 4)
+            CHECK(reload_reclaimed_epoch(&epochs[0], i, 0) == 0);
+        if (i >= 2 && (!delayed || i != 2))
+            CHECK(reload_reclaimed_epoch(&epochs[i - 2], i, i - 2) == 0);
+        /* Epoch two can reclaim while epoch one is still rooted. The next load
+         * must retry epoch one even though its successor is already gone. */
+        if (delayed && i == 3)
+            mc_entity_release(epochs[0].player);
+        char before[32], after[32];
+        CHECK(snprintf(before, sizeof(before), "before-%zu", i + 1) > 0 &&
+              snprintf(after, sizeof(after), "after-%zu", i + 1) > 0 &&
+              reload_snapshot(before) == 0 &&
+              save_title_run(f, initial, capture_path, false, i + 1, i + 1) == 0 &&
+              reload_snapshot(after) == 0);
+        printf("WORLD_RECLAIM_PHASE epoch=%zu folder=%s save-title=1\n", i + 1, folders[i]);
+    }
+    for (size_t i = 0; i < RELOAD_EPOCHS; ++i) {
+        mc_client_world_load_state load;
+        CHECK(mc_client_world_load_inspect(epochs[i].call, &load) && load.source_returned &&
+              load.last_outer_pc == 130 && load.leave.source_returned && load.leave.i_cleared &&
+              load.leave.f_cleared && load.leave.h_cleared);
+        if (i + 2 < RELOAD_EPOCHS) {
+            CHECK(load.storage_reclaimed && load.superseded && load.world == NULL &&
+                  load.player == NULL && load.handler == NULL && load.input == NULL &&
+                  load.controller == NULL && load.renderer == NULL);
+        } else {
+            /* The current graph and its immediate predecessor are still live. */
+            mc_world_runtime_construction construction;
+            CHECK(!load.storage_reclaimed && load.world == epochs[i].world &&
+                  load.player == epochs[i].player && load.handler == epochs[i].handler &&
+                  load.input == epochs[i].input && load.controller == epochs[i].controller &&
+                  load.superseded == (i + 1 < RELOAD_EPOCHS) &&
+                  mc_world_runtime_construction_get(load.world, &construction) ==
+                      MC_WORLD_STORAGE_OK &&
+                  construction.phase == MC_WORLD_RUNTIME_READY);
+        }
+    }
+    *left_load = epochs[RELOAD_EPOCHS - 1].call;
+    puts("WORLD_RECLAIM_TERMINAL epochs=10 reclaimed=8 live=2 all-calls-inspectable=1");
     return 0;
 }

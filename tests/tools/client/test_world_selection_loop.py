@@ -388,16 +388,18 @@ def save_title_decode(before, entries, after, mode, stdout, process_first, *,
 
 
 
-def reload_decode(evidence, stdout, process_first):
+def reload_decode(evidence, stdout, process_first, mode):
     """Read byte-for-byte snapshots taken after real source stages; no inputs rewritten."""
     shots = evidence / "native-snapshots"
     rows = stdout.splitlines()
     saves = [line for line in rows if line.startswith("WORLD_SAVE_TITLE ")]
-    phases = [line for line in rows if line.startswith("WORLD_RELOAD_PHASE ")]
+    reclaim = mode != "reload-cycle"
+    phase = "WORLD_RECLAIM_PHASE" if reclaim else "WORLD_RELOAD_PHASE"
+    phases = [line for line in rows if line.startswith(phase + " ")]
     folders = ("alpha", "alpha", "older", "alpha", "older", "alpha", "older", "alpha", "older", "alpha")
     count = len(folders)
     if len(saves) != count or phases != [
-            f"WORLD_RELOAD_PHASE epoch={epoch} folder={folder} save-title=1"
+            f"{phase} epoch={epoch} folder={folder} save-title=1"
             for epoch, folder in enumerate(folders, 1)]:
         raise RuntimeError("Ten actual ordered source save/title epochs required")
     suffix = (" distinct-os=1 distinct-load=1 distinct-handler=1 distinct-world=1 distinct-player=1"
@@ -407,13 +409,29 @@ def reload_decode(evidence, stdout, process_first):
     if selections != [f"WORLD_RELOAD_SELECT epoch={epoch} folder={folder}" + suffix
                       for epoch, folder in enumerate(folders, 1) if epoch > 1]:
         raise RuntimeError("Actual same/different source selection and renderer receipts required")
-    if rows.count("WORLD_RELOAD_NOTICE terminal-prefix-retired=1 source-fields-unchanged=1") != 1:
-        raise RuntimeError("Actual Notice call retirement must precede all-epoch terminal audit")
-    terminal = "WORLD_RELOAD_TERMINAL epochs=10 old-root-busy=1 all-worlds-ready=1 passive-invariant=1 released-root-retry=1 all-epoch-audit=1"
-    if rows.count(terminal) != 1 or rows.count("WORLD_RELOAD_IDENTITIES epochs=10 all-pairs-distinct=1 source-owners-live=1") != 1:
-        raise RuntimeError("All-pairs genuine identities, predecessor root refusal and passive retry required")
-    if rows.count("WORLD_RELOAD_FAILED epoch=11 folder=bravo conversion=1 acquired-storage=0 preserved-prefix=1") != 1:
-        raise RuntimeError("Actual failed successor conversion prefix required")
+    if reclaim:
+        storage = [line for line in rows if line.startswith("WORLD_RECLAIM_STORAGE ")]
+        deferred = [line for line in rows if line.startswith("WORLD_RECLAIM_DEFERRED ")]
+        pairs = [(epoch, epoch - 2) for epoch in range(3, count + 1)]
+        expected_deferred = []
+        if mode == "reload-reclaim-retry":
+            pairs[:2] = [(4, 2), (5, 1)]
+            expected_deferred = [f"WORLD_RECLAIM_DEFERRED epoch={epoch} held-epoch=1 storage-live=1"
+                                 for epoch in (3, 4)]
+        expected = [f"WORLD_RECLAIM_STORAGE epoch={epoch} retired-epoch={retired} "
+                    "storage-reclaimed=1 source-scalars-retained=1 graph-fields-null=1"
+                    for epoch, retired in pairs]
+        terminal = "WORLD_RECLAIM_TERMINAL epochs=10 reclaimed=8 live=2 all-calls-inspectable=1"
+        if storage != expected or deferred != expected_deferred or rows.count(terminal) != 1:
+            raise RuntimeError("Every eligible superseded storage graph must retire")
+    else:
+        if rows.count("WORLD_RELOAD_NOTICE terminal-prefix-retired=1 source-fields-unchanged=1") != 1:
+            raise RuntimeError("Actual Notice call retirement must precede all-epoch terminal audit")
+        terminal = "WORLD_RELOAD_TERMINAL epochs=10 old-root-busy=1 all-worlds-ready=1 passive-invariant=1 released-root-retry=1 all-epoch-audit=1"
+        if rows.count(terminal) != 1 or rows.count("WORLD_RELOAD_IDENTITIES epochs=10 all-pairs-distinct=1 source-owners-live=1") != 1:
+            raise RuntimeError("All-pairs genuine identities, predecessor root refusal and passive retry required")
+        if rows.count("WORLD_RELOAD_FAILED epoch=11 folder=bravo conversion=1 acquired-storage=0 preserved-prefix=1") != 1:
+            raise RuntimeError("Actual failed successor conversion prefix required")
     snapshots = [line for line in rows if line.startswith("WORLD_RELOAD_SNAPSHOT ")]
     names = [f"{stage}-{epoch}" for epoch in range(1, count + 1) for stage in ("before", "after")]
     if len(snapshots) != 2 * count:
@@ -473,7 +491,7 @@ def reload_decode(evidence, stdout, process_first):
     for key in ("Inventory", "Dimension", "Score"):
         if key not in saved[1] or key not in loaded or typed(saved[1][key]) != typed(loaded[key]):
             raise RuntimeError(f"Actual reopened LocalPlayer semantic {key}")
-    return {"mode": "reload-cycle", "stages": reports,
+    return {"mode": mode, "stages": reports,
             "loaded_player_sha256": hashlib.sha256(parser.read(shots / "loaded-player-2.nbt")).hexdigest(),
             "scope": "native actual source same/different World UI reload and multi-epoch cleanup; no original whole-frame equivalence"}
 
@@ -1141,7 +1159,8 @@ def main():
                                  "load-terminal", "load-partial", "repeat", "load-light", "load-cactus", "load-torch", "load-water", "load-lava", "load-ladder", "load-crops", "animals", "creatures",
                                  "creatures-slime", "creatures-creeper", "remaining-mobs",
                                  "remaining-wolf", "remaining-zombie", "remaining-skeleton",
-                                 "save-title", "save-title-session", "reload-cycle"))
+                                 "save-title", "save-title-session", "reload-cycle", "reload-reclaim",
+                                 "reload-reclaim-retry"))
     parser.add_argument("--timeout", type=float)
     parser.add_argument("--monitor-two", action="store_true",
                         help="Require physical monitor 2 and verify both source windows there")
@@ -1166,7 +1185,8 @@ def main():
     resources_before = snapshot(assets)
     requested = args.mode or ("empty", "populated", "large", "double", "load", "load-terminal",
                               "load-partial", "repeat", "load-light")
-    if args.monitor_two and any(mode not in ('save-title', 'save-title-session', 'reload-cycle')
+    if args.monitor_two and any(mode not in ('save-title', 'save-title-session', 'reload-cycle',
+                                            'reload-reclaim', 'reload-reclaim-retry')
                                 for mode in requested):
         raise RuntimeError("Monitor witness currently requires a save-title or reload-cycle profile")
     modes = [expanded for mode in requested
@@ -1182,7 +1202,7 @@ def main():
         ladder = mode == 'load-ladder'
         crops = mode == 'load-crops'
         fluid_id = 9 if mode == 'load-water' else 11 if mode == 'load-lava' else 0
-        reload_cycle = mode == "reload-cycle"
+        reload_cycle = mode in ("reload-cycle", "reload-reclaim", "reload-reclaim-retry")
         save_title = mode in ("save-title", "save-title-session") or reload_cycle
         evidence = Path(tempfile.mkdtemp(prefix=mode + "-", dir=artifacts))
         with tempfile.TemporaryDirectory(prefix="mc-rq-loop-") as work:
@@ -1471,7 +1491,7 @@ def main():
                 standing_block_receipts(result.stdout, pose_input, crops_reference[0])
             after = snapshot(saves)
             if save_title:
-                decoded = (reload_decode(evidence, result.stdout, process_first) if reload_cycle else
+                decoded = (reload_decode(evidence, result.stdout, process_first, mode) if reload_cycle else
                            save_title_decode(evidence / "before", evidence / "entries", evidence / "after",
                                              mode, result.stdout, process_first))
                 cleanup = [line for line in result.stdout.splitlines()
