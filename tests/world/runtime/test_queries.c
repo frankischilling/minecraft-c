@@ -778,6 +778,15 @@ static bool light_and_height(fixture *f, size_t side) {
     CHECK(mc_world_runtime_saved_light(w, f->types[side][1], 8, 64, 32000001, &value, &e) ==
               MC_WORLD_STORAGE_OK &&
           value == 0 && cleared(&e));
+    CHECK(mc_world_runtime_saved_light(w, f->types[side][0], 8, 64, 32000000, &value, &e) ==
+              MC_WORLD_STORAGE_OK &&
+          value == 0 && cleared(&e));
+    CHECK(mc_world_runtime_saved_light(w, f->types[side][0], -32000000, 64, 8, &value, &e) ==
+              MC_WORLD_STORAGE_OK &&
+          value == 0 && cleared(&e));
+    CHECK(mc_world_runtime_saved_light(w, f->types[side][0], -32000001, 64, 8, &value, &e) ==
+              MC_WORLD_STORAGE_OK &&
+          value == 15 && cleared(&e));
     /* NULL ordinarily matches neither Light identity and must not inspect
      * malformed Nibbles. Explicit aliases prove live comparison ordering. */
     mc_world_chunk_nibble *saved_f = chunk->f, *saved_g = chunk->g;
@@ -794,6 +803,13 @@ static bool light_and_height(fixture *f, size_t side) {
     f->classes[side]->light_statics[0] = saved_static;
     chunk->f->a[index] = old_sky;
     CHECK(status[0] == MC_WORLD_STORAGE_OK && value == 3 && cleared(&e));
+    const mc_world_light_type *saved_block_static = f->classes[side]->light_statics[1];
+    f->classes[side]->light_statics[1] = NULL;
+    chunk->g->a[index] = UINT8_C(0x4e);
+    status[0] = mc_world_runtime_saved_light(w, NULL, 8, 64, 8, &value, &e);
+    chunk->g->a[index] = old_block;
+    f->classes[side]->light_statics[1] = saved_block_static;
+    CHECK(status[0] == MC_WORLD_STORAGE_OK && value == 14 && cleared(&e));
     chunk->f->a[index] = UINT8_C(0xc3);
     f->classes[side]->light_statics[0] = f->types[side][1];
     status[0] = mc_world_runtime_saved_light(w, f->types[side][1], 8, 64, 8, &value, &e);

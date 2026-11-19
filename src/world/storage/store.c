@@ -1104,20 +1104,21 @@ bool mc_world_store_owns_chunk(const mc_world_store *store, const mc_chunk_state
     return store_find_chunk(store, chunk) != NULL;
 }
 
-static mc_world_storage_status lease_chunk_entry(store_chunk *entry,
-                                                 mc_world_storage_error *error) {
+static mc_world_storage_status chunk_lease(store_chunk *entry, bool hold,
+                                           mc_world_storage_error *error) {
     if (entry == NULL)
         return store_error(error, MC_WORLD_STORAGE_INVALID_ARGUMENT, "foreign chunk identity");
     if (entry->leases == SIZE_MAX)
         return store_error(error, MC_WORLD_STORAGE_LIMIT, "chunk lease count");
-    ++entry->leases;
+    if (hold)
+        ++entry->leases;
     return store_error(error, MC_WORLD_STORAGE_OK, NULL);
 }
 
-mc_world_storage_status mc_world_store_lease_chunk_object(mc_world_store *store,
-                                                          const mc_chunk_state *state,
-                                                          mc_world_chunk **out,
-                                                          mc_world_storage_error *error) {
+static mc_world_storage_status access_chunk_object(mc_world_store *store,
+                                                   const mc_chunk_state *state,
+                                                   mc_world_chunk **out, bool hold,
+                                                   mc_world_storage_error *error) {
     store_chunk *entry = store_find_chunk(store, state);
     mc_world_chunk *object = store_chunk_object(entry);
     if (object == NULL) {
@@ -1129,10 +1130,24 @@ mc_world_storage_status mc_world_store_lease_chunk_object(mc_world_store *store,
         if (admission != MC_WORLD_STORAGE_OK)
             return admission;
     }
-    const mc_world_storage_status status = lease_chunk_entry(entry, error);
+    const mc_world_storage_status status = chunk_lease(entry, hold, error);
     if (status == MC_WORLD_STORAGE_OK)
         *out = object;
     return status;
+}
+
+mc_world_storage_status mc_world_store_lease_chunk_object(mc_world_store *store,
+                                                          const mc_chunk_state *state,
+                                                          mc_world_chunk **out,
+                                                          mc_world_storage_error *error) {
+    return access_chunk_object(store, state, out, true, error);
+}
+
+mc_world_storage_status mc_world_store_borrow_chunk_object(mc_world_store *store,
+                                                           const mc_chunk_state *state,
+                                                           mc_world_chunk **out,
+                                                           mc_world_storage_error *error) {
+    return access_chunk_object(store, state, out, false, error);
 }
 
 mc_world_storage_status mc_world_store_lease_chunk(mc_world_store *store,
@@ -1143,7 +1158,7 @@ mc_world_storage_status mc_world_store_lease_chunk(mc_world_store *store,
         if (admission != MC_WORLD_STORAGE_OK)
             return admission;
     }
-    return lease_chunk_entry(store_find_chunk(store, chunk), error);
+    return chunk_lease(store_find_chunk(store, chunk), true, error);
 }
 
 mc_world_storage_status mc_world_store_release_chunk(mc_world_store *store,

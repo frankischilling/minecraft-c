@@ -132,7 +132,7 @@ static bool query_acquisition_failed(mc_world_query_error *error,
  * source local across later Registry active use, without blocking reentry. */
 static bool acquire_query(mc_world_runtime *world, int32_t chunk_x, int32_t chunk_z,
                           query_chunk *out, mc_world_query_error *error,
-                          mc_world_query_execution *execution) {
+                          mc_world_query_execution *execution, bool hold) {
     error->provider_bytecode = 6;
     if (world->fields.v == NULL) {
         error->source_null = true;
@@ -195,18 +195,21 @@ static bool acquire_query(mc_world_runtime *world, int32_t chunk_x, int32_t chun
         return true;
     out->store = world->fields.w;
     mc_world_storage_error cause;
-    if (mc_world_store_lease_chunk_object(out->store, out->state, &out->object, &cause) !=
-        MC_WORLD_STORAGE_OK)
+    const mc_world_storage_status status =
+        hold ? mc_world_store_lease_chunk_object(out->store, out->state, &out->object, &cause)
+             : mc_world_store_borrow_chunk_object(out->store, out->state, &out->object, &cause);
+    if (status != MC_WORLD_STORAGE_OK)
         return storage_fail(error, &cause);
     if (out->object == NULL)
         return fail(error, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "World query concrete Chunk");
-    out->leased = true;
+    out->leased = hold;
     return true;
 }
 
 static bool acquire(mc_world_runtime *world, int32_t x, int32_t z, query_chunk *out,
                     mc_world_query_error *error) {
-    return acquire_query(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), out, error, NULL);
+    return acquire_query(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), out, error, NULL,
+                         true);
 }
 
 /* Every caller has already clamped or rejected Y. */
@@ -327,7 +330,10 @@ static mc_world_storage_status saved_light(mc_world_runtime *world, const mc_wor
     query_chunk chunk = {0};
     int32_t value = 0;
     y = y < 0 ? 0 : y >= 128 ? 127 : y;
-    if (x < -32000000 || x >= 32000000 || z < -32000000 || z > 32000000) {
+
+    enum { border = 32000000 };
+
+    if (x < -border || x >= border || z < -border || z > border) {
         frame->bytecode = 54;
         if (type == NULL)
             (void)fail(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
@@ -338,7 +344,10 @@ static mc_world_storage_status saved_light(mc_world_runtime *world, const mc_wor
     }
     frame->bytecode = 74;
     frame->provider_bytecode = 6;
-    const int32_t chunk_x = mc_java_i32_shr(x, 4), chunk_z = mc_java_i32_shr(z, 4);
+    /* The border offset is a whole number of chunks and admits a
+     * nonnegative shift even for negative block coordinates. */
+    const int32_t chunk_x = (int32_t)((uint32_t)(x + border) >> 4u) - border / 16;
+    const int32_t chunk_z = (int32_t)((uint32_t)(z + border) >> 4u) - border / 16;
     bool present;
     if (mc_world_runtime_chunk_provider_contains(world, chunk_x, chunk_z, &present,
                                                  &frame->cause) != MC_WORLD_STORAGE_OK) {
@@ -349,30 +358,29 @@ static mc_world_storage_status saved_light(mc_world_runtime *world, const mc_wor
     if (!present)
         goto done;
     frame->bytecode = 87;
-    if (!acquire_query(world, chunk_x, chunk_z, &chunk, frame, NULL))
+    /* Only the callback-free Light static and Nibble reads follow the GET. */
+    if (!acquire_query(world, chunk_x, chunk_z, &chunk, frame, NULL, false))
         goto done;
     frame->bytecode = 105;
     if (chunk.state->blank)
         goto done;
-    const mc_world_light_type *selected;
+    mc_world_runtime_classes *classes = world->classes;
+    const mc_world_light_type *sky;
     frame->chunk_bytecode = 1;
-    if (mc_world_runtime_light_type_get(world->classes, MC_LIGHT_SKY, &selected, &frame->cause) !=
-        MC_WORLD_STORAGE_OK) {
+    if (classes != NULL && classes->light_types_initialized)
+        sky = classes->light_statics[0];
+    else if (mc_world_runtime_light_type_get(classes, MC_LIGHT_SKY, &sky, &frame->cause) !=
+             MC_WORLD_STORAGE_OK) {
         (void)storage_fail(frame, &frame->cause);
         goto done;
     }
-    if (type == selected) {
+    if (type == sky) {
         frame->chunk_bytecode = 15;
         (void)nibble(chunk.object->f, light_cell(x, y, z), &value, frame);
         goto done;
     }
-    frame->chunk_bytecode = 20;
-    if (mc_world_runtime_light_type_get(world->classes, MC_LIGHT_BLOCK, &selected, &frame->cause) !=
-        MC_WORLD_STORAGE_OK) {
-        (void)storage_fail(frame, &frame->cause);
-        goto done;
-    }
-    if (type == selected) {
+    /* The first lookup has admitted the owner and initialized both statics. */
+    if (type == classes->light_statics[1]) {
         frame->chunk_bytecode = 34;
         (void)nibble(chunk.object->g, light_cell(x, y, z), &value, frame);
     }
@@ -423,7 +431,7 @@ static mc_world_storage_status plant_light(mc_world_runtime *world, int32_t x, i
         y = 127;
     frame.bytecode = 23;
     if (!acquire_query(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &chunk, &frame,
-                       execution))
+                       execution, true))
         goto done;
     frame.bytecode = 36;
     if (chunk.state->blank)
@@ -607,7 +615,7 @@ static mc_world_storage_status sky_visible(mc_world_runtime *world, int32_t x, i
     bool value = false;
     frame.bytecode = 7;
     if (!acquire_query(world, mc_java_i32_shr(x, 4), mc_java_i32_shr(z, 4), &chunk, &frame,
-                       execution))
+                       execution, true))
         goto done;
     frame.bytecode = 19;
     if (!chunk.state->blank) {

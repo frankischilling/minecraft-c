@@ -221,6 +221,13 @@ mc_world_storage_status mc_world_store_lease_chunk_object(mc_world_store *store,
                                                           mc_world_chunk **out,
                                                           mc_world_storage_error *error);
 
+/* Same concrete identity and lease admission checks. The caller must finish
+ * reading before any callback, Store mutation or other owner activity. */
+mc_world_storage_status mc_world_store_borrow_chunk_object(mc_world_store *store,
+                                                           const mc_chunk_state *state,
+                                                           mc_world_chunk **out,
+                                                           mc_world_storage_error *error);
+
 /* Allocation-free actual d guard, including bound loaded objects. Retiring a
  * World is allowed first; every such Chunk must retire before freeing World. */
 bool mc_world_store_has_chunks_for_world(const mc_world_store *store,

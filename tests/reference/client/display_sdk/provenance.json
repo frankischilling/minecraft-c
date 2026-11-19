@@ -2598,8 +2598,8 @@
       "sha256": "7a20e4a5979b0facd0835f0d5f3271e5d5e577e90e9a4cbf7435b62bff8c03a1"
     },
     "src/world/storage/objects_internal.h": {
-      "bytes": 15997,
-      "sha256": "2d3bda9a11b9feb7452e4d0011067e91f4395bd5052457e80eb44fe5d830e230"
+      "bytes": 16492,
+      "sha256": "cddc585869b217d2e50d6ac93060614a3c5098cc98ebabcf6007c8ecc00d48a7"
     },
     "src/world/storage/source_chunk_loader.c": {
       "bytes": 36221,
@@ -3874,8 +3874,8 @@
       "sha256": "fed826a2e36dc16e765335a682932deebbcab0ebc90b91fa017f9872c43841ad"
     },
     "src/world/storage/store.c": {
-      "bytes": 137183,
-      "sha256": "035be44066ea95453f554adc9e0cc7d680c8abe68397d6dcdbe525565e1a2728"
+      "bytes": 138000,
+      "sha256": "a9d04be45cdc29f972f4cc37bf39a0949d922e69f599b3a36b2a1ce8a3c16235"
     },
     "src/world/storage/store_source.inc": {
       "bytes": 38805,

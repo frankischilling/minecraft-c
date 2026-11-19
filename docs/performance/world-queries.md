@@ -530,6 +530,30 @@ varied across runs.
 | First | 41.69 / 43.86 | 45.35 / 45.09 | 67.99 / 70.52 |
 | Repeat | 45.46 / 46.91 | 39.59 / 35.67 | 63.23 / 64.79 |
 
+### Saved-light reads after acquisition
+
+The saved-light query checks the Store owner and lease limit, then reads
+the Chunk during the callback-free part of the call. It rounds in-range
+coordinates down to their Chunk and reads the ready light statics directly
+from the current class owner. A cold owner still initializes both statics
+before the first identity comparison.
+
+Each Windows Release group alternated eight baseline and candidate pairs.
+The drain fixture used nine authored Chunks and consumed 499 queued regions.
+All acquisition counts, light planes, queue contents and failure receipts
+matched, including the callback that removed the reached Nibble backing.
+
+| Workload | Median before / after | p95 before / after |
+| --- | ---: | ---: |
+| 3,992-cell drain | 2.54 / 2.23 ms | 2.90 / 2.47 ms |
+| 3,992-cell repeat | 2.52 / 2.22 ms | 2.71 / 2.37 ms |
+| 31,936-cell drain | 18.36 / 16.38 ms | 22.18 / 17.66 ms |
+| Saved-light read, 289 indexed Chunks | 74.44 / 63.84 ns | 76.43 / 67.91 ns |
+| Saved-light read, 289 Chunks in a mutation scope | 75.09 / 64.80 ns | 81.68 / 76.70 ns |
+
+The longest sample in the larger drain went from 23.43 to 24.54 ms.
+These timings cover the drain and scalar query calls on authored inputs.
+
 ## Controlled Windows measurement
 
 The fixed-work CPU benchmark uses authored saved Chunks, an actual constructed
