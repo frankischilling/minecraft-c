@@ -38,6 +38,49 @@ characterize unrestricted play, Far distance, other hardware or frame-time
 stability. Earlier rejected frame cohorts retain their own limits in the
 [Chunk-rendering record](chunk-rendering.md).
 
+## Complete frames with authored assets
+
+The observer can generate its own textures, fonts and statistics inputs
+for the saved World fixture. In an x64 MSVC developer shell with Ninja,
+build the SDK target and run one observation on physical DISPLAY2.
+
+```powershell
+cmake -S . -B frame-sdk -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DMC_BUILD_CLIENT=ON -DMC_BUILD_CLIENT_AUDIO=ON
+cmake --build frame-sdk --target mc_test_workbench_open_shutdown
+python scripts/benchmarks/client_frames.py --build frame-sdk --out frame-builds --authored-assets --artifacts frame-runs --rounds 1
+```
+
+Use the same observer source and build configuration for both
+executables in a comparison.
+
+```powershell
+python scripts/benchmarks/client_frames.py --executable before=PATH --executable after=PATH --authored-assets --artifacts frame-runs --rounds 4
+```
+
+Two groups of four alternating Windows Release pairs compared the light
+and collision changes. The baseline relinked `queries.c`, `store.c`,
+`boxes.c` and `entities.c` from `c34a7c23`. Both builds shared the
+observer and the other locally built dependencies. All 16 runs matched
+the fingerprints of 28 asset files and 11 save files, the camera pose,
+the GPU context and Tiny distance at 854×480.
+
+Every process completed focused, screen-free World frames and advanced
+the simulation by 200 or 201 ticks. The measurements follow ordinary
+real-time simulation from the same starting scene. The table reports
+the medians of each process's frame statistics.
+
+| Windows group | FPS before / after | Frame p95 before / after | Frame p99 before / after |
+| --- | ---: | ---: | ---: |
+| First four pairs | 108.7 / 123.0 | 17.37 / 15.96 ms | 32.92 / 31.21 ms |
+| Four repeats through `--authored-assets` | 121.8 / 129.0 | 16.88 / 16.21 ms | 30.53 / 30.71 ms |
+| All eight pairs | 114.8 / 129.0 | 17.16 / 15.96 ms | 32.60 / 31.21 ms |
+
+FPS rose in seven pairs. Frame p95 fell in all eight, and p99 fell in six.
+The fixture starts with empty saved Entity lists. The
+[crowded collision workload](mob-tick-diagnostics.md#nearby-list-reads-during-collision-queries)
+and [fixed light drains](world-queries.md#saved-light-reads-after-acquisition)
+exercise the two changes independently.
+
 ## Fixed-input observer
 
 Build both comparison executables with the same observer source. The runner

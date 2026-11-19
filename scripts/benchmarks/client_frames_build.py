@@ -52,8 +52,8 @@ def build_observer(build, out):
     target = 'mc_test_workbench_open_shutdown.exe'
     begin = next((i for i, line in enumerate(lines) if line.startswith('build ' + target + ':')), None)
     if begin is None:
-        raise RuntimeError('Configure MC_ENABLE_CLIENT_WORKBENCH_OPEN_SHUTDOWN_TESTS with local '
-                           'imported resources, then build mc_test_workbench_open_shutdown first')
+        raise RuntimeError('Configure BUILD_TESTING, MC_BUILD_CLIENT and MC_BUILD_CLIENT_AUDIO, '
+                           'then build mc_test_workbench_open_shutdown first')
     commands = subprocess.check_output([ninja, '-C', str(build), '-t', 'commands', target],
                                        text=True).splitlines()
     compile_line = next((line for line in commands if 'cl.exe' in line and

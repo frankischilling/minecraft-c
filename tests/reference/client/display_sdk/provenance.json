@@ -7202,12 +7202,12 @@
       "sha256": "4c91d9bd8b0bac0cc2a4d6f5075bc1173945879289cd2a94a983f87359b3158f"
     },
     "scripts/benchmarks/client_frames.py": {
-      "bytes": 5941,
-      "sha256": "05d79a013b6c341a84c439d069e9022cc72837d4b176cc40a4bbf8900db1c0dc"
+      "bytes": 7680,
+      "sha256": "9bcd2759db4ae5672339b2a97c6b2c99b0847790f937c70e9d1f7c5227708043"
     },
     "scripts/benchmarks/client_frames_build.py": {
-      "bytes": 7407,
-      "sha256": "ad47b26a94754938ecbcae256ac84c432cfd6be915907267f341b626aba6a665"
+      "bytes": 7387,
+      "sha256": "2deede75d129ce119ef4dd49d67a895e1967a1d6599a71005fc39cb94e5f1ece"
     },
     "scripts/benchmarks/client_frames_run.py": {
       "bytes": 23431,

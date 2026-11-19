@@ -1,9 +1,13 @@
-"""Build or compare native Windows client frame observers in one authored sky scene.
+r"""Build or compare native Windows client frame observers in one authored sky scene.
 
 Build from an existing Release Ninja/MSVC SDK configuration:
   python scripts/benchmarks/client_frames.py --build build-windows --out frame-builds
 
-Compare already-built observers from two revisions:
+Compare already-built observers from two revisions with generated resources:
+  python scripts/benchmarks/client_frames.py --executable before=PATH --executable after=PATH \
+      --authored-assets --artifacts frame-runs --rounds 3
+
+Use an existing local resource directory when comparing that presentation:
   python scripts/benchmarks/client_frames.py --executable before=PATH --executable after=PATH \
       --assets IMPORTED_ASSETS --artifacts frame-runs --rounds 3
 
@@ -21,9 +25,28 @@ import sys
 import tempfile
 
 from client_frames_build import build_observer
-from client_frames_run import qualify_cohort
+from client_frames_run import module, qualify_cohort
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def author_frame_assets(assets):
+    hud = module('frame_authored_hud', 'tests/tools/client/test_gui_ingame_draw.py')
+    startup = module('frame_authored_startup', 'tests/tools/client/test_startup.py')
+    hud.authored_assets(assets)
+    # The saved statistics fixture needs two distinct hexadecimal identifiers.
+    (assets / 'jar/achievement/map.txt').write_bytes(b'5242880,ae017\r\n5242881,be018\r\n')
+
+    def checker(x, y):
+        return 40 + (x // 16) % 2 * 100, 70 + (y // 16) % 2 * 110, 150, 255
+
+    texture = startup.authored_png(256, 256, checker)
+    for name in ('item/arrows.png', 'mob/char.png', 'misc/shadow.png', 'misc/particlefield.png',
+                 'particles.png', 'misc/water.png', 'misc/pumpkinblur.png'):
+        path = assets / 'jar' / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if not path.exists():
+            path.write_bytes(texture)
 
 
 def main():
@@ -31,7 +54,10 @@ def main():
     parser.add_argument('--build', type=Path, help='Existing built Ninja/MSVC Release SDK directory')
     parser.add_argument('--out', type=Path, help='Parent directory for the optional observer build')
     parser.add_argument('--executable', action='append', default=[], metavar='LABEL=PATH')
-    parser.add_argument('--assets', type=Path, help='Locally imported original resource directory')
+    fixtures = parser.add_mutually_exclusive_group()
+    fixtures.add_argument('--assets', type=Path, help='Local resource directory')
+    fixtures.add_argument('--authored-assets', action='store_true',
+                          help='Generate test textures and resources for this cohort')
     parser.add_argument('--artifacts', type=Path, help='Parent directory for retained run evidence')
     parser.add_argument('--rounds', type=int, default=3)
     options = parser.parse_args()
@@ -55,18 +81,24 @@ def main():
         executable, build_record = build_observer(options.build, options.out)
         executables['current'] = executable
         print('Observer built: ' + str(executable), flush=True)
-        if options.assets is None and options.artifacts is None:
+        if options.assets is None and not options.authored_assets and options.artifacts is None:
             print('Build receipt: ' + str(build_record))
             return 0
-    if not executables or options.assets is None or options.artifacts is None:
-        parser.error('Running needs --executable (or --build), --assets and --artifacts')
-    assets = options.assets.resolve(strict=True)
+    if not executables or options.artifacts is None or (options.assets is None and
+                                                        not options.authored_assets):
+        parser.error('Running needs --executable (or --build), --assets or --authored-assets, '
+                     'and --artifacts')
+    assets = options.assets.resolve(strict=True) if options.assets is not None else None
     options.artifacts.mkdir(parents=True, exist_ok=True)
     output = Path(tempfile.mkdtemp(prefix='client-frames-', dir=options.artifacts.resolve()))
+    if assets is None:
+        assets = output / 'assets'
+        author_frame_assets(assets)
     children = output / 'runs'
     children.mkdir()
     report = {'status': 'FAIL', 'scope': __doc__, 'profiles': [], 'rounds': options.rounds,
               'build_record': None if build_record is None else str(build_record),
+              'asset_fixture': 'authored' if options.authored_assets else 'provided',
               'qualification': 'Only complete focused screen-free intervals support this finite scene comparison. No failed attempt is discarded.'}
     for round_index in range(options.rounds):
         order = list(executables)
