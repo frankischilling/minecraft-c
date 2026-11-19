@@ -4,7 +4,8 @@ enum {
     SOURCE_CACHE_GROUP_SIZE = 64,
     SOURCE_CACHE_GROUPS = SOURCE_CACHE_SLOTS / SOURCE_CACHE_GROUP_SIZE,
     SOURCE_CACHE_BYTES = 64 * 1024 * 1024,
-    SOURCE_CACHE_MIN_VERTICES = 18,
+    SOURCE_CACHE_MIN_VERTICES = 6,
+    SOURCE_CACHE_REGULAR_VERTICES = 18,
     SOURCE_CACHE_LARGE_VERTICES = 96
 };
 
@@ -28,7 +29,7 @@ typedef struct source_cached_vertices {
 struct source_vertex_cache {
     source_cached_vertices slots[SOURCE_CACHE_SLOTS];
     source_cached_vertices *oldest[SOURCE_CACHE_GROUPS];
-    size_t bytes;
+    size_t bytes, tiny_bytes;
     uint64_t sequence, dirty_groups;
 };
 
@@ -38,6 +39,10 @@ static size_t source_vertex_cache_index(const uint8_t *data) {
     hash *= UINT64_C(0xff51afd7ed558ccd);
     hash ^= hash >> 33;
     return (size_t)(hash & (SOURCE_CACHE_SLOTS / SOURCE_CACHE_WAYS - 1)) * SOURCE_CACHE_WAYS;
+}
+
+static size_t source_vertex_cache_tiny_charge(size_t bytes) {
+    return bytes < SOURCE_CACHE_REGULAR_VERTICES * sizeof(mc_client_source_gpu_vertex) ? bytes : 0;
 }
 
 static source_cached_vertices *source_vertex_cache_slot(mc_client_display *display,
@@ -52,20 +57,35 @@ static source_cached_vertices *source_vertex_cache_slot(mc_client_display *displ
         if (set[i].data == data)
             return &set[i];
 
+    const size_t regular = SOURCE_CACHE_REGULAR_VERTICES * sizeof(mc_client_source_gpu_vertex);
     const size_t large = SOURCE_CACHE_LARGE_VERTICES * sizeof(mc_client_source_gpu_vertex);
+    const bool tiny = bytes < regular;
     const bool small = bytes < large;
+    const size_t protected_bytes = tiny ? regular : large;
     const size_t free_bytes = SOURCE_CACHE_BYTES - cache->bytes;
     source_cached_vertices *replacement = NULL;
-    /* Small batches can take spare storage. Leave live larger batches and
-     * the existing byte-budget eviction policy to larger uploads. */
+    source_cached_vertices *tiny_replacement = NULL;
+    /* Tiny batches use spare budget or replace a tiny slot. A regular batch
+     * may also reclaim tiny storage when spare bytes run out. */
     for (size_t i = 0; i < SOURCE_CACHE_WAYS; ++i) {
         source_cached_vertices *entry = &set[i];
-        if (small &&
-            ((entry->data != NULL && entry->bytes >= large) || bytes > free_bytes + entry->bytes))
+        if (small) {
+            const size_t reclaimable =
+                tiny ? 0 : cache->tiny_bytes - source_vertex_cache_tiny_charge(entry->bytes);
+            if ((entry->data != NULL && entry->bytes >= protected_bytes) ||
+                bytes > free_bytes + entry->bytes + reclaimable)
+                continue;
+        }
+        if (!tiny && entry->data != NULL && entry->bytes < regular) {
+            if (tiny_replacement == NULL || entry->last_used < tiny_replacement->last_used)
+                tiny_replacement = entry;
             continue;
+        }
         if (replacement == NULL || entry->last_used < replacement->last_used)
             replacement = entry;
     }
+    if (tiny_replacement != NULL && (replacement == NULL || replacement->data != NULL))
+        return tiny_replacement;
     return replacement;
 }
 
@@ -110,6 +130,15 @@ static void source_vertex_cache_invalidate(mc_client_display *display, const uin
     }
 }
 
+static bool source_vertex_cache_eviction_before(const source_cached_vertices *a,
+                                                const source_cached_vertices *b) {
+    if (b == NULL)
+        return true;
+    const bool a_tiny = source_vertex_cache_tiny_charge(a->bytes) != 0;
+    const bool b_tiny = source_vertex_cache_tiny_charge(b->bytes) != 0;
+    return a_tiny == b_tiny ? a->last_used < b->last_used : a_tiny;
+}
+
 static source_cached_vertices *
 source_vertex_cache_group_oldest(source_vertex_cache *cache, size_t group,
                                  const source_cached_vertices *excluded) {
@@ -118,7 +147,7 @@ source_vertex_cache_group_oldest(source_vertex_cache *cache, size_t group,
     for (size_t i = start; i < start + SOURCE_CACHE_GROUP_SIZE; ++i) {
         source_cached_vertices *candidate = &cache->slots[i];
         if (candidate != excluded && candidate->bytes != 0 &&
-            (oldest == NULL || candidate->last_used < oldest->last_used))
+            source_vertex_cache_eviction_before(candidate, oldest))
             oldest = candidate;
     }
     return oldest;
@@ -128,8 +157,8 @@ static source_cached_vertices *source_vertex_cache_oldest(source_vertex_cache *c
                                                           const source_cached_vertices *excluded) {
     source_cached_vertices *oldest = NULL;
     const uint64_t dirty_groups = cache->dirty_groups;
-    /* Ascending slot order breaks ties, including invalidated storage with
-     * timestamp zero. Exclusion only affects the group containing the upload. */
+    /* Reclaim tiny storage first. Within a tier, age and then ascending slot
+     * order decide. Exclusion only affects the group containing the upload. */
     for (size_t group = 0; group < SOURCE_CACHE_GROUPS; ++group) {
         const uint64_t bit = UINT64_C(1) << group;
         if ((dirty_groups & bit) != 0)
@@ -137,7 +166,7 @@ static source_cached_vertices *source_vertex_cache_oldest(source_vertex_cache *c
         source_cached_vertices *candidate = cache->oldest[group];
         if (candidate == excluded)
             candidate = source_vertex_cache_group_oldest(cache, group, excluded);
-        if (candidate != NULL && (oldest == NULL || candidate->last_used < oldest->last_used))
+        if (candidate != NULL && source_vertex_cache_eviction_before(candidate, oldest))
             oldest = candidate;
     }
     cache->dirty_groups = 0;
@@ -157,6 +186,7 @@ static bool source_vertex_cache_make_room(mc_client_display *display,
         if (!gl_check(display, "evict source vertex cache storage", error))
             return false;
         cache->bytes -= oldest->bytes;
+        cache->tiny_bytes -= source_vertex_cache_tiny_charge(oldest->bytes);
         *oldest = (source_cached_vertices){0};
         source_vertex_cache_changed(cache, oldest);
     }
@@ -200,9 +230,13 @@ static bool source_vertex_cache_upload(mc_client_display *display, source_cached
             display->source.vbo_capacity_uncertain = true;
             return false;
         }
-        display->source_cache->bytes = display->source_cache->bytes - entry->bytes + bytes;
-        if (entry->bytes == 0)
-            source_vertex_cache_changed(display->source_cache, entry);
+        source_vertex_cache *cache = display->source_cache;
+        const size_t previous_tiny = source_vertex_cache_tiny_charge(entry->bytes);
+        const size_t next_tiny = source_vertex_cache_tiny_charge(bytes);
+        cache->bytes = cache->bytes - entry->bytes + bytes;
+        cache->tiny_bytes = cache->tiny_bytes - previous_tiny + next_tiny;
+        if (entry->bytes == 0 || (previous_tiny != 0) != (next_tiny != 0))
+            source_vertex_cache_changed(cache, entry);
         entry->bytes = bytes;
     }
     entry->data = data;

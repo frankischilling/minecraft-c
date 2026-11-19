@@ -326,23 +326,32 @@ matched. Measurements span frames through GPU completion.
 
 ### Vertex cache evictions
 
-The cache admits unlit recorded batches of at least 18 vertices, enough
-for three expanded quads. Batches below 96 vertices use available space
-in the 64 MiB budget. A live entry of 96 vertices or more takes priority
-when a smaller batch hashes to the same set. Each set holds four entries.
-On a miss, the cache reuses the least recently used eligible slot in that
-set, so several batches with the same hash can stay resident.
+The cache admits unlit recorded batches of at least six vertices, enough
+for one expanded quad. Batches of 6–17 vertices can reuse an unused slot
+or another entry of that size in the same four-way set. They use the spare
+bytes in the 64 MiB budget. Batches of 18–95 vertices can also reclaim
+storage from 6–17 vertex batches. Live entries of 96 vertices or more
+retain priority in the set.
 
-The 4,096-slot vertex cache retains the oldest occupied slot in each group
-of 64. Hits, uploads, and invalidation mark the affected group when they
-change its eviction candidates. Under pressure, the cache rescans changed
-groups and compares their oldest slots. Equal timestamps still favor the
-lowest slot index, and resizing an occupied slot excludes it from eviction.
-The index adds 520 bytes per cache on x86-64.
+The 4,096-slot cache retains an eviction candidate in each group of 64.
+Under pressure it reclaims 6–17 vertex storage first, then compares age
+and slot index within each tier. A slot being resized is excluded.
+Hits, uploads, and invalidation mark affected groups for rescan. The
+group index occupies 520 bytes per cache on x86-64.
 
-A fixed CPU workload ran the production cache and upload code with stubbed
-GL calls. All 12 WSL2 pairs matched hit and miss counts, eviction counts,
-driver check counts, and ordered deletion and final-state checksums.
+Ten alternating Windows Release pairs per profile used 450 lists per pass
+on an RTX 3060. Framebuffer, section order, and work hashes matched.
+The times span frames through GPU completion.
+
+| Quads per list, pass 0/1 | Median, before → after | p95, before → after |
+| --- | ---: | ---: |
+| 1/2 | 3.637 → 0.522 ms | 4.299 → 0.628 ms |
+| 16/1 | 1.966 → 0.539 ms | 2.482 → 0.631 ms |
+| 16/3 | 0.534 → 0.543 ms | 0.646 → 0.649 ms |
+
+An earlier fixed CPU workload measured the introduction of grouped eviction
+with stubbed GL calls. All 12 WSL2 pairs matched hit and miss counts, eviction
+counts, driver check counts, and ordered deletion and final-state checksums.
 [Raw pairs and build identities](../../tests/benchmarks/vertex_cache_eviction_linux.json)
 
 | Workload | Baseline median | Candidate median | Change |
