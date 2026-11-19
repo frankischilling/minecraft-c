@@ -648,8 +648,7 @@ static bool eviction_invalidation_control(void) {
         source_cached_vertices *entry = source_vertex_cache_slot(&display, keys[i], large);
         CHECK(entry == first + i);
         entry->data = keys[i];
-        entry->bytes = large;
-        cache->bytes += large;
+        source_vertex_cache_set_bytes(cache, entry, large);
         source_vertex_cache_touch(cache, entry);
     }
     const uint8_t *extra = keys[SOURCE_CACHE_WAYS];
@@ -670,8 +669,8 @@ static bool eviction_invalidation_control(void) {
           source_vertex_cache_slot(&display, keys[0], large) == first);
 
     last->data = keys[SOURCE_CACHE_WAYS - 1];
-    last->bytes = tiny;
-    cache->tiny_bytes = tiny;
+    source_vertex_cache_set_bytes(cache, last, tiny);
+    cache->bytes = SOURCE_CACHE_BYTES;
     source_vertex_cache_touch(cache, last);
     CHECK(source_vertex_cache_slot(&display, extra, tiny) == last &&
           source_vertex_cache_slot(&display, extra, 2 * tiny) == NULL &&
@@ -680,8 +679,8 @@ static bool eviction_invalidation_control(void) {
     /* A regular batch can reclaim the tiny storage held by another set. */
     const size_t other_set =
         ((size_t)(first - cache->slots) + SOURCE_CACHE_WAYS) % SOURCE_CACHE_SLOTS;
-    cache->slots[other_set].bytes = small - tiny;
-    cache->tiny_bytes += cache->slots[other_set].bytes;
+    cache->bytes -= small - tiny;
+    source_vertex_cache_set_bytes(cache, &cache->slots[other_set], small - tiny);
     CHECK(source_vertex_cache_slot(&display, extra, small) == last &&
           source_vertex_cache_slot(&display, extra, 2 * tiny) == NULL);
     result = true;
@@ -709,9 +708,7 @@ static bool eviction_controls(void) {
         source_cached_vertices *entry = &cache->slots[slots[i]];
         entry->vbo = (GLuint)(2u * i + 1u);
         entry->vao = (GLuint)(2u * i + 2u);
-        entry->bytes = charge;
-        cache->bytes += charge;
-        source_vertex_cache_changed(cache, entry);
+        source_vertex_cache_set_bytes(cache, entry, charge);
     }
     source_cached_vertices *replaced = &cache->slots[64];
     CHECK(source_vertex_cache_oldest(cache, &cache->slots[63]) == replaced);
@@ -727,22 +724,23 @@ static bool eviction_controls(void) {
     eviction_calls = 0;
     CHECK(!source_vertex_cache_make_room(&display, replaced, 3u * charge, &error));
     CHECK(error.status == MC_CLIENT_DISPLAY_GL_ERROR && cache->bytes == SOURCE_CACHE_BYTES &&
-          cache->slots[65].bytes == charge && eviction_calls == 2);
+          cache->slots[65].bytes == charge && cache->occupied[1] == 3 &&
+          cache->occupied_count[1] == 2 && eviction_calls == 2);
     CHECK(source_vertex_cache_make_room(&display, replaced, 3u * charge, &error));
     const GLuint expected[] = {5, 6, 5, 6, 7, 8};
     CHECK(eviction_calls == sizeof(expected) / sizeof(*expected) &&
           memcmp(eviction_names, expected, sizeof(expected)) == 0);
     CHECK(cache->bytes == 2u * charge && replaced->bytes == charge && replaced->vbo == 3 &&
           cache->slots[63].bytes == charge && cache->slots[65].bytes == 0 &&
-          cache->slots[SOURCE_CACHE_SLOTS - 1u].bytes == 0);
+          cache->slots[SOURCE_CACHE_SLOTS - 1u].bytes == 0 && cache->occupied[1] == 1 &&
+          cache->occupied_count[1] == 1);
 
     /* The room check refreshes the incoming group while it is still empty.
      * The completed upload must refresh it again when storage is published. */
     display.gl.BindVertexArray = eviction_bind_vao;
     display.gl.BindBuffer = eviction_bind_buffer;
     display.gl.BufferData = eviction_upload;
-    cache->slots[63].bytes = 3u * charge;
-    cache->bytes = SOURCE_CACHE_BYTES;
+    source_vertex_cache_set_bytes(cache, &cache->slots[63], 3u * charge);
     source_cached_vertices *incoming = &cache->slots[SOURCE_CACHE_SLOTS - 1u];
     incoming->layout_ready = true;
     incoming->vao = 9;
@@ -764,21 +762,17 @@ static bool eviction_controls(void) {
     source_cached_vertices *neighbor = &cache->slots[65];
     source_cached_vertices *tiny_victim = &cache->slots[128];
     incoming = &cache->slots[64];
-    kept->bytes = SOURCE_CACHE_BYTES - small - 3 * tiny;
-    neighbor->bytes = small;
+    source_vertex_cache_set_bytes(cache, kept, SOURCE_CACHE_BYTES - small - 3 * tiny);
+    source_vertex_cache_set_bytes(cache, neighbor, small);
     neighbor->last_used = 1;
-    incoming->bytes = tiny;
+    source_vertex_cache_set_bytes(cache, incoming, tiny);
     incoming->layout_ready = true;
     incoming->vao = 9;
     incoming->vbo = 10;
-    tiny_victim->bytes = 2 * tiny;
+    source_vertex_cache_set_bytes(cache, tiny_victim, 2 * tiny);
     tiny_victim->vao = 11;
     tiny_victim->vbo = 12;
-    cache->bytes = SOURCE_CACHE_BYTES;
-    cache->tiny_bytes = 3 * tiny;
     cache->sequence = neighbor->last_used;
-    source_vertex_cache_changed(cache, kept);
-    source_vertex_cache_changed(cache, neighbor);
     source_vertex_cache_touch(cache, incoming);
     source_vertex_cache_touch(cache, tiny_victim);
     CHECK(source_vertex_cache_oldest(cache, incoming) == tiny_victim);
@@ -795,6 +789,15 @@ static bool eviction_controls(void) {
     CHECK(cache->tiny_bytes == 0 && cache->bytes == SOURCE_CACHE_BYTES && tiny_victim->bytes == 0 &&
           eviction_calls == 4 && eviction_names[2] == 12 && eviction_names[3] == 11 &&
           source_vertex_cache_oldest(cache, kept) == neighbor);
+
+    memset(cache, 0, sizeof(*cache));
+    for (size_t i = 0; i <= SOURCE_CACHE_GROUP_SIZE / 2; ++i)
+        source_vertex_cache_set_bytes(cache, &cache->slots[i], small);
+    CHECK(cache->occupied_count[0] == SOURCE_CACHE_GROUP_SIZE / 2 + 1 &&
+          source_vertex_cache_oldest(cache, &cache->slots[0]) == &cache->slots[1]);
+    source_vertex_cache_set_bytes(cache, &cache->slots[0], 0);
+    CHECK(cache->occupied_count[0] == SOURCE_CACHE_GROUP_SIZE / 2 &&
+          source_vertex_cache_oldest(cache, &cache->slots[1]) == &cache->slots[2]);
     result = true;
 cleanup:
     free(cache);

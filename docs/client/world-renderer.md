@@ -339,8 +339,10 @@ and slot index within each tier. A slot being resized is excluded.
 Hits, uploads, and invalidation mark affected groups for rescan. A binary
 tree combines the group candidates. Eviction refreshes the dirty groups
 and their ancestors. When the root candidate is excluded, only its group
-is rescanned and compared with the remaining subtrees. The index occupies
-1,032 bytes per cache on x86-64.
+is rescanned and compared with the remaining subtrees. Groups holding
+at most 32 buffers visit occupied slots in ascending order. Denser
+groups use sequential reads of all 64 slots. The index and occupancy
+records occupy 1,608 bytes per cache on x86-64.
 
 Ten alternating Windows Release pairs per profile used 450 lists per pass
 on an RTX 3060. Framebuffer, section order, and work hashes matched.
@@ -366,6 +368,19 @@ matched across the builds being compared.
 
 The earlier cache with an 18-vertex minimum took 37.51 ms for the same
 regular workload. These measurements cover the CPU cache path.
+
+Twelve further GCC Release pairs on WSL2 compared the tree with and
+without occupancy tracking. The workloads used the same order of
+requests and the same synthetic buffer charges, with stubbed GL calls.
+Hit, upload, fallback, deletion and driver-check counts matched, as did
+ordered deletions and final cache hashes.
+
+| Workload | Before | After |
+| --- | ---: | ---: |
+| Regular pressure, one buffer per set at start | 37.10 ms | 18.63 ms |
+| Mixed pressure, two buffers per set at start | 32.25 ms | 18.69 ms |
+| Dense pressure, all 4,096 slots occupied at start | 32.52 ms | 32.35 ms |
+| 4,194,304 hits | 36.84 ms | 36.88 ms |
 
 An earlier fixed CPU workload measured the introduction of grouped eviction
 with stubbed GL calls. All 12 WSL2 pairs matched hit and miss counts, eviction

@@ -17,6 +17,7 @@ _Static_assert(SOURCE_CACHE_SLOTS % SOURCE_CACHE_GROUP_SIZE == 0 && SOURCE_CACHE
                "one dirty bit per complete vertex cache group");
 _Static_assert(SOURCE_CACHE_GROUP_SIZE % SOURCE_CACHE_WAYS == 0,
                "each vertex cache set is contained in one eviction group");
+_Static_assert(SOURCE_CACHE_GROUP_SIZE <= 64, "one occupancy bit per slot in a group");
 _Static_assert((SOURCE_CACHE_GROUPS & (SOURCE_CACHE_GROUPS - 1)) == 0,
                "the eviction tree has a power-of-two leaf count");
 
@@ -35,6 +36,8 @@ typedef struct source_cached_vertices {
 struct source_vertex_cache {
     source_cached_vertices slots[SOURCE_CACHE_SLOTS];
     source_cached_vertices *eviction_tree[2 * SOURCE_CACHE_GROUPS];
+    uint64_t occupied[SOURCE_CACHE_GROUPS];
+    uint8_t occupied_count[SOURCE_CACHE_GROUPS];
     size_t bytes, tiny_bytes;
     uint64_t sequence, dirty_groups;
 };
@@ -116,6 +119,29 @@ static void source_vertex_cache_changed(source_vertex_cache *cache,
     cache->dirty_groups |= UINT64_C(1) << (index / SOURCE_CACHE_GROUP_SIZE);
 }
 
+static void source_vertex_cache_set_bytes(source_vertex_cache *cache, source_cached_vertices *entry,
+                                          size_t bytes) {
+    const size_t before = entry->bytes;
+    const size_t previous_tiny = source_vertex_cache_tiny_charge(before);
+    const size_t next_tiny = source_vertex_cache_tiny_charge(bytes);
+    cache->bytes = cache->bytes - before + bytes;
+    cache->tiny_bytes = cache->tiny_bytes - previous_tiny + next_tiny;
+    entry->bytes = bytes;
+
+    const size_t index = (size_t)(entry - cache->slots);
+    const size_t group = index / SOURCE_CACHE_GROUP_SIZE;
+    const bool occupancy_changed = (before == 0) != (bytes == 0);
+    if (occupancy_changed) {
+        cache->occupied[group] ^= UINT64_C(1) << (index % SOURCE_CACHE_GROUP_SIZE);
+        if (bytes != 0)
+            ++cache->occupied_count[group];
+        else
+            --cache->occupied_count[group];
+    }
+    if (occupancy_changed || (previous_tiny != 0) != (next_tiny != 0))
+        cache->dirty_groups |= UINT64_C(1) << group;
+}
+
 static void source_vertex_cache_touch(source_vertex_cache *cache, source_cached_vertices *entry) {
     entry->last_used = ++cache->sequence;
     source_vertex_cache_changed(cache, entry);
@@ -145,15 +171,42 @@ static bool source_vertex_cache_eviction_before(const source_cached_vertices *a,
     return a_tiny == b_tiny ? a->last_used < b->last_used : a_tiny;
 }
 
+static size_t source_vertex_cache_first_bit(uint64_t bits) {
+#if defined(_MSC_VER)
+    unsigned long index;
+    _BitScanForward64(&index, bits);
+    return (size_t)index;
+#else
+    return (size_t)__builtin_ctzll(bits);
+#endif
+}
+
 static source_cached_vertices *
 source_vertex_cache_group_oldest(source_vertex_cache *cache, size_t group,
                                  const source_cached_vertices *excluded) {
     const size_t start = group * SOURCE_CACHE_GROUP_SIZE;
     source_cached_vertices *oldest = NULL;
-    for (size_t i = start; i < start + SOURCE_CACHE_GROUP_SIZE; ++i) {
-        source_cached_vertices *candidate = &cache->slots[i];
-        if (candidate != excluded && candidate->bytes != 0 &&
-            source_vertex_cache_eviction_before(candidate, oldest))
+    /* Contiguous reads are cheaper when most of a group is occupied. */
+    if (cache->occupied_count[group] > SOURCE_CACHE_GROUP_SIZE / 2) {
+        for (size_t i = start; i < start + SOURCE_CACHE_GROUP_SIZE; ++i) {
+            source_cached_vertices *candidate = &cache->slots[i];
+            if (candidate != excluded && candidate->bytes != 0 &&
+                source_vertex_cache_eviction_before(candidate, oldest))
+                oldest = candidate;
+        }
+        return oldest;
+    }
+
+    uint64_t occupied = cache->occupied[group];
+    if (excluded != NULL) {
+        const size_t offset = (size_t)(excluded - (cache->slots + start));
+        occupied &= ~(UINT64_C(1) << offset);
+    }
+    while (occupied != 0) {
+        const size_t offset = source_vertex_cache_first_bit(occupied);
+        occupied &= occupied - 1;
+        source_cached_vertices *candidate = &cache->slots[start + offset];
+        if (source_vertex_cache_eviction_before(candidate, oldest))
             oldest = candidate;
     }
     return oldest;
@@ -165,21 +218,11 @@ static source_cached_vertices *source_vertex_cache_min(source_cached_vertices *l
     return right != NULL && source_vertex_cache_eviction_before(right, left) ? right : left;
 }
 
-static size_t source_vertex_cache_first_dirty(uint64_t dirty) {
-#if defined(_MSC_VER)
-    unsigned long index;
-    _BitScanForward64(&index, dirty);
-    return (size_t)index;
-#else
-    return (size_t)__builtin_ctzll(dirty);
-#endif
-}
-
 static void source_vertex_cache_refresh(source_vertex_cache *cache) {
     uint64_t dirty = cache->dirty_groups;
     uint64_t parents = 0;
     while (dirty != 0) {
-        const size_t group = source_vertex_cache_first_dirty(dirty);
+        const size_t group = source_vertex_cache_first_bit(dirty);
         dirty &= dirty - 1;
         cache->eviction_tree[SOURCE_CACHE_GROUPS + group] =
             source_vertex_cache_group_oldest(cache, group, NULL);
@@ -190,7 +233,7 @@ static void source_vertex_cache_refresh(source_vertex_cache *cache) {
         dirty = parents;
         parents = 0;
         while (dirty != 0) {
-            const size_t index = source_vertex_cache_first_dirty(dirty);
+            const size_t index = source_vertex_cache_first_bit(dirty);
             dirty &= dirty - 1;
             const size_t node = width + index;
             cache->eviction_tree[node] = source_vertex_cache_min(
@@ -232,10 +275,8 @@ static bool source_vertex_cache_make_room(mc_client_display *display,
         display->gl.DeleteVertexArrays(1, &oldest->vao);
         if (!gl_check(display, "evict source vertex cache storage", error))
             return false;
-        cache->bytes -= oldest->bytes;
-        cache->tiny_bytes -= source_vertex_cache_tiny_charge(oldest->bytes);
+        source_vertex_cache_set_bytes(cache, oldest, 0);
         *oldest = (source_cached_vertices){0};
-        source_vertex_cache_changed(cache, oldest);
     }
     return true;
 }
@@ -277,14 +318,7 @@ static bool source_vertex_cache_upload(mc_client_display *display, source_cached
             display->source.vbo_capacity_uncertain = true;
             return false;
         }
-        source_vertex_cache *cache = display->source_cache;
-        const size_t previous_tiny = source_vertex_cache_tiny_charge(entry->bytes);
-        const size_t next_tiny = source_vertex_cache_tiny_charge(bytes);
-        cache->bytes = cache->bytes - entry->bytes + bytes;
-        cache->tiny_bytes = cache->tiny_bytes - previous_tiny + next_tiny;
-        if (entry->bytes == 0 || (previous_tiny != 0) != (next_tiny != 0))
-            source_vertex_cache_changed(cache, entry);
-        entry->bytes = bytes;
+        source_vertex_cache_set_bytes(display->source_cache, entry, bytes);
     }
     entry->data = data;
     entry->generation = display->native_context_generation;
