@@ -101,10 +101,8 @@ void mc_font_renderer_free(mc_font_renderer *font) {
 }
 
 static int glyph_index(const mc_font_renderer *font, uint16_t unit) {
-    for (size_t index = 0; index < font->mapping_length; ++index)
-        if (font->mapping[index] == unit)
-            return (int)index + 32;
-    return -1;
+    const size_t index = mc_font_unit_index(font->mapping, font->mapping_length, unit);
+    return index == font->mapping_length ? -1 : (int)index + 32;
 }
 
 static int32_t measured(const mc_font_renderer *font, const mc_font_text *text) {

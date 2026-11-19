@@ -1,3 +1,4 @@
+#include "../../../src/client/gui/font_kernels.h"
 #include "mc/client/gui/font_renderer.h"
 
 #include <stdio.h>
@@ -441,15 +442,33 @@ static int create_fonts(mc_font_renderer **font, mc_font_renderer **scratch) {
     return 0;
 }
 
+static int test_code_unit_lookup(void) {
+    uint16_t units[33];
+    CHECK(mc_font_unit_index(NULL, 0, 0) == 0);
+    for (size_t length = 1; length <= COUNT(units); ++length) {
+        uint16_t *const start = units + COUNT(units) - length;
+        for (size_t index = 0; index < length; ++index)
+            start[index] = (uint16_t)(0xd800u + index);
+        for (size_t index = 0; index < length; ++index)
+            CHECK(mc_font_unit_index(start, length, start[index]) == index);
+        CHECK(mc_font_unit_index(start, length, 0) == length);
+        if (length > 8) {
+            start[1] = start[length - 1] = 0;
+            CHECK(mc_font_unit_index(start, length, 0) == 1);
+        }
+    }
+    return 0;
+}
+
 int main(void) {
     authored_inputs();
     mc_font_renderer *font = NULL, *scratch = NULL;
     int result = create_fonts(&font, &scratch);
     if (result == 0)
-        result = test_null_empty(font) || test_passes_and_advances(font) ||
-                 test_colors_and_trailing_section(font) || test_invariant_unicode(font) ||
-                 test_identity_replay(font) || test_failures(font) ||
-                 test_scratch_and_maximum(scratch);
+        result = test_code_unit_lookup() || test_null_empty(font) ||
+                 test_passes_and_advances(font) || test_colors_and_trailing_section(font) ||
+                 test_invariant_unicode(font) || test_identity_replay(font) ||
+                 test_failures(font) || test_scratch_and_maximum(scratch);
     mc_font_renderer_free(scratch);
     mc_font_renderer_free(font);
     if (result == 0)

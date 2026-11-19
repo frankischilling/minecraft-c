@@ -2778,20 +2778,20 @@
       "sha256": "c16e983f91db2907b1bf6af7215ae5a44b67cdde2b275b0c1f0232c30e99c5d7"
     },
     "src/client/gui/bitmap_font_draw.c": {
-      "bytes": 13556,
-      "sha256": "8bd9e26d026877d45a0724705d92c05e66f9e9bfa8b41cff3b58d56b6103e1c7"
+      "bytes": 13532,
+      "sha256": "ec028ce3da54073b75bc72b75ae2eb6489ad32ba6e4a305deba831b9c528841b"
     },
     "src/client/gui/bitmap_font_internal.h": {
       "bytes": 3318,
       "sha256": "6df0ac7e4fde76fd4fc32bc67971cbee096c9d66d5b96f10e801f45e9feeacad"
     },
     "src/client/gui/bitmap_font_measure.c": {
-      "bytes": 4709,
-      "sha256": "0cb98632273ea3bd292d719cf39371604232dd9245f8f5d6316bb4e27ca18b50"
+      "bytes": 4703,
+      "sha256": "18c9c4cae35b2cd68865fd2bd8f65f2d8b3fec064989e74f2a2056d9932c125a"
     },
     "src/client/gui/font_kernels.h": {
-      "bytes": 1487,
-      "sha256": "71e4677fcacbc8808555b001e048d7e11fd7953558b483ffcae50423d3e2aa80"
+      "bytes": 2335,
+      "sha256": "e861ef0ae53f7a7ce50ba07b4e20c7d7a741b70edb2a99b9b03187e650982290"
     },
     "src/client/gui/font_mapping.c": {
       "bytes": 13410,
@@ -2802,8 +2802,8 @@
       "sha256": "5f49bfecd6964f3806c9cb78fd25573a66c6406fcb1a5ebe0a29611876305dd9"
     },
     "src/client/gui/font_renderer.c": {
-      "bytes": 11978,
-      "sha256": "517a213d4360557d5bf999d2a0b774237fc8acb24ca1853d9f27d5a0d8adbd12"
+      "bytes": 11972,
+      "sha256": "64b29cbe056cc6a7190d88fcfb9e3ee5660ba578398066bf2610adefe7c07786"
     },
     "src/client/gui/gui_ingame.c": {
       "bytes": 25757,
@@ -5354,8 +5354,8 @@
       "sha256": "9e4ded6ae9d518997e927a215f8a5060ae0510f5cbce08b9f589afc6f11c787c"
     },
     "tests/client/gui/test_font_commands.c": {
-      "bytes": 23354,
-      "sha256": "13663043369764f4c26376d4771c4a8b322747478a0d291e77caab5f699a6bf4"
+      "bytes": 24146,
+      "sha256": "1865463269fa3274f61559a65cf7dc0fd1417665a7aabfce65d89a483100aedc"
     },
     "tests/client/gui/test_font_renderer.c": {
       "bytes": 21268,
@@ -6483,7 +6483,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067982,
-      "sha256": "63d5753327660bef8a5d6d4492f00afb6f46d111e72fe830c955082ea3fcbc86"
+      "sha256": "11a3bd86eeae960339251630a4f618d419b66b18315e9de076cb6be063f6c3f0"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6615,7 +6615,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934853,
-      "sha256": "d94c4c18ee97171d3015b18c316bca78d33daecfd081487a47a1675e3e5456b8"
+      "sha256": "ef7e1b3743ae6dfb100c76322e2dbcdb3c6523a55088f542ba33b0192cbe77e7"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,

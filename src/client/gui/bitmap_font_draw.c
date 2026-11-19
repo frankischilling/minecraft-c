@@ -140,9 +140,8 @@ static bool draw_body(mc_client_bitmap_font *font, mc_player_string_view input, 
             if (!mc_player_string_read(mapping, &joined))
                 return failed(e, MC_CLIENT_BITMAP_FONT_NULL_REFERENCE,
                               "sj actual fp.a String receiver", 297, false);
-            size_t first = 0;
-            while (first < joined.length && joined.units[first] != input.units[index])
-                ++first;
+            const size_t first =
+                mc_font_unit_index(joined.units, joined.length, input.units[index]);
             if (first < joined.length) {
                 const int32_t name =
                     mc_java_i32_add(mc_java_i32_add(font->fields.c, (int32_t)first), 32);

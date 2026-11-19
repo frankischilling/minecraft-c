@@ -1,4 +1,5 @@
 #include "bitmap_font_internal.h"
+#include "font_kernels.h"
 #include "mc/core/java/java.h"
 
 static mc_client_bitmap_font_status fail(mc_client_bitmap_font_error *e,
@@ -29,9 +30,7 @@ void mc_client_bitmap_font_measure_entered(mc_client_bitmap_font *font, mc_playe
                  false);
             break;
         }
-        size_t first = 0;
-        while (first < joined.length && joined.units[first] != input.units[index])
-            ++first;
+        const size_t first = mc_font_unit_index(joined.units, joined.length, input.units[index]);
         if (first == joined.length)
             continue;
         if (font->fields.b == NULL) {

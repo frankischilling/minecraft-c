@@ -1,7 +1,32 @@
 #ifndef MC_CLIENT_GUI_FONT_KERNELS_H
 #define MC_CLIENT_GUI_FONT_KERNELS_H
+#include <emmintrin.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
+
+/* Return the first matching code unit, or length for a miss. */
+static inline size_t mc_font_unit_index(const uint16_t *units, size_t length, uint16_t unit) {
+    if (length == 0 || units[0] == unit)
+        return 0;
+    size_t first = 1;
+    const __m128i target = _mm_set1_epi16((int16_t)unit);
+    while (length - first >= 8) {
+        const __m128i values = _mm_loadu_si128((const __m128i *)(const void *)(units + first));
+        unsigned int mask = (unsigned int)_mm_movemask_epi8(_mm_cmpeq_epi16(values, target));
+        if (mask != 0) {
+            while ((mask & 3u) == 0) {
+                mask >>= 2;
+                ++first;
+            }
+            return first;
+        }
+        first += 8;
+    }
+    while (first < length && units[first] != unit)
+        ++first;
+    return first;
+}
 
 /* Shared pure source arithmetic. Callers own admission, live field
  * reads, resource effects and failure/store order. No fp active use. */
