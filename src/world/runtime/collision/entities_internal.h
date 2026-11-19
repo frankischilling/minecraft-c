@@ -11,6 +11,19 @@
 bool mc_world_nearby_owned_valid(const mc_world_runtime *world);
 void mc_world_nearby_owned_release(mc_world_runtime *world);
 
+/* Read one in-range occurrence from the admitted nearby list.
+ * The caller must keep the list exclusive and perform no callbacks before
+ * the read. Earlier entries do not establish the ownership of later ones. */
+static inline mc_world_storage_status mc_world_nearby_read_admitted(void *const *items,
+                                                                    mc_entity *const *entries,
+                                                                    size_t index, mc_entity **out) {
+    mc_entity *entity = entries[index];
+    if (entity == NULL || items[index] != entity)
+        return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
+    *out = entity;
+    return MC_WORLD_STORAGE_OK;
+}
+
 /* Reached real provider getter shared by the two distinct Entity queries.
  * Caller holds/enters World; preserve its outer query PC and complete fresh
  * per-attempt acquisition descendants. No presence query or List use here. */

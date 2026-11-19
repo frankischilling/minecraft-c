@@ -6,6 +6,7 @@
 #include "../chunk_provider_internal.h"
 #include "../construction_internal.h"
 #include "blocks_internal.h"
+#include "entities_internal.h"
 #include "mc/core/java/java.h"
 #include "mc/core/math/math.h"
 
@@ -433,21 +434,24 @@ static bool query(mc_world_runtime *world, mc_entity *moving, const mc_entity_bo
     (void)mc_entity_bounds_release(mc_world_runtime_entities(world), expanded);
     if (gathered != MC_WORLD_STORAGE_OK)
         return false;
+    frame->world_bytecode = 198;
+    size_t count;
+    const mc_world_storage_status admitted = mc_world_entity_list_view_count(&nearby, &count);
+    if (admitted != MC_WORLD_STORAGE_OK) {
+        fail(frame, admitted, "Collision nearby List size");
+        mc_world_entity_list_view_release(&nearby);
+        return false;
+    }
+    /* Both virtual checks below are callback-free. Keep the admitted
+     * descriptor and validate each occurrence at its two reached reads. */
+    void *const *items = nearby.identity->items;
+    mc_entity *const *entries = nearby.owner->nearby_entities.entries;
     bool success = true;
-    for (size_t i = 0;; ++i) {
-        frame->world_bytecode = 198;
-        size_t count;
-        mc_world_storage_status status = mc_world_entity_list_view_count(&nearby, &count);
-        if (status != MC_WORLD_STORAGE_OK) {
-            fail(frame, status, "Collision nearby List size");
-            success = false;
-            break;
-        }
-        if (i >= count)
-            break;
+    for (size_t i = 0; i < count; ++i) {
         frame->world_bytecode = 210;
         mc_entity *candidate;
-        status = mc_world_entity_list_view_get(&nearby, i, &candidate);
+        mc_world_storage_status status =
+            mc_world_nearby_read_admitted(items, entries, i, &candidate);
         if (status != MC_WORLD_STORAGE_OK) {
             fail(frame, status, "Collision nearby first get");
             success = false;
@@ -461,7 +465,7 @@ static bool query(mc_world_runtime *world, mc_entity *moving, const mc_entity_bo
         /* Actual inherited candidate box returned null. The second get is
          * still a separate reached List operation, before the moving call. */
         frame->world_bytecode = 252;
-        status = mc_world_entity_list_view_get(&nearby, i, &candidate);
+        status = mc_world_nearby_read_admitted(items, entries, i, &candidate);
         if (status != MC_WORLD_STORAGE_OK) {
             fail(frame, status, "Collision nearby second get");
             success = false;

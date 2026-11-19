@@ -727,11 +727,8 @@ mc_world_storage_status mc_world_entity_list_view_get(const mc_world_entity_list
         return status;
     if (index >= count)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
-    const mc_world_entity_list_ledger *ledger = &view->owner->nearby_entities;
-    if (ledger->entries[index] == NULL || view->identity->items[index] != ledger->entries[index])
-        return MC_WORLD_STORAGE_UNSUPPORTED_STATE;
-    *out = ledger->entries[index];
-    return MC_WORLD_STORAGE_OK;
+    return mc_world_nearby_read_admitted(view->identity->items,
+                                         view->owner->nearby_entities.entries, index, out);
 }
 
 void mc_world_entity_list_view_release(mc_world_entity_list_view *view) {

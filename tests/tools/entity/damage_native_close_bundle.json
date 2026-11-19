@@ -77,8 +77,8 @@
       "sha256": "a285621972c1f904bc23043a3a72f0df15f923c3dd20307be4a84c3c534969c9"
     },
     "src/world/runtime/collision/entities.c": {
-      "bytes": 35207,
-      "sha256": "f057aa18469be6be6db546597125f9a7592581703407ee088026b60276ba4260"
+      "bytes": 35068,
+      "sha256": "cde655cd3687cf8824f5b40ea966c6e19c791f4768102dafb133a79be732a9db"
     },
     "src/world/cache/acquire.c": {
       "bytes": 19466,

@@ -305,6 +305,27 @@ tick words, simulation state, World RNG, and Chunk digests matched. The median
 tick cost went from 3.150 to 3.194 ms with eight Zombies and from 24.043 to
 24.040 ms with 64 Zombies.
 
+### Nearby-list reads during collision queries
+
+Collision queries validate the nearby list's backing arrays once after
+gathering. The candidate and moving-Entity checks are callback-free.
+Both reached reads verify the individual occurrence. The regression
+case checks that an unsupported later candidate retains the earlier
+block boxes and the ordered nearby list, including duplicates.
+
+Eight alternating Windows Release pairs used the same authored scene
+with one solid block and overlapping occurrences of one Entity. The
+times include resetting the bounds pool, querying collision boxes and
+releasing the result. The result boxes, list order and ownership counts
+matched in all samples.
+
+| Nearby occurrences | Median before | Median after |
+| ---: | ---: | ---: |
+| 0 | 4.42 µs | 4.39 µs |
+| 1 | 4.54 µs | 4.45 µs |
+| 8 | 5.13 µs | 4.80 µs |
+| 64 | 8.60 µs | 6.65 µs |
+
 ### Living action diagnostics after Bounds indexing
 
 Two heavy and two lighter Far runs on DISPLAY2 timed the indexed build with

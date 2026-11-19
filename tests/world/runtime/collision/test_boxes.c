@@ -1097,6 +1097,14 @@ static bool boxes_arrow_null_virtuals(fixture *f) {
           error.world_bytecode == 218 && boxes_view_is(&held, &ghast_stone, 1) &&
           out.owner == NULL && out.identity == held.identity && w->fields.R->count == 1 &&
           w->fields.R->items[0] == ghast);
+    const mc_entity_bounds mixed_query = {3.75, 7.75, 3.75, 9.25, 9.25, 9.25};
+    const mc_entity_bounds mixed_stone[] = {ghast_stone, stone};
+    mc_entity *const mixed_entities[] = {a, a, b, cart, ghast};
+    CHECK(mc_world_runtime_collision_boxes(w, moving, &mixed_query, &out, &error) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          error.world_bytecode == 218 && out.owner == NULL && out.identity == held.identity &&
+          boxes_view_is(&held, mixed_stone, COUNT(mixed_stone)) &&
+          boxes_nearby_is(w, mixed_entities, COUNT(mixed_entities)) && w->local_leases == 1);
     CHECK(mc_world_runtime_chunk_add_entity(f->chunks[0], failed, NULL) == MC_WORLD_STORAGE_OK &&
           mc_world_runtime_collision_boxes(w, moving, &origin, &out, &error) ==
               MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
