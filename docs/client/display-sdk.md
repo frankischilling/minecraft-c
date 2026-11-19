@@ -78,6 +78,48 @@ SDL's origin; raw Windows/X11 event, timestamp, coalescing and pixel parity are
 not claimed. The verified game mouse filter uses wall time and App `P`, so no
 unjustified epoch conversion is introduced.
 
+## Display operation guard
+
+The staged Display checks the live input and update active flags before
+making the GL context current. Each child supplies its flag directly.
+The diagnostic inspection APIs still publish full snapshots. Retirement
+reads the update flag directly and inspects input for its pending event
+ticket.
+
+Six alternating Windows MSVC Release pairs compared the same passive guard
+on real Display owners with authored icons. With both children ready,
+median cost fell from 16.93 to 3.21 ns per call. It fell from 5.60 to
+3.21 ns before class initialization and from 5.18 to 3.24 ns with only
+the update child. The pairs matched Display and child state, retained
+diagnostics, queue and buffer bytes, and MXCSR.
+
+The native event-watch test calls Display while each SDK child is active
+on its own. Context acquisition and retirement return BUSY in both cases.
+Context acquisition succeeds as soon as the active call returns.
+Seven focused tests passed on each host, using Windows MSVC Release and
+WSL Clang Debug with ASan and UBSan.
+
+The uninstrumented Windows frame observer compared `baf2129c`, the new
+guard, and the guard with [packed normals](lighting-raster.md#packed-normal-array-conversion).
+Each variant ran on the same stationary authored Far scene at 854×480 on
+an i9-10900F with an RTX 3060. In three rounds after a two-second warmup,
+all nine intervals advanced 200 World ticks and kept compiling sections.
+
+| Early Far build | Median FPS | Median p95 (ms) | Median p99 (ms) |
+| --- | ---: | ---: | ---: |
+| Baseline | 73.33 | 15.36 | 16.39 |
+| Guard | 74.13 | 15.16 | 16.29 |
+| Guard and packed normals | 74.56 | 15.02 | 15.77 |
+
+Three more rounds after a 25-second warmup ran 200 World ticks per
+interval and reported zero Chunk updates.
+
+| Settled Far build | Median FPS | Median p95 (ms) | Median p99 (ms) |
+| --- | ---: | ---: | ---: |
+| Baseline | 420.88 | 4.39 | 7.03 |
+| Guard | 427.58 | 4.07 | 7.00 |
+| Guard and packed normals | 430.94 | 4.15 | 6.98 |
+
 ## Startup GL setup and diagnostics
 
 The normal startup caller now performs its selected GL setup through offset

@@ -78,6 +78,52 @@ static void triangle_bytes(uint8_t bytes[96]) {
     }
 }
 
+static float scalar_array_normal(mc_client_source_attribute_profile profile, bool compiled,
+                                 uint8_t byte) {
+    const int value = byte < 128 ? byte : (int)byte - 256;
+    if (compiled)
+        return (float)(2 * value + 1) * (1.0f / 255.0f);
+    if (profile == SOURCE_ATTRIBUTE_PROFILE_MESA_LLVMPIPE) {
+        const float normal = (float)value * (1.0f / 127.0f);
+        return normal < -1.0f ? -1.0f : normal;
+    }
+    const int replicated = (int)byte * 257;
+    return (float)(replicated >= 32768 ? replicated - 65536 : replicated) / 32767.0f;
+}
+
+static bool normal_array_controls(void) {
+    const unsigned int saved = _mm_getcsr();
+    bool matched = true;
+    for (unsigned int mode = 0; mode < 3 && matched; ++mode) {
+        const bool compiled = mode == 2;
+        const mc_client_source_attribute_profile profile =
+            mode == 1 ? SOURCE_ATTRIBUTE_PROFILE_MESA_LLVMPIPE
+                      : SOURCE_ATTRIBUTE_PROFILE_NVIDIA_581_42;
+        for (unsigned int byte = 0; byte < 256; ++byte) {
+            const uint8_t raw[4] = {(uint8_t)byte, (uint8_t)(byte * 37u), (uint8_t)(255u - byte),
+                                    (uint8_t)(byte * 19u)};
+            const unsigned int initial = 0x1f80u | (byte & 63u);
+            float expected[3];
+            float actual[4] = {0, 0, 0, -17};
+            _mm_setcsr(initial);
+            for (size_t component = 0; component < 3; ++component)
+                expected[component] = scalar_array_normal(profile, compiled, raw[component]);
+            const unsigned int expected_flags = _mm_getcsr();
+            _mm_setcsr(initial);
+            source_attribute_normals(profile, compiled, raw, actual);
+            const unsigned int actual_flags = _mm_getcsr();
+            if (memcmp(actual, expected, sizeof(expected)) != 0 || actual_flags != expected_flags ||
+                actual[3] != -17) {
+                fprintf(stderr, "Normal array case %u/%u differs\n", mode, byte);
+                matched = false;
+                break;
+            }
+        }
+    }
+    _mm_setcsr(saved);
+    return matched;
+}
+
 int main(int argc, char **argv) {
     (void)argc;
     (void)argv;
@@ -92,6 +138,7 @@ int main(int argc, char **argv) {
     uint8_t bytes[96];
     triangle_bytes(bytes);
     _mm_setcsr(0x1f80u);
+    CHECK(normal_array_controls());
     CHECK(mc_client_display_create("source FP boundary controls", 64, 64, true, &display, &error));
     real_clear = display->gl.Clear;
     real_integer = display->gl.GetIntegerv;

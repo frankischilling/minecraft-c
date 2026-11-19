@@ -358,6 +358,10 @@ done:
     return e.status;
 }
 
+bool mc_client_sdk_input_operation_active(const mc_client_sdk_input *o) {
+    return o != NULL && o->active;
+}
+
 bool mc_client_sdk_input_inspect(const mc_client_sdk_input *o, mc_client_sdk_input_state *out) {
     if (o == NULL || out == NULL)
         return false;

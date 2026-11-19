@@ -11,6 +11,8 @@ typedef struct mc_client_sdk_update mc_client_sdk_update;
  * Helpers are private to the real Display/update/input composition. */
 bool mc_client_display_sdk_created(const mc_client_display *);
 bool mc_client_display_sdk_live(const mc_client_display *);
+bool mc_client_sdk_input_operation_active(const mc_client_sdk_input *);
+bool mc_client_sdk_update_operation_active(const mc_client_sdk_update *);
 bool mc_client_display_sdk_operation_busy(const mc_client_display *);
 bool mc_client_display_sdk_external_busy(const mc_client_display *);
 bool mc_client_display_sdk_parent(const mc_client_display *);

@@ -46,23 +46,31 @@ static mc_client_source_attribute_profile source_attribute_profile_for(mc_client
 
 /* Reached only after the batch admits a known profile and strict native FP.
  * Each direct/list formula was observed for all 256 GL_BYTE input values. */
-static float source_attribute_normal(mc_client_source_attribute_profile profile, bool compiled,
-                                     uint8_t byte) {
-    const int value = byte < 128 ? byte : (int)byte - 256;
-    if (compiled)
-        return (float)(2 * value + 1) * (1.0f / 255.0f);
-    if (profile == SOURCE_ATTRIBUTE_PROFILE_MESA_LLVMPIPE) {
-        const float normal = (float)value * (1.0f / 127.0f);
-        return normal < -1.0f ? -1.0f : normal;
+static void source_attribute_normals(mc_client_source_attribute_profile profile, bool compiled,
+                                     const uint8_t raw[3], float normal[3]) {
+    /* Read only the three normal bytes. The fourth SIMD lane stays zero so
+     * unrelated vertex padding cannot add floating-point exception flags. */
+    const uint32_t packed = (uint32_t)raw[0] | ((uint32_t)raw[1] << 8u) | ((uint32_t)raw[2] << 16u);
+    const __m128i bytes = _mm_cvtsi32_si128((int32_t)packed);
+    const __m128i pairs = _mm_unpacklo_epi8(bytes, bytes);
+    const __m128i replicated = _mm_unpacklo_epi16(pairs, _mm_srai_epi16(pairs, 15));
+    __m128 converted;
+    if (compiled) {
+        const __m128i signed_bytes = _mm_srai_epi32(replicated, 8);
+        const __m128i odd =
+            _mm_or_si128(_mm_slli_epi32(signed_bytes, 1), _mm_set_epi32(0, 1, 1, 1));
+        converted = _mm_mul_ps(_mm_cvtepi32_ps(odd), _mm_set1_ps(1.0f / 255.0f));
+    } else if (profile == SOURCE_ATTRIBUTE_PROFILE_MESA_LLVMPIPE) {
+        const __m128i signed_bytes = _mm_srai_epi32(replicated, 8);
+        converted = _mm_mul_ps(_mm_cvtepi32_ps(signed_bytes), _mm_set1_ps(1.0f / 127.0f));
+        converted = _mm_max_ps(converted, _mm_set1_ps(-1.0f));
+    } else {
+        /* Preserve the direct signed replicated-16-bit NVIDIA conversion. */
+        converted = _mm_div_ps(_mm_cvtepi32_ps(replicated), _mm_set1_ps(32767.0f));
     }
-    /* The captured NVIDIA GL_BYTE array profile replicates each byte into a
-     * signed 16-bit normalized value. All 256 values were observed through
-     * gl_Normal feedback with GL_BYTE, stride 32 and client memory; this is
-     * distinct from immediate glNormal3b's conversion. */
-    int replicated = (int)byte * 257;
-    if (replicated >= 32768)
-        replicated -= 65536;
-    return (float)replicated / 32767.0f;
+    float values[4];
+    _mm_storeu_ps(values, converted);
+    memcpy(normal, values, 3u * sizeof(*normal));
 }
 
 static void source_attribute_colors(const uint8_t rgba[4], bool multiply, float color[4]) {
@@ -631,9 +639,7 @@ static bool source_execute_batch(mc_client_display *display, mc_client_source_dr
         else
             memcpy(vertices[i].color, candidate.color, sizeof(candidate.color));
         if ((arrays & normal_bit) != 0)
-            for (size_t component = 0; component < 3; ++component)
-                vertices[i].normal[component] =
-                    source_attribute_normal(attribute_profile, compiled, raw[24 + component]);
+            source_attribute_normals(attribute_profile, compiled, raw + 24, vertices[i].normal);
         else
             memcpy(vertices[i].normal, candidate.fog.normal, sizeof(vertices[i].normal));
     }

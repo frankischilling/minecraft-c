@@ -6,6 +6,29 @@ that [standard lighting](standard-lighting.md) updates. Later loaded-World
 profiles now return through Entity drawing, hand and HUD; each retains its own
 finite qualification. This backend contract alone does not establish gameplay.
 
+## Packed normal-array conversion
+
+Direct draws and uncached replay convert the three signed normal bytes
+together. Each profile keeps its observed conversion formula and rounding.
+The unused SIMD lane is zero and the conversion writes three floats.
+
+The strict-FP CPU comparison on Windows MSVC and WSL Clang matched
+83,886,080 scalar and packed cases, including all 24-bit normal triples
+on the direct and compiled paths. Every case checked all 12 output
+bytes, full MXCSR and adjacent storage. Five authored native lighting
+modes matched on Windows and on Mesa 26 llvmpipe, including the 256
+normal-array values.
+
+Eight alternating MSVC Release pairs measured 256 authored vertices per
+batch. Each pair matched every output byte and the full MXCSR register.
+
+| Normal-array path | Median scalar / packed (ns per vertex) |
+| --- | ---: |
+| NVIDIA direct | 2.80 / 1.07 |
+| NVIDIA compiled | 2.79 / 1.44 |
+| Mesa direct | 2.87 / 1.68 |
+| Mesa compiled | 2.79 / 1.70 |
+
 ## Local Mesa 26 device support
 
 Display recognizes `Mesa`, `llvmpipe (LLVM 21.1.8, 256 bits)` and

@@ -28,6 +28,14 @@ failures independently.
 Across four alternating Windows pairs, the 24-test suite took 14.02 seconds
 at the median, down from 20.48 seconds. Every test name and outcome matched.
 
+## Dedicated population mutation fixtures
+
+The dedicated population suite decodes a fresh tree for each mutation
+from one strict JSON encoding of the verified fixture. A repeated saving
+flag mutation checks that the original tree remains intact. In three
+alternating Windows pairs, the same 18 tests and ten mutation checks
+ran in 20.10 seconds before and 15.60 seconds after at the median.
+
 ## Locale selection for native replays
 
 The held-item attack and plant lifecycle drivers run their Linux native

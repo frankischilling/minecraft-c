@@ -2,6 +2,7 @@
 import copy
 import hashlib
 import importlib.util
+import json
 from pathlib import Path
 import sys
 import unittest
@@ -31,9 +32,13 @@ class DedicatedOriginalSemantics(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.case = F.load_package()
+        # Every corruption gets a fresh JSON tree. Observed game aliases use
+        # explicit reference IDs, independently of Python container identity.
+        cls.original_json = json.dumps(cls.case["original_value"], ensure_ascii=True,
+                                       allow_nan=False, separators=(",", ":"))
 
     def reject_original(self, edit, message=None):
-        value = copy.deepcopy(self.case["original_value"])
+        value = json.loads(self.original_json)
         edit(value)
         context = self.assertRaisesRegex(ValueError, message) if message else self.assertRaises(ValueError)
         with context:
@@ -58,9 +63,14 @@ class DedicatedOriginalSemantics(unittest.TestCase):
     def test_derived_E_cannot_be_normalized(self):
         def edit(value):
             state = value["states"][0]
-            field_at(world_at(state), "dp", "E")["value"] = True
-            next(row for row in state["dedicated"]["fields"] if row["field"] == "E")["value"] = True
-        self.reject_original(edit, "saving-disable")
+            flag = field_at(world_at(state), "dp", "E")
+            flag["value"] = not flag["value"]
+            next(row for row in state["dedicated"]["fields"] if row["field"] == "E")["value"] = flag["value"]
+        for _ in range(2):
+            # Reusing a mutable case would toggle back to the valid observation.
+            self.reject_original(edit, "saving-disable")
+        self.assertEqual(json.dumps(self.case["original_value"], ensure_ascii=True,
+                                    allow_nan=False, separators=(",", ":")), self.original_json)
 
     def test_missing_base_field_and_nullable_server_role_fail(self):
         def missing(value):

@@ -537,11 +537,9 @@ bool mc_client_display_sdk_live(const mc_client_display *d) {
 bool mc_client_display_sdk_operation_busy(const mc_client_display *d) {
     if (d == NULL)
         return false;
-    mc_client_sdk_update_state update;
-    mc_client_sdk_input_state input;
     return d->stage_active || d->native_retiring ||
-           (mc_client_sdk_input_inspect(d->inputs, &input) && input.active) ||
-           (mc_client_sdk_update_inspect(d->updates, &update) && update.active);
+           mc_client_sdk_input_operation_active(d->inputs) ||
+           mc_client_sdk_update_operation_active(d->updates);
 }
 
 bool mc_client_display_sdk_external_busy(const mc_client_display *d) {
@@ -636,8 +634,7 @@ bool mc_client_display_stage_retire(mc_client_display **slot, mc_client_display_
     mc_client_events_state events;
     const bool port_live = mc_client_events_inspect(d->events, &events);
     const size_t own_ticket = input_live && input.pending_native_event != NULL ? 1u : 0u;
-    mc_client_sdk_update_state update;
-    const bool update_active = mc_client_sdk_update_inspect(d->updates, &update) && update.active;
+    const bool update_active = mc_client_sdk_update_operation_active(d->updates);
     if (!d->sdk_profile || d->stage_active || update_active || (input_live && input.active) ||
         d->source.context_holds != 0 || d->source.range_count != 0 ||
         d->source.texture_lease_count != 0 || d->source.active_calls != 0 ||

@@ -14,7 +14,7 @@ typedef struct callback_probe {
     mc_client_sdk_update *updates;
     mc_client_sdk_input *input;
     Uint32 type;
-    size_t callbacks, busy;
+    size_t callbacks, busy, input_only, update_only;
     bool enabled, registered, failed, change_fp;
 } callback_probe;
 
@@ -27,14 +27,26 @@ static bool SDLCALL event_watch(void *context, SDL_Event *event) {
     ++p->callbacks;
     mc_client_display *same = *p->display;
     mc_client_display_stage_error display_error;
+    mc_client_display_error current_error;
     mc_client_sdk_update_error update_error;
     mc_client_sdk_input_error input_error;
+    mc_client_sdk_input_state input_state;
+    mc_client_sdk_update_state update_state;
+    if (!mc_client_sdk_input_inspect(p->input, &input_state) ||
+        !mc_client_sdk_update_inspect(p->updates, &update_state)) {
+        p->failed = true;
+        return true;
+    }
+    p->input_only += input_state.active && !update_state.active;
+    p->update_only += update_state.active && !input_state.active;
     mc_client_sdk_input *input_slot = p->input;
     bool next = true;
     mc_client_sdk_mouse_event mouse = {.x = 123};
     const bool busy =
         !mc_client_display_stage_retire(p->display, &display_error) && *p->display == same &&
         display_error.display.status == MC_CLIENT_DISPLAY_BUSY &&
+        !mc_client_display_make_current(same, &current_error) &&
+        current_error.status == MC_CLIENT_DISPLAY_BUSY &&
         mc_client_sdk_display_update(p->updates, &update_error) == MC_CLIENT_SDK_UPDATE_BUSY &&
         !update_error.swapped &&
         mc_client_sdk_input_retire(&input_slot, &input_error) == MC_CLIENT_SDK_INPUT_BUSY &&
@@ -51,8 +63,7 @@ static bool SDLCALL event_watch(void *context, SDL_Event *event) {
     return true;
 }
 
-static void actual_pump_then_watch_event(void) {
-    SDL_PumpEvents();
+static void push_watch_event(void) {
     if (probe.enabled) {
         SDL_Event event = {0};
         event.type = probe.type;
@@ -60,6 +71,17 @@ static void actual_pump_then_watch_event(void) {
         if (!SDL_PushEvent(&event))
             probe.failed = true;
     }
+}
+
+static void actual_pump_then_watch_event(void) {
+    SDL_PumpEvents();
+    push_watch_event();
+}
+
+static SDL_MouseButtonFlags actual_mouse_state_then_watch_event(float *x, float *y) {
+    const SDL_MouseButtonFlags buttons = SDL_GetMouseState(x, y);
+    push_watch_event();
+    return buttons;
 }
 
 #ifdef _WIN32
@@ -313,6 +335,18 @@ int main(int argc, char **argv) {
     probe.registered = true;
     CHECK(mc_client_sdk_display_process_messages(updates, &update_error) ==
           MC_CLIENT_SDK_UPDATE_OK);
+    CHECK(probe.update_only != 0 && !probe.failed);
+    mc_client_display_error current_error;
+    CHECK(mc_client_display_make_current(display, &current_error) &&
+          current_error.status == MC_CLIENT_DISPLAY_OK);
+    const size_t input_callbacks = probe.input_only;
+    CHECK(mc_client_sdk_mouse_poll(input, &input_error) == MC_CLIENT_SDK_INPUT_OK);
+    CHECK(probe.input_only > input_callbacks && probe.busy == probe.callbacks && !probe.failed);
+    mc_client_sdk_update_state update_state;
+    CHECK(mc_client_sdk_input_inspect(input, &input_state) && !input_state.active &&
+          mc_client_sdk_update_inspect(updates, &update_state) && !update_state.active);
+    CHECK(mc_client_display_make_current(display, &current_error) &&
+          current_error.status == MC_CLIENT_DISPLAY_OK);
     bool next = false;
     mc_client_sdk_mouse_event mouse;
     mc_client_sdk_key_event key;
@@ -455,3 +489,10 @@ cleanup:
 #define SDL_PumpEvents actual_pump_then_watch_event
 #include "../../../src/client/display/events.c"
 #undef SDL_PumpEvents
+
+/* Invoke the same event watch after the actual native mouse read, while an
+ * ordinary direct input call owns its active guard. The archive poll object
+ * must also remain unextracted in the final link map. */
+#define SDL_GetMouseState actual_mouse_state_then_watch_event
+#include "../../../src/client/display/sdk_input_poll.c"
+#undef SDL_GetMouseState

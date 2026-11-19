@@ -381,6 +381,10 @@ mc_client_sdk_update_status mc_client_sdk_display_update(mc_client_sdk_update *o
     return status;
 }
 
+bool mc_client_sdk_update_operation_active(const mc_client_sdk_update *o) {
+    return o != NULL && o->active;
+}
+
 bool mc_client_sdk_update_inspect(const mc_client_sdk_update *o, mc_client_sdk_update_state *out) {
     if (o == NULL || out == NULL)
         return false;
