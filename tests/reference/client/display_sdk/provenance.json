@@ -4190,8 +4190,8 @@
       "sha256": "03fae9d45bc2d949cc3cfd922ac3c5e77c50f7c870ee7e0cd8f2f570a8b03c2c"
     },
     "tests/client/render_engine/test_nw_normals.c": {
-      "bytes": 10068,
-      "sha256": "79ed49b6c461c644529c0c892947dcef576da8f2b80f329a9767053a9618aa01"
+      "bytes": 12586,
+      "sha256": "2bcc764a21c2f70be9ad32624f2b169e0f00f2c4f8bb6d5d52bb5db3e887a810"
     },
     "tests/reference/client/lighting_raster/capture_conversion.py": {
       "bytes": 7205,

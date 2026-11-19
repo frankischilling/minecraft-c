@@ -3078,8 +3078,8 @@
       "sha256": "835c9cb537fb0af9c799442d0f573c710fbfa589ed141135f55caa399579eb17"
     },
     "src/client/render_engine/nw.c": {
-      "bytes": 27235,
-      "sha256": "eeebedd9151136e82b832667a9ffc00f1647f929bc065106dc27036a0bf9914e"
+      "bytes": 28305,
+      "sha256": "2266c11b164f66cdc11ab378f2fe0cee8b7c84291e09c91931b5e852d3fe62f8"
     },
     "src/client/render_engine/nw.h": {
       "bytes": 6588,
@@ -6419,7 +6419,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938028,
-      "sha256": "aada1e1e6f0e9cc6ab9a702bae148f8b8a014655a9f7171a11be79758eb258ba"
+      "sha256": "33a193ff59928f22caa7dcce0f36058c1e3d03a30182ad299df2bf0f0921ac12"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6483,7 +6483,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067982,
-      "sha256": "d3ffc461fef93f283112e2e4e1c9483a5bca19d78b47c5f98624cc39bf0c019b"
+      "sha256": "851bc9c191df1eda605144c74d2b44c1d7d8b3b39931687abc00c62017dce135"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6615,7 +6615,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934853,
-      "sha256": "5c982ce7761fd393a1bcfde10d20b88544e319d7a75a71a5875ee820cb5832c1"
+      "sha256": "4dfbd602eebf9fdfd15028df0a20c4c1da0fefa5bc2970de85fbf74cda2b49d3"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -12246,8 +12246,8 @@
       "sha256": "03fae9d45bc2d949cc3cfd922ac3c5e77c50f7c870ee7e0cd8f2f570a8b03c2c"
     },
     "tests/client/render_engine/test_nw_normals.c": {
-      "bytes": 10068,
-      "sha256": "79ed49b6c461c644529c0c892947dcef576da8f2b80f329a9767053a9618aa01"
+      "bytes": 12586,
+      "sha256": "2bcc764a21c2f70be9ad32624f2b169e0f00f2c4f8bb6d5d52bb5db3e887a810"
     },
     "tests/reference/client/lighting_raster/ConvertedRasterObservation.java": {
       "bytes": 4790,

@@ -399,6 +399,46 @@ static int32_t added_narrowed_bits(double left, double right) {
     return bits;
 }
 
+static bool write_vertex_checked(mc_client_tessellator *o, double x, double y, double z,
+                                 mc_client_graphics_error *e) {
+    const mc_client_nw_fields *f = &o->fields;
+    if (f->m) {
+        if (!fp(e, 264) || !store(o, mc_java_i32_add(f->o, 3), narrowed_bits(f->i), 268, e) ||
+            !store(o, mc_java_i32_add(f->o, 4), narrowed_bits(f->j), 287, e))
+            return false;
+    }
+    if (f->l && !store(o, mc_java_i32_add(f->o, 5), f->k, 309, e))
+        return false;
+    if (f->n && !store(o, mc_java_i32_add(f->o, 6), f->v, 332, e))
+        return false;
+    return fp(e, 348) && store(o, f->o, added_narrowed_bits(x, f->s), 353, e) &&
+           store(o, mc_java_i32_add(f->o, 1), added_narrowed_bits(y, f->t), 374, e) &&
+           store(o, mc_java_i32_add(f->o, 2), added_narrowed_bits(z, f->u), 396, e);
+}
+
+static bool write_vertex(mc_client_tessellator *o, double x, double y, double z,
+                         mc_client_graphics_error *e) {
+    const mc_client_nw_fields *f = &o->fields;
+    /* The checked path preserves partial writes at the first failing access. */
+    if (f->g == NULL || f->o < 0 || f->B < 7 || f->o > f->B - 7 ||
+        (_mm_getcsr() & 0xffc0u) != 0x1f80u)
+        return write_vertex_checked(o, x, y, z, e);
+
+    int32_t *const words = (int32_t *)(void *)f->g + f->o;
+    if (f->m) {
+        words[3] = narrowed_bits(f->i);
+        words[4] = narrowed_bits(f->j);
+    }
+    if (f->l)
+        words[5] = f->k;
+    if (f->n)
+        words[6] = f->v;
+    words[0] = added_narrowed_bits(x, f->s);
+    words[1] = added_narrowed_bits(y, f->t);
+    words[2] = added_narrowed_bits(z, f->u);
+    return true;
+}
+
 static bool vertex(mc_client_tessellator *o, double x, double y, double z,
                    mc_client_graphics_error *e) {
     mc_client_nw_fields *f = &o->fields;
@@ -423,18 +463,7 @@ static bool vertex(mc_client_tessellator *o, double x, double y, double z,
             o->last_store_pc = 234;
         }
     }
-    if (f->m) {
-        if (!fp(e, 264) || !store(o, mc_java_i32_add(f->o, 3), narrowed_bits(f->i), 268, e) ||
-            !store(o, mc_java_i32_add(f->o, 4), narrowed_bits(f->j), 287, e))
-            return false;
-    }
-    if (f->l && !store(o, mc_java_i32_add(f->o, 5), f->k, 309, e))
-        return false;
-    if (f->n && !store(o, mc_java_i32_add(f->o, 6), f->v, 332, e))
-        return false;
-    if (!fp(e, 348) || !store(o, f->o, added_narrowed_bits(x, f->s), 353, e) ||
-        !store(o, mc_java_i32_add(f->o, 1), added_narrowed_bits(y, f->t), 374, e) ||
-        !store(o, mc_java_i32_add(f->o, 2), added_narrowed_bits(z, f->u), 396, e))
+    if (!write_vertex(o, x, y, z, e))
         return false;
     f->o = mc_java_i32_add(f->o, 8);
     o->last_store_pc = 405;

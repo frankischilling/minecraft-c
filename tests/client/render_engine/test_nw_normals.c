@@ -123,6 +123,54 @@ static void fp_prefix(void) {
     CHECK(mc_client_render_engine_classes_release(classes) == MC_CLIENT_RENDER_ENGINE_OK);
 }
 
+static void vertex_span(void) {
+    mc_client_render_engine_classes *classes = NULL;
+    mc_client_tessellator *owner = NULL;
+    mc_client_graphics_error error;
+    CHECK(mc_client_render_engine_classes_create(NULL, &classes) == MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_nw_active_use(classes, caller, &owner, &error));
+    CHECK(mc_client_nw_begin_quads(owner, &error));
+    CHECK(mc_client_nw_color(owner, 17, 34, 51, 68, &error));
+    CHECK(mc_client_nw_normal(owner, 1, 0, 0, &error));
+    const mc_client_nw_fields initial = owner->fields;
+    const int32_t sentinel = 42;
+    int32_t words[8] = {0};
+    words[7] = sentinel;
+    owner->fields.g = words;
+    owner->fields.B = 7;
+    CHECK(mc_client_nw_vertex_uv(owner, 1, -2, 3, 0.5, 0.25, &error));
+    const int32_t expected[8] = {0x3f800000, -1073741824, 0x40400000, 0x3f000000,
+                                 0x3e800000, initial.k,   initial.v,  sentinel};
+    CHECK(memcmp(words, expected, sizeof(words)) == 0 && owner->fields.h == 1 &&
+          owner->fields.o == 8 && owner->fields.p == 1 && owner->last_store_pc == 415);
+
+    memset(words, 0, sizeof(words));
+    owner->fields = initial;
+    owner->fields.g = words;
+    owner->fields.B = 6;
+    CHECK(!mc_client_nw_vertex_uv(owner, 1, -2, 3, 0.5, 0.25, &error));
+    CHECK(error.status == MC_CLIENT_GRAPHICS_ARRAY_INDEX && error.actual_index == 6 &&
+          error.site.pc == 332 && error.parent.pc == 13 && owner->fields.p == 1 &&
+          owner->fields.h == 0 && owner->fields.o == 0 && owner->last_store_pc == 7);
+    CHECK(words[0] == 0 && words[1] == 0 && words[2] == 0 && words[3] == expected[3] &&
+          words[4] == expected[4] && words[5] == expected[5] && words[6] == 0 && words[7] == 0);
+
+    memset(words, 0, sizeof(words));
+    owner->fields = initial;
+    owner->fields.g = words;
+    owner->fields.B = 8;
+    const unsigned int saved = _mm_getcsr();
+    _mm_setcsr(saved | 0x8000u);
+    const bool result = mc_client_nw_vertex(owner, 1, -2, 3, &error);
+    _mm_setcsr(saved);
+    CHECK(!result && error.status == MC_CLIENT_GRAPHICS_UNSUPPORTED_FP && error.site.pc == 348 &&
+          owner->fields.p == 1 && owner->fields.h == 0 && owner->fields.o == 0);
+    CHECK(words[0] == 0 && words[1] == 0 && words[2] == 0 && words[3] == 0 && words[4] == 0 &&
+          words[5] == expected[5] && words[6] == expected[6] && words[7] == 0);
+    owner->fields = initial;
+    CHECK(mc_client_render_engine_classes_release(classes) == MC_CLIENT_RENDER_ENGINE_OK);
+}
+
 int main(void) {
     mc_client_render_engine_classes *classes = NULL;
     mc_client_tessellator *owner = NULL;
@@ -187,6 +235,7 @@ int main(void) {
     CHECK(classes->nw_system_output == NULL);
     CHECK(mc_client_render_engine_classes_release(classes) == MC_CLIENT_RENDER_ENGINE_OK);
     fp_prefix();
+    vertex_span();
     printf("Source NW normals: %u checks\n", checks);
     return 0;
 }

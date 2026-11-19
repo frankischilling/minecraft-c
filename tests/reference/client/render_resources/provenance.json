@@ -1002,8 +1002,8 @@
       "sha256": "835c9cb537fb0af9c799442d0f573c710fbfa589ed141135f55caa399579eb17"
     },
     "src/client/render_engine/nw.c": {
-      "bytes": 27235,
-      "sha256": "eeebedd9151136e82b832667a9ffc00f1647f929bc065106dc27036a0bf9914e"
+      "bytes": 28305,
+      "sha256": "2266c11b164f66cdc11ab378f2fe0cee8b7c84291e09c91931b5e852d3fe62f8"
     },
     "src/client/render_engine/nw.h": {
       "bytes": 6588,
@@ -3994,8 +3994,8 @@
       "sha256": "03fae9d45bc2d949cc3cfd922ac3c5e77c50f7c870ee7e0cd8f2f570a8b03c2c"
     },
     "tests/client/render_engine/test_nw_normals.c": {
-      "bytes": 10068,
-      "sha256": "79ed49b6c461c644529c0c892947dcef576da8f2b80f329a9767053a9618aa01"
+      "bytes": 12586,
+      "sha256": "2bcc764a21c2f70be9ad32624f2b169e0f00f2c4f8bb6d5d52bb5db3e887a810"
     },
     "tests/reference/client/lighting_raster/capture_conversion.py": {
       "bytes": 7205,
