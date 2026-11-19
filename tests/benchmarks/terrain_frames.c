@@ -16,7 +16,7 @@
 #include <string.h>
 #include <windows.h>
 
-enum { side = 384, radius = 3, visible = 98, samples = 160, warmup = 40 };
+enum { side = 384, max_radius = 7, max_quads = 64, samples = 160, warmup = 40 };
 
 static mc_client_render_global *renderer;
 static mc_client_display *display;
@@ -24,6 +24,9 @@ static mc_entity *camera;
 static mc_math_classes *math;
 static mc_client_render_global_error error;
 static mc_client_display_error display_error;
+static int radius = 3;
+static int visible;
+static int quads[2] = {3, 3};
 typedef void(APIENTRY *finish_fn)(void);
 static finish_fn finish_draws;
 static uint64_t work_hash;
@@ -53,7 +56,7 @@ static int define_tile(int32_t id, int32_t local_x, int32_t y, int32_t local_z, 
     CHECK(mc_client_nw_active_use(renderer->classes, site, &mesh, &error.graphics));
     CHECK(mc_client_nw_translation(mesh, 0, 0, 0, &error.graphics));
     CHECK(mc_client_nw_begin_quads(mesh, &error.graphics));
-    for (int k = 0; k < 3; ++k) {
+    for (int k = 0; k < quads[style]; ++k) {
         const double x0 = local_x + 2.0 + style * 2.0 + (k % 2) * 4.0;
         const double z0 = local_z + 2.0 + (k / 2) * 4.0 + style * 2.0;
         const int red = 70 + (id * 17 + k * 9) % 160, green = 52 + (id * 7 + k * 41) % 160;
@@ -205,12 +208,27 @@ static int prepare_scene(int32_t dimension, mc_client_display_list_range **lists
     return 0;
 }
 
+static bool read_option(const char *argument, int minimum, int maximum, int *value) {
+    char *end;
+    const long parsed = strtol(argument, &end, 10);
+    if (end == argument || *end != '\0' || parsed < minimum || parsed > maximum)
+        return false;
+    *value = (int)parsed;
+    return true;
+}
+
 int main(int argc, char **argv) {
-    if (argc != 3 || (strcmp(argv[1], "17") != 0 && strcmp(argv[1], "33") != 0) ||
-        (strcmp(argv[2], "0") != 0 && strcmp(argv[2], "1") != 0)) {
-        fprintf(stderr, "usage: mc_benchmark_terrain_frames 17|33 0|1\n");
+    if ((argc != 3 && argc != 4 && argc != 6) ||
+        (strcmp(argv[1], "17") != 0 && strcmp(argv[1], "33") != 0) ||
+        (strcmp(argv[2], "0") != 0 && strcmp(argv[2], "1") != 0) ||
+        (argc >= 4 && !read_option(argv[3], 1, max_radius, &radius)) ||
+        (argc == 6 && (!read_option(argv[4], 1, max_quads, &quads[0]) ||
+                       !read_option(argv[5], 1, max_quads, &quads[1])))) {
+        fprintf(stderr, "usage: mc_benchmark_terrain_frames 17|33 0|1 [radius [pass0-quads "
+                        "pass1-quads]]\n");
         return 2;
     }
+    visible = 2 * (2 * radius + 1) * (2 * radius + 1);
     const int dimension = atoi(argv[1]), mode = atoi(argv[2]);
     DWORD_PTR available, machine;
     CHECK(GetProcessAffinityMask(GetCurrentProcess(), &available, &machine));

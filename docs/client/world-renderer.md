@@ -235,7 +235,9 @@ The lighter scene varied between rounds and had nearly the same median FPS.
 The cache admits unlit recorded batches of at least 18 vertices, enough
 for three expanded quads. Batches below 96 vertices use available space
 in the 64 MiB budget. A live entry of 96 vertices or more takes priority
-when a smaller batch hashes to the same slot.
+when a smaller batch hashes to the same set. Each set holds four entries.
+On a miss, the cache reuses the least recently used eligible slot in that
+set, so several batches with the same hash can stay resident.
 
 The 4,096-slot vertex cache retains the oldest occupied slot in each group
 of 64. Hits, uploads, and invalidation mark the affected group when they
@@ -261,6 +263,14 @@ timings cover cache bookkeeping with no GPU or game scene. The
 `client.source_vertex_cache_cpu` test checks tie order, exclusion, timestamp
 wrap, invalidation, refill under pressure, and retry after an injected driver
 error. `client.source_lists_device` covers real OpenGL draws and readback.
+
+For a whole render submission measurement on Windows, enable
+`MC_BUILD_BENCHMARKS` and build `mc_benchmark_terrain_frames`. Run
+`mc_benchmark_terrain_frames 33 0 7 16 3` for a stationary 33×33×8 section
+grid with 450 visible sections and 16 then 3 quads per draw in the two
+passes. Change `0` to `1` to move the camera vertically. The benchmark
+reports milliseconds through GPU completion and hashes the framebuffer,
+section order, and submitted work. It uses generated geometry.
 
 ### Rendering and context ownership
 

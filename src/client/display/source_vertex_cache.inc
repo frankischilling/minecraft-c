@@ -1,5 +1,6 @@
 enum {
     SOURCE_CACHE_SLOTS = 4096,
+    SOURCE_CACHE_WAYS = 4,
     SOURCE_CACHE_GROUP_SIZE = 64,
     SOURCE_CACHE_GROUPS = SOURCE_CACHE_SLOTS / SOURCE_CACHE_GROUP_SIZE,
     SOURCE_CACHE_BYTES = 64 * 1024 * 1024,
@@ -9,6 +10,8 @@ enum {
 
 _Static_assert(SOURCE_CACHE_SLOTS % SOURCE_CACHE_GROUP_SIZE == 0 && SOURCE_CACHE_GROUPS <= 64,
                "one dirty bit per complete vertex cache group");
+_Static_assert(SOURCE_CACHE_GROUP_SIZE % SOURCE_CACHE_WAYS == 0,
+               "each vertex cache set is contained in one eviction group");
 
 typedef struct source_cached_vertices {
     /* Recorded draw bytes identify one immutable, committed command. */
@@ -34,7 +37,7 @@ static size_t source_vertex_cache_index(const uint8_t *data) {
     hash ^= hash >> 33;
     hash *= UINT64_C(0xff51afd7ed558ccd);
     hash ^= hash >> 33;
-    return (size_t)(hash & (SOURCE_CACHE_SLOTS - 1));
+    return (size_t)(hash & (SOURCE_CACHE_SLOTS / SOURCE_CACHE_WAYS - 1)) * SOURCE_CACHE_WAYS;
 }
 
 static source_cached_vertices *source_vertex_cache_slot(mc_client_display *display,
@@ -44,14 +47,26 @@ static source_cached_vertices *source_vertex_cache_slot(mc_client_display *displ
     if (display->source_cache == NULL)
         return NULL;
     source_vertex_cache *cache = display->source_cache;
-    source_cached_vertices *entry = &cache->slots[source_vertex_cache_index(data)];
+    source_cached_vertices *set = &cache->slots[source_vertex_cache_index(data)];
+    for (size_t i = 0; i < SOURCE_CACHE_WAYS; ++i)
+        if (set[i].data == data)
+            return &set[i];
+
     const size_t large = SOURCE_CACHE_LARGE_VERTICES * sizeof(mc_client_source_gpu_vertex);
+    const bool small = bytes < large;
+    const size_t free_bytes = SOURCE_CACHE_BYTES - cache->bytes;
+    source_cached_vertices *replacement = NULL;
     /* Small batches can take spare storage. Leave live larger batches and
      * the existing byte-budget eviction policy to larger uploads. */
-    if (bytes < large && ((entry->data != NULL && entry->bytes >= large) ||
-                          bytes > SOURCE_CACHE_BYTES - (cache->bytes - entry->bytes)))
-        return NULL;
-    return entry;
+    for (size_t i = 0; i < SOURCE_CACHE_WAYS; ++i) {
+        source_cached_vertices *entry = &set[i];
+        if (small &&
+            ((entry->data != NULL && entry->bytes >= large) || bytes > free_bytes + entry->bytes))
+            continue;
+        if (replacement == NULL || entry->last_used < replacement->last_used)
+            replacement = entry;
+    }
+    return replacement;
 }
 
 static bool source_vertex_cache_matches(const source_cached_vertices *entry, const uint8_t *data,
@@ -83,11 +98,15 @@ static void source_vertex_cache_touch(source_vertex_cache *cache, source_cached_
 static void source_vertex_cache_invalidate(mc_client_display *display, const uint8_t *data) {
     if (display->source_cache == NULL)
         return;
-    source_cached_vertices *entry = &display->source_cache->slots[source_vertex_cache_index(data)];
-    if (entry->data == data) {
-        entry->data = NULL;
-        entry->last_used = 0;
-        source_vertex_cache_changed(display->source_cache, entry);
+    source_cached_vertices *set = &display->source_cache->slots[source_vertex_cache_index(data)];
+    for (size_t i = 0; i < SOURCE_CACHE_WAYS; ++i) {
+        source_cached_vertices *entry = &set[i];
+        if (entry->data == data) {
+            entry->data = NULL;
+            entry->last_used = 0;
+            source_vertex_cache_changed(display->source_cache, entry);
+            return;
+        }
     }
 }
 

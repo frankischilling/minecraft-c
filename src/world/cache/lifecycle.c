@@ -197,7 +197,7 @@ mc_chunk_lifecycle_status mc_chunk_lifecycle_maintain(const mc_chunk_lifecycle_c
             int32_t key = 0;
             mc_chunk_acquire_status selected = mc_chunk_pending_first(context->pending, &key);
             if (selected == MC_CHUNK_ACQUIRE_EMPTY)
-                continue;
+                break;
             if (selected != MC_CHUNK_ACQUIRE_OK)
                 return MC_CHUNK_LIFECYCLE_STATE_ERROR;
             size_t index = entry_index(context->cache, key);

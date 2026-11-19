@@ -389,9 +389,9 @@ static bool replay_native_controls(mc_client_display *display,
     mc_client_source_batch_view view;
     CHECK(mc_client_display_list_batch(display, cached_id, 0, &view) &&
           display->source_cache != NULL);
-    const source_cached_vertices *entry =
-        &display->source_cache->slots[source_vertex_cache_index(view.bytes)];
-    CHECK(entry->data == view.bytes && entry->vao != 0 && entry->vbo != 0 &&
+    const source_cached_vertices *entry = source_vertex_cache_slot(
+        display, view.bytes, CACHE_VERTICES * sizeof(mc_client_source_gpu_vertex));
+    CHECK(entry != NULL && entry->data == view.bytes && entry->vao != 0 && entry->vbo != 0 &&
           entry->vao != display->source.vao && entry->vbo != display->source.vbo);
     const GLuint cached_vao = entry->vao, cached_vbo = entry->vbo;
     replay_native = display->gl;
@@ -616,37 +616,54 @@ static void GLAPIENTRY eviction_upload(GLenum target, GLsizeiptr bytes, const vo
 static bool eviction_invalidation_control(void) {
     bool result = false;
     mc_client_display display = {0};
-    const uint8_t key = 0;
+
+    enum { SETS = SOURCE_CACHE_SLOTS / SOURCE_CACHE_WAYS };
+
+    uint8_t storage[SOURCE_CACHE_SLOTS + 1];
+    const uint8_t *keys_by_set[SETS][SOURCE_CACHE_WAYS + 1];
+    size_t counts[SETS] = {0};
+    const uint8_t **keys = NULL;
+    /* One more key than there are slots guarantees an overfull set. */
+    for (size_t i = 0; i < sizeof(storage); ++i) {
+        const size_t set = source_vertex_cache_index(&storage[i]) / SOURCE_CACHE_WAYS;
+        keys_by_set[set][counts[set]++] = &storage[i];
+        if (counts[set] > SOURCE_CACHE_WAYS) {
+            keys = keys_by_set[set];
+            break;
+        }
+    }
+    CHECK(keys != NULL);
+
     const size_t small = SOURCE_CACHE_MIN_VERTICES * sizeof(mc_client_source_gpu_vertex);
     const size_t large = SOURCE_CACHE_LARGE_VERTICES * sizeof(mc_client_source_gpu_vertex);
-    source_cached_vertices *entry = source_vertex_cache_slot(&display, &key, large);
-    CHECK(entry != NULL);
+    source_cached_vertices *first = source_vertex_cache_slot(&display, keys[0], large);
+    CHECK(first != NULL);
     source_vertex_cache *cache = display.source_cache;
-    entry->data = &key;
-    entry->bytes = large;
     cache->bytes = SOURCE_CACHE_BYTES;
-    CHECK(source_vertex_cache_slot(&display, &key, small) == NULL &&
-          source_vertex_cache_slot(&display, &key, large) == entry);
-    source_vertex_cache_invalidate(&display, &key);
-    CHECK(source_vertex_cache_slot(&display, &key, small) == entry);
-    entry->bytes = 0;
-    CHECK(source_vertex_cache_slot(&display, &key, small) == NULL);
-    entry->data = &key;
-    entry->bytes = small;
-    CHECK(source_vertex_cache_slot(&display, &key, small) == entry);
+    CHECK(source_vertex_cache_slot(&display, keys[0], small) == NULL);
+    cache->bytes = 0;
+    for (size_t i = 0; i < SOURCE_CACHE_WAYS; ++i) {
+        source_cached_vertices *entry = source_vertex_cache_slot(&display, keys[i], large);
+        CHECK(entry == first + i);
+        entry->data = keys[i];
+        entry->bytes = large;
+        cache->bytes += large;
+        source_vertex_cache_touch(cache, entry);
+    }
+    const uint8_t *extra = keys[SOURCE_CACHE_WAYS];
+    CHECK(source_vertex_cache_slot(&display, extra, small) == NULL);
+    for (size_t i = 0; i < SOURCE_CACHE_WAYS; ++i)
+        CHECK(source_vertex_cache_slot(&display, keys[i], large) == first + i);
 
-    const size_t index = source_vertex_cache_index(&key);
-    source_cached_vertices *oldest = &cache->slots[(index + 1u) % SOURCE_CACHE_SLOTS];
-    const source_cached_vertices *excluded = &cache->slots[(index + 2u) % SOURCE_CACHE_SLOTS];
-    oldest->bytes = entry->bytes = 1;
-    cache->bytes = 2;
-    entry->data = &key;
-    source_vertex_cache_touch(cache, oldest);
-    source_vertex_cache_touch(cache, entry);
-    CHECK(source_vertex_cache_oldest(cache, excluded) == oldest);
-    source_vertex_cache_invalidate(&display, &key);
-    CHECK(entry->data == NULL && entry->last_used == 0 && entry->bytes == 1 &&
-          source_vertex_cache_oldest(cache, excluded) == entry);
+    source_vertex_cache_touch(cache, first);
+    CHECK(source_vertex_cache_slot(&display, extra, large) == first + 1);
+    source_cached_vertices *last = first + SOURCE_CACHE_WAYS - 1;
+    source_vertex_cache_invalidate(&display, keys[SOURCE_CACHE_WAYS - 1]);
+    cache->bytes = SOURCE_CACHE_BYTES;
+    CHECK(last->data == NULL && last->last_used == 0 && last->bytes == large &&
+          source_vertex_cache_oldest(cache, first) == last &&
+          source_vertex_cache_slot(&display, extra, small) == last &&
+          source_vertex_cache_slot(&display, keys[0], large) == first);
     result = true;
 cleanup:
     free(display.source_cache);
