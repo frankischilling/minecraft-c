@@ -125,6 +125,16 @@ fell from 262 to 239 µs. Each populated section produced matching
 vertex bytes and display list counts. The measurement covers compilation
 and retirement of the compile call.
 
+Each X run now resolves the block array once per chunk it crosses.
+The scan stops at the first non-air block or unreadable cell. Ten
+alternating Windows Release pairs compiled and retired an authored
+15×16×15 section. Median time fell from 24.0 to 11.1 µs when empty
+and from 253.7 to 239.4 µs with 64 blocks. The filled section went
+from 2.467 to 2.443 ms. Both populated fixtures matched the first
+vertex batch's byte count and hash. In a separate eight-pair run,
+single-block reads went from 10.5 to 10.0 ns per call at the median
+with matching values and ownership checks.
+
 Section rebuilds now index shared tile occurrences in groups of 256 rows.
 They validate the entire list before removal, then keep the surviving rows
 in order even if a membership check fails. In 12 alternating Windows

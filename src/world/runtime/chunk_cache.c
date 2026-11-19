@@ -439,44 +439,66 @@ static bool nibble(const mc_world_chunk_nibble *n, size_t cell, int32_t *out, un
     return true;
 }
 
+/* Keep the shared lookup in both hot readers. MSVC's ordinary inline drops it. */
+#ifdef _MSC_VER
+#define MC_CHUNK_CACHE_INLINE __forceinline
+#else
+#define MC_CHUNK_CACHE_INLINE inline
+#endif
+static MC_CHUNK_CACHE_INLINE bool block_data(mc_client_chunk_cache *c, int32_t x, int32_t z,
+                                             const mc_chunk_data **out, cache_query_error *e) {
+    *out = NULL;
+    const int32_t row = chunk_coordinate(x) - c->state.a;
+    const int32_t col = chunk_coordinate(z) - c->state.b;
+    if (row < 0)
+        return true;
+    if (c->state.c == NULL)
+        return query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL, "actual ew block null outer array",
+                          46, false);
+    if (row >= c->state.rows || col < 0 || col >= c->state.columns)
+        return true;
+    const mc_client_chunk_cache_occurrence *cell =
+        &c->occurrences[(size_t)row * (size_t)c->state.columns + (size_t)col];
+    if (cell->state == NULL || cell->state->blank)
+        return true;
+    const mc_chunk_data *data = cell->object->data;
+    if (data == NULL || data->blocks == NULL) {
+        e->child_bytecode = 15;
+        return query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL, "actual Chunk null block array",
+                          100, false);
+    }
+    *out = data;
+    return true;
+}
+
+#undef MC_CHUNK_CACHE_INLINE
+
+static bool block_index_failure(cache_query_error *e) {
+    e->child_bytecode = 15;
+    return query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_INDEX, "actual Chunk block index", 100,
+                      false);
+}
+
 static bool block_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z, int32_t *out,
                         cache_query_error *e) {
     e->method = "a";
     e->descriptor = "(III)I";
-    if (y < 0 || y >= 128) {
+    if ((uint32_t)y >= MC_CHUNK_HEIGHT) {
         *out = 0;
         return true;
     }
-    const int32_t row = chunk_coordinate(x) - c->state.a;
-    const int32_t col = chunk_coordinate(z) - c->state.b;
-    if (row < 0) {
+    const mc_chunk_data *data;
+    if (!block_data(c, x, z, &data, e))
+        return false;
+    if (data == NULL) {
         *out = 0;
         return true;
     }
-    if (c->state.c == NULL)
-        return query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL, "actual ew block null outer array",
-                          46, false);
-    if (row >= c->state.rows || col < 0 || col >= c->state.columns) {
-        *out = 0;
-        return true;
-    }
-    mc_client_chunk_cache_occurrence *cell =
-        &c->occurrences[(size_t)row * (size_t)c->state.columns + (size_t)col];
-    if (cell->state == NULL || cell->state->blank) {
-        *out = 0;
-        return true;
-    }
-    e->bytecode = 100;
-    e->child_bytecode = 15;
-    const mc_world_chunk *chunk = cell->object;
     const size_t index = block_index(x, y, z);
-    if (chunk->data == NULL || chunk->data->blocks == NULL)
-        return query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL, "actual Chunk null block array",
-                          100, false);
-    if (index >= chunk->data->blocks_capacity)
-        return query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_INDEX, "actual Chunk block index", 100,
-                          false);
-    *out = chunk->data->blocks[index];
+    if (index >= data->blocks_capacity)
+        return block_index_failure(e);
+    *out = data->blocks[index];
+    e->bytecode = 100;
     e->child_bytecode = 0;
     return true;
 }
@@ -528,8 +550,53 @@ mc_client_chunk_cache_next_block_failure(mc_client_chunk_cache *c, int32_t *x, i
     query_error_init(&e, "a", "(III)I", NULL);
     if (!enter(c, x != NULL && out != NULL, &e))
         return query_result(error, &e, true);
-    while (*x < end_x && block_value(c, *x, y, z, out, &e) && *out == 0)
-        ++*x;
+    if (x == out) {
+        while (*x < end_x && block_value(c, *x, y, z, out, &e) && *out == 0)
+            ++*x;
+        return finish(c, &e, error, true);
+    }
+    if ((uint32_t)y >= MC_CHUNK_HEIGHT) {
+        if (*x < end_x) {
+            *x = end_x;
+            *out = 0;
+        }
+        return finish(c, &e, error, true);
+    }
+    const size_t stride = (size_t)MC_CHUNK_WIDTH * MC_CHUNK_HEIGHT;
+    while (*x < end_x) {
+        const mc_chunk_data *data;
+        if (!block_data(c, *x, z, &data, &e))
+            break;
+        size_t index = block_index(*x, y, z);
+        if (data != NULL) {
+            if (index >= data->blocks_capacity) {
+                block_index_failure(&e);
+                break;
+            }
+            *out = data->blocks[index];
+            if (*out != 0)
+                break;
+        }
+        /* Stay within this chunk and the signed end, even across x=0. */
+        const uint32_t remaining = (uint32_t)end_x - (uint32_t)*x;
+        const uint32_t width = MC_CHUNK_WIDTH - ((uint32_t)*x & (MC_CHUNK_WIDTH - 1u));
+        const int32_t stop = *x + (int32_t)(width < remaining ? width : remaining);
+        if (data == NULL) {
+            *out = 0;
+            *x = stop;
+            continue;
+        }
+        while (++*x < stop) {
+            index += stride;
+            if (index >= data->blocks_capacity) {
+                block_index_failure(&e);
+                return finish(c, &e, error, true);
+            }
+            *out = data->blocks[index];
+            if (*out != 0)
+                return finish(c, &e, error, true);
+        }
+    }
     return finish(c, &e, error, true);
 }
 

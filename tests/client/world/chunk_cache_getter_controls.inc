@@ -298,10 +298,41 @@ static bool ew_getter_failure_controls(picking_fixture *f) {
     CHECK(mc_client_chunk_cache_next_block_failure(cache, &cursor, 20, 64, 8, &scanned_id, error) ==
               MC_CLIENT_CHUNK_CACHE_OK &&
           cursor == 18 && scanned_id == 1 && error->bytecode == 12345);
+    cursor = -1;
+    CHECK(mc_client_chunk_cache_next_block_failure(cache, &cursor, 9, 64, 8, &scanned_id, error) ==
+              MC_CLIENT_CHUNK_CACHE_OK &&
+          cursor == 8 && scanned_id == 1 && error->bytecode == 12345);
+    cursor = 18;
+    CHECK(mc_client_chunk_cache_next_block_failure(cache, &cursor, 20, 64, 8, &cursor, error) ==
+              MC_CLIENT_CHUNK_CACHE_OK &&
+          cursor == 1 && error->bytecode == 12345);
     cursor = 19;
     CHECK(mc_client_chunk_cache_next_block_failure(cache, &cursor, 23, 64, 8, &scanned_id, error) ==
               MC_CLIENT_CHUNK_CACHE_OK &&
           cursor == 23 && scanned_id == 0 && error->bytecode == 12345);
+    cursor = 23;
+    scanned_id = 99;
+    CHECK(mc_client_chunk_cache_next_block_failure(cache, &cursor, 23, -1, 8, &scanned_id, error) ==
+              MC_CLIENT_CHUNK_CACHE_OK &&
+          cursor == 23 && scanned_id == 99 && error->bytecode == 12345);
+    cursor = INT32_MAX - 1;
+    CHECK(mc_client_chunk_cache_next_block_failure(cache, &cursor, INT32_MAX, -1, 8, &scanned_id,
+                                                   error) == MC_CLIENT_CHUNK_CACHE_OK &&
+          cursor == INT32_MAX && scanned_id == 0 && error->bytecode == 12345);
+    const size_t next_capacity = next_chunk->blocks_capacity;
+    next_chunk->blocks_capacity = next_index;
+    next_blocks[next_index - ((size_t)MC_CHUNK_WIDTH * MC_CHUNK_HEIGHT)] = 1;
+    cursor = 16;
+    CHECK(mc_client_chunk_cache_next_block_failure(cache, &cursor, 20, 64, 8, &scanned_id, error) ==
+              MC_CLIENT_CHUNK_CACHE_OK &&
+          cursor == 17 && scanned_id == 1 && error->bytecode == 12345);
+    next_blocks[next_index - ((size_t)MC_CHUNK_WIDTH * MC_CHUNK_HEIGHT)] = 0;
+    cursor = 16;
+    scanned_id = 99;
+    CHECK(mc_client_chunk_cache_next_block_failure(cache, &cursor, 20, 64, 8, &scanned_id, error) ==
+              MC_CLIENT_CHUNK_CACHE_SOURCE_INDEX &&
+          cursor == 18 && scanned_id == 0 && error->bytecode == 100 && error->child_bytecode == 15);
+    next_chunk->blocks_capacity = next_capacity;
     next_blocks[next_index] = 0;
     next_chunk->blocks = NULL;
     cursor = 15;
