@@ -75,6 +75,59 @@ cleanup:
     return result;
 }
 
+/* B already owns the removal candidate. Exercise a failure in the first row
+ * of the next window, then keep a matching candidate in the unvisited suffix. */
+static bool shared_window_tail_control(mc_client_render_global *owner, mc_client_source_dk *dk,
+                                       mc_tile_entity *removed, mc_tile_entity *throwing) {
+    enum { prefix = 255, failing = 256, suffix = 257, row_count = 258 };
+
+    bool result = false;
+    mc_client_render_list *const original_list = dk->fields.F;
+    mc_client_render_list *const original_origin = owner->tile_list_origin;
+    mc_render_global_tile_occurrence *const original_occurrences = owner->tile_occurrences;
+    mc_source_dk_compile *call = NULL;
+    mc_client_render_global_error error, cleanup_error;
+    mc_client_chunk_compile_state state;
+    void *entries[row_count] = {[prefix] = removed, [failing] = throwing, [suffix] = removed};
+    mc_client_render_list list = {.count = row_count, .capacity = row_count, .entries = entries};
+    mc_render_global_tile_occurrence rows[row_count];
+    for (size_t i = 0; i < row_count; ++i)
+        rows[i] =
+            (mc_render_global_tile_occurrence){.next = i + 1 < row_count ? &rows[i + 1] : NULL,
+                                               .list = &list,
+                                               .index = i,
+                                               .active = true};
+    for (size_t i = prefix; i < row_count; ++i) {
+        CHECK(mc_tile_entity_retain(entries[i]) == MC_TILE_ENTITY_OK);
+        rows[i].tile = entries[i];
+    }
+    owner->tile_list_origin = dk->fields.F = &list;
+    owner->tile_occurrences = rows;
+    const uint32_t saved_hash = throwing->identity.hash;
+    throwing->identity.hash = UINT32_C(0x80000000);
+    const bool accepted = mc_source_dk_tile_lists_entered(dk, NULL, 0, &call, &error);
+    throwing->identity.hash = saved_hash;
+    CHECK(!accepted && error.source_pc == 608 && error.native_policy &&
+          error.tile_identity_set != NULL &&
+          error.tile_identity_set->tile_status == MC_TILE_ENTITY_STATE_ERROR &&
+          mc_source_dk_compile_inspect(call, &state) && state.shared_tiles_removed == 1 &&
+          !state.returned && list.count == row_count - 1 && list.mod_count == 2 &&
+          entries[prefix] == throwing && entries[failing] == removed && entries[suffix] == NULL &&
+          !rows[prefix].active && rows[prefix].tile == NULL && rows[failing].active &&
+          rows[failing].index == prefix && rows[suffix].active && rows[suffix].index == failing);
+    CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);
+    result = true;
+cleanup:
+    if (call != NULL)
+        (void)mc_source_dk_compile_retire(&call, &cleanup_error);
+    for (size_t i = prefix; i < row_count; ++i)
+        mc_tile_entity_release(rows[i].tile);
+    owner->tile_occurrences = original_occurrences;
+    owner->tile_list_origin = original_origin;
+    dk->fields.F = original_list;
+    return result;
+}
+
 int main(void) {
     int result = 1;
     static mc_math_trig trig;
@@ -373,6 +426,11 @@ int main(void) {
     captured = NULL;
     CHECK(mc_source_dk_tile_lists_entered(&other_dk, NULL, 0, &call, &error) && shared.count == 0);
     CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);
+    CHECK(mc_source_dk_tile_lists_entered(&dk, one_spawner, 1, &call, &error));
+    CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);
+    CHECK(shared_window_tail_control(&owner, &dk, spawner, second));
+    shared.count = 0;
+    mc_render_global_tile_list_release(&owner);
     CHECK(mc_source_dk_tile_lists_entered(&dk, one_spawner, 1, &call, &error));
     CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);
 

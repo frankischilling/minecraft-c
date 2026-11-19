@@ -125,6 +125,14 @@ fell from 262 to 239 µs. Each populated section produced matching
 vertex bytes and display list counts. The measurement covers compilation
 and retirement of the compile call.
 
+Section rebuilds now index shared tile occurrences in groups of 256 rows.
+They validate the entire list before removal, then keep the surviving rows
+in order even if a membership check fails. In 12 alternating Windows
+Release pairs with authored rows, the median list update and retirement
+took 3.52 µs at 64 rows, down from 6.23 µs, and 0.125 ms at 4,096 rows,
+down from 11.19 ms. Through eight rows, the median varied by less than 1%.
+The measurement covers the shared-list update on its own.
+
 Section compilation also avoids preparing an EntityRenderer diagnostic
 when the caller provides no output. An initialized application reads the
 live ambient-occlusion setting under one lock. Eight alternating Windows

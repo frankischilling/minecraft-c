@@ -463,38 +463,30 @@ static mc_render_global_tile_occurrence *f_occurrence(mc_client_render_global *n
     return NULL;
 }
 
-static bool shared_tile_occurrences_valid(mc_client_render_global *n, mc_client_render_list *list) {
+enum { shared_rows_per_scan = 256 };
+
+static size_t shared_tile_occurrence_window(mc_client_render_global *n, mc_client_render_list *list,
+                                            size_t first, mc_render_global_tile_occurrence **rows) {
+    const size_t available = list->count - first;
     if (list->count < 8) {
-        for (size_t i = 0; i < list->count; ++i) {
-            const mc_render_global_tile_occurrence *h = f_occurrence(n, list, i);
-            if (h == NULL || h->tile != list->entries[i])
-                return false;
-        }
-        return true;
+        for (size_t i = 0; i < available; ++i)
+            rows[i] = f_occurrence(n, list, first + i);
+        return available;
     }
 
-    enum { rows_per_scan = 256 };
-
-    for (size_t first = 0; first < list->count; first += rows_per_scan) {
-        const size_t available = list->count - first;
-        const size_t count = available < rows_per_scan ? available : rows_per_scan;
-        bool seen[rows_per_scan] = {0};
-        size_t remaining = count;
-        /* Keep the first active occurrence for each index, as f_occurrence does. */
-        for (const mc_render_global_tile_occurrence *h = n->tile_occurrences;
-             h != NULL && remaining != 0; h = h->next) {
-            const size_t offset = h->index - first;
-            if (!h->active || h->list != list || offset >= count || seen[offset])
-                continue;
-            if (h->tile != list->entries[h->index])
-                return false;
-            seen[offset] = true;
-            --remaining;
-        }
-        if (remaining != 0)
-            return false;
+    const size_t count = available < shared_rows_per_scan ? available : shared_rows_per_scan;
+    memset(rows, 0, count * sizeof(*rows));
+    size_t remaining = count;
+    /* Keep the first active occurrence for each index, in ledger order. */
+    for (mc_render_global_tile_occurrence *h = n->tile_occurrences; h != NULL && remaining != 0;
+         h = h->next) {
+        const size_t offset = h->index - first;
+        if (!h->active || h->list != list || offset >= count || rows[offset] != NULL)
+            continue;
+        rows[offset] = h;
+        --remaining;
     }
-    return true;
+    return count;
 }
 
 /* ArrayList.addAll finishes the complete Set.toArray before modCount or
@@ -589,41 +581,49 @@ static bool remove_old(mc_source_dk_compile *c) {
     mc_client_render_list *f = dk->fields.F; /* Actual fresh F603, after Set.removeAll596. */
     if (!tile_list(c, f, dk->owner->tile_list_origin, 608))
         return false;
-    if (!shared_tile_occurrences_valid(dk->owner, f))
-        return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
-                    "DK shared List.removeAll actual Tile occurrence ownership", 608, true);
     const size_t original_count = f->count;
-    size_t kept = 0, i = 0;
+    mc_render_global_tile_occurrence *rows[shared_rows_per_scan];
+    for (size_t first = 0; first < original_count;) {
+        const size_t count = shared_tile_occurrence_window(dk->owner, f, first, rows);
+        for (size_t offset = 0; offset < count; ++offset)
+            if (rows[offset] == NULL || rows[offset]->tile != f->entries[first + offset])
+                return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
+                            "DK shared List.removeAll actual Tile occurrence ownership", 608, true);
+        first += count;
+    }
+    size_t kept = 0;
     bool ok = true;
-    for (; i < original_count; ++i) {
-        mc_render_global_tile_occurrence *h = f_occurrence(dk->owner, f, i);
-        bool found;
-        if (!set_result(c,
-                        mc_tile_identity_set_contains(c->old_tiles, h->tile, current_thread(c),
-                                                      &found, &c->set_error),
-                        608)) {
-            ok = false;
-            break;
-        }
-        if (found) {
-            if (h->tile != NULL)
-                mc_tile_entity_release(h->tile);
-            h->tile = NULL;
-            h->list = NULL;
-            h->index = 0;
-            h->active = false;
-            ++c->state.shared_tiles_removed;
-        } else {
-            f->entries[kept] = f->entries[i];
+    for (size_t first = 0; first < original_count;) {
+        /* Compaction moves only visited rows to lower indices. Later windows
+         * still resolve to the same ownership records validated above. */
+        const size_t count = original_count <= shared_rows_per_scan
+                                 ? original_count
+                                 : shared_tile_occurrence_window(dk->owner, f, first, rows);
+        for (size_t offset = 0; offset < count; ++offset) {
+            mc_render_global_tile_occurrence *h = rows[offset];
+            if (ok) {
+                bool found;
+                ok =
+                    set_result(c,
+                               mc_tile_identity_set_contains(
+                                   c->old_tiles, h->tile, current_thread(c), &found, &c->set_error),
+                               608);
+                if (ok && found) {
+                    if (h->tile != NULL)
+                        mc_tile_entity_release(h->tile);
+                    h->tile = NULL;
+                    h->list = NULL;
+                    h->index = 0;
+                    h->active = false;
+                    ++c->state.shared_tiles_removed;
+                    continue;
+                }
+            }
+            /* Keep the throwing row and the unvisited suffix in order. */
+            f->entries[kept] = f->entries[first + offset];
             h->index = kept++;
         }
-    }
-    /* ArrayList.batchRemove's exceptional tail keeps the throwing element and
-     * every unvisited element, after compacting the completed removal prefix. */
-    for (; i < original_count; ++i) {
-        mc_render_global_tile_occurrence *h = f_occurrence(dk->owner, f, i);
-        f->entries[kept] = f->entries[i];
-        h->index = kept++;
+        first += count;
     }
     for (size_t j = kept; j < original_count; ++j)
         f->entries[j] = NULL;
