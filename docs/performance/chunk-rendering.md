@@ -26,6 +26,50 @@ warmup, on an i9-10900F with an RTX 3060. The client's final counters still
 reported 214–233 Chunk updates per second across the eight runs. The rebuild
 test checks arena use during distance changes.
 
+## Direct Block reads during section compilation
+
+In one sampled Windows Far run, `block_value` was the most frequently
+observed project function, with 221 of 3,418 render-thread samples. The
+samples record wall-clock positions and include pause overhead. Frame
+comparisons below used uninstrumented builds.
+
+The cached Block read now distinguishes an array read from a default air
+result. The public getter still reports the reached success site. The
+failure-only getter can return without writing that site. Nested failures
+still include the Block read before the enclosing getter, and the row scan
+retains its last successful value if a later read fails.
+
+The Windows MSVC Release fixed-work comparison ran six alternating process
+pairs, each with seven samples of 65,536 reads over nine leased Chunks.
+Median time fell from 9.46 to 7.48 ns per read. Every pair passed exact Block
+value, ownership, World state and untouched success-error checks. A separate
+six-pair getter workload measured minimum brightness at 53.60 and 51.75 ns
+before and after. Material, opacity and normal cube also took less time at
+the median. Brightness increased from 52.81 to 53.03 ns.
+
+The frame baseline was `911d56be`. The stationary authored Far scene ran at
+854×480 on an i9-10900F with an RTX 3060. All 14 matched ten-second runs
+completed 200 World ticks. Section compilation continued throughout the
+timing window after a two-second warmup, and FPS rose in three of four pairs.
+After a 25-second warmup, the final counters showed zero Chunk updates in all
+six runs.
+
+| Far timing window | Median FPS before / after | Median p95 before / after | Median p99 before / after |
+| --- | ---: | ---: | ---: |
+| Two-second warmup | 72.83 / 73.43 | 15.13 / 15.20 ms | 16.03 / 16.30 ms |
+| 25-second warmup | 431.67 / 431.35 | 3.39 / 3.28 ms | 6.30 / 6.46 ms |
+
+The first trial also forced inlining of the shared Block read. It lowered
+direct lookup time from 9.28 to 5.91 ns and raised median FPS from 72.26 to
+73.39 during section builds. After a 25-second warmup its median FPS fell
+from 437.75 to 426.92, and minimum brightness rose from 53.33 to 55.25 ns
+in the fixed-work control. The final version lets the compiler decide where
+to inline the shared read.
+
+A separate vertex trial paired the x and y floating-point operations. It
+failed the authored test for a vertex with distinct NaN payloads. Finite
+vertex output matched across all six CPU pairs. The trial was dropped.
+
 ## Sky-change dirty marking
 
 The sky-change callback now checks the Chunk renderer's fixed owner on

@@ -1594,7 +1594,7 @@ class Comparison:
             self.boundary(o["states"][previous], right["after"], index + 1)
             if index in (4, 8, 16):
                 equal(left["before"], left["after"], "source repeated/protected no-op preserves complete state")
-                a, b = copy.deepcopy(before["native"]), copy.deepcopy(right["after"])
+                a, b = before["native"].copy(), right["after"].copy()
                 a.pop("ordinal"); b.pop("ordinal")
                 equal(a, b, "native repeated/protected no-op preserves complete state including private owners")
         equal(state_ref(o["final"]), previous, "actual original final state continuity")

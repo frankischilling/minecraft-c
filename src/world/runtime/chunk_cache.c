@@ -471,64 +471,68 @@ static MC_CHUNK_CACHE_INLINE bool block_data(mc_client_chunk_cache *c, int32_t x
     return true;
 }
 
-#undef MC_CHUNK_CACHE_INLINE
-
 static bool block_index_failure(cache_query_error *e) {
     e->child_bytecode = 15;
     return query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_INDEX, "actual Chunk block index", 100,
                       false);
 }
 
-static bool block_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z, int32_t *out,
-                        cache_query_error *e) {
-    e->method = "a";
-    e->descriptor = "(III)I";
+typedef enum { BLOCK_READ_FAILED, BLOCK_READ_AIR, BLOCK_READ_ARRAY } block_read;
+
+static inline block_read block_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z,
+                                     int32_t *out, cache_query_error *e) {
     if ((uint32_t)y >= MC_CHUNK_HEIGHT) {
         *out = 0;
-        return true;
+        return BLOCK_READ_AIR;
     }
     const mc_chunk_data *data;
     if (!block_data(c, x, z, &data, e))
-        return false;
+        return BLOCK_READ_FAILED;
     if (data == NULL) {
         *out = 0;
-        return true;
+        return BLOCK_READ_AIR;
     }
     const size_t index = block_index(x, y, z);
-    if (index >= data->blocks_capacity)
-        return block_index_failure(e);
+    if (index >= data->blocks_capacity) {
+        block_index_failure(e);
+        return BLOCK_READ_FAILED;
+    }
     *out = data->blocks[index];
-    e->bytecode = 100;
-    e->child_bytecode = 0;
-    return true;
+    return BLOCK_READ_ARRAY;
 }
 
 static bool block_child(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z, int32_t *out,
                         const char *method, const char *descriptor, unsigned int pc,
                         cache_query_error *e) {
-    if (!block_value(c, x, y, z, out, e)) {
+    const block_read read = block_value(c, x, y, z, out, e);
+    if (read == BLOCK_READ_FAILED) {
+        e->method = "a";
+        e->descriptor = "(III)I";
         wrap(e, method, descriptor, pc);
         return false;
     }
+    if (read == BLOCK_READ_ARRAY)
+        e->child_bytecode = 0;
     e->method = method;
     e->descriptor = descriptor;
     e->bytecode = pc;
     return true;
 }
 
-static mc_client_chunk_cache_status block_query(mc_client_chunk_cache *c, int32_t x, int32_t y,
-                                                int32_t z, int32_t *out,
-                                                mc_client_chunk_cache_error *error,
-                                                bool failure_only) {
+static MC_CHUNK_CACHE_INLINE mc_client_chunk_cache_status
+block_query(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z, int32_t *out,
+            mc_client_chunk_cache_error *error, bool failure_only) {
     cache_query_error e;
     query_error_init(&e, "a", "(III)I", NULL);
     if (!enter(c, out != NULL, &e))
         return query_result(error, &e, failure_only);
-    int32_t value;
-    if (block_value(c, x, y, z, &value, &e))
-        *out = value;
+    const block_read read = block_value(c, x, y, z, out, &e);
+    if (!failure_only && read == BLOCK_READ_ARRAY)
+        e.bytecode = 100;
     return finish(c, &e, error, failure_only);
 }
+
+#undef MC_CHUNK_CACHE_INLINE
 
 mc_client_chunk_cache_status mc_client_chunk_cache_block(mc_client_chunk_cache *c, int32_t x,
                                                          int32_t y, int32_t z, int32_t *out,
@@ -552,7 +556,8 @@ mc_client_chunk_cache_next_block_failure(mc_client_chunk_cache *c, int32_t *x, i
         return query_result(error, &e, true);
     if (x == out) {
         int32_t cursor = *x;
-        while (cursor < end_x && block_value(c, cursor, y, z, out, &e) && *out == 0)
+        while (cursor < end_x && block_value(c, cursor, y, z, out, &e) != BLOCK_READ_FAILED &&
+               *out == 0)
             ++cursor;
         return finish(c, &e, error, true);
     }

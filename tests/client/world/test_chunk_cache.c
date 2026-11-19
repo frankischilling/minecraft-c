@@ -58,6 +58,13 @@ static bool ew_block_failure_controls(picking_fixture *f) {
     CHECK(mc_client_chunk_cache_create(f->base.world, 0, 0, 0, 31, 127, 31, &cache, &error) ==
               MC_CLIENT_CHUNK_CACHE_OK &&
           cache != NULL && cache->occurrences[0].object != NULL);
+    int32_t block_id;
+    CHECK(mc_client_chunk_cache_block(cache, 8, 64, 8, &block_id, &error) ==
+              MC_CLIENT_CHUNK_CACHE_OK &&
+          error.bytecode == 100 && error.child_bytecode == 0);
+    CHECK(mc_client_chunk_cache_block(cache, 8, -1, 8, &block_id, &error) ==
+              MC_CLIENT_CHUNK_CACHE_OK &&
+          block_id == 0 && error.bytecode == 0 && error.child_bytecode == 0);
     static const int32_t positions[][3] = {{8, 64, 8},         {0, 0, 0},  {31, 127, 31},
                                            {INT32_MIN, 64, 8}, {8, -1, 8}, {8, 128, 8},
                                            {32, 64, 8},        {8, 64, -1}};

@@ -13,6 +13,14 @@ Three alternating local Windows pairs ran all 24 tests with fresh Python
 processes. Median elapsed time went from 21.04 to 19.60 seconds, with a
 decrease in all three pairs. This timing covers one suite on one machine.
 
+Dedicated replay also compares complete state graphs across no-op boundaries.
+It now copies only the outer dictionaries before removing their `ordinal`
+fields. The comparison still checks every nested value and leaves both inputs
+intact. Six alternating Windows pairs timed the copy, field removal and
+comparison on the same stored boundary. The median fell from 156.03 to
+4.55 ms per pair of graphs. The replay suite still checks the full boundary
+sequence and eight corruption cases.
+
 ## Native object identity and Tile collections
 
 The [identity contract](reference/object-identity.md) separates native startup,
