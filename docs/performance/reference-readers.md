@@ -1,5 +1,23 @@
 # Reference-reader performance
 
+## Callback helper compilation
+
+The callback validator caches compiled Python code by source bytes,
+filename and mode. Each call reads and fingerprints all six helper
+sources and executes them in fresh module namespaces. The guards load
+different bytes at the same path and check the new code and fingerprint.
+
+Three Windows pairs used CPython 3.14.3 and ran the same 63 tests in fresh
+processes. The median for a whole helper load fell from 54.9 to 4.9 ms.
+The median wall time for the three suites together fell from 66.1 to
+54.0 seconds.
+
+| Suite | Before | After |
+| --- | ---: | ---: |
+| Population persistence | 27.02 s | 21.35 s |
+| Population named data | 23.44 s | 21.11 s |
+| Population world save | 15.62 s | 11.57 s |
+
 ## Callback protocol guards
 
 Each mutation now decodes its own snapshot and trace from the verified

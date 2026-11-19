@@ -68,7 +68,7 @@ def descriptor(value, count, context):
     return raw_hex(value["values"], count, context)
 
 
-def helpers():
+def helpers(*, compile_source=compile):
     path = ROOT / "scripts/reference/generation/compare_overworld.py"
     require(Path(__file__).resolve() == (ROOT / "scripts/reference/cache/compare_acquire.py").resolve(),
             "canonical executing source identity")
@@ -76,8 +76,8 @@ def helpers():
     require(len(data) <= 2 * 1024 * 1024, "generation helper source bound")
     module = types.ModuleType("_acquire_normal")
     module.__file__ = str(path)
-    exec(compile(data, str(path), "exec"), module.__dict__)
-    common, old, finish, executed = module.helpers()
+    exec(compile_source(data, str(path), "exec"), module.__dict__)
+    common, old, finish, executed = module.helpers(compile_source=compile_source)
     executed.append({"path": str(path), "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()})
     return common, old, finish, module, executed
 

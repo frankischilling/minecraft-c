@@ -41,14 +41,14 @@ def require(condition, message):
         raise Failure(message)
 
 
-def helpers():
+def helpers(*, compile_source=compile):
     path = ROOT / "scripts/reference/chunk/compare_finish.py"
     data = path.read_bytes()
     require(len(data) <= 2 * 1024 * 1024, "finishing helper source bound")
     module = types.ModuleType("_overworld_finish")
     module.__file__ = str(path)
-    exec(compile(data, str(path), "exec"), module.__dict__)
-    common, old, executed = module.helpers()
+    exec(compile_source(data, str(path), "exec"), module.__dict__)
+    common, old, executed = module.helpers(compile_source=compile_source)
     executed.append({"path": str(path), "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()})
     return common, old, module, executed
 

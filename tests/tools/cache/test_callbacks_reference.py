@@ -35,6 +35,33 @@ PROTOCOL, PROTOCOL_SOURCE = CALLBACKS.load_protocol()
 REJECTIONS = (CALLBACKS.Failure, ACQUIRE.Failure, FINISH.Failure, NORMAL.Failure)
 
 
+class CallbackHelperLoading(unittest.TestCase):
+    def test_unchanged_sources_still_create_fresh_helper_modules(self):
+        *first, first_sources = CALLBACKS.helpers()
+        *second, second_sources = CALLBACKS.helpers()
+        for left, right in zip(first, second, strict=True):
+            self.assertIsNot(left, right)
+            self.assertIsNot(left.require, right.require)
+        self.assertIsNot(first[0].ProcessResult, second[0].ProcessResult)
+        self.assertEqual(first_sources, second_sources)
+        self.assertIsNot(first_sources[0], second_sources[0])
+
+    def test_source_change_at_same_path_updates_code_and_fingerprint(self):
+        acquire_path = ROOT / "scripts/reference/cache/compare_acquire.py"
+        original_read = Path.read_bytes
+        changed = acquire_path.read_bytes() + b"\nprobe: UnresolvedAnnotation = 42\n"
+        with patch.object(Path, "read_bytes",
+                          lambda path: changed if path == acquire_path else original_read(path)):
+            *_, acquire, sources = CALLBACKS.helpers()
+        self.assertEqual(acquire.probe, 42)
+        self.assertEqual(acquire.__annotations__["probe"], "UnresolvedAnnotation")
+        self.assertEqual(sources[-1], {"path": str(acquire_path), "bytes": len(changed),
+                                       "sha256": hashlib.sha256(changed).hexdigest()})
+        *_, restored, restored_sources = CALLBACKS.helpers()
+        self.assertFalse(hasattr(restored, "probe"))
+        self.assertEqual(restored_sources, EXECUTED)
+
+
 class CallbackExecutionGuards(unittest.TestCase):
     def setUp(self):
         directory = tempfile.TemporaryDirectory(prefix="mc-callback-execution-")

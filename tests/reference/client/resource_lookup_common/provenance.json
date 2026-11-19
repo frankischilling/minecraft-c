@@ -2042,12 +2042,12 @@
       "sha256": "004ce5380f60091b555a29dd8b2d027bf559feef7c3a53e33b526d422b24e87d"
     },
     "scripts/reference/cache/compare_acquire.py": {
-      "bytes": 62406,
-      "sha256": "aca8f1bed06f47458ac4652e7d10d8f9f9129a9c27abcf6b8ad9d39b0b122853"
+      "bytes": 62467,
+      "sha256": "3628ea1d43c59fc9cb4be14a6ce67f22f47cd571362eb91d3d8955135a98409a"
     },
     "scripts/reference/cache/compare_callbacks.py": {
-      "bytes": 49258,
-      "sha256": "49947bbad5504c68473c9f8157088ca3c82668b7f1c482740c7825f5e7148fea"
+      "bytes": 49688,
+      "sha256": "7ffcb211cb6b0d99c1b33f9c9ae2fb7afc3092cca45f0919ee6ba1f63c45f478"
     },
     "scripts/reference/cache/compare_lifecycle.py": {
       "bytes": 67389,
@@ -2094,12 +2094,12 @@
       "sha256": "53361f17685432b23880629f2d3b033e8e7a36e6f8143dfaf147bea752f74569"
     },
     "scripts/reference/chunk/compare_chunk.py": {
-      "bytes": 42738,
-      "sha256": "5bedc970de2988d4af0105c79b5459d7cdca8f80df33a880f8bf36cc821c332a"
+      "bytes": 42950,
+      "sha256": "445c903bcb2da5576e3dea77202898bd3a9dcfe872d49d4aea5d00e307dbf744"
     },
     "scripts/reference/chunk/compare_finish.py": {
-      "bytes": 23808,
-      "sha256": "390fa1dc5328b0305f3b31231ace5a6688cfe83e9a71d84d030bd312562ad0f4"
+      "bytes": 23871,
+      "sha256": "1a44ee84f708fc70b9c90e1d5af68e52ba02b28256850b8bf9711f0c87aafa17"
     },
     "scripts/reference/chunk/compare_nibbles.py": {
       "bytes": 26268,
@@ -2150,8 +2150,8 @@
       "sha256": "d6280fc778d20adb9f3d43901388fc50d15a4e52b93f58ca1005ca884ce5fcae"
     },
     "scripts/reference/generation/compare_overworld.py": {
-      "bytes": 34643,
-      "sha256": "9a45a6f1c4c0d64f50fa692e4a0135c025557253074de6099f57982fa6e8804c"
+      "bytes": 34704,
+      "sha256": "933688f9dc93c69350f3046ef020995c6f9c2b8c226a1bd36aff2e5b3747b112"
     },
     "scripts/reference/generation/export_overworld.py": {
       "bytes": 10054,
@@ -8362,8 +8362,8 @@
       "sha256": "79724f940a6067a1b62661b0bbc9c6676b2c523043a0f6a012e38c66f517d1df"
     },
     "tests/tools/cache/test_callbacks_reference.py": {
-      "bytes": 38989,
-      "sha256": "f04a83e403eb11ac1614d12cbb2902e6a1124e01cb86f246406c9742b3a636b4"
+      "bytes": 40516,
+      "sha256": "ca6e0e3b38e1828f01d81b094af1c6629e6116ad19ae3f95441f939d9833e642"
     },
     "tests/tools/caves/test_geometry_reference.py": {
       "bytes": 16777,
@@ -21678,8 +21678,8 @@
       "sha256": "548d810f6542a3ad5d8ff073acae9387f604bf6a426bac83c775772bc76efd57"
     },
     "docs/performance/reference-readers.md": {
-      "bytes": 15691,
-      "sha256": "8124779fbfc31d9fd40ced18771dd7538feabf107d2aa2e78e8196b20b916e88"
+      "bytes": 16422,
+      "sha256": "12ac4a4de68082a025ee36479e983f3b64b5fcc0b321250608842453d481ba8e"
     },
     "docs/world/bed-interaction.md": {
       "bytes": 5514,
