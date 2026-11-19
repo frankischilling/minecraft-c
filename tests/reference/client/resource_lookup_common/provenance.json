@@ -6419,7 +6419,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938028,
-      "sha256": "2e6bca82beb129bc1af437348318a18a90d4b7bccd4c9b6ec42a00100c7c12b8"
+      "sha256": "23172c5806ae6a30a47f5218b56e92f096d252b3447b33a730ed8f23e6ef1f57"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6483,7 +6483,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067982,
-      "sha256": "5747d53ee5f57758af14b0521129400acbda034fd67d73cdce7929d30413c484"
+      "sha256": "9479c021cc55f95fd32157a8520982591d6d4abc4f80cb92c7c856f8e33ff5df"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6615,7 +6615,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934853,
-      "sha256": "3dde6842b3c334c997d6aef89b4dcd179465951275265784d6bb1025126a8a85"
+      "sha256": "a68e4c8d645c00dcff6a21f4155d7bef961265c374d0ab60d03d3f5adafc2cda"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -11514,8 +11514,8 @@
       "sha256": "d749c65bec50c1df278d8a5c7c96ab550358fb163f54c360546b55f92d409e9f"
     },
     "src/client/world/source_chunk_compile.c": {
-      "bytes": 41477,
-      "sha256": "5e8f8b986a57d481d57dad9d9b7038c68a4873808bab22e28ab8486ebb228831"
+      "bytes": 42663,
+      "sha256": "0a26a6b16c0949bcd1f4765caa131feb9cc97a238867fcd09845ff43536a124b"
     },
     "src/client/world/source_chunk_compile_internal.h": {
       "bytes": 2862,
@@ -24510,8 +24510,8 @@
       "sha256": "16555315411f819cf56dfb0446a381879743b927658fc8d31efce07bf95873f7"
     },
     "tests/client/world/test_chunk_tile_eligibility.c": {
-      "bytes": 23612,
-      "sha256": "78a7fc17a02854794a9164790508fa83c4414577559037a2ddd27ec844cb73a5"
+      "bytes": 26428,
+      "sha256": "2b93e31c5a8e4fc6a20073af6d921a6ac200d59c5be0388934c37963432a451b"
     },
     "tests/entity/player/run_chest_eligibility.py": {
       "bytes": 1703,

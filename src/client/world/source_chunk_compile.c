@@ -463,6 +463,40 @@ static mc_render_global_tile_occurrence *f_occurrence(mc_client_render_global *n
     return NULL;
 }
 
+static bool shared_tile_occurrences_valid(mc_client_render_global *n, mc_client_render_list *list) {
+    if (list->count < 8) {
+        for (size_t i = 0; i < list->count; ++i) {
+            const mc_render_global_tile_occurrence *h = f_occurrence(n, list, i);
+            if (h == NULL || h->tile != list->entries[i])
+                return false;
+        }
+        return true;
+    }
+
+    enum { rows_per_scan = 256 };
+
+    for (size_t first = 0; first < list->count; first += rows_per_scan) {
+        const size_t available = list->count - first;
+        const size_t count = available < rows_per_scan ? available : rows_per_scan;
+        bool seen[rows_per_scan] = {0};
+        size_t remaining = count;
+        /* Keep the first active occurrence for each index, as f_occurrence does. */
+        for (const mc_render_global_tile_occurrence *h = n->tile_occurrences;
+             h != NULL && remaining != 0; h = h->next) {
+            const size_t offset = h->index - first;
+            if (!h->active || h->list != list || offset >= count || seen[offset])
+                continue;
+            if (h->tile != list->entries[h->index])
+                return false;
+            seen[offset] = true;
+            --remaining;
+        }
+        if (remaining != 0)
+            return false;
+    }
+    return true;
+}
+
 /* ArrayList.addAll finishes the complete Set.toArray before modCount or
  * backing growth. Its one bulk publication cannot expose a per-element prefix. */
 static bool publish_new(mc_source_dk_compile *c) {
@@ -555,12 +589,9 @@ static bool remove_old(mc_source_dk_compile *c) {
     mc_client_render_list *f = dk->fields.F; /* Actual fresh F603, after Set.removeAll596. */
     if (!tile_list(c, f, dk->owner->tile_list_origin, 608))
         return false;
-    for (size_t i = 0; i < f->count; ++i) {
-        mc_render_global_tile_occurrence *h = f_occurrence(dk->owner, f, i);
-        if (h == NULL || h->tile != f->entries[i])
-            return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
-                        "DK shared List.removeAll actual Tile occurrence ownership", 608, true);
-    }
+    if (!shared_tile_occurrences_valid(dk->owner, f))
+        return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
+                    "DK shared List.removeAll actual Tile occurrence ownership", 608, true);
     const size_t original_count = f->count;
     size_t kept = 0, i = 0;
     bool ok = true;

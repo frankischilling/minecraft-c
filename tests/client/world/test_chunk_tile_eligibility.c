@@ -24,6 +24,57 @@ static unsigned checks;
         }                                                                                          \
     } while (0)
 
+static bool shared_window_controls(mc_client_render_global *owner, mc_client_source_dk *dk) {
+    enum { row_count = 257 };
+
+    bool result = false;
+    mc_client_render_list *const original_list = dk->fields.F;
+    mc_client_render_list *const original_origin = owner->tile_list_origin;
+    mc_render_global_tile_occurrence *const original_occurrences = owner->tile_occurrences;
+    mc_source_dk_compile *call = NULL;
+    mc_client_render_global_error error, cleanup_error;
+    void *entries[row_count] = {0};
+    mc_client_render_list list = {.count = row_count, .capacity = row_count, .entries = entries};
+    mc_render_global_tile_occurrence rows[row_count];
+    mc_tile_entity unowned = {0};
+    mc_render_global_tile_occurrence duplicate = {
+        .list = &list, .tile = &unowned, .index = row_count - 1, .active = true};
+    for (size_t i = 0; i < row_count; ++i)
+        rows[i] = (mc_render_global_tile_occurrence){.next = i + 1 < row_count ? &rows[i + 1]
+                                                                               : &duplicate,
+                                                     .list = &list,
+                                                     .index = i,
+                                                     .active = true};
+    owner->tile_list_origin = dk->fields.F = &list;
+    owner->tile_occurrences = rows;
+    CHECK(mc_source_dk_tile_lists_entered(dk, NULL, 0, &call, &error) && list.count == row_count &&
+          list.mod_count == 1 && rows[row_count - 1].active);
+    CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);
+
+    rows[row_count - 1].next = NULL;
+    duplicate.next = rows;
+    owner->tile_occurrences = &duplicate;
+    CHECK(!mc_source_dk_tile_lists_entered(dk, NULL, 0, &call, &error) &&
+          error.status == MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE && error.source_pc == 608 &&
+          list.count == row_count && list.mod_count == 2 && entries[row_count - 1] == NULL);
+    CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);
+
+    owner->tile_occurrences = rows;
+    rows[row_count - 1].active = false;
+    CHECK(!mc_source_dk_tile_lists_entered(dk, NULL, 0, &call, &error) &&
+          error.status == MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE && error.source_pc == 608 &&
+          list.count == row_count && list.mod_count == 3 && entries[row_count - 1] == NULL);
+    CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);
+    result = true;
+cleanup:
+    if (call != NULL)
+        (void)mc_source_dk_compile_retire(&call, &cleanup_error);
+    owner->tile_occurrences = original_occurrences;
+    owner->tile_list_origin = original_origin;
+    dk->fields.F = original_list;
+    return result;
+}
+
 int main(void) {
     int result = 1;
     static mc_math_trig trig;
@@ -173,6 +224,7 @@ int main(void) {
     CHECK(mc_source_dk_tile_lists_entered(&dk, NULL, 0, &call, &error) && tiles.count == 0 &&
           shared.count == 0);
     CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);
+    CHECK(shared_window_controls(&owner, &dk));
     mc_tile_entity *duplicates[] = {spawner, spawner};
     CHECK(mc_source_dk_tile_lists_entered(&dk, duplicates, 2, &call, &error));
     CHECK(mc_source_dk_compile_inspect(call, &state) && state.returned && state.source_pc == 626 &&

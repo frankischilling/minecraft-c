@@ -6646,8 +6646,8 @@
       "sha256": "d749c65bec50c1df278d8a5c7c96ab550358fb163f54c360546b55f92d409e9f"
     },
     "src/client/world/source_chunk_compile.c": {
-      "bytes": 41477,
-      "sha256": "5e8f8b986a57d481d57dad9d9b7038c68a4873808bab22e28ab8486ebb228831"
+      "bytes": 42663,
+      "sha256": "0a26a6b16c0949bcd1f4765caa131feb9cc97a238867fcd09845ff43536a124b"
     },
     "src/client/world/source_chunk_compile_internal.h": {
       "bytes": 2862,
@@ -12998,8 +12998,8 @@
       "sha256": "16555315411f819cf56dfb0446a381879743b927658fc8d31efce07bf95873f7"
     },
     "tests/client/world/test_chunk_tile_eligibility.c": {
-      "bytes": 23612,
-      "sha256": "78a7fc17a02854794a9164790508fa83c4414577559037a2ddd27ec844cb73a5"
+      "bytes": 26428,
+      "sha256": "2b93e31c5a8e4fc6a20073af6d921a6ac200d59c5be0388934c37963432a451b"
     },
     "tests/entity/player/run_chest_eligibility.py": {
       "bytes": 1703,
