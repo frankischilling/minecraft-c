@@ -316,10 +316,7 @@ static bool old_set(mc_source_dk_compile *c) {
     mc_client_render_list *b = c->state.chunk->fields.B; /* Fresh getfield113. */
     if (!tile_list(c, b, c->state.chunk->tile_list_origin, 116))
         return false;
-    ++b->mod_count;
-    for (size_t i = 0; i < b->count; ++i)
-        b->entries[i] = NULL;
-    b->count = 0;
+    mc_client_render_list_clear(b);
     mc_source_dk_tile_occurrences_release(c->state.chunk, b);
     return true;
 }

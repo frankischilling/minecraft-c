@@ -8,7 +8,6 @@
 
 #include <limits.h>
 #include <stdlib.h>
-#include <string.h>
 
 struct mc_client_render_global_update_call {
     mc_client_render_global_update_state state;
@@ -47,31 +46,6 @@ static bool owned(mc_client_render_global_update_call *c, mc_client_source_dk *d
         return true; /* CHECKCAST and List.get permit actual null elements. */
     return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT, "N DK native occurrence provenance",
                 pc, true);
-}
-
-static bool get(mc_client_render_global_update_call *c, int32_t index, unsigned int pc,
-                mc_client_source_dk **out) {
-    mc_client_render_list *m = list(c, pc);
-    if (m == NULL)
-        return false;
-    if (index < 0 || (size_t)index >= m->count)
-        return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE, "actual N List.get index", pc, false);
-    mc_client_source_dk *dk = m->entries[index];
-    if (!owned(c, dk, pc))
-        return false;
-    *out = dk;
-    return true;
-}
-
-static bool set(mc_client_render_global_update_call *c, int32_t index, mc_client_source_dk *dk,
-                unsigned int pc) {
-    mc_client_render_list *m = list(c, pc);
-    if (m == NULL)
-        return false;
-    if (index < 0 || (size_t)index >= m->count)
-        return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE, "actual N List.set index", pc, false);
-    m->entries[index] = dk;
-    return true;
 }
 
 static bool distance(mc_client_render_global_update_call *c, mc_client_source_dk *dk, float *out,
@@ -202,9 +176,10 @@ static bool body(mc_client_render_global_update_call *c) {
     if (m == NULL)
         return false;
     c->state.initial_count = (int32_t)m->count;
+    /* The first traversal changes entries without changing the List extent. */
     for (c->state.index = 0; c->state.index < c->state.initial_count; ++c->state.index) {
-        mc_client_source_dk *dk;
-        if (!get(c, c->state.index, 225, &dk))
+        mc_client_source_dk *dk = m->entries[c->state.index];
+        if (!owned(c, dk, 225))
             return false;
         if (!c->state.visible_only) {
             float d;
@@ -242,8 +217,7 @@ static bool body(mc_client_render_global_update_call *c) {
         c->state.near_count = mc_java_i32_add(c->state.near_count, 1);
         c->near_chunks[c->state.near_length++] = dk;
         c->state.near_chunks = c->near_chunks;
-        if (!set(c, c->state.index, NULL, 381))
-            return false;
+        m->entries[c->state.index] = NULL;
     }
     if (!sort_near(c))
         return false;
@@ -268,27 +242,20 @@ static bool body(mc_client_render_global_update_call *c) {
     const int32_t count = (int32_t)m->count;
     int32_t kept = 0;
     for (int32_t i = 0; i != count; ++i) {
-        mc_client_source_dk *dk;
-        if (!get(c, i, 570, &dk))
+        mc_client_source_dk *dk = m->entries[i];
+        if (!owned(c, dk, 570))
             return false;
         if (dk != NULL && dk != c->state.far_chunks[0] && dk != c->state.far_chunks[1]) {
-            if (kept != i && !set(c, kept, dk, 642))
-                return false;
+            if (kept != i)
+                m->entries[kept] = dk;
             ++kept;
         }
     }
-    for (int32_t i = count; i > kept;) {
-        --i;
-        m = list(c, 673);
-        if (m == NULL)
-            return false;
-        if ((size_t)i >= m->count)
-            return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE, "actual N List.remove index", 673,
-                        false);
-        memmove(m->entries + i, m->entries + i + 1,
-                (m->count - (size_t)i - 1) * sizeof(*m->entries));
-        m->entries[--m->count] = NULL; /* ArrayList drops its trailing reference. */
-    }
+    /* Every removed entry is in the tail after the stable compaction above. */
+    for (int32_t i = kept; i < count; ++i)
+        m->entries[i] = NULL;
+    m->mod_count += (uint32_t)(count - kept);
+    m->count = (size_t)kept;
     c->state.remaining_count = m->count;
     c->state.result =
         c->state.initial_count == mc_java_i32_add(c->state.near_count, c->state.far_count);

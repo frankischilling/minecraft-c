@@ -48,6 +48,14 @@ struct mc_client_render_list {
     uint32_t mod_count;
 };
 
+/* Clear the entries of an already validated list. */
+static inline void mc_client_render_list_clear(mc_client_render_list *list) {
+    ++list->mod_count;
+    for (size_t i = 0; i < list->count; ++i)
+        list->entries[i] = NULL;
+    list->count = 0;
+}
+
 struct mc_client_direct_byte_buffer {
     size_t position, limit, capacity;
     uint8_t *data;

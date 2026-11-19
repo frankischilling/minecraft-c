@@ -1036,6 +1036,9 @@ static bool one_case(fixture *f, size_t index) {
     CHECK(mc_client_chunk_statistics_reset(f->graphics, statistic, &graphics));
     f->world_classes->chunk_a = true;
     mc_client_render_list *const queue = n->fields.m;
+    const uint32_t modifications = UINT32_MAX;
+    if (queue != NULL)
+        queue->mod_count = modifications;
     const mc_client_render_global_status status =
         mc_client_render_global_update_begin(n, camera, input->visible_only, &call, f->error);
     mc_client_render_global_update_state state;
@@ -1055,8 +1058,13 @@ static bool one_case(fixture *f, size_t index) {
                   !state.failure->native_policy && state.source_pc == 411);
             exception = "IAE";
         }
-    } else
+    } else {
         CHECK(status == MC_CLIENT_RENDER_GLOBAL_OK && state.source_pc == 697);
+        CHECK(queue != NULL && queue->count <= input->queue_count &&
+              queue->mod_count == modifications + (uint32_t)(input->queue_count - queue->count));
+        for (size_t i = queue->count; i < input->queue_count; ++i)
+            CHECK(queue->entries[i] == NULL);
+    }
     int32_t counter;
     CHECK(mc_client_chunk_statistics_get(f->graphics, statistic, &counter, &graphics));
     CHECK(observe(index, input, n, actors, &state, counter, f->world_classes->chunk_a, exception));

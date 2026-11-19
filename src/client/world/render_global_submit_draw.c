@@ -184,9 +184,7 @@ bool mc_terrain_subset(mc_client_render_global_submit_call *c, int32_t start, in
     mc_client_render_list *s = selected(c, 4);
     if (s == NULL)
         return false;
-    for (size_t i = 0; i < s->count; ++i)
-        s->entries[i] = NULL;
-    s->count = 0;
+    mc_client_render_list_clear(s);
     int32_t count = 0;
     for (int32_t i = start; i < end; ++i) {
         c->state.index = i;

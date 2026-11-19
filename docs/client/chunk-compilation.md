@@ -24,6 +24,11 @@ decrements admit only one populated slot. It must not be replaced by a generic
 nearest-two selection. Identity compaction and the original count comparison
 can empty a duplicate-far queue while returning false.
 
+The native selector validates the queue before scanning and again after
+compilation, which can change the queue. Compaction preserves surviving
+entries in order. It clears the vacated tail and advances the modification
+counter once per removed entry.
+
 Distance subtracts each integer section center from the camera's binary64
 coordinate, narrows each difference separately and then performs binary32
 squares and additions. MD compares visibility, distance and ordinal. Its

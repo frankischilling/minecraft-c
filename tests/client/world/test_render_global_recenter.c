@@ -307,7 +307,7 @@ static bool device(picking_fixture *f) {
           state.constructed_chunks == 200 && state.published_chunks == 200 &&
           state.queued_chunks == 200 && n->fields.I == 2 && n->fields.H == 3 &&
           n->o_length == 200 && n->n_length == 200 && n->fields.m->count == 200 &&
-          f->base.world->persistent_bindings == bindings + 200);
+          n->fields.m->mod_count == 201u && f->base.world->persistent_bindings == bindings + 200);
     mc_render_global_jo comparator;
     CHECK(mc_render_global_jo_construct(&comparator, f->actors[0], &error));
     for (size_t i = 1; i < n->n_length; ++i) {
@@ -347,6 +347,16 @@ static bool device(picking_fixture *f) {
           n->fields.o[0]->fields.c == 320 && n->fields.o[5]->fields.c == 320 &&
           third->fields.c == 160 && !third->fields.u && n->fields.C == 0 && n->fields.F == 32);
     third->fields.p = passes; /* End declared corruption after observing its source prefix. */
+    mc_client_render_list *tiles = n->fields.a;
+    n->fields.a = NULL;
+    n->fields.m->mod_count = UINT32_MAX;
+    state = (mc_client_render_global_world_state){0};
+    error = (mc_client_render_global_error){0};
+    CHECK(!mc_render_global_rebuild_entered(n, f->math, &state, &error));
+    CHECK(error.status == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE && state.rebuild_pc == 249 &&
+          n->fields.m->count == 0 && n->fields.m->mod_count == 0 &&
+          n->fields.m->entries[0] == NULL && n->fields.m->entries[1] == NULL);
+    n->fields.a = tiles;
     n->active = false;
     CHECK(mc_client_render_global_retire(&n, &error) == MC_CLIENT_RENDER_GLOBAL_OK && n == NULL);
     CHECK(f->base.world->persistent_bindings == bindings);

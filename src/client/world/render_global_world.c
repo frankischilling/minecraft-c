@@ -238,7 +238,7 @@ static bool rebuild(rebuild_context *c) {
                                    "actual dirty DK.u receiver", 227, false);
         chunk->fields.u = false;
     }
-    o->fields.m->count = 0;
+    mc_client_render_list_clear(o->fields.m);
     if (o->fields.a != NULL && o->fields.a != o->tile_list_origin)
         return rebuild_failure(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
                                "actual TileEntity List.clear object ownership", 249, true);
@@ -247,10 +247,7 @@ static bool rebuild(rebuild_context *c) {
                                o->fields.a == NULL ? MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE
                                                    : MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
                                "actual TileEntity List.clear receiver", 249, o->fields.a != NULL);
-    ++o->fields.a->mod_count;
-    for (size_t i = 0; i < o->fields.a->count; ++i)
-        o->fields.a->entries[i] = NULL;
-    o->fields.a->count = 0;
+    mc_client_render_list_clear(o->fields.a);
     mc_render_global_tile_list_release(o);
     int32_t offset = 0, ordinal = 0;
     for (c->state->x = 0; c->state->x < o->fields.p; ++c->state->x)

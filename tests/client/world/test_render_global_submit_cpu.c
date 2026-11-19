@@ -194,12 +194,13 @@ static bool subset_selection(void) {
     };
     mc_client_source_dk *sorted[] = {&actors[0], &actors[1], &actors[2], &actors[3]};
     void *entries[4] = {0};
-    mc_client_render_list selected = {.entries = entries, .capacity = 4};
+    mc_client_render_list selected = {.entries = entries, .capacity = 4, .mod_count = UINT32_MAX};
     owner.fields.n = sorted;
     owner.fields.S = &selected;
     owner.fields.w = true;
     owner.n_length = 4;
     for (int32_t pass = 0; pass < 2; ++pass) {
+        const uint32_t modifications = selected.mod_count;
         owner.fields.M = owner.fields.N = owner.fields.O = owner.fields.P = owner.fields.Q = 0;
         mc_client_render_global_submit_call call = {.state = {.owner = &owner, .pass = pass}};
         int32_t result = -1;
@@ -207,7 +208,8 @@ static bool subset_selection(void) {
         CHECK(call.failure.status == MC_CLIENT_RENDER_GLOBAL_SOURCE_INDEX &&
               call.failure.source_pc == (pass == 0 ? 41u : 138u) && call.state.index == 4 &&
               call.state.selected_chunks == 1 && selected.count == 1 && entries[0] == &actors[3] &&
-              actors[3].source_pc == 24 && result == -1);
+              selected.mod_count == modifications + 2u && actors[3].source_pc == 24 &&
+              result == -1);
         CHECK(owner.fields.M == (pass == 0 ? 5 : 0) && owner.fields.N == (pass == 0 ? 1 : 0) &&
               owner.fields.O == (pass == 0 ? 1 : 0) && owner.fields.P == (pass == 0 ? 1 : 0) &&
               owner.fields.Q == (pass == 0 ? 1 : 0));
@@ -215,13 +217,15 @@ static bool subset_selection(void) {
 
     actors[0].fields.p = NULL;
     for (int32_t pass = 0; pass < 2; ++pass) {
+        const uint32_t modifications = selected.mod_count;
         owner.fields.M = 0;
         mc_client_render_global_submit_call call = {.state = {.owner = &owner, .pass = pass}};
         int32_t result = -1;
         CHECK(!mc_terrain_subset(&call, 0, 1, 0, &result));
         CHECK(call.failure.status == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE &&
               call.failure.source_pc == (pass == 0 ? 46u : 143u) && call.state.index == 0 &&
-              owner.fields.M == (pass == 0 ? 1 : 0) && selected.count == 0 && result == -1);
+              owner.fields.M == (pass == 0 ? 1 : 0) && selected.count == 0 &&
+              selected.mod_count == modifications + 1u && entries[0] == NULL && result == -1);
     }
     return true;
 }
