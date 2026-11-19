@@ -25,9 +25,23 @@ static mc_client_texture_source_state source_texture_defaults(uint64_t generatio
 }
 
 static display_texture *source_texture_slot(mc_client_display *display, GLuint id) {
-    for (size_t i = 0; i < display->texture_count; ++i)
-        if (display->textures[i].id == id)
+    const size_t count = display->texture_count;
+    if (count == 0)
+        return NULL;
+    if (display->textures[0].id == id)
+        return &display->textures[0];
+
+    uint8_t *const cached = &display->texture_lookup_cache[id % DISPLAY_TEXTURE_LOOKUP_CACHE_SIZE];
+    const size_t slot = *cached;
+    if (id != 0 && slot != 0 && slot <= count && display->textures[slot - 1].id == id)
+        return &display->textures[slot - 1];
+    for (size_t i = 1; i < count; ++i) {
+        if (display->textures[i].id == id) {
+            if (id != 0)
+                *cached = (uint8_t)(i + 1);
             return &display->textures[i];
+        }
+    }
     return NULL;
 }
 

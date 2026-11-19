@@ -20,10 +20,13 @@ enum {
     DISPLAY_WINDOW_AXIS = 16384,
     DISPLAY_WINDOW_PIXELS = 16 * 1024 * 1024,
     DISPLAY_TEXTURES = 128,
+    DISPLAY_TEXTURE_LOOKUP_CACHE_SIZE = 32,
     DISPLAY_TEXTURE_BYTES = 64 * 1024 * 1024,
     DISPLAY_TOTAL_TEXTURE_BYTES = 128 * 1024 * 1024,
     DISPLAY_CAPTURE_BYTES = 64 * 1024 * 1024
 };
+
+_Static_assert(DISPLAY_TEXTURES <= UINT8_MAX, "Texture lookup cache stores one-based slot indices");
 
 typedef struct display_texture {
     GLuint id;
@@ -73,6 +76,7 @@ struct mc_client_display {
     double exact_width, exact_height;
     display_texture textures[DISPLAY_TEXTURES];
     size_t texture_count, texture_bytes;
+    uint8_t texture_lookup_cache[DISPLAY_TEXTURE_LOOKUP_CACHE_SIZE];
     size_t texture_resource_count, texture_resource_calls;
     mc_client_source_state source;
     source_vertex_cache *source_cache;
@@ -957,6 +961,7 @@ bool mc_client_display_retire_texture(mc_client_texture_resource **owner,
     memmove(&display->textures[index], &display->textures[index + 1],
             (display->texture_count - index) * sizeof(display->textures[0]));
     memset(&display->textures[display->texture_count], 0, sizeof(display->textures[0]));
+    memset(display->texture_lookup_cache, 0, sizeof(display->texture_lookup_cache));
     *owner = NULL;
     free(resource);
     return ok ? success(error) : false;

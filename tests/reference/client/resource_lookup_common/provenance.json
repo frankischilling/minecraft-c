@@ -2570,8 +2570,8 @@
       "sha256": "49671f8a17d39c58006c819b8cfc5e6de352858edc2f9cbe8ce6f8c53ef43913"
     },
     "src/client/display/display.c": {
-      "bytes": 66495,
-      "sha256": "8d9c2bd71b05d0af92adf3df007bab2d3bad3441919a5960f79ef5ec15cfa513"
+      "bytes": 66795,
+      "sha256": "58c2f33564185bdc21062a510ad98abb8cfda88bb04338f6e66f5671f38e7ae7"
     },
     "src/client/display/display.h": {
       "bytes": 14865,
@@ -6419,7 +6419,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938028,
-      "sha256": "55827bf66e1edf792821e3027af596728fe2ab10da502f06129427ef31e3162a"
+      "sha256": "2e6bca82beb129bc1af437348318a18a90d4b7bccd4c9b6ec42a00100c7c12b8"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6483,7 +6483,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067982,
-      "sha256": "00f194741c884f3dc38340aabaed513b63c29e14a49bb7dda0b1a47c28cb4b1b"
+      "sha256": "5747d53ee5f57758af14b0521129400acbda034fd67d73cdce7929d30413c484"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6615,7 +6615,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934853,
-      "sha256": "6dd0ef7b1681dccfaab49d7d65978790e879b9c2b782d6eb1401fe92a41e3c9d"
+      "sha256": "3dde6842b3c334c997d6aef89b4dcd179465951275265784d6bb1025126a8a85"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -10226,8 +10226,8 @@
       "sha256": "619946b5733bc9ba5dc95f880e115a07e05d6592fc4840e1501fc1458bec5396"
     },
     "tests/client/display/test_source_lists.c": {
-      "bytes": 45744,
-      "sha256": "4267074a953838fcf75fa5ca6309a00f96041c64ab757d6d005f874342be0fef"
+      "bytes": 47928,
+      "sha256": "8b1eb5a30c8ea11490e93901535208f55e03a69abfbe2a5c6e02aec0a963fd9d"
     },
     "tests/client/render_engine/test_image_buffer.c": {
       "bytes": 17961,
@@ -13830,8 +13830,8 @@
       "sha256": "f481aee02e0113ad8724d5a217178090b0fc0015915e5bc2785dd197d9868a9e"
     },
     "src/client/display/source_texture_sampling.h": {
-      "bytes": 6565,
-      "sha256": "b80ffe4f108d8b6239db3f8425369753dee8c263fb5072afac63d442b80a3902"
+      "bytes": 7070,
+      "sha256": "826718702324b1ed8c1226aadf14c282208faafef46b699e581967d0cfd7e391"
     },
     "src/client/render/living_draw/body.c": {
       "bytes": 14386,

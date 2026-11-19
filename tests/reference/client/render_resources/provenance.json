@@ -654,8 +654,8 @@
       "sha256": "cbfd4c5bf8a45fbd3152f3bac9bf9688cf61950800579345bc993365da5d1cbd"
     },
     "src/client/display/display.c": {
-      "bytes": 66495,
-      "sha256": "8d9c2bd71b05d0af92adf3df007bab2d3bad3441919a5960f79ef5ec15cfa513"
+      "bytes": 66795,
+      "sha256": "58c2f33564185bdc21062a510ad98abb8cfda88bb04338f6e66f5671f38e7ae7"
     },
     "src/client/display/display.h": {
       "bytes": 14865,
@@ -2574,8 +2574,8 @@
       "sha256": "69d76d736a61b230563bc49763252114699cc20fe2f89e7835cc1656d11c69b4"
     },
     "tests/client/display/test_source_lists.c": {
-      "bytes": 45744,
-      "sha256": "4267074a953838fcf75fa5ca6309a00f96041c64ab757d6d005f874342be0fef"
+      "bytes": 47928,
+      "sha256": "8b1eb5a30c8ea11490e93901535208f55e03a69abfbe2a5c6e02aec0a963fd9d"
     },
     "tests/client/render_engine/test_image_buffer.c": {
       "bytes": 17961,
@@ -4950,8 +4950,8 @@
       "sha256": "f481aee02e0113ad8724d5a217178090b0fc0015915e5bc2785dd197d9868a9e"
     },
     "src/client/display/source_texture_sampling.h": {
-      "bytes": 6565,
-      "sha256": "b80ffe4f108d8b6239db3f8425369753dee8c263fb5072afac63d442b80a3902"
+      "bytes": 7070,
+      "sha256": "826718702324b1ed8c1226aadf14c282208faafef46b699e581967d0cfd7e391"
     },
     "src/client/render/living_draw/body.c": {
       "bytes": 14386,

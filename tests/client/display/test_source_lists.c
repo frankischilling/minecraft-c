@@ -654,7 +654,52 @@ cleanup:
     return result;
 }
 
+static bool texture_lookup_controls(void) {
+    bool result = false;
+    mc_client_display display = {
+        .context_lost = true, .texture_count = 4, .texture_resource_count = 1};
+    mc_client_texture_resource *retiring = calloc(1, sizeof(*retiring));
+    CHECK(retiring != NULL);
+    retiring->display = &display;
+    retiring->id = 1;
+    display.textures[0] = (display_texture){.id = 1, .resource = retiring};
+    display.textures[1].id = 33;
+    display.textures[2].id = 65;
+    CHECK(source_texture_slot(&display, 33) == &display.textures[1] &&
+          source_texture_slot(&display, 33) == &display.textures[1] &&
+          source_texture_slot(&display, 65) == &display.textures[2] &&
+          source_texture_slot(&display, 33) == &display.textures[1] &&
+          source_texture_slot(&display, 0) == &display.textures[3] &&
+          source_texture_slot(&display, 97) == NULL);
+    mc_client_display_error error = {0};
+    CHECK(!mc_client_display_retire_texture(&retiring, &error) &&
+          error.status == MC_CLIENT_DISPLAY_CONTEXT_LOST && retiring == NULL &&
+          display.texture_count == 3 && source_texture_slot(&display, 1) == NULL &&
+          source_texture_slot(&display, 33) == &display.textures[0] &&
+          source_texture_slot(&display, 65) == &display.textures[1]);
+    display.textures[display.texture_count++] = (display_texture){.id = 1};
+    CHECK(source_texture_slot(&display, 1) == &display.textures[3] &&
+          source_texture_slot(&display, 0) == &display.textures[2]);
+    mc_client_texture_source_state *sampling = &display.textures[3].source;
+    *sampling = source_texture_defaults(1);
+    sampling->wrap_s = GL_CLAMP;
+    sampling->min_filter = GL_LINEAR;
+    sampling->image_uploaded = true;
+    int clamp_s, clamp_t;
+    CHECK(source_texture_sampling(&display, 1, &clamp_s, &clamp_t, &error) && clamp_s == 1 &&
+          clamp_t == 0);
+    sampling->known = false;
+    CHECK(!source_texture_sampling(&display, 1, &clamp_s, &clamp_t, &error) &&
+          error.status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL);
+    result = true;
+cleanup:
+    free(retiring);
+    return result;
+}
+
 int main(int argc, char **argv) {
+    if (!texture_lookup_controls())
+        return 1;
     if (argc == 2 && strcmp(argv[1], "--eviction-only") == 0) {
         if (!eviction_controls() || !eviction_invalidation_control())
             return 1;
