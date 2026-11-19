@@ -81,6 +81,73 @@ The fixture starts with empty saved Entity lists. The
 and [fixed light drains](world-queries.md#saved-light-reads-after-acquisition)
 exercise the two changes independently.
 
+## Complete frames at Far distance
+
+Add `--view-distance far` to run at Far distance. The runner writes the
+setting before startup and checks the loaded setting against the request.
+The authored save includes 1,369 populated Chunks from −18 through 18 on
+each axis. Tiny keeps the existing 289-Chunk fixture. Each cohort uses
+one distance, and qualification requires matching saves, camera and
+graphics settings across its processes.
+
+```powershell
+python scripts/benchmarks/client_frames.py --executable current=PATH --authored-assets --view-distance far --artifacts far-runs --rounds 3
+```
+
+One Windows Release smoke run at 854×480 on DISPLAY2 completed 656 frames
+and 200 World ticks, measuring 65.52 FPS. The live Provider held 413
+Chunks at the end of warmup and 549 at the end of timing.
+
+Three separate runs used host-clock measurements around the display
+update, World drawing, Light drain and section compile calls. Each
+run returned 200 or 201 World ticks and 2,125–2,147 section compile
+calls during the measured frames.
+
+| Time per frame | Range of medians across three profiles |
+| --- | ---: |
+| Complete frame | 14.84–14.97 ms |
+| World drawing, including section compiles | 13.41–13.65 ms |
+| Section compiles | 8.69–8.80 ms |
+| SDK display update | 0.29 ms |
+| Light drain | 0.001 ms |
+
+Section compiles took 8.96–9.06 ms at the median on zero-tick frames and
+4.45–4.51 ms on tick-bearing frames. This profile covers the stationary
+save while its renderer builds sections over successive frames.
+
+### Block descriptions during section compilation
+
+Pass selection now supplies its Block description to the renderer for the
+same Block. The renderer still captures the type before updating the Block's
+bounds. Independent render calls get their description through the existing
+dispatch.
+
+Eight alternating Windows Release pairs compiled authored 15×16×15
+sections with flat lighting, at 21 measured compiles per fixture and
+process. Timings cover the compile call. Pass counts, vertex counts and
+hashes of the complete vertex batches matched.
+
+| Authored section | Median before / after | p95 before / after |
+| --- | ---: | ---: |
+| 64 solid Blocks | 92.8 / 92.6 µs | 95.3 / 95.5 µs |
+| Filled with solid Blocks | 2.424 / 2.425 ms | 2.636 / 2.516 ms |
+| Alternating solid Blocks and Ice | 8.460 / 8.369 ms | 9.206 / 8.961 ms |
+
+Two groups of four alternating Far-distance pairs used the same observer,
+save and textures. The first tested the render-description change in a
+prototype, and the repeat compiled the production source. All 16 runs
+returned complete focused frames and advanced World time by 200 or 201
+ticks. The table shows the median of the per-process statistics.
+
+| Windows group | FPS before / after | Frame p95 before / after | Frame p99 before / after |
+| --- | ---: | ---: | ---: |
+| First four pairs | 66.68 / 68.44 | 16.54 / 16.07 ms | 17.75 / 17.14 ms |
+| Four repeats | 68.20 / 69.21 | 16.16 / 16.00 ms | 17.38 / 17.10 ms |
+| All eight pairs | 67.93 / 69.21 | 16.25 / 16.00 ms | 17.56 / 17.10 ms |
+
+FPS rose in seven pairs, while p95 and p99 fell in six. The median of
+each run's longest frame rose from 19.48 to 21.09 ms.
+
 ## Fixed-input observer
 
 Build both comparison executables with the same observer source. The runner

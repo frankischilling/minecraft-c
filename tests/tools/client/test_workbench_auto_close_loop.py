@@ -41,9 +41,9 @@ def metadata(mining, selected, world, name):
                         struct.pack('>i', len(records)) + b''.join(records)))
 
 
-def saved_regions(selected, world, directory):
+def saved_regions(selected, world, directory, *, radius=8):
     # Keep the existing solid target's consistent authored height and light.
-    selected.saved_regions(world, directory, {'id': 3, 'metadata': 0})
+    selected.saved_regions(world, directory, {'id': 3, 'metadata': 0}, radius=radius)
     path = directory / 'r.0.0.mcr'
     region = bytearray(path.read_bytes())
     location = struct.unpack_from('>I', region, 0)[0]

@@ -242,7 +242,8 @@ static int perf_run(fixture *f) {
            "view-distance=%d performance-mode=%d input-policy=fixed-input\n",
            gpu->gl_major, gpu->gl_minor, gpu->profile, (int)gpu->swap_interval_zero, f->app->d,
            f->app->e, settings.values.render_distance, settings.values.performance_mode);
-    CHECK(settings.values.render_distance == 3 && f->app->r == NULL && f->app->N);
+    CHECK((settings.values.render_distance == 0 || settings.values.render_distance == 3) &&
+          f->app->r == NULL && f->app->N);
     perf_camera pose;
     CHECK(perf_read_camera(f, &pose));
     perf_pose(&pose, "pre-warmup");

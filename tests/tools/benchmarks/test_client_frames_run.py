@@ -106,6 +106,15 @@ class FrameWorkObservations(unittest.TestCase):
         self.assertEqual(summary['work_ledger']['world_draws_proved'], 2)
         self.assertEqual(summary['work_ledger']['main_ticks'], 1)
 
+    def test_far_observation_requires_matching_requested_distance(self):
+        tiny = work_receipt()
+        far = tiny.replace('view-distance=3', 'view-distance=0')
+        summary = FRAMES.summarize(far, expected_view_distance=0)
+        self.assertTrue(summary['comparison_qualified'])
+        self.assertFalse(summary['valid_focused_Tiny_interval'])
+        self.assertFalse(FRAMES.summarize(far)['comparison_qualified'])
+        self.assertFalse(FRAMES.summarize(tiny, expected_view_distance=0)['comparison_qualified'])
+
     def test_main_and_world_counts_need_not_be_equal(self):
         def unequal(rows):
             rows[0][6:8], rows[1][6:8] = [2, 2], [3, 3]

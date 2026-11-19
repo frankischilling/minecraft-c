@@ -55,7 +55,7 @@ bool mc_cv_standard(mc_cv_context *c, const mc_block *b, int32_t x, int32_t y, i
 }
 
 static bool render_block(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y, int32_t z,
-                         bool *out) {
+                         const mc_block_render_description *description, bool *out) {
     if (c->failed)
         return false;
     if (!mc_cv_push(c, "b", "(Luu;III)Z"))
@@ -63,12 +63,15 @@ static bool render_block(mc_cv_context *c, const mc_block *block, int32_t x, int
     if (block == NULL)
         return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
                           "actual Block render-type receiver", 1, false);
-    mc_block_render_description description;
-    if (mc_block_render_describe(block, &description) != MC_REGISTRY_OK)
-        return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
-                          "actual Block render-type dispatch", 1, true);
+    mc_block_render_description fresh_description;
+    if (description == NULL) {
+        if (mc_block_render_describe(block, &fresh_description) != MC_REGISTRY_OK)
+            return mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
+                              "actual Block render-type dispatch", 1, true);
+        description = &fresh_description;
+    }
     /* Capture the virtual type before its SAME receiver's bound update. */
-    const int32_t type = description.type;
+    const int32_t type = description->type;
     if (!mc_cv_update_bounds(c, block, x, y, z, 15))
         return false;
     bool rendered = false;
@@ -165,13 +168,18 @@ static bool render_block(mc_cv_context *c, const mc_block *block, int32_t x, int
     return true;
 }
 
-bool mc_cv_render(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y, int32_t z,
-                  bool *out) {
+bool mc_cv_render_described(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y,
+                            int32_t z, const mc_block_render_description *description, bool *out) {
     if (c->failed)
         return false;
     c->returned = false;
     c->depth = 0;
-    return render_block(c, block, x, y, z, out);
+    return render_block(c, block, x, y, z, description, out);
+}
+
+bool mc_cv_render(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y, int32_t z,
+                  bool *out) {
+    return mc_cv_render_described(c, block, x, y, z, NULL, out);
 }
 
 bool mc_cv_render_all(mc_cv_context *c, const mc_block *block, int32_t x, int32_t y, int32_t z) {
@@ -181,7 +189,7 @@ bool mc_cv_render_all(mc_cv_context *c, const mc_block *block, int32_t x, int32_
     mc_cv_store(c, 2);
     mc_cv_pc(c, 11);
     bool ignored;
-    if (!render_block(c, block, x, y, z, &ignored))
+    if (!render_block(c, block, x, y, z, NULL, &ignored))
         return false;
     c->fields->f = false;
     mc_cv_store(c, 17);
@@ -203,7 +211,7 @@ bool mc_cv_texture_override(mc_cv_context *c, const mc_block *block, int32_t x, 
     mc_cv_store(c, 3);
     mc_cv_pc(c, 12);
     bool rendered;
-    if (!render_block(c, block, x, y, z, &rendered))
+    if (!render_block(c, block, x, y, z, NULL, &rendered))
         return false;
     /* The child return is discarded by the actual void wrapper. There is no
      * cleanup/finally resetting d after a child failure. */

@@ -19,6 +19,7 @@ import time
 
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[2]
+VIEW_DISTANCES = {'tiny': (3, 8), 'far': (0, 18)}  # Settings value and saved Chunk radius.
 
 
 def module(name, relative):
@@ -157,7 +158,7 @@ def qualify_cohort(profiles):
             'all_intervals_qualified': complete, 'authored_scene_and_camera_matched': matched}
 
 
-def summarize(stdout):
+def summarize(stdout, expected_view_distance=3):
     result = [fields(s) for s in stdout.splitlines() if s.startswith('PERF_RESULT ')]
     context = [fields(s) for s in stdout.splitlines() if s.startswith('PERF_CONTEXT ')]
     finish = [fields(s) for s in stdout.splitlines() if s.startswith('PERF_FINISH ')]
@@ -228,9 +229,10 @@ def summarize(stdout):
     duration_complete = end - start >= 10 * hz
     stationary = context.get('input-policy') == 'fixed-input'
     pose_valid = not stationary or unsigned(result['pose-invalid'], 'Pose failures') == 0
+    view_distance = int(context['view-distance'])
     valid = (result['healthy'] == '1' and result['capacity'] == '0' and
              result['focus-invalid'] == '0' and finish['cleanup'] == '1' and
-             int(context['view-distance']) == 3 and all(r[12] == 1 for r in raw) and
+             view_distance == expected_view_distance and all(r[12] == 1 for r in raw) and
              all(r[11] == -1 and r[10] == 1 for r in raw) and native_foreground_valid and
              actual_rotation_valid and pose_valid and (row_version == 1 or len(split_rows) == len(raw)))
     gpu = {key: next((s.split(' ', 1)[1] for s in stdout.splitlines()
@@ -248,7 +250,8 @@ def summarize(stdout):
             'work_ledger': ledger,
             'comparison_qualified': (valid and duration_complete and full_pose_retained and
                                      context_complete and ledger['simulation_advanced']),
-            'valid_focused_Tiny_interval': valid, 'context': context, 'measurement': result,
+            'valid_focused_Tiny_interval': valid and view_distance == 3,
+            'context': context, 'measurement': result,
             'observation_row_version': row_version,
             'measured_fps': len(raw) * hz / (end - start),
             'gpu': gpu,
@@ -269,7 +272,11 @@ def summarize(stdout):
             'frames_over_16_667_ms': sum(x > 1000 / 60 for x in total),
             'frames_over_33_333_ms': sum(x > 1000 / 30 for x in total),
             'observed_source_FPS_strings': source_fps,
-            'scope': 'Fresh no-export setup; 2s natural warmup + 10s actual direct normal frames; includes normal Source pacing, SDK swap, tick/services/World/render work. No unrestricted/Far/GPU-only FPS claim.'}
+            'scope': (
+                'Fresh no-export setup; 2s natural warmup + 10s actual direct normal frames; includes normal Source pacing, SDK swap, tick/services/World/render work. No unrestricted/Far/GPU-only FPS claim.'
+                if expected_view_distance == 3 else
+                'Fresh no-export setup, 2s natural warmup and 10s of normal frames with '
+                'Source pacing, SDK swaps, World ticks and rendering for the stationary Far scene.')}
 
 
 def main():
@@ -277,7 +284,9 @@ def main():
     p.add_argument('--executable', type=Path, required=True)
     p.add_argument('--assets', type=Path, required=True)
     p.add_argument('--artifacts', type=Path, required=True)
+    p.add_argument('--view-distance', choices=VIEW_DISTANCES, default='tiny')
     args = p.parse_args()
+    view_distance, chunk_radius = VIEW_DISTANCES[args.view_distance]
     if os.name != 'nt':
         raise RuntimeError('This raw-QPC/native-SDK observer declares Windows only')
     A = module('perf_auto_inputs', 'tests/tools/client/test_workbench_auto_close_loop.py')
@@ -302,6 +311,7 @@ def main():
     asset_before = world.snapshot(assets)
     report = {'status': 'FAIL', 'scope': __doc__, 'inputs_before': before,
               'monitor': monitor,
+              'view_distance': args.view_distance, 'authored_chunk_radius': chunk_radius,
               'assets_before': asset_before, 'read_only_source_clock_observations': True,
               'audio_backend': 'existing SDK fixture OpenAL null driver; Source sound work unchanged',
               'per_frame_test_screenshots_disk_checks_assertion_helpers': False,
@@ -314,7 +324,7 @@ def main():
         game = home / '.minecraft'
         game.mkdir(parents=True)
         report['statistics_input'] = A.B.statistics_input(game, assets)
-        (game / 'options.txt').write_bytes(b'viewDistance:3\n')
+        (game / 'options.txt').write_bytes(f'viewDistance:{view_distance}\n'.encode('ascii'))
         saves = game / 'saves'
         saves.mkdir()
         for folder, name, played in [('older', 'Old world', 1303000000000),
@@ -341,7 +351,7 @@ def main():
             (directory / 'preserve-chunk.dat').write_bytes(b'authored unrelated bytes')
         region = saves / 'alpha/region'
         region.mkdir()
-        A.saved_regions(selected, world, region)
+        A.saved_regions(selected, world, region, radius=chunk_radius)
         (region / 'r.9.9.mcr').write_bytes(bytes(8192))
         report['save_before'] = world.snapshot(saves)
         environment = os.environ.copy()
@@ -367,7 +377,7 @@ def main():
         report['ended_ns'] = time.time_ns()
         report['returncode'] = result.returncode
         stdout = result.stdout.decode('utf8', errors='strict')
-        report['summary'] = summarize(stdout)
+        report['summary'] = summarize(stdout, expected_view_distance=view_distance)
         if report['summary']['context'].get('input-policy') != 'fixed-input':
             raise ValueError('Use an observer built for the fixed-input workload')
         monitor_rows = [fields(line) for line in stdout.splitlines()

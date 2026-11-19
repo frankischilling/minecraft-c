@@ -11,7 +11,8 @@ Use an existing local resource directory when comparing that presentation:
   python scripts/benchmarks/client_frames.py --executable before=PATH --executable after=PATH \
       --assets IMPORTED_ASSETS --artifacts frame-runs --rounds 3
 
-The fixed scene uses seed 123, Tiny distance, 854x480 and saved Rotation 180,-30.
+The fixed scene uses seed 123, 854x480 and saved Rotation 180,-30.
+Choose Tiny (default) or Far with --view-distance.
 Each fresh process warms up naturally for 2s and measures 10s of ordinary Source
 frames on DISPLAY2 with fixed input. All attempts remain in artifacts.
 There is no universal FPS or original-game parity claim and no FPS threshold.
@@ -25,7 +26,7 @@ import sys
 import tempfile
 
 from client_frames_build import build_observer
-from client_frames_run import module, qualify_cohort
+from client_frames_run import VIEW_DISTANCES, module, qualify_cohort
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -58,6 +59,7 @@ def main():
     fixtures.add_argument('--assets', type=Path, help='Local resource directory')
     fixtures.add_argument('--authored-assets', action='store_true',
                           help='Generate test textures and resources for this cohort')
+    parser.add_argument('--view-distance', choices=VIEW_DISTANCES, default='tiny')
     parser.add_argument('--artifacts', type=Path, help='Parent directory for retained run evidence')
     parser.add_argument('--rounds', type=int, default=3)
     options = parser.parse_args()
@@ -99,6 +101,7 @@ def main():
     report = {'status': 'FAIL', 'scope': __doc__, 'profiles': [], 'rounds': options.rounds,
               'build_record': None if build_record is None else str(build_record),
               'asset_fixture': 'authored' if options.authored_assets else 'provided',
+              'view_distance': options.view_distance,
               'qualification': 'Only complete focused screen-free intervals support this finite scene comparison. No failed attempt is discarded.'}
     for round_index in range(options.rounds):
         order = list(executables)
@@ -108,7 +111,7 @@ def main():
             before = set(children.iterdir())
             command = [sys.executable, '-B', str(Path(__file__).with_name('client_frames_run.py')),
                        '--executable', str(executables[label]), '--assets', str(assets),
-                       '--artifacts', str(children)]
+                       '--artifacts', str(children), '--view-distance', options.view_distance]
             result = subprocess.run(command, capture_output=True, timeout=300)
             (output / f'{round_index}-{label}.stdout').write_bytes(result.stdout)
             (output / f'{round_index}-{label}.stderr').write_bytes(result.stderr)

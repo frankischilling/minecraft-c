@@ -185,6 +185,9 @@ bool mc_cv_flat(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, fl
 bool mc_source_cv_ambient_occlusion(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t,
                                     float, float, float, bool *);
 bool mc_cv_render(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
+/* Use the description just read from this same live Block during pass selection. */
+bool mc_cv_render_described(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t,
+                            const mc_block_render_description *, bool *);
 bool mc_cv_standard(mc_cv_context *, const mc_block *, int32_t, int32_t, int32_t, bool *);
 /* Exact Piston bodies own their CV source frame, but neither begin nor draw NW.
  * Void wrappers return native success only; f is cleared solely on normal return. */

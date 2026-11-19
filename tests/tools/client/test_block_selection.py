@@ -133,10 +133,10 @@ def metadata(world, name):
     return b'\x0a\x00\x00' + tag(10, 'Data', body + tag(10, 'Player', player + b'\x00') + b'\x00') + b'\x00'
 
 
-def saved_regions(world, directory, target):
+def saved_regions(world, directory, target, *, radius=8):
     regions = {}
-    for x in range(-8, 9):
-        for z in range(-8, 9):
+    for x in range(-radius, radius + 1):
+        for z in range(-radius, radius + 1):
             blocks, light, data = bytearray(32768), bytearray(16384), bytearray(16384)
             heights = bytearray([64] * 256)
             for bx in range(16):

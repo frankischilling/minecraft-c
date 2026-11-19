@@ -428,7 +428,8 @@ static bool block(mc_source_dk_compile *c) {
         return true;
     }
     bool rendered;
-    if (!mc_cv_render(&c->render_blocks, b, c->state.x, c->state.y, c->state.z, &rendered)) {
+    if (!mc_cv_render_described(&c->render_blocks, b, c->state.x, c->state.y, c->state.z,
+                                &description, &rendered)) {
         c->failure = c->render_blocks.failure;
         if (c->render_blocks.depth != 0) {
             const mc_cv_frame *f = &c->render_blocks.frames[0];
