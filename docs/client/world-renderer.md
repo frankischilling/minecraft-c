@@ -133,6 +133,14 @@ took 3.52 µs at 64 rows, down from 6.23 µs, and 0.125 ms at 4,096 rows,
 down from 11.19 ms. Through eight rows, the median varied by less than 1%.
 The measurement covers the shared-list update on its own.
 
+When a rebuild adds shared tiles, it now checks each existing ownership
+record at most once while reserving rows. Reusable records retain their
+order. In 12 alternating Windows Release pairs, adding 64 authored tiles
+to a 4,096-row list took 175.60 µs at the median, down from 511.42 µs.
+Adding 128 took 216.58 µs, down from 898.79 µs. Adding one tile to an
+empty list went from 3.50 to 3.56 µs. Timings include the list update and
+retirement, with the subsequent removal outside the timer.
+
 Section compilation also avoids preparing an EntityRenderer diagnostic
 when the caller provides no output. An initialized application reads the
 live ambient-occlusion setting under one lock. Eight alternating Windows

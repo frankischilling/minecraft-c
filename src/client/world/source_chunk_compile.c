@@ -513,11 +513,15 @@ static bool publish_new(mc_source_dk_compile *c) {
     if (c->pending_f == NULL)
         return fail(c, MC_CLIENT_RENDER_GLOBAL_ALLOCATION_FAILED,
                     "DK shared List native occurrence reservation", 584, true);
+    mc_render_global_tile_occurrence *unscanned = n->tile_occurrences;
     for (size_t i = 0; i < array.count; ++i) {
-        mc_render_global_tile_occurrence *h = n->tile_occurrences;
-        while (h != NULL && (h->active || h->list != NULL))
-            h = h->next;
-        if (h == NULL) {
+        while (unscanned != NULL && (unscanned->active || unscanned->list != NULL))
+            unscanned = unscanned->next;
+        mc_render_global_tile_occurrence *h = unscanned;
+        if (h != NULL) {
+            /* The reservation loop only removes rows from the free pool. */
+            unscanned = h->next;
+        } else {
             h = mc_render_global_allocate(
                 n, sizeof(*h), (mc_client_graphics_site){"dk", "a", "()V", 584}, &c->failure);
             if (h == NULL)

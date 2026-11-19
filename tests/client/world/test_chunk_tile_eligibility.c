@@ -385,6 +385,14 @@ int main(void) {
     CHECK(mc_source_dk_tile_lists_entered(&dk, NULL, 0, &call, &error));
     CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);
     mc_tile_entity *two_new[] = {spawner, second};
+    mc_render_global_tile_occurrence *free_rows[2];
+    size_t found = 0;
+    for (mc_render_global_tile_occurrence *h = owner.tile_occurrences; h != NULL && found < 2;
+         h = h->next) {
+        if (!h->active && h->list == NULL)
+            free_rows[found++] = h;
+    }
+    CHECK(found == 2);
     const uint32_t spawner_bin = (spawner->identity.hash ^ (spawner->identity.hash >> 16u)) & 15u;
     const uint32_t second_bin = (second->identity.hash ^ (second->identity.hash >> 16u)) & 15u;
     CHECK(mc_source_dk_tile_lists_entered(&dk, two_new, 2, &call, &error) && shared.count == 2 &&
@@ -393,6 +401,9 @@ int main(void) {
           state.shared_tiles_added == 2 &&
           shared.entries[0] == (spawner_bin <= second_bin ? spawner : second) &&
           shared.entries[1] == (spawner_bin <= second_bin ? second : spawner));
+    for (size_t i = 0; i < 2; ++i)
+        CHECK(free_rows[i]->active && free_rows[i]->list == &shared && free_rows[i]->index == i &&
+              free_rows[i]->tile == shared.entries[i]);
     CHECK(mc_source_dk_compile_retire(&call, &cleanup_error) == MC_CLIENT_RENDER_GLOBAL_OK);
     CHECK(mc_source_dk_tile_lists_entered(&dk, NULL, 0, &call, &error) && shared.count == 0 &&
           mc_source_dk_compile_inspect(call, &state) && state.shared_tiles_removed == 2);

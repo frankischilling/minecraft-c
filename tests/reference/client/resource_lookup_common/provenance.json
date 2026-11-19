@@ -318,8 +318,8 @@
       "sha256": "88cf0c24f07c5212dfada475c1647a070ae82953e83b324de188e6a2080fe7b7"
     },
     "docs/client/world-renderer.md": {
-      "bytes": 31908,
-      "sha256": "3ace5d82fea21cd031872fee5a9b942c96b9f9edb3801e226c8bceb98ebfe3d6"
+      "bytes": 32405,
+      "sha256": "d91e5818446d4ef9c714d2e9d54ecb9ad58f4f0645b64c4e3050c3abc1c2775c"
     },
     "docs/core/java-float-format.md": {
       "bytes": 4461,
@@ -6423,7 +6423,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938031,
-      "sha256": "e85a88a4ab7de4f40b3e50d874a09a42c437f792f77047fb4b9cc289b92731d9"
+      "sha256": "fa44e20da3f9785ecd76c7d8e6ca812dab6edb8dd3a688cbad020f8144ace753"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6487,7 +6487,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1068134,
-      "sha256": "87f0a8203d22c8efc563823dbc8c68737d58cdc828f01ba6fd9ab8900e50db64"
+      "sha256": "f4c8fde0d32d0b7ed07bcf8703daf8f03742451e6ba77c52e1533be2269ae7d3"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6619,7 +6619,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934856,
-      "sha256": "d1f935c44f2ece99a6d8fc9a71d9dd80db91427295b95811fd693865542a5fea"
+      "sha256": "6fbb5363509efe361d4870bf87c30a14ac3b5902d3056f061ab648d274fc6767"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -11518,8 +11518,8 @@
       "sha256": "d749c65bec50c1df278d8a5c7c96ab550358fb163f54c360546b55f92d409e9f"
     },
     "src/client/world/source_chunk_compile.c": {
-      "bytes": 43042,
-      "sha256": "b127b77611154f9b4476b1fee54abbc7862a96dc3eac2c0843fffbb91513e226"
+      "bytes": 43270,
+      "sha256": "d7aab4906f06a85e9dbb22ec8d45b45fa26de706a8fdfcbdb486728ca7134d7a"
     },
     "src/client/world/source_chunk_compile_internal.h": {
       "bytes": 2862,
@@ -24514,8 +24514,8 @@
       "sha256": "16555315411f819cf56dfb0446a381879743b927658fc8d31efce07bf95873f7"
     },
     "tests/client/world/test_chunk_tile_eligibility.c": {
-      "bytes": 29743,
-      "sha256": "a8bb2d3ea164797fbf98141c493f28e974214a284c5e67b916ba39c812842cb8"
+      "bytes": 30234,
+      "sha256": "6af7c278eabca78cf12b11233a515982c7b9af3d421c7605ac5c90fcd9dd6cae"
     },
     "tests/entity/player/run_chest_eligibility.py": {
       "bytes": 1703,
