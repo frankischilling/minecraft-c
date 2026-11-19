@@ -700,6 +700,7 @@ static bool eviction_controls(void) {
     display.gl.DeleteBuffers = observe_eviction;
     display.gl.DeleteVertexArrays = observe_eviction;
     display.gl.GetError = observe_eviction_error;
+    CHECK(source_vertex_cache_oldest(cache, NULL) == NULL);
     const size_t slots[] = {63, 64, 65, SOURCE_CACHE_SLOTS - 1u};
     const size_t charge = SOURCE_CACHE_BYTES / 4u;
     /* Synthetic charges drive pressure and injected failures without needing
@@ -715,6 +716,7 @@ static bool eviction_controls(void) {
     source_cached_vertices *replaced = &cache->slots[64];
     CHECK(source_vertex_cache_oldest(cache, &cache->slots[63]) == replaced);
     CHECK(source_vertex_cache_oldest(cache, replaced) == &cache->slots[63]);
+    CHECK(source_vertex_cache_oldest(cache, NULL) == &cache->slots[63]);
     cache->sequence = UINT64_MAX;
     source_vertex_cache_touch(cache, &cache->slots[63]);
     CHECK(source_vertex_cache_oldest(cache, replaced) == &cache->slots[63]);

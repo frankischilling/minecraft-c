@@ -1,3 +1,7 @@
+#if defined(_MSC_VER)
+#include <intrin.h>
+#endif
+
 enum {
     SOURCE_CACHE_SLOTS = 4096,
     SOURCE_CACHE_WAYS = 4,
@@ -13,6 +17,8 @@ _Static_assert(SOURCE_CACHE_SLOTS % SOURCE_CACHE_GROUP_SIZE == 0 && SOURCE_CACHE
                "one dirty bit per complete vertex cache group");
 _Static_assert(SOURCE_CACHE_GROUP_SIZE % SOURCE_CACHE_WAYS == 0,
                "each vertex cache set is contained in one eviction group");
+_Static_assert((SOURCE_CACHE_GROUPS & (SOURCE_CACHE_GROUPS - 1)) == 0,
+               "the eviction tree has a power-of-two leaf count");
 
 typedef struct source_cached_vertices {
     /* Recorded draw bytes identify one immutable, committed command. */
@@ -28,7 +34,7 @@ typedef struct source_cached_vertices {
 
 struct source_vertex_cache {
     source_cached_vertices slots[SOURCE_CACHE_SLOTS];
-    source_cached_vertices *oldest[SOURCE_CACHE_GROUPS];
+    source_cached_vertices *eviction_tree[2 * SOURCE_CACHE_GROUPS];
     size_t bytes, tiny_bytes;
     uint64_t sequence, dirty_groups;
 };
@@ -153,23 +159,64 @@ source_vertex_cache_group_oldest(source_vertex_cache *cache, size_t group,
     return oldest;
 }
 
-static source_cached_vertices *source_vertex_cache_oldest(source_vertex_cache *cache,
-                                                          const source_cached_vertices *excluded) {
-    source_cached_vertices *oldest = NULL;
-    const uint64_t dirty_groups = cache->dirty_groups;
-    /* Reclaim tiny storage first. Within a tier, age and then ascending slot
-     * order decide. Exclusion only affects the group containing the upload. */
-    for (size_t group = 0; group < SOURCE_CACHE_GROUPS; ++group) {
-        const uint64_t bit = UINT64_C(1) << group;
-        if ((dirty_groups & bit) != 0)
-            cache->oldest[group] = source_vertex_cache_group_oldest(cache, group, NULL);
-        source_cached_vertices *candidate = cache->oldest[group];
-        if (candidate == excluded)
-            candidate = source_vertex_cache_group_oldest(cache, group, excluded);
-        if (candidate != NULL && source_vertex_cache_eviction_before(candidate, oldest))
-            oldest = candidate;
+static source_cached_vertices *source_vertex_cache_min(source_cached_vertices *left,
+                                                       source_cached_vertices *right) {
+    /* All slots from the left subtree precede those from the right. */
+    return right != NULL && source_vertex_cache_eviction_before(right, left) ? right : left;
+}
+
+static size_t source_vertex_cache_first_dirty(uint64_t dirty) {
+#if defined(_MSC_VER)
+    unsigned long index;
+    _BitScanForward64(&index, dirty);
+    return (size_t)index;
+#else
+    return (size_t)__builtin_ctzll(dirty);
+#endif
+}
+
+static void source_vertex_cache_refresh(source_vertex_cache *cache) {
+    uint64_t dirty = cache->dirty_groups;
+    uint64_t parents = 0;
+    while (dirty != 0) {
+        const size_t group = source_vertex_cache_first_dirty(dirty);
+        dirty &= dirty - 1;
+        cache->eviction_tree[SOURCE_CACHE_GROUPS + group] =
+            source_vertex_cache_group_oldest(cache, group, NULL);
+        parents |= UINT64_C(1) << (group / 2);
+    }
+    /* Each dirty leaf contributes its parent once at each level. */
+    for (size_t width = SOURCE_CACHE_GROUPS / 2; width != 0 && parents != 0; width /= 2) {
+        dirty = parents;
+        parents = 0;
+        while (dirty != 0) {
+            const size_t index = source_vertex_cache_first_dirty(dirty);
+            dirty &= dirty - 1;
+            const size_t node = width + index;
+            cache->eviction_tree[node] = source_vertex_cache_min(
+                cache->eviction_tree[2 * node], cache->eviction_tree[2 * node + 1]);
+            parents |= UINT64_C(1) << (index / 2);
+        }
     }
     cache->dirty_groups = 0;
+}
+
+static source_cached_vertices *source_vertex_cache_oldest(source_vertex_cache *cache,
+                                                          const source_cached_vertices *excluded) {
+    source_vertex_cache_refresh(cache);
+    source_cached_vertices *oldest = cache->eviction_tree[1];
+    if (oldest == NULL || oldest != excluded)
+        return oldest;
+
+    /* Scan the excluded slot's group again, then combine its sibling
+     * subtrees with lower indices breaking ties. The shared index stays intact. */
+    const size_t group = (size_t)(excluded - cache->slots) / SOURCE_CACHE_GROUP_SIZE;
+    oldest = source_vertex_cache_group_oldest(cache, group, excluded);
+    for (size_t node = SOURCE_CACHE_GROUPS + group; node > 1; node /= 2) {
+        source_cached_vertices *sibling = cache->eviction_tree[node ^ 1u];
+        oldest = (node & 1u) != 0 ? source_vertex_cache_min(sibling, oldest)
+                                  : source_vertex_cache_min(oldest, sibling);
+    }
     return oldest;
 }
 

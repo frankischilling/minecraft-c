@@ -336,8 +336,11 @@ retain priority in the set.
 The 4,096-slot cache retains an eviction candidate in each group of 64.
 Under pressure it reclaims 6–17 vertex storage first, then compares age
 and slot index within each tier. A slot being resized is excluded.
-Hits, uploads, and invalidation mark affected groups for rescan. The
-group index occupies 520 bytes per cache on x86-64.
+Hits, uploads, and invalidation mark affected groups for rescan. A binary
+tree combines the group candidates. Eviction refreshes the dirty groups
+and their ancestors. When the root candidate is excluded, only its group
+is rescanned and compared with the remaining subtrees. The index occupies
+1,032 bytes per cache on x86-64.
 
 Ten alternating Windows Release pairs per profile used 450 lists per pass
 on an RTX 3060. Framebuffer, section order, and work hashes matched.
@@ -348,6 +351,21 @@ The times span frames through GPU completion.
 | 1/2 | 3.637 → 0.522 ms | 4.299 → 0.628 ms |
 | 16/1 | 1.966 → 0.539 ms | 2.482 → 0.631 ms |
 | 16/3 | 0.534 → 0.543 ms | 0.646 → 0.649 ms |
+
+Twelve paired WSL2 runs used GCC 15.2 Release and stubbed GL calls to
+measure cache bookkeeping near the 64 MiB limit. The regular workload
+performed 98,304 uploads and 98,392 evictions. The mixed workload
+performed 103,156 uploads and 104,265 evictions. Selection, upload,
+fallback and deletion counts, deletion order, and final cache hashes
+matched across the builds being compared.
+
+| Workload | Group scan median | Tree median |
+| --- | ---: | ---: |
+| Regular batches | 41.20 ms | 34.11 ms |
+| Regular and 6–12 vertex batches | 39.61 ms | 33.66 ms |
+
+The earlier cache with an 18-vertex minimum took 37.51 ms for the same
+regular workload. These measurements cover the CPU cache path.
 
 An earlier fixed CPU workload measured the introduction of grouped eviction
 with stubbed GL calls. All 12 WSL2 pairs matched hit and miss counts, eviction
