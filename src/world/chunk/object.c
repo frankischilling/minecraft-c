@@ -320,16 +320,9 @@ void mc_world_chunk_storage_free(mc_world_chunk *chunk) {
     }
 }
 
-static bool list_valid(const mc_world_chunk_entity_list *list) {
-    return list != NULL && list->count <= list->capacity && list->capacity <= (size_t)INT32_MAX &&
-           list->capacity <= SIZE_MAX / sizeof(*list->items) &&
-           ((list->capacity == 0 && list->items == NULL) ||
-            (list->capacity != 0 && list->items != NULL));
-}
-
 mc_world_storage_status mc_world_chunk_entity_at(const mc_world_chunk_entity_list *list,
                                                  size_t index, mc_entity **out) {
-    if (out == NULL || !list_valid(list) || index >= list->count)
+    if (out == NULL || !mc_world_chunk_entity_list_valid(list) || index >= list->count)
         return MC_WORLD_STORAGE_INVALID_ARGUMENT;
     *out = list->items[index];
     return MC_WORLD_STORAGE_OK;
@@ -360,7 +353,7 @@ bool mc_world_chunk_entities_validate(const mc_world_chunk *chunk) {
     bytes += map_bytes;
     for (size_t index = 0; index < CHUNK_ENTITY_SLICES; ++index) {
         const mc_world_chunk_entity_list *const list = &chunk->entities[index];
-        if (chunk->slices.items[index] != list || !list_valid(list) ||
+        if (chunk->slices.items[index] != list || !mc_world_chunk_entity_list_valid(list) ||
             (list->count != 0 && chunk->release_entity == NULL))
             return false;
         if (chunk->entity_containers_retired &&

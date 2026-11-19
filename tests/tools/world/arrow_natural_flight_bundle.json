@@ -120,8 +120,8 @@
       "sha256": "3334a415fd7ba07140dca944f5cadb856a07d7cabe6fa58802c61fc466dc1263"
     },
     "src/world/runtime/collision/class_entities.c": {
-      "bytes": 26478,
-      "sha256": "255dd0b05f85742528504cd7f2775926e6500d16b1ac64592001aa8e2d195705"
+      "bytes": 25943,
+      "sha256": "a285621972c1f904bc23043a3a72f0df15f923c3dd20307be4a84c3c534969c9"
     },
     "src/world/runtime/entity_publication.c": {
       "bytes": 56231,

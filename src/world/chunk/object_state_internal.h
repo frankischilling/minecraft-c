@@ -31,6 +31,12 @@ struct mc_world_chunk_entity_list {
     size_t count, capacity;
 };
 
+static inline bool mc_world_chunk_entity_list_valid(const mc_world_chunk_entity_list *list) {
+    return list != NULL && list->count <= list->capacity && list->capacity <= (size_t)INT32_MAX &&
+           list->capacity <= SIZE_MAX / sizeof(*list->items) &&
+           ((list->capacity == 0) == (list->items == NULL));
+}
+
 struct mc_world_chunk_list_array {
     mc_world_chunk_entity_list *items[CHUNK_ENTITY_SLICES];
     size_t length;
@@ -74,6 +80,14 @@ struct mc_world_chunk {
      * constructors; it is never a source/gameplay WorldAccess callback. */
     void (*release_entity)(mc_entity *entity);
 };
+
+static inline bool mc_world_chunk_entity_list_owned(const mc_world_chunk *chunk,
+                                                    const mc_world_chunk_entity_list *list) {
+    for (size_t i = 0; i < CHUNK_ENTITY_SLICES; ++i)
+        if (list == &chunk->entities[i])
+            return mc_world_chunk_entity_list_valid(list);
+    return false;
+}
 
 typedef struct generated_chunk_backing {
     mc_world_chunk chunk;

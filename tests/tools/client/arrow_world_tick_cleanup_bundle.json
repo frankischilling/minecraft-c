@@ -138,8 +138,8 @@
       "sha256": "3334a415fd7ba07140dca944f5cadb856a07d7cabe6fa58802c61fc466dc1263"
     },
     "src/world/runtime/collision/class_entities.c": {
-      "bytes": 26478,
-      "sha256": "255dd0b05f85742528504cd7f2775926e6500d16b1ac64592001aa8e2d195705"
+      "bytes": 25943,
+      "sha256": "a285621972c1f904bc23043a3a72f0df15f923c3dd20307be4a84c3c534969c9"
     },
     "src/world/runtime/entity_publication.c": {
       "bytes": 56231,
@@ -177,7 +177,7 @@
   "helpers": {
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76652,
-      "sha256": "af1e6e31d13c7913c3d7e1b9b4db4a595d9523aa38d4a44585b17c63ec360111"
+      "sha256": "d89a0bb4c6b6a943723384165c504f7b779c3cf5bd4e1984fc06e44c83288df8"
     },
     "tests/tools/world/test_execution_ownership.py": {
       "bytes": 8350,

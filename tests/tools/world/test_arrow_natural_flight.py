@@ -16,7 +16,7 @@ TIMEOUT = 240
 LIMIT = 1024 ** 2
 MODES = {'air-first': 1, 'air-multi': 8, 'block': 5, 'victim-frontier': 1}
 TARGET = 'mc_test_arrow_natural_flight'
-BUNDLE_SHA = 'efc8055e796c6bd0be813bf5c7702018480b210696f94420250729d2b19444fd'
+BUNDLE_SHA = '1a6cee66054572f646b82b68d9824c0aaa9316d736efc9d14087cde1b7213b68'
 
 
 def need(value, message):

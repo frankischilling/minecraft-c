@@ -73,12 +73,12 @@
       "sha256": "39ebbb88f6bd90dbc3662fdaa2fda9978759cf02fc06b0543bd8a6c7472c9e7f"
     },
     "src/world/runtime/collision/class_entities.c": {
-      "bytes": 26478,
-      "sha256": "255dd0b05f85742528504cd7f2775926e6500d16b1ac64592001aa8e2d195705"
+      "bytes": 25943,
+      "sha256": "a285621972c1f904bc23043a3a72f0df15f923c3dd20307be4a84c3c534969c9"
     },
     "src/world/runtime/collision/entities.c": {
-      "bytes": 35695,
-      "sha256": "f039d9de9919cd383e1ac67e492a83940b4ac9dc303c853c356e0ca2d2a738e8"
+      "bytes": 35207,
+      "sha256": "f057aa18469be6be6db546597125f9a7592581703407ee088026b60276ba4260"
     },
     "src/world/cache/acquire.c": {
       "bytes": 18004,

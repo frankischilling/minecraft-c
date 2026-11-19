@@ -419,8 +419,8 @@
       "sha256": "06d301424a64339763a57988e17b556e53d8543214679a54e77fabd64b7c3162"
     },
     "src/world/runtime/collision/entities.c": {
-      "bytes": 35695,
-      "sha256": "f039d9de9919cd383e1ac67e492a83940b4ac9dc303c853c356e0ca2d2a738e8"
+      "bytes": 35207,
+      "sha256": "f057aa18469be6be6db546597125f9a7592581703407ee088026b60276ba4260"
     },
     "src/world/runtime/collision/entities_execution_internal.h": {
       "bytes": 5156,
@@ -467,8 +467,8 @@
       "sha256": "239ea3db2b581b6fbb63d1ba27c7f2c30c025457f300fb469b3e6044196329dc"
     },
     "src/world/runtime/collision/class_entities.c": {
-      "bytes": 26478,
-      "sha256": "255dd0b05f85742528504cd7f2775926e6500d16b1ac64592001aa8e2d195705"
+      "bytes": 25943,
+      "sha256": "a285621972c1f904bc23043a3a72f0df15f923c3dd20307be4a84c3c534969c9"
     },
     "src/world/runtime/collision/class_entities_execution_internal.h": {
       "bytes": 1750,

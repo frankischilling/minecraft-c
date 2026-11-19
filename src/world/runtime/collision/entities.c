@@ -283,18 +283,6 @@ static bool slice_array(const mc_world_chunk *chunk, const mc_world_chunk_list_a
     return array == &chunk->slices && array->length <= CHUNK_ENTITY_SLICES;
 }
 
-static bool slice_list(const mc_world_chunk *chunk, const mc_world_chunk_entity_list *list) {
-    if (list == NULL)
-        return false;
-    bool known = false;
-    for (size_t i = 0; i < CHUNK_ENTITY_SLICES; ++i)
-        if (list == &chunk->entities[i])
-            known = true;
-    return known && list->count <= list->capacity && list->capacity <= (size_t)INT32_MAX &&
-           list->capacity <= SIZE_MAX / sizeof(*list->items) &&
-           ((list->capacity == 0) == (list->items == NULL));
-}
-
 static bool gather(mc_world_runtime *world, mc_world_chunk *chunk, mc_entity *excluded,
                    const mc_entity_bounds *bounds, mc_world_reference_list *destination,
                    mc_world_nearby_error *frame, const nearby_execution *owned) {
@@ -332,17 +320,17 @@ static bool gather(mc_world_runtime *world, mc_world_chunk *chunk, mc_entity *ex
             return stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                            "Chunk gather selected slice");
         mc_world_chunk_entity_list *const list = array->items[(uint32_t)slice]; /* local7 */
-        for (size_t index = 0;; ++index) {
-            frame->index = index;
+        if (!mc_world_chunk_entity_list_owned(chunk, list)) {
+            frame->index = 0;
             frame->query.chunk_bytecode = 88;
-            if (!slice_list(chunk, list))
-                return stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Chunk gather List size");
-            if (index >= list->count)
-                break;
+            return stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Chunk gather List size");
+        }
+        /* Appends update the separate destination list. */
+        const size_t count = list->count;
+        for (size_t index = 0; index < count; ++index) {
+            frame->index = index;
             frame->query.chunk_bytecode = 100;
-            mc_entity *candidate;
-            if (mc_world_chunk_entity_at(list, index, &candidate) != MC_WORLD_STORAGE_OK)
-                return stopped(frame, MC_WORLD_STORAGE_UNSUPPORTED_STATE, "Chunk gather List get");
+            mc_entity *candidate = list->items[index];
             if (candidate == excluded) /* actual reference comparison113 */
                 continue;
             frame->query.chunk_bytecode = 118;
@@ -357,6 +345,8 @@ static bool gather(mc_world_runtime *world, mc_world_chunk *chunk, mc_entity *ex
                     return false;
             }
         }
+        frame->index = count;
+        frame->query.chunk_bytecode = 88;
     }
     return true;
 }

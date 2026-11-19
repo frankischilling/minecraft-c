@@ -618,6 +618,26 @@ static bool nearby_failures_and_blank(fixture *f, size_t side) {
           w->fields.R->items[0] == a && a->holds == 3 && b->holds == 2);
     CHECK(nearby_query_is(w, NULL, &inverted, NULL, 0) && a->holds == 2);
 
+    const size_t slice_capacity = slice_one->capacity;
+    slice_one->capacity = 0;
+    const mc_world_storage_status invalid_extent =
+        nearby_gather(w, f->states[slot], NULL, &q, w->fields.R, &error);
+    slice_one->capacity = slice_capacity;
+    CHECK(invalid_extent == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          error.query.chunk_bytecode == 88 && error.slice == 1 && error.index == 0 &&
+          w->fields.R->count == 1 && w->fields.R->items[0] == a && a->holds == 3 && b->holds == 2);
+    CHECK(nearby_query_is(w, NULL, &inverted, NULL, 0) && a->holds == 2);
+
+    actual_m->items[1] = actual_m->items[0];
+    const mc_world_storage_status owned_alias =
+        nearby_gather(w, f->states[slot], NULL, &q, w->fields.R, &error);
+    actual_m->items[1] = slice_one;
+    CHECK(owned_alias == MC_WORLD_STORAGE_OK && error.query.chunk_bytecode == 88 &&
+          error.slice == 2 && error.index == 0 && w->fields.R->count == 2 &&
+          w->fields.R->items[0] == a && w->fields.R->items[1] == a && a->holds == 4 &&
+          b->holds == 2);
+    CHECK(nearby_query_is(w, NULL, &inverted, NULL, 0) && a->holds == 2);
+
     /* Native invariant fault control only: SIZE_MAX real holds cannot be
      * accumulated in a finite contract run. This exercises retain rejection,
      * not Java gameplay, source OOM timing or an original execution result. */
@@ -654,7 +674,8 @@ static bool nearby_failures_and_blank(fixture *f, size_t side) {
     const mc_world_storage_status null_equals_excluded =
         nearby_gather(w, f->states[slot], NULL, &low_only, NULL, &error);
     slice_zero->items[0] = actual_candidate;
-    CHECK(null_equals_excluded == MC_WORLD_STORAGE_OK && a->holds == 4 && b->holds == 2);
+    CHECK(null_equals_excluded == MC_WORLD_STORAGE_OK && error.query.chunk_bytecode == 88 &&
+          error.slice == 1 && error.index == 1 && a->holds == 4 && b->holds == 2);
     slice_zero->items[0] = NULL;
     const mc_world_storage_status null_candidate =
         nearby_gather(w, f->states[slot], b, &low_only, NULL, &error);
