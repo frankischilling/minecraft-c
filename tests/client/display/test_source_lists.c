@@ -811,6 +811,22 @@ static bool eviction_controls(void) {
     source_vertex_cache_set_bytes(cache, &cache->slots[0], 0);
     CHECK(cache->occupied_count[0] == SOURCE_CACHE_GROUP_SIZE / 2 &&
           source_vertex_cache_oldest(cache, &cache->slots[1]) == &cache->slots[2]);
+
+    memset(cache, 0, sizeof(*cache));
+    source_cached_vertices *older = &cache->slots[0], *newer = &cache->slots[1];
+    source_vertex_cache_set_bytes(cache, older, small);
+    source_vertex_cache_set_bytes(cache, newer, small);
+    source_vertex_cache_touch(cache, older);
+    source_vertex_cache_touch(cache, newer);
+    CHECK(source_vertex_cache_oldest(cache, NULL) == older && cache->dirty_groups == 0);
+    source_vertex_cache_touch(cache, newer);
+    CHECK(cache->dirty_groups == 0 && source_vertex_cache_oldest(cache, NULL) == older);
+    source_vertex_cache_touch(cache, older);
+    CHECK(cache->dirty_groups == 1 && source_vertex_cache_oldest(cache, NULL) == newer);
+    cache->sequence = UINT64_MAX;
+    source_vertex_cache_touch(cache, older);
+    CHECK(older->last_used == 0 && cache->dirty_groups == 1 &&
+          source_vertex_cache_oldest(cache, NULL) == older);
     result = true;
 cleanup:
     free(cache);

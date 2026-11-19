@@ -152,8 +152,15 @@ static void source_vertex_cache_set_bytes(source_vertex_cache *cache, source_cac
 }
 
 static void source_vertex_cache_touch(source_vertex_cache *cache, source_cached_vertices *entry) {
-    entry->last_used = ++cache->sequence;
-    source_vertex_cache_changed(cache, entry);
+    const uint64_t previous = entry->last_used;
+    const uint64_t now = ++cache->sequence;
+    entry->last_used = now;
+    const size_t group = (size_t)(entry - cache->slots) / SOURCE_CACHE_GROUP_SIZE;
+    const uint64_t mask = UINT64_C(1) << group;
+    /* A newer non-victim cannot change a clean group's oldest entry. */
+    if ((cache->dirty_groups & mask) == 0 &&
+        (now < previous || cache->eviction_tree[SOURCE_CACHE_GROUPS + group] == entry))
+        cache->dirty_groups |= mask;
 }
 
 static void source_vertex_cache_invalidate(mc_client_display *display, const uint8_t *data,

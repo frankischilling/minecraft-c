@@ -516,6 +516,22 @@ passes. Change `0` to `1` to move the camera vertically. The benchmark
 reports milliseconds through GPU completion and hashes the framebuffer,
 section order, and submitted work. It uses generated geometry.
 
+#### Age updates under eviction pressure
+
+A touch marks a clean group for rescan only if it changes the group's
+current victim or moves a timestamp backward. The wrap control moves a
+non-victim from a larger timestamp to zero and checks the new victim.
+
+Eight WSL2 Clang 18 `-O3` pairs exercised 1.6 million touches per profile.
+The mixed profiles selected and refreshed a simulated victim every 16
+touches. Ordered victim choices and final timestamps matched in every pair.
+
+| CPU workload | Median before | Median after |
+| --- | ---: | ---: |
+| Warm touches | 2.55 ns/step | 2.66 ns/step |
+| Mixed touches and victim selection | 119.42 ns/step | 15.00 ns/step |
+| Mixed sequence crossing timestamp wrap | 118.94 ns/step | 15.78 ns/step |
+
 ### Rendering and context ownership
 
 Vertices contain section-local float XYZ, UV and ARGB. The upload converts color

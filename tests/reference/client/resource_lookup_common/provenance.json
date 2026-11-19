@@ -318,8 +318,8 @@
       "sha256": "88cf0c24f07c5212dfada475c1647a070ae82953e83b324de188e6a2080fe7b7"
     },
     "docs/client/world-renderer.md": {
-      "bytes": 30668,
-      "sha256": "1f5528375efbf5fc662da7cc37ddb6a684f6250ee6f0c047e3a29d9a777e87f4"
+      "bytes": 31410,
+      "sha256": "1886b975c9dbdc6b223072b1ffaf0c03b94844208a8c5b8c9df9e28bbf13a8c7"
     },
     "docs/core/java-float-format.md": {
       "bytes": 4461,
@@ -2738,8 +2738,8 @@
       "sha256": "77061eb3ce7189068207217e5433f1f69d60d350de38f24acdf6defcca628501"
     },
     "src/client/display/source_vertex_cache.inc": {
-      "bytes": 15902,
-      "sha256": "a2c5bd902d6cac1c1d22e9c4a3778a8c4ae07f4af2571ee92bb767a4a6285b92"
+      "bytes": 16307,
+      "sha256": "16aca0017216949d3dbe0a7f89d1661bf2bbc76b0e230210af8c958026e0f6d3"
     },
     "src/client/display/source_viewport.inc": {
       "bytes": 3343,
@@ -6423,7 +6423,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938031,
-      "sha256": "5e14391de34e2a8f3c4211cfa010130eaf1f09766b7dee9385c71bbe2788324a"
+      "sha256": "aadedc7269b63460c22ec2f6954931403f86f1c986d60e2881fa5ede1a38a357"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6487,7 +6487,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1068134,
-      "sha256": "d87b4ca41a333b5685059d9281229a47b32263dd4380f27b09ec612a104ed8de"
+      "sha256": "1774b24b7b67bef091e5964998d275d4dee09a5d0d75b3a9ef261e65c37f56a7"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6619,7 +6619,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934856,
-      "sha256": "8995f1193751c4428c5494e7dafccbfa9177be8d4cddc9fb4a9d64325ce672de"
+      "sha256": "d062ddb294fcdec6bbc14262f1e65a69a73d3883624096f77aabb0ff13d03270"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -10230,8 +10230,8 @@
       "sha256": "619946b5733bc9ba5dc95f880e115a07e05d6592fc4840e1501fc1458bec5396"
     },
     "tests/client/display/test_source_lists.c": {
-      "bytes": 59829,
-      "sha256": "e4f75da508f5e00f124010c431286a6477d73c6b7283e897f4840f701fdca26a"
+      "bytes": 60711,
+      "sha256": "0e9abb8fe95eadbf18968fe4a3187a4a90449fc0661e9c6a5e0bf7d79bc6268d"
     },
     "tests/client/render_engine/test_image_buffer.c": {
       "bytes": 17961,
