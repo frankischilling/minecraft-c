@@ -2286,8 +2286,8 @@
       "sha256": "d5e2b53556194d52cd361480f140b3dc3d5beb56df6f895fbf0713786360496e"
     },
     "scripts/reference/storage/compare_chunk_storage.py": {
-      "bytes": 85693,
-      "sha256": "952b0ca1ddbc137fd0717585f59da6738985ed04ffe8a984efcc43213995c627"
+      "bytes": 85685,
+      "sha256": "127853013cc752ff8dd8ca551065dd1b69f38850c77d86f6be0701dcd9a4931a"
     },
     "scripts/reference/storage/compare_level.py": {
       "bytes": 63764,

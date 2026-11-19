@@ -196,7 +196,7 @@ def chunk_schema(value, side, source, table, normalized, initial, identities, na
         tag = child(level_tag, field)
         raw = b'' if tag is None else bytes.fromhex(tag['value'])
         if normalized and role == 'blocks':
-            raw = bytes(table[x] for x in raw)
+            raw = raw.translate(table)
         require(item['length'] == len(raw) and item['values'] == raw.hex(), 'actual complete imported/normalized array: '+role)
     require(type(value['data']['minimum_height']) is int and value['data']['minimum_height'] == 0 and value['last_save_time'] == '0000000000000000', 'static decode and direct loader/writer keep minimum/r zero; LastUpdate ignored')
     populated = child(level_tag, 'TerrainPopulated')
