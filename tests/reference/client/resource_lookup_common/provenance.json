@@ -10830,8 +10830,8 @@
       "sha256": "38cfd702201a4e06c474e9faaefca525a81ef54de8fd1ec67f507a3f3cce1eac"
     },
     "docs/client/renderer-frames.md": {
-      "bytes": 29813,
-      "sha256": "76e30c84b0968653e063fceddf082e4f19d97f560949b1c177bd5e02c94c7e20"
+      "bytes": 31824,
+      "sha256": "6a6b9119a6384f9535d206d795048423446bc0170129c16fa11092cda3faef89"
     },
     "docs/world/ticking.md": {
       "bytes": 6826,
@@ -21134,8 +21134,8 @@
       "sha256": "c139f7e3ef971d333fd08805edbdc162a294ac1a17652febd922ee691baf76a3"
     },
     "docs/performance/chunk-rendering.md": {
-      "bytes": 46909,
-      "sha256": "826213a3634cd8a85fac08f65f72935e9dfabf8156671239908ba462da60b0c8"
+      "bytes": 48530,
+      "sha256": "8e6a91b1581764b575ae1329af9c490bf37b3febea2668b79d5383564fb26093"
     },
     "tests/benchmarks/chunk_cache_render_windows.json": {
       "bytes": 2023922,

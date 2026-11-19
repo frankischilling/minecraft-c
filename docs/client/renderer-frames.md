@@ -392,12 +392,38 @@ stopped in the Living renderer at `n.a:516` before timing began.
 | Baseline | 3,090 | 46.15 | 64.30 |
 | Candidate | 3,210 | 47.96 | 61.23 |
 
-This single pair describes the returned prefixes at that frontier. A
-separate attempt with a longer authored floor ran for 50.5 seconds and
-stopped in the renderer's World Chunk getter at `n.a:519`. Windows mining
+This single pair describes the returned prefixes at that frontier. With
+the earlier 1,024-entry limit, a longer authored floor ran for 50.5 seconds
+before stopping in the renderer's World Chunk getter at `n.a:519`. Windows mining
 controls completed forward movement, pickup and two save and reload cycles.
 The independent ten-epoch world-selection fixture passed save readback and
 terminal ownership checks.
+
+### Resident Chunk capacity during Far travel
+
+The extended authored floor reproduced the renderer stop at 1,010 timed
+World ticks. The failing ChunkCache getter requested Chunk (−5, −28) when
+both the provider map and insertion list held 1,024 entries. The acquisition
+reported its native limit before the region loader ran. The diagnostic
+repeat of the separate generated-terrain autosave identified the unavailable
+Falling Sand renderer at `gn.a` method entry.
+
+The normal client now admits 4,096 entries in both the source Store and
+the provider. On the same authored floor, the 854 × 480 Far run completed
+75 seconds, 1,500 timed World ticks and 323.53 blocks of straight movement.
+It had 1,204 resident Chunks at the end of the interval. The provider's
+direct allocation rose by 108 KiB and its separate index by 24 KiB.
+The Store still allocates Chunk data as it loads or generates each Chunk.
+
+Save and Quit returned to title. Independent NBT readback recorded World
+time 1,545 and Player Z −324.15. A new process selected a copy of the save,
+completed another 200 timed ticks and saved at World time 1,790 and Player
+Z −367.32. The starting save and asset hashes matched across the capacity
+comparison. These results cover the authored route and its reload.
+
+Five focused CTests passed on Windows Release and Linux Clang with ASan
+and UBSan. Both compared all 950 ChunkCache rows and passed the canonical
+lease controls and 18,938 Chunk compilation checks.
 
 ## Evidence and limits
 

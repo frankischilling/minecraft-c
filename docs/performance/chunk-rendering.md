@@ -265,6 +265,20 @@ Windows MSVC Release and Linux Clang Debug with ASan and UBSan. Windows
 compared all 35 terrain replay rows. Mesa compared 30 rows and reported
 five uncredited rows for its unsupported occlusion profile.
 
+## ChunkCache lookup and lease trial
+
+The trial combined the canonical Store object lookup and lease acquisition
+for each normal ChunkCache cell. Both MSVC Release observers used the
+same 1,024-entry budget and began at the first loaded Far World with 289
+resident Chunks. Map and Chunk data hashes matched across six alternating
+pairs. Each process verified selected identities and leases. Each measured
+sample created and retired 2,560 actual 3 × 3 ChunkCaches.
+
+Median time per construction and retirement was 3.480 µs with the existing
+path and 3.504 µs with the combined call. The combined call was faster in
+three pairs and slower in three. The trial was dropped. The measurement
+isolates CPU construction and retirement from the frame loop.
+
 ## Settled Far culling and terrain selection
 
 Two sampled Windows Far runs after a 25-second warmup recorded 6,045
