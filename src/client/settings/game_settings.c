@@ -268,6 +268,13 @@ bool mc_game_settings_read_ambient_occlusion(const mc_game_settings *settings, b
     return true;
 }
 
+bool mc_game_settings_read_anaglyph(const mc_game_settings *settings, bool *out) {
+    if (settings == NULL || out == NULL)
+        return false;
+    *out = settings->state.values.anaglyph;
+    return true;
+}
+
 static mc_game_settings_status borrow_admit(const mc_game_settings *settings,
                                             mc_game_settings_error *error) {
     if (settings == NULL)

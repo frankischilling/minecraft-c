@@ -1,4 +1,5 @@
 #include "../display/source_surface.h"
+#include "../settings/source_access.h"
 #include "context_internal.h"
 #include "font_lease.h"
 #include "ge.h"
@@ -174,27 +175,25 @@ static bool upload(mc_client_render_engine *o, mc_client_texture_resource *resou
         goto done;
     }
     memcpy(argb, image->pixels, bytes); /* Actual TYPE_INT_ARGB getRGB192. */
+    /* Conversion has no callbacks; the same setting applies to every pixel. */
+    bool anaglyph = false;
+    const mc_game_settings *settings = o->fields.i;
+    if (count != 0 && settings != NULL && !mc_game_settings_read_anaglyph(settings, &anaglyph)) {
+        fail(e, MC_CLIENT_RENDER_TEXTURE_NULL_REFERENCE, "RenderEngine anaglyph settings receiver",
+             "ji", "a", image_and_int, 271);
+        goto done;
+    }
     for (size_t i = 0; i < count; ++i) {
         const uint32_t value = argb[i];
         unsigned a = (value >> 24) & 255u, r = (value >> 16) & 255u, g = (value >> 8) & 255u,
                  b = value & 255u;
-        /* Actual i261 null branch, then its fresh i268/g271 reload. No
-         * callback occurs in this pure CPU loop; keep source reads explicit. */
-        if (o->fields.i != NULL) {
-            mc_game_settings_state settings;
-            if (!mc_game_settings_read_state(o->fields.i, &settings)) {
-                fail(e, MC_CLIENT_RENDER_TEXTURE_NULL_REFERENCE,
-                     "RenderEngine anaglyph settings receiver", "ji", "a", image_and_int, 271);
-                goto done;
-            }
-            if (settings.values.anaglyph) {
-                const unsigned nr = (r * 30u + g * 59u + b * 11u) / 100u;
-                const unsigned ng = (r * 30u + g * 70u) / 100u;
-                const unsigned nb = (r * 30u + b * 70u) / 100u;
-                r = nr;
-                g = ng;
-                b = nb;
-            }
+        if (anaglyph) {
+            const unsigned nr = (r * 30u + g * 59u + b * 11u) / 100u;
+            const unsigned ng = (r * 30u + g * 70u) / 100u;
+            const unsigned nb = (r * 30u + b * 70u) / 100u;
+            r = nr;
+            g = ng;
+            b = nb;
         }
         rgba[i * 4] = (uint8_t)r;
         rgba[i * 4 + 1] = (uint8_t)g;

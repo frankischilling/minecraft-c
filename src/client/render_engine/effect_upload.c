@@ -1,5 +1,6 @@
 #include "effect_upload.h"
 #include "../display/source_texture_update.h"
+#include "../settings/source_access.h"
 #include <string.h>
 
 static bool failed(mc_client_effect_upload_error *e, mc_client_effect_upload_status status,
@@ -163,17 +164,18 @@ bool mc_client_render_engine_update_effects(mc_client_render_engine *engine,
     for (size_t n = 0; n < list->count; ++n) {
         e->occurrence = n;
         mc_client_texture_effect *effect = list->entries[n];
-        mc_game_settings_state settings;
-        if (engine->fields.i == NULL) {
+        const mc_game_settings *settings = engine->fields.i;
+        if (settings == NULL) {
             failed(e, MC_CLIENT_EFFECT_UPLOAD_NULL_REFERENCE, "ji actual i Settings.g receiver",
                    34);
             goto leave;
         }
-        if (!mc_game_settings_read_state(engine->fields.i, &settings)) {
+        bool anaglyph;
+        if (!mc_game_settings_read_anaglyph(settings, &anaglyph)) {
             failed(e, MC_CLIENT_EFFECT_UPLOAD_INVALID_PHASE, "ji actual Settings native owner", 34);
             goto leave;
         }
-        if (mc_client_texture_effect_set_anaglyph(effect, settings.values.anaglyph, &e->child) !=
+        if (mc_client_texture_effect_set_anaglyph(effect, anaglyph, &e->child) !=
             MC_TEXTURE_EFFECT_OK) {
             failed(e,
                    effect == NULL ? MC_CLIENT_EFFECT_UPLOAD_NULL_REFERENCE

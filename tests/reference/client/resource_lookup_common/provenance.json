@@ -3134,8 +3134,8 @@
       "sha256": "c38d58ae80d660caa6a74665a4111ef6a38df72c37013273b9ba5a8f4f5e8487"
     },
     "src/client/render_engine/textures.c": {
-      "bytes": 25685,
-      "sha256": "58e6996843244e5ad7d514ef0c316cba0b6bb7ccf6338962d520554bf3f243a8"
+      "bytes": 25586,
+      "sha256": "edcc596e0c9dd031fd05d3646886849448c5f086c0088436fbd70ecf9b854a5b"
     },
     "src/client/render_engine/textures.h": {
       "bytes": 4948,
@@ -3182,8 +3182,8 @@
       "sha256": "04250c23f22fba151654e1106a764d03cd5fdf5227504ca4fc7e828c9b1ea4da"
     },
     "src/client/settings/game_settings.c": {
-      "bytes": 106235,
-      "sha256": "3b9cf8a690eaa965f2f63151e2471e9e201e33c24256881c63429aadf10b0bac"
+      "bytes": 106445,
+      "sha256": "6bfefb18c7494a085a556f590348a574deb0e80eedc508d614c2e05f6cf0e061"
     },
     "src/client/settings/labels.c": {
       "bytes": 15759,
@@ -3198,8 +3198,8 @@
       "sha256": "55fe0c2cb48f490d545c0ae10ebf8524a65b942d794e01dced8c24a30246506c"
     },
     "src/client/settings/source_access.h": {
-      "bytes": 712,
-      "sha256": "46f8a9cf919d59ce0daf46696336d66aaad26add4266976c0a5dbd7cbef0f12e"
+      "bytes": 856,
+      "sha256": "3b30bced335e6daa583f9fc6ebc03bcc563ce98b27dba850df950df6b41744b2"
     },
     "src/client/sound/backend/codec.c": {
       "bytes": 9071,
@@ -6419,7 +6419,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938028,
-      "sha256": "ba566676a0efc647f26d32d252c52afc4ee73f27bfa6f571dce228136d472e80"
+      "sha256": "ee045dd9fa1852b3865394d575fce5bfbc9963eaed84a0a552f5bacac0c70b67"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6483,7 +6483,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067982,
-      "sha256": "16c242a797aa34e46788d103c2180ea6a8763c3f5951985d22205c408d73428f"
+      "sha256": "63d5753327660bef8a5d6d4492f00afb6f46d111e72fe830c955082ea3fcbc86"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6615,7 +6615,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934853,
-      "sha256": "a7a51ad2022841d7f5f34dab37d57229fdf6271970352a433bf31ae7825d9071"
+      "sha256": "d94c4c18ee97171d3015b18c316bca78d33daecfd081487a47a1675e3e5456b8"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9814,8 +9814,8 @@
       "sha256": "f61a70244c5e7019d4a5cccc34834c77f8bd0ff8a65d601414c77d1bf2a76214"
     },
     "src/client/render_engine/effect_upload.c": {
-      "bytes": 12221,
-      "sha256": "f0eba57f477a1ed1cd0da7d985bb7dd5df5a72ef69b31f5a9c89115d631f06bd"
+      "bytes": 12274,
+      "sha256": "6a8b8004ef5637e1c55b1b1948d082e0f8f48f171c4bbd7f362333dabef5daa9"
     },
     "src/client/render_engine/effect_upload.h": {
       "bytes": 1767,
