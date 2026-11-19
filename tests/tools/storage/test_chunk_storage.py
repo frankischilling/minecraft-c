@@ -33,12 +33,13 @@ def artifacts(context):
 
 
 def replace_record(context, value):
-    context['record'] = export.packed((json.dumps(value, ensure_ascii=True, separators=(',', ':'))+'\n').encode('ascii'))
+    raw = (json.dumps(value, ensure_ascii=True, separators=(',', ':'))+'\n').encode('ascii')
+    context['record'] = export.packed(raw, compression=zlib.Z_BEST_SPEED)
 
 
 def replace_artifact(context, name, raw):
     previous = context['artifacts'][name]['bytes']
-    context['artifacts'][name] = export.packed(raw)
+    context['artifacts'][name] = export.packed(raw, compression=zlib.Z_BEST_SPEED)
     inventory = context['artifact_inventory']
     inventory['bytes'] += len(raw)-previous
     next(row for row in inventory['entries'] if row['path'] == name).update(chunks.fp(raw))
@@ -91,6 +92,7 @@ class ChunkStorageGuards(unittest.TestCase):
         raw = b'original chunk bytes\x00\xff'
         value = export.packed(raw)
         self.assertEqual(export.unpacked(value), raw)
+        self.assertEqual(export.unpacked(export.packed(raw, compression=zlib.Z_BEST_SPEED)), raw)
         for changes in ({'bytes': True}, {'bytes': float(len(raw))}, {'bytes': len(raw)+1}, {'sha256': '0'*64}, {'zlib_base64': '!'}):
             with self.assertRaises(chunks.Failure):
                 export.unpacked(value | changes)

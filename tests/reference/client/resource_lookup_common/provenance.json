@@ -2302,8 +2302,8 @@
       "sha256": "787f7375d70c31adf422a0a27a9a76651224af2b4b0c98a671097bbf649dd251"
     },
     "scripts/reference/storage/export_chunk_storage.py": {
-      "bytes": 31305,
-      "sha256": "5fc3eb9362d6a6291f2210a381fb3a7e94be02eefd4e6b17bbb7c58d12bc2342"
+      "bytes": 31355,
+      "sha256": "4ab74533bfdf9f14478669cbe7f023a124a3697f9dbe95bb7f4e94018d597c44"
     },
     "scripts/reference/storage/export_level.py": {
       "bytes": 23862,
@@ -8718,8 +8718,8 @@
       "sha256": "d72021a689b1e0b1cc871bdcacdbfb5a161dda8b81044d7b959ad64fbe36b599"
     },
     "tests/tools/storage/test_chunk_storage.py": {
-      "bytes": 40347,
-      "sha256": "c9da3efb7f01b8bc24d4ae61a09de3561c927a67edbfdb11a8751bf4e65c4f34"
+      "bytes": 40521,
+      "sha256": "1ca0344910f2d164f91380f94c12733ae03380e90959443265fface27ce48c0d"
     },
     "tests/tools/storage/test_level.py": {
       "bytes": 34899,
@@ -21674,8 +21674,8 @@
       "sha256": "548d810f6542a3ad5d8ff073acae9387f604bf6a426bac83c775772bc76efd57"
     },
     "docs/performance/reference-readers.md": {
-      "bytes": 14542,
-      "sha256": "c3221264248586c6f366b6286f6412a2cad286907f1656c69ae2af47dc417543"
+      "bytes": 15264,
+      "sha256": "5a317adce5af0626ebe9a04470153a7e554f42dcd09578d811b515c877833cfb"
     },
     "docs/world/bed-interaction.md": {
       "bytes": 5514,

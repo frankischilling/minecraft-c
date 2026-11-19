@@ -44,9 +44,9 @@ def checked(path, common, expected=None, maximum=chunks.MAX_RECORD):
     return raw
 
 
-def packed(raw):
+def packed(raw, *, compression=zlib.Z_BEST_COMPRESSION):
     require(type(raw) is bytes and len(raw) <= chunks.MAX_RECORD, 'bounded lossless original stream')
-    return {**chunks.fp(raw), 'zlib_base64': base64.b64encode(zlib.compress(raw, 9)).decode('ascii')}
+    return {**chunks.fp(raw), 'zlib_base64': base64.b64encode(zlib.compress(raw, compression)).decode('ascii')}
 
 
 def unpacked(value, maximum=chunks.MAX_RECORD):

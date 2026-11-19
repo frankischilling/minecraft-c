@@ -266,3 +266,23 @@ Median elapsed time fell from 23.702 to 19.667 seconds, a 17.0% reduction
 for the Python guard suite. A separate authored decoder control matched
 all 2,048 header words in signed and unsigned mode and rejected
 out-of-bounds and misaligned image lengths.
+
+## Chunk-storage fixture mutations
+
+The chunk-storage guards use zlib's speed preset to pack temporary
+mutations. The decoder checks the same byte lengths, SHA-256 values
+and complete streams. Regular fixture export uses zlib's maximum
+compression preset.
+
+Four alternating pairs of fresh CPython 3.14.3 processes ran the same
+35 Python guards on Windows 10 with an Intel Core i9-10900F.
+
+| Pair order | Baseline (s) | Candidate (s) |
+| --- | ---: | ---: |
+| Baseline first | 15.963 | 13.611 |
+| Candidate first | 15.792 | 13.601 |
+| Baseline first | 15.898 | 13.651 |
+| Candidate first | 15.768 | 13.543 |
+
+The guard suite's median fell from 15.845 to 13.606 seconds, a 14.1%
+reduction. Every guard passed in every run.
