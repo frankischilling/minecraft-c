@@ -400,6 +400,38 @@ In a separate recording-only comparison, the 64/48 profile's median
 recording phase fell from 14.33 to 14.13 ms. Its median whole frame
 moved from 19.06 to 19.04 ms.
 
+### Cache slot publication and retirement
+
+A successful vertex upload records its slot on the draw command.
+Replay and retirement verify the payload in that slot. If a later draw
+has reclaimed the slot, replay chooses a replacement in the hashed set
+and retirement leaves the new resident intact. The device test checks
+slot publication on the first upload and invalidation on retirement.
+The pressure test checks failed uploads and retries.
+
+Ten WSL2 Clang 18 `-O3` pairs ran two million lookups per profile with
+simulated uploads. Each pair matched the slot choices, hit and miss
+counts, and final cache-state hashes.
+
+| CPU workload | Median before | Median after |
+| --- | ---: | ---: |
+| Resident replay | 9.52 ns | 9.19 ns |
+| Changing current normal | 12.60 ns | 12.57 ns |
+| Collision churn | 30.75 ns | 31.63 ns |
+| Retire and rebuild | 26.53 ns | 24.48 ns |
+
+Eight paired Windows MSVC Release runs per profile used an authored
+textured scene with 900 draws per frame on the RTX 3060. Each run measured
+160 frames through GPU completion. List rebuilding occurred before
+timing each frame. Framebuffer hashes and submission order matched.
+
+| Profile | Frame p50 | Frame p95 |
+| --- | ---: | ---: |
+| Warm, 16/3 quads per list | 0.587 → 0.579 ms | 0.693 → 0.700 ms |
+| 384 sections rebuilt, 3/3 | 1.642 → 1.631 ms | 2.278 → 2.251 ms |
+| 384 sections rebuilt, 16/3 | 2.044 → 2.056 ms | 2.924 → 2.864 ms |
+| 128 sections rebuilt, 128/4 | 2.366 → 2.397 ms | 3.377 → 3.133 ms |
+
 ### Vertex cache evictions
 
 The cache admits unlit recorded batches of at least six vertices, enough

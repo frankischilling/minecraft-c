@@ -579,7 +579,7 @@ static bool source_execute_batch(mc_client_display *display, mc_client_source_dr
     source_cached_vertices *entry = NULL;
     if (compiled && !candidate.lighting_enabled && count >= SOURCE_CACHE_MIN_VERTICES &&
         allocation <= SOURCE_CACHE_BYTES)
-        entry = source_vertex_cache_slot(display, data, allocation, &draw->cache_slot_hint);
+        entry = source_vertex_cache_slot(display, data, allocation, draw->cache_slot_hint);
     const bool hit = entry != NULL &&
                      source_vertex_cache_matches(entry, data, display->native_context_generation,
                                                  attribute_profile, current_color, current_normal);
@@ -629,9 +629,8 @@ static bool source_execute_batch(mc_client_display *display, mc_client_source_dr
                     display->gl.BindBuffer(GL_ARRAY_BUFFER, entry->vbo);
                 ok = gl_check(display, "source VBO upload", error);
             } else {
-                ok = source_vertex_cache_upload(display, entry, data, allocation, attribute_profile,
-                                                current_color, current_normal, vertices,
-                                                (size_t)count, error);
+                ok = source_vertex_cache_upload(display, entry, draw, allocation, attribute_profile,
+                                                current_color, current_normal, vertices, error);
             }
             if (ok) {
                 replay->vao = entry->vao;
@@ -838,7 +837,8 @@ static void source_free_commands(mc_client_display_list_range *range,
     while (command != NULL) {
         mc_client_source_command *next = command->next;
         if (command->kind == SOURCE_COMMAND_DRAW)
-            source_vertex_cache_invalidate(range->display, command->value.draw.bytes);
+            source_vertex_cache_invalidate(range->display, command->value.draw.bytes,
+                                           command->value.draw.cache_slot_hint);
         range->display->source.command_bytes -= command->charge;
         --range->command_count;
         free(command);

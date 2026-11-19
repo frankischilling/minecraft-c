@@ -54,27 +54,26 @@ static size_t source_vertex_cache_tiny_charge(size_t bytes) {
     return bytes < SOURCE_CACHE_REGULAR_VERTICES * sizeof(mc_client_source_gpu_vertex) ? bytes : 0;
 }
 
+static source_cached_vertices *source_vertex_cache_resident(source_vertex_cache *cache,
+                                                            const uint8_t *data, uint32_t hint) {
+    if (cache == NULL || hint == 0)
+        return NULL;
+    source_cached_vertices *entry = &cache->slots[hint - 1u];
+    return entry->data == data ? entry : NULL;
+}
+
 static source_cached_vertices *source_vertex_cache_slot(mc_client_display *display,
                                                         const uint8_t *data, size_t bytes,
-                                                        uint32_t *hint) {
+                                                        uint32_t hint) {
     if (display->source_cache == NULL)
         display->source_cache = calloc(1, sizeof(*display->source_cache));
     if (display->source_cache == NULL)
         return NULL;
     source_vertex_cache *cache = display->source_cache;
-    if (hint != NULL && *hint != 0) {
-        source_cached_vertices *entry = &cache->slots[*hint - 1u];
-        if (entry->data == data)
-            return entry;
-    }
-    const size_t base = source_vertex_cache_index(data);
-    source_cached_vertices *set = &cache->slots[base];
-    for (size_t i = 0; i < SOURCE_CACHE_WAYS; ++i)
-        if (set[i].data == data) {
-            if (hint != NULL)
-                *hint = (uint32_t)(base + i) + 1u;
-            return &set[i];
-        }
+    source_cached_vertices *resident = source_vertex_cache_resident(cache, data, hint);
+    if (resident != NULL)
+        return resident;
+    source_cached_vertices *set = &cache->slots[source_vertex_cache_index(data)];
 
     const size_t regular = SOURCE_CACHE_REGULAR_VERTICES * sizeof(mc_client_source_gpu_vertex);
     const size_t large = SOURCE_CACHE_LARGE_VERTICES * sizeof(mc_client_source_gpu_vertex);
@@ -157,18 +156,13 @@ static void source_vertex_cache_touch(source_vertex_cache *cache, source_cached_
     source_vertex_cache_changed(cache, entry);
 }
 
-static void source_vertex_cache_invalidate(mc_client_display *display, const uint8_t *data) {
-    if (display->source_cache == NULL)
-        return;
-    source_cached_vertices *set = &display->source_cache->slots[source_vertex_cache_index(data)];
-    for (size_t i = 0; i < SOURCE_CACHE_WAYS; ++i) {
-        source_cached_vertices *entry = &set[i];
-        if (entry->data == data) {
-            entry->data = NULL;
-            entry->last_used = 0;
-            source_vertex_cache_changed(display->source_cache, entry);
-            return;
-        }
+static void source_vertex_cache_invalidate(mc_client_display *display, const uint8_t *data,
+                                           uint32_t hint) {
+    source_cached_vertices *entry = source_vertex_cache_resident(display->source_cache, data, hint);
+    if (entry != NULL) {
+        entry->data = NULL;
+        entry->last_used = 0;
+        source_vertex_cache_changed(display->source_cache, entry);
     }
 }
 
@@ -292,10 +286,10 @@ static bool source_vertex_cache_make_room(mc_client_display *display,
 }
 
 static bool source_vertex_cache_upload(mc_client_display *display, source_cached_vertices *entry,
-                                       const uint8_t *data, size_t bytes,
+                                       mc_client_source_draw_command *draw, size_t bytes,
                                        mc_client_source_attribute_profile profile,
                                        const float *color, const float *normal,
-                                       const mc_client_source_gpu_vertex *vertices, size_t count,
+                                       const mc_client_source_gpu_vertex *vertices,
                                        mc_client_display_error *error) {
     entry->data = NULL;
     if (!source_vertex_cache_make_room(display, entry, bytes, error))
@@ -330,14 +324,15 @@ static bool source_vertex_cache_upload(mc_client_display *display, source_cached
         }
         source_vertex_cache_set_bytes(display->source_cache, entry, bytes);
     }
-    entry->data = data;
+    entry->data = draw->bytes;
     entry->generation = display->native_context_generation;
     entry->profile = profile;
-    entry->last_vertex = vertices[count - 1];
+    entry->last_vertex = vertices[draw->count - 1];
     if (color != NULL)
         memcpy(entry->color, color, sizeof(entry->color));
     if (normal != NULL)
         memcpy(entry->normal, normal, sizeof(entry->normal));
+    draw->cache_slot_hint = (uint32_t)(entry - display->source_cache->slots) + 1u;
     return true;
 }
 

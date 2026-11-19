@@ -28,7 +28,7 @@ typedef struct mc_client_source_draw_command {
     size_t size;
     int32_t count, mode;
     unsigned arrays;
-    uint32_t cache_slot_hint; /* One-based slot index, checked against bytes. */
+    uint32_t cache_slot_hint; /* One-based slot from the last successful upload. */
 } mc_client_source_draw_command;
 
 typedef struct mc_client_source_command {

@@ -390,8 +390,11 @@ static bool replay_native_controls(mc_client_display *display,
     mc_client_source_batch_view view;
     CHECK(mc_client_display_list_batch(display, cached_id, 0, &view) &&
           display->source_cache != NULL);
-    const source_cached_vertices *entry = source_vertex_cache_slot(
-        display, view.bytes, CACHE_VERTICES * sizeof(mc_client_source_gpu_vertex), NULL);
+    const mc_client_source_list *recorded = source_find_list(display, cached_id, NULL);
+    CHECK(recorded != NULL && recorded->first != NULL &&
+          recorded->first->kind == SOURCE_COMMAND_DRAW);
+    const source_cached_vertices *entry = source_vertex_cache_resident(
+        display->source_cache, view.bytes, recorded->first->value.draw.cache_slot_hint);
     CHECK(entry != NULL && entry->data == view.bytes && entry->vao != 0 && entry->vbo != 0 &&
           entry->vao != display->source.vao && entry->vbo != display->source.vbo);
     const GLuint cached_vao = entry->vao, cached_vbo = entry->vbo;
@@ -481,6 +484,8 @@ static bool replay_native_controls(mc_client_display *display,
                                             error) &&
               error->status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL && replay_payload_counts(1, 1, 1));
     }
+    CHECK(mc_client_display_lists_retire(&range, error));
+    CHECK(entry->data == NULL && entry->vao == cached_vao && entry->vbo == cached_vbo);
     result = true;
 cleanup:
     if (observing) {
@@ -638,57 +643,56 @@ static bool eviction_invalidation_control(void) {
     const size_t tiny = SOURCE_CACHE_MIN_VERTICES * sizeof(mc_client_source_gpu_vertex);
     const size_t small = SOURCE_CACHE_REGULAR_VERTICES * sizeof(mc_client_source_gpu_vertex);
     const size_t large = SOURCE_CACHE_LARGE_VERTICES * sizeof(mc_client_source_gpu_vertex);
-    source_cached_vertices *first = source_vertex_cache_slot(&display, keys[0], large, NULL);
+    source_cached_vertices *first = source_vertex_cache_slot(&display, keys[0], large, 0);
     CHECK(first != NULL);
     source_vertex_cache *cache = display.source_cache;
     cache->bytes = SOURCE_CACHE_BYTES;
-    CHECK(source_vertex_cache_slot(&display, keys[0], small, NULL) == NULL);
+    CHECK(source_vertex_cache_slot(&display, keys[0], small, 0) == NULL);
     cache->bytes = 0;
     for (size_t i = 0; i < SOURCE_CACHE_WAYS; ++i) {
-        source_cached_vertices *entry = source_vertex_cache_slot(&display, keys[i], large, NULL);
+        source_cached_vertices *entry = source_vertex_cache_slot(&display, keys[i], large, 0);
         CHECK(entry == first + i);
         entry->data = keys[i];
         source_vertex_cache_set_bytes(cache, entry, large);
         source_vertex_cache_touch(cache, entry);
     }
     const uint8_t *extra = keys[SOURCE_CACHE_WAYS];
-    CHECK(source_vertex_cache_slot(&display, extra, small, NULL) == NULL &&
-          source_vertex_cache_slot(&display, extra, tiny, NULL) == NULL);
-    uint32_t hint = 0;
-    CHECK(source_vertex_cache_slot(&display, keys[0], large, &hint) == first &&
-          hint == (uint32_t)(first - cache->slots) + 1u);
-    CHECK(source_vertex_cache_slot(&display, keys[0], large, &hint) == first);
-    for (size_t i = 1; i < SOURCE_CACHE_WAYS; ++i)
-        CHECK(source_vertex_cache_slot(&display, keys[i], large, NULL) == first + i);
+    CHECK(source_vertex_cache_slot(&display, extra, small, 0) == NULL &&
+          source_vertex_cache_slot(&display, extra, tiny, 0) == NULL);
+    const uint32_t first_hint = (uint32_t)(first - cache->slots) + 1u;
+    for (uint32_t i = 0; i < SOURCE_CACHE_WAYS; ++i)
+        CHECK(source_vertex_cache_slot(&display, keys[i], large, first_hint + i) == first + i);
 
     source_vertex_cache_touch(cache, first);
-    const uint32_t old_hint = hint;
-    CHECK(source_vertex_cache_slot(&display, extra, small, &hint) == NULL && hint == old_hint);
-    CHECK(source_vertex_cache_slot(&display, extra, large, &hint) == first + 1 && hint == old_hint);
+    CHECK(source_vertex_cache_slot(&display, extra, small, first_hint) == NULL);
+    CHECK(source_vertex_cache_slot(&display, extra, large, first_hint) == first + 1);
+    source_vertex_cache_invalidate(&display, extra, first_hint);
+    CHECK(first->data == keys[0]);
     source_cached_vertices *last = first + SOURCE_CACHE_WAYS - 1;
-    source_vertex_cache_invalidate(&display, keys[SOURCE_CACHE_WAYS - 1]);
+    source_vertex_cache_invalidate(&display, keys[SOURCE_CACHE_WAYS - 1],
+                                   first_hint + SOURCE_CACHE_WAYS - 1u);
     cache->bytes = SOURCE_CACHE_BYTES;
     CHECK(last->data == NULL && last->last_used == 0 && last->bytes == large &&
           source_vertex_cache_oldest(cache, first) == last &&
-          source_vertex_cache_slot(&display, extra, small, NULL) == last &&
-          source_vertex_cache_slot(&display, extra, tiny, NULL) == last &&
-          source_vertex_cache_slot(&display, keys[0], large, &hint) == first);
+          source_vertex_cache_slot(&display, extra, small, 0) == last &&
+          source_vertex_cache_slot(&display, extra, tiny, 0) == last &&
+          source_vertex_cache_slot(&display, keys[0], large, first_hint) == first);
 
     last->data = keys[SOURCE_CACHE_WAYS - 1];
     source_vertex_cache_set_bytes(cache, last, tiny);
     cache->bytes = SOURCE_CACHE_BYTES;
     source_vertex_cache_touch(cache, last);
-    CHECK(source_vertex_cache_slot(&display, extra, tiny, NULL) == last &&
-          source_vertex_cache_slot(&display, extra, 2 * tiny, NULL) == NULL &&
-          source_vertex_cache_slot(&display, extra, small, NULL) == NULL &&
-          source_vertex_cache_slot(&display, extra, large, NULL) == last);
+    CHECK(source_vertex_cache_slot(&display, extra, tiny, 0) == last &&
+          source_vertex_cache_slot(&display, extra, 2 * tiny, 0) == NULL &&
+          source_vertex_cache_slot(&display, extra, small, 0) == NULL &&
+          source_vertex_cache_slot(&display, extra, large, 0) == last);
     /* A regular batch can reclaim the tiny storage held by another set. */
     const size_t other_set =
         ((size_t)(first - cache->slots) + SOURCE_CACHE_WAYS) % SOURCE_CACHE_SLOTS;
     cache->bytes -= small - tiny;
     source_vertex_cache_set_bytes(cache, &cache->slots[other_set], small - tiny);
-    CHECK(source_vertex_cache_slot(&display, extra, small, NULL) == last &&
-          source_vertex_cache_slot(&display, extra, 2 * tiny, NULL) == NULL);
+    CHECK(source_vertex_cache_slot(&display, extra, small, 0) == last &&
+          source_vertex_cache_slot(&display, extra, 2 * tiny, 0) == NULL);
     result = true;
 cleanup:
     free(display.source_cache);
@@ -752,16 +756,19 @@ static bool eviction_controls(void) {
     incoming->vao = 9;
     incoming->vbo = 10;
     const uint8_t key = 0;
+    mc_client_source_draw_command draw = {.bytes = &key, .count = 1};
     const mc_client_source_gpu_vertex vertex = {0};
     source_vertex_cache_touch(cache, incoming);
-    CHECK(source_vertex_cache_upload(&display, incoming, &key, charge,
-                                     SOURCE_ATTRIBUTE_PROFILE_UNKNOWN, NULL, NULL, &vertex, 1,
+    CHECK(source_vertex_cache_upload(&display, incoming, &draw, charge,
+                                     SOURCE_ATTRIBUTE_PROFILE_UNKNOWN, NULL, NULL, &vertex,
                                      &error));
     CHECK(cache->bytes == SOURCE_CACHE_BYTES && replaced->bytes == 0 && incoming->bytes == charge &&
           eviction_calls == 8 && eviction_names[6] == 3 && eviction_names[7] == 4 &&
-          source_vertex_cache_oldest(cache, &cache->slots[63]) == incoming);
+          source_vertex_cache_oldest(cache, &cache->slots[63]) == incoming &&
+          draw.cache_slot_hint == SOURCE_CACHE_SLOTS);
 
     memset(cache, 0, sizeof(*cache));
+    draw.cache_slot_hint = 0;
     const size_t tiny = SOURCE_CACHE_MIN_VERTICES * sizeof(mc_client_source_gpu_vertex);
     const size_t small = SOURCE_CACHE_REGULAR_VERTICES * sizeof(mc_client_source_gpu_vertex);
     source_cached_vertices *kept = &cache->slots[0];
@@ -784,17 +791,17 @@ static bool eviction_controls(void) {
     CHECK(source_vertex_cache_oldest(cache, incoming) == tiny_victim);
     eviction_calls = 0;
     eviction_error = GL_INVALID_OPERATION;
-    CHECK(!source_vertex_cache_upload(&display, incoming, &key, small,
-                                      SOURCE_ATTRIBUTE_PROFILE_UNKNOWN, NULL, NULL, &vertex, 1,
+    CHECK(!source_vertex_cache_upload(&display, incoming, &draw, small,
+                                      SOURCE_ATTRIBUTE_PROFILE_UNKNOWN, NULL, NULL, &vertex,
                                       &error));
     CHECK(cache->tiny_bytes == 3 * tiny && cache->bytes == SOURCE_CACHE_BYTES &&
-          tiny_victim->bytes == 2 * tiny && eviction_calls == 2);
-    CHECK(source_vertex_cache_upload(&display, incoming, &key, small,
-                                     SOURCE_ATTRIBUTE_PROFILE_UNKNOWN, NULL, NULL, &vertex, 1,
+          tiny_victim->bytes == 2 * tiny && eviction_calls == 2 && draw.cache_slot_hint == 0);
+    CHECK(source_vertex_cache_upload(&display, incoming, &draw, small,
+                                     SOURCE_ATTRIBUTE_PROFILE_UNKNOWN, NULL, NULL, &vertex,
                                      &error));
     CHECK(cache->tiny_bytes == 0 && cache->bytes == SOURCE_CACHE_BYTES && tiny_victim->bytes == 0 &&
           eviction_calls == 4 && eviction_names[2] == 12 && eviction_names[3] == 11 &&
-          source_vertex_cache_oldest(cache, kept) == neighbor);
+          source_vertex_cache_oldest(cache, kept) == neighbor && draw.cache_slot_hint == 65);
 
     memset(cache, 0, sizeof(*cache));
     for (size_t i = 0; i <= SOURCE_CACHE_GROUP_SIZE / 2; ++i)
