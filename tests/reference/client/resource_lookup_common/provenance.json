@@ -826,8 +826,8 @@
       "sha256": "55b4f7ca9d5cd05630a6ff7065f151a334e3617c7bc421209c6e374b589f5542"
     },
     "docs/testing.md": {
-      "bytes": 704502,
-      "sha256": "27adf57607e6582d18d2adce198b3606d2f06750bab82daa19ec256d8159f667"
+      "bytes": 705172,
+      "sha256": "7c214ef2bdbf52f42e678f880a8fecbbe9ce0dbe65e9a89a35eccd21291399a8"
     },
     "docs/wiki/Architecture.md": {
       "bytes": 39570,
@@ -2042,8 +2042,8 @@
       "sha256": "004ce5380f60091b555a29dd8b2d027bf559feef7c3a53e33b526d422b24e87d"
     },
     "scripts/reference/cache/compare_acquire.py": {
-      "bytes": 62467,
-      "sha256": "3628ea1d43c59fc9cb4be14a6ce67f22f47cd571362eb91d3d8955135a98409a"
+      "bytes": 62542,
+      "sha256": "d5a12f234e0840d24a51b987fa4f82fe207c4af8613e1f8c908e560c964543fd"
     },
     "scripts/reference/cache/compare_callbacks.py": {
       "bytes": 49688,
@@ -2370,8 +2370,8 @@
       "sha256": "d8849d9e229fd3a69b18cfb605e5d154517db67a9db60d2da4106a4e0ccc69df"
     },
     "scripts/reference/world/population/compare_natural.py": {
-      "bytes": 28864,
-      "sha256": "bc057ae2e8526269ab975caff4e1c9ea1af1931efa91ac1e85457885e938dba1"
+      "bytes": 28964,
+      "sha256": "948e38daadad7ae7ca0cdd7c90aed76d5f64a45d28955f8c813dc5d16330caa5"
     },
     "scripts/reference/world/population/compare_persistence.py": {
       "bytes": 40932,
@@ -8354,8 +8354,8 @@
       "sha256": "15f5cd01810ee71158551a65822ee27b67d93eb60588a586bc28f77b9f8a55a9"
     },
     "tests/tools/cache/test_acquire_reference.py": {
-      "bytes": 26673,
-      "sha256": "1c20186c22e37f4ad4eebc975ec06f7ff0b70deca7e58b37c4187695286f6c34"
+      "bytes": 27436,
+      "sha256": "866cb241b9bb118da6d7bcbc29b25de1704f9ded3689c1e6d13f456358e5628e"
     },
     "tests/tools/cache/test_callbacks_interop.py": {
       "bytes": 51286,
@@ -8858,8 +8858,8 @@
       "sha256": "ed24f2695adbea7095221c81c350a37cc5d7d007fdcbc98a64de63aa43d50207"
     },
     "tests/tools/world/test_natural_population.py": {
-      "bytes": 10956,
-      "sha256": "9e362eeacee9ddb39ca38e498d389de63eecb8bdba601b5d425da666fba9d303"
+      "bytes": 11363,
+      "sha256": "27688e908d974f38d88e3120882689e886bfd644c48366636aeaa2c29f4d596e"
     },
     "tests/tools/world/test_overworld_population.py": {
       "bytes": 7299,

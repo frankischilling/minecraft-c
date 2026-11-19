@@ -71,6 +71,8 @@ def first_difference(actual, expected, path="$", depth=0):
         if len(actual) != len(expected):
             return path + ": length " + str(len(actual)) + " != " + str(len(expected))
         for index, (left, right) in enumerate(zip(actual, expected)):
+            if type(left) is int and type(right) is int and left == right:
+                continue
             result = first_difference(left, right, "", depth + 1)
             if result:
                 return path + "[" + str(index) + "]" + result

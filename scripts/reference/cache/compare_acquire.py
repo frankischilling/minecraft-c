@@ -219,7 +219,8 @@ def world_projection(snapshot, ids, finish):
     for row in queue:
         require(type(row) is list and len(row) == 7 and type(row[0]) is int and row[0] in (0, 1), "queued kind/bounds")
         for coordinate in row[1:]:
-            integer(coordinate, -(1 << 31), (1 << 31) - 1, "queued bound")
+            if type(coordinate) is not int or not -(1 << 31) <= coordinate < (1 << 31):
+                raise Failure("queued bound: integer bounds")
     integer(world["enqueue_depth"], -(1 << 31), (1 << 31) - 1, "shared enqueue depth")
     return {"map": sorted([[entry["key"], ids[entry["value"]]] for entry in mappings]),
             "insertions": [ids[entry["value"]] for entry in insertions], "pending": sorted(pending),

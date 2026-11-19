@@ -103,6 +103,13 @@ class CompleteProjection(unittest.TestCase):
         self.assertIn("100000", difference)
         self.assertLess(len(difference), 128)
 
+    def test_integer_list_comparison_keeps_exact_types_and_first_difference(self):
+        self.assertIsNone(DRIVER.first_difference([[0, 1, 2]], [[0, 1, 2]]))
+        self.assertEqual(DRIVER.first_difference([[0, True, 2]], [[0, 1, 3]]),
+                         "$[0][1]: JSON type")
+        self.assertEqual(DRIVER.first_difference([[0, 1, 2]], [[0, 1, 3]]),
+                         "$[0][2]: 2 != 3")
+
     def test_random_and_array_transport_rejects_coercion_and_truncation(self):
         state = {"state": "000000000001", "have_next_next_gaussian": False,
                  "next_next_gaussian_bits": "0000000000000000", "next_longs": ["0000000000000000"] * 8}

@@ -179,6 +179,19 @@ class AcquisitionProtocolGuards(unittest.TestCase):
             with self.subTest(state=name):
                 self.rejected(mutation)
 
+    def test_queued_bounds_require_signed_32_bit_integers(self):
+        snapshot, _, _ = self.original()
+        snapshot = snapshot["initial"]
+        ids = ACQUIRE.identities({"initial": snapshot})
+        snapshot["world"]["queue"]["entries"] = [
+            {"kind": {"ordinal": 0}, "bounds": [-(1 << 31), (1 << 31) - 1, 0, 0, 0, 0]}]
+        row = snapshot["world"]["queue"]["entries"][0]["bounds"]
+        self.assertEqual(ACQUIRE.world_projection(snapshot, ids, FINISH)["queue"], [[0] + row])
+        for invalid in (True, 1.0, -(1 << 31) - 1, 1 << 31):
+            with self.subTest(value=invalid), self.assertRaisesRegex(ACQUIRE.Failure, "queued bound"):
+                row[0] = invalid
+                ACQUIRE.world_projection(snapshot, ids, FINISH)
+
     def test_context_ids_and_traced_cache_container_ids_bind_actual_objects(self):
         for name in ("world_id", "cache_id", "generator_id"):
             with self.subTest(context=name):

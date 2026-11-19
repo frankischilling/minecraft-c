@@ -1,5 +1,18 @@
 # Test scope and reproduction
 
+## Population fixture validation time
+
+The Windows profile of `tools.population_persistence` recorded about ten
+million calls to a generic integer validator while scanning queued bounds.
+The queue loop now checks the type and range directly. The JSON comparator
+also handles equal integers in a list without recursing for each element.
+The corruption tests still check signed 32-bit limits, exact JSON types,
+and the location of the first mismatch.
+
+Three alternating local Windows pairs ran all 24 tests with fresh Python
+processes. Median elapsed time went from 21.04 to 19.60 seconds, with a
+decrease in all three pairs. This timing covers one suite on one machine.
+
 ## Native object identity and Tile collections
 
 The [identity contract](reference/object-identity.md) separates native startup,
