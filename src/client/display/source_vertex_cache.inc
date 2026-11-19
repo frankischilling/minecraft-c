@@ -55,16 +55,26 @@ static size_t source_vertex_cache_tiny_charge(size_t bytes) {
 }
 
 static source_cached_vertices *source_vertex_cache_slot(mc_client_display *display,
-                                                        const uint8_t *data, size_t bytes) {
+                                                        const uint8_t *data, size_t bytes,
+                                                        uint32_t *hint) {
     if (display->source_cache == NULL)
         display->source_cache = calloc(1, sizeof(*display->source_cache));
     if (display->source_cache == NULL)
         return NULL;
     source_vertex_cache *cache = display->source_cache;
-    source_cached_vertices *set = &cache->slots[source_vertex_cache_index(data)];
+    if (hint != NULL && *hint != 0) {
+        source_cached_vertices *entry = &cache->slots[*hint - 1u];
+        if (entry->data == data)
+            return entry;
+    }
+    const size_t base = source_vertex_cache_index(data);
+    source_cached_vertices *set = &cache->slots[base];
     for (size_t i = 0; i < SOURCE_CACHE_WAYS; ++i)
-        if (set[i].data == data)
+        if (set[i].data == data) {
+            if (hint != NULL)
+                *hint = (uint32_t)(base + i) + 1u;
             return &set[i];
+        }
 
     const size_t regular = SOURCE_CACHE_REGULAR_VERTICES * sizeof(mc_client_source_gpu_vertex);
     const size_t large = SOURCE_CACHE_LARGE_VERTICES * sizeof(mc_client_source_gpu_vertex);

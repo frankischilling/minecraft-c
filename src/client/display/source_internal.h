@@ -23,23 +23,27 @@ typedef enum mc_client_source_command_kind {
     SOURCE_COMMAND_SCALE
 } mc_client_source_command_kind;
 
+typedef struct mc_client_source_draw_command {
+    const uint8_t *bytes;
+    size_t size;
+    int32_t count, mode;
+    unsigned arrays;
+    uint32_t cache_slot_hint; /* One-based slot index, checked against bytes. */
+} mc_client_source_draw_command;
+
 typedef struct mc_client_source_command {
     struct mc_client_source_command *next;
     mc_client_source_command_kind kind;
     size_t charge;
 
     union {
-        struct {
-            uint8_t *bytes;
-            size_t size;
-            int32_t count, mode;
-            unsigned arrays;
-        } draw;
-
+        mc_client_source_draw_command draw;
         float vector[4];
         double scale[3];
     } value;
 } mc_client_source_command;
+
+_Static_assert(sizeof(mc_client_source_command) == 56, "slot hint fits the existing command size");
 
 typedef struct mc_client_source_definition {
     mc_client_source_command *first, *last;

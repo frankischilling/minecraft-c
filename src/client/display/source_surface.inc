@@ -355,14 +355,15 @@ static mc_client_source_command *source_append(mc_client_display *display,
              "command byte/count limit", 0);
         return NULL;
     }
-    mc_client_source_command *command = calloc(1, sizeof(*command) + bytes);
+    const size_t charge = sizeof(mc_client_source_command) + bytes;
+    mc_client_source_command *command = malloc(charge);
     if (command == NULL) {
         fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "source command definition",
              "allocation failed", 0);
         return NULL;
     }
-    command->kind = kind;
-    command->charge = sizeof(*command) + bytes;
+    /* The draw caller copies the complete trailing payload before leaving. */
+    *command = (mc_client_source_command){.kind = kind, .charge = charge};
     mc_client_source_definition *pending = s->compiling->pending;
     if (pending->last == NULL)
         pending->first = command;
@@ -507,10 +508,12 @@ static void source_replay_matrix_changed(source_replay_state *replay,
         replay->modelview_uploaded = false;
 }
 
-static bool source_execute_batch(mc_client_display *display, const uint8_t *data, size_t bytes,
-                                 int32_t count, int32_t mode, unsigned arrays,
+static bool source_execute_batch(mc_client_display *display, mc_client_source_draw_command *draw,
                                  source_replay_state *replay, mc_client_display_error *error) {
     const bool compiled = replay != NULL;
+    const uint8_t *data = draw->bytes;
+    const int32_t count = draw->count, mode = draw->mode;
+    const unsigned arrays = draw->arrays;
     mc_client_source_state *s = &display->source;
     const unsigned vertex_bit = 1u << MC_CLIENT_SOURCE_VERTEX_ARRAY;
     const unsigned uv_bit = 1u << MC_CLIENT_SOURCE_UV_ARRAY;
@@ -525,7 +528,7 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
     if (count < 0 ||
         (mode != GL_TRIANGLES && mode != GL_TRIANGLE_FAN && mode != GL_LINES &&
          mode != GL_LINE_STRIP) ||
-        (arrays & vertex_bit) == 0 || (size_t)count > bytes / 32u ||
+        (arrays & vertex_bit) == 0 || (size_t)count > draw->size / 32u ||
         (size_t)count > SOURCE_COMMAND_BYTES / sizeof(mc_client_source_gpu_vertex))
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source interleaved draw",
                     "unsupported mode/span/client vertex state", 0);
@@ -576,7 +579,7 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
     source_cached_vertices *entry = NULL;
     if (compiled && !candidate.lighting_enabled && count >= SOURCE_CACHE_MIN_VERTICES &&
         allocation <= SOURCE_CACHE_BYTES)
-        entry = source_vertex_cache_slot(display, data, allocation);
+        entry = source_vertex_cache_slot(display, data, allocation, &draw->cache_slot_hint);
     const bool hit = entry != NULL &&
                      source_vertex_cache_matches(entry, data, display->native_context_generation,
                                                  attribute_profile, current_color, current_normal);
@@ -739,16 +742,19 @@ bool mc_client_display_source_batch(mc_client_display_context_lease *lease, cons
             source_append(display, SOURCE_COMMAND_DRAW, needed, error);
         ok = command != NULL;
         if (ok) {
-            command->value.draw.bytes = (uint8_t *)(command + 1);
-            command->value.draw.size = needed;
-            command->value.draw.count = count;
-            command->value.draw.mode = mode;
-            command->value.draw.arrays = s->arrays;
+            uint8_t *payload = (uint8_t *)(command + 1);
+            command->value.draw = (mc_client_source_draw_command){.bytes = payload,
+                                                                  .size = needed,
+                                                                  .count = count,
+                                                                  .mode = mode,
+                                                                  .arrays = s->arrays};
             if (needed != 0)
-                memcpy(command->value.draw.bytes, bytes, needed);
+                memcpy(payload, bytes, needed);
         }
     } else {
-        ok = source_execute_batch(display, bytes, size, count, mode, s->arrays, NULL, error);
+        mc_client_source_draw_command draw = {
+            .bytes = bytes, .size = size, .count = count, .mode = mode, .arrays = s->arrays};
+        ok = source_execute_batch(display, &draw, NULL, error);
     }
     return source_leave(display, ok, error);
 }
@@ -1141,7 +1147,7 @@ static bool source_lists_execute(mc_client_display *display, const int32_t *ids,
                       "undefined/deleted/unregistered name path", 0);
             break;
         }
-        for (const mc_client_source_command *command = list->first; command != NULL && ok;
+        for (mc_client_source_command *command = list->first; command != NULL && ok;
              command = command->next) {
             if (command->kind == SOURCE_COMMAND_COLOR) {
                 ok = source_material_profile_admit(display, false, "source list color", error);
@@ -1168,10 +1174,7 @@ static bool source_lists_execute(mc_client_display *display, const int32_t *ids,
                     source_replay_matrix_changed(&replay, &display->source);
                 }
             } else if (command->kind == SOURCE_COMMAND_DRAW) {
-                ok = source_execute_batch(display, command->value.draw.bytes,
-                                          command->value.draw.size, command->value.draw.count,
-                                          command->value.draw.mode, command->value.draw.arrays,
-                                          &replay, error);
+                ok = source_execute_batch(display, &command->value.draw, &replay, error);
             } else {
                 ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation,
                           "unrecognized native list command", 0);

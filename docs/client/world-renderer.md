@@ -346,6 +346,41 @@ Framebuffer hashes, covered pixels and list order matched in every pair.
 | 3/3 | 9.21 → 9.11 ms | 11.85 → 14.82 ms | 15.26 → 15.43 ms |
 | 16/3 | 19.65 → 19.37 ms | 29.88 → 30.50 ms | 38.05 → 36.32 ms |
 
+### Display-list recording and cache lookup
+
+Recording initializes the command header and copies its vertex payload
+directly into the allocated storage. A recorded draw remembers a cache
+slot after confirming the payload identity. Replay checks the payload,
+generation and attributes before reusing its buffer. A stale hint falls
+back to the normal lookup and replacement policy. The hint fits in the
+existing 56-byte command.
+
+Ten WSL2 Clang 18 `-O3` pairs ran two million lookups per profile with
+simulated uploads. Selection order, hit counts and final cache-state
+hashes matched in every pair.
+
+| CPU workload | Median before | Median after |
+| --- | ---: | ---: |
+| Resident replay | 18.87 ns | 13.20 ns |
+| Changing current normal | 14.54 ns | 11.44 ns |
+| Collision churn | 26.80 ns | 27.25 ns |
+
+Eight paired Windows MSVC Release runs per profile used the RTX 3060 and
+900 draws per frame on an authored scene. Each run measured 160 frames
+through GPU completion. The rebuilt profiles replace two lists for each
+of 384 visible sections per frame. Framebuffer hashes, section order and
+submitted work matched in every pair.
+
+| Profile | Frame p50 | Frame p95 |
+| --- | ---: | ---: |
+| Warm, 16/3 quads per list | 0.549 → 0.541 ms | 0.659 → 0.649 ms |
+| Rebuilt, 3/3 quads per list | 2.782 → 2.782 ms | 3.519 → 3.320 ms |
+| Rebuilt, 16/3 quads per list | 4.726 → 4.747 ms | 5.795 → 5.555 ms |
+
+In a separate recording-only comparison, the 64/48 profile's median
+recording phase fell from 14.33 to 14.13 ms. Its median whole frame
+moved from 19.06 to 19.04 ms.
+
 ### Vertex cache evictions
 
 The cache admits unlit recorded batches of at least six vertices, enough
