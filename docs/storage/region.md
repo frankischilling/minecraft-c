@@ -32,10 +32,10 @@ time per read includes probe input and output and decompression.
 
 | Occupied slots | Before (µs) | After (µs) |
 | --- | ---: | ---: |
-| 8, ordered | 23.52 | 19.55 |
-| 128, ordered | 81.02 | 20.07 |
-| 1,024, ordered | 494.71 | 26.13 |
-| 1,024, shuffled | 1,311.23 | 32.78 |
+| 8, ordered | 23.74 | 22.25 |
+| 128, ordered | 81.32 | 22.68 |
+| 1,024, ordered | 476.71 | 28.82 |
+| 1,024, shuffled | 1,315.01 | 34.41 |
 
 ### Record framing
 

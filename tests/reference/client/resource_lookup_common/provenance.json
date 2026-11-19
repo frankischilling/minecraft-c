@@ -818,12 +818,12 @@
       "sha256": "56c96123ed3a9e50b94a4a827546358b9ff1c447affbc67ae134ec5c0ee7c036"
     },
     "docs/storage/region-writer.md": {
-      "bytes": 3263,
-      "sha256": "5168dce31702debfec11286f07a5225a005e2b905bb57660e5710a0e90037d12"
+      "bytes": 3981,
+      "sha256": "1a26dda59c1353e525cb672336ceb17477d0dba0c0f530a78c80cbe496144f4e"
     },
     "docs/storage/region.md": {
       "bytes": 7870,
-      "sha256": "c7193ecc24713bde20458fa4e7d4d4fe3c5e748e8b1bd1070b3d7b1f16ee2e39"
+      "sha256": "55b4f7ca9d5cd05630a6ff7065f151a334e3617c7bc421209c6e374b589f5542"
     },
     "docs/testing.md": {
       "bytes": 704502,
@@ -4466,12 +4466,16 @@
       "sha256": "64e757a05a937befbf5d34a3e9b47bad47d9f5dcce694af8c374a26aa1f37eab"
     },
     "src/storage/region/region.c": {
-      "bytes": 7950,
-      "sha256": "d89e6ef5ac5606baaebd98ccb37d246c93f7ef7235d2a17a8a0633d4f71c0488"
+      "bytes": 8316,
+      "sha256": "986566500c93f6da98b0688f0491fc4d34473a2d94c038f7ff40271144cc70d1"
+    },
+    "src/storage/region/region_internal.h": {
+      "bytes": 420,
+      "sha256": "c403816fb543581846843886dfd48c7af7b2d8d4b1abe7c9c53edfbb9c93b950"
     },
     "src/storage/region/writer.c": {
-      "bytes": 13454,
-      "sha256": "d2b2c95395831223f1df52af08c3bec13160376389fda5b1bd1263e22c8a9383"
+      "bytes": 13856,
+      "sha256": "091bc3f71d52fe3fc098fc56022463ecdaa305830ade89fc317ff51fb82b7bbc"
     },
     "src/tools/storage/region_inspect.c": {
       "bytes": 17532,
@@ -6486,8 +6490,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 1068134,
-      "sha256": "f4c8fde0d32d0b7ed07bcf8703daf8f03742451e6ba77c52e1533be2269ae7d3"
+      "bytes": 1068290,
+      "sha256": "17b724a47dde9609e49ccddbeb16ff68e3b9269b13e121c64a7b70ae42de59cb"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -8318,8 +8322,8 @@
       "sha256": "fb1f5657845578648a406f3967f507717d8fa2a6f11c88e4bdf5ee0744b064b0"
     },
     "tests/storage/region/test_writer.c": {
-      "bytes": 25314,
-      "sha256": "ed441de23dfb4acc34fe5dccf5a21aad087809441608146eaaf81f5cb7ee60eb"
+      "bytes": 26034,
+      "sha256": "48b9bfc38464103023d0dd6fb0ace95f51a16e98917a10ff58bf47e3cfd736c0"
     },
     "tests/storage/region/writer_probe.c": {
       "bytes": 4532,

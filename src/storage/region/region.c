@@ -1,5 +1,7 @@
 #include "mc/storage/region/region.h"
 
+#include "region_internal.h"
+
 #include <limits.h>
 #include <stdbool.h>
 
@@ -63,11 +65,11 @@ static void region_read_locations(mc_region_view *view) {
     }
 }
 
-static void region_sort_start_byte(const mc_region_view *view, const uint16_t *from, uint16_t *to,
+static void region_sort_start_byte(const uint32_t *locations, const uint16_t *from, uint16_t *to,
                                    size_t count, unsigned int shift) {
     size_t positions[256] = {0};
     for (size_t i = 0; i < count; ++i) {
-        const uint32_t byte = (view->entries[from[i]].location >> shift) & UINT32_C(255);
+        const uint32_t byte = (locations[from[i]] >> shift) & UINT32_C(255);
         ++positions[byte];
     }
     size_t first = 0;
@@ -77,14 +79,22 @@ static void region_sort_start_byte(const mc_region_view *view, const uint16_t *f
         first += entries;
     }
     for (size_t i = 0; i < count; ++i) {
-        const uint32_t byte = (view->entries[from[i]].location >> shift) & UINT32_C(255);
+        const uint32_t byte = (locations[from[i]] >> shift) & UINT32_C(255);
         to[positions[byte]++] = from[i];
     }
 }
 
+void mc_region_sort_ranges(const uint32_t *locations, uint16_t *indices, uint16_t *sorted,
+                           size_t count) {
+    /* Sort the three start-sector bytes, skipping the low count byte. */
+    region_sort_start_byte(locations, indices, sorted, count, 8);
+    region_sort_start_byte(locations, sorted, indices, count, 16);
+    region_sort_start_byte(locations, indices, sorted, count, 24);
+}
+
 static void region_check_overlaps(mc_region_view *view) {
     uint16_t indices[MC_REGION_ENTRY_COUNT];
-    uint16_t scratch[MC_REGION_ENTRY_COUNT];
+    uint16_t sorted[MC_REGION_ENTRY_COUNT];
     size_t count = 0;
     bool ordered = true;
     uint64_t previous_start = 0;
@@ -100,11 +110,11 @@ static void region_check_overlaps(mc_region_view *view) {
         return;
     const uint16_t *by_start = indices;
     if (!ordered) {
-        /* Sort the three start-sector bytes, skipping the low count byte. */
-        region_sort_start_byte(view, indices, scratch, count, 8);
-        region_sort_start_byte(view, scratch, indices, count, 16);
-        region_sort_start_byte(view, indices, scratch, count, 24);
-        by_start = scratch;
+        uint32_t locations[MC_REGION_ENTRY_COUNT];
+        for (size_t i = 0; i < count; ++i)
+            locations[indices[i]] = view->entries[indices[i]].location;
+        mc_region_sort_ranges(locations, indices, sorted, count);
+        by_start = sorted;
     }
 
     mc_region_entry *furthest = &view->entries[by_start[0]];

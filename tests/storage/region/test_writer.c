@@ -330,6 +330,19 @@ static int test_import_preservation_and_rejections(void) {
     CHECK(expect_image(writer, saved, sizeof(saved)) == 0);
     CHECK(mc_region_writer_consume_growth(writer) == 0);
 
+    /* A disordered but adjacent allocation reaches the budget check. An
+     * overlap in that same layout is rejected before trying to allocate. */
+    const mc_region_writer_limits no_allocation = {sizeof(input), 0};
+    memset(input, 0, MC_REGION_HEADER_BYTES);
+    put_u32(input, UINT32_C(0x501));
+    put_u32(input + 4u, UINT32_C(0x202));
+    put_u32(input + 8u, UINT32_C(0x401));
+    CHECK(expect_import_failure(input, sizeof(input), &no_allocation, writer,
+                                MC_REGION_WRITER_LIMIT) == 0);
+    put_u32(input + 4u, UINT32_C(0x203));
+    CHECK(expect_import_failure(input, sizeof(input), &no_allocation, writer,
+                                MC_REGION_WRITER_INVALID_IMAGE) == 0);
+
     static const uint32_t unsafe[] = {UINT32_C(0x001), UINT32_C(0x101), UINT32_C(0x200),
                                       UINT32_C(0x901), UINT32_C(0x8ff), UINT32_C(0x80000001),
                                       UINT32_MAX};

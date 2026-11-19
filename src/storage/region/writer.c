@@ -1,6 +1,7 @@
 #include "mc/storage/region/writer.h"
 
 #include "mc/storage/region/region.h"
+#include "region_internal.h"
 
 #include <limits.h>
 #include <stdbool.h>
@@ -82,29 +83,41 @@ static bool writer_safe_image(const uint8_t *input, size_t length) {
     if (length < MC_REGION_HEADER_BYTES || length % MC_REGION_SECTOR_BYTES != 0) {
         return false;
     }
-    size_t sectors = length / MC_REGION_SECTOR_BYTES;
+    const size_t sectors = length / MC_REGION_SECTOR_BYTES;
+    uint32_t locations[MC_REGION_ENTRY_COUNT];
+    uint16_t indices[MC_REGION_ENTRY_COUNT];
+    size_t count = 0;
+    uint32_t previous_end = 2;
+    bool separated = true;
     for (size_t i = 0; i < MC_REGION_ENTRY_COUNT; ++i) {
-        uint32_t location = writer_read_u32(input + 4u * i);
+        const uint32_t location = writer_read_u32(input + 4u * i);
         if (location == 0) {
             continue;
         }
-        size_t start = location >> 8u;
-        size_t count = location & UINT32_C(255);
-        if (start < 2 || count == 0 || start > sectors || count > sectors - start) {
+        const uint32_t start = location >> 8u;
+        const uint32_t extent = location & UINT32_C(255);
+        if (start < 2 || extent == 0 || start > sectors || extent > sectors - start) {
             return false;
         }
-        size_t end = start + count;
-        for (size_t j = 0; j < i; ++j) {
-            uint32_t previous = writer_read_u32(input + 4u * j);
-            if (previous == 0) {
-                continue;
-            }
-            size_t previous_start = previous >> 8u;
-            size_t previous_end = previous_start + (previous & UINT32_C(255));
-            if (start < previous_end && previous_start < end) {
-                return false;
-            }
+        indices[count] = (uint16_t)count;
+        locations[count++] = location;
+        separated = separated && start >= previous_end;
+        previous_end = start + extent;
+    }
+    if (separated) {
+        return true;
+    }
+
+    uint16_t sorted[MC_REGION_ENTRY_COUNT];
+    mc_region_sort_ranges(locations, indices, sorted, count);
+    previous_end = 2;
+    for (size_t i = 0; i < count; ++i) {
+        const uint32_t location = locations[sorted[i]];
+        const uint32_t start = location >> 8u;
+        if (start < previous_end) {
+            return false;
         }
+        previous_end = start + (location & UINT32_C(255));
     }
     return true;
 }
