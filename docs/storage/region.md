@@ -18,6 +18,27 @@ overlap are diagnosed, including ranges that also have other issues. Work is
 bounded to 1024 ranges; it does not allocate a bitmap based on a stored offset.
 Unrelated metadata stays available when another record is invalid.
 
+### Overlap checking on cached reads
+
+The reader sweeps occupied ranges in start-sector order. It sorts disordered
+headers using fixed-size stack arrays and keeps the original slot order in
+the returned view. Empty extents are excluded. Adjacent extents are valid,
+and nested or out-of-file overlaps still flag both occupants.
+
+In eight alternating Windows Release pairs, the native world-region probe
+read 3,072 authored 64-byte records per process from one cached region. Each
+pair matched decoded bytes, diagnostics and cache usage. The median elapsed
+time per read includes probe input and output and decompression.
+
+| Occupied slots | Before (µs) | After (µs) |
+| --- | ---: | ---: |
+| 8, ordered | 23.52 | 19.55 |
+| 128, ordered | 81.02 | 20.07 |
+| 1,024, ordered | 494.71 | 26.13 |
+| 1,024, shuffled | 1,311.23 | 32.78 |
+
+### Record framing
+
 Record headers are inspected only after location validation. Their signed
 length must be positive and `4 + length` must fit the allocated sector extent
 and actual input. Length includes one selector byte and the compressed payload.

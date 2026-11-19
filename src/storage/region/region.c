@@ -1,6 +1,7 @@
 #include "mc/storage/region/region.h"
 
 #include <limits.h>
+#include <stdbool.h>
 
 _Static_assert(CHAR_BIT == 8, "Region storage requires eight-bit bytes");
 
@@ -62,26 +63,64 @@ static void region_read_locations(mc_region_view *view) {
     }
 }
 
+static void region_sort_start_byte(const mc_region_view *view, const uint16_t *from, uint16_t *to,
+                                   size_t count, unsigned int shift) {
+    size_t positions[256] = {0};
+    for (size_t i = 0; i < count; ++i) {
+        const uint32_t byte = (view->entries[from[i]].location >> shift) & UINT32_C(255);
+        ++positions[byte];
+    }
+    size_t first = 0;
+    for (size_t byte = 0; byte < 256; ++byte) {
+        const size_t entries = positions[byte];
+        positions[byte] = first;
+        first += entries;
+    }
+    for (size_t i = 0; i < count; ++i) {
+        const uint32_t byte = (view->entries[from[i]].location >> shift) & UINT32_C(255);
+        to[positions[byte]++] = from[i];
+    }
+}
+
 static void region_check_overlaps(mc_region_view *view) {
-    /* There are at most 1024 packed ranges. Pairwise comparisons keep storage
-     * fixed, even when an entry names a sector far beyond the input. Packed
-     * starts have 24 bits and counts have 8, so their byte endpoints fit u64. */
+    uint16_t indices[MC_REGION_ENTRY_COUNT];
+    uint16_t scratch[MC_REGION_ENTRY_COUNT];
+    size_t count = 0;
+    bool ordered = true;
+    uint64_t previous_start = 0;
     for (size_t i = 0; i < MC_REGION_ENTRY_COUNT; ++i) {
-        mc_region_entry *left = &view->entries[i];
-        if (left->location == 0 || left->extent_bytes == 0) {
+        const mc_region_entry *entry = &view->entries[i];
+        if (entry->extent_bytes == 0)
             continue;
+        indices[count++] = (uint16_t)i;
+        ordered = ordered && entry->byte_offset >= previous_start;
+        previous_start = entry->byte_offset;
+    }
+    if (count < 2)
+        return;
+    const uint16_t *by_start = indices;
+    if (!ordered) {
+        /* Sort the three start-sector bytes, skipping the low count byte. */
+        region_sort_start_byte(view, indices, scratch, count, 8);
+        region_sort_start_byte(view, scratch, indices, count, 16);
+        region_sort_start_byte(view, indices, scratch, count, 24);
+        by_start = scratch;
+    }
+
+    mc_region_entry *furthest = &view->entries[by_start[0]];
+    uint64_t furthest_end = furthest->byte_offset + furthest->extent_bytes;
+    for (size_t i = 1; i < count; ++i) {
+        mc_region_entry *entry = &view->entries[by_start[i]];
+        /* Any other prior range that overlaps this start has already
+         * overlapped the range that reached at least as far. */
+        if (entry->byte_offset < furthest_end) {
+            entry->issues |= MC_REGION_ISSUE_OVERLAP;
+            furthest->issues |= MC_REGION_ISSUE_OVERLAP;
         }
-        uint64_t left_end = left->byte_offset + left->extent_bytes;
-        for (size_t j = i + 1; j < MC_REGION_ENTRY_COUNT; ++j) {
-            mc_region_entry *right = &view->entries[j];
-            if (right->location == 0 || right->extent_bytes == 0) {
-                continue;
-            }
-            uint64_t right_end = right->byte_offset + right->extent_bytes;
-            if (left->byte_offset < right_end && right->byte_offset < left_end) {
-                left->issues |= MC_REGION_ISSUE_OVERLAP;
-                right->issues |= MC_REGION_ISSUE_OVERLAP;
-            }
+        const uint64_t end = entry->byte_offset + entry->extent_bytes;
+        if (end > furthest_end) {
+            furthest = entry;
+            furthest_end = end;
         }
     }
 }

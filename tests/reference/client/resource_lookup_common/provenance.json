@@ -822,8 +822,8 @@
       "sha256": "5168dce31702debfec11286f07a5225a005e2b905bb57660e5710a0e90037d12"
     },
     "docs/storage/region.md": {
-      "bytes": 7019,
-      "sha256": "2efd0b4b5585d50ffc22559c98299660ace7efe0ccc87b89be19ee32b86e299a"
+      "bytes": 7870,
+      "sha256": "c7193ecc24713bde20458fa4e7d4d4fe3c5e748e8b1bd1070b3d7b1f16ee2e39"
     },
     "docs/testing.md": {
       "bytes": 704502,
@@ -4466,8 +4466,8 @@
       "sha256": "64e757a05a937befbf5d34a3e9b47bad47d9f5dcce694af8c374a26aa1f37eab"
     },
     "src/storage/region/region.c": {
-      "bytes": 6598,
-      "sha256": "d234f5c098e19bdb6c652b10a1d343f12a4a7568bd28c6bb1520ae5bd482576e"
+      "bytes": 7950,
+      "sha256": "d89e6ef5ac5606baaebd98ccb37d246c93f7ef7235d2a17a8a0633d4f71c0488"
     },
     "src/storage/region/writer.c": {
       "bytes": 13454,
@@ -6487,7 +6487,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1068134,
-      "sha256": "0a3f09941c4453352aea167c6ed707406d03c2eccf8b1b26b4fb82753beaee57"
+      "sha256": "87f0a8203d22c8efc563823dbc8c68737d58cdc828f01ba6fd9ab8900e50db64"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -8314,8 +8314,8 @@
       "sha256": "83d0425ef92e7570ed170499532cbd8def100042bb011fc9e2e3c007412fad12"
     },
     "tests/storage/region/test_region.c": {
-      "bytes": 20297,
-      "sha256": "4ede752a8490ce8cc01dd9479ed62ac55e842d1c7f48d53f046cdeb908517bef"
+      "bytes": 21618,
+      "sha256": "fb1f5657845578648a406f3967f507717d8fa2a6f11c88e4bdf5ee0744b064b0"
     },
     "tests/storage/region/test_writer.c": {
       "bytes": 25314,

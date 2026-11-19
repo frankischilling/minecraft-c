@@ -1,6 +1,7 @@
 #include "mc/storage/region/region.h"
 
 #include <limits.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -189,6 +190,32 @@ static int test_extents_and_overlaps(void) {
         CHECK((view.entries[0].issues &
                (i == 0 ? MC_REGION_ISSUE_HEADER_SECTOR : MC_REGION_ISSUE_EXTENT_BOUNDS)) != 0);
         CHECK(view.invalid_entries == 2);
+    }
+    return 0;
+}
+
+static int test_disordered_overlaps(void) {
+    static const struct {
+        uint32_t location;
+        bool overlap;
+    } ranges[] = {
+        {UINT32_C(0xfffffe01), true}, {UINT32_C(0x01000301), false}, {UINT32_C(0x0000fe04), true},
+        {UINT32_C(0xfffffaff), true}, {UINT32_C(0x0000ff00), false}, {UINT32_C(0x01000102), true},
+        {UINT32_C(0x00010101), true}, {UINT32_C(0x00010201), false}, {UINT32_C(0x01000101), true},
+        {UINT32_C(0x00010001), true}, {UINT32_C(0x00000002), true},  {UINT32_C(0x00000101), true}};
+
+    uint8_t bytes[MC_REGION_HEADER_BYTES] = {0};
+    for (size_t i = 0; i < sizeof(ranges) / sizeof(*ranges); ++i)
+        location(bytes, i, ranges[i].location);
+
+    mc_region_view view;
+    CHECK(mc_region_open(bytes, sizeof(bytes), NULL, &view) == MC_REGION_OK);
+    CHECK(view.present_entries == sizeof(ranges) / sizeof(*ranges));
+    CHECK(view.invalid_entries == view.present_entries);
+    for (size_t i = 0; i < sizeof(ranges) / sizeof(*ranges); ++i) {
+        CHECK(view.entries[i].location == ranges[i].location);
+        CHECK(((view.entries[i].issues & MC_REGION_ISSUE_OVERLAP) != 0) == ranges[i].overlap);
+        CHECK(view.entries[i].record_length == 0 && view.entries[i].selector == 0);
     }
     return 0;
 }
@@ -397,8 +424,9 @@ static int test_bounded_mutations(void) {
 
 int main(void) {
     if (test_all_metadata() || test_coordinate_bounds() || test_extents_and_overlaps() ||
-        test_record_lengths_and_selectors() || test_partial_sectors_and_limits() ||
-        test_multisector_records() || test_borrowed_payload() || test_bounded_mutations())
+        test_disordered_overlaps() || test_record_lengths_and_selectors() ||
+        test_partial_sectors_and_limits() || test_multisector_records() ||
+        test_borrowed_payload() || test_bounded_mutations())
         return 1;
     printf("Region: %u checks passed\n", checks);
     return 0;
