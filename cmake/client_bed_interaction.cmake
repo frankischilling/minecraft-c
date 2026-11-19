@@ -26,11 +26,6 @@ if(BUILD_TESTING AND TARGET mc_test_world_selection_loop)
     if(CMAKE_CXX_COMPILER_LOADED)
         set_property(TARGET mc_test_bed_placement PROPERTY LINKER_LANGUAGE CXX)
     endif()
-    if(WIN32 AND TARGET OpenAL)
-        add_custom_command(TARGET mc_test_bed_placement POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_bed_placement>")
-    endif()
 endif()
 
 if(BUILD_TESTING AND TARGET mc_test_world_selection_loop)
@@ -46,11 +41,6 @@ if(BUILD_TESTING AND TARGET mc_test_world_selection_loop)
         mc_client_runtime mc_client_saves mc_build_options)
     if(CMAKE_CXX_COMPILER_LOADED)
         set_property(TARGET mc_test_bed_sleep PROPERTY LINKER_LANGUAGE CXX)
-    endif()
-    if(WIN32 AND TARGET OpenAL)
-        add_custom_command(TARGET mc_test_bed_sleep POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_bed_sleep>")
     endif()
 endif()
 

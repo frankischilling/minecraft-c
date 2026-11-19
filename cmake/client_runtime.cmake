@@ -21,11 +21,6 @@ if(TARGET mc_client_application_startup AND TARGET mc_client_source_screen_drawi
     if(CMAKE_CXX_COMPILER_LOADED)
         set_property(TARGET minecraft-client PROPERTY LINKER_LANGUAGE CXX)
     endif()
-    if(WIN32)
-        add_custom_command(TARGET minecraft-client POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:minecraft-client>")
-    endif()
     if(BUILD_TESTING)
         add_executable(mc_test_standalone_canvas tests/client/window/test_standalone_canvas.c)
         target_include_directories(mc_test_standalone_canvas PRIVATE src include)
@@ -43,12 +38,6 @@ if(TARGET mc_client_application_startup AND TARGET mc_client_source_screen_drawi
             add_test(NAME client.frame_canvas_owner COMMAND mc_test_frame_canvas)
             set_tests_properties(client.frame_canvas_owner PROPERTIES
                 LABELS "public;integration;client;graphics;ownership" TIMEOUT 60)
-        endif()
-        if(WIN32)
-            foreach(_mc_canvas_target IN ITEMS mc_test_frame_canvas mc_test_standalone_canvas)
-                add_custom_command(TARGET ${_mc_canvas_target} POST_BUILD
-                    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>" "$<TARGET_FILE_DIR:${_mc_canvas_target}>")
-            endforeach()
         endif()
         if(MC_ENABLE_CLIENT_DISPLAY_TESTS AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
             foreach(_mc_canvas_profile IN ITEMS hidden visible visible-fp-position visible-fp-ungrab
@@ -72,9 +61,6 @@ if(TARGET mc_client_application_startup AND TARGET mc_client_source_screen_drawi
             set_property(TARGET mc_test_menu_loop PROPERTY LINKER_LANGUAGE CXX)
         endif()
         if(WIN32)
-            add_custom_command(TARGET mc_test_menu_loop POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                    "$<TARGET_FILE_DIR:mc_test_menu_loop>")
             if(MC_ENABLE_CLIENT_DISPLAY_TESTS AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
                 add_test(NAME client.source_menu_loop COMMAND Python3::Interpreter -B
                     "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_menu_loop.py"

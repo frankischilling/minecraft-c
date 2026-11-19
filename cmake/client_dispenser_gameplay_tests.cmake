@@ -28,11 +28,6 @@ if(BUILD_TESTING AND WIN32 AND TARGET mc_client_runtime)
     if(CMAKE_CXX_COMPILER_LOADED)
         set_property(TARGET mc_test_source_dispenser_cross_owner PROPERTY LINKER_LANGUAGE CXX)
     endif()
-    if(TARGET OpenAL)
-        add_custom_command(TARGET mc_test_source_dispenser_cross_owner POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_source_dispenser_cross_owner>")
-    endif()
     if(MC_ENABLE_CLIENT_DISPENSER_CROSS_OWNER_TESTS AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
         add_test(NAME client.dispenser_cross_owner COMMAND Python3::Interpreter -B
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_dispenser_cross_owner.py"
@@ -58,11 +53,6 @@ if(BUILD_TESTING AND TARGET mc_test_world_selection_loop AND TARGET mc_client_ti
     target_link_libraries(mc_test_dispenser PRIVATE mc_client_runtime mc_client_saves mc_build_options)
     if(CMAKE_CXX_COMPILER_LOADED)
         set_property(TARGET mc_test_dispenser PROPERTY LINKER_LANGUAGE CXX)
-    endif()
-    if(WIN32 AND TARGET OpenAL)
-        add_custom_command(TARGET mc_test_dispenser POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_dispenser>")
     endif()
     if(WIN32 AND MC_ENABLE_CLIENT_DISPENSER_GAMEPLAY_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS
        AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
@@ -107,11 +97,6 @@ if(BUILD_TESTING AND TARGET mc_test_world_selection_loop AND TARGET mc_client_ti
         mc_client_runtime mc_client_saves mc_build_options)
     if(CMAKE_CXX_COMPILER_LOADED)
         set_property(TARGET mc_test_dispenser_placement PROPERTY LINKER_LANGUAGE CXX)
-    endif()
-    if(WIN32 AND TARGET OpenAL)
-        add_custom_command(TARGET mc_test_dispenser_placement POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_dispenser_placement>")
     endif()
     if(WIN32 AND MC_ENABLE_CLIENT_DISPENSER_PLACEMENT_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS
        AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)

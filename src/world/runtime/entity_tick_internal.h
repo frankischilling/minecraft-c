@@ -29,6 +29,8 @@ typedef struct wt_scope {
      * Nested World calls allocate their own scope; no World/Mob cache exists. */
     union mc_mob_tick_child_workspace *mob_workspace;
     bool mob_workspace_attempted;
+    /* Cleared by any other child that uses the shared error between ticks. */
+    bool mob_action_tail_zero;
 } wt_scope;
 
 /* Native functional control for the same complete FD.g run. It disables only

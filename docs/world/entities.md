@@ -82,6 +82,41 @@ Entity hold. A genuine insertion failure preserves the nested publication frame.
 Horizontal fluid displacement can consequently publish its ItemEntity and
 continue the original block replacement and notification sequence.
 
+## World Entity tick diagnostics
+
+The World already clears its private scope before the first dispatch. It uses
+that cleared space for the first Mob's diagnostics and reuses the zero action
+tail after a completed Mob tick. The next Mob still clears the prefix and
+every smaller child field. A non-Mob dispatch or Chunk acquisition invalidates
+the reuse. A failed action writes its complete child record before publishing
+the failure. Public Mob calls with independent outputs clear their full record.
+
+On Windows x64, the reused tail covers 200,760 of the 363,440 bytes in a Mob
+diagnostic. A separate change removes the second clear of the 364,320-byte
+World diagnostic during scope creation. These sizes describe the records.
+
+Four alternating Windows MSVC Release pairs measured the native World Entity
+loop on the authored 25-Chunk fixture. Each timed interval returned 16 World
+ticks. Each build contributed 84 timed intervals per workload. The pairs
+matched actor ticks, positions, Random, Chunk data and ownership checks. The
+fixture retains the three independent constructor-entropy fields separately.
+
+| Actors | Median before / after (ms/tick) | p95 before / after (ms/tick) |
+| --- | ---: | ---: |
+| None | 0.0305 / 0.0228 | 0.0438 / 0.0292 |
+| 1 Pig | 0.1168 / 0.1087 | 0.2150 / 0.2006 |
+| 8 Pigs | 0.7760 / 0.7320 | 1.0388 / 0.9674 |
+| 64 Pigs | 6.1740 / 5.9491 | 6.6345 / 6.4483 |
+| 1 Zombie | 0.1202 / 0.1099 | 0.2340 / 0.2152 |
+| 8 Zombies | 0.8847 / 0.8631 | 1.1939 / 1.1376 |
+| 64 Zombies | 6.9863 / 6.8598 | 7.7596 / 7.5863 |
+
+Median time fell in every pair for the empty and Pig workloads. The 8- and
+64-Zombie workloads improved in three pairs each. The measurements cover
+World Entity ticks. Failed-action, reused-output, reentry and independent
+fallback controls passed on Windows MSVC Release and on Linux Clang Debug
+with ASan and UBSan.
+
 ## Persistence and terminal disposal
 
 The GAME save coordinator resets q and sets it before each actual Boolean Item

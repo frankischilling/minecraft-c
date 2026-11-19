@@ -14,6 +14,7 @@ bool wt_present(wt_scope *s, int32_t x, int32_t z, unsigned int pc, bool *out) {
 
 bool wt_get(wt_scope *s, int32_t x, int32_t z, unsigned int pc, mc_chunk_state **out) {
     s->error.bytecode = pc;
+    s->mob_action_tail_zero = false;
     s->error.child = MC_WORLD_ENTITY_TICK_CHILD_ACQUISITION;
     const mc_chunk_acquire_status status =
         mc_world_runtime_get_detailed(s->world, x, z, out, &s->error.child_error.acquisition);

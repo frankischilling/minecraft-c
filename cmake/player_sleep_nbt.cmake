@@ -55,9 +55,6 @@ if(MC_ENABLE_CLIENT_PLAYER_SLEEP_NBT_TESTS)
     if(CMAKE_CXX_COMPILER_LOADED)
         set_property(TARGET mc_test_player_sleep_nbt_load PROPERTY LINKER_LANGUAGE CXX)
     endif()
-    add_custom_command(TARGET mc_test_player_sleep_nbt_load POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-            "$<TARGET_FILE_DIR:mc_test_player_sleep_nbt_load>")
     foreach(profile IN ITEMS success load-failure)
         if(profile STREQUAL "success")
             set(_mc_sleep_nbt_case client.player_sleep_nbt_load)

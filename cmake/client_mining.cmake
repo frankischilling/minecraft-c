@@ -100,11 +100,6 @@ if(BUILD_TESTING)
         if(CMAKE_CXX_COMPILER_LOADED)
             set_property(TARGET mc_test_digging_particle PROPERTY LINKER_LANGUAGE CXX)
         endif()
-        if(WIN32 AND TARGET OpenAL)
-            add_custom_command(TARGET mc_test_digging_particle POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                    "$<TARGET_FILE_DIR:mc_test_digging_particle>")
-        endif()
         if(MC_ENABLE_CLIENT_DISPLAY_TESTS)
             add_test(NAME entity.digging_particle COMMAND Python3::Interpreter -B
                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/entity/test_digging.py"
@@ -126,11 +121,6 @@ if(BUILD_TESTING)
             mc_client_runtime mc_client_saves mc_build_options)
         if(CMAKE_CXX_COMPILER_LOADED)
             set_property(TARGET mc_test_mining_loop PROPERTY LINKER_LANGUAGE CXX)
-        endif()
-        if(WIN32 AND TARGET OpenAL)
-            add_custom_command(TARGET mc_test_mining_loop POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                    "$<TARGET_FILE_DIR:mc_test_mining_loop>")
         endif()
         if(WIN32 AND MC_ENABLE_CLIENT_MINING_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS
            AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)

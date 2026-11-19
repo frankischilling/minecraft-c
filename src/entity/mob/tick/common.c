@@ -2,15 +2,42 @@
 #include "../references_internal.h"
 #include "internal.h"
 #include "mc/world/runtime/presentation.h"
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
-void mc_mob_tick_error_init(mc_mob_tick_error *e) {
-    if (e == NULL)
-        return;
-    memset(e, 0, sizeof(*e));
+/* Only a failed action writes beyond the environment member. Other detail
+ * producers may partially write their members, so reset their entire span. */
+#define CHECK_DETAIL_EXTENT(member)                                                                \
+    _Static_assert(sizeof(((mc_mob_tick_error *)0)->detail.member) <=                              \
+                       sizeof(((mc_mob_tick_error *)0)->detail.environment),                       \
+                   "Mob diagnostic member exceeds the cleared detail span")
+CHECK_DETAIL_EXTENT(brightness);
+CHECK_DETAIL_EXTENT(query);
+CHECK_DETAIL_EXTENT(presentation);
+CHECK_DETAIL_EXTENT(sound);
+CHECK_DETAIL_EXTENT(class_list);
+CHECK_DETAIL_EXTENT(bounds);
+CHECK_DETAIL_EXTENT(vector);
+CHECK_DETAIL_EXTENT(material);
+CHECK_DETAIL_EXTENT(effect);
+CHECK_DETAIL_EXTENT(ray);
+CHECK_DETAIL_EXTENT(path);
+CHECK_DETAIL_EXTENT(inventory);
+CHECK_DETAIL_EXTENT(arrow);
+CHECK_DETAIL_EXTENT(publication);
+#undef CHECK_DETAIL_EXTENT
+
+void mt_tick_error_init(mc_mob_tick_error *e, bool action_tail_zero) {
+    const size_t written = offsetof(mc_mob_tick_error, detail) + sizeof(e->detail.environment);
+    memset(e, 0, action_tail_zero ? written : sizeof(*e));
     e->site.pc = e->child_site.pc = -1;
     e->registry.initializer_pc = e->registry.active_initializer_pc = -1;
+}
+
+void mc_mob_tick_error_init(mc_mob_tick_error *e) {
+    if (e != NULL)
+        mt_tick_error_init(e, false);
 }
 
 void mt_at(mc_mob_tick_scope *s, const char *c, const char *m, const char *d, unsigned int pc) {

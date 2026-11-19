@@ -25,11 +25,6 @@ if(BUILD_TESTING AND TARGET mc_client_render_global)
         if(CMAKE_CXX_COMPILER_LOADED)
             set_property(TARGET mc_test_render_global_device PROPERTY LINKER_LANGUAGE CXX)
         endif()
-        if(WIN32 AND TARGET OpenAL)
-            add_custom_command(TARGET mc_test_render_global_device POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                    "$<TARGET_FILE:OpenAL>" "$<TARGET_FILE_DIR:mc_test_render_global_device>")
-        endif()
         if(MC_ENABLE_CLIENT_DISPLAY_TESTS AND MC_ENABLE_APPLICATION_STARTUP_DEFAULT_DIRECTORY_TESTS)
             if(WIN32)
                 add_test(NAME client.render_global_device COMMAND Python3::Interpreter -B

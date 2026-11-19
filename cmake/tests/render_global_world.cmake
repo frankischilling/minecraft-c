@@ -14,11 +14,6 @@ if(BUILD_TESTING AND TARGET mc_test_application_startup AND TARGET mc_client_ren
     if(CMAKE_CXX_COMPILER_LOADED)
         set_property(TARGET mc_test_render_global_world PROPERTY LINKER_LANGUAGE CXX)
     endif()
-    if(WIN32 AND TARGET OpenAL)
-        add_custom_command(TARGET mc_test_render_global_world POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "$<TARGET_FILE:OpenAL>" "$<TARGET_FILE_DIR:mc_test_render_global_world>")
-    endif()
     add_test(NAME client.render_global_world_cpu COMMAND mc_test_render_global_world --cpu)
     set_tests_properties(client.render_global_world_cpu PROPERTIES
         LABELS "public;unit;client;ownership" TIMEOUT 30)

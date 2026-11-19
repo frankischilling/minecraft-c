@@ -9,16 +9,6 @@ if(BUILD_TESTING AND TARGET mc_client_runtime)
     if(CMAKE_CXX_COMPILER_LOADED)
         set_property(TARGET mc_test_arrow_world_tick_cleanup PROPERTY LINKER_LANGUAGE CXX)
     endif()
-    if(WIN32 AND TARGET OpenAL)
-        # Keep the runtime current even when its import library does not change
-        # and the executable therefore does not need to relink.
-        add_custom_target(mc_arrow_world_tick_cleanup_audio
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_arrow_world_tick_cleanup>"
-            DEPENDS "$<TARGET_FILE:OpenAL>"
-            VERBATIM)
-        add_dependencies(mc_test_arrow_world_tick_cleanup mc_arrow_world_tick_cleanup_audio)
-    endif()
 endif()
 
 if(BUILD_TESTING AND Python3_Interpreter_FOUND)

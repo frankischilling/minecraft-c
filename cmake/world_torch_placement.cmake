@@ -14,11 +14,6 @@ if(BUILD_TESTING AND Python3_Interpreter_FOUND)
         if(CMAKE_CXX_COMPILER_LOADED)
             set_property(TARGET mc_test_torch_placement_reference PROPERTY LINKER_LANGUAGE CXX)
         endif()
-        if(WIN32 AND TARGET OpenAL)
-            add_custom_command(TARGET mc_test_torch_placement_reference POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                    "$<TARGET_FILE_DIR:mc_test_torch_placement_reference>")
-        endif()
         add_test(NAME world.torch_placement_reference COMMAND Python3::Interpreter -B
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/world/test_torch_placement.py"
             --executable "$<TARGET_FILE:mc_test_torch_placement_reference>"

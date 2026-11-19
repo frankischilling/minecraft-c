@@ -88,14 +88,6 @@ if(BUILD_TESTING AND TARGET mc_test_world_selection_loop)
         set_property(TARGET mc_test_spawner_frame PROPERTY LINKER_LANGUAGE CXX)
         set_property(TARGET mc_test_spawner_tick_frame PROPERTY LINKER_LANGUAGE CXX)
     endif()
-    if(WIN32 AND TARGET OpenAL)
-        add_custom_command(TARGET mc_test_spawner_tick_frame POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_spawner_tick_frame>")
-        add_custom_command(TARGET mc_test_spawner_frame POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_spawner_frame>")
-    endif()
     if(WIN32 AND MC_ENABLE_CLIENT_SPAWNER_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS
        AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
         add_test(NAME client.spawner_frame COMMAND Python3::Interpreter -B

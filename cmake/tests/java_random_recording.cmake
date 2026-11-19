@@ -17,11 +17,6 @@ if(TARGET mc_client_runtime)
     if(CMAKE_CXX_COMPILER_LOADED)
         set_property(TARGET mc_test_bootstrap_random_admission PROPERTY LINKER_LANGUAGE CXX)
     endif()
-    if(WIN32)
-        add_custom_command(TARGET mc_test_bootstrap_random_admission POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_bootstrap_random_admission>")
-    endif()
     add_test(NAME client.bootstrap_random_admission COMMAND mc_test_bootstrap_random_admission)
     set_tests_properties(client.bootstrap_random_admission PROPERTIES
         LABELS "public;unit;client;ownership;admission" TIMEOUT 60)

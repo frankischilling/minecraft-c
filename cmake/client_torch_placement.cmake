@@ -13,11 +13,6 @@ if(BUILD_TESTING AND TARGET mc_test_world_selection_loop)
     if(CMAKE_CXX_COMPILER_LOADED)
         set_property(TARGET mc_test_torch_placement PROPERTY LINKER_LANGUAGE CXX)
     endif()
-    if(WIN32 AND TARGET OpenAL)
-        add_custom_command(TARGET mc_test_torch_placement POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_torch_placement>")
-    endif()
     if(WIN32 AND Python3_Interpreter_FOUND AND MC_ENABLE_CLIENT_TORCH_PLACEMENT_TESTS
        AND MC_ENABLE_CLIENT_DISPLAY_TESTS AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
         foreach(_torch_mode IN ITEMS placement support-removal)

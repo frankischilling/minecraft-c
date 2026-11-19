@@ -101,6 +101,8 @@ bool wt_tick(wt_scope *s, mc_entity *p, unsigned int pc) {
     if (p->classes->source != MC_ENTITY_CLIENT)
         return wt_fail(s, MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                        "World actual server Entity active tick dependency");
+    const bool mob_action_tail_zero = s->mob_action_tail_zero;
+    s->mob_action_tail_zero = false;
     mc_entity_status status;
     if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_LOCAL_PLAYER)) {
         s->error.virtual_class = "gs";
@@ -129,10 +131,13 @@ bool wt_tick(wt_scope *s, mc_entity *p, unsigned int pc) {
             s->mob_workspace = malloc(sizeof(*s->mob_workspace));
         }
         status =
-            mt_tick_in_place(p, s->context == NULL ? NULL : s->context->player.travel.code_registry,
+            mt_tick_in_world(p, s->context == NULL ? NULL : s->context->player.travel.code_registry,
                              s->context == NULL ? NULL : s->context->math,
                              s->context == NULL ? NULL : s->context->mob_limits,
-                             &s->error.child_error.mob, s->mob_workspace);
+                             &s->error.child_error.mob, s->mob_workspace, mob_action_tail_zero);
+        /* A successful Mob tick cannot publish an action failure into the
+         * tail. A different diagnostic writer invalidates this proof. */
+        s->mob_action_tail_zero = status == MC_ENTITY_OK && s->error.child_error.mob.state.returned;
         observe_hurt(s, p);
     } else if (mc_entity_is_kind(p, MC_ENTITY_CLASS_KIND_FALLING_SAND)) {
         s->error.virtual_class = "ju";

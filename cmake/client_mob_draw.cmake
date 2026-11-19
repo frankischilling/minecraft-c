@@ -40,11 +40,6 @@ if(TARGET mc_client_entity_renderer)
             if(CMAKE_CXX_COMPILER_LOADED)
                 set_property(TARGET ${_mc_draw_target} PROPERTY LINKER_LANGUAGE CXX)
             endif()
-            if(WIN32 AND TARGET OpenAL)
-                add_custom_command(TARGET ${_mc_draw_target} POST_BUILD
-                    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                        "$<TARGET_FILE_DIR:${_mc_draw_target}>")
-            endif()
             if(MC_ENABLE_CLIENT_DISPLAY_TESTS)
                 set(_mc_draw_timeout 300)
                 if(NOT _mc_draw_kind STREQUAL "mob")

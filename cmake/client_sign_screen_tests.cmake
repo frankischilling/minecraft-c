@@ -34,11 +34,4 @@ if(BUILD_TESTING AND TARGET mc_client_source_screens)
             LABELS "public;integration;client;graphics;ownership" TIMEOUT 180
             RESOURCE_LOCK mc_desktop_focus)
     endif()
-    if(WIN32 AND TARGET OpenAL)
-        foreach(_sign_screen_test IN ITEMS mc_test_source_sign_screen mc_test_source_sign_screen_dirty)
-            add_custom_command(TARGET ${_sign_screen_test} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                    "$<TARGET_FILE_DIR:${_sign_screen_test}>")
-        endforeach()
-    endif()
 endif()

@@ -75,14 +75,6 @@ if(BUILD_TESTING AND TARGET mc_test_world_selection_loop AND TARGET mc_client_ti
         set_property(TARGET mc_test_sign_sdk PROPERTY LINKER_LANGUAGE CXX)
         set_property(TARGET mc_test_sign_draw_geometry PROPERTY LINKER_LANGUAGE CXX)
     endif()
-    if(WIN32 AND TARGET OpenAL)
-        add_custom_command(TARGET mc_test_sign_sdk POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_sign_sdk>")
-        add_custom_command(TARGET mc_test_sign_draw_geometry POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_sign_draw_geometry>")
-    endif()
     if(WIN32 AND MC_ENABLE_CLIENT_SIGN_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS
        AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
         foreach(_sign_profile IN ITEMS standing-0 standing-4 standing-8 standing-12 wall-2 wall-3 wall-4 wall-5)

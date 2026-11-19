@@ -1,10 +1,14 @@
 #include "entity_tick_internal.h"
 
+static void init_positions(mc_world_entity_tick_error *e) {
+    e->weather_index = e->deferred_index = e->loaded_index = -1;
+    e->tile_index = e->comparison_index = SIZE_MAX;
+}
+
 void mc_world_entity_tick_error_init(mc_world_entity_tick_error *e) {
     if (e != NULL) {
         memset(e, 0, sizeof(*e));
-        e->weather_index = e->deferred_index = e->loaded_index = -1;
-        e->tile_index = e->comparison_index = SIZE_MAX;
+        init_positions(e);
     }
 }
 
@@ -210,7 +214,8 @@ static mc_world_storage_status run(mc_world_runtime *world, mc_entity *entity, b
                         "World update diagnostic scratch allocation");
     }
     memset(s, 0, sizeof(*s));
-    mc_world_entity_tick_error_init(&s->error);
+    init_positions(&s->error);
+    s->mob_action_tail_zero = true;
     s->world = world;
     s->context = context;
     s->has_error_output = out != NULL;

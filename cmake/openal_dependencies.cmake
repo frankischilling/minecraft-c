@@ -4,6 +4,24 @@ include(FetchContent)
 # This file is included only by the client audio graph.
 enable_language(CXX)
 
+# All Windows client and test executables are declared in the parent binary
+# directory. Give the shared DLL the same output rule so parallel links need
+# no post-build copies to a common destination.
+function(mc_set_openal_runtime_directory property)
+    set(directory "${CMAKE_${property}}")
+    if(directory STREQUAL "")
+        if(NOT property STREQUAL "RUNTIME_OUTPUT_DIRECTORY")
+            return()
+        endif()
+        set(directory "${CMAKE_CURRENT_BINARY_DIR}")
+    elseif(directory MATCHES "\\$<")
+        set(directory "$<PATH:ABSOLUTE_PATH,${directory},${CMAKE_CURRENT_BINARY_DIR}>")
+    else()
+        cmake_path(ABSOLUTE_PATH directory BASE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+    endif()
+    set_property(TARGET OpenAL PROPERTY "${property}" "${directory}")
+endfunction()
+
 # The C API and shared device runtime belong only to the client audio target.
 # OpenAL Soft's implementation is third-party C++20; project runtime code is C17.
 function(mc_add_openal_dependencies)
@@ -161,6 +179,13 @@ function(mc_add_openal_dependencies)
     get_target_property(openal_type OpenAL TYPE)
     if(NOT openal_type STREQUAL "SHARED_LIBRARY")
         message(FATAL_ERROR "Client audio requires the shared OpenAL Soft runtime")
+    endif()
+    if(WIN32)
+        mc_set_openal_runtime_directory(RUNTIME_OUTPUT_DIRECTORY)
+        foreach(config IN LISTS CMAKE_BUILD_TYPE CMAKE_CONFIGURATION_TYPES)
+            string(TOUPPER "${config}" config_upper)
+            mc_set_openal_runtime_directory("RUNTIME_OUTPUT_DIRECTORY_${config_upper}")
+        endforeach()
     endif()
 
     # Preserve upstream diagnostics; only the project's sanitizer interface is

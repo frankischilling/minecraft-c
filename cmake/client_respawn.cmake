@@ -30,9 +30,6 @@ if(MC_ENABLE_CLIENT_DEATH_RESPAWN_TESTS)
     if(CMAKE_CXX_COMPILER_LOADED)
         set_property(TARGET mc_test_death_respawn PROPERTY LINKER_LANGUAGE CXX)
     endif()
-    add_custom_command(TARGET mc_test_death_respawn POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-            "$<TARGET_FILE_DIR:mc_test_death_respawn>")
     add_test(NAME client.death_respawn COMMAND Python3::Interpreter -B
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_death_respawn.py"
         --executable "$<TARGET_FILE:mc_test_death_respawn>"

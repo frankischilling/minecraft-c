@@ -63,20 +63,8 @@ if(BUILD_TESTING)
         if(CMAKE_CXX_COMPILER_LOADED)
             set_property(TARGET mc_test_controller_use PROPERTY LINKER_LANGUAGE CXX)
         endif()
-        if(WIN32 AND TARGET OpenAL)
-            add_custom_command(TARGET mc_test_controller_use POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                    "$<TARGET_FILE_DIR:mc_test_controller_use>")
-        endif()
     endif()
     if(WIN32 AND TARGET OpenAL)
-        foreach(_target IN ITEMS mc_test_item_use mc_test_world_placement_callbacks)
-            if(TARGET ${_target})
-                add_custom_command(TARGET ${_target} POST_BUILD
-                    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                        "$<TARGET_FILE_DIR:${_target}>")
-            endif()
-        endforeach()
         unset(_target)
     endif()
     foreach(_mode IN ITEMS world chest chest_terminal chest_predicate callbacks item chest_item controller)
@@ -119,11 +107,6 @@ if(BUILD_TESTING)
         if(CMAKE_CXX_COMPILER_LOADED)
             set_property(TARGET mc_test_farming_loop PROPERTY LINKER_LANGUAGE CXX)
         endif()
-        if(WIN32 AND TARGET OpenAL)
-            add_custom_command(TARGET mc_test_farming_loop POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                    "$<TARGET_FILE_DIR:mc_test_farming_loop>")
-        endif()
         if(WIN32 AND MC_ENABLE_CLIENT_FARMING_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS
            AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
             add_test(NAME client.farming_loop COMMAND Python3::Interpreter -B
@@ -145,11 +128,6 @@ if(BUILD_TESTING)
             mc_client_runtime mc_client_saves mc_build_options)
         if(CMAKE_CXX_COMPILER_LOADED)
             set_property(TARGET mc_test_placement_loop PROPERTY LINKER_LANGUAGE CXX)
-        endif()
-        if(WIN32 AND TARGET OpenAL)
-            add_custom_command(TARGET mc_test_placement_loop POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                    "$<TARGET_FILE_DIR:mc_test_placement_loop>")
         endif()
         if(WIN32 AND MC_ENABLE_CLIENT_PLACEMENT_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS
            AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)

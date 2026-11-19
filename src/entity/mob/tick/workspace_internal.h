@@ -28,4 +28,12 @@ mc_entity_status mt_tick_in_place(mc_entity *, mc_registry_classes *, mc_math_cl
                                   const mc_mob_tick_limits *, mc_mob_tick_error *working,
                                   mc_mob_tick_child_workspace *scratch);
 
+/* The World can reuse the known zero action tail in a freshly cleared child
+ * output or after a completed Mob tick with no intervening writer. */
+mc_entity_status mt_tick_in_world(mc_entity *, mc_registry_classes *, mc_math_classes *,
+                                  const mc_mob_tick_limits *, mc_mob_tick_error *working,
+                                  mc_mob_tick_child_workspace *scratch, bool action_tail_zero);
+
+void mt_tick_error_init(mc_mob_tick_error *, bool action_tail_zero);
+
 #endif

@@ -10,11 +10,6 @@ if(BUILD_TESTING AND TARGET mc_client_runtime AND TARGET mc_client_source_screen
     endif()
     if(WIN32)
         target_link_libraries(mc_test_source_sign_drawing PRIVATE opengl32)
-        if(TARGET OpenAL)
-            add_custom_command(TARGET mc_test_source_sign_drawing POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                    "$<TARGET_FILE_DIR:mc_test_source_sign_drawing>")
-        endif()
     else()
         find_package(OpenGL REQUIRED)
         target_link_libraries(mc_test_source_sign_drawing PRIVATE OpenGL::GL)

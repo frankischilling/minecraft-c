@@ -13,9 +13,4 @@ if(BUILD_TESTING AND MC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS AND
         COMMAND mc_test_inventory_callback_ownership "${_mc_application_constructor_resource_root}")
     set_tests_properties(client.inventory_callback_ownership PROPERTIES
         LABELS "public;unit;client;constructor;ownership" TIMEOUT 120)
-    if(WIN32)
-        add_custom_command(TARGET mc_test_inventory_callback_ownership POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_inventory_callback_ownership>")
-    endif()
 endif()

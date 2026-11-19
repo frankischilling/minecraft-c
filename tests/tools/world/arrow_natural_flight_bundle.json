@@ -40,12 +40,12 @@
       "sha256": "3dd073c658a9e63f86a87588461c67803730f5bc145f544bacabd4f29db61c83"
     },
     "src/world/runtime/entity_tick.c": {
-      "bytes": 12800,
-      "sha256": "c10e00b4952941c743f870acea11e5e9654fcf10148fe27444433ba539f9bb95"
+      "bytes": 12901,
+      "sha256": "97a15edcf1e026e218545c6ae6cb48425dae2a8d8b85bf139b74078d454a8d07"
     },
     "src/world/runtime/entity_tick_dispatch.c": {
-      "bytes": 16532,
-      "sha256": "c2bc52972d5cabdf108f5694672a9814de129f9a002731cd146b6d066363666b"
+      "bytes": 16904,
+      "sha256": "7146698805c7e63101e3cd2a4af1065a73f5f052dc6d2f8c53654aa69bd90716"
     },
     "src/world/runtime/terminal_inventory.c": {
       "bytes": 47178,

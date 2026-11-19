@@ -46,9 +46,6 @@ if(MC_ENABLE_CLIENT_BED_RESPAWN_TESTS)
     if(CMAKE_CXX_COMPILER_LOADED)
         set_property(TARGET mc_test_bed_respawn PROPERTY LINKER_LANGUAGE CXX)
     endif()
-    add_custom_command(TARGET mc_test_bed_respawn POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-            "$<TARGET_FILE_DIR:mc_test_bed_respawn>")
     foreach(profile IN ITEMS valid missing)
         add_test(NAME client.bed_respawn_${profile} COMMAND Python3::Interpreter -B
             "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_bed_respawn.py"
@@ -97,11 +94,6 @@ if(BUILD_TESTING AND TARGET mc_test_gui_ingame_draw)
         target_include_directories(${chat_target} PRIVATE src src/platform/time)
         if(CMAKE_CXX_COMPILER_LOADED)
             set_property(TARGET ${chat_target} PROPERTY LINKER_LANGUAGE CXX)
-        endif()
-        if(WIN32 AND TARGET OpenAL)
-            add_custom_command(TARGET ${chat_target} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                    "$<TARGET_FILE_DIR:${chat_target}>")
         endif()
         if(kind STREQUAL "cpu" OR MC_ENABLE_CLIENT_DISPLAY_TESTS)
             add_test(NAME ${chat_case} COMMAND Python3::Interpreter -B

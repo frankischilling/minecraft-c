@@ -22,11 +22,6 @@ if(BUILD_TESTING AND TARGET mc_test_application_startup AND TARGET mc_client_sdk
         target_link_options(mc_test_application_startup PRIVATE
             "-Wl,-Map,${CMAKE_CURRENT_BINARY_DIR}/mc_test_application_startup.map")
     endif()
-    if(WIN32 AND TARGET OpenAL)
-        add_custom_command(TARGET mc_test_application_startup_boundary POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "$<TARGET_FILE:OpenAL>" "$<TARGET_FILE_DIR:mc_test_application_startup_boundary>")
-    endif()
     if(MC_ENABLE_CLIENT_DISPLAY_TESTS AND MC_ENABLE_APPLICATION_STARTUP_DEFAULT_DIRECTORY_TESTS)
         add_test(NAME client.application_startup_session_gl_error
             COMMAND Python3::Interpreter -B

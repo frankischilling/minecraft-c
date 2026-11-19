@@ -69,6 +69,11 @@ ctest --test-dir build -C Debug --output-on-failure
 ```
 
 Choose a separate build directory when changing generators or compilers.
+On Windows, the OpenAL target writes `OpenAL32.dll` directly into the client
+and test executable directory. A multi-configuration build keeps each
+configuration's DLL beside its executables. The build has one producer for
+the DLL, so parallel executable links share it without competing copies.
+
 For GCC/Clang sanitizers, configure `-DMC_ENABLE_SANITIZERS=ON`; instrumentation
 covers project code and its zlib dependency. Strict diagnostics apply to project
 source. Set `-DBUILD_TESTING=OFF` to build libraries without Python/Java discovery.

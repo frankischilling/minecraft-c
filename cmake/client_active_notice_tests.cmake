@@ -21,11 +21,6 @@ if(BUILD_TESTING AND TARGET mc_client_runtime)
         if(CMAKE_CXX_COMPILER_LOADED)
             set_property(TARGET ${_mc_notice_target} PROPERTY LINKER_LANGUAGE CXX)
         endif()
-        if(WIN32 AND TARGET OpenAL)
-            add_custom_command(TARGET ${_mc_notice_target} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                    "$<TARGET_FILE_DIR:${_mc_notice_target}>")
-        endif()
     endforeach()
     unset(_mc_notice_target)
     add_test(NAME client.active_notice_cpu COMMAND mc_test_active_notice_cpu

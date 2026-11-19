@@ -87,9 +87,6 @@ if(BUILD_TESTING AND TARGET mc_client_application_startup AND TARGET mc_sound_ba
     endif()
     if(WIN32)
         target_link_libraries(mc_test_application_logo_prepared PRIVATE opengl32)
-        add_custom_command(TARGET mc_test_application_logo_prepared POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "$<TARGET_FILE:OpenAL>" "$<TARGET_FILE_DIR:mc_test_application_logo_prepared>")
     else()
         find_package(OpenGL REQUIRED)
         target_link_libraries(mc_test_application_logo_prepared PRIVATE OpenGL::GL)

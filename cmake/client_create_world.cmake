@@ -36,11 +36,6 @@ if(TARGET mc_client_source_screens)
             if(CMAKE_CXX_COMPILER_LOADED)
                 set_property(TARGET ${_target} PROPERTY LINKER_LANGUAGE CXX)
             endif()
-            if(WIN32 AND TARGET OpenAL)
-                add_custom_command(TARGET ${_target} POST_BUILD
-                    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                        "$<TARGET_FILE_DIR:${_target}>")
-            endif()
         endforeach()
         unset(_target)
         if(TARGET mc_test_world_selection_loop)
@@ -54,11 +49,6 @@ if(TARGET mc_client_source_screens)
                 mc_client_runtime mc_client_saves mc_build_options)
             if(CMAKE_CXX_COMPILER_LOADED)
                 set_property(TARGET mc_test_create_world_loop PROPERTY LINKER_LANGUAGE CXX)
-            endif()
-            if(WIN32 AND TARGET OpenAL)
-                add_custom_command(TARGET mc_test_create_world_loop POST_BUILD
-                    COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                        "$<TARGET_FILE_DIR:mc_test_create_world_loop>")
             endif()
             if(WIN32 AND MC_ENABLE_CLIENT_CREATE_WORLD_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS
                AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)

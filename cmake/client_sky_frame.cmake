@@ -52,11 +52,6 @@ if(TARGET mc_client_entity_renderer)
                 if(CMAKE_CXX_COMPILER_LOADED)
                     set_property(TARGET mc_test_render_global_sky_device PROPERTY LINKER_LANGUAGE CXX)
                 endif()
-                if(WIN32 AND TARGET OpenAL)
-                    add_custom_command(TARGET mc_test_render_global_sky_device POST_BUILD
-                        COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                            "$<TARGET_FILE_DIR:mc_test_render_global_sky_device>")
-                endif()
                 if(WIN32 AND MC_ENABLE_CLIENT_DISPLAY_TESTS AND
                    MC_ENABLE_APPLICATION_STARTUP_DEFAULT_DIRECTORY_TESTS AND
                    NOT "${MC_APPLICATION_STARTUP_IMPORTED_RESOURCES}" STREQUAL "")

@@ -128,14 +128,6 @@ if(BUILD_TESTING AND TARGET mc_test_world_selection_loop AND TARGET mc_client_ti
         set_property(TARGET mc_test_piston_sdk PROPERTY LINKER_LANGUAGE CXX)
         set_property(TARGET mc_test_piston_draw_geometry PROPERTY LINKER_LANGUAGE CXX)
     endif()
-    if(WIN32 AND TARGET OpenAL)
-        add_custom_command(TARGET mc_test_piston_sdk POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_piston_sdk>")
-        add_custom_command(TARGET mc_test_piston_draw_geometry POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_piston_draw_geometry>")
-    endif()
     if(WIN32 AND MC_ENABLE_CLIENT_PISTON_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS
        AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
         add_test(NAME client.piston_draw_geometry COMMAND Python3::Interpreter -B

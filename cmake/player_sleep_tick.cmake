@@ -37,11 +37,6 @@ if(BUILD_TESTING AND TARGET mc_client_runtime)
     if(CMAKE_CXX_COMPILER_LOADED)
         set_property(TARGET mc_test_player_sleep_tick_cleanup PROPERTY LINKER_LANGUAGE CXX)
     endif()
-    if(WIN32 AND TARGET OpenAL)
-        add_custom_command(TARGET mc_test_player_sleep_tick_cleanup POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_player_sleep_tick_cleanup>")
-    endif()
     add_test(NAME client.player_sleep_tick_cleanup COMMAND Python3::Interpreter -B
         "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_player_sleep_tick_cleanup.py"
         --executable "$<TARGET_FILE:mc_test_player_sleep_tick_cleanup>"

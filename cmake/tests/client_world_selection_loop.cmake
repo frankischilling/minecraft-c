@@ -7,9 +7,6 @@ if(BUILD_TESTING AND TARGET mc_client_runtime)
         if(CMAKE_CXX_COMPILER_LOADED)
             set_property(TARGET mc_test_embedded_focus PROPERTY LINKER_LANGUAGE CXX)
         endif()
-        add_custom_command(TARGET mc_test_embedded_focus POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_embedded_focus>")
         if(MC_ENABLE_EMBEDDED_FOCUS_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS)
             add_test(NAME client.embedded_focus COMMAND Python3::Interpreter -B
                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_embedded_focus.py"
@@ -30,9 +27,6 @@ if(BUILD_TESTING AND TARGET mc_client_runtime)
         set_property(TARGET mc_test_world_selection_loop PROPERTY LINKER_LANGUAGE CXX)
     endif()
     if(WIN32)
-        add_custom_command(TARGET mc_test_world_selection_loop POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_world_selection_loop>")
         if(MC_ENABLE_CLIENT_DISPLAY_TESTS AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
             add_test(NAME client.world_selection_loop COMMAND Python3::Interpreter -B
                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_world_selection_loop.py"

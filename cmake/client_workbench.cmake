@@ -105,11 +105,6 @@ if(BUILD_TESTING AND TARGET mc_test_world_selection_loop)
     if(CMAKE_CXX_COMPILER_LOADED)
         set_property(TARGET mc_test_workbench_open_shutdown PROPERTY LINKER_LANGUAGE CXX)
     endif()
-    if(WIN32 AND TARGET OpenAL)
-        add_custom_command(TARGET mc_test_workbench_open_shutdown POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_workbench_open_shutdown>")
-    endif()
     if(WIN32 AND MC_ENABLE_CLIENT_WORKBENCH_OPEN_SHUTDOWN_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS
        AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
         foreach(_mc_shutdown_profile IN ITEMS clean container player world)
@@ -138,11 +133,6 @@ if(BUILD_TESTING AND TARGET mc_test_world_selection_loop)
     if(CMAKE_CXX_COMPILER_LOADED)
         set_property(TARGET mc_test_workbench_auto_close_failures PROPERTY LINKER_LANGUAGE CXX)
     endif()
-    if(WIN32 AND TARGET OpenAL)
-        add_custom_command(TARGET mc_test_workbench_auto_close_failures POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_workbench_auto_close_failures>")
-    endif()
     if(WIN32 AND MC_ENABLE_CLIENT_WORKBENCH_AUTO_CLOSE_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS
        AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
         add_test(NAME client.workbench_auto_close_failures COMMAND Python3::Interpreter -B
@@ -165,11 +155,6 @@ if(BUILD_TESTING AND TARGET mc_test_world_selection_loop)
         mc_client_runtime mc_client_saves mc_build_options)
     if(CMAKE_CXX_COMPILER_LOADED)
         set_property(TARGET mc_test_workbench_auto_close_loop PROPERTY LINKER_LANGUAGE CXX)
-    endif()
-    if(WIN32 AND TARGET OpenAL)
-        add_custom_command(TARGET mc_test_workbench_auto_close_loop POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_workbench_auto_close_loop>")
     endif()
     if(WIN32 AND MC_ENABLE_CLIENT_WORKBENCH_AUTO_CLOSE_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS
        AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)
@@ -197,11 +182,6 @@ if(BUILD_TESTING AND TARGET mc_test_world_selection_loop)
         mc_client_runtime mc_client_saves mc_build_options)
     if(CMAKE_CXX_COMPILER_LOADED)
         set_property(TARGET mc_test_workbench_loop PROPERTY LINKER_LANGUAGE CXX)
-    endif()
-    if(WIN32 AND TARGET OpenAL)
-        add_custom_command(TARGET mc_test_workbench_loop POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_workbench_loop>")
     endif()
     if(WIN32 AND MC_ENABLE_CLIENT_WORKBENCH_TESTS AND MC_ENABLE_CLIENT_DISPLAY_TESTS
        AND MC_APPLICATION_STARTUP_IMPORTED_RESOURCES)

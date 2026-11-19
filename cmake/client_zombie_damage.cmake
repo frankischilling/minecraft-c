@@ -16,11 +16,6 @@ if(BUILD_TESTING AND TARGET mc_test_world_selection_loop)
     if(CMAKE_CXX_COMPILER_LOADED)
         set_property(TARGET mc_test_client_zombie_damage PROPERTY LINKER_LANGUAGE CXX)
     endif()
-    if(WIN32 AND TARGET OpenAL)
-        add_custom_command(TARGET mc_test_client_zombie_damage POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_client_zombie_damage>")
-    endif()
 endif()
 
 if(MC_ENABLE_CLIENT_ZOMBIE_DAMAGE_TESTS)

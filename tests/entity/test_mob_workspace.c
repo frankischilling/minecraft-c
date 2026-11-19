@@ -14,6 +14,7 @@ int mc_workspace_unused_statistics_main(int, char **);
 #include "world/runtime/chunk_provider_internal.h"
 #include "world/runtime/entity_tick_internal.h"
 #include "world/storage/objects_internal.h"
+#include <stddef.h>
 
 typedef struct ws_fixture {
     fixture base;
@@ -239,10 +240,17 @@ static bool ws_fresh_action_diagnostics(ws_fixture *f) {
 static bool ws_reset_failures(ws_fixture *f) {
     CHECK(ws_fresh_action_diagnostics(f));
     const mc_entity_class_kind initial = (mc_entity_class_kind)0;
+    const size_t mob_prefix =
+        offsetof(mc_mob_tick_error, detail) + sizeof(f->working->detail.environment);
     memset(f->working, 0xa5, sizeof(*f->working));
     CHECK(mt_tick_in_place(NULL, f->base.app.registry, f->math, NULL, f->working, f->scratch) ==
               MC_ENTITY_STATE_ERROR &&
           ws_blank(f->working, initial));
+    memcpy(f->saved, f->working, sizeof(*f->saved));
+    memset(f->working, 0xa5, mob_prefix);
+    CHECK(mt_tick_in_world(NULL, f->base.app.registry, f->math, NULL, f->working, f->scratch,
+                           true) == MC_ENTITY_STATE_ERROR &&
+          memcmp(f->working, f->saved, sizeof(*f->working)) == 0);
     memset(f->working, 0xa5, sizeof(*f->working));
     CHECK(mt_tick_in_place(f->base.player, f->base.app.registry, f->math, NULL, f->working,
                            f->scratch) == MC_ENTITY_STATE_ERROR &&
@@ -295,9 +303,10 @@ static bool ws_reset_failures(ws_fixture *f) {
     f->actor->mob->living.aq = f->actor->base.z;
     f->actor->mob->living.ar = (double)f->actor->base.yaw + 360;
     f->actor->mob->living.as = f->actor->base.aT;
-    memset(f->working, 0xa5, sizeof(*f->working));
-    CHECK(mt_tick_in_place(f->actor, f->base.app.registry, f->math, &limits, f->working,
-                           f->scratch) == MC_ENTITY_LIMIT &&
+    mc_mob_tick_error_init(f->working);
+    memset(f->working, 0xa5, mob_prefix);
+    CHECK(mt_tick_in_world(f->actor, f->base.app.registry, f->math, &limits, f->working, f->scratch,
+                           true) == MC_ENTITY_LIMIT &&
           f->working->child == MC_MOB_TICK_CHILD_ACTION && f->working->state.environment_returned &&
           !f->working->state.action_returned && f->working->detail.action.max_loop_work == 0 &&
           memcmp(&f->working->detail.action, &f->scratch->action, sizeof(f->scratch->action)) == 0);

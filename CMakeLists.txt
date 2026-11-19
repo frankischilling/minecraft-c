@@ -935,11 +935,6 @@ if(MC_ENABLE_SETTINGS_CAPTURE_ALLOCATION_CONTROL)
         target_link_options(mc_test_application_startup_capture PRIVATE
             "-Wl,-Map,${CMAKE_CURRENT_BINARY_DIR}/mc_test_application_startup_capture.map")
     endif()
-    if(WIN32)
-        add_custom_command(TARGET mc_test_application_startup_capture POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_application_startup_capture>")
-    endif()
 endif()
 
 
@@ -1123,11 +1118,6 @@ if(BUILD_TESTING)
             mc_client_application_startup mc_sound_backend mc_client_assets mc_resources
             mc_c_atomics mc_build_options)
         set_property(TARGET mc_test_application_startup PROPERTY LINKER_LANGUAGE CXX)
-        if(WIN32)
-            add_custom_command(TARGET mc_test_application_startup POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                    "$<TARGET_FILE:OpenAL>" "$<TARGET_FILE_DIR:mc_test_application_startup>")
-        endif()
         add_test(NAME client.application_startup_prefix COMMAND mc_test_application_startup
             "${_mc_startup_resource_root}" cpu)
         set_tests_properties(client.application_startup_prefix PROPERTIES
@@ -1179,11 +1169,6 @@ if(BUILD_TESTING)
         target_link_libraries(mc_test_sound_construction_backend PRIVATE
             mc_sound_backend mc_c_atomics mc_build_options)
         set_property(TARGET mc_test_sound_construction_backend PROPERTY LINKER_LANGUAGE CXX)
-        if(WIN32)
-            add_custom_command(TARGET mc_test_sound_construction_backend POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                    "$<TARGET_FILE:OpenAL>" "$<TARGET_FILE_DIR:mc_test_sound_construction_backend>")
-        endif()
         add_test(NAME client.sound_construction_backend COMMAND mc_test_sound_construction_backend)
         set_tests_properties(client.sound_construction_backend PROPERTIES
             LABELS "public;integration;client;constructor;audio;ownership" TIMEOUT 60)
@@ -1221,11 +1206,6 @@ if(BUILD_TESTING)
                 target_link_options(${target} PRIVATE "/MAP:${CMAKE_CURRENT_BINARY_DIR}/${target}.map")
             else()
                 target_link_options(${target} PRIVATE "-Wl,-Map,${CMAKE_CURRENT_BINARY_DIR}/${target}.map")
-            endif()
-            if(WIN32)
-                add_custom_command(TARGET ${target} POST_BUILD
-                    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                        "$<TARGET_FILE:OpenAL>" "$<TARGET_FILE_DIR:${target}>")
             endif()
         endforeach()
     endif()
@@ -1695,11 +1675,6 @@ if(BUILD_TESTING)
                     mc_client_application_constructor mc_sound_backend mc_client_render_textures
                     mc_resources mc_c_atomics mc_build_options)
                 set_property(TARGET mc_observe_${kind}_lookup PROPERTY LINKER_LANGUAGE CXX)
-                if(WIN32)
-                    add_custom_command(TARGET mc_observe_${kind}_lookup POST_BUILD
-                        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                            "$<TARGET_FILE:OpenAL>" "$<TARGET_FILE_DIR:mc_observe_${kind}_lookup>")
-                endif()
             endforeach()
             foreach(mode IN ITEMS normal optimized)
                 set(_mc_observation_flags -B)
@@ -3721,10 +3696,6 @@ if(BUILD_TESTING)
             add_executable(mc_test_sound_backend tests/client/sound/backend/test_backend.c)
             target_link_libraries(mc_test_sound_backend PRIVATE mc_sound_backend mc_build_options)
             set_property(TARGET mc_test_sound_backend PROPERTY LINKER_LANGUAGE CXX)
-            if(WIN32)
-                add_custom_command(TARGET mc_test_sound_backend POST_BUILD COMMAND ${CMAKE_COMMAND}
-                    -E copy_if_different "$<TARGET_FILE:OpenAL>" "$<TARGET_FILE_DIR:mc_test_sound_backend>")
-            endif()
             add_test(NAME client.sound_backend COMMAND mc_test_sound_backend
                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/client/sound/fixtures/vorbis")
             set_tests_properties(client.sound_backend PROPERTIES LABELS "public;integration;client;audio;ownership" TIMEOUT 60)
@@ -3738,10 +3709,6 @@ if(BUILD_TESTING)
             target_link_libraries(mc_test_sound_allocation PRIVATE mc_sound_backend OpenAL::OpenAL
                 mc_c_atomics mc_build_options)
             set_property(TARGET mc_test_sound_allocation PROPERTY LINKER_LANGUAGE CXX)
-            if(WIN32)
-                add_custom_command(TARGET mc_test_sound_allocation POST_BUILD COMMAND ${CMAKE_COMMAND}
-                    -E copy_if_different "$<TARGET_FILE:OpenAL>" "$<TARGET_FILE_DIR:mc_test_sound_allocation>")
-            endif()
             add_test(NAME client.sound_allocation COMMAND mc_test_sound_allocation
                 "${CMAKE_CURRENT_SOURCE_DIR}/tests/client/sound/fixtures/vorbis")
             set_tests_properties(client.sound_allocation PROPERTIES LABELS "public;integration;client;audio;ownership" TIMEOUT 60)
@@ -5558,11 +5525,6 @@ if(BUILD_TESTING AND MC_ENABLE_APPLICATION_CONSTRUCTOR_TESTS AND
         mc_client_application_constructor mc_game_settings mc_client_texture_packs
         mc_sound_backend mc_client_assets mc_resources mc_c_atomics mc_build_options)
     set_property(TARGET mc_test_texture_pack_file PROPERTY LINKER_LANGUAGE CXX)
-    if(WIN32)
-        add_custom_command(TARGET mc_test_texture_pack_file POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:OpenAL>"
-                "$<TARGET_FILE_DIR:mc_test_texture_pack_file>")
-    endif()
 endif()
 
 # Explicit fixture profile: generation is a separately admitted runner phase,

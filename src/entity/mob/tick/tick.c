@@ -20,10 +20,10 @@ static mc_entity_status
 run_entered(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
             const mc_mob_tick_limits *limits, mob_entry entry, mc_entity *target, float distance,
             mc_mob_tick_error *e, mc_mob_tick_child_workspace *child_workspace,
-            mc_entity **owned_arrow, mt_skeleton_fire_observation *capture) {
+            mc_entity **owned_arrow, mt_skeleton_fire_observation *capture, bool action_tail_zero) {
     /* In-place World output must never expose a preceding Entity's state or
      * hurt receipt on any new attempt, even a rejected admission. */
-    mc_mob_tick_error_init(e);
+    mt_tick_error_init(e, action_tail_zero);
     if (capture != NULL)
         memset(capture, 0, sizeof(*capture));
     mc_player_action_context context = {0};
@@ -180,7 +180,7 @@ static mc_entity_status run_captured(mc_entity *p, mc_registry_classes *registry
         return MC_ENTITY_ALLOCATION_FAILED;
     }
     const mc_entity_status status = run_entered(p, registry, math, limits, entry, target, distance,
-                                                e, NULL, owned_arrow, capture);
+                                                e, NULL, owned_arrow, capture, false);
     if (out != NULL)
         *out = *e;
     free(e);
@@ -197,10 +197,17 @@ mc_entity_status mt_tick_in_place(mc_entity *p, mc_registry_classes *registry,
                                   mc_math_classes *math, const mc_mob_tick_limits *limits,
                                   mc_mob_tick_error *working,
                                   mc_mob_tick_child_workspace *scratch) {
+    return mt_tick_in_world(p, registry, math, limits, working, scratch, false);
+}
+
+mc_entity_status mt_tick_in_world(mc_entity *p, mc_registry_classes *registry,
+                                  mc_math_classes *math, const mc_mob_tick_limits *limits,
+                                  mc_mob_tick_error *working, mc_mob_tick_child_workspace *scratch,
+                                  bool action_tail_zero) {
     if (working == NULL)
         return run(p, registry, math, limits, MOB_ENTRY_TICK, NULL, 0.0f, NULL);
     return run_entered(p, registry, math, limits, MOB_ENTRY_TICK, NULL, 0.0f, working, scratch,
-                       NULL, NULL);
+                       NULL, NULL, action_tail_zero);
 }
 
 mc_entity_status mc_mob_tick(mc_entity *p, mc_registry_classes *registry, mc_math_classes *math,
