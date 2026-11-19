@@ -22,6 +22,12 @@ if(TARGET mc_client_application_startup AND TARGET mc_client_source_screen_drawi
         set_property(TARGET minecraft-client PROPERTY LINKER_LANGUAGE CXX)
     endif()
     if(BUILD_TESTING)
+        add_test(NAME client.startup_asset_diagnostics COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_startup_asset_diagnostics.py"
+            --executable "$<TARGET_FILE:minecraft-client>")
+        set_tests_properties(client.startup_asset_diagnostics PROPERTIES
+            LABELS "public;integration;client;resources" TIMEOUT 45)
+
         add_executable(mc_test_standalone_canvas tests/client/window/test_standalone_canvas.c)
         target_include_directories(mc_test_standalone_canvas PRIVATE src include)
         target_link_libraries(mc_test_standalone_canvas PRIVATE mc_client_runtime mc_build_options)

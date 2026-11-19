@@ -79,6 +79,20 @@ static bool starts(mc_texture_pack_text key, const char *prefix, size_t length) 
     return mc_client_resource_key_starts(key, prefix, length);
 }
 
+static void report_missing_texture(FILE *output, mc_texture_pack_text name) {
+    fputs("Using a placeholder for missing texture jar", output);
+    if (name.length == 0 || name.units[0] != '/')
+        fputc('/', output);
+    for (size_t i = 0; i < name.length; ++i) {
+        const unsigned int ch = name.units[i];
+        if (ch >= 0x20u && ch <= 0x7eu)
+            fputc((int)ch, output);
+        else
+            fprintf(output, "\\u%04x", ch);
+    }
+    fputs(". Check the folder passed to --assets.\n", output);
+}
+
 static mc_client_texture_lookup_status cache_put(mc_client_render_engine *o,
                                                  mc_client_texture_lookup_attempt *a,
                                                  mc_texture_pack_text key, mc_client_texture id) {
@@ -219,7 +233,8 @@ static mc_client_texture_lookup_status run_body(mc_client_render_engine *o,
     if (mc_client_resource_lookup_open(a, name, open_pc) != MC_CLIENT_LOOKUP_OK)
         return e->status;
     mc_client_argb_image *image;
-    if (mode == NORMAL && a->stream == NULL) {
+    const bool missing = mode == NORMAL && a->stream == NULL;
+    if (missing) {
         image = o->fields.m;
         upload_pc = 187;
     } else {
@@ -254,6 +269,8 @@ static mc_client_texture_lookup_status run_body(mc_client_render_engine *o,
     }
     if (cache_put(o, a, key, id) != MC_CLIENT_LOOKUP_OK)
         return e->status;
+    if (missing && o->classes->missing_texture_output != NULL)
+        report_missing_texture(o->classes->missing_texture_output, name);
     a->state.source_returned = true;
     a->state.returned_id = id;
     touch(a, 218);

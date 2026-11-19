@@ -376,15 +376,19 @@ On Windows, pass the installed formatter's executable path if needed. Formatter
 input is restricted to project C sources/headers; ignored reference material is
 not scanned.
 
-Supply your own client JAR and resource directory to the local importer:
+Supply your own client JAR, resource directory, and LWJGL 2.9.0 JAR to the
+local importer for normal startup.
 
 ```powershell
-python scripts/resources/import_assets.py --jar b1.7.3.jar --resources "$env:APPDATA/.minecraft/resources" --output .local/assets
-python scripts/reference/binaries/inspect_jars.py --client b1.7.3.jar --server b1.7.3_server.jar --output .local/reference/jars.json
+$minecraft = Join-Path $env:APPDATA '.minecraft'
+$clientJar = Join-Path $minecraft 'versions/b1.7.3/b1.7.3.jar'
+$sdkJar = Join-Path $minecraft 'libraries/org/lwjgl/lwjgl/lwjgl/2.9.0/lwjgl-2.9.0.jar'
+python scripts/resources/import_assets.py --jar $clientJar --resources "$minecraft/resources" --lwjgl-jar $sdkJar --output .local/assets
 ```
 
 Use explicit Linux paths on Linux. The importer requires a fresh output
-directory and reports missing resources. See [resource evidence](reference/resources.md)
+directory and reports missing resources. Use the actual input paths if your
+launcher saves files elsewhere. See [resource evidence](reference/resources.md)
 and [binary setup](reference/binaries.md). The [native title screen](client/startup.md)
 consumes a subset of those resources. Keep originals, launcher files,
 credentials, recordings, logs and worlds in

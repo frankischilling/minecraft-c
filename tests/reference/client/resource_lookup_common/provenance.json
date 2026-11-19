@@ -186,8 +186,8 @@
       "sha256": "1a54745a759c41a57a2453f44296f6cc9793698f281e83afd9a9893bdbe7ae1d"
     },
     "docs/building.md": {
-      "bytes": 24957,
-      "sha256": "063da8fc621a2ed9ac86fc009190aca67cd0fece12c5a9eaf7ac4bfeb6b8e994"
+      "bytes": 25134,
+      "sha256": "0a34984650e2b97ca144d3360d4ccf3a633695bafd568b22f1a2df07b47d560c"
     },
     "docs/client/achievement-notice.md": {
       "bytes": 12218,
@@ -294,8 +294,8 @@
       "sha256": "94e3ac3ab92a1ff4d053374601483ff2ddc22fbadad351881496d889044e16bb"
     },
     "docs/client/startup.md": {
-      "bytes": 10163,
-      "sha256": "3c121e1f2efacc2b8865b2203a76e6a32fd3505142079fd762b11af9f75124b4"
+      "bytes": 10602,
+      "sha256": "9da62e1b46e5aeaef60345b5847e6a5bf611598e4d30c3c013af408b7d780dab"
     },
     "docs/client/statistics-file.md": {
       "bytes": 6761,
@@ -722,8 +722,8 @@
       "sha256": "5959cb79945deab1bac5b0a5b0443e86bd7be6b072ec9208c51d9ab99da395c5"
     },
     "docs/reference/resources.md": {
-      "bytes": 8362,
-      "sha256": "a657db62a41945432d6d2b379ad9e3b3e319455568a56fa504a525c61c4a4268"
+      "bytes": 8348,
+      "sha256": "1f1ad920003a96f202c0ae754fd45e9d0932213cc4068fdb015c6f32b4fecd19"
     },
     "docs/reference/saved-data-ids.md": {
       "bytes": 10075,
@@ -2906,8 +2906,8 @@
       "sha256": "d05f90dcfd53a7f60b1266c809e150e51ed9233b078e680b25f81e2539c493e1"
     },
     "src/client/main.c": {
-      "bytes": 3618,
-      "sha256": "9d6cc0b0b8b1faa0c7dd5718552c625e9cb3f58f6a4a440c5d285da377797ec6"
+      "bytes": 3745,
+      "sha256": "31e99ab530569c7276c304bb6f07c73b55479443cf10b55f40ded4be2218adab"
     },
     "src/client/particles/application.c": {
       "bytes": 3039,
@@ -3074,8 +3074,8 @@
       "sha256": "afea1fc77e43e745b354a231e4a6801406d69873fcca700bf50270a8b1c7814e"
     },
     "src/client/render_engine/internal.h": {
-      "bytes": 5298,
-      "sha256": "c6f3bab175d837bdff85d0d8a5bf4977d03950ed438d599aa1b55e28933669da"
+      "bytes": 5403,
+      "sha256": "df808827fcd11b6fcd7c923dd7204bb8fd1ea35b1a2072a8ec0c4de6e97502a7"
     },
     "src/client/render_engine/nw.c": {
       "bytes": 33103,
@@ -3122,8 +3122,8 @@
       "sha256": "92695aec96cd548a6847c19cac813160a7fd7cab3706a68c4abe913084ed5372"
     },
     "src/client/render_engine/texture_lookup.c": {
-      "bytes": 18700,
-      "sha256": "aab8ec769e9237250bd0fb9e7b25cc49ade1e362c25145670475b9922c8e44b1"
+      "bytes": 19392,
+      "sha256": "0dab7370d8ef27a47a429d7841bfcd10dd67e5d430363082d2b2bf7e27cb397c"
     },
     "src/client/render_engine/texture_lookup.h": {
       "bytes": 5528,
@@ -5482,8 +5482,8 @@
       "sha256": "e560037b8229a9b2f58a931e70c433a73cd5c2eb3738411f1439efcfd37fdabb"
     },
     "tests/client/render_engine/test_texture_lookup.c": {
-      "bytes": 18128,
-      "sha256": "2fb272ba29f07e0ea244d3a2d592dcdeba0936b45a50e0988076ee7570c52960"
+      "bytes": 19152,
+      "sha256": "2178773d55d4c30ce004e1970d5d0449524dd0020ef6dfadb0cf97502a4e7e39"
     },
     "tests/client/render_engine/test_textures.c": {
       "bytes": 24349,
@@ -6427,7 +6427,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938203,
-      "sha256": "9064d25f50094f5e788bf6116f247e39dd0397938e685e8f1c7df60ca74a11d8"
+      "sha256": "39a299de7601cf14441df51260183aa169d3097fdf2cf5064db93dbb7ec2e806"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6491,7 +6491,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1068463,
-      "sha256": "0922799e11d4913f80fd5ba3792d3530b0d46a014d993755dedc5e6cf8332db3"
+      "sha256": "909538f63546c673676a50f14d7c85153144a62d33f92176b0f2b88593484273"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6623,7 +6623,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 935028,
-      "sha256": "ba8ea8f3e4000d6ba6b90edb8fb57fe9ffa73847cd90359dd8794e29925e4c0d"
+      "sha256": "2d17e82c8f8d3456bccf266cdc326fa45965a1cdd6b21b629492f8f6192aaa2c"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9770,8 +9770,8 @@
       "sha256": "78321bb335d5f90fc5e419fa97ead8dd8ac486dc148be73f3abf4dab4ebf6253"
     },
     "cmake/client_runtime.cmake": {
-      "bytes": 4708,
-      "sha256": "22c287be24cd7af90c2e8caec5d4435abe9074e87bc24f0c6ef37fb872c7f656"
+      "bytes": 5093,
+      "sha256": "55e2b55ec153f33575df402b6389d619bde8f4de85cadf9a28fcd5457b44e18f"
     },
     "cmake/client_source_screen_drawing.cmake": {
       "bytes": 589,
@@ -9830,8 +9830,8 @@
       "sha256": "253914a08f69c1a13527e24bbe43c9faa40fba294aa4da8369469a6995291498"
     },
     "src/client/runtime/bootstrap.c": {
-      "bytes": 50373,
-      "sha256": "675c97bc8d692561f6608d5392ffac835136edc32ea3faa82b0f27b622007eba"
+      "bytes": 51170,
+      "sha256": "8afde593bf727a05e197c779e36ba769dbe4c46b011afd56d48a9130f4265eb2"
     },
     "src/client/runtime/bootstrap.h": {
       "bytes": 4398,

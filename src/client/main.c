@@ -85,8 +85,12 @@ int main(int argc, char **argv) {
             return 2;
         }
     }
-    if (options.assets == NULL || options.assets[0] == '\0' ||
-        (options.hidden && options.frame_limit == 0)) {
+    if (options.assets == NULL || options.assets[0] == '\0') {
+        fputs("Pass the imported asset folder containing jar/ to --assets.\n", stderr);
+        usage();
+        return 2;
+    }
+    if (options.hidden && options.frame_limit == 0) {
         usage();
         return 2;
     }

@@ -5,6 +5,7 @@
 #include "mc/client/render_engine/render_engine.h"
 #include "nw_internal.h"
 #include <stdatomic.h>
+#include <stdio.h>
 
 typedef struct mc_client_image_download_entry mc_client_image_download_entry;
 typedef struct mc_client_image_download_native mc_client_image_download_native;
@@ -103,6 +104,7 @@ struct mc_client_render_engine_classes {
     mc_client_graphics_cause ge_failure;
     mc_client_nw_namespace nw;
     mc_java_system_output *nw_system_output; /* Borrowed canonical runtime service. */
+    FILE *missing_texture_output;            /* Borrowed native diagnostic stream. */
     mc_client_graphics_limits limits;
     size_t active_source_calls, font_lease_count, command_range_count;
     size_t

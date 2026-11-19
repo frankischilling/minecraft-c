@@ -19,6 +19,13 @@ original JAR, Java nor the launcher. Build with `MC_BUILD_CLIENT=ON`, then run:
 ./build/minecraft-client --assets /absolute/path/to/imported-assets --username Player
 ```
 
+Pass the import root containing `jar/`, `resources/`, and `sdk/`. Normal startup
+reports which SDK icon it could not load. If neither the selected texture pack
+nor the imported resources supplies an ordinary texture, the client reports
+its `jar/` path when it caches the placeholder. For example, missing terrain
+appears as `jar/terrain.png`. Use a fresh import and restart after restoring a
+missing file so the client can load it again.
+
 Visual Studio builds place the executable under `build/Debug/`. The import root
 and native default [game directory](game-directory.md) are separate. Normal
 startup loads Settings from that game directory, saves options during sound

@@ -97,15 +97,14 @@ remain unverified.
 ## Local import and validation
 
 The importer requires Python 3.10 or later during development. It takes explicit
-local inputs and makes no network requests:
+local inputs and makes no network requests. For normal startup, include the
+LWJGL 2.9.0 JAR used to import both window icons.
 
 ```powershell
-python scripts/resources/import_assets.py --jar b1.7.3.jar --resources "$env:APPDATA/.minecraft/resources" --output .local/assets-b1.7.3
+python scripts/resources/import_assets.py --jar b1.7.3.jar --resources "$env:APPDATA/.minecraft/resources" --lwjgl-jar /path/to/lwjgl-2.9.0.jar --output .local/assets-b1.7.3
 ```
 
-The default source startup also needs the verified SDK window icons. For a
-fresh import, add `--lwjgl-jar /path/to/lwjgl-2.9.0.jar`. The importer verifies
-the selected SDK and emits private `sdk/lwjgl-icon-16.rgba` and
+The importer verifies the selected SDK and emits private `sdk/lwjgl-icon-16.rgba` and
 `sdk/lwjgl-icon-32.rgba` files. Runtime startup reads those RGBA files and
 requires no SDK JAR or Java execution. An older import without `sdk/` remains
 usable by the explicit diagnostic frontend; create a fresh import for normal

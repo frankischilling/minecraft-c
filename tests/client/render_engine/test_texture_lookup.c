@@ -133,6 +133,14 @@ static int close_fixture(fixture *f) {
 
 static int contracts(fixture *f) {
     mc_client_render_engine *o = f->engine;
+    FILE *diagnostics = NULL;
+#ifdef _WIN32
+    CHECK(tmpfile_s(&diagnostics) == 0 && diagnostics != NULL);
+#else
+    diagnostics = tmpfile();
+    CHECK(diagnostics != NULL);
+#endif
+    f->classes->missing_texture_output = diagnostics;
     const size_t first_ledger = f->classes->b->count;
     size_t d_count;
     CHECK(mc_client_render_map_count(o->fields.d, &d_count) && d_count == 0);
@@ -191,6 +199,19 @@ static int contracts(fixture *f) {
     CHECK(mc_client_render_engine_retire_lookup(o, f->error) == MC_CLIENT_LOOKUP_OK);
     CHECK(mc_client_render_engine_texture(o, f->display, NULL, text(missing, COUNT(missing)),
                                           &again, f->error) == MC_CLIENT_LOOKUP_OK);
+    const mc_client_texture missing_id = again;
+    CHECK(mc_client_render_engine_texture(o, f->display, NULL, text(missing, COUNT(missing)),
+                                          &again, f->error) == MC_CLIENT_LOOKUP_OK &&
+          again == missing_id);
+    f->classes->missing_texture_output = NULL;
+    CHECK(fseek(diagnostics, 0, SEEK_SET) == 0);
+    static const char notice[] = "Using a placeholder for missing texture jar/lookup-absent.png. "
+                                 "Check the folder passed to --assets.\n";
+    char output[sizeof(notice) + 1];
+    const size_t bytes = fread(output, 1, sizeof(output), diagnostics);
+    CHECK(bytes == sizeof(notice) - 1 && memcmp(output, notice, bytes) == 0 &&
+          !ferror(diagnostics));
+    CHECK(fclose(diagnostics) == 0);
 
     CHECK(mc_client_render_engine_texture(o, f->display, NULL, text(nonimage, COUNT(nonimage)),
                                           &again, f->error) == MC_CLIENT_LOOKUP_NULL_REFERENCE);

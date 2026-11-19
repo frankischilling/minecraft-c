@@ -3,6 +3,7 @@
 #include "../gui/source_screen_transitions.h"
 #include "../render/tile_entity_renderer/internal.h"
 #include "../render_engine/image_download.h"
+#include "../render_engine/internal.h"
 #include "../render_engine/nw.h"
 #include "../render_engine/textures.h"
 #include "../startup/application_construction.h"
@@ -219,7 +220,8 @@ open_constructor_services(mc_client_bootstrap *context,
     return MC_CLIENT_BOOTSTRAP_OK;
 }
 
-static mc_client_bootstrap_status open_startup_services(mc_client_bootstrap *context) {
+static mc_client_bootstrap_status open_startup_services(mc_client_bootstrap *context,
+                                                        const char *assets) {
     mc_client_startup_services *services = &context->services;
     mc_client_startup_error *error = &context->startup_error;
     OPEN_OWNER(mc_java_files_create(NULL, &services->files, &error->file), MC_JAVA_FILE_OK,
@@ -240,6 +242,16 @@ static mc_client_bootstrap_status open_startup_services(mc_client_bootstrap *con
         mc_client_sdk_icons_construct(services->icons, &error->icons);
     if (icons != MC_CLIENT_SDK_ICONS_OK) {
         startup_failure(error);
+        if (error->icons.open == MC_REGISTRY_NULL_REFERENCE)
+            fprintf(stderr,
+                    "Missing SDK icon %s/sdk/lwjgl-icon-%d.rgba. "
+                    "Import assets with --lwjgl-jar and pass the import root to --assets.\n",
+                    assets, error->icons.asset_edge);
+        else if (icons == MC_CLIENT_SDK_ICONS_WRONG_EXTENT)
+            fprintf(stderr,
+                    "Invalid SDK icon size for %s/sdk/lwjgl-icon-%d.rgba. "
+                    "Import assets again with --lwjgl-jar.\n",
+                    assets, error->icons.asset_edge);
         return owner_failure("imported SDK icon construction", (int)icons);
     }
     return MC_CLIENT_BOOTSTRAP_OK;
@@ -386,7 +398,9 @@ static mc_client_bootstrap_status open_profile(const mc_client_application_optio
     status = open_constructor_services(context, random);
     if (status != MC_CLIENT_BOOTSTRAP_OK)
         return status;
-    status = open_startup_services(context);
+    if (standalone)
+        context->graphics->missing_texture_output = stderr;
+    status = open_startup_services(context, options->assets);
     if (status != MC_CLIENT_BOOTSTRAP_OK)
         return status;
     if (standalone && !mc_client_source_frame_open(options->width, options->height, &context->frame,
