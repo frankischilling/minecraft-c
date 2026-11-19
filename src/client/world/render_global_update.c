@@ -71,6 +71,20 @@ static bool distance(mc_client_render_global_update_call *c, mc_client_source_dk
     return true;
 }
 
+static int compare_visibility(const mc_client_source_dk *a, const mc_client_source_dk *b) {
+    return (int)a->fields.o - (int)b->fields.o;
+}
+
+static int compare_distances(const mc_client_source_dk *a, const mc_client_source_dk *b, float left,
+                             float right) {
+    /* dcmpg/dcmpl make both NaN comparisons fall through to the ordinal. */
+    if (left < right)
+        return 1;
+    if (left > right)
+        return -1;
+    return a->fields.w < b->fields.w ? 1 : -1;
+}
+
 static bool compare(mc_client_render_global_update_call *c, mc_client_source_dk *a,
                     mc_client_source_dk *b, unsigned int pc, int *out) {
     if (a == NULL || b == NULL) {
@@ -78,24 +92,15 @@ static bool compare(mc_client_render_global_update_call *c, mc_client_source_dk 
         c->failure.child = (mc_client_graphics_site){"md", "a", "(Ldk;Ldk;)I", a == NULL ? 1 : 6};
         return false;
     }
-    if (a->fields.o && !b->fields.o) {
-        *out = 1;
-        return true;
-    }
-    if (b->fields.o && !a->fields.o) {
-        *out = -1;
+    const int visibility = compare_visibility(a, b);
+    if (visibility != 0) {
+        *out = visibility;
         return true;
     }
     float left, right;
     if (!distance(c, a, &left, pc, 38) || !distance(c, b, &right, pc, 49))
         return false;
-    /* dcmpg/dcmpl make both NaN comparisons fall through to the ordinal. */
-    if (left < right)
-        *out = 1;
-    else if (left > right)
-        *out = -1;
-    else
-        *out = a->fields.w < b->fields.w ? 1 : -1;
+    *out = compare_distances(a, b, left, right);
     return true;
 }
 
@@ -176,6 +181,7 @@ static bool body(mc_client_render_global_update_call *c) {
     if (m == NULL)
         return false;
     c->state.initial_count = (int32_t)m->count;
+    float far_distances[2] = {0};
     /* The first traversal changes entries without changing the List extent. */
     for (c->state.index = 0; c->state.index < c->state.initial_count; ++c->state.index) {
         mc_client_source_dk *dk = m->entries[c->state.index];
@@ -188,20 +194,25 @@ static bool body(mc_client_render_global_update_call *c) {
             if (d > 256.0f) { /* fcmpl makes NaN enter the near path. */
                 int slot = 0;
                 for (; slot < 2; ++slot) {
-                    if (c->state.far_chunks[slot] != NULL) {
-                        int cmp;
-                        if (!compare(c, c->state.far_chunks[slot], dk, 278, &cmp))
-                            return false;
-                        if (cmp > 0)
-                            break;
-                    }
+                    const mc_client_source_dk *retained = c->state.far_chunks[slot];
+                    if (retained == NULL)
+                        continue;
+                    /* Both distances were checked during this traversal, before compilation. */
+                    const int visibility = compare_visibility(retained, dk);
+                    if (visibility > 0 ||
+                        (visibility == 0 &&
+                         compare_distances(retained, dk, far_distances[slot], d) > 0))
+                        break;
                 }
                 --slot; /* Preserve the original unusual decrement/gate. */
                 if (slot > 0) {
                     int move = slot;
-                    while (--move != 0)
+                    while (--move != 0) {
                         c->state.far_chunks[move - 1] = c->state.far_chunks[move];
+                        far_distances[move - 1] = far_distances[move];
+                    }
                     c->state.far_chunks[slot] = dk;
+                    far_distances[slot] = d;
                 }
                 continue;
             }

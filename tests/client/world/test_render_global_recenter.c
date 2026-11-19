@@ -241,15 +241,49 @@ static bool rows(picking_fixture *f, const char *path) {
     return true;
 }
 
+static bool grid_stride_scope(void) {
+    enum { width = 2, height = 2, max_depth = 65, slots = width * height * max_depth };
+
+    static mc_client_source_dk sections[slots];
+    mc_client_source_dk *array[slots];
+    mc_client_render_global grid = {.active = true};
+    grid.fields.o = array;
+    grid.fields.p = width;
+    grid.fields.q = height;
+    for (int32_t z = 0; z < max_depth; ++z)
+        for (int32_t y = 0; y < height; ++y)
+            for (int32_t x = 0; x < width; ++x) {
+                const size_t index = (size_t)((z * height + y) * width + x);
+                array[index] = &sections[index];
+                sections[index].owner = &grid;
+                sections[index].fields.c = -16 * x;
+                sections[index].fields.d = 16 * y;
+                sections[index].fields.e = -16 * (z % 2);
+            }
+    mc_client_render_global_error error = {0};
+    for (int32_t depth = 64; depth <= max_depth; ++depth) {
+        grid.fields.r = depth;
+        grid.o_length = (size_t)depth * width * height;
+        for (size_t i = 0; i < slots; ++i)
+            sections[i].source_pc = 0;
+        CHECK(mc_render_global_recenter_entered(&grid, 8, 0, 8, &error) && grid.fields.B == -16 &&
+              grid.fields.C == 0 && grid.fields.D == -16 && grid.fields.E == 0 &&
+              grid.fields.F == 16 && grid.fields.G == 0);
+        for (size_t i = 0; i < grid.o_length; ++i)
+            CHECK(sections[i].source_pc == 24);
+    }
+    return true;
+}
+
 static bool distance_cache_scope(picking_fixture *f) {
     enum { copies = 16, length = copies * 4 };
 
     mc_client_render_global owner = {.active = true, .n_length = length};
     mc_client_source_dk actors[] = {
         {.fields = {.q = -2, .w = 0}},
-        {.fields = {.q = 2, .w = 256}},
-        {.fields = {.q = 11, .w = 512}},
-        {.fields = {.q = -11, .w = 768}},
+        {.fields = {.q = 2, .w = 1024}},
+        {.fields = {.q = 11, .w = 2048}},
+        {.fields = {.q = -11, .w = 3072}},
     };
     mc_client_source_dk *array[length];
     owner.fields.n = array;
@@ -429,7 +463,7 @@ int main(int argc, char **argv) {
         return 1;
     f->app->entities = f->base.entities;
     f->app->registry = f->base.registry;
-    if (!rows(f, argv[3]) || !distance_cache_scope(f) ||
+    if (!rows(f, argv[3]) || !grid_stride_scope() || !distance_cache_scope(f) ||
         (!cpu_only && (!picking_case_open(f, argv[2]) || !device(f) || !picking_case_close(f))) ||
         !picking_close(f))
         return 1;

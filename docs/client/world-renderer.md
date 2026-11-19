@@ -227,6 +227,44 @@ Framebuffer, section order and work hashes matched in every pair.
 The medians use the per-run percentiles. The alternating-height profile
 also exercises section recentering on this authored scene.
 
+### Camera movement and the dirty queue
+
+Camera sorting keeps 1,024 squared distances in its per-sort cache. The
+integer conversion uses hardware truncation for values inside the signed
+range and retains the existing conversion for saturation and NaN cases.
+Recentering reuses Z positions after the first column on grids up to 64
+slots deep and advances the flat array index by its row stride. It still
+visits each renderer in the original order.
+
+On the RTX 3060 fixture with 8,712 section slots, eight instrumented pairs
+measured a reduction from 257.8 to 225.1 µs for camera sorting and from
+72.6 to 63.4 µs for recentering. These are medians of per-run mean CPU
+spans on the alternating-height profile.
+
+Eight separate Windows Release pairs ran 1,024 frames per profile through
+GPU completion. Framebuffer, section order and work hashes matched in
+every pair. The horizontal profile alternated between X coordinates 0
+and −5 without moving the section slots.
+
+| Profile | Median frame, before → after | p95, before → after | p99, before → after |
+| --- | ---: | ---: | ---: |
+| Stationary, 8,712 slots | 0.536 → 0.528 ms | 0.654 → 0.654 ms | 1.000 → 0.947 ms |
+| Alternating height, 8,712 slots | 0.903 → 0.839 ms | 1.066 → 1.068 ms | 1.442 → 1.409 ms |
+| Alternating horizontal position, 8,712 slots | 1.354 → 1.234 ms | 1.777 → 1.523 ms | 2.149 → 1.956 ms |
+| Alternating height, 2,312 slots | 0.260 → 0.248 ms | 0.340 → 0.330 ms | 0.470 → 0.480 ms |
+
+A separate 160-frame cohort measured a higher p99 for the larger
+alternating-height profile, from 1.346 to 1.403 ms. The complete game
+frame includes simulation and other rendering outside these timings.
+
+Dirty-queue classification now carries each far candidate's previously
+checked distance until compilation begins. At 4,096 authored candidates,
+the native update took 40.19 µs at the median, down from 80.34 µs in ten
+paired Windows Release runs. The 128-candidate case went from 7.27 to
+5.99 µs, and the empty case took about 1.7 µs in both builds. Queue order,
+the chosen section and MXCSR matched. The fixture exercises classification
+and list compaction with clean sections, so these timings exclude mesh building.
+
 ### Display-list draw cost
 
 Two heavy Far cave traces at 854×480 on DISPLAY2 averaged about 360

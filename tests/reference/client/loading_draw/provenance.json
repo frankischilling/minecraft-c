@@ -6642,8 +6642,8 @@
       "sha256": "a4df300c367dbe801d39ec34fa718512e935e0104e3a00d2329322813c673f6e"
     },
     "src/client/world/render_global_update.c": {
-      "bytes": 16156,
-      "sha256": "c05c36288021a35442754165b22812787399c4abb14fb7d4f348fd776b8bb98d"
+      "bytes": 16843,
+      "sha256": "7babf187507db95220202ba14c0684f173a4ae34a9989d5cb88dae44d97b1b57"
     },
     "src/client/world/render_global_update_sort.c": {
       "bytes": 15962,
@@ -6798,8 +6798,8 @@
       "sha256": "991ffc39b12b39e738eb47ce1d844a7a8b0e8fde6e297fa832ee076009def014"
     },
     "src/client/world/render_global_jo.c": {
-      "bytes": 7322,
-      "sha256": "5e489dfc2b1811795085825d9d88f8229bb9882f5c9a5ae29b3c71e54e897e0e"
+      "bytes": 7709,
+      "sha256": "67b8443823f8599688db38c12a42265e0a1f57ee49baf1f5dc0f759029ff9129"
     },
     "src/client/world/render_global_jo.h": {
       "bytes": 1334,
@@ -6810,8 +6810,8 @@
       "sha256": "2e88dbcac65a4a9def8de1fab53f107c309892f8ec0bee3e7e8a34e705852f88"
     },
     "src/client/world/render_global_recenter.c": {
-      "bytes": 5303,
-      "sha256": "66caf674e240f23c816f68230b520cccb412be5a16a2c73825137ff247db2d6d"
+      "bytes": 5762,
+      "sha256": "a82eba2a6455097cdd57d3732bb56f334427b5f865d883f21ff090c6ef492f12"
     },
     "src/client/world/render_global_recenter.h": {
       "bytes": 854,
@@ -6846,8 +6846,8 @@
       "sha256": "777e9b53e15b2f34aeb3a4eca91b99525526dd3b9d54db46d947c6a40cd73dea"
     },
     "tests/client/world/test_render_global_recenter.c": {
-      "bytes": 20849,
-      "sha256": "2a295b36c2881a78496754ec055fb758159d32ecb25508d3f58f27b1b7054098"
+      "bytes": 22352,
+      "sha256": "d309a91aa6638b9743bc5765fff1d36d5b55d89dd7f9650525876ddcbd37c49e"
     },
     "tests/client/world/test_render_global_submit.c": {
       "bytes": 20574,

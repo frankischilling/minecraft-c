@@ -43,7 +43,15 @@ static double squared_distance(double x, double y, double z) {
 }
 
 static int32_t compare_distances(double left, double right) {
-    return mc_java_double_to_i32(at_mul(at_sub(left, right), 1024.0));
+    const double scaled = at_mul(at_sub(left, right), 1024.0);
+    const double limit = 0x1p31;
+    uint64_t bits, limit_bits;
+    memcpy(&bits, &scaled, sizeof(bits));
+    memcpy(&limit_bits, &limit, sizeof(limit_bits));
+    /* Only the in-range conversion can use the hardware truncation directly. */
+    if ((bits & UINT64_C(0x7fffffffffffffff)) < limit_bits)
+        return _mm_cvttsd_si32(_mm_set_sd(scaled));
+    return mc_java_double_to_i32(scaled);
 }
 
 bool mc_render_global_jo_compare(const mc_render_global_jo *j, const mc_client_source_dk *left,
@@ -70,7 +78,7 @@ bool mc_render_global_jo_compare(const mc_render_global_jo *j, const mc_client_s
     return true;
 }
 
-enum { distance_slots = 256 };
+enum { distance_slots = 1024 };
 
 typedef struct distance_entry {
     const mc_client_source_dk *section;

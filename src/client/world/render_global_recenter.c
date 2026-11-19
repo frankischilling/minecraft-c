@@ -69,6 +69,13 @@ bool mc_render_global_recenter_entered(mc_client_render_global *n, int32_t x, in
     n->fields.G = INT32_MIN;
     const int32_t width = mc_java_i32_mul(n->fields.p, 16);
     const int32_t half = width / 2;
+    const uint32_t row_stride = (uint32_t)n->fields.p;
+    const uint32_t column_stride = row_stride * (uint32_t)n->fields.q;
+
+    enum { cached_z_limit = 64 };
+
+    int32_t z_positions[cached_z_limit];
+    const bool cache_z = n->fields.r <= cached_z_limit;
     for (int32_t ix = 0; ix < n->fields.p; ++ix) {
         int32_t px;
         if (!axis_position(ix, camera_x, width, half, &px, 106, e))
@@ -79,13 +86,21 @@ bool mc_render_global_recenter_entered(mc_client_render_global *n, int32_t x, in
             n->fields.E = px;
         for (int32_t iz = 0; iz < n->fields.r; ++iz) {
             int32_t pz;
-            if (!axis_position(iz, camera_z, width, half, &pz, 195, e))
-                return false;
+            /* Keep the first column's traversal order, including any early failure. */
+            if (cache_z && ix != 0) {
+                pz = z_positions[iz];
+            } else {
+                if (!axis_position(iz, camera_z, width, half, &pz, 195, e))
+                    return false;
+                if (cache_z)
+                    z_positions[iz] = pz;
+            }
             if (pz < n->fields.D)
                 n->fields.D = pz;
             if (pz > n->fields.G)
                 n->fields.G = pz;
-            for (int32_t iy = 0; iy < n->fields.q; ++iy) {
+            uint32_t index = column_stride * (uint32_t)iz + (uint32_t)ix;
+            for (int32_t iy = 0; iy < n->fields.q; ++iy, index += row_stride) {
                 const uint32_t vertical = (uint32_t)iy * 16u;
                 const int32_t py =
                     vertical <= INT32_MAX ? (int32_t)vertical : mc_java_i32_narrow(vertical);
@@ -93,9 +108,6 @@ bool mc_render_global_recenter_entered(mc_client_render_global *n, int32_t x, in
                     n->fields.C = py;
                 if (py > n->fields.F)
                     n->fields.F = py;
-                const uint32_t index =
-                    ((uint32_t)iz * (uint32_t)n->fields.q + (uint32_t)iy) * (uint32_t)n->fields.p +
-                    (uint32_t)ix;
                 mc_client_source_dk *d = NULL;
                 if (!chunk(n, index, &d, e))
                     return false;
