@@ -766,8 +766,8 @@
       "sha256": "7b02fadfaf8310e34b2649de9dc5a7c9b79b2773185f035ff5681d9077a8e5e1"
     },
     "src/client/display/source_surface.inc": {
-      "bytes": 65353,
-      "sha256": "d124380d55f1f1e5892736de200683776e9b9aad11112fdbf1c07c9e38f0256a"
+      "bytes": 65622,
+      "sha256": "319a326f019a72d645c7f066132832c9f984a9377b9d742d30107752a6971f6e"
     },
     "src/client/display/source_vertex_cache.inc": {
       "bytes": 16307,
@@ -1002,8 +1002,8 @@
       "sha256": "c6f3bab175d837bdff85d0d8a5bf4977d03950ed438d599aa1b55e28933669da"
     },
     "src/client/render_engine/nw.c": {
-      "bytes": 32128,
-      "sha256": "14900a4d80920a742cbc978f494fa77fb1b7745000cbd049c3b4ab12d66ad591"
+      "bytes": 32190,
+      "sha256": "96117d7b29abb87a1012c4b5ad5f59461a6645dcf06f15574e4cd9845bb790d5"
     },
     "src/client/render_engine/nw.h": {
       "bytes": 6588,
@@ -2574,8 +2574,8 @@
       "sha256": "69d76d736a61b230563bc49763252114699cc20fe2f89e7835cc1656d11c69b4"
     },
     "tests/client/display/test_source_lists.c": {
-      "bytes": 68597,
-      "sha256": "e3527e192b00d4cf8be4595d3eb8ab37ba0404e790dd968febde1b3b0880731c"
+      "bytes": 72891,
+      "sha256": "3545ab256ab95a4601381706611a469f922cc63d1032efb20c44e4c6da13a42a"
     },
     "tests/client/render_engine/test_image_buffer.c": {
       "bytes": 17961,

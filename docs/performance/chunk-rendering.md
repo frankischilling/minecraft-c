@@ -148,6 +148,42 @@ three matched early rounds, that trial measured 76.05 median FPS against
 One settled baseline interval in the intermediate cloud trial lost
 foreground focus. Its receipt was kept and the cohort did not qualify.
 
+## Tessellator error initialization
+
+Two settled Far traces at `3339393c` recorded 6,205 render-thread positions
+in frames without a World tick. Scene-held UV submission accounted for 544
+positions and its vertex writer for 249. Sampling adds overhead. The timing
+comparisons use separate uninstrumented executables.
+
+Tessellator admission clears the caller's graphics error in place. MSVC
+previously zeroed a 1,272-byte temporary and copied it to the caller. The
+scene vertex entry's stack reservation fell from 1,408 to 128 bytes.
+The receiver checks, vertex writer and automatic flush path use the
+same error fields and control flow.
+
+Six alternating Windows MSVC Release pairs called the same scene vertex
+entry in both builds. Median time fell from 40.88 to 22.94 ns per input
+triangle vertex and from 41.58 to 24.05 ns per input quad vertex. The full
+vertex allocations, buffer positions, diagnostics and MXCSR matched.
+
+Three uninstrumented early Far pairs compared the change and
+[native replay fix](../client/renderer-frames.md#native-replay-after-context-reentry)
+with `3339393c`. The stationary authored scene ran at 854×480 on an
+i9-10900F with an RTX 3060. All six intervals advanced 200 World ticks
+and kept compiling sections after the two-second warmup. Median FPS
+rose from 74.26 to 75.81. Overall p99 fell from 16.23 to 15.90 ms, while
+p99 for frames containing a World tick rose from 16.35 to 16.62 ms.
+
+Four pairs after a 25-second warmup also ran 200 World ticks per
+interval and reported zero Chunk updates. Median FPS rose from 435.15
+to 480.93. Median p95 fell from 3.96 to 3.37 ms and p99 from 6.85 to
+6.72 ms. For frames without a World tick, median p99 went from 3.60
+to 3.30 ms.
+
+A separate packed matrix-translation trial matched 1,087,776 finite
+cases. It selected a different NaN payload when two distinct payloads
+reached the same addition, so the trial was rejected.
+
 ## Cached lighting and Tessellator counters
 
 Two Windows Far traces after a two-second warmup recorded 7,005 render-thread

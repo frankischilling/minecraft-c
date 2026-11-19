@@ -22,7 +22,8 @@ static bool draw(mc_client_tessellator *, mc_client_display *, mc_client_graphic
 #endif
 
 static MC_NW_INLINE bool admit(mc_client_tessellator *o, mc_client_graphics_error *e) {
-    *e = (mc_client_graphics_error){0};
+    /* Clear the native error record in place on the hot entry path. */
+    memset(e, 0, sizeof(*e));
     if (o == NULL || o->classes == NULL || o->classes->nw.published != o ||
         o->classes->nw.phase != MC_CLIENT_RENDER_ENGINE_READY) {
         mc_client_graphics_fail(

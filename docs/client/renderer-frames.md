@@ -266,6 +266,25 @@ method entry. With Arrow publication fixed and the larger vertex cache, a
 separate 75-second attempt completed 946 ticks before the Player action failed.
 Reloading its save reproduced that failure in the nearby pickup dispatch.
 
+### Native replay after context reentry
+
+When another renderer acquires the context from a native callback during
+display-list replay, the next draw restores the source program, buffers,
+matrix and fragment uniforms, and provoking mode. Replay refreshes those
+bindings on each remaining draw after reentry. The active texture-unit
+and texture-binding checks still run before drawing.
+
+The device regression forwards the first GL draw, reenters the context
+and installs real replacement objects and uniforms. It checks the
+second draw's bindings, uploads and framebuffer output on both the
+streamed and warm vertex-cache paths. The texture-unit refusal case
+also runs through the same callback.
+
+Nine focused tests passed on Windows MSVC Release. Eight passed in
+WSL Clang Debug with ASan, UBSan and llvmpipe. Terrain submission
+matched all 35 rows on Windows and 30 rows on WSL. The WSL software
+context had no support for the five `occlusion16` rows.
+
 ### GPU vertex cache during movement
 
 The vertex cache holds converted draws from committed display lists. It

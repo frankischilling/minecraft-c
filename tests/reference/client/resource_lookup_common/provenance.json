@@ -2734,8 +2734,8 @@
       "sha256": "7b02fadfaf8310e34b2649de9dc5a7c9b79b2773185f035ff5681d9077a8e5e1"
     },
     "src/client/display/source_surface.inc": {
-      "bytes": 65353,
-      "sha256": "d124380d55f1f1e5892736de200683776e9b9aad11112fdbf1c07c9e38f0256a"
+      "bytes": 65622,
+      "sha256": "319a326f019a72d645c7f066132832c9f984a9377b9d742d30107752a6971f6e"
     },
     "src/client/display/source_vertex_cache.inc": {
       "bytes": 16307,
@@ -3078,8 +3078,8 @@
       "sha256": "c6f3bab175d837bdff85d0d8a5bf4977d03950ed438d599aa1b55e28933669da"
     },
     "src/client/render_engine/nw.c": {
-      "bytes": 32128,
-      "sha256": "14900a4d80920a742cbc978f494fa77fb1b7745000cbd049c3b4ab12d66ad591"
+      "bytes": 32190,
+      "sha256": "96117d7b29abb87a1012c4b5ad5f59461a6645dcf06f15574e4cd9845bb790d5"
     },
     "src/client/render_engine/nw.h": {
       "bytes": 6588,
@@ -6427,7 +6427,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938203,
-      "sha256": "b5281ce69efbb7fe0eb4c05048a8ed6b4ea53e0eb3639c18cc357f451db1b9ae"
+      "sha256": "2a6ab1161b4614e9826ef12a2bffbaec0833a32ec1407b2d52bd458976459ce8"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6491,7 +6491,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1068462,
-      "sha256": "44857616db8b2803e86cbfa30dd5ed5d9ee15e5a6cd8c6cdb2098a980642979a"
+      "sha256": "3feb1990372779b75bcb103addff218d8e804854c9928bdc4dfe9e44f5057e70"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6623,7 +6623,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 935028,
-      "sha256": "ac496bedf5b8dece2b9db513e943afb80c8014377063fdb51e89986318c44ded"
+      "sha256": "b2270e67386a1d1480736050b8344a499705b6277f862cec1ec430146db3e80d"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -10234,8 +10234,8 @@
       "sha256": "619946b5733bc9ba5dc95f880e115a07e05d6592fc4840e1501fc1458bec5396"
     },
     "tests/client/display/test_source_lists.c": {
-      "bytes": 68597,
-      "sha256": "e3527e192b00d4cf8be4595d3eb8ab37ba0404e790dd968febde1b3b0880731c"
+      "bytes": 72891,
+      "sha256": "3545ab256ab95a4601381706611a469f922cc63d1032efb20c44e4c6da13a42a"
     },
     "tests/client/render_engine/test_image_buffer.c": {
       "bytes": 17961,
@@ -10830,8 +10830,8 @@
       "sha256": "38cfd702201a4e06c474e9faaefca525a81ef54de8fd1ec67f507a3f3cce1eac"
     },
     "docs/client/renderer-frames.md": {
-      "bytes": 25988,
-      "sha256": "b05e4477cdce9b689482035656a0378c11dde1b1f6e06d7144e80b49fb44f4a4"
+      "bytes": 26941,
+      "sha256": "18237df441bbdf691ff1087c49fe879f52bc41b3024d0564b0d22b4124874f01"
     },
     "docs/world/ticking.md": {
       "bytes": 6826,
@@ -21134,8 +21134,8 @@
       "sha256": "c139f7e3ef971d333fd08805edbdc162a294ac1a17652febd922ee691baf76a3"
     },
     "docs/performance/chunk-rendering.md": {
-      "bytes": 43304,
-      "sha256": "aa12dd275d53fed01938b0bb4644b074f2ac008267858dc1313cc6e121acd9a3"
+      "bytes": 45206,
+      "sha256": "d7246fa2533e4b754dacc728c69594c804eb42890f4a1b7986f7b6c88252cc92"
     },
     "tests/benchmarks/chunk_cache_render_windows.json": {
       "bytes": 2023922,

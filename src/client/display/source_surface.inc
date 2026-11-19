@@ -652,6 +652,10 @@ static bool source_execute_batch(mc_client_display *display, mc_client_source_dr
         source_material_publish(s, &candidate);
     bool ok = source_gpu_create(display, error);
     if (ok) {
+        /* A renderer that reentered this context could replace native bindings
+         * and uniforms. Reestablish our state for each remaining replay draw. */
+        if (replay != NULL && s->native_current_reentered)
+            *replay = (source_replay_state){0};
         if (replay == NULL || !replay->drew)
             display->gl.UseProgram(s->program);
         if (entry != NULL) {

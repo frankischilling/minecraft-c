@@ -35,7 +35,8 @@ static mc_client_gl replay_native;
 static mc_client_display *replay_display;
 static unsigned replay_calls[REPLAY_COUNTERS];
 static GLuint replay_names[3][4];
-static bool replay_change_unit, replay_reentered;
+static bool replay_change_unit, replay_change_bindings, replay_reentered;
+static GLuint replay_foreign_vao, replay_foreign_vbo;
 
 static void replay_name(unsigned int kind, GLuint name) {
     if (replay_calls[kind] < 4)
@@ -61,11 +62,28 @@ static void GLAPIENTRY replay_buffer(GLenum target, GLuint buffer) {
 
 static void GLAPIENTRY replay_draw(GLenum mode, GLint first, GLsizei count) {
     replay_native.DrawArrays(mode, first, count);
-    if (++replay_calls[REPLAY_DRAW] == 1 && replay_change_unit) {
+    if (++replay_calls[REPLAY_DRAW] == 1 && (replay_change_unit || replay_change_bindings)) {
         mc_client_display_error error;
         replay_reentered = mc_client_display_make_current(replay_display, &error);
-        if (replay_reentered)
-            replay_native.ActiveTexture(GL_TEXTURE1);
+        if (replay_reentered) {
+            if (replay_change_unit)
+                replay_native.ActiveTexture(GL_TEXTURE1);
+            if (replay_change_bindings) {
+                const mc_client_source_state *s = &replay_display->source;
+                const GLfloat zero[16] = {0};
+                replay_native.Uniform1i(s->textured_uniform, 1);
+                replay_native.Uniform1i(s->alpha_uniform, 1);
+                replay_native.Uniform1i(s->fog_enabled_uniform, 1);
+                replay_native.Uniform1i(s->lighting_uniform, 1);
+                replay_native.Uniform1i(s->flat_uniform, 1);
+                replay_native.UniformMatrix4fv(s->projection_uniform, 1, GL_FALSE, zero);
+                replay_native.UniformMatrix4fv(s->modelview_uniform, 1, GL_FALSE, zero);
+                replay_native.ProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
+                replay_native.UseProgram(replay_display->program);
+                replay_native.BindVertexArray(replay_foreign_vao);
+                replay_native.BindBuffer(GL_ARRAY_BUFFER, replay_foreign_vbo);
+            }
+        }
     }
 }
 
@@ -430,6 +448,15 @@ static bool replay_native_controls(mc_client_display *display,
     const GLuint cached_vao = entry->vao, cached_vbo = entry->vbo;
     replay_native = display->gl;
     replay_display = display;
+    replay_native.GenVertexArrays(1, &replay_foreign_vao);
+    replay_native.GenBuffers(1, &replay_foreign_vbo);
+    replay_native.BindVertexArray(replay_foreign_vao);
+    replay_native.BindBuffer(GL_ARRAY_BUFFER, replay_foreign_vbo);
+    replay_native.BufferData(GL_ARRAY_BUFFER,
+                             (GLsizeiptr)(CACHE_VERTICES * sizeof(mc_client_source_gpu_vertex)),
+                             NULL, GL_STREAM_DRAW);
+    CHECK(replay_foreign_vao != 0 && replay_foreign_vbo != 0 &&
+          replay_native.GetError() == GL_NO_ERROR);
     display->gl.UseProgram = replay_program;
     display->gl.BindVertexArray = replay_vao;
     display->gl.BindBuffer = replay_buffer;
@@ -490,6 +517,42 @@ static bool replay_native_controls(mc_client_display *display,
               color_pixels(&capture, 0) && color_pixels(&capture, 1) && !color_pixels(&capture, 2));
         mc_client_capture_free(&capture);
     }
+    /* make_current is an admitted reentry point during a source draw. As in
+     * the between-call controls above, native callers can replace bindings
+     * and uniforms after reaching it. The following draw must rebuild every
+     * replay receipt from the retained source state. */
+    const int32_t cached_pair[] = {cached_id, cached_id};
+    for (unsigned int cache = 0; cache < 2; ++cache) {
+        CHECK(mc_client_display_loading_clear_color_depth(display, error));
+        memset(replay_calls, 0, sizeof(replay_calls));
+        memset(replay_names, 0, sizeof(replay_names));
+        replay_change_bindings = true;
+        replay_reentered = false;
+        const bool replayed =
+            mc_client_display_lists_call(display, cache ? cached_pair : pair, 2, error);
+        replay_change_bindings = false;
+        CHECK(replayed && replay_reentered && replay_calls[REPLAY_DRAW] == 2 &&
+              replay_calls[REPLAY_PROGRAM] == 2 && replay_calls[REPLAY_VAO] == 2 &&
+              replay_calls[REPLAY_BUFFER] == 2 && replay_calls[REPLAY_PROJECTION] == 2 &&
+              replay_calls[REPLAY_MODELVIEW] == 2 && replay_calls[REPLAY_PROVOKING] == 2 &&
+              replay_calls[REPLAY_ACTIVE_UNIT] == 2);
+        for (unsigned int kind = REPLAY_TEXTURED; kind < REPLAY_COUNTERS; ++kind)
+            CHECK(replay_calls[kind] == 2);
+        const GLuint expected_vao = cache ? cached_vao : display->source.vao;
+        const GLuint expected_vbo = cache ? cached_vbo : display->source.vbo;
+        GLint program = 0, vao = 0, buffer = 0, provoking = 0;
+        replay_native.GetIntegerv(GL_CURRENT_PROGRAM, &program);
+        replay_native.GetIntegerv(GL_VERTEX_ARRAY_BINDING, &vao);
+        replay_native.GetIntegerv(GL_ARRAY_BUFFER_BINDING, &buffer);
+        replay_native.GetIntegerv(GL_PROVOKING_VERTEX, &provoking);
+        CHECK((GLuint)program == display->source.program && (GLuint)vao == expected_vao &&
+              (GLuint)buffer == expected_vbo && provoking == GL_LAST_VERTEX_CONVENTION &&
+              replay_native.GetError() == GL_NO_ERROR);
+        CHECK(mc_client_display_capture_rgba(display, &capture, error));
+        CHECK(cache ? color_pixels(&capture, 2)
+                    : color_pixels(&capture, 0) && color_pixels(&capture, 1));
+        mc_client_capture_free(&capture);
+    }
     const int32_t changed[] = {base, transform_id, base + 1, pop_id, base};
     const int32_t modes[] = {GL_MODELVIEW, GL_PROJECTION};
     for (size_t i = 0; i < sizeof(modes) / sizeof(*modes); ++i) {
@@ -530,9 +593,18 @@ static bool replay_native_controls(mc_client_display *display,
     CHECK(entry->data == NULL && entry->vao == cached_vao && entry->vbo == cached_vbo);
     result = true;
 cleanup:
+    replay_change_bindings = false;
     if (observing) {
         display->gl = replay_native;
         replay_display = NULL;
+    }
+    if (replay_foreign_vbo != 0) {
+        replay_native.DeleteBuffers(1, &replay_foreign_vbo);
+        replay_foreign_vbo = 0;
+    }
+    if (replay_foreign_vao != 0) {
+        replay_native.DeleteVertexArrays(1, &replay_foreign_vao);
+        replay_foreign_vao = 0;
     }
     mc_client_capture_free(&capture);
     if (!mc_client_display_lists_retire(&other, error))
