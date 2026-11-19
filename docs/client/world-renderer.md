@@ -132,6 +132,13 @@ Release pairs with 512 authored blocks measured 1.106 to 1.010 ms for flat
 shading and 2.167 to 2.047 ms with ambient occlusion. Display list counts
 and vertex bytes matched in both modes.
 
+Quad conversion checks the span for both duplicate vertices before
+copying their position and enabled texture or color words. The checked
+path still preserves the partial writes of a failed copy. Eight
+alternating Windows Release pairs with 512 authored blocks measured
+0.997 to 0.944 ms for flat shading and 2.088 to 1.987 ms with ambient
+occlusion. Display list counts and vertex bytes matched.
+
 Separate instrumented Far runs matched 411 mesh groups by section position
 and counts of cell reads, rendered Blocks, minimum-light queries, opacity
 queries, and ambient occlusion flags. Each group had at least two samples per

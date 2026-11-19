@@ -171,6 +171,45 @@ static void vertex_span(void) {
     CHECK(mc_client_render_engine_classes_release(classes) == MC_CLIENT_RENDER_ENGINE_OK);
 }
 
+static void duplicate_prefix(void) {
+    mc_client_render_engine_classes *classes = NULL;
+    mc_client_tessellator *owner = NULL;
+    mc_client_graphics_error error;
+    CHECK(mc_client_render_engine_classes_create(NULL, &classes) == MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_nw_active_use(classes, caller, &owner, &error));
+    CHECK(mc_client_nw_begin_quads(owner, &error));
+    CHECK(mc_client_nw_color(owner, 17, 34, 51, 68, &error));
+    CHECK(mc_client_nw_normal(owner, 1, 0, 0, &error));
+    const mc_client_nw_fields initial = owner->fields;
+    int32_t words[64], expected[64];
+
+    for (int32_t capacity = 37; capacity <= 40; capacity += 3) {
+        for (size_t i = 0; i < sizeof(words) / sizeof(*words); ++i)
+            words[i] = expected[i] = 100 + (int32_t)i;
+        owner->fields = initial;
+        owner->fields.g = words;
+        owner->fields.B = capacity;
+        owner->fields.o = 24;
+        owner->fields.h = owner->fields.p = 3;
+        memcpy(expected + 24, expected, 6 * sizeof(*expected));
+        CHECK(!mc_client_nw_vertex_uv(owner, 1, -2, 3, 0.5, 0.25, &error));
+        CHECK(error.status == MC_CLIENT_GRAPHICS_ARRAY_INDEX && error.parent.pc == 13 &&
+              owner->fields.p == 4 && owner->last_store_pc == 234);
+        if (capacity == 37) {
+            memcpy(expected + 35, expected + 19, 2 * sizeof(*expected));
+            CHECK(error.actual_index == 37 && error.site.pc == 140 && owner->fields.h == 4 &&
+                  owner->fields.o == 32);
+        } else {
+            memcpy(expected + 32, expected + 16, 6 * sizeof(*expected));
+            CHECK(error.actual_index == 43 && error.site.pc == 268 && owner->fields.h == 5 &&
+                  owner->fields.o == 40);
+        }
+        CHECK(memcmp(words, expected, sizeof(words)) == 0);
+    }
+    owner->fields = initial;
+    CHECK(mc_client_render_engine_classes_release(classes) == MC_CLIENT_RENDER_ENGINE_OK);
+}
+
 int main(void) {
     mc_client_render_engine_classes *classes = NULL;
     mc_client_tessellator *owner = NULL;
@@ -236,6 +275,7 @@ int main(void) {
     CHECK(mc_client_render_engine_classes_release(classes) == MC_CLIENT_RENDER_ENGINE_OK);
     fp_prefix();
     vertex_span();
+    duplicate_prefix();
     printf("Source NW normals: %u checks\n", checks);
     return 0;
 }

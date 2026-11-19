@@ -318,8 +318,8 @@
       "sha256": "88cf0c24f07c5212dfada475c1647a070ae82953e83b324de188e6a2080fe7b7"
     },
     "docs/client/world-renderer.md": {
-      "bytes": 20650,
-      "sha256": "f67e1e3cdee9c6cf9e34bc7a2ddc174f979a0b8766b1c2542b441f91131db25d"
+      "bytes": 21048,
+      "sha256": "bf0750cdbd0b3e8713ae708089dc094ee787d06433419bd812b3159ea462e7db"
     },
     "docs/core/java-float-format.md": {
       "bytes": 4461,
@@ -3078,8 +3078,8 @@
       "sha256": "c6f3bab175d837bdff85d0d8a5bf4977d03950ed438d599aa1b55e28933669da"
     },
     "src/client/render_engine/nw.c": {
-      "bytes": 28305,
-      "sha256": "2266c11b164f66cdc11ab378f2fe0cee8b7c84291e09c91931b5e852d3fe62f8"
+      "bytes": 29288,
+      "sha256": "6597965a4f3171f5eef7071658ab5361149ba72faa1d0523d6df4ee2841c30a0"
     },
     "src/client/render_engine/nw.h": {
       "bytes": 6588,
@@ -6423,7 +6423,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938031,
-      "sha256": "daa4395db0abd68dcdf0f4140de661c99165902af8fb31f3d7fb956347de390e"
+      "sha256": "d96f72deafc45ae8ba9c495e811b2327c0a3d4ad0f3fa24857a76743c0100f4e"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6487,7 +6487,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1068134,
-      "sha256": "e1866471d7c8e2856a12619fe1c67e33c0782d559e1fe140d5985d2b8806fab8"
+      "sha256": "6726c9030767cfa71709c6e28679dc98041f3bcd46a3a49fe4a9ddab7d646d6d"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6619,7 +6619,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934856,
-      "sha256": "4163e1b0852577c768aedc00a26d2854955dcb6490580db8d4aff21c12137ed1"
+      "sha256": "134ea0ed1952f727481b5ecb20dd3de5886f36648ef732dd39dfdde4df38eab5"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -12250,8 +12250,8 @@
       "sha256": "03fae9d45bc2d949cc3cfd922ac3c5e77c50f7c870ee7e0cd8f2f570a8b03c2c"
     },
     "tests/client/render_engine/test_nw_normals.c": {
-      "bytes": 12586,
-      "sha256": "2bcc764a21c2f70be9ad32624f2b169e0f00f2c4f8bb6d5d52bb5db3e887a810"
+      "bytes": 14534,
+      "sha256": "b3f247ac25980f70a86c845496029a781951e70889e74885e4f74e028b2277a8"
     },
     "tests/reference/client/lighting_raster/ConvertedRasterObservation.java": {
       "bytes": 4790,

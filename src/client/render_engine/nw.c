@@ -439,30 +439,58 @@ static bool write_vertex(mc_client_tessellator *o, double x, double y, double z,
     return true;
 }
 
+static bool duplicate_quad_checked(mc_client_tessellator *o, mc_client_graphics_error *e) {
+    mc_client_nw_fields *f = &o->fields;
+    for (int32_t i = 0; i < 2; ++i) {
+        const int32_t from = mc_java_i32_sub(f->o, 24 - i * 8);
+        if (f->m && (!copy(o, mc_java_i32_add(f->o, 3), mc_java_i32_add(from, 3), 82, 83, e) ||
+                     !copy(o, mc_java_i32_add(f->o, 4), mc_java_i32_add(from, 4), 107, 108, e)))
+            return false;
+        if (f->l && !copy(o, mc_java_i32_add(f->o, 5), mc_java_i32_add(from, 5), 139, 140, e))
+            return false;
+        if (!copy(o, f->o, from, 164, 165, e) ||
+            !copy(o, mc_java_i32_add(f->o, 1), mc_java_i32_add(from, 1), 189, 190, e) ||
+            !copy(o, mc_java_i32_add(f->o, 2), mc_java_i32_add(from, 2), 214, 215, e))
+            return false;
+        f->h = mc_java_i32_add(f->h, 1);
+        o->last_store_pc = 223;
+        f->o = mc_java_i32_add(f->o, 8);
+        o->last_store_pc = 234;
+    }
+    return true;
+}
+
+static void copy_vertex_words(int32_t *target, const int32_t *source,
+                              const mc_client_nw_fields *f) {
+    if (f->m)
+        memcpy(target + 3, source + 3, 2 * sizeof(*target));
+    if (f->l)
+        target[5] = source[5];
+    memcpy(target, source, 3 * sizeof(*target));
+}
+
+static bool duplicate_quad(mc_client_tessellator *o, mc_client_graphics_error *e) {
+    mc_client_nw_fields *f = &o->fields;
+    /* Both duplicates fit. The checked path retains each write and cursor
+     * update that completed before a failed element access. */
+    if (f->g == NULL || f->o < 24 || f->B < 16 || f->o > f->B - 16)
+        return duplicate_quad_checked(o, e);
+    int32_t *target = (int32_t *)(void *)f->g + f->o;
+    copy_vertex_words(target, target - 24, f);
+    copy_vertex_words(target + 8, target - 8, f);
+    f->h = mc_java_i32_add(f->h, 2);
+    f->o += 16;
+    o->last_store_pc = 234;
+    return true;
+}
+
 static bool vertex(mc_client_tessellator *o, double x, double y, double z,
                    mc_client_graphics_error *e) {
     mc_client_nw_fields *f = &o->fields;
     f->p = mc_java_i32_add(f->p, 1);
     o->last_store_pc = 7;
-    if (f->r == 7 && o->classes->nw.b && f->p % 4 == 0) {
-        for (int32_t i = 0; i < 2; ++i) {
-            const int32_t distance = mc_java_i32_mul(8, mc_java_i32_sub(3, i));
-            const int32_t from = mc_java_i32_sub(f->o, distance);
-            if (f->m && (!copy(o, mc_java_i32_add(f->o, 3), mc_java_i32_add(from, 3), 82, 83, e) ||
-                         !copy(o, mc_java_i32_add(f->o, 4), mc_java_i32_add(from, 4), 107, 108, e)))
-                return false;
-            if (f->l && !copy(o, mc_java_i32_add(f->o, 5), mc_java_i32_add(from, 5), 139, 140, e))
-                return false;
-            if (!copy(o, f->o, from, 164, 165, e) ||
-                !copy(o, mc_java_i32_add(f->o, 1), mc_java_i32_add(from, 1), 189, 190, e) ||
-                !copy(o, mc_java_i32_add(f->o, 2), mc_java_i32_add(from, 2), 214, 215, e))
-                return false;
-            f->h = mc_java_i32_add(f->h, 1);
-            o->last_store_pc = 223;
-            f->o = mc_java_i32_add(f->o, 8);
-            o->last_store_pc = 234;
-        }
-    }
+    if (f->r == 7 && o->classes->nw.b && f->p % 4 == 0 && !duplicate_quad(o, e))
+        return false;
     if (!write_vertex(o, x, y, z, e))
         return false;
     f->o = mc_java_i32_add(f->o, 8);
