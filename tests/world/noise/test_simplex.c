@@ -388,6 +388,39 @@ static int test_observed_grids(void) {
     return 0;
 }
 
+static int test_single_point_matches_grid(void) {
+    static const mc_noise_simplex_grid points[] = {
+        {-89.75, 125.0, 1, 1, 0.025, 0.05},
+        {-0.0, 0.0, 1, 1, -0.0, -0.25},
+        {0x1.0p31, -0x1.0p31, 1, 1, 1.5, 1.5},
+        {INFINITY, -0.0, 1, 1, 0.0, 1.5},
+    };
+    mc_java_random random;
+    mc_java_random_seed(&random, 173);
+    mc_noise_simplex layers[4];
+    mc_noise_simplex_octaves noise;
+    CHECK(mc_noise_simplex_octaves_init(&noise, layers, 4, &random));
+    for (size_t i = 0; i < sizeof(points) / sizeof(points[0]); ++i) {
+        mc_noise_simplex_grid grid = points[i];
+        grid.size_z = 2;
+        double point[5];
+        double reference[2];
+        prefill(point, 5);
+        CHECK(mc_noise_simplex_octaves_fill(&noise, &points[i], -0.4, -0.5, point, 5));
+        CHECK(mc_noise_simplex_octaves_fill(&noise, &grid, -0.4, -0.5, reference, 2));
+        CHECK(isnan(reference[0]) ? isnan(point[0]) : bits_of(point[0]) == bits_of(reference[0]));
+        for (size_t j = 1; j < 5; ++j)
+            CHECK(bits_of(point[j]) == 0);
+    }
+    const mc_noise_simplex_octaves empty = {0};
+    double output[5];
+    prefill(output, 5);
+    CHECK(mc_noise_simplex_octaves_fill(&empty, &points[0], 0.5, 0.5, output, 5));
+    for (size_t i = 0; i < 5; ++i)
+        CHECK(bits_of(output[i]) == 0);
+    return 0;
+}
+
 static int test_invalid_constructors(void) {
     mc_java_random random;
     mc_java_random_seed(&random, 123);
@@ -496,7 +529,8 @@ static int test_grid_validation_and_zero_sizes(void) {
 int main(void) {
     if (test_constants_and_construction() || test_constructor_order() ||
         test_observed_constructor_states() || test_observed_grids() ||
-        test_invalid_constructors() || test_grid_validation_and_zero_sizes())
+        test_single_point_matches_grid() || test_invalid_constructors() ||
+        test_grid_validation_and_zero_sizes())
         return 1;
     printf("Simplex: %u checks passed\n", checks);
     return 0;

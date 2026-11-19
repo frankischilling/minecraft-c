@@ -377,6 +377,51 @@ metrics. All reported FPS strings counted zero Chunk updates. The native
 controls checked failure records and the spawning caller's error buffer on
 success. A callback test replaced the Block array during acquisition.
 
+### Single-point Biome sampling
+
+The [octave sampler](../world/simplex.md) handles a 1×1 fill without going
+through the nested grid loops for each layer. Spawning still goes through the
+World manager's ordinary chunk lookup and updates its climate arrays.
+
+Three Windows MSVC Release processes per build ran the native World manager
+fixture with a warmed registry and single-element climate buffers. Each
+sample repeated 867 lookups 220 times and divided the host time by 220. The
+coordinates covered three 17×17 chunk squares centered at `(0, 0)`,
+`(29, -31)` and `(58, -62)`. Each process first hashed the three climate
+values and the returned Biome kind at every coordinate. All hashes matched.
+
+Three more processes per build first grew the climate buffers to 256 elements.
+The same lookup hashes matched, and every reused climate buffer had a
+positive-zero tail after each checked lookup.
+
+| Time per 867 lookups, 27 samples per build | Median before / after | p95 before / after |
+| --- | ---: | ---: |
+| Single-element buffers | 0.379 / 0.339 ms | 0.415 / 0.366 ms |
+| Reused 256-element buffers | 0.411 / 0.372 ms | 0.438 / 0.400 ms |
+
+Four alternating Far pairs used the same Windows Release observer and
+libraries with only the simplex object replaced. All eight runs used the
+authored 854×480 scene and fixed camera on `DISPLAY2`. After the 30-second
+warmup, each run advanced 200 World ticks and every FPS string reported
+zero Chunk updates.
+
+| Median of per-run statistics | Before | After |
+| --- | ---: | ---: |
+| FPS | 390.14 | 390.00 |
+| Frame p50 | 2.183 ms | 2.208 ms |
+| Frame p95 | 6.040 ms | 5.985 ms |
+| Frame p99 | 7.647 ms | 7.241 ms |
+| Longest frame | 11.755 ms | 10.206 ms |
+| World tick batch p50 on tick-bearing frames | 3.972 ms | 3.862 ms |
+
+Frame p99 and World tick batch p50 fell in three of the four pairs. Median
+FPS was nearly level. Two repeats used normal CMake Release libraries, with
+only `mc_world.lib` changing. Both repeats lowered frame p99 and tick batch
+p50. Their median frame p99 went from 7.621 to 7.524 ms and tick batch p50
+went from 4.004 to 3.890 ms. Median FPS went from 393.25 to 391.56, and
+the median longest frame rose from 10.175 to 10.582 ms. The frame comparisons
+cover one settled scene.
+
 ## Fixed-input observer
 
 Build both comparison executables with the same observer source. The runner

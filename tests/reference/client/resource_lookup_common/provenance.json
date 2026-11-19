@@ -1050,8 +1050,8 @@
       "sha256": "62207ab54f1c6af97eeb455c14b188dc47f1425576a95535069332122dd71962"
     },
     "docs/world/simplex.md": {
-      "bytes": 3358,
-      "sha256": "7e72211d08480fa8a903e617f63e6cf3a90897fb90d5898686016e6e66420e81"
+      "bytes": 3667,
+      "sha256": "a19e89417804d27806ec2645852523c132954f561262b1f0870715ef20d51616"
     },
     "docs/world/snow.md": {
       "bytes": 4798,
@@ -4598,8 +4598,8 @@
       "sha256": "f6711b8536f9bc219b14fdb48cd608027a688522e0a291a5fd0345d2e4ac0ec2"
     },
     "src/world/noise/simplex.c": {
-      "bytes": 7564,
-      "sha256": "546de009bd3960c49c4d4a7b0900e9e49e23ff94abe17311300cd87ba2218a48"
+      "bytes": 8358,
+      "sha256": "2306748c1a12981614cc7a7efdbe0bd0d9b8246211f8ae627db929b9ef42026d"
     },
     "src/world/runtime/acquisition_internal.h": {
       "bytes": 4894,
@@ -6491,7 +6491,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1068291,
-      "sha256": "a76c17ac048fee6ec26245faabecc087e7d411a7a716cc38946534458c58efe0"
+      "sha256": "d54cddc65b3e52a0e66ce9103eec38cc04b8c8c0b7a9882306532d7b07fe26c9"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -9074,8 +9074,8 @@
       "sha256": "6c35fd29c76bb81deca7cc2840210954a9516331a37324fe7e976884470f17f1"
     },
     "tests/world/noise/test_simplex.c": {
-      "bytes": 21414,
-      "sha256": "ffb512dd70efd3a9b91e1e24d08fd9369fa80c8a4543f58499f5ed9547b0bbf6"
+      "bytes": 22799,
+      "sha256": "8ad15362ad111104a698de541aa5e0beb3d6021d51f3c629c20fe302b12138ed"
     },
     "tests/world/runtime/collision/block_shape_probe.c": {
       "bytes": 15596,

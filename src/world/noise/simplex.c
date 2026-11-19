@@ -173,6 +173,22 @@ bool mc_noise_simplex_octaves_fill(const mc_noise_simplex_octaves *noise,
     }
     double frequency = 1.0;
     double divisor = 1.0;
+    if (elements == 1) {
+        for (size_t i = 0; i < noise->count; ++i) {
+            const mc_noise_simplex *layer = &noise->layers[i];
+            double scaled_x = scale_x * frequency;
+            double scaled_z = scale_z * frequency;
+            double amplitude = 0.55 / divisor;
+            /* Keep the zero index additions used by the grid path. */
+            double sampled_x = (grid->origin_x + 0.0) * scaled_x + layer->offset_x;
+            double sampled_z = (grid->origin_z + 0.0) * scaled_z + layer->offset_z;
+            double sample = simplex_sample(layer, sampled_x, sampled_z);
+            output[0] = output[0] + sample * amplitude;
+            frequency *= frequency_multiplier;
+            divisor *= amplitude_divisor_multiplier;
+        }
+        return true;
+    }
     for (size_t i = 0; i < noise->count; ++i) {
         mc_noise_simplex_grid scaled = *grid;
         scaled.scale_x = scale_x * frequency;
