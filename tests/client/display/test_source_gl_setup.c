@@ -12,7 +12,8 @@ typedef void(GLAPIENTRY *get_double_fn)(GLenum, GLdouble *);
 static mc_client_gl native_gl;
 static mc_client_display *observed;
 static unsigned checks, queries, clears, draws, dispatches[8], dispatch_count;
-static unsigned normal_uniforms;
+static unsigned normal_uniforms, fog_uniforms;
+static float prior_normal_z, last_normal_z;
 static bool reenter, nested_busy, change_controls, pending_controls;
 static unsigned controls;
 
@@ -43,8 +44,17 @@ static void GLAPIENTRY observe_draw(GLenum mode, GLint first, GLsizei count) {
 static void GLAPIENTRY observe_uniform_matrix(GLint location, GLsizei count, GLboolean transpose,
                                               const GLfloat *values) {
     native_gl.UniformMatrix4fv(location, count, transpose, values);
-    if (location == observed->source.normal_matrix_uniform)
+    if (location == observed->source.normal_matrix_uniform) {
         ++normal_uniforms;
+        prior_normal_z = last_normal_z;
+        last_normal_z = values[10];
+    }
+}
+
+static void GLAPIENTRY observe_uniform_int(GLint location, GLint value) {
+    native_gl.Uniform1i(location, value);
+    if (location == observed->source.fog_enabled_uniform)
+        ++fog_uniforms;
 }
 
 static void GLAPIENTRY observe_clear_depth(GLclampd depth) {
@@ -474,7 +484,7 @@ int main(int argc, char **argv) {
     mc_client_capture_free(&capture);
 
     CHECK(mc_client_display_lists_retire(&range, &error));
-    CHECK(mc_client_display_lists_generate(display, 2, 2, &range, &list, &error));
+    CHECK(mc_client_display_lists_generate(display, 2, 8, &range, &list, &error));
     CHECK(mc_client_display_lists_begin(display, list, &error));
     CHECK(mc_client_display_source_batch(lease, flat_bytes, flat_bytes, sizeof(flat_bytes), 6,
                                          GL_TRIANGLES, &error));
@@ -562,6 +572,26 @@ int main(int argc, char **argv) {
     CHECK(mc_client_display_capture_rgba(display, &capture, &error) &&
           pixels_have_flat_pair(&capture, 1, 1));
     mc_client_capture_free(&capture);
+
+    CHECK(mc_client_display_lists_begin(display, gradient_list, &error) &&
+          mc_client_display_source_push(display, &error) &&
+          mc_client_display_source_scale(display, 1, 1, .5, &error) &&
+          mc_client_display_source_batch(lease, flat_bytes, flat_bytes, sizeof(flat_bytes), 6,
+                                         GL_TRIANGLES, &error) &&
+          mc_client_display_source_pop(display, &error) &&
+          mc_client_display_lists_end(display, &error));
+    display->gl.Uniform1i = observe_uniform_int;
+    const int32_t lit_lists[] = {list, gradient_list};
+    const unsigned before_lit = draws;
+    for (unsigned call = 1; call <= 2; ++call) {
+        CHECK(mc_client_display_loading_clear_color_depth(display, &error) &&
+              mc_client_display_lists_call(display, lit_lists, 2, &error));
+        CHECK(draws == before_lit + 2 * call && fog_uniforms == call &&
+              normal_uniforms == 2 + 2 * call && prior_normal_z == 1 && last_normal_z == 2);
+        CHECK(mc_client_display_capture_rgba(display, &capture, &error) &&
+              pixels_have_flat_pair(&capture, 1, 1));
+        mc_client_capture_free(&capture);
+    }
     result = 0;
 cleanup:
     if (result != 0)

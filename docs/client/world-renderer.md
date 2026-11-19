@@ -324,6 +324,28 @@ matched. Measurements span frames through GPU completion.
 | 16/3 | 0.574 → 0.541 ms | 0.675 → 0.680 ms |
 | 3/3 | 0.567 → 0.534 ms | 0.684 → 0.634 ms |
 
+### Lit display-list uniforms
+
+A list replay reuses the texture, alpha and fog uniforms while its sampled
+texture clamps agree. Every later lit draw with the same clamp values skips
+12 uniform calls and still uploads its normal matrix and lighting material.
+Each new replay starts with a fresh upload.
+
+The startup device test submits two lit lists twice. It checks the upload
+count, the normal matrices after distinct modelview scales, and the
+resulting pixels.
+
+The Windows MSVC Release benchmark used an RTX 3060 and two direct
+replays of 450 textured lists per frame on an authored scene. Each profile
+ran eight alternating pairs with 40 warmup frames and 160 measured frames
+per run. Times include `glFinish` and are medians of the run percentiles.
+Framebuffer hashes, covered pixels and list order matched in every pair.
+
+| Quads per list by pass | Frame p50 | Frame p95 | Frame p99 |
+| --- | ---: | ---: | ---: |
+| 3/3 | 9.21 → 9.11 ms | 11.85 → 14.82 ms | 15.26 → 15.43 ms |
+| 16/3 | 19.65 → 19.37 ms | 29.88 → 30.50 ms | 38.05 → 36.32 ms |
+
 ### Vertex cache evictions
 
 The cache admits unlit recorded batches of at least six vertices, enough

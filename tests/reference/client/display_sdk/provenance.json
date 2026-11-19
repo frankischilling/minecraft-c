@@ -946,8 +946,8 @@
       "sha256": "7b02fadfaf8310e34b2649de9dc5a7c9b79b2773185f035ff5681d9077a8e5e1"
     },
     "src/client/display/source_surface.inc": {
-      "bytes": 62852,
-      "sha256": "50184424d126bca6e486bfea1811bbd4d0eaf90fb1fe3a9f2ceb310d83f08ade"
+      "bytes": 62895,
+      "sha256": "efd7f4a09f91884aca0016c1d7b6f6f0dcf3809182bec22c49f990788b62e498"
     },
     "src/client/display/source_vertex_cache.inc": {
       "bytes": 15499,
@@ -1818,8 +1818,8 @@
       "sha256": "318bca925b1c22d6fd2af4a445e6ed3e5561df1b98bd5060cd69189ed0d66c2e"
     },
     "tests/client/display/test_source_gl_setup.c": {
-      "bytes": 32142,
-      "sha256": "eaf31a579b0a633113dda4ee7b9221f2f21367085372c37f734984c949ec4794"
+      "bytes": 33657,
+      "sha256": "8fbad9ee68c9ce23de2c35fe227136a15be8754d16eb49910f0f35f8cc45e253"
     },
     "tests/client/gui/test_gui_ingame.c": {
       "bytes": 29003,

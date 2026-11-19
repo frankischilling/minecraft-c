@@ -494,7 +494,7 @@ static bool source_gpu_create(mc_client_display *display, mc_client_display_erro
 }
 
 typedef struct source_replay_state {
-    bool drew, unlit_uniforms, projection_uploaded, modelview_uploaded;
+    bool drew, fragment_uniforms, projection_uploaded, modelview_uploaded;
     GLuint vao, vbo;
     int clamp_s, clamp_t;
 } source_replay_state;
@@ -665,10 +665,10 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
                                          s->modelview.column_major);
         if (replay != NULL)
             replay->projection_uploaded = replay->modelview_uploaded = true;
-        /* The unlit shader's other inputs stay fixed except for sampled texture clamps. */
-        const bool reuse = replay != NULL && replay->unlit_uniforms && !s->lighting_enabled &&
-                           replay->clamp_s == clamp_s && replay->clamp_t == clamp_t;
-        if (!reuse) {
+        /* Replay cannot change these inputs except through sampled texture clamps. */
+        const bool reuse_fragment = replay != NULL && replay->fragment_uniforms &&
+                                    replay->clamp_s == clamp_s && replay->clamp_t == clamp_t;
+        if (!reuse_fragment) {
             display->gl.Uniform1i(s->textured_uniform, s->texture_enabled ? 1 : 0);
             display->gl.Uniform1i(s->alpha_uniform, s->alpha_test ? 1 : 0);
             display->gl.Uniform1i(s->clamp_s_uniform, clamp_s);
@@ -682,13 +682,14 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
             display->gl.Uniform1f(s->fog_density_uniform, s->fog.density);
             display->gl.Uniform1f(s->fog_start_uniform, s->fog.start);
             display->gl.Uniform1f(s->fog_end_uniform, s->fog.end);
-            source_lighting_upload(display, normal_matrix, normal_scale);
             if (replay != NULL) {
-                replay->unlit_uniforms = !s->lighting_enabled;
+                replay->fragment_uniforms = true;
                 replay->clamp_s = clamp_s;
                 replay->clamp_t = clamp_t;
             }
         }
+        if (!reuse_fragment || s->lighting_enabled)
+            source_lighting_upload(display, normal_matrix, normal_scale);
         if (replay == NULL || !replay->drew)
             display->gl.ProvokingVertex(GL_LAST_VERTEX_CONVENTION);
         /* Preserve inherited blend/depth/viewport/scissor/cull/clear state. */
