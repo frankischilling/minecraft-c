@@ -242,6 +242,53 @@ frame with zero World ticks, and the pre-HUD span accounted for over 97% of
 both frames. That span includes draw, display update and pacing. The cause of
 the longer tails remains uncertain. The index remains a prototype.
 
+### Far draw, display swap and pacing
+
+Four alternating pairs on Windows measured `21682c1e` with the standard
+observer and a diagnostic build. Both builds used the same MSVC Release
+inputs, authored Far save, procedural textures and 854×480 fixed view on
+`DISPLAY2`. All eight runs passed focus, camera and World tick checks. The
+diagnostic build collected host-clock spans in memory and wrote them after
+timing. Median FPS was 68.89 with the standard observer and 69.77 with the
+diagnostic build. This comparison checks the profiling setup.
+
+| Host time in 2,788 profiled frames | Median | p99 | Maximum |
+| --- | ---: | ---: | ---: |
+| World draw | 12.97 ms | 15.32 ms | 21.44 ms |
+| Section updates, including compiles | 8.49 ms | 10.22 ms | 15.22 ms |
+| Section compiles | 8.35 ms | 9.78 ms | 14.78 ms |
+| SDK display update | 0.269 ms | 0.673 ms | 1.708 ms |
+| `SDL_GL_SwapWindow` | 0.021 ms | 0.295 ms | 1.070 ms |
+| Display messages and input processing | 0.009 ms | 0.013 ms | 0.086 ms |
+
+The longest frame took 22.16 ms. It ran no World tick and spent 14.78 ms
+in eight section compiles. The swap took 0.026 ms. In the longest frame
+with a World tick, the tick took 7.73 ms and one section compile took
+4.41 ms of the 18.91 ms frame. The spans are nested host measurements.
+The swap presented the preceding frame before the current World draw.
+Every profiled frame ran with performance mode 1, which sets the section
+update deadline. The World-render and inactive sleep paths were never called.
+
+Two 45-second profiles of the same scene each completed 900 World ticks.
+The last section compile started 20.78 seconds into timing in both runs.
+Between seconds 25 and 45 the renderer compiled no sections. In those
+five-second windows, median frame time ranged from 2.11 to 2.14 ms and
+p99 ranged from 7.75 to 8.13 ms. The default benchmark window samples the
+initial section build in this scene. After settling, every frame at or above
+p99 included a World tick. The two longest measured frames in this period
+took 12.38 and 11.31 ms, including tick batches of 7.01 and 8.47 ms.
+
+Use a longer warmup when measuring the settled view. A freshly built observer
+accepts 2 to 90 seconds. The benchmark checks the warmup duration in its
+receipt before comparing the ten-second timed intervals.
+
+```powershell
+python scripts/benchmarks/client_frames.py --executable current=PATH --authored-assets --view-distance far --warmup-seconds 25 --artifacts far-settled --rounds 3
+```
+
+Two runs with the 25-second warmup measured 405.65–409.20 FPS with p99
+frame times of 8.17–8.19 ms. Both timed intervals ran 200 World ticks.
+
 ## Fixed-input observer
 
 Build both comparison executables with the same observer source. The runner

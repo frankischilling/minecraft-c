@@ -20,6 +20,16 @@ import time
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[2]
 VIEW_DISTANCES = {'tiny': (3, 8), 'far': (0, 18)}  # Settings value and saved Chunk radius.
+DEFAULT_WARMUP_SECONDS = 2
+MAX_WARMUP_SECONDS = 90
+
+
+def warmup_seconds(value):
+    seconds = int(value)
+    if not DEFAULT_WARMUP_SECONDS <= seconds <= MAX_WARMUP_SECONDS:
+        raise argparse.ArgumentTypeError(
+            f'Warmup must be between {DEFAULT_WARMUP_SECONDS} and {MAX_WARMUP_SECONDS} seconds')
+    return seconds
 
 
 def module(name, relative):
@@ -152,13 +162,15 @@ def qualify_cohort(profiles):
             p['observation']['assets_before'] == first['assets_before'] and
             p['observation']['summary']['context'] == first['summary']['context'] and
             p['observation']['summary']['gpu'] == first['summary']['gpu'] and
+            p['observation']['summary'].get('requested_warmup_seconds', DEFAULT_WARMUP_SECONDS) ==
+            first['summary'].get('requested_warmup_seconds', DEFAULT_WARMUP_SECONDS) and
             pose(p['observation']['summary']['camera_receipts'][1]) ==
             pose(first['summary']['camera_receipts'][1]) for p in profiles)
     return {'status': 'PASS' if complete and matched else 'FAIL',
             'all_intervals_qualified': complete, 'authored_scene_and_camera_matched': matched}
 
 
-def summarize(stdout, expected_view_distance=3):
+def summarize(stdout, expected_view_distance=3, expected_warmup_seconds=DEFAULT_WARMUP_SECONDS):
     result = [fields(s) for s in stdout.splitlines() if s.startswith('PERF_RESULT ')]
     context = [fields(s) for s in stdout.splitlines() if s.startswith('PERF_CONTEXT ')]
     finish = [fields(s) for s in stdout.splitlines() if s.startswith('PERF_FINISH ')]
@@ -227,6 +239,13 @@ def summarize(stdout, expected_view_distance=3):
     ledger = work_ledger(raw, result, row_version,
                          [fields(s) for s in stdout.splitlines() if s.startswith('PERF_WORK ')])
     duration_complete = end - start >= 10 * hz
+    warmup_request, warmup_qpc = result.get('warmup-seconds'), result.get('warmup-qpc')
+    if warmup_request is None and warmup_qpc is None:
+        warmup_complete = expected_warmup_seconds == DEFAULT_WARMUP_SECONDS
+    else:
+        warmup_complete = (warmup_request is not None and warmup_qpc is not None and
+                           unsigned(warmup_request, 'Requested warmup') == expected_warmup_seconds and
+                           unsigned(warmup_qpc, 'Warmup duration') >= expected_warmup_seconds * hz)
     stationary = context.get('input-policy') == 'fixed-input'
     pose_valid = not stationary or unsigned(result['pose-invalid'], 'Pose failures') == 0
     view_distance = int(context['view-distance'])
@@ -241,15 +260,16 @@ def summarize(stdout, expected_view_distance=3):
     context_complete = ({'major', 'minor', 'profile', 'swap-zero', 'width', 'height',
                          'view-distance', 'performance-mode'} <= set(context) and
                         all(gpu.values()))
-    return {'cache_receipts': cache, 'no_raw_cache_exports': True,
+    summary = {'cache_receipts': cache, 'no_raw_cache_exports': True,
             'camera_receipts': poses, 'native_foreground_receipts': foreground,
             'native_foreground_valid': native_foreground_valid,
             'authored_rotation_retained': actual_rotation_valid,
             'full_endpoint_pose_retained': full_pose_retained,
             'measurement_at_least_ten_seconds': duration_complete,
             'work_ledger': ledger,
-            'comparison_qualified': (valid and duration_complete and full_pose_retained and
-                                     context_complete and ledger['simulation_advanced']),
+            'comparison_qualified': (valid and duration_complete and warmup_complete and
+                                     full_pose_retained and context_complete and
+                                     ledger['simulation_advanced']),
             'valid_focused_Tiny_interval': valid and view_distance == 3,
             'context': context, 'measurement': result,
             'observation_row_version': row_version,
@@ -273,10 +293,17 @@ def summarize(stdout, expected_view_distance=3):
             'frames_over_33_333_ms': sum(x > 1000 / 30 for x in total),
             'observed_source_FPS_strings': source_fps,
             'scope': (
-                'Fresh no-export setup; 2s natural warmup + 10s actual direct normal frames; includes normal Source pacing, SDK swap, tick/services/World/render work. No unrestricted/Far/GPU-only FPS claim.'
+                f'Fresh no-export setup; {expected_warmup_seconds}s natural warmup + 10s actual direct '
+                'normal frames; includes normal Source pacing, SDK swap, tick/services/World/render work. '
+                'No unrestricted/Far/GPU-only FPS claim.'
                 if expected_view_distance == 3 else
-                'Fresh no-export setup, 2s natural warmup and 10s of normal frames with '
+                f'Fresh no-export setup, {expected_warmup_seconds}s natural warmup and 10s of normal frames with '
                 'Source pacing, SDK swaps, World ticks and rendering for the stationary Far scene.')}
+    if (warmup_request is not None or warmup_qpc is not None or
+            expected_warmup_seconds != DEFAULT_WARMUP_SECONDS):
+        summary['requested_warmup_seconds'] = expected_warmup_seconds
+        summary['warmup_qualified'] = warmup_complete
+    return summary
 
 
 def main():
@@ -285,6 +312,7 @@ def main():
     p.add_argument('--assets', type=Path, required=True)
     p.add_argument('--artifacts', type=Path, required=True)
     p.add_argument('--view-distance', choices=VIEW_DISTANCES, default='tiny')
+    p.add_argument('--warmup-seconds', type=warmup_seconds, default=DEFAULT_WARMUP_SECONDS)
     args = p.parse_args()
     view_distance, chunk_radius = VIEW_DISTANCES[args.view_distance]
     if os.name != 'nt':
@@ -312,6 +340,7 @@ def main():
     report = {'status': 'FAIL', 'scope': __doc__, 'inputs_before': before,
               'monitor': monitor,
               'view_distance': args.view_distance, 'authored_chunk_radius': chunk_radius,
+              'warmup_seconds': args.warmup_seconds,
               'assets_before': asset_before, 'read_only_source_clock_observations': True,
               'audio_backend': 'existing SDK fixture OpenAL null driver; Source sound work unchanged',
               'per_frame_test_screenshots_disk_checks_assertion_helpers': False,
@@ -357,6 +386,7 @@ def main():
         environment = os.environ.copy()
         environment.update(APPDATA=str(home), LOCALAPPDATA=str(home), USERPROFILE=str(home),
             SDL_DISPLAY_USABLE_BOUNDS=bounds, MC_WORLD_SELECTION_MONITOR_BOUNDS=bounds,
+            MC_BENCHMARK_WARMUP_SECONDS=str(args.warmup_seconds),
             ALSOFT_DRIVERS='null', MC_WORLD_RELOAD_SAVES=str(saves),
             MC_WORLD_SAVE_TITLE_SAVES=str(saves),
             MC_WORLD_SAVE_TITLE_SNAPSHOTS=str(evidence / 'snapshots'),
@@ -366,8 +396,9 @@ def main():
         report['started_ns'] = time.time_ns()
         # No polling, screenshots, disk hashing or assertions during the child.
         try:
+            timeout = 240 + args.warmup_seconds - DEFAULT_WARMUP_SECONDS
             result = subprocess.run(command, cwd=evidence, env=environment,
-                                    capture_output=True, text=False, timeout=240, check=False)
+                                    capture_output=True, text=False, timeout=timeout, check=False)
         except subprocess.TimeoutExpired as error:
             (evidence / 'stdout.txt').write_bytes(error.stdout or b'')
             (evidence / 'stderr.txt').write_bytes(error.stderr or b'')
@@ -377,9 +408,12 @@ def main():
         report['ended_ns'] = time.time_ns()
         report['returncode'] = result.returncode
         stdout = result.stdout.decode('utf8', errors='strict')
-        report['summary'] = summarize(stdout, expected_view_distance=view_distance)
+        report['summary'] = summarize(stdout, expected_view_distance=view_distance,
+                                      expected_warmup_seconds=args.warmup_seconds)
         if report['summary']['context'].get('input-policy') != 'fixed-input':
             raise ValueError('Use an observer built for the fixed-input workload')
+        if not report['summary'].get('warmup_qualified', True):
+            raise ValueError('Observer did not report completing the requested warmup')
         monitor_rows = [fields(line) for line in stdout.splitlines()
                         if line.startswith('WORLD_SELECTION_MONITOR stage=perf-')]
         if ([(row['stage'], row['window']) for row in monitor_rows] !=

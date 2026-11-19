@@ -221,6 +221,24 @@ class FrameWorkObservations(unittest.TestCase):
                 self.assertTrue(result['valid_focused_Tiny_interval'])
                 self.assertFalse(result['comparison_qualified'])
 
+    def test_longer_warmup_requires_matching_duration_receipt(self):
+        legacy = work_receipt()
+        self.assertTrue(FRAMES.summarize(legacy)['comparison_qualified'])
+        for fields, qualified in (
+            ('', False),
+            ('warmup-seconds=25', False),
+            ('warmup-qpc=25000', False),
+            ('warmup-seconds=2 warmup-qpc=25000', False),
+            ('warmup-seconds=25 warmup-qpc=24999', False),
+            ('warmup-seconds=25 warmup-qpc=25000', True),
+        ):
+            with self.subTest(fields=fields):
+                wire = legacy.replace('healthy=1', f'healthy=1 {fields}')
+                summary = FRAMES.summarize(wire, expected_warmup_seconds=25)
+                self.assertEqual(summary['requested_warmup_seconds'], 25)
+                self.assertEqual(summary['warmup_qualified'], qualified)
+                self.assertEqual(summary['comparison_qualified'], qualified)
+
     def test_either_unqualified_member_rejects_whole_cohort(self):
         observation = {'status': 'PASS', 'summary': FRAMES.summarize(work_receipt()),
                        'save_before': {'world': 'same'}, 'assets_before': {'assets': 'same'}}
@@ -239,6 +257,9 @@ class FrameWorkObservations(unittest.TestCase):
             changed = copy.deepcopy(profiles)
             changed[1]['observation']['summary'][key]['changed'] = True
             self.assertEqual(FRAMES.qualify_cohort(changed)['status'], 'FAIL')
+        changed = copy.deepcopy(profiles)
+        changed[1]['observation']['summary']['requested_warmup_seconds'] = 25
+        self.assertEqual(FRAMES.qualify_cohort(changed)['status'], 'FAIL')
 
     def test_world_time_uses_java_long_wrapping(self):
         wire = work_receipt().replace('world-time=6000', f'world-time={(1 << 63) - 1}')

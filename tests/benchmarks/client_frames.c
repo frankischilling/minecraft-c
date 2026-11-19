@@ -8,7 +8,13 @@ int mc_perf_unused_auto_main(int, char **);
 #include "client/display/sdk_update.h"
 #include <windows.h>
 
-enum { PERF_ROWS = 200000, PERF_FPS_ROWS = 64, PERF_FPS_UNITS = 96 };
+enum {
+    PERF_ROWS = 200000,
+    PERF_FPS_ROWS = 64,
+    PERF_FPS_UNITS = 96,
+    PERF_DEFAULT_WARMUP_SECONDS = 2,
+    PERF_MAX_WARMUP_SECONDS = 90
+};
 
 typedef struct perf_row {
     int64_t begin, end, run137, run203, run387, render_clock;
@@ -221,7 +227,7 @@ static int perf_world_ready(fixture *f) {
     return 1;
 }
 
-static int perf_run(fixture *f) {
+static int perf_run(fixture *f, int warmup_seconds) {
     uint32_t frame_id = 0, canvas_id = 0;
     CHECK(mc_client_menu_loop_create(f->bootstrap, &f->loop) &&
           mc_client_menu_loop_inspect(f->loop, &f->state) &&
@@ -251,7 +257,7 @@ static int perf_run(fixture *f) {
     perf_fps *fps = calloc(PERF_FPS_ROWS, sizeof(*fps));
     LARGE_INTEGER frequency;
     CHECK(rows != NULL && fps != NULL && QueryPerformanceFrequency(&frequency) &&
-          frequency.QuadPart > 0);
+          frequency.QuadPart > 0 && frequency.QuadPart <= INT64_MAX / PERF_MAX_WARMUP_SECONDS);
     /* Fault in observation storage before warmup, not on sampled frames. */
     for (size_t i = 0; i < PERF_ROWS * sizeof(*rows); i += 4096)
         ((volatile unsigned char *)rows)[i] = 0;
@@ -264,7 +270,7 @@ static int perf_run(fixture *f) {
     CHECK(perf_qpc(&start));
     end = start;
     /* Natural warmup, no Source timing input, observer, screenshot or repair. */
-    while (end - start < 2 * hz) {
+    while (end - start < warmup_seconds * hz) {
         if (!mc_client_menu_loop_frame(f->loop)) {
             healthy = false;
             break;
@@ -272,6 +278,7 @@ static int perf_run(fixture *f) {
         ++warm_frames;
         CHECK(perf_qpc(&end));
     }
+    const int64_t warmup_qpc = end - start;
     CHECK(healthy && mc_client_menu_loop_inspect(f->loop, &f->state));
     CHECK(perf_cache_receipt(f, "warmup-returned") == 0);
     CHECK(perf_read_camera(f, &pose));
@@ -362,12 +369,13 @@ static int perf_run(fixture *f) {
             ++focus_invalid;
     printf(
         "PERF_RESULT row-version=2 qpc-hz=%" PRId64 " start=%" PRId64 " end=%" PRId64
-        " warmup-frames=%" PRIu64 " frames=%zu world-ticks=%" PRIu64
+        " warmup-seconds=%d warmup-qpc=%" PRId64 " warmup-frames=%" PRIu64
+        " frames=%zu world-ticks=%" PRIu64
         " healthy=%d capacity=%d focus-invalid=%zu pose-invalid=%zu process-kernel-100ns=%" PRIu64
         " process-user-100ns=%" PRIu64 "\n",
-        hz, start, end, warm_frames, count, f->state.world_tick_returns - ticks_before,
-        (int)healthy, (int)capacity, focus_invalid, pose_invalid, perf_ft(pk1) - perf_ft(pk0),
-        perf_ft(pu1) - perf_ft(pu0));
+        hz, start, end, warmup_seconds, warmup_qpc, warm_frames, count,
+        f->state.world_tick_returns - ticks_before, (int)healthy, (int)capacity, focus_invalid,
+        pose_invalid, perf_ft(pk1) - perf_ft(pk0), perf_ft(pu1) - perf_ft(pu0));
     if (!healthy)
         fprintf(stderr, "PERF_FRONTIER %s.%s:%" PRId64 " %s\n",
                 f->state.source_class == NULL ? "native" : f->state.source_class,
@@ -423,6 +431,15 @@ static int perf_quit(fixture *f, uint32_t frame_id) {
 
 int main(int argc, char **argv) {
     CHECK(argc == 3 && SDL_getenv("MC_WORLD_SELECTION_MONITOR_BOUNDS") != NULL);
+    long warmup_seconds = PERF_DEFAULT_WARMUP_SECONDS;
+    const char *warmup_option = SDL_getenv("MC_BENCHMARK_WARMUP_SECONDS");
+    if (warmup_option != NULL) {
+        char *end;
+        warmup_seconds = strtol(warmup_option, &end, 10);
+        CHECK(end != warmup_option && *end == '\0' &&
+              warmup_seconds >= PERF_DEFAULT_WARMUP_SECONDS &&
+              warmup_seconds <= PERF_MAX_WARMUP_SECONDS);
+    }
     fixture *f = calloc(1, sizeof(*f));
     workbench = calloc(1, sizeof(*workbench));
     automatic = calloc(1, sizeof(*automatic));
@@ -452,7 +469,7 @@ int main(int argc, char **argv) {
         probe.motion.windowID = canvas_id;
         probe.motion.xrel = 1.0f;
         if (!SDL_PushEvent(&probe))
-            result = perf_run(f);
+            result = perf_run(f, (int)warmup_seconds);
         SDL_SetEventFilter(NULL, NULL);
     }
     if (perf_quit(f, frame_id) != 0)

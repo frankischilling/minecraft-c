@@ -13,8 +13,9 @@ Use an existing local resource directory when comparing that presentation:
 
 The fixed scene uses seed 123, 854x480 and saved Rotation 180,-30.
 Choose Tiny (default) or Far with --view-distance.
-Each fresh process warms up naturally for 2s and measures 10s of ordinary Source
-frames on DISPLAY2 with fixed input. All attempts remain in artifacts.
+Each fresh process warms up naturally for 2s by default and measures 10s of
+ordinary Source frames on DISPLAY2 with fixed input. Use --warmup-seconds to
+measure later in the scene. All attempts remain in artifacts.
 There is no universal FPS or original-game parity claim and no FPS threshold.
 """
 import argparse
@@ -26,7 +27,8 @@ import sys
 import tempfile
 
 from client_frames_build import build_observer
-from client_frames_run import VIEW_DISTANCES, module, qualify_cohort
+from client_frames_run import (DEFAULT_WARMUP_SECONDS, VIEW_DISTANCES, module, qualify_cohort,
+                               warmup_seconds)
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -60,6 +62,7 @@ def main():
     fixtures.add_argument('--authored-assets', action='store_true',
                           help='Generate test textures and resources for this cohort')
     parser.add_argument('--view-distance', choices=VIEW_DISTANCES, default='tiny')
+    parser.add_argument('--warmup-seconds', type=warmup_seconds, default=DEFAULT_WARMUP_SECONDS)
     parser.add_argument('--artifacts', type=Path, help='Parent directory for retained run evidence')
     parser.add_argument('--rounds', type=int, default=3)
     options = parser.parse_args()
@@ -102,7 +105,9 @@ def main():
               'build_record': None if build_record is None else str(build_record),
               'asset_fixture': 'authored' if options.authored_assets else 'provided',
               'view_distance': options.view_distance,
+              'warmup_seconds': options.warmup_seconds,
               'qualification': 'Only complete focused screen-free intervals support this finite scene comparison. No failed attempt is discarded.'}
+    timeout = 300 + options.warmup_seconds - DEFAULT_WARMUP_SECONDS
     for round_index in range(options.rounds):
         order = list(executables)
         if round_index & 1:
@@ -111,8 +116,9 @@ def main():
             before = set(children.iterdir())
             command = [sys.executable, '-B', str(Path(__file__).with_name('client_frames_run.py')),
                        '--executable', str(executables[label]), '--assets', str(assets),
-                       '--artifacts', str(children), '--view-distance', options.view_distance]
-            result = subprocess.run(command, capture_output=True, timeout=300)
+                       '--artifacts', str(children), '--view-distance', options.view_distance,
+                       '--warmup-seconds', str(options.warmup_seconds)]
+            result = subprocess.run(command, capture_output=True, timeout=timeout)
             (output / f'{round_index}-{label}.stdout').write_bytes(result.stdout)
             (output / f'{round_index}-{label}.stderr').write_bytes(result.stderr)
             created = set(children.iterdir()) - before

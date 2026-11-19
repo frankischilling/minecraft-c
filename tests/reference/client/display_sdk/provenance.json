@@ -7202,16 +7202,16 @@
       "sha256": "4c91d9bd8b0bac0cc2a4d6f5075bc1173945879289cd2a94a983f87359b3158f"
     },
     "scripts/benchmarks/client_frames.py": {
-      "bytes": 7911,
-      "sha256": "b6cfa79a01706f5af3744df5b0ec39e585decd886036f156c108284d0aea48a0"
+      "bytes": 8344,
+      "sha256": "b062dd85b51977c9b99dececdfc5d0bfc4956c744336f97f71685120651f9f26"
     },
     "scripts/benchmarks/client_frames_build.py": {
       "bytes": 7387,
       "sha256": "2deede75d129ce119ef4dd49d67a895e1967a1d6599a71005fc39cb94e5f1ece"
     },
     "scripts/benchmarks/client_frames_run.py": {
-      "bytes": 24226,
-      "sha256": "0780f06249e77c517d00613b2be1e09a040b36f06f23d9627cd1aa754705e2aa"
+      "bytes": 26251,
+      "sha256": "0e221b2c564858d072f0884442538fba836dc354f6cb1cd2438fc49cfc3870e9"
     },
     "src/client/runtime/bootstrap_terminal_internal.h": {
       "bytes": 2975,
@@ -7238,8 +7238,8 @@
       "sha256": "8d9020defb7fbd4007c802d4638c1d83032f0563eb5ff4c4ee06dc01f7fe0e06"
     },
     "tests/benchmarks/client_frames.c": {
-      "bytes": 22594,
-      "sha256": "242ceb98f383e306aa691417de315011b337b3641293b50d9f8ec5e023cd0eec"
+      "bytes": 23334,
+      "sha256": "290b42a6c2f908b4cc50d2e0f279eb1b01575142e136e0fdf845d8f24d7757aa"
     },
     "tests/benchmarks/world_queries.c": {
       "bytes": 20229,
@@ -7686,8 +7686,8 @@
       "sha256": "89f07324e2ec1f0222000df3e3c7680a8d541571fe3db001bd2f0ea3bd0ea069"
     },
     "tests/tools/benchmarks/test_client_frames_run.py": {
-      "bytes": 28645,
-      "sha256": "e4a15c3ec695503635228d8b17862c596d777eb0c26b98301b921f7137ca750c"
+      "bytes": 29766,
+      "sha256": "bd4181aec08d7e58eb442000a5c577e9cd222ddb34b44dd134440d6a3e58c549"
     },
     "cmake/client_ladder_world.cmake": {
       "bytes": 1473,
