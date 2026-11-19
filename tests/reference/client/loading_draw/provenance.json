@@ -6826,8 +6826,8 @@
       "sha256": "245dce31a98c328ccd662a6b25114c49e57179c3a13cf2bbb6d41641c3222e72"
     },
     "src/client/world/render_global_submit_draw.c": {
-      "bytes": 11010,
-      "sha256": "b614b1b3bc34ef43e0c54eefe95aa25ef56af55be8544c84a5a12a6267d66e1a"
+      "bytes": 11535,
+      "sha256": "56fcc487091438becaa378c48336c38424ac63ae009125bc3e3057420904a8f3"
     },
     "src/client/world/source_terrain_internal.h": {
       "bytes": 4506,
@@ -6854,8 +6854,8 @@
       "sha256": "102d2a4814a3df13934c42243564d91357b50d376e4dd96522ac0c73655cb9f1"
     },
     "tests/client/world/test_render_global_submit_cpu.c": {
-      "bytes": 19211,
-      "sha256": "641e82055b7ba9b182d9a99b432c2ea6f8f479a826825af73aa8dc4604c73c63"
+      "bytes": 25802,
+      "sha256": "f218bcf6ca07da8cdbca78c068271a1c9b800b30d2cd64051df3bc02c1b91107"
     },
     "cmake/tests/client_lighting_enable.cmake": {
       "bytes": 1471,

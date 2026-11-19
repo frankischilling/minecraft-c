@@ -340,6 +340,117 @@ static bool subset_selection(void) {
     return true;
 }
 
+static bool subset_span_controls(void) {
+    mc_client_render_global owner = {0};
+    bool empty[2] = {true, true};
+    mc_client_source_dk actor = {.owner = &owner, .fields = {.p = empty}};
+    mc_client_source_dk *sorted[] = {&actor, &actor, &actor, &actor};
+    mc_client_source_dk *null_slot[] = {NULL};
+
+    const struct {
+        mc_client_source_dk **array;
+        size_t length;
+        int32_t start, end, pass;
+        mc_client_render_global_status status;
+        const char *operation;
+        unsigned int pc;
+        int32_t index, visited, empties;
+        bool native;
+    } cases[] = {
+        {NULL, 4, 0, 1, 0, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE, "actual N ChunkRenderer array",
+         41, 0, 1, 0, false},
+        {sorted, (size_t)INT32_MAX + 1u, 0, 1, 0, MC_CLIENT_RENDER_GLOBAL_LIMIT,
+         "N ChunkRenderer native array extent", 41, 0, 1, 0, true},
+        {sorted, 4, -1, 1, 0, MC_CLIENT_RENDER_GLOBAL_SOURCE_INDEX,
+         "actual N ChunkRenderer array index", 41, -1, 1, 0, false},
+        {sorted, 4, 0, 5, 0, MC_CLIENT_RENDER_GLOBAL_SOURCE_INDEX,
+         "actual N ChunkRenderer array index", 41, 4, 5, 4, false},
+        /* These spans never reach a sorted-array access. */
+        {NULL, (size_t)INT32_MAX + 1u, 2, 1, 0, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
+         "actual N batching App.i receiver", 228, 91, 0, 0, false},
+        {NULL, (size_t)INT32_MAX + 1u, 0, 0, 0, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
+         "actual N batching App.i receiver", 228, 91, 0, 0, false},
+        {null_slot, 1, 0, 1, 0, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
+         "actual ChunkRenderer receiver", 42, 0, 1, 0, false},
+        {sorted, 4, 0, 1, -1, MC_CLIENT_RENDER_GLOBAL_SOURCE_INDEX, "actual DK pass array index",
+         143, 0, 1, 0, false},
+        {sorted, 4, 0, 1, 2, MC_CLIENT_RENDER_GLOBAL_SOURCE_INDEX, "actual DK pass array index",
+         143, 0, 1, 0, false},
+    };
+
+    for (size_t sample = 0; sample < sizeof(cases) / sizeof(cases[0]); ++sample) {
+        void *entries[] = {&actor};
+        mc_client_render_list selected = {
+            .entries = entries, .count = 1, .capacity = 1, .mod_count = UINT32_MAX};
+        owner.fields.n = cases[sample].array;
+        owner.n_length = cases[sample].length;
+        owner.fields.S = &selected;
+        owner.fields.M = owner.fields.N = owner.fields.O = owner.fields.P = owner.fields.Q = 0;
+        mc_client_render_global_submit_call call = {
+            .state = {
+                .owner = &owner, .pass = cases[sample].pass, .index = 91, .last_store_pc = 92}};
+        int32_t result = -1;
+        CHECK(!mc_terrain_subset(&call, cases[sample].start, cases[sample].end, 0, &result));
+        const mc_client_render_global_error *error = &call.failure;
+        const bool statistics = cases[sample].pass == 0;
+        CHECK(error->status == cases[sample].status && error->operation != NULL &&
+              strcmp(error->operation, cases[sample].operation) == 0 &&
+              error->native_policy == cases[sample].native &&
+              strcmp(error->source_class, "n") == 0 && strcmp(error->source_method, "a") == 0 &&
+              strcmp(error->source_descriptor, "(IIID)I") == 0 &&
+              error->source_pc == cases[sample].pc && !error->source_returned &&
+              error->enclosing_pc == 0 && error->parent.class_name == NULL &&
+              error->ancestor.class_name == NULL && error->child.class_name == NULL &&
+              error->graphics.status == MC_CLIENT_GRAPHICS_OK);
+        CHECK(call.depth == 1 && strcmp(call.frames[0].class_name, "n") == 0 &&
+              strcmp(call.frames[0].method, "a") == 0 &&
+              strcmp(call.frames[0].descriptor, "(IIID)I") == 0 &&
+              call.frames[0].pc == (int32_t)cases[sample].pc &&
+              call.state.source_pc == cases[sample].pc && call.state.index == cases[sample].index &&
+              call.state.last_store_pc == (statistics && cases[sample].visited != 0 ? 32u : 92u) &&
+              call.state.subsets == 1 && call.state.selected_chunks == 0 && result == -1);
+        CHECK(owner.fields.M == (statistics ? cases[sample].visited : 0) &&
+              owner.fields.Q == (statistics ? cases[sample].empties : 0) && owner.fields.N == 0 &&
+              owner.fields.O == 0 && owner.fields.P == 0 && selected.count == 0 &&
+              selected.mod_count == 0 && entries[0] == NULL && owner.arena.head == NULL &&
+              owner.arena.bytes == 0 && owner.arena.allocations == 0);
+    }
+
+    /* A later append refuses growth after retaining the first selected entry. */
+    bool populated[2] = {false, false};
+    actor.fields.p = populated;
+    actor.fields.o = true;
+    actor.fields.C = 7;
+    void *retained[] = {&actor};
+    mc_client_render_list selected = {
+        .entries = retained, .count = 1, .capacity = 1, .mod_count = UINT32_MAX};
+    owner.fields.n = sorted;
+    owner.n_length = 4;
+    owner.fields.S = &selected;
+    owner.fields.M = owner.fields.N = owner.fields.O = owner.fields.P = owner.fields.Q = 0;
+    mc_client_render_global_submit_call call = {.state = {.owner = &owner}};
+    int32_t result = -1;
+    CHECK(!mc_terrain_subset(&call, 0, 2, 0, &result));
+    CHECK(call.failure.status == MC_CLIENT_RENDER_GLOBAL_LIMIT && call.failure.native_policy &&
+          strcmp(call.failure.operation, "graphics native constructor limit") == 0 &&
+          strcmp(call.failure.source_class, "n") == 0 &&
+          strcmp(call.failure.source_method, "a") == 0 &&
+          strcmp(call.failure.source_descriptor, "(IIID)I") == 0 && call.failure.source_pc == 209 &&
+          call.failure.graphics.status == MC_CLIENT_GRAPHICS_LIMIT &&
+          strcmp(call.failure.graphics.site.class_name, "n") == 0 &&
+          strcmp(call.failure.graphics.site.method, "a") == 0 &&
+          strcmp(call.failure.graphics.site.descriptor, "(IIID)I") == 0 &&
+          call.failure.graphics.site.pc == 209 && call.failure.child.pc == 209 && call.depth == 1 &&
+          call.frames[0].pc == 209 && call.state.source_pc == 209 &&
+          call.state.last_store_pc == 129 && call.state.index == 1 &&
+          call.state.selected_chunks == 1 && owner.fields.M == 2 && owner.fields.P == 2 &&
+          owner.fields.N == 0 && owner.fields.O == 0 && owner.fields.Q == 0 &&
+          selected.count == 1 && selected.capacity == 1 && selected.mod_count == 2 &&
+          retained[0] == &actor && actor.source_pc == 24 && result == -1 &&
+          owner.arena.head == NULL && owner.arena.bytes == 0 && owner.arena.allocations == 0);
+    return true;
+}
+
 static bool live_camera_distance(mc_entity_classes *classes) {
     mc_entity *camera = NULL;
     CHECK(mc_minecart_entity_allocate(classes, &camera, NULL) == MC_ENTITY_OK);
@@ -379,7 +490,8 @@ int main(int argc, char **argv) {
     f->app->entities = f->base.entities;
     f->app->source_math_classes = f->math;
     if (!run(f, argv[2]) || !dirty_queue_polls(f) || !dirty_range_marking() ||
-        !subset_selection() || !live_camera_distance(f->base.entities) || !picking_close(f))
+        !subset_selection() || !subset_span_controls() || !live_camera_distance(f->base.entities) ||
+        !picking_close(f))
         return 1;
     free(f);
     printf("Source submission CPU: %u checks; 12 pre-U prefixes\n", checks);

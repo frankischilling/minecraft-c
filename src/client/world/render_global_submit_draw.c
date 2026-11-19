@@ -72,15 +72,19 @@ static void increment(mc_client_render_global_submit_call *c, int32_t *field, un
     mc_terrain_store(c, pc);
 }
 
-static bool choose(mc_client_render_global_submit_call *c, int32_t index, int32_t *count) {
+static bool choose(mc_client_render_global_submit_call *c, int32_t index, int32_t *count,
+                   mc_client_source_dk *const *chunks) {
     mc_client_render_global *n = c->state.owner;
     const bool record_statistics = c->state.pass == 0;
     mc_client_source_dk *dk;
     bool empty;
     if (record_statistics)
         increment(c, &n->fields.M, 32);
-    if (!mc_terrain_array(c, true, index, record_statistics ? 41 : 138, &dk) ||
-        !pass_empty(c, dk, record_statistics ? 42 : 139, record_statistics ? 46 : 143, &empty))
+    dk = chunks == NULL ? NULL : chunks[index];
+    if ((chunks == NULL || (dk != NULL && dk->owner != n)) &&
+        !mc_terrain_array(c, true, index, record_statistics ? 41 : 138, &dk))
+        return false;
+    if (!pass_empty(c, dk, record_statistics ? 42 : 139, record_statistics ? 46 : 143, &empty))
         return false;
     /* No callback runs between classification and selection. */
     if (empty) {
@@ -186,9 +190,15 @@ bool mc_terrain_subset(mc_client_render_global_submit_call *c, int32_t start, in
         return false;
     mc_client_render_list_clear(s);
     int32_t count = 0;
+    /* Selection has no callbacks. Keep the checked path for malformed spans,
+     * including its original per-entry counter stores before failure. */
+    mc_client_source_dk *const *chunks =
+        start >= 0 && end >= start && n->n_length <= INT32_MAX && (size_t)end <= n->n_length
+            ? n->fields.n
+            : NULL;
     for (int32_t i = start; i < end; ++i) {
         c->state.index = i;
-        if (!choose(c, i, &count))
+        if (!choose(c, i, &count, chunks))
             return false;
     }
     double x, y, z;

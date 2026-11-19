@@ -231,6 +231,40 @@ reported zero Chunk updates. Median FPS moved from 457.66 to 455.67 and
 p99 from 5.94 to 5.96 ms. Median p95 fell from 2.97 to 2.96 ms. One pair
 gained FPS, and one pair had lower p99.
 
+## Sorted terrain array admission
+
+The first terrain selection loop validates the sorted array span once.
+Each entry still checks its renderer owner, null receiver and live pass
+array. Malformed spans use the per-entry checks, preserving the counters
+and selected-list prefix before failure. The later batching loop keeps
+its live reads because appending a full batch can reach a GL callback.
+
+Six alternating Windows Release pairs replayed two authored terrain
+passes on each grid. Every pair matched the framebuffer, pixel coverage,
+section order and work counts across 160 timed frames per process.
+
+| Grid | Median before / after (ms) |
+| --- | ---: |
+| 17 × 17 × 8 sections | 0.16570 / 0.16273 |
+| 33 × 33 × 8 sections | 0.24635 / 0.23250 |
+
+A CPU-only fixture ran 64 selection sweeps per sample with a preallocated
+selected list. Six alternating pairs matched section order, counters,
+diagnostics, retained storage and floating-point controls. Median time
+per section fell from 12.21 to 11.20 ns in pass 0 and from 11.27 to 10.21 ns
+in pass 1 on the 17-section grid. On the 33-section grid it fell from
+12.42 to 11.30 ns in pass 0 and from 11.51 to 10.30 ns in pass 1.
+
+The CPU controls cover null and oversized arrays, signed and incomplete
+ranges, empty and reversed spans, invalid passes and a later List
+allocation refusal. They verify the reached diagnostic and retained
+counter, cursor and selected-list state.
+
+All four focused terrain-submission and entity pickup tests passed on
+Windows MSVC Release and Linux Clang Debug with ASan and UBSan. Windows
+compared all 35 terrain replay rows. Mesa compared 30 rows and reported
+five uncredited rows for its unsupported occlusion profile.
+
 ## Settled Far culling and terrain selection
 
 Two sampled Windows Far runs after a 25-second warmup recorded 6,045

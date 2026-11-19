@@ -265,6 +265,11 @@ a Falling Sand Entity. The retained failure identifies renderer `gn` at
 method entry. With Arrow publication fixed and the larger vertex cache, a
 separate 75-second attempt completed 946 ticks before the Player action failed.
 Reloading its save reproduced that failure in the nearby pickup dispatch.
+The later Arrow contact fix routed the reached case through the existing
+collection path. Two reloads of the affected save reproduced the old stop
+after 61 World ticks. The fixed build completed the eight-second reload
+with 165 World ticks, and independent readback verified the autosave.
+See [Arrow contact and collection](../entity/player-action.md#arrow-contact-and-collection).
 
 ### Native replay after context reentry
 
@@ -348,6 +353,51 @@ The longer held-vector run again reached the Bubble allocation after
 406 World ticks. It drew 464 frames before the stop and closed with
 valid focus and pose checks. NBT readback matched the earlier autosave
 at World time 13,799, including all Player position and rotation bits.
+
+### Authored forward movement and reload
+
+The Windows Release observer queues native SDL movement key events
+and lets the SDK apply input to ordinary client frames. These runs use
+authored assets, Far render distance and an 854 × 480 window. The loaded
+Player faces along negative Z from the saved orientation. The observer reads
+the live pose, focus and World counters without changing them.
+
+The candidate completed 200 timed World ticks and moved 42.91 blocks in
+ten seconds. Ordinary Save and Quit returned to a fresh title screen.
+Independent NBT readback recorded World time 244 and Player Z −43.53.
+A new process selected a copy of that save, advanced another 200 timed
+ticks and read back World time 488 and Player Z −86.70 after a second save.
+
+A 75-second route alternated forward and backward input through eight legs
+on the authored floor. The observer verified motion in both directions
+while the window kept focus. The run returned 16,193 frames and 1,499
+timed World ticks before saving through the normal menu. NBT readback
+recorded World time 1,545 and Player Z −91.42. A new process loaded that
+save, completed another 199 timed World ticks and returned to title after
+saving at World time 1,789 and Player Z −134.26.
+
+A 75-second attempt crossed from the authored floor into generated terrain.
+The baseline and candidate both completed 1,338 timed World ticks over about
+66.9 seconds. The terminal Player poses and scheduler work counts matched.
+Both stopped in the active Player tick child at `fd.a:121` calling `gs.w_()`.
+Their last autosaves independently decoded to World time 1,359 and Player
+Z −284.53.
+A repeat with detailed failure output reached the same tick and pose. It
+recorded the Player environment call at `sn.U:299` and the missing Bubble
+allocation at `n.a:120`. A separate reload of the generated-terrain autosave
+stopped in the Living renderer at `n.a:516` before timing began.
+
+| Returned-frame prefix | Frames | FPS | p99 frame time (ms) |
+| --- | ---: | ---: | ---: |
+| Baseline | 3,090 | 46.15 | 64.30 |
+| Candidate | 3,210 | 47.96 | 61.23 |
+
+This single pair describes the returned prefixes at that frontier. A
+separate attempt with a longer authored floor ran for 50.5 seconds and
+stopped in the renderer's World Chunk getter at `n.a:519`. Windows mining
+controls completed forward movement, pickup and two save and reload cycles.
+The independent ten-epoch world-selection fixture passed save readback and
+terminal ownership checks.
 
 ## Evidence and limits
 
