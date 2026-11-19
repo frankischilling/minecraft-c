@@ -709,6 +709,36 @@ static int32_t subtract_light(int32_t level, int32_t subtraction) {
     return mc_java_i32_sub(level, subtraction);
 }
 
+static bool missing_light_shape(cache_query_error *e, unsigned int pc) {
+    return query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL, "actual ew light static Block receiver",
+                      pc, false);
+}
+
+static const struct {
+    const char *name;
+    size_t slot;
+    unsigned int load_pc, field_pc;
+} light_shapes[] = {{"al", 43, 43, 46}, {"aB", 59, 54, 57}, {"au", 52, 65, 68}, {"aI", 66, 76, 79}};
+
+static bool light_shapes_active_use(mc_client_chunk_cache *c, int32_t block, bool *sample,
+                                    cache_query_error *e, mc_registry_error *registry_error) {
+    for (size_t i = 0; i < sizeof(light_shapes) / sizeof(light_shapes[0]); ++i) {
+        const mc_block *shape;
+        if (!registry_result(e,
+                             mc_registry_block_static_get_failure(registry(c), light_shapes[i].name,
+                                                                  &shape, registry_error),
+                             light_shapes[i].load_pc, registry_error))
+            return false;
+        if (shape == NULL)
+            return missing_light_shape(e, light_shapes[i].field_pc);
+        if (shape->fields.bn == block) {
+            *sample = true;
+            break;
+        }
+    }
+    return true;
+}
+
 static bool light_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z, bool neighbors,
                         int32_t *out, cache_query_error *e, mc_registry_error *registry_error) {
     e->method = "a";
@@ -722,36 +752,21 @@ static bool light_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t 
         if (!block_child(c, x, y, z, &block, "a", "(IIIZ)I", 36, e))
             return false;
 
-        static const struct {
-            const char *name;
-            size_t slot;
-            unsigned int load_pc, field_pc;
-        } shapes[] = {
-            {"al", 43, 43, 46}, {"aB", 59, 54, 57}, {"au", 52, 65, 68}, {"aI", 66, 76, 79}};
-
         const mc_registry_classes *ready = registry(c);
-        if (ready != NULL && (ready->entered != 0 || ready->blocks_phase != MC_REGISTRY_READY))
-            ready = NULL;
         bool sample = false;
-        for (size_t i = 0; i < sizeof(shapes) / sizeof(shapes[0]); ++i) {
-            const mc_block *shape;
-            /* Ready static reads cannot call back. Still read each live slot only
-             * when reached, and read the original name after any slow active use. */
-            if (ready != NULL)
-                shape = ready->blocks.named[shapes[i].slot];
-            else if (!registry_result(e,
-                                      mc_registry_block_static_get_failure(
-                                          registry(c), shapes[i].name, &shape, registry_error),
-                                      shapes[i].load_pc, registry_error))
-                return false;
-            if (shape == NULL)
-                return query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL,
-                                  "actual ew light static Block receiver", shapes[i].field_pc,
-                                  false);
-            if (shape->fields.bn == block) {
-                sample = true;
-                break;
+        if (ready != NULL && ready->entered == 0 && ready->blocks_phase == MC_REGISTRY_READY) {
+            /* Ready reads cannot call back. Stop at the first match or null slot. */
+            for (size_t i = 0; i < sizeof(light_shapes) / sizeof(light_shapes[0]); ++i) {
+                const mc_block *shape = ready->blocks.named[light_shapes[i].slot];
+                if (shape == NULL)
+                    return missing_light_shape(e, light_shapes[i].field_pc);
+                if (shape->fields.bn == block) {
+                    sample = true;
+                    break;
+                }
             }
+        } else if (!light_shapes_active_use(c, block, &sample, e, registry_error)) {
+            return false;
         }
         if (sample) {
             const int32_t xyz[5][3] = {{x, mc_java_i32_add(y, 1), z},

@@ -3078,8 +3078,8 @@
       "sha256": "c6f3bab175d837bdff85d0d8a5bf4977d03950ed438d599aa1b55e28933669da"
     },
     "src/client/render_engine/nw.c": {
-      "bytes": 29664,
-      "sha256": "16cff6520658b5981e3d4d197751fec5cb967588f781f6781bf15b841dd5b175"
+      "bytes": 29878,
+      "sha256": "1b57b5d26a6de618617538ca8dee254568820341cf52eb9aef23a5e83d01d3f6"
     },
     "src/client/render_engine/nw.h": {
       "bytes": 6588,
@@ -6427,7 +6427,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938201,
-      "sha256": "a63a3c0ffe5a718f950ff8b1ba600fbd9212badff4f1136f4eb8373b19dc2217"
+      "sha256": "c8dd401b88fd273e00064a7a1aacbb68083bcae05241ebcc2f3f61c8db6405ce"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6491,7 +6491,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1068460,
-      "sha256": "ec3d4bdd9746eb69f56771ddbcc3efb245a7debe9793133a30b981076fe0fe95"
+      "sha256": "c49847c6a111ba0a434a9ef5148039b3ce03920b658c015f4675c938e3379033"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6623,7 +6623,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 935026,
-      "sha256": "93d294b55ea81eacb989186f7e871fccd9f68d341ca58391d5caa166dad0ebb4"
+      "sha256": "9f16eaa239ce0204dc09fa829cbde22936ce0b45c19899a39d584ccebf515a59"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -11750,8 +11750,8 @@
       "sha256": "3e6e0b238dfe0d0ef272957574056d97be18b5d00060cf2258fff9b55e29fc17"
     },
     "src/client/render/blocks/access.c": {
-      "bytes": 25327,
-      "sha256": "3d8b5f05ee00806d330c4e685bb061058f1c6c89ad7f5d2e976d01957327d3f0"
+      "bytes": 25222,
+      "sha256": "de1718a26a1898c02a19dd71e986b4d9b5b3ed9d29e07083dc56d2b085e6df65"
     },
     "src/client/render/blocks/ambient_occlusion.c": {
       "bytes": 14963,
@@ -11778,8 +11778,8 @@
       "sha256": "4eb109dad24b3d7d43e397a91eea5c4f0d6417fb386c0bf84d254e2687187d84"
     },
     "src/client/render/blocks/internal.h": {
-      "bytes": 13317,
-      "sha256": "9e7ffabb990b7089c499c03660755c1b1cf5f64941d1ccafe58ae3732e67cfde"
+      "bytes": 13387,
+      "sha256": "e78f137dd18d60b3748d13709b2081f4458973539c6a635611ae0053b50f23fc"
     },
     "src/client/render/blocks/render.c": {
       "bytes": 9206,
@@ -12254,8 +12254,8 @@
       "sha256": "03fae9d45bc2d949cc3cfd922ac3c5e77c50f7c870ee7e0cd8f2f570a8b03c2c"
     },
     "tests/client/render_engine/test_nw_normals.c": {
-      "bytes": 15251,
-      "sha256": "6410c4582399568bd8b98eb07ae3b6e54182e62490fae76d792e21eb4b9f6359"
+      "bytes": 16016,
+      "sha256": "f01571b3a40e548505d8f6c4aff2a2fe4ab0550cbfb404c1e9d729b9f32617b5"
     },
     "tests/reference/client/lighting_raster/ConvertedRasterObservation.java": {
       "bytes": 4790,
@@ -13750,8 +13750,8 @@
       "sha256": "39ee7f49684cdefaa5bab60c00dfe12708898111b68a8b4aa4ec552be7193f43"
     },
     "src/world/runtime/chunk_cache.c": {
-      "bytes": 47922,
-      "sha256": "1755717923e2c5c1470e30c39f6668b6a70efff979f5a2d1f253a405087583e9"
+      "bytes": 48485,
+      "sha256": "4cf28857da757b638c51ad3e23e9fbd3074911f2978a62744814573047a8c20a"
     },
     "src/world/runtime/chunk_cache_internal.h": {
       "bytes": 4074,
@@ -21134,8 +21134,8 @@
       "sha256": "c139f7e3ef971d333fd08805edbdc162a294ac1a17652febd922ee691baf76a3"
     },
     "docs/performance/chunk-rendering.md": {
-      "bytes": 35365,
-      "sha256": "9445709fbec7d0413577b5c6e44978a84e1bb51af050935438920065e3a995c9"
+      "bytes": 37892,
+      "sha256": "0f73ac382f772e02f5af62f96b71497e2e1bc9ea8ade9c85e1232354778e7e80"
     },
     "tests/benchmarks/chunk_cache_render_windows.json": {
       "bytes": 2023922,

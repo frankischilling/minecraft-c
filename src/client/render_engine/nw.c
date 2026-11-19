@@ -475,6 +475,13 @@ static void copy_vertex_words(int32_t *target, const int32_t *source,
     memcpy(target, source, 3 * sizeof(*target));
 }
 
+static inline int32_t offset_counter(int32_t value, int32_t offset) {
+    const uint32_t bits = (uint32_t)value + (uint32_t)offset;
+    int32_t result;
+    memcpy(&result, &bits, sizeof(result));
+    return result;
+}
+
 static bool duplicate_quad(mc_client_tessellator *o, mc_client_graphics_error *e) {
     mc_client_nw_fields *f = &o->fields;
     /* Both duplicates fit. The checked path retains each write and cursor
@@ -484,7 +491,7 @@ static bool duplicate_quad(mc_client_tessellator *o, mc_client_graphics_error *e
     int32_t *target = (int32_t *)(void *)f->g + f->o;
     copy_vertex_words(target, target - 24, f);
     copy_vertex_words(target + 8, target - 8, f);
-    f->h = mc_java_i32_add(f->h, 2);
+    f->h = offset_counter(f->h, 2);
     f->o += 16;
     o->last_store_pc = 234;
     return true;
@@ -493,17 +500,17 @@ static bool duplicate_quad(mc_client_tessellator *o, mc_client_graphics_error *e
 static bool vertex(mc_client_tessellator *o, double x, double y, double z,
                    mc_client_graphics_error *e) {
     mc_client_nw_fields *f = &o->fields;
-    f->p = mc_java_i32_add(f->p, 1);
+    f->p = offset_counter(f->p, 1);
     o->last_store_pc = 7;
     if (f->r == 7 && o->classes->nw.b && f->p % 4 == 0 && !duplicate_quad(o, e))
         return false;
     if (!write_vertex(o, x, y, z, e))
         return false;
-    f->o = mc_java_i32_add(f->o, 8);
+    f->o = offset_counter(f->o, 8);
     o->last_store_pc = 405;
-    f->h = mc_java_i32_add(f->h, 1);
+    f->h = offset_counter(f->h, 1);
     o->last_store_pc = 415;
-    if (f->h % 4 == 0 && f->o >= mc_java_i32_sub(f->B, 32)) {
+    if (f->h % 4 == 0 && f->o >= offset_counter(f->B, -32)) {
         if (!draw(o, o->classes->bound_display, e)) {
             e->parent = site("a", "(DDD)V", 442);
             return false;

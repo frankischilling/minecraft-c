@@ -109,7 +109,6 @@ bool mc_cv_tile_bound(mc_cv_context *, const void *, int32_t, int32_t, int32_t, 
 bool mc_cv_fail(mc_cv_context *, mc_client_render_global_status, const char *, unsigned int,
                 bool native_policy);
 bool mc_cv_fp(mc_cv_context *, unsigned int);
-void mc_cv_store(mc_cv_context *, unsigned int);
 bool mc_cv_push(mc_cv_context *, const char *method, const char *descriptor);
 bool mc_cv_push_source(mc_cv_context *, const char *class_name, const char *method,
                        const char *descriptor);
@@ -123,6 +122,11 @@ static inline void mc_cv_pc(mc_cv_context *c, unsigned int pc) {
     c->source_pc = pc;
     if (c->depth != 0)
         c->frames[c->depth - 1].pc = pc;
+}
+
+static inline void mc_cv_store(mc_cv_context *c, unsigned int pc) {
+    mc_cv_pc(c, pc);
+    c->last_store_pc = pc;
 }
 
 bool mc_cv_nw(mc_cv_context *, unsigned int);

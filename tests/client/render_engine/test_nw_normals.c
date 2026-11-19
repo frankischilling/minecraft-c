@@ -223,6 +223,25 @@ static void duplicate_prefix(void) {
         CHECK(memcmp(words, expected, sizeof(words)) == 0);
     }
     owner->fields = initial;
+    owner->fields.r = 4;
+    owner->fields.g = words;
+    owner->fields.B = 64;
+    owner->fields.h = owner->fields.p = INT32_MAX;
+    CHECK(mc_client_nw_vertex_uv(owner, 1, -2, 3, 0.5, 0.25, &error));
+    CHECK(owner->fields.h == INT32_MIN && owner->fields.p == INT32_MIN && owner->fields.o == 8 &&
+          owner->last_store_pc == 415);
+
+    owner->fields = initial;
+    owner->fields.g = words;
+    owner->fields.B = 64;
+    owner->fields.o = 24;
+    owner->fields.h = INT32_MAX - 1;
+    owner->fields.p = INT32_MAX;
+    CHECK(mc_client_nw_vertex_uv(owner, 1, -2, 3, 0.5, 0.25, &error));
+    CHECK(owner->fields.h == INT32_MIN + 1 && owner->fields.p == INT32_MIN &&
+          owner->fields.o == 48 && owner->last_store_pc == 415);
+
+    owner->fields = initial;
     CHECK(mc_client_render_engine_classes_release(classes) == MC_CLIENT_RENDER_ENGINE_OK);
 }
 

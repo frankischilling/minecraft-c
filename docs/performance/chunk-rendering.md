@@ -70,6 +70,53 @@ A separate vertex trial paired the x and y floating-point operations. It
 failed the authored test for a vertex with distinct NaN payloads. Finite
 vertex output matched across all six CPU pairs. The trial was dropped.
 
+## Cached lighting and Tessellator counters
+
+Two Windows Far traces after a two-second warmup recorded 7,005 render-thread
+positions while sections compiled. Block reads accounted for 460 named samples,
+cached lighting for 392, and the ambient occlusion body for 228. Of the 406
+samples in the slowest 5% of frames, cached lighting accounted for 25 and Block
+reads for 21. Sampling pauses the render thread briefly. The frame comparisons
+use uninstrumented builds.
+
+Cached lighting branches on Block registry readiness before entering the slot
+loop. The ready path reads live slots in order and stops at the first match or
+null slot. If the registry needs active use, each reached lookup uses the
+captured name and keeps its original failure location. The [fixed-work getter
+benchmark](../../tests/tools/world/benchmark_chunk_cache_render.py) ran six
+alternating pairs with 65,536 queries per sample. Result hashes, light planes,
+ownership and World state matched. A trial that split recursive sampling into
+a separate routine took longer on both brightness workloads and was dropped.
+
+| Getter | Median before / after (ns) |
+| --- | ---: |
+| Brightness | 53.49 / 49.91 |
+| Minimum brightness | 51.95 / 49.84 |
+| Material | 16.46 / 16.76 |
+| Opacity | 21.21 / 21.90 |
+| Normal cube | 24.19 / 25.05 |
+| Chunk manager | 7.63 / 7.51 |
+
+The renderer inlines its store bookkeeping with the same recorded program
+counters. The Tessellator advances its hot counters with fixed-width unsigned
+arithmetic and copies the resulting bits back to each signed field. Authored
+tests cover wraparound in ordinary submission and while duplicating a quad.
+Six alternating CPU pairs matched every stored vertex word, counter and
+MXCSR result across 4,096 inputs per batch in each mode. Median submission time
+fell from 53.34 to 52.93 ns in mode 4 and from 54.97 to 53.90 ns in quad mode.
+
+Four early Far pairs compared these changes against `3b4c095e` in the
+stationary authored 854×480 scene on an i9-10900F with an RTX 3060. All
+eight ten-second intervals completed 200 World ticks and continued compiling
+sections. Median FPS rose from 74.51 to 75.83 (+1.77%). Median run p95 fell
+from 14.77 to 14.51 ms and p99 fell from 15.69 to 15.27 ms. FPS rose and p99
+fell in every pair.
+
+Three pairs after a 25-second warmup completed the same World tick count and
+reported zero Chunk updates. Median FPS moved from 457.66 to 455.67 and
+p99 from 5.94 to 5.96 ms. Median p95 fell from 2.97 to 2.96 ms. One pair
+gained FPS, and one pair had lower p99.
+
 ## Settled Far culling and terrain selection
 
 Two sampled Windows Far runs after a 25-second warmup recorded 6,045

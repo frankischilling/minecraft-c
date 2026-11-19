@@ -38,11 +38,6 @@ bool mc_cv_push(mc_cv_context *c, const char *method, const char *descriptor) {
     return mc_cv_push_source(c, "cv", method, descriptor);
 }
 
-void mc_cv_store(mc_cv_context *c, unsigned int pc) {
-    mc_cv_pc(c, pc);
-    c->last_store_pc = pc;
-}
-
 bool mc_cv_fp(mc_cv_context *c, unsigned int pc) {
     return (_mm_getcsr() & 0xffc0u) == 0x1f80u ||
            mc_cv_fail(c, MC_CLIENT_RENDER_GLOBAL_UNSUPPORTED_FP,
