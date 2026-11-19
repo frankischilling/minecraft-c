@@ -22,8 +22,9 @@ Four alternating pairs against `22837ae9` measured 72.21 FPS before and 72.23
 FPS after, with two pairs faster and two slower. Median run p95 frame time
 was 15.32 ms before and 15.26 ms after. All eight intervals completed 200
 World ticks in the stationary authored Far scene at 854×480 after a two-second
-warmup, on an i9-10900F with an RTX 3060. This comparison measured steady
-rendering. The rebuild test checks arena use during distance changes.
+warmup, on an i9-10900F with an RTX 3060. The client's final counters still
+reported 214–233 Chunk updates per second across the eight runs. The rebuild
+test checks arena use during distance changes.
 
 ## Sky-change dirty marking
 

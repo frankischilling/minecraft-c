@@ -21130,8 +21130,8 @@
       "sha256": "c139f7e3ef971d333fd08805edbdc162a294ac1a17652febd922ee691baf76a3"
     },
     "docs/performance/chunk-rendering.md": {
-      "bytes": 28756,
-      "sha256": "f3967217da406b95d6106ba98011bb901c55955863bcffb0940987c3891bf2e3"
+      "bytes": 28814,
+      "sha256": "a569a9b14e3c045f2a90911e27b4ce69814d313580beab3594c09b5165658e8e"
     },
     "tests/benchmarks/chunk_cache_render_windows.json": {
       "bytes": 2023922,
