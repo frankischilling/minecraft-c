@@ -22,6 +22,12 @@ mc_world_storage_status mc_world_runtime_material_get_source_detailed(
     mc_world_runtime *, int32_t x, int32_t y, int32_t z, mc_material **out,
     mc_world_material_error *, mc_world_runtime_acquisition_error *, bool *provider_null);
 
+/* Ordinary acquiring solid support with the same failure record. The optional
+ * diagnostic is untouched on success. */
+mc_world_storage_status mc_world_runtime_solid_support_get_failure(mc_world_runtime *, int32_t x,
+                                                                   int32_t y, int32_t z, bool *out,
+                                                                   mc_world_solid_support_error *);
+
 typedef struct mc_world_solid_support_detail {
     mc_world_solid_support_error error;
     mc_world_nearby_error access;

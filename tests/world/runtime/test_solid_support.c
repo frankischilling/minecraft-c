@@ -7,6 +7,7 @@
 #include "../../../src/block/registry/registry_internal.h"
 #include "../../../src/core/java/random_profile_internal.h"
 #include "../../../src/platform/time/millis.h"
+#include "../../../src/world/runtime/block_queries_internal.h"
 #include "../../../src/world/runtime/chunk_provider_internal.h"
 #include "../../../src/world/runtime/runtime_internal.h"
 #include "../../../src/world/storage/files.h"
@@ -110,6 +111,13 @@ static bool same_registry(const mc_registry_error *a, const mc_registry_error *b
            a->format_error.flags == b->format_error.flags &&
            a->format_error.conversion == b->format_error.conversion &&
            a->format_error.date_time == b->format_error.date_time;
+}
+
+static bool same_solid_error(const mc_world_solid_support_error *a,
+                             const mc_world_solid_support_error *b) {
+    return a->status == b->status && a->operation == b->operation && a->bytecode == b->bytecode &&
+           a->source_null == b->source_null && same_cause(&a->cause, &b->cause) &&
+           same_registry(&a->registry, &b->registry);
 }
 
 static bool fresh_registry(const mc_registry_error *error, mc_registry_status status) {
@@ -454,9 +462,14 @@ static bool late_array(fixture *f, size_t side) {
     r->blocks.m = NULL;
     const mc_world_storage_status outside =
         mc_world_runtime_solid_support_get(w, 8, -1, 8, &value, &error);
+    bool private_value = false;
+    mc_world_solid_support_error private_error;
+    const mc_world_storage_status private_outside =
+        mc_world_runtime_solid_support_get_failure(w, 8, -1, 8, &private_value, &private_error);
     r->blocks.m = saved;
     CHECK(outside == MC_WORLD_STORAGE_UNSUPPORTED_STATE && !value && error.bytecode == 10 &&
-          error.registry.status == MC_REGISTRY_NULL_REFERENCE);
+          error.registry.status == MC_REGISTRY_NULL_REFERENCE && private_outside == outside &&
+          !private_value && same_solid_error(&error, &private_error));
 
     mc_world_runtime *limited = f->worlds[side + 4u];
     value = true;
@@ -510,16 +523,30 @@ static bool selected_predicates(fixture *f, size_t side) {
     stone->fields.bA = NULL;
     const mc_world_storage_status null_material =
         mc_world_runtime_solid_support_get(w, 8, 64, 8, &value, &error);
+    bool private_value = false;
+    mc_world_solid_support_error private_error;
+    const mc_world_storage_status private_null_material =
+        mc_world_runtime_solid_support_get_failure(w, 8, 64, 8, &private_value, &private_error);
     stone->fields.bA = saved_material;
     CHECK(null_material == MC_WORLD_STORAGE_UNSUPPORTED_STATE && !value && error.bytecode == 25 &&
           fresh_registry(&error.registry, MC_REGISTRY_NULL_REFERENCE) &&
-          same_cause(&error.cause, mc_world_runtime_last_error(w)));
+          same_cause(&error.cause, mc_world_runtime_last_error(w)) &&
+          private_null_material == null_material && !private_value &&
+          same_solid_error(&error, &private_error));
     const mc_world_storage_error old_world = *mc_world_runtime_last_error(w);
     const mc_registry_error old_registry = *mc_world_runtime_last_registry_error(w);
     value = false;
     CHECK(mc_world_runtime_solid_support_get(w, 8, 64, 8, &value, &error) == MC_WORLD_STORAGE_OK &&
           value && error.status == MC_WORLD_STORAGE_OK && error.bytecode == 0 &&
           fresh_registry(&error.registry, MC_REGISTRY_OK) &&
+          same_cause(&old_world, mc_world_runtime_last_error(w)) &&
+          same_registry(&old_registry, mc_world_runtime_last_registry_error(w)));
+    unsigned char sentinel[sizeof(private_error)];
+    memset(&private_error, 0xa5, sizeof(private_error));
+    memcpy(sentinel, &private_error, sizeof(sentinel));
+    CHECK(mc_world_runtime_solid_support_get_failure(w, 8, 64, 8, &private_value, &private_error) ==
+              MC_WORLD_STORAGE_OK &&
+          private_value && memcmp(sentinel, &private_error, sizeof(sentinel)) == 0 &&
           same_cause(&old_world, mc_world_runtime_last_error(w)) &&
           same_registry(&old_registry, mc_world_runtime_last_registry_error(w)));
 

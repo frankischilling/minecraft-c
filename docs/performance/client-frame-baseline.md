@@ -328,6 +328,55 @@ initial section work. Median FPS rose from 68.55 to 69.98 and median frame
 p99 fell from 17.56 to 16.78 ms. Both improved in all four pairs. The longest
 frame improved in two pairs and rose in two.
 
+### Mob spawning position reads
+
+Three Windows profiles at `585897da` captured 601 World ticks after a
+30-second Far warmup. The camera stayed fixed and the FPS strings all
+reported zero Chunk updates. The timers bracket individual calls and
+contribute to the absolute timings. Position checks are part of trials
+and include solid-support and material reads.
+
+| Work per tick | Median calls | Median host time |
+| --- | ---: | ---: |
+| Spawning | 1 | 2.158 ms |
+| Biome lookup | 867 | 0.423 ms |
+| Weighted spawn entry | 867 | 0.088 ms |
+| Spawn position checks | 3,480 | 0.821 ms |
+| Solid-support reads | 4,443 | 0.972 ms |
+| Material reads | 486 | 0.053 ms |
+
+The solid-support count includes the initial candidate filters as well as
+the trial positions. These measurements overlap within the scheduler.
+
+Eight Windows Release pairs compared a lighter solid-support read in the
+authored scheduler cases. It uses the Block array captured before acquisition
+and copies a diagnostic record to the spawning caller on failure. The measured
+prefixes matched in candidate visits, Random draws and end state, constructors,
+rejections and publications.
+
+| Spawning workload | Samples per build | Median before / trial | p95 before / trial |
+| --- | ---: | ---: | ---: |
+| Resident Chunks, rejected predicates | 40 | 0.800 / 0.767 ms | 0.884 / 0.910 ms |
+| Cold acquisition and publication | 32 | 60.37 / 59.57 ms | 63.77 / 61.67 ms |
+
+Four Far pairs with separate builds reduced the median World tick batch from
+4.230 to 3.996 ms, with a decrease in every pair. Median FPS went from 387.56
+to 377.41 and frame p99 went from 7.62 to 7.69 ms. FPS and p99 improved in two
+pairs each. The median frame with no World tick rose from 2.192 to 2.264 ms.
+
+Three more pairs used a byte-identical executable that selected the
+solid-support path only for spawning. Median tick batches fell from 4.198 to
+3.955 ms, and frame p99 fell from 7.86 to 7.25 ms. Both fell in every pair.
+Median FPS was 388.81 with the original path and 388.78 with the trial path.
+All reported FPS strings in both cohorts counted zero Chunk updates.
+
+Two repeats used normal CMake Release libraries. Median Far FPS rose from
+385.87 to 391.73, frame p99 fell from 7.59 to 7.24 ms, and the median tick
+batch fell from 4.214 to 3.914 ms. Both pairs improved on those three
+metrics. All reported FPS strings counted zero Chunk updates. The native
+controls checked failure records and the spawning caller's error buffer on
+success. A callback test replaced the Block array during acquisition.
+
 ## Fixed-input observer
 
 Build both comparison executables with the same observer source. The runner

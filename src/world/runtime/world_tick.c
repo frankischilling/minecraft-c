@@ -5,6 +5,7 @@
 #include "../../entity/player/player_internal.h"
 #include "../info/tick_source_internal.h"
 #include "../info/weather_source_internal.h"
+#include "block_queries_internal.h"
 #include "chunk_provider_internal.h"
 #include "construction_internal.h"
 #include "entity_tick_math_internal.h"
@@ -610,8 +611,8 @@ static bool spawn_solid(mc_world_tick_call *c, int32_t x, int32_t y, int32_t z, 
                         unsigned int helper_pc, bool *out) {
     c->error.child_bytecode = pc;
     c->error.descendant_bytecode = helper_pc;
-    if (mc_world_runtime_solid_support_get(c->state.world, x, y, z, out, &c->spawning.solid) ==
-        MC_WORLD_STORAGE_OK)
+    if (mc_world_runtime_solid_support_get_failure(c->state.world, x, y, z, out,
+                                                   &c->spawning.solid) == MC_WORLD_STORAGE_OK)
         return true;
     c->error.spawning = &c->spawning;
     c->spawning.bytecode = pc;

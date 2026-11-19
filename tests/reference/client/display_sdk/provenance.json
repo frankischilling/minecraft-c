@@ -3398,8 +3398,8 @@
       "sha256": "9d6b50605df8db62bce182c085fdeb5141afac3038ef8dcecb7623caca759138"
     },
     "src/world/runtime/world_tick.c": {
-      "bytes": 65285,
-      "sha256": "cfdc302b8cbd4b54bd4956035bb733a9d24b64689bdbf24ac91e78a7b044050d"
+      "bytes": 65372,
+      "sha256": "e358f60e091ab9275b6dbd202a719c12620f57d6e6a4bf9360cbd3c355ad7cf5"
     },
     "src/world/runtime/world_tick_scheduled.c": {
       "bytes": 10638,
@@ -9010,8 +9010,8 @@
       "sha256": "65e2a7a6a20c72f0c558e89d166676e33552efd97653a4483332c423eea9f1c8"
     },
     "src/world/runtime/block_queries_internal.h": {
-      "bytes": 2366,
-      "sha256": "d01a334d2d002fb6ffa4d3159d8423e956d26e37b4be74b4ad55461dfeb7c983"
+      "bytes": 2786,
+      "sha256": "8b387e99f05b2dcce5c59772a88f06b9857ef65e9f9849c9ba854629b9ca0010"
     },
     "src/world/runtime/chunk_provider_state_internal.h": {
       "bytes": 1519,
