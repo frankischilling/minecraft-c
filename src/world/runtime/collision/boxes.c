@@ -10,6 +10,7 @@
 #include "mc/core/math/math.h"
 
 #include <limits.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -23,10 +24,13 @@
 #include <emmintrin.h>
 
 void mc_world_collision_error_init(mc_world_collision_error *error) {
-    static const mc_world_collision_error zero = {0};
     if (error == NULL)
         return;
-    *error = zero;
+    const size_t start = offsetof(mc_world_collision_error, nearby);
+    const size_t end = start + sizeof(error->nearby);
+    unsigned char *const bytes = (unsigned char *)error;
+    memset(bytes, 0, start);
+    memset(bytes + end, 0, sizeof(*error) - end);
     mc_world_nearby_error_init(&error->nearby);
 }
 

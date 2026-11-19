@@ -2762,8 +2762,8 @@
       "sha256": "5ad7d035b189651ea91c31ee9ac9427dd11a7e3f06288888325a526a667ba2e5"
     },
     "tests/world/runtime/collision/test_boxes.c": {
-      "bytes": 73739,
-      "sha256": "ce8e7c54c5c2daeb9d46078ed4dac7f321258ca81801462ff57fd410d760acda"
+      "bytes": 75942,
+      "sha256": "2b140d09e319d3f17c1e8361052235357905962842dea6c4a586a4d875a81815"
     },
     "tests/world/runtime/collision/test_raytrace.c": {
       "bytes": 21992,
@@ -9675,7 +9675,7 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76652,
-      "sha256": "123bcc1c1701dcc94f6c0aeaa8016d66bf82107e7227020a7e53f43a1b7466ad"
+      "sha256": "af1e6e31d13c7913c3d7e1b9b4db4a595d9523aa38d4a44585b17c63ec360111"
     },
     "tests/tools/world/world_query_inputs.py": {
       "bytes": 4725,
@@ -9855,7 +9855,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "4079915f1448c64801ceab15f426822678b149e38b19ac798b41c4b9e9f72a15"
+      "sha256": "013e7dc61e062f6097e5fb6e6a8432ea7caf5fa3c756a80dc36ca0324777c9bf"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,
@@ -9863,7 +9863,7 @@
     },
     "tests/tools/entity/test_damage_native_close.py": {
       "bytes": 17605,
-      "sha256": "55e212bfb3038aac4cd1613cc85b814077554ac0e6cb1a135008541204dab8d2"
+      "sha256": "93349f0eca81e60ce7944ba122fe5f363086c0da52632556a0800a0620c80a9d"
     },
     "tests/world/runtime/world_access/test_damage_close_execution.c": {
       "bytes": 30398,

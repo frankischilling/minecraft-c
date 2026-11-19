@@ -11,6 +11,7 @@
 #include "mc/core/math/math.h"
 
 #include <limits.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -24,10 +25,20 @@
 #include <emmintrin.h>
 
 void mc_world_nearby_error_init(mc_world_nearby_error *error) {
-    static const mc_world_nearby_error zero = {0};
     if (error == NULL)
         return;
-    *error = zero;
+    /* The three child initializers clear their own storage. */
+    const size_t tile_start = offsetof(mc_world_nearby_error, tile_entity);
+    const size_t tile_end = tile_start + sizeof(error->tile_entity);
+    const size_t batch_start = offsetof(mc_world_nearby_error, batch);
+    const size_t batch_end = batch_start + sizeof(error->batch);
+    const size_t load_start = offsetof(mc_world_nearby_error, load_entity);
+    const size_t load_end = load_start + sizeof(error->load_entity);
+    unsigned char *const bytes = (unsigned char *)error;
+    memset(bytes, 0, tile_start);
+    memset(bytes + tile_end, 0, batch_start - tile_end);
+    memset(bytes + batch_end, 0, load_start - batch_end);
+    memset(bytes + load_end, 0, sizeof(*error) - load_end);
     error->slice = SIZE_MAX;
     error->index = SIZE_MAX;
     mc_live_tile_entities_error_init(&error->tile_entity);

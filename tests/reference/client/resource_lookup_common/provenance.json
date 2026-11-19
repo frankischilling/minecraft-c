@@ -4642,8 +4642,8 @@
       "sha256": "4e5984aad16929de566746113e881a571f8198974bd171df826103773cdcdd67"
     },
     "src/world/runtime/collision/boxes.c": {
-      "bytes": 26575,
-      "sha256": "3cca889451dd46fa4c47d0ffa2dc52037bd6f0986ff168d4b7a466a00e4cf5a3"
+      "bytes": 26781,
+      "sha256": "061e723ba9a795ae10a6721fa48b5b5b86c2821407b3515f7c756c0358a1fb90"
     },
     "src/world/runtime/collision/boxes_internal.h": {
       "bytes": 1673,
@@ -4658,8 +4658,8 @@
       "sha256": "93f9e71649390515f35169ec498e826f3c46bbe1bdf417eab0186c0f4a9ddae7"
     },
     "src/world/runtime/collision/entities.c": {
-      "bytes": 34989,
-      "sha256": "6237f44915f2b8f53a91d3506146d4727303dc2e1007d57f553d00ffd6d6bb84"
+      "bytes": 35695,
+      "sha256": "f039d9de9919cd383e1ac67e492a83940b4ac9dc303c853c356e0ca2d2a738e8"
     },
     "src/world/runtime/collision/entities_internal.h": {
       "bytes": 1949,
@@ -6419,7 +6419,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938028,
-      "sha256": "0de876cf1c8d5b514a83f4bfcec1b0a93e213248c7076e65ba49e50f175ece93"
+      "sha256": "3cbcb9d0601d01570676821352877a98bde2942522d54861964d319624a5ee7f"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6483,7 +6483,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067982,
-      "sha256": "72c9b60ad5603cf8f555cf3235f7a8fab25ed7887a2fd0e2f99330ee7a1c2b8e"
+      "sha256": "48d245569a822a51c466b2dd4113a06a2c83806b8f9bff1e0fa41cb618b7e8b8"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6615,7 +6615,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934853,
-      "sha256": "eee241f56158176914d2b687a3741cd07662ebb862b71122786d1d02be275a97"
+      "sha256": "7779aabe266c2e022d9dfc5dc21ecb4ffae23989a70d3e063516ccdd6fad38e4"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -9082,8 +9082,8 @@
       "sha256": "465d0a8842fe7f3c30d3b78442bbf33c044298078463bfe295eef3257dc2ef31"
     },
     "tests/world/runtime/collision/test_boxes.c": {
-      "bytes": 73739,
-      "sha256": "ce8e7c54c5c2daeb9d46078ed4dac7f321258ca81801462ff57fd410d760acda"
+      "bytes": 75942,
+      "sha256": "2b140d09e319d3f17c1e8361052235357905962842dea6c4a586a4d875a81815"
     },
     "tests/world/runtime/collision/test_class_entities.c": {
       "bytes": 30320,
@@ -23355,11 +23355,11 @@
     },
     "tests/tools/world/test_world_query_controls.py": {
       "bytes": 76652,
-      "sha256": "123bcc1c1701dcc94f6c0aeaa8016d66bf82107e7227020a7e53f43a1b7466ad"
+      "sha256": "af1e6e31d13c7913c3d7e1b9b4db4a595d9523aa38d4a44585b17c63ec360111"
     },
     "tests/tools/world/world_query_controls_bundle.json": {
       "bytes": 61334,
-      "sha256": "0bfd55db7ae49d275b8320c59f6738d571a91ae78c46f145ffe799212053eb33"
+      "sha256": "2005b1db950f7e9b312d5caf612202df7d4e728f9d0aae623cb95a2caea5d455"
     },
     "tests/tools/world/world_query_controls_protocol.json": {
       "bytes": 33175,
@@ -23559,11 +23559,11 @@
     },
     "tests/tools/client/arrow_world_tick_cleanup_bundle.json": {
       "bytes": 9794,
-      "sha256": "8cc1d832e1f2012869277914428df1df13933031fed403b419d3ec2d2264b3e8"
+      "sha256": "3323596953a577e68e794b3a8a2e06dd66b0ffadac2e1aedfc02a4013a42d29c"
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "4079915f1448c64801ceab15f426822678b149e38b19ac798b41c4b9e9f72a15"
+      "sha256": "013e7dc61e062f6097e5fb6e6a8432ea7caf5fa3c756a80dc36ca0324777c9bf"
     },
     "docs/entity/arrow-flight.md": {
       "bytes": 12048,
@@ -23575,11 +23575,11 @@
     },
     "tests/tools/entity/damage_native_close_bundle.json": {
       "bytes": 13011,
-      "sha256": "b3200197769e47e53701cddd69a807f67bbe8897ff184f14627dc501838efc2b"
+      "sha256": "af81e1ff332440c8d4b1d236658c6784620e7166314fdad7fbe5896e4d55984f"
     },
     "tests/tools/entity/test_damage_native_close.py": {
       "bytes": 17605,
-      "sha256": "55e212bfb3038aac4cd1613cc85b814077554ac0e6cb1a135008541204dab8d2"
+      "sha256": "93349f0eca81e60ce7944ba122fe5f363086c0da52632556a0800a0620c80a9d"
     },
     "tests/world/runtime/world_access/test_damage_close_execution.c": {
       "bytes": 30398,

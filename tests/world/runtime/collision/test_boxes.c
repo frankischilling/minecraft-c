@@ -20,6 +20,42 @@
  * fault controls are temporary and restored before assertions can branch. */
 static size_t boxes_first_capacity_bytes[2];
 
+static bool boxes_diagnostic_defaults(void) {
+    mc_world_collision_error actual;
+    for (int pattern = 0; pattern <= 255; ++pattern) {
+        memset(&actual, pattern, sizeof(actual));
+        mc_world_collision_error_init(&actual);
+        const mc_world_nearby_error *nearby = &actual.nearby;
+        const mc_registry_error *registry = &nearby->query.registry;
+        CHECK(nearby->query.status == MC_WORLD_STORAGE_OK && nearby->query.operation == NULL &&
+              nearby->query.chunk_bytecode == 0 && nearby->query.source_chunk == NULL &&
+              nearby->entity.status == MC_ENTITY_OK && nearby->entity.operation == NULL &&
+              nearby->activation_bytecode == 0 && nearby->load_builder_bytecode == 0 &&
+              nearby->slice == SIZE_MAX && nearby->index == SIZE_MAX);
+        CHECK(registry->status == MC_REGISTRY_OK && registry->message == NULL &&
+              registry->initializer_pc == -1 && registry->block_id == -1 &&
+              registry->constructor_pc == -1 && registry->active_initializer_pc == -1 &&
+              registry->item_argument == -1 && nearby->tile_entity.registry.initializer_pc == -1);
+        CHECK(nearby->tile_entity.status == MC_WORLD_STORAGE_OK &&
+              nearby->tile_entity.batch.index == SIZE_MAX &&
+              nearby->tile_entity.load_entity.index == SIZE_MAX &&
+              nearby->batch.index == SIZE_MAX && nearby->load_entity.index == SIZE_MAX &&
+              nearby->load_entity.factory.status == MC_ENTITY_NBT_OK &&
+              nearby->load_entity.provenance.status == MC_ENTITY_NBT_OK);
+        CHECK(actual.bounds.status == MC_ENTITY_OK && actual.bounds.operation == NULL &&
+              actual.bounds.bytecode == 0 && actual.block_class == NULL &&
+              actual.world_bytecode == 0 && actual.block_bytecode == 0 &&
+              actual.piston_bytecode == 0 && actual.shifted_bytecode == 0 && actual.x == 0 &&
+              actual.y == 0 && actual.z == 0 && actual.lazy_addition == NULL &&
+              !actual.lazy_source_null);
+    }
+    mc_world_collision_error_init(NULL);
+    mc_world_nearby_error_init(NULL);
+    return true;
+cleanup:
+    return false;
+}
+
 static bool boxes_open_store(fixture *f, size_t slot, const char *root) {
     bool ok = false;
     char path[8192];
@@ -1236,6 +1272,7 @@ int MC_COLLISION_BOXES_MAIN(int argc, char **argv) {
         return 1;
     f = calloc(1, sizeof(*f));
     CHECK(f != NULL && mc_world_regions_create(NULL, &f->regions, NULL) == MC_WORLD_STORAGE_OK);
+    CHECK(boxes_diagnostic_defaults());
     CHECK(mc_materials_create(&f->materials));
     CHECK(mc_java_random_profile_create(4u * 1024u * 1024u, &f->profile) ==
           MC_JAVA_RANDOM_PROFILE_OK);

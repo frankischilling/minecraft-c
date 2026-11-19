@@ -419,8 +419,8 @@
       "sha256": "06d301424a64339763a57988e17b556e53d8543214679a54e77fabd64b7c3162"
     },
     "src/world/runtime/collision/entities.c": {
-      "bytes": 34989,
-      "sha256": "6237f44915f2b8f53a91d3506146d4727303dc2e1007d57f553d00ffd6d6bb84"
+      "bytes": 35695,
+      "sha256": "f039d9de9919cd383e1ac67e492a83940b4ac9dc303c853c356e0ca2d2a738e8"
     },
     "src/world/runtime/collision/entities_execution_internal.h": {
       "bytes": 5156,
