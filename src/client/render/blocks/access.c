@@ -77,8 +77,10 @@ bool mc_cv_nw(mc_cv_context *c, unsigned int pc) {
 
 bool mc_cv_color(mc_cv_context *c, float red, float green, float blue, unsigned int pc) {
     mc_cv_pc(c, pc);
-    return graphics_result(
-        c, mc_client_nw_color_float(c->tessellator, red, green, blue, &c->failure.graphics), pc);
+    return graphics_result(c,
+                           mc_client_nw_color_float_in_scene(c->tessellator, red, green, blue,
+                                                             c->graphics, &c->failure.graphics),
+                           pc);
 }
 
 bool mc_cv_translation_add(mc_cv_context *c, float x, float y, float z, unsigned int pc) {

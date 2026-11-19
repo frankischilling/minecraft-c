@@ -220,6 +220,66 @@ static bool same_graphics_error(const mc_client_graphics_error *a,
            a->cleanup_failed == b->cleanup_failed;
 }
 
+static int scene_colors(mc_client_tessellator *nw, mc_client_render_engine_classes *other) {
+    mc_client_render_engine_classes *classes = nw->classes;
+    const size_t holds = atomic_load(&classes->holds);
+    const unsigned int controls = _mm_getcsr();
+    const mc_client_nw_fields original = nw->fields;
+    const int32_t original_pc = nw->last_store_pc;
+    const size_t scene_leases = classes->scene_lease_count;
+
+    enum { COLOR, DISABLED, FOREIGN_SCENE, NO_SCENE, STRICT_FP, HOLD_LIMIT, ZERO_HOLDS, BUSY };
+
+    for (int sample = COLOR; sample <= BUSY; ++sample) {
+        const size_t expected_holds = sample == HOLD_LIMIT   ? SIZE_MAX
+                                      : sample == ZERO_HOLDS ? 0
+                                                             : holds;
+        const unsigned int incoming = sample == STRICT_FP ? controls ^ 0x2000u : controls;
+        bool expected_return = false, expected_colored = false;
+        int32_t expected_color = 0, expected_pc = 0;
+        unsigned int expected_controls = 0;
+        mc_client_graphics_error expected_error;
+        for (int variant = 0; variant < 2; ++variant) {
+            nw->fields = original;
+            nw->fields.q = sample == DISABLED;
+            nw->last_store_pc = original_pc;
+            nw->active = sample == BUSY;
+            classes->scene_lease_count = sample == NO_SCENE ? 0 : scene_leases;
+            atomic_store(&classes->holds, expected_holds);
+            _mm_setcsr(incoming);
+            mc_client_graphics_error error;
+            memset(&error, 0xa5, sizeof(error));
+            const bool ok = variant == 0 ? mc_client_nw_color_float(nw, 0.15f, -0.25f, 1.5f, &error)
+                                         : mc_client_nw_color_float_in_scene(
+                                               nw, 0.15f, -0.25f, 1.5f,
+                                               sample == FOREIGN_SCENE ? other : classes, &error);
+            const unsigned int outgoing = _mm_getcsr();
+            _mm_setcsr(controls);
+            CHECK(atomic_load(&classes->holds) == expected_holds &&
+                  classes->active_source_calls == 0 && nw->active == (sample == BUSY));
+            if (variant == 0) {
+                expected_return = ok;
+                expected_colored = nw->fields.l;
+                expected_color = nw->fields.k;
+                expected_pc = nw->last_store_pc;
+                expected_error = error;
+                expected_controls = outgoing;
+            } else {
+                CHECK(ok == expected_return && nw->fields.l == expected_colored &&
+                      nw->fields.k == expected_color && nw->last_store_pc == expected_pc &&
+                      outgoing == expected_controls &&
+                      same_graphics_error(&error, &expected_error));
+            }
+        }
+    }
+    nw->fields = original;
+    nw->last_store_pc = original_pc;
+    nw->active = false;
+    classes->scene_lease_count = scene_leases;
+    atomic_store(&classes->holds, holds);
+    return 0;
+}
+
 static int scene_vertices(void) {
     /* A cold scene owns the real counted class occurrence without constructing
      * a World or invoking any scene rendering body. */
@@ -238,6 +298,7 @@ static int scene_vertices(void) {
           mc_client_nw_begin(nw, 4, &error) && mc_client_nw_color(nw, 17, 34, 51, 68, &error) &&
           mc_client_nw_normal(nw, 1, 0, 0, &error) &&
           mc_client_nw_translation(nw, .25, -.5, 1, &error));
+    CHECK(scene_colors(nw, other) == 0);
     const mc_client_nw_fields initial = nw->fields;
     const int32_t initial_pc = nw->last_store_pc;
     mc_client_direct_byte_buffer *bytes = (mc_client_direct_byte_buffer *)(void *)initial.d;

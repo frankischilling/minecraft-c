@@ -1002,16 +1002,16 @@
       "sha256": "c6f3bab175d837bdff85d0d8a5bf4977d03950ed438d599aa1b55e28933669da"
     },
     "src/client/render_engine/nw.c": {
-      "bytes": 32190,
-      "sha256": "96117d7b29abb87a1012c4b5ad5f59461a6645dcf06f15574e4cd9845bb790d5"
+      "bytes": 33103,
+      "sha256": "fe655bae97837ee94c67074a045a902ba92d32dae22bb7fe3553f7269cba6214"
     },
     "src/client/render_engine/nw.h": {
       "bytes": 6588,
       "sha256": "cc9cb6065749299dceb2cf03db2ac355958a8c83d43a9e8d0aa3f31c541f1109"
     },
     "src/client/render_engine/nw_internal.h": {
-      "bytes": 1404,
-      "sha256": "d5bdb22affbcdf02e8cc999c2efdf0264b117c81125644f759e71b30edb4d102"
+      "bytes": 1661,
+      "sha256": "7eefaea9075418efa3739d33585ea6e4512050866491357e7b4e4ea1a2637aab"
     },
     "src/client/render_engine/nw_owner.c": {
       "bytes": 7251,
@@ -1542,8 +1542,8 @@
       "sha256": "f4b67831e815cb81db37210673b61bd07f69fbe876c6baecba3caf7c7a6da6d5"
     },
     "tests/client/world/test_render_global_cpu.c": {
-      "bytes": 24965,
-      "sha256": "48341bc4256f9412e597c3435b1bed606a41993ddc042b9a415aacf39162b095"
+      "bytes": 28020,
+      "sha256": "e707ebf11d60b6c033ee425797fe573df7bf91a9401b0d7220f85a61372729c0"
     },
     "tests/client/world/test_render_global_device.c": {
       "bytes": 23372,
@@ -3702,8 +3702,8 @@
       "sha256": "db48725dd52b8f9b466cb9d98768104adf93ce762818eedcb3015c2597f2497f"
     },
     "src/client/render/blocks/access.c": {
-      "bytes": 25549,
-      "sha256": "48c8df92b1bc4e1dd4bd7afc943da6ed2c746927e313d6748f0b907e3922047d"
+      "bytes": 25677,
+      "sha256": "60d66a7c2a4ca978dc4667288f373fa5b95fb34802ff665e7451336b957778ef"
     },
     "src/client/render/blocks/ambient_occlusion.c": {
       "bytes": 14963,
@@ -3858,8 +3858,8 @@
       "sha256": "245dce31a98c328ccd662a6b25114c49e57179c3a13cf2bbb6d41641c3222e72"
     },
     "src/client/world/render_global_submit_draw.c": {
-      "bytes": 11535,
-      "sha256": "56fcc487091438becaa378c48336c38424ac63ae009125bc3e3057420904a8f3"
+      "bytes": 11599,
+      "sha256": "45b34ad1d25ce3a871520e42c9b35a4872ba9f067276c1f255d1f08dbec09f7f"
     },
     "src/client/world/source_terrain_internal.h": {
       "bytes": 4506,

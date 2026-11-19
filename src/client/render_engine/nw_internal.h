@@ -25,7 +25,10 @@ struct mc_client_tessellator {
 };
 
 /* The caller must hold the exact scene's class owner for the duration of this
- * call. The scene lease prevents context cleanup during a no-draw vertex. */
+ * call. The scene lease prevents context cleanup during these no-draw calls. */
+bool mc_client_nw_color_float_in_scene(mc_client_tessellator *o, float r, float g, float b,
+                                       const mc_client_render_engine_classes *scene_classes,
+                                       mc_client_graphics_error *e);
 bool mc_client_nw_vertex_uv_in_scene(mc_client_tessellator *o, double x, double y, double z,
                                      double u, double v,
                                      const mc_client_render_engine_classes *scene_classes,

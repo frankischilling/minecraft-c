@@ -50,6 +50,14 @@ static bool retain_call(mc_client_tessellator *o, mc_client_graphics_error *e) {
     return true;
 }
 
+static inline bool scene_can_borrow(const mc_client_tessellator *o,
+                                    const mc_client_render_engine_classes *scene_classes) {
+    if (o->classes != scene_classes || scene_classes->scene_lease_count == 0)
+        return false;
+    const size_t holds = atomic_load_explicit(&scene_classes->holds, memory_order_acquire);
+    return holds != 0 && holds != SIZE_MAX;
+}
+
 static inline void activate(mc_client_tessellator *o) {
     o->active = true;
     ++o->classes->active_source_calls;
@@ -233,15 +241,13 @@ bool mc_client_nw_color_rgb(mc_client_tessellator *o, int32_t r, int32_t g, int3
     return mc_client_nw_color(o, r, g, b, 255, e);
 }
 
-bool mc_client_nw_color_float(mc_client_tessellator *o, float r, float g, float b,
-                              mc_client_graphics_error *e) {
-    if (!enter(o, e))
-        return false;
+static bool color_float(mc_client_tessellator *o, float r, float g, float b,
+                        mc_client_graphics_error *e) {
     if ((_mm_getcsr() & 0xffc0u) != 0x1f80u) {
         mc_client_graphics_fail(e, MC_CLIENT_GRAPHICS_UNSUPPORTED_FP,
                                 "nw float color floating environment", site("a", "(FFF)V", 2),
                                 true);
-        return leave(o, false, e);
+        return false;
     }
     /* Actual a(FFF): three ordered fmul/f2i pairs, then a(III)16 supplies
      * alpha255 to the SAME a(IIII)7 body. Even q=true does these conversions. */
@@ -252,7 +258,28 @@ bool mc_client_nw_color_float(mc_client_tessellator *o, float r, float g, float 
     const float blue = _mm_cvtss_f32(_mm_mul_ss(_mm_set_ss(b), _mm_set_ss(255.0f)));
     const int32_t ib = mc_java_float_to_i32(blue);
     color(o, ir, ig, ib, 255);
-    return leave(o, true, e);
+    return true;
+}
+
+bool mc_client_nw_color_float(mc_client_tessellator *o, float r, float g, float b,
+                              mc_client_graphics_error *e) {
+    return enter(o, e) && leave(o, color_float(o, r, g, b, e), e);
+}
+
+bool mc_client_nw_color_float_in_scene(mc_client_tessellator *o, float r, float g, float b,
+                                       const mc_client_render_engine_classes *scene_classes,
+                                       mc_client_graphics_error *e) {
+    if (!admit(o, e))
+        return false;
+    const bool borrow = scene_can_borrow(o, scene_classes);
+    if (!borrow && !retain_call(o, e))
+        return false;
+    activate(o);
+    const bool ok = color_float(o, r, g, b, e);
+    if (!borrow)
+        return leave(o, ok, e);
+    deactivate(o);
+    return ok;
 }
 
 bool mc_client_nw_color_rgba_float(mc_client_tessellator *o, float r, float g, float b, float a,
@@ -578,16 +605,13 @@ bool mc_client_nw_vertex_uv(mc_client_tessellator *o, double x, double y, double
 
 static bool scene_vertex_can_borrow(const mc_client_tessellator *o,
                                     const mc_client_render_engine_classes *scene_classes) {
-    if (o->classes != scene_classes || scene_classes->scene_lease_count == 0)
-        return false;
     const mc_client_nw_fields *f = &o->fields;
     /* The raw buffer was allocated last. A quad can add up to 24 words, so
      * this cursor cannot reach the automatic draw threshold of B - 32. */
     if (f->B != MC_NW_BUFFER_WORDS || (uint32_t)f->o >= MC_NW_BUFFER_WORDS - 56u ||
         o->arena.head == NULL || f->g != (const int32_t *)(const void *)(o->arena.head + 1))
         return false;
-    const size_t holds = atomic_load_explicit(&scene_classes->holds, memory_order_acquire);
-    return holds != 0 && holds != SIZE_MAX;
+    return scene_can_borrow(o, scene_classes);
 }
 
 bool mc_client_nw_vertex_uv_in_scene(mc_client_tessellator *o, double x, double y, double z,

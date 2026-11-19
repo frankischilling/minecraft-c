@@ -1,5 +1,53 @@
 # Chunk rendering and EW diagnostics
 
+## Tessellator colors and terrain selection
+
+Block-face color writes can use the RenderGlobal scene's existing Tessellator
+class hold. They still check the active receiver and floating-point mode and
+perform the same color conversions and writes. The per-call hold remains the
+fallback when the scene cannot supply the ownership.
+
+Four alternating Windows Release pairs used the same native section compiler
+workload and authored input. Each sample compiled 25 sections. Vertex bytes,
+draw counts, and World bindings matched.
+
+| Section and lighting | Median before | Median after |
+| --- | ---: | ---: |
+| Filled, ambient occlusion | 5.265 ms | 5.152 ms |
+| Surface, ambient occlusion | 0.746 ms | 0.720 ms |
+| Filled, flat | 2.217 ms | 2.225 ms |
+| Surface, flat | 0.300 ms | 0.290 ms |
+
+Terrain selection now appends directly to the admitted list while its backing
+has room. List growth keeps its checked allocation path. Batching still
+reloads the live list after any draw that can call back.
+
+Eight alternating Windows Release CPU pairs ran the actual selection prefix
+for both passes on 17×17×8 and 33×33×8 renderer grids. Time per visited
+section fell by 12.7–18.6% across the four median comparisons, with all 32
+paired cases faster. Selection order, counters, failure receipts, list state,
+and floating-point state matched. In six pairs per grid with full graphics
+submission, both framebuffer hashes and work counts matched, and median frame
+time changed by less than 1%.
+
+Four alternating pairs measured both changes together during ten seconds of
+Far-distance movement after a two-second warmup. All eight runs used the same
+authored 854×480 scene, returned 200 World ticks, walked 42.91 blocks, and
+saved the same Player position and World time through Save and Quit.
+
+| Pair | FPS before / after | Frame p99 before / after |
+| --- | ---: | ---: |
+| 1 | 84.29 / 71.51 | 17.80 / 16.68 ms |
+| 2 | 72.15 / 72.56 | 16.54 / 16.48 ms |
+| 3 | 71.17 / 72.80 | 17.38 / 16.75 ms |
+| 4 | 72.56 / 73.99 | 16.24 / 16.48 ms |
+
+The moving results varied. Median FPS was nearly level, and frame p99 fell
+in three pairs. The first attempts hit the observer's disk snapshot cap on
+both builds. The rows above use the same larger snapshot cap on both builds
+and all passed the save check. Seven focused rendering and ownership tests
+passed on Windows Release and on Linux Clang with ASan and UBSan.
+
 ## Tessellator lookup during section compilation
 
 The warmed Tessellator lookup clears the caller's graphics error record in
