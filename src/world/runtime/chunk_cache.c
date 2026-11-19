@@ -8,6 +8,7 @@
 #include "../../world/runtime/construction_internal.h"
 #include "../../world/runtime/runtime_internal.h"
 #include "../../world/storage/objects_internal.h"
+#include "../dimension/world_provider_internal.h"
 #include "mc/block/registry/rendering.h"
 #include "mc/block/registry/runtime.h"
 #include "mc/core/java/java.h"
@@ -376,9 +377,10 @@ static mc_client_chunk_cache_status finish(mc_client_chunk_cache *c, const cache
 }
 
 static int32_t chunk_coordinate(int32_t block) {
-    const int32_t width = (int32_t)MC_CHUNK_WIDTH;
-    /* C division truncates toward zero. A negative remainder belongs to the previous chunk. */
-    return block / width - (block % width < 0);
+    /* Divide a nonnegative offset from INT32_MIN to round toward the lower chunk. */
+    const uint32_t bias = UINT32_C(1) << 31;
+    const uint32_t biased = (uint32_t)block ^ bias;
+    return (int32_t)(biased / MC_CHUNK_WIDTH) - (int32_t)(bias / MC_CHUNK_WIDTH);
 }
 
 /* Check only when the actual source reaches the corresponding array load. */
@@ -422,16 +424,18 @@ static size_t block_index(int32_t x, int32_t y, int32_t z) {
 
 static bool nibble(const mc_world_chunk_nibble *n, size_t cell, int32_t *out, unsigned int child_pc,
                    cache_query_error *e) {
-    e->child_bytecode = child_pc;
-    if (n == NULL || n->a == NULL)
+    if (n == NULL || n->a == NULL) {
+        e->child_bytecode = child_pc;
         return query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL, "actual Chunk null Nibble backing",
                           e->bytecode, false);
+    }
     const size_t index = cell / 2u;
-    if (index >= n->length)
+    if (index >= n->length) {
+        e->child_bytecode = child_pc;
         return query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_INDEX, "actual Chunk Nibble index",
                           e->bytecode, false);
+    }
     *out = (int32_t)(((uint32_t)n->a[index] >> ((cell & 1u) * 4u)) & 15u);
-    e->child_bytecode = 0;
     return true;
 }
 
@@ -612,6 +616,13 @@ static bool registry_result(cache_query_error *e, mc_registry_status status, uns
                       pc, !(null || index));
 }
 
+static int32_t subtract_light(int32_t level, int32_t subtraction) {
+    /* A nibble is in [0,15]. Only an extreme negative offset needs wrapping. */
+    if (subtraction >= INT32_MIN + 16)
+        return level - subtraction;
+    return mc_java_i32_sub(level, subtraction);
+}
+
 static bool light_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z, bool neighbors,
                         int32_t *out, cache_query_error *e, mc_registry_error *registry_error) {
     e->method = "a";
@@ -686,7 +697,7 @@ static bool light_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t 
         if (c->state.d == NULL)
             return query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL,
                               "actual ew light null World receiver", 211, false);
-        const int32_t value = mc_java_i32_sub(15, c->state.d->fields.f);
+        const int32_t value = subtract_light(15, c->state.d->fields.f);
         *out = value < 0 ? 0 : value;
         return true;
     }
@@ -712,7 +723,7 @@ static bool light_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t 
         return false;
     if (sky > 0)
         c->state.d->classes->chunk_a = true;
-    sky = mc_java_i32_sub(sky, subtraction);
+    sky = subtract_light(sky, subtraction);
     if (!nibble(cell->object->g, index, &block, 35, e))
         return false;
     *out = sky > block ? sky : block;
@@ -744,19 +755,11 @@ static bool table_capture(mc_client_chunk_cache *c, unsigned int world_pc,
     if (*dimension == NULL)
         return query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL,
                           "actual ew brightness null Dimension", dimension_pc, false);
-    if (mc_world_provider_retain(*dimension) != MC_WORLD_PROVIDER_OK) {
+    if (mc_world_provider_retain_light_table(*dimension, table) != MC_WORLD_PROVIDER_OK) {
         *dimension = NULL;
         return query_fail(e, MC_CLIENT_CHUNK_CACHE_BUSY, "ew brightness Dimension native hold", 0,
                           true);
     }
-    mc_world_provider_fields fields;
-    if (mc_world_provider_fields_get(*dimension, &fields) != MC_WORLD_PROVIDER_OK) {
-        mc_world_provider_release(*dimension);
-        *dimension = NULL;
-        return query_fail(e, MC_CLIENT_CHUNK_CACHE_CHILD_FAILED,
-                          "ew brightness canonical Dimension", 0, true);
-    }
-    *table = fields.f;
     return true;
 }
 

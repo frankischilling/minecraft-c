@@ -257,6 +257,16 @@ mc_world_provider_status mc_world_provider_retain(mc_world_provider *dimension) 
     return MC_WORLD_PROVIDER_OK;
 }
 
+mc_world_provider_status mc_world_provider_retain_light_table(mc_world_provider *dimension,
+                                                              const float **out) {
+    if (out == NULL)
+        return MC_WORLD_PROVIDER_INVALID_ARGUMENT;
+    const mc_world_provider_status status = mc_world_provider_retain(dimension);
+    if (status == MC_WORLD_PROVIDER_OK)
+        *out = dimension->f;
+    return status;
+}
+
 float *mc_world_provider_sunrise_storage(mc_world_provider *dimension) {
     return dimension == NULL ? NULL : dimension->h;
 }

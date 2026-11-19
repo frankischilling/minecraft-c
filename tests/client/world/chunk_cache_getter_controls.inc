@@ -355,6 +355,19 @@ static bool ew_getter_failure_controls(picking_fixture *f) {
                              0, true, &full, NULL));
     }
     world->classes->chunk_a = false;
+    /* Exercise both sides of the signed subtraction limit with SkyLight 15. */
+    const ew_getter_output darkness = {.brightness = dimension.f[0]};
+    world->fields.f = INT32_MIN + 15;
+    CHECK(ew_getter_pair(f, cache, EW_GET_BRIGHTNESS, 8, 64, 8, 0, true, MC_CLIENT_CHUNK_CACHE_OK,
+                         0, true, &darkness, NULL) &&
+          ew_getter_pair(f, cache, EW_GET_BRIGHTNESS, 8, 128, 8, 0, true, MC_CLIENT_CHUNK_CACHE_OK,
+                         0, false, &darkness, NULL));
+    world->fields.f = INT32_MIN + 16;
+    CHECK(ew_getter_pair(f, cache, EW_GET_BRIGHTNESS, 8, 64, 8, 0, true,
+                         MC_CLIENT_CHUNK_CACHE_SOURCE_INDEX, 17, true, NULL, NULL) &&
+          ew_getter_pair(f, cache, EW_GET_MINIMUM, 8, 128, 8, 0, true,
+                         MC_CLIENT_CHUNK_CACHE_SOURCE_INDEX, 32, false, NULL, NULL));
+    world->fields.f = 0;
     CHECK(mc_chunk_nibbles_set(object->data->skylight, MC_CHUNK_NIBBLE_BYTES, 8, 64, 8, 0) &&
           mc_chunk_nibbles_set(object->data->block_light, MC_CHUNK_NIBBLE_BYTES, 8, 64, 8, 15));
     CHECK(ew_getter_pair(f, cache, EW_GET_BRIGHTNESS, 8, 64, 8, 7, true, MC_CLIENT_CHUNK_CACHE_OK,

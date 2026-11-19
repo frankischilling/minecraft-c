@@ -107,6 +107,14 @@ query median fell from 39.19 to 17.96 ns per call across 42 samples per
 build. Query results and the World, Chunk, Random, and ownership receipts
 matched. These timings cover the getter loop.
 
+Brightness queries retain the Dimension and capture its live light table
+together. Packed light reads attach child diagnostics on failure, and the
+usual in-range skylight subtraction uses native arithmetic. The wrapped
+result is preserved at the signed limit. Eight alternating Windows Release
+pairs measured brightness at 59.45 to 53.04 ns per call and minimum
+brightness at 59.70 to 53.17 ns per call. The same nine-Chunk fixture
+matched query results, ownership receipts, and skylight side effects.
+
 Separate instrumented Far runs matched 411 mesh groups by section position
 and counts of cell reads, rendered Blocks, minimum-light queries, opacity
 queries, and ambient occlusion flags. Each group had at least two samples per
