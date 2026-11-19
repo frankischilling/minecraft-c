@@ -572,7 +572,7 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
     source_cached_vertices *entry = NULL;
     if (compiled && !candidate.lighting_enabled && count >= SOURCE_CACHE_MIN_VERTICES &&
         allocation <= SOURCE_CACHE_BYTES)
-        entry = source_vertex_cache_slot(display, data);
+        entry = source_vertex_cache_slot(display, data, allocation);
     const bool hit = entry != NULL &&
                      source_vertex_cache_matches(entry, data, display->native_context_generation,
                                                  attribute_profile, current_color, current_normal);

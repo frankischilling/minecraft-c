@@ -3,7 +3,8 @@ enum {
     SOURCE_CACHE_GROUP_SIZE = 64,
     SOURCE_CACHE_GROUPS = SOURCE_CACHE_SLOTS / SOURCE_CACHE_GROUP_SIZE,
     SOURCE_CACHE_BYTES = 64 * 1024 * 1024,
-    SOURCE_CACHE_MIN_VERTICES = 96
+    SOURCE_CACHE_MIN_VERTICES = 18,
+    SOURCE_CACHE_LARGE_VERTICES = 96
 };
 
 _Static_assert(SOURCE_CACHE_SLOTS % SOURCE_CACHE_GROUP_SIZE == 0 && SOURCE_CACHE_GROUPS <= 64,
@@ -37,12 +38,20 @@ static size_t source_vertex_cache_index(const uint8_t *data) {
 }
 
 static source_cached_vertices *source_vertex_cache_slot(mc_client_display *display,
-                                                        const uint8_t *data) {
+                                                        const uint8_t *data, size_t bytes) {
     if (display->source_cache == NULL)
         display->source_cache = calloc(1, sizeof(*display->source_cache));
     if (display->source_cache == NULL)
         return NULL;
-    return &display->source_cache->slots[source_vertex_cache_index(data)];
+    source_vertex_cache *cache = display->source_cache;
+    source_cached_vertices *entry = &cache->slots[source_vertex_cache_index(data)];
+    const size_t large = SOURCE_CACHE_LARGE_VERTICES * sizeof(mc_client_source_gpu_vertex);
+    /* Small batches can take spare storage. Leave live larger batches and
+     * the existing byte-budget eviction policy to larger uploads. */
+    if (bytes < large && ((entry->data != NULL && entry->bytes >= large) ||
+                          bytes > SOURCE_CACHE_BYTES - (cache->bytes - entry->bytes)))
+        return NULL;
+    return entry;
 }
 
 static bool source_vertex_cache_matches(const source_cached_vertices *entry, const uint8_t *data,

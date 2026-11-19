@@ -169,9 +169,9 @@ The 32 MiB model reused 96.4% and 97.4%, respectively. The model counted
 bytes from cold start within each measured interval and removed entries on
 command retirement.
 
-Display now retains converted vertices for eligible unlit recorded draws
-of at least 96 vertices. The cache is local to one Display and caps
-retained GL buffer storage at 32 MiB. Retiring or replacing a recorded
+The initial Display cache retained converted vertices for eligible unlit
+recorded draws of at least 96 vertices and capped retained GL buffer
+storage at 32 MiB. Retiring or replacing a recorded
 command invalidates its entry. Replay still performs native texture and
 floating-point admission, applies current uniforms, issues each draw in
 order, and publishes the final vertex attributes according to the driver
@@ -231,6 +231,11 @@ The combined build improved FPS and p99 in both heavy-cave rounds.
 The lighter scene varied between rounds and had nearly the same median FPS.
 
 ### Vertex cache evictions
+
+The cache admits unlit recorded batches of at least 18 vertices, enough
+for three expanded quads. Batches below 96 vertices use available space
+in the 64 MiB budget. A live entry of 96 vertices or more takes priority
+when a smaller batch hashes to the same slot.
 
 The 4,096-slot vertex cache retains the oldest occupied slot in each group
 of 64. Hits, uploads, and invalidation mark the affected group when they

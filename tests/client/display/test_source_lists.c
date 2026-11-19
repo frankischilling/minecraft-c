@@ -617,9 +617,24 @@ static bool eviction_invalidation_control(void) {
     bool result = false;
     mc_client_display display = {0};
     const uint8_t key = 0;
-    source_cached_vertices *entry = source_vertex_cache_slot(&display, &key);
+    const size_t small = SOURCE_CACHE_MIN_VERTICES * sizeof(mc_client_source_gpu_vertex);
+    const size_t large = SOURCE_CACHE_LARGE_VERTICES * sizeof(mc_client_source_gpu_vertex);
+    source_cached_vertices *entry = source_vertex_cache_slot(&display, &key, large);
     CHECK(entry != NULL);
     source_vertex_cache *cache = display.source_cache;
+    entry->data = &key;
+    entry->bytes = large;
+    cache->bytes = SOURCE_CACHE_BYTES;
+    CHECK(source_vertex_cache_slot(&display, &key, small) == NULL &&
+          source_vertex_cache_slot(&display, &key, large) == entry);
+    source_vertex_cache_invalidate(&display, &key);
+    CHECK(source_vertex_cache_slot(&display, &key, small) == entry);
+    entry->bytes = 0;
+    CHECK(source_vertex_cache_slot(&display, &key, small) == NULL);
+    entry->data = &key;
+    entry->bytes = small;
+    CHECK(source_vertex_cache_slot(&display, &key, small) == entry);
+
     const size_t index = source_vertex_cache_index(&key);
     source_cached_vertices *oldest = &cache->slots[(index + 1u) % SOURCE_CACHE_SLOTS];
     const source_cached_vertices *excluded = &cache->slots[(index + 2u) % SOURCE_CACHE_SLOTS];
