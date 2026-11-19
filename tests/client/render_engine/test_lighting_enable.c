@@ -458,6 +458,14 @@ static void lit_draw_and_normal_knowledge(fixture *f) {
     uint32_t nan_bits = UINT32_C(0x7fc12345);
     float nan;
     memcpy(&nan, &nan_bits, sizeof(nan));
+    /* The third vertex shares an admitted normal but still needs its own eye check. */
+    memcpy(bytes->data + 64, &nan, sizeof(nan));
+    CHECK(!mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
+    CHECK(error.status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL &&
+          strcmp(error.operation, "source lighting numerical admission") == 0 &&
+          strcmp(error.detail, "nonfinite used lighting input") == 0);
+    memcpy(bytes->data + 64, positions[2], sizeof(positions[2]));
+    CHECK(mc_client_display_source_batch(lease, bytes, bytes->data, 96, 3, GL_TRIANGLES, &error));
     CHECK(mc_client_display_source_normal(f->display, nan, 0, 1, &error));
     mc_client_source_fog_state before_rejection;
     CHECK(mc_client_display_source_fog_inspect(f->display, &before_rejection));

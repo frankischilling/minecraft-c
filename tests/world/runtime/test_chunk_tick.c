@@ -640,6 +640,10 @@ static bool failure_only_contracts(fixture *f) {
         data->blocks = bytes;
         free(replacement);
         CHECK(raw_pair(f, INT32_C(-2097152), 0, 0, 0, 173, ok, 948, NULL, NULL, false, false));
+        CHECK(raw_pair(f, INT32_MIN, 0, INT32_C(-33554432), 0, 173, ok, 948, NULL, NULL, false,
+                       false));
+        CHECK(raw_pair(f, 0, 1, INT32_MAX, -127, 777, bad, 944, "Captured Chunk block byte index",
+                       "java/lang/ArrayIndexOutOfBoundsException", false, false));
         CHECK(raw_pair(f, 16, 0, 0, 32768, 777, bad, 944, "Captured Chunk block byte index",
                        "java/lang/ArrayIndexOutOfBoundsException", false, false));
         data->blocks = NULL;

@@ -8,6 +8,7 @@
 #include "mc/core/java/java.h"
 #include "runtime_internal.h"
 #include <stdlib.h>
+#include <string.h>
 
 struct mc_world_chunk_tick_capture {
     mc_world_chunk_tick_state state;
@@ -183,7 +184,10 @@ static mc_world_storage_status rejected(const mc_world_chunk_tick_error *frame,
 }
 
 static int32_t packed(int32_t x, int32_t y, int32_t z) {
-    return mc_java_i32_shl(x, 11) | mc_java_i32_shl(z, 7) | y;
+    const uint32_t bits = ((uint32_t)x << 11u) | ((uint32_t)z << 7u) | (uint32_t)y;
+    int32_t index;
+    memcpy(&index, &bits, sizeof(index));
+    return index;
 }
 
 typedef enum byte_read_status {

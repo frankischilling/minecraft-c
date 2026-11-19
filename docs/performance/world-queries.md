@@ -308,6 +308,25 @@ from the EW accessor comparison above; their percentages cannot be added or
 converted into a scene-FPS or full World.tick result. Source-reference parity
 remains scoped to the linked fixtures.
 
+#### Fixed-width Chunk byte indices
+
+The byte reader now packs the three coordinates with unsigned 32-bit shifts and
+copies the resulting bits into the signed array index. The MSVC Release raw
+reader drops two calls to the general shift helper. Normal and Blank Chunk tests
+exercise both high bits wrapping into an in-bounds address and a negative
+packed index retaining its bounds error.
+
+Six alternating CPU fixture pairs read 28,880 positions per pass from one live
+32 KiB Block array. The Normal median fell from 7.123 to 5.182 ns per read and
+the Blank median fell from 7.104 to 5.173 ns. All byte hashes, capture counters,
+sites and success sentinels matched.
+
+The full scheduler comparison also passed its 15 controls and matched the
+361 Chunk visits and 28,880 samples per tick. Its six timing pairs had mixed
+results. Median air time fell from 2.051 to 2.001 ms, while median stone time
+rose from 1.839 to 1.940 ms. Air p95 rose from 2.674 to 2.712 ms and stone p95
+fell from 2.604 to 2.538 ms.
+
 ### Random tick coordinates and packed Chunk keys
 
 Each random sample advances the live World coordinate generator using 32-bit

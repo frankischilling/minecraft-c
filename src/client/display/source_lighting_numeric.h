@@ -256,6 +256,17 @@ static inline bool source_lighting_numeric_admit(const source_draw_state *state,
                         "directional light normalization exceeds the normal binary32 profile", 0);
     }
 
+    /* The matrix, scale and flags stay fixed inside this callback-free batch.
+     * Cache only complete successful normal proofs, keyed by all input bits.
+     * No FP flags are cleared here: any flags from a skipped identical proof
+     * were already raised by its first evaluation under the admitted controls. */
+    struct normal_proof {
+        uint32_t bits[3];
+        source_lighting_numeric_interval interval[3];
+        double length;
+    } normal_proofs[2];
+
+    size_t normal_proof_count = 0, next_normal_proof = 0;
     for (size_t vertex = 0; vertex < count; ++vertex) {
         const mc_client_source_gpu_vertex *input = &vertices[vertex];
         if (!source_lighting_numeric_span(input->position, 3) ||
@@ -264,45 +275,60 @@ static inline bool source_lighting_numeric_admit(const source_draw_state *state,
         double normal[3] = {0};
         source_lighting_numeric_interval eye_interval[3] = {{0}};
         source_lighting_numeric_interval normal_interval[3] = {{0}};
+        const struct normal_proof *proof = NULL;
+        for (size_t slot = 0; slot < normal_proof_count; ++slot)
+            if (memcmp(normal_proofs[slot].bits, input->normal, sizeof(normal_proofs[slot].bits)) ==
+                0) {
+                proof = &normal_proofs[slot];
+                break;
+            }
+        if (proof != NULL)
+            memcpy(normal_interval, proof->interval, sizeof(normal_interval));
         for (size_t row = 0; row < 3; ++row) {
             double eye_magnitude = fabs((double)state->modelview[12 + row]);
             double normal_magnitude = 0;
             source_lighting_numeric_interval position[3], current_normal[3], model[3], inverse[3];
             for (size_t column = 0; column < 3; ++column) {
                 position[column] = (source_lighting_numeric_interval){input->position[column], 0};
-                current_normal[column] =
-                    (source_lighting_numeric_interval){input->normal[column], 0};
+                if (proof == NULL)
+                    current_normal[column] =
+                        (source_lighting_numeric_interval){input->normal[column], 0};
                 model[column] =
                     (source_lighting_numeric_interval){state->modelview[column * 4 + row], 0};
-                inverse[column] =
-                    (source_lighting_numeric_interval){normal_matrix[column * 4 + row], 0};
+                if (proof == NULL)
+                    inverse[column] =
+                        (source_lighting_numeric_interval){normal_matrix[column * 4 + row], 0};
                 eye_magnitude += fabs(model[column].center) * fabs(position[column].center);
-                normal_magnitude +=
-                    fabs(inverse[column].center) * fabs(current_normal[column].center);
+                if (proof == NULL)
+                    normal_magnitude +=
+                        fabs(inverse[column].center) * fabs(current_normal[column].center);
             }
             eye_interval[row] = source_lighting_numeric_dot3(
                 model, position, (source_lighting_numeric_interval){state->modelview[12 + row], 0});
-            normal_interval[row] = source_lighting_numeric_dot3(
-                inverse, current_normal, (source_lighting_numeric_interval){0});
+            if (proof == NULL)
+                normal_interval[row] = source_lighting_numeric_dot3(
+                    inverse, current_normal, (source_lighting_numeric_interval){0});
             /* Retain absolute product/sum bounds for overflow: cancellation
              * must not hide an overflowing alternative dot association. */
-            if (eye_magnitude > limit || normal_magnitude > limit ||
+            if (eye_magnitude > limit || (proof == NULL && normal_magnitude > limit) ||
                 source_lighting_numeric_upper(eye_interval[row]) > limit ||
-                source_lighting_numeric_upper(normal_interval[row]) > limit)
+                (proof == NULL && source_lighting_numeric_upper(normal_interval[row]) > limit))
                 return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation,
                             "eye or normal transform can overflow binary32", 0);
-            if (fog->rescale_normal_enabled)
-                normal_interval[row] = source_lighting_numeric_multiply(
-                    normal_interval[row], (source_lighting_numeric_interval){normal_scale, 0});
-            if (fog->rescale_normal_enabled)
-                normal_magnitude *= fabs((double)normal_scale);
-            normal[row] =
-                fmax(normal_magnitude, source_lighting_numeric_upper(normal_interval[row]));
-            if (normal[row] > limit)
-                return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation,
-                            "normal rescaling can overflow binary32", 0);
+            if (proof == NULL) {
+                if (fog->rescale_normal_enabled)
+                    normal_interval[row] = source_lighting_numeric_multiply(
+                        normal_interval[row], (source_lighting_numeric_interval){normal_scale, 0});
+                if (fog->rescale_normal_enabled)
+                    normal_magnitude *= fabs((double)normal_scale);
+                normal[row] =
+                    fmax(normal_magnitude, source_lighting_numeric_upper(normal_interval[row]));
+                if (normal[row] > limit)
+                    return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation,
+                                "normal rescaling can overflow binary32", 0);
+            }
         }
-        if (fog->normalize_enabled) {
+        if (proof == NULL && fog->normalize_enabled) {
             source_lighting_numeric_interval normalized[3];
             if (!source_lighting_numeric_normalization(normal_interval, normalized))
                 return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation,
@@ -310,13 +336,23 @@ static inline bool source_lighting_numeric_admit(const source_draw_state *state,
             memcpy(normal_interval, normalized, sizeof(normalized));
         }
         const double normal_length =
-            fog->normalize_enabled
+            proof != NULL ? proof->length
+            : fog->normalize_enabled
                 ? unit
                 : sqrt((normal[0] * normal[0] + normal[1] * normal[1]) + normal[2] * normal[2]);
         const double dot_bound = enabled_light ? normal_length * unit : 0;
         if (dot_bound > limit)
             return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation,
                         "normal-light dot product can overflow binary32", 0);
+        if (proof == NULL) {
+            struct normal_proof *completed = &normal_proofs[next_normal_proof];
+            memcpy(completed->bits, input->normal, sizeof(completed->bits));
+            memcpy(completed->interval, normal_interval, sizeof(normal_interval));
+            completed->length = normal_length;
+            if (normal_proof_count < 2)
+                ++normal_proof_count;
+            next_normal_proof ^= 1u;
+        }
 
         source_lighting_numeric_interval light_unit[2][3];
         memcpy(light_unit, directional_unit, sizeof(light_unit));

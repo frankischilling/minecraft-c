@@ -112,6 +112,39 @@ sections throughout the timing window. Each run completed 200 World ticks.
 Median FPS rose from 74.11 to 74.55, p95 fell from 15.05 to 14.87 ms, and p99
 fell from 16.00 to 15.73 ms. Two pairs were faster.
 
+## Lighting admission for repeated normals
+
+A lit batch retains two successful normal proofs and replaces the older entry
+on a miss. A hit requires all three input floats to match bit for bit. The
+modelview and normal matrix, scale and flags are fixed for the batch. Every
+vertex still checks its eye transform and any position-dependent light,
+material or specular bounds.
+
+The Windows Release fixture ran six alternating process pairs with 4,096
+vertices per batch. Twelve successful mode and input combinations matched their
+admission results, success sentinels and MXCSR flags. Five edge cases also
+matched, including a nonfinite eye position after repeated normals and
+overflow in eye and normal transforms.
+
+| Normals per batch | Median range across four lighting modes |
+| --- | ---: |
+| One repeated normal | 38–48% less CPU time per vertex |
+| Two alternating normals | 35–46% less CPU time per vertex |
+| All unique normals | 3–4% more CPU time per vertex |
+
+Four matched Far pairs compared lighting admission and [fixed-width Chunk byte
+indices](world-queries.md#fixed-width-chunk-byte-indices) against `561571f5`.
+The authored scene was stationary at 854×480 on an i9-10900F with an RTX 3060.
+After the 25-second warmup, FPS rose in every pair and p99 fell in every pair.
+All eight ten-second intervals completed 200 World ticks and reported zero
+Chunk updates. The median of the run FPS rose from 431.56 to 450.15 (+4.31%).
+Median run p95 fell from 3.46 to 3.10 ms and p99 fell from 6.20 to 6.03 ms.
+
+Three two-second-warmup pairs kept compiling sections through all six intervals.
+Each interval completed 200 World ticks. Median FPS fell from 74.65 to 74.30
+and median run p99 rose from 15.49 to 15.97 ms. One pair improved on both
+measures. Median run p95 rose from 14.76 to 14.86 ms.
+
 ## Sky-change dirty marking
 
 The sky-change callback now checks the Chunk renderer's fixed owner on
