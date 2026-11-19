@@ -199,6 +199,28 @@ FPS measurement. Original geometry replays and loaded scenes cover the callers.
 
 ## Random Chunk reads
 
+### Random block sample dispatch
+
+Each sample reads the tick flag from the current Block registry when the
+registry is ready and idle. The checked array path still supplies initialization
+and failure diagnostics. The next sample reloads the live registry and array
+after a Block update. Source location updates record the program counter and
+clear its companion fields when a child was recorded.
+
+Six alternating Windows MSVC Release pairs measured 84 calls per workload and
+build. Each call sampled all 28,880 positions across 361 saved Chunks. The air
+and stone timings cover samples with disabled Block ticks.
+
+| Workload | Median before / after | p95 before / after |
+| --- | ---: | ---: |
+| Air with ambient cooldown | 2.199 / 1.609 ms | 2.741 / 1.899 ms |
+| Stone with ambient checks | 2.339 / 1.585 ms | 2.790 / 1.956 ms |
+
+Fifteen authored scheduler controls passed 89,842 checks per build. Native
+transcripts and all 75 observation hashes matched, including enabled Block
+updates, callback reentry and failure paths. The registry tests cover live flag
+changes, array replacement, invalid indices and refusal during initialization.
+
 ### Active Chunk indexing and registry reads
 
 Random ticks build a 2 KiB ordinal index while gathering active Chunks. It

@@ -53,6 +53,9 @@ static mc_world_storage_status rejected(mc_world_random_tick_error *error,
 
 static void at(mc_world_random_tick_call *c, unsigned int pc) {
     c->state.source_pc = c->error.bytecode = pc;
+    /* These companion fields are set only with a child kind. */
+    if (c->error.child == MC_WORLD_RANDOM_TICK_NONE)
+        return;
     c->error.child = MC_WORLD_RANDOM_TICK_NONE;
     c->error.child_class = c->error.child_method = NULL;
     c->error.child_bytecode = 0;
@@ -943,16 +946,18 @@ static bool samples(mc_world_random_tick_call *c) {
                                                   c->state.local_z, &c->state.block_id,
                                                   &c->chunk_error) != MC_WORLD_STORAGE_OK)
             return chunk_fail(c);
-        mc_registry_block_n_view active;
         at(c, 951);
-        if (mc_registry_block_n_get_failure(c->state.world->classes->registry, &active,
-                                            &c->registry) != MC_REGISTRY_OK)
-            return registry_fail(c);
-        at(c, 956);
+        mc_registry_classes *registry = c->state.world->classes->registry;
         bool enabled;
-        if (mc_registry_block_n_at_failure(&active, c->state.block_id, &enabled, &c->registry) !=
-            MC_REGISTRY_OK)
-            return registry_fail(c);
+        if (!mc_registry_block_n_read_ready(registry, c->state.block_id, &enabled)) {
+            mc_registry_block_n_view active;
+            if (mc_registry_block_n_get_failure(registry, &active, &c->registry) != MC_REGISTRY_OK)
+                return registry_fail(c);
+            at(c, 956);
+            if (mc_registry_block_n_at_failure(&active, c->state.block_id, &enabled,
+                                               &c->registry) != MC_REGISTRY_OK)
+                return registry_fail(c);
+        }
         if (enabled) {
             mc_registry_block_m_view blocks;
             at(c, 960);

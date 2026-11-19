@@ -69,6 +69,7 @@ mc_registry_status mc_registry_block_q_at_failure(const mc_registry_block_q_view
  * reached sites. The caller provides a writable output and holds the owner. */
 bool mc_registry_block_q_read_ready(const mc_registry_classes *, int32_t, int32_t *);
 bool mc_registry_block_m_read_ready(const mc_registry_classes *, int32_t, const mc_block **);
+bool mc_registry_block_n_read_ready(const mc_registry_classes *, int32_t, bool *);
 bool mc_registry_block_s_read_ready(const mc_registry_classes *, int32_t, int32_t *);
 
 /* Actual m captured before a later acquiring World getter. NULL is a valid

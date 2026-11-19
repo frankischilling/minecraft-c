@@ -1034,12 +1034,12 @@
       "sha256": "d6f60febb34a64e2cb179ef04d08f0ddd8acc9a6afbf1ff10d6eeca7443e2fc9"
     },
     "src/block/registry/runtime.c": {
-      "bytes": 32896,
-      "sha256": "86af8851ad7b3d5005626803d4e7a34d151bc9a108fa05e2ca0eaf4cf14e2cb5"
+      "bytes": 33195,
+      "sha256": "4c2c9ca12f52aca582dc6bfee908db64539429faf118d7469952a6ba54f31443"
     },
     "src/block/registry/runtime_internal.h": {
-      "bytes": 13842,
-      "sha256": "2734a9f5e8e5e65c8b54403d34421323f53fe0340e3cbe321d2df3e1cb6c52d0"
+      "bytes": 13925,
+      "sha256": "e64894cecc1dbed58d13d08d4da3db3f65fa432469e645927d7511939ebbe72c"
     },
     "src/block/registry/step_sound.c": {
       "bytes": 8271,
@@ -7350,8 +7350,8 @@
       "sha256": "95a24a00bb4793f293899c51bdb32bfa1716939bcab7e3890609adfdb3e8041c"
     },
     "src/world/runtime/world_tick_random.c": {
-      "bytes": 50964,
-      "sha256": "d9d6ce749b31d8f51d016cf59606bc5b2ea5bbef4776190b97c07886a2d9377c"
+      "bytes": 51259,
+      "sha256": "b09176eb3dff2ab73572a3aa684c9ff72ca890214af91665dfa6b5c6a87d9590"
     },
     "src/world/runtime/world_tick_random_internal.h": {
       "bytes": 562,
@@ -7370,8 +7370,8 @@
       "sha256": "0703302dbc981162ccc196c95dd5853fe36ca5c7a6be6512d6693069fbc52139"
     },
     "tests/world/runtime/test_random_blocks.c": {
-      "bytes": 54023,
-      "sha256": "b568b29510c6b95d186e9a8e547432793f1ef8ce33bdb6ba7633b2a325c768c4"
+      "bytes": 55206,
+      "sha256": "545dfebbe7ffd9ea66971557f45c27e400a1e1550f729657b58ea7a69b2f40ac"
     },
     "tests/world/runtime/test_world_random_tick.c": {
       "bytes": 39950,

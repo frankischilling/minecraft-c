@@ -161,6 +161,15 @@ static bool n_same_owner(const n_owner_snapshot *a, const n_owner_snapshot *b) {
            a->initializer_pc == b->initializer_pc;
 }
 
+static bool n_ready_read(mc_registry_classes *owner, int32_t index, bool reads, bool expected) {
+    bool value = !expected;
+    const n_owner_snapshot before = n_snapshot(owner);
+    const bool read = mc_registry_block_n_read_ready(owner, index, &value);
+    const n_owner_snapshot after = n_snapshot(owner);
+    return read == reads && value == (reads ? expected : !expected) &&
+           n_same_owner(&before, &after) && n_same_error(&before.last_error, &after.last_error);
+}
+
 /* Both routes operate on the same live owner. These controls use the public
  * route as a native contract comparison, not as an original observation. */
 static bool n_get_pair(mc_registry_classes *owner, const mc_registry_block_n_view *anchor,
@@ -257,6 +266,7 @@ static mc_registry_status n_entered_open(void *context, const char *name,
             (mc_registry_block_n_view){owner, owner->blocks.n, MC_REGISTRY_BLOCK_SLOTS};
         control->valid = n_get_pair(owner, &control->anchor, false, MC_REGISTRY_BUSY, true) &&
                          n_get_pair(owner, &control->anchor, false, MC_REGISTRY_BUSY, false) &&
+                         n_ready_read(owner, 2, false, true) &&
                          n_at_pair(&control->captured, 2, false, MC_REGISTRY_OK, true, true);
     }
     return MC_REGISTRY_NULL_REFERENCE;
@@ -286,6 +296,7 @@ static bool n_cold_pairs(fixture *f, const mc_registry_block_n_view *anchor) {
           mc_registry_classes_bind_entities(failure, f->entities[0], NULL) == MC_REGISTRY_OK &&
           ordinary->blocks_phase == MC_REGISTRY_COLD && failure->blocks_phase == MC_REGISTRY_COLD &&
           ordinary->blocks.n == NULL && failure->blocks.n == NULL);
+    CHECK(n_ready_read(ordinary, 2, false, true));
     CHECK(n_get_pair(ordinary, anchor, true, MC_REGISTRY_INVALID_ARGUMENT, true) &&
           n_get_pair(failure, anchor, true, MC_REGISTRY_INVALID_ARGUMENT, false) &&
           ordinary->blocks_phase == MC_REGISTRY_COLD && failure->blocks_phase == MC_REGISTRY_COLD &&
@@ -323,6 +334,7 @@ static bool n_cold_pairs(fixture *f, const mc_registry_block_n_view *anchor) {
           entered->entered == 0 && control.captured.identity == entered->blocks.n);
     CHECK(n_get_pair(entered, anchor, false, MC_REGISTRY_FAILED_INITIALIZATION, true) &&
           n_get_pair(entered, anchor, false, MC_REGISTRY_FAILED_INITIALIZATION, false) &&
+          n_ready_read(entered, 2, false, true) &&
           n_at_pair(&control.captured, 2, false, MC_REGISTRY_OK, true, true) && control.opens == 1);
     ok = true;
 cleanup:
@@ -346,15 +358,22 @@ static bool n_array_pairs(fixture *f, const mc_registry_block_n_view *captured,
           n_get_pair(NULL, captured, true, MC_REGISTRY_INVALID_ARGUMENT, false));
     CHECK(n_at_pair(captured, 2, false, MC_REGISTRY_OK, true, true) &&
           n_at_pair(captured, 1, false, MC_REGISTRY_OK, false, true) &&
+          n_ready_read(owner, 2, true, true) && n_ready_read(owner, 1, true, false) &&
+          n_ready_read(NULL, 2, false, true) &&
           n_at_pair(captured, 2, false, MC_REGISTRY_OK, true, false) &&
           n_at_pair(captured, 2, true, MC_REGISTRY_INVALID_ARGUMENT, false, true) &&
           n_at_pair(NULL, 2, false, MC_REGISTRY_INVALID_ARGUMENT, false, true));
+    ++owner->entered;
+    const bool busy_ready = n_ready_read(owner, 2, false, true);
+    --owner->entered;
+    CHECK(busy_ready);
     mc_registry_block_n_view no_classes = *captured;
     no_classes.classes = NULL;
     CHECK(n_at_pair(&no_classes, 2, false, MC_REGISTRY_INVALID_ARGUMENT, false, true));
     const int32_t bounds[] = {INT32_MIN, -1, 256, INT32_MAX};
     for (size_t i = 0; i < COUNT(bounds); ++i)
         CHECK(n_at_pair(captured, bounds[i], false, MC_REGISTRY_INDEX_OUT_OF_RANGE, false, true) &&
+              n_ready_read(owner, bounds[i], false, false) &&
               n_at_pair(missing, bounds[i], false, MC_REGISTRY_NULL_REFERENCE, false, true));
     mc_registry_block_n_view malformed = *captured;
     malformed.length = MC_REGISTRY_BLOCK_SLOTS + 1u;
@@ -367,11 +386,13 @@ static bool n_array_pairs(fixture *f, const mc_registry_block_n_view *captured,
     bool *const array = owner->blocks.n;
     const bool original = array[2];
     array[2] = false;
-    const bool mutated = n_at_pair(captured, 2, false, MC_REGISTRY_OK, false, true);
+    const bool mutated = n_at_pair(captured, 2, false, MC_REGISTRY_OK, false, true) &&
+                         n_ready_read(owner, 2, true, false);
     array[2] = original;
     CHECK(mutated && n_at_pair(captured, 2, false, MC_REGISTRY_OK, original, true));
     owner->blocks.n = NULL;
     const bool rebound_null = n_get_pair(owner, captured, false, MC_REGISTRY_OK, true) &&
+                              n_ready_read(owner, 2, false, true) &&
                               n_at_pair(captured, 2, false, MC_REGISTRY_OK, original, true);
     owner->blocks.n = array;
     CHECK(rebound_null);
@@ -382,6 +403,7 @@ static bool n_array_pairs(fixture *f, const mc_registry_block_n_view *captured,
     owner->blocks.n = current;
     current[2] = !original;
     const bool rebound_owned = n_get_pair(owner, captured, false, MC_REGISTRY_OK, true) &&
+                               n_ready_read(owner, 2, true, !original) &&
                                n_at_pair(captured, 2, false, MC_REGISTRY_OK, original, true);
     current[2] = current_original;
     owner->blocks.n = array;

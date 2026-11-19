@@ -289,6 +289,45 @@ python scripts/benchmarks/client_frames.py --executable current=PATH --authored-
 Two runs with the 25-second warmup measured 405.65–409.20 FPS with p99
 frame times of 8.17–8.19 ms. Both timed intervals ran 200 World ticks.
 
+### Random block ticks after Far settles
+
+The [random block sample changes](world-queries.md#random-block-sample-dispatch)
+were compared in four Windows Release pairs with the same authored save,
+textures, 854×480 view and 25-second warmup. The executables shared the
+observer and replaced only the scheduler and Registry runtime objects.
+Every measured interval completed 200 World ticks with the camera fixed.
+
+| Median of per-run statistics | Before | After |
+| --- | ---: | ---: |
+| FPS | 407.88 | 415.59 |
+| Frame p50 | 2.103 ms | 2.132 ms |
+| Frame p95 | 4.141 ms | 3.518 ms |
+| Frame p99 | 7.945 ms | 6.785 ms |
+| Longest frame | 11.144 ms | 9.897 ms |
+
+FPS, p95, p99 and the longest frame improved in all four pairs. Frame p50
+rose in all four. This cohort measures the stationary Far scene after the
+initial section queue has drained. Every reported FPS string counted zero
+Chunk updates.
+
+Three repeats used the compiled production objects. Median FPS rose from
+378.87 to 380.21, and median p99 fell from 9.11 to 7.36 ms. Frame p50 rose
+from 2.191 to 2.253 ms. Four runs reported Chunk updates in the first FPS
+string and every later string reported zero. Across the last eight seconds
+of each run, median p99 fell from 9.12 to 7.30 ms, with lower p99 in all
+three pairs.
+
+Three instrumented pairs timed 600 ticks per build in the same scene. Median
+tick batch time fell from 5.226 to 4.165 ms. The random block phase fell from
+2.645 to 1.583 ms, and its sample loops fell from 2.296 to 1.233 ms. Those spans
+are nested. Spawning measured 1.820 and 1.834 ms. The longest instrumented
+frame rose from 11.255 to 13.639 ms, with 4.389 ms in its tick batch.
+
+Four additional pairs used the default two-second warmup and included the
+initial section work. Median FPS rose from 68.55 to 69.98 and median frame
+p99 fell from 17.56 to 16.78 ms. Both improved in all four pairs. The longest
+frame improved in two pairs and rose in two.
+
 ## Fixed-input observer
 
 Build both comparison executables with the same observer source. The runner
