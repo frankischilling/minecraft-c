@@ -8,6 +8,7 @@
 #include "../display/fog_surface.h"
 #include "../display/world_frame_surface.h"
 #include "../render/model_graph_internal.h"
+#include "../render_engine/nw_internal.h"
 #include "mc/client/world/entity_renderer.h"
 #include "render_global_internal.h"
 
@@ -287,7 +288,10 @@ static bool nw_color(mc_client_render_global_clouds_call *c, float r, float g, f
 static bool vertex(mc_client_render_global_clouds_call *c, double x, double y, double z, double u,
                    double v, unsigned int pc) {
     if (!fp(c, pc) ||
-        !graphics(c, mc_client_nw_vertex_uv(c->nw, x, y, z, u, v, &c->failure.graphics), pc))
+        !graphics(c,
+                  mc_client_nw_vertex_uv_in_scene(c->nw, x, y, z, u, v, c->state.owner->classes,
+                                                  &c->failure.graphics),
+                  pc))
         return false;
     ++c->state.vertices;
     return true;

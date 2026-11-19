@@ -1002,20 +1002,20 @@
       "sha256": "c6f3bab175d837bdff85d0d8a5bf4977d03950ed438d599aa1b55e28933669da"
     },
     "src/client/render_engine/nw.c": {
-      "bytes": 29878,
-      "sha256": "1b57b5d26a6de618617538ca8dee254568820341cf52eb9aef23a5e83d01d3f6"
+      "bytes": 32128,
+      "sha256": "14900a4d80920a742cbc978f494fa77fb1b7745000cbd049c3b4ab12d66ad591"
     },
     "src/client/render_engine/nw.h": {
       "bytes": 6588,
       "sha256": "cc9cb6065749299dceb2cf03db2ac355958a8c83d43a9e8d0aa3f31c541f1109"
     },
     "src/client/render_engine/nw_internal.h": {
-      "bytes": 898,
-      "sha256": "478022c71d2c46a53a2e961ee144f64710a8107a5c340e57fbb7f5d95e8ee4dd"
+      "bytes": 1404,
+      "sha256": "d5bdb22affbcdf02e8cc999c2efdf0264b117c81125644f759e71b30edb4d102"
     },
     "src/client/render_engine/nw_owner.c": {
-      "bytes": 7250,
-      "sha256": "2af91166d507b91a1c0977b1602166491bd08425533dc6c208b961b1b1809411"
+      "bytes": 7261,
+      "sha256": "53401abea118624fe7e5a19b3289616d56ad8ff59497ce7128917df7d8e8901a"
     },
     "src/client/render_engine/owner.c": {
       "bytes": 29233,
@@ -1542,8 +1542,8 @@
       "sha256": "f4b67831e815cb81db37210673b61bd07f69fbe876c6baecba3caf7c7a6da6d5"
     },
     "tests/client/world/test_render_global_cpu.c": {
-      "bytes": 9759,
-      "sha256": "69cbabc0c652c88db145f13ee0bc5fec4914efe0c81909707f4444da5841e15e"
+      "bytes": 24965,
+      "sha256": "48341bc4256f9412e597c3435b1bed606a41993ddc042b9a415aacf39162b095"
     },
     "tests/client/world/test_render_global_device.c": {
       "bytes": 23372,
@@ -2574,8 +2574,8 @@
       "sha256": "69d76d736a61b230563bc49763252114699cc20fe2f89e7835cc1656d11c69b4"
     },
     "tests/client/display/test_source_lists.c": {
-      "bytes": 66600,
-      "sha256": "4da94687b538181f885774811e54d767611c4ba5df4506f8aad5df0d0edda86a"
+      "bytes": 68597,
+      "sha256": "e3527e192b00d4cf8be4595d3eb8ab37ba0404e790dd968febde1b3b0880731c"
     },
     "tests/client/render_engine/test_image_buffer.c": {
       "bytes": 17961,
@@ -4422,8 +4422,8 @@
       "sha256": "5cdc7648cb7398c7af658eeb7ce4c5ac4aaf01b12b274b1799e504cde1063597"
     },
     "src/client/world/render_global_clouds.c": {
-      "bytes": 34533,
-      "sha256": "2081d9c70815d197ae9a7efc1b952696966a7b5c3360b6e7a847c04315fd8599"
+      "bytes": 34695,
+      "sha256": "3841450f0981b942fafb1da9960333ed6b707b601ec0fb2f2d1c8bc3b30abf41"
     },
     "src/client/world/render_global_clouds_internal.h": {
       "bytes": 197,

@@ -32,7 +32,7 @@ static bool construct(mc_client_tessellator *o, mc_client_graphics_error *e) {
     o->last_store_pc = 51;
     f->A = 10;
     o->last_store_pc = 57;
-    f->B = 2097152;
+    f->B = MC_NW_BUFFER_WORDS;
     o->last_store_pc = 64;
     mc_client_direct_byte_buffer *bytes;
     if (!mc_client_ge_c(o->classes, &o->arena, mc_java_i32_mul(f->B, 4), site("<init>", "(I)V", 69),

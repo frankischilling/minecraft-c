@@ -4,6 +4,7 @@
 
 #include <emmintrin.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 static unsigned int checks;
@@ -159,11 +160,297 @@ static int delayed_fp_admission(void) {
     return 0;
 }
 
+static bool same_text(const char *a, const char *b) {
+    return a == b || (a != NULL && b != NULL && strcmp(a, b) == 0);
+}
+
+static bool same_graphics_site(mc_client_graphics_site a, mc_client_graphics_site b) {
+    return a.pc == b.pc && same_text(a.class_name, b.class_name) && same_text(a.method, b.method) &&
+           same_text(a.descriptor, b.descriptor);
+}
+
+static bool same_graphics_cause(const mc_client_graphics_cause *a,
+                                const mc_client_graphics_cause *b) {
+    return a->status == b->status && a->native_policy == b->native_policy &&
+           same_text(a->operation, b->operation) && same_graphics_site(a->caller, b->caller) &&
+           same_graphics_site(a->site, b->site);
+}
+
+static bool same_display_error(const mc_client_display_error *a, const mc_client_display_error *b) {
+    return a->status == b->status && a->gl_error == b->gl_error &&
+           same_text(a->operation, b->operation) &&
+           memcmp(a->detail, b->detail, sizeof(a->detail)) == 0;
+}
+
+static bool same_print_site(mc_java_print_site a, mc_java_print_site b) {
+    return a.pc == b.pc && same_text(a.class_name, b.class_name) && same_text(a.method, b.method) &&
+           same_text(a.descriptor, b.descriptor);
+}
+
+static bool same_print_error(const mc_java_print_error *a, const mc_java_print_error *b) {
+    for (size_t i = 0; i < sizeof(a->frames) / sizeof(a->frames[0]); ++i)
+        if (!same_print_site(a->frames[i], b->frames[i]))
+            return false;
+    return a->status == b->status && same_text(a->operation, b->operation) &&
+           same_print_site(a->site, b->site) && a->frame_count == b->frame_count &&
+           a->system_error == b->system_error && a->native_policy == b->native_policy &&
+           a->source_returned == b->source_returned && a->interrupted_io == b->interrupted_io &&
+           a->encoder.status == b->encoder.status &&
+           a->encoder.system_error == b->encoder.system_error &&
+           same_text(a->encoder.operation, b->encoder.operation) &&
+           a->encoder.native_cleanup_failed == b->encoder.native_cleanup_failed &&
+           a->encoder.native_cleanup_system_error == b->encoder.native_cleanup_system_error;
+}
+
+/* Compare diagnostics by member because native C structure padding is unspecified. */
+static bool same_graphics_error(const mc_client_graphics_error *a,
+                                const mc_client_graphics_error *b) {
+    return a->status == b->status && same_text(a->operation, b->operation) &&
+           same_graphics_site(a->caller, b->caller) && same_graphics_site(a->site, b->site) &&
+           same_graphics_site(a->entry, b->entry) && same_graphics_site(a->parent, b->parent) &&
+           same_graphics_cause(&a->class_cause, &b->class_cause) &&
+           same_graphics_cause(&a->dependency_class_cause, &b->dependency_class_cause) &&
+           same_display_error(&a->display, &b->display) &&
+           same_display_error(&a->cleanup_display, &b->cleanup_display) &&
+           same_print_error(&a->print, &b->print) &&
+           same_print_error(&a->cleanup_print, &b->cleanup_print) &&
+           a->actual_index == b->actual_index && a->retained_count == b->retained_count &&
+           a->native_policy == b->native_policy && a->generated == b->generated &&
+           a->first_append == b->first_append && a->second_append == b->second_append &&
+           a->cleanup_failed == b->cleanup_failed;
+}
+
+static int scene_vertices(void) {
+    /* A cold scene owns the real counted class occurrence without constructing
+     * a World or invoking any scene rendering body. */
+    mc_client_render_engine_classes *classes = NULL, *other = NULL;
+    mc_client_render_global *scene = NULL;
+    mc_client_render_global_error scene_error = {0};
+    mc_client_tessellator *nw = NULL;
+    mc_client_graphics_error error;
+    const mc_client_graphics_site caller = {"fixture", "scene_vertices", "()V", -1};
+    CHECK(mc_client_render_engine_classes_create(NULL, &classes) == MC_CLIENT_RENDER_ENGINE_OK &&
+          mc_client_render_engine_classes_create(NULL, &other) == MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_render_global_allocate(classes, NULL, &scene, &scene_error) ==
+              MC_CLIENT_RENDER_GLOBAL_OK &&
+          classes->scene_lease_count == 1 && atomic_load(&classes->holds) == 2);
+    CHECK(mc_client_nw_active_use(classes, caller, &nw, &error) &&
+          mc_client_nw_begin(nw, 4, &error) && mc_client_nw_color(nw, 17, 34, 51, 68, &error) &&
+          mc_client_nw_normal(nw, 1, 0, 0, &error) &&
+          mc_client_nw_translation(nw, .25, -.5, 1, &error));
+    const mc_client_nw_fields initial = nw->fields;
+    const int32_t initial_pc = nw->last_store_pc;
+    mc_client_direct_byte_buffer *bytes = (mc_client_direct_byte_buffer *)(void *)initial.d;
+    mc_client_direct_int_buffer *ints = (mc_client_direct_int_buffer *)(void *)initial.e;
+    mc_client_direct_float_buffer *floats = (mc_client_direct_float_buffer *)(void *)initial.f;
+    const mc_client_direct_byte_buffer initial_bytes = *bytes;
+    const mc_client_direct_int_buffer initial_ints = *ints;
+    const mc_client_direct_float_buffer initial_floats = *floats;
+    const size_t size = (size_t)initial.B * sizeof(*initial.g);
+    int32_t *const canonical = (int32_t *)(void *)initial.g;
+    void *expected_words = malloc(size), *expected_upload = malloc(size);
+    CHECK(expected_words != NULL && expected_upload != NULL && initial.B == MC_NW_BUFFER_WORDS &&
+          initial_bytes.capacity == size && canonical == (void *)(nw->arena.head + 1));
+    const unsigned int saved_controls = _mm_getcsr();
+
+    enum {
+        TRIANGLE,
+        QUAD_DUPLICATES,
+        TRIANGLE_WRAP,
+        QUAD_WRAP,
+        NEGATIVE_COUNTER,
+        WRONG_SCENE,
+        NULL_SCENE,
+        NO_SCENE_LEASE,
+        FOREIGN_ARRAY,
+        SHORT_ARRAY,
+        FIRST_DUPLICATE_PREFIX,
+        SECOND_DUPLICATE_PREFIX,
+        AUTO_FLUSH,
+        STRICT_FP,
+        SIGNALING_UV,
+        RECEIVER_BUSY,
+        CLASS_BUSY,
+        RETIRING,
+        HOLD_LIMIT,
+        ZERO_HOLDS,
+        NEGATIVE_OFFSET,
+        BEFORE_FLUSH,
+        CASE_COUNT
+    };
+
+    for (unsigned int sample = 0; sample < CASE_COUNT; ++sample) {
+        if (sample == NO_SCENE_LEASE)
+            CHECK(mc_client_render_global_release(&scene, &scene_error) ==
+                      MC_CLIENT_RENDER_GLOBAL_OK &&
+                  scene == NULL && classes->scene_lease_count == 0);
+        const size_t live_holds = atomic_load(&classes->holds);
+        mc_client_nw_fields expected_fields = {0};
+        mc_client_direct_byte_buffer expected_bytes = {0};
+        mc_client_direct_int_buffer expected_ints = {0};
+        mc_client_direct_float_buffer expected_floats = {0};
+        mc_client_graphics_error expected_error = {0};
+        int32_t words[64], expected_foreign[64], expected_pc = 0;
+        unsigned int expected_controls = 0;
+        bool expected_result = false;
+        for (unsigned int pass = 0; pass < 2; ++pass) {
+            memcpy(&nw->fields, &initial, sizeof(initial));
+            nw->last_store_pc = initial_pc;
+            nw->active = sample == RECEIVER_BUSY;
+            classes->active_source_calls = sample == CLASS_BUSY ? 1u : 0u;
+            classes->resource_retirement_started = sample == RETIRING;
+            const size_t holds = sample == HOLD_LIMIT   ? SIZE_MAX
+                                 : sample == ZERO_HOLDS ? 0
+                                                        : live_holds;
+            atomic_store(&classes->holds, holds);
+            memcpy(bytes, &initial_bytes, sizeof(initial_bytes));
+            memcpy(ints, &initial_ints, sizeof(initial_ints));
+            memcpy(floats, &initial_floats, sizeof(initial_floats));
+            memset(canonical, 0x5a, size);
+            memset(bytes->data, 0xa5, size);
+            for (size_t i = 0; i < sizeof(words) / sizeof(*words); ++i)
+                words[i] = 100 + (int32_t)i;
+            const mc_client_render_engine_classes *scene_classes = classes;
+            double u = .5, v = .25;
+            switch (sample) {
+                case QUAD_DUPLICATES:
+                case QUAD_WRAP:
+                case NEGATIVE_COUNTER:
+                case FIRST_DUPLICATE_PREFIX:
+                case SECOND_DUPLICATE_PREFIX:
+                    nw->fields.r = 7;
+                    nw->fields.h = nw->fields.p = 3;
+                    nw->fields.o = 24;
+                    if (sample == QUAD_WRAP) {
+                        nw->fields.h = INT32_MAX - 1;
+                        nw->fields.p = INT32_MAX;
+                    } else if (sample == NEGATIVE_COUNTER)
+                        nw->fields.p = -1;
+                    else if (sample == FIRST_DUPLICATE_PREFIX ||
+                             sample == SECOND_DUPLICATE_PREFIX) {
+                        nw->fields.g = words;
+                        nw->fields.B = sample == FIRST_DUPLICATE_PREFIX ? 37 : 40;
+                    }
+                    break;
+                case TRIANGLE_WRAP:
+                    nw->fields.h = nw->fields.p = INT32_MAX;
+                    break;
+                case WRONG_SCENE:
+                    scene_classes = other;
+                    break;
+                case NULL_SCENE:
+                    scene_classes = NULL;
+                    break;
+                case FOREIGN_ARRAY:
+                case SHORT_ARRAY:
+                    nw->fields.g = words;
+                    nw->fields.B = sample == FOREIGN_ARRAY ? 7 : 6;
+                    break;
+                case AUTO_FLUSH:
+                case BEFORE_FLUSH:
+                    nw->fields.h = nw->fields.p = 3;
+                    nw->fields.o = initial.B - (sample == AUTO_FLUSH ? 40 : 48);
+                    break;
+                case SIGNALING_UV: {
+                    const uint64_t signaling_bits = UINT64_C(0x7ff0000000000001);
+                    u = -0.0;
+                    memcpy(&v, &signaling_bits, sizeof(v));
+                    break;
+                }
+                case NEGATIVE_OFFSET:
+                    nw->fields.o = -1;
+                    break;
+                default:
+                    break;
+            }
+            memset(&error, 0, sizeof(error));
+            error.status = MC_CLIENT_GRAPHICS_LIMIT;
+            error.actual_index = 123;
+            error.retained_count = 456;
+            error.cleanup_failed = true;
+            error.cleanup_display.status = MC_CLIENT_DISPLAY_BUSY;
+            error.print.frame_count = 3;
+            _mm_setcsr(sample == STRICT_FP ? 0x9fc0u : 0x1f80u);
+            const bool result = pass == 0 ? mc_client_nw_vertex_uv(nw, 1, -2, 3, u, v, &error)
+                                          : mc_client_nw_vertex_uv_in_scene(nw, 1, -2, 3, u, v,
+                                                                            scene_classes, &error);
+            const unsigned int controls = _mm_getcsr();
+            _mm_setcsr(saved_controls);
+            CHECK(atomic_load(&classes->holds) == holds &&
+                  classes->active_source_calls == (sample == CLASS_BUSY ? 1u : 0u) &&
+                  nw->active == (sample == RECEIVER_BUSY) && classes->context_lease == NULL &&
+                  classes->bound_display == NULL &&
+                  classes->resource_retirement_started == (sample == RETIRING) &&
+                  classes->scene_lease_count == (sample == NO_SCENE_LEASE ? 0u : 1u));
+            if (pass == 0) {
+                memcpy(&expected_fields, &nw->fields, sizeof(expected_fields));
+                memcpy(&expected_bytes, bytes, sizeof(expected_bytes));
+                memcpy(&expected_ints, ints, sizeof(expected_ints));
+                memcpy(&expected_floats, floats, sizeof(expected_floats));
+                memcpy(&expected_error, &error, sizeof(error));
+                memcpy(expected_words, canonical, size);
+                memcpy(expected_upload, bytes->data, size);
+                memcpy(expected_foreign, words, sizeof(words));
+                expected_pc = nw->last_store_pc;
+                expected_controls = controls;
+                expected_result = result;
+            } else {
+                if (result != expected_result || error.status != expected_error.status)
+                    fprintf(stderr, "Scene vertex case%u public%d internal%d status%d/%d\n", sample,
+                            expected_result, result, (int)expected_error.status, (int)error.status);
+                /* Compare complete backing stores, including untouched padding
+                 * and the copied upload prefix on an automatic draw failure. */
+                CHECK(result == expected_result && controls == expected_controls &&
+                      nw->last_store_pc == expected_pc &&
+                      memcmp(&nw->fields, &expected_fields, sizeof(expected_fields)) == 0 &&
+                      memcmp(bytes, &expected_bytes, sizeof(expected_bytes)) == 0 &&
+                      memcmp(ints, &expected_ints, sizeof(expected_ints)) == 0 &&
+                      memcmp(floats, &expected_floats, sizeof(expected_floats)) == 0 &&
+                      same_graphics_error(&error, &expected_error) &&
+                      memcmp(canonical, expected_words, size) == 0 &&
+                      memcmp(bytes->data, expected_upload, size) == 0 &&
+                      memcmp(words, expected_foreign, sizeof(words)) == 0);
+            }
+        }
+        nw->active = false;
+        classes->active_source_calls = 0;
+        classes->resource_retirement_started = false;
+        atomic_store(&classes->holds, live_holds);
+        if (sample == AUTO_FLUSH)
+            CHECK(!expected_result &&
+                  expected_error.status == MC_CLIENT_GRAPHICS_INVALID_ARGUMENT &&
+                  expected_error.site.pc == 171 && expected_error.parent.pc == 13 &&
+                  !expected_fields.w && expected_fields.h == 4 &&
+                  expected_fields.o == initial.B - 32 && expected_pc == 19 &&
+                  expected_ints.position == (size_t)initial.B - 32 &&
+                  expected_bytes.limit == ((size_t)initial.B - 32) * sizeof(int32_t));
+        if (sample == TRIANGLE_WRAP)
+            CHECK(expected_result && expected_fields.h == INT32_MIN &&
+                  expected_fields.p == INT32_MIN && expected_fields.o == 8);
+        if (sample == QUAD_WRAP)
+            CHECK(expected_result && expected_fields.h == INT32_MIN + 1 &&
+                  expected_fields.p == INT32_MIN && expected_fields.o == 48);
+        if (sample == NO_SCENE_LEASE)
+            CHECK(mc_client_render_global_allocate(classes, NULL, &scene, &scene_error) ==
+                      MC_CLIENT_RENDER_GLOBAL_OK &&
+                  classes->scene_lease_count == 1);
+    }
+    nw->fields = initial;
+    free(expected_words);
+    free(expected_upload);
+    CHECK(mc_client_render_global_release(&scene, &scene_error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+          scene == NULL && classes->scene_lease_count == 0);
+    CHECK(mc_client_render_engine_classes_release(other) == MC_CLIENT_RENDER_ENGINE_OK &&
+          mc_client_render_engine_classes_release(classes) == MC_CLIENT_RENDER_ENGINE_OK);
+    return 0;
+}
+
 int main(void) {
     CHECK(raw() == 0);
     CHECK(prefixes() == 0);
     CHECK(buffer_operations() == 0);
     CHECK(delayed_fp_admission() == 0);
+    CHECK(scene_vertices() == 0);
     printf("Actual RenderGlobal CPU contracts: %u checks\n", checks);
     return 0;
 }

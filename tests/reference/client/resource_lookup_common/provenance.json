@@ -3078,20 +3078,20 @@
       "sha256": "c6f3bab175d837bdff85d0d8a5bf4977d03950ed438d599aa1b55e28933669da"
     },
     "src/client/render_engine/nw.c": {
-      "bytes": 29878,
-      "sha256": "1b57b5d26a6de618617538ca8dee254568820341cf52eb9aef23a5e83d01d3f6"
+      "bytes": 32128,
+      "sha256": "14900a4d80920a742cbc978f494fa77fb1b7745000cbd049c3b4ab12d66ad591"
     },
     "src/client/render_engine/nw.h": {
       "bytes": 6588,
       "sha256": "cc9cb6065749299dceb2cf03db2ac355958a8c83d43a9e8d0aa3f31c541f1109"
     },
     "src/client/render_engine/nw_internal.h": {
-      "bytes": 898,
-      "sha256": "478022c71d2c46a53a2e961ee144f64710a8107a5c340e57fbb7f5d95e8ee4dd"
+      "bytes": 1404,
+      "sha256": "d5bdb22affbcdf02e8cc999c2efdf0264b117c81125644f759e71b30edb4d102"
     },
     "src/client/render_engine/nw_owner.c": {
-      "bytes": 7250,
-      "sha256": "2af91166d507b91a1c0977b1602166491bd08425533dc6c208b961b1b1809411"
+      "bytes": 7261,
+      "sha256": "53401abea118624fe7e5a19b3289616d56ad8ff59497ce7128917df7d8e8901a"
     },
     "src/client/render_engine/owner.c": {
       "bytes": 29233,
@@ -5810,8 +5810,8 @@
       "sha256": "672b01888e78ebb65ecd8a7f650c18b8af6d43b7fdb9cd6e0418404435904df1"
     },
     "tests/client/world/test_render_global_cpu.c": {
-      "bytes": 9759,
-      "sha256": "69cbabc0c652c88db145f13ee0bc5fec4914efe0c81909707f4444da5841e15e"
+      "bytes": 24965,
+      "sha256": "48341bc4256f9412e597c3435b1bed606a41993ddc042b9a415aacf39162b095"
     },
     "tests/client/world/test_render_global_device.c": {
       "bytes": 23372,
@@ -6426,8 +6426,8 @@
       "sha256": "df3e4ce91744dd141a3ba7adc7c350db01070f4c569a41e1089b282803f70acf"
     },
     "tests/reference/client/display_sdk/provenance.json": {
-      "bytes": 938201,
-      "sha256": "d9b7f8c9111041b0f8c72ed9d4f7aeb39cdfc40e546ef0b48470ff7e9755c0da"
+      "bytes": 938203,
+      "sha256": "e678782540e36ba4b860f70ca756097c0a9387054e79179bfe2f819aa0767699"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6490,8 +6490,8 @@
       "sha256": "98ee546c3177f76a9987ed6d990a4fbea8748ad0c9472863a54d442bca5685be"
     },
     "tests/reference/client/loading_draw/provenance.json": {
-      "bytes": 1068460,
-      "sha256": "2d81f06ba7697718df11b2141242ff048b7cef461e3baf82d4b144ea552e89e0"
+      "bytes": 1068462,
+      "sha256": "ee5c6025d43ebe5e126d1d19d26a0ffbea755bf29a7b656a7b7442e851e6d6c4"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6622,8 +6622,8 @@
       "sha256": "42333feb1adca2f4e69b5cf78b3289d13914261faceb7b679e4847ae7f52ef25"
     },
     "tests/reference/client/render_resources/provenance.json": {
-      "bytes": 935026,
-      "sha256": "37e73b6c11d3a491a42140d281d847da4a1fc37c6fe89a27842294ff6928b8e0"
+      "bytes": 935028,
+      "sha256": "13a974c9b883743a1089d60ae171f3092823b6e65bf1684a6729a3b252f69454"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -10234,8 +10234,8 @@
       "sha256": "619946b5733bc9ba5dc95f880e115a07e05d6592fc4840e1501fc1458bec5396"
     },
     "tests/client/display/test_source_lists.c": {
-      "bytes": 66600,
-      "sha256": "4da94687b538181f885774811e54d767611c4ba5df4506f8aad5df0d0edda86a"
+      "bytes": 68597,
+      "sha256": "e3527e192b00d4cf8be4595d3eb8ab37ba0404e790dd968febde1b3b0880731c"
     },
     "tests/client/render_engine/test_image_buffer.c": {
       "bytes": 17961,
@@ -12970,8 +12970,8 @@
       "sha256": "5cdc7648cb7398c7af658eeb7ce4c5ac4aaf01b12b274b1799e504cde1063597"
     },
     "src/client/world/render_global_clouds.c": {
-      "bytes": 34533,
-      "sha256": "2081d9c70815d197ae9a7efc1b952696966a7b5c3360b6e7a847c04315fd8599"
+      "bytes": 34695,
+      "sha256": "3841450f0981b942fafb1da9960333ed6b707b601ec0fb2f2d1c8bc3b30abf41"
     },
     "src/client/world/render_global_clouds_internal.h": {
       "bytes": 197,
@@ -21134,8 +21134,8 @@
       "sha256": "c139f7e3ef971d333fd08805edbdc162a294ac1a17652febd922ee691baf76a3"
     },
     "docs/performance/chunk-rendering.md": {
-      "bytes": 40947,
-      "sha256": "e186d9be04b5826ebcdddde9c5ac61b49bcae4fe4c5e3a2d1a5c736122da73ed"
+      "bytes": 43304,
+      "sha256": "aa12dd275d53fed01938b0bb4644b074f2ac008267858dc1313cc6e121acd9a3"
     },
     "tests/benchmarks/chunk_cache_render_windows.json": {
       "bytes": 2023922,

@@ -2,6 +2,8 @@
 #define MC_CLIENT_RENDER_ENGINE_NW_INTERNAL_H
 #include "nw.h"
 
+enum { MC_NW_BUFFER_WORDS = 2097152 };
+
 typedef struct mc_client_nw_namespace {
     mc_client_render_engine_phase phase;
     bool b, c;
@@ -21,4 +23,11 @@ struct mc_client_tessellator {
     int32_t last_store_pc;
     bool active;
 };
+
+/* The caller must hold the exact scene's class owner for the duration of this
+ * call. The scene lease prevents context cleanup during a no-draw vertex. */
+bool mc_client_nw_vertex_uv_in_scene(mc_client_tessellator *o, double x, double y, double z,
+                                     double u, double v,
+                                     const mc_client_render_engine_classes *scene_classes,
+                                     mc_client_graphics_error *e);
 #endif

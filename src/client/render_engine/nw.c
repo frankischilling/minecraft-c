@@ -14,7 +14,14 @@ static mc_client_graphics_site site(const char *method, const char *descriptor, 
 
 static bool draw(mc_client_tessellator *, mc_client_display *, mc_client_graphics_error *);
 
-static bool enter(mc_client_tessellator *o, mc_client_graphics_error *e) {
+/* These shared checks and stores stay in both hot entry points. */
+#ifdef _MSC_VER
+#define MC_NW_INLINE __forceinline
+#else
+#define MC_NW_INLINE inline
+#endif
+
+static MC_NW_INLINE bool admit(mc_client_tessellator *o, mc_client_graphics_error *e) {
     *e = (mc_client_graphics_error){0};
     if (o == NULL || o->classes == NULL || o->classes->nw.published != o ||
         o->classes->nw.phase != MC_CLIENT_RENDER_ENGINE_READY) {
@@ -30,13 +37,32 @@ static bool enter(mc_client_tessellator *o, mc_client_graphics_error *e) {
                                 (mc_client_graphics_site){0}, true);
         return false;
     }
+    return true;
+}
+
+static bool retain_call(mc_client_tessellator *o, mc_client_graphics_error *e) {
     if (mc_client_render_engine_classes_retain(o->classes) != MC_CLIENT_RENDER_ENGINE_OK) {
         mc_client_graphics_fail(e, MC_CLIENT_GRAPHICS_LIMIT, "native nw per-call class hold",
                                 (mc_client_graphics_site){0}, true);
         return false;
     }
+    return true;
+}
+
+static inline void activate(mc_client_tessellator *o) {
     o->active = true;
     ++o->classes->active_source_calls;
+}
+
+static inline void deactivate(mc_client_tessellator *o) {
+    --o->classes->active_source_calls;
+    o->active = false;
+}
+
+static bool enter(mc_client_tessellator *o, mc_client_graphics_error *e) {
+    if (!admit(o, e) || !retain_call(o, e))
+        return false;
+    activate(o);
     return true;
 }
 
@@ -56,8 +82,7 @@ static bool leave(mc_client_tessellator *o, bool ok, mc_client_graphics_error *e
             }
         }
     }
-    --classes->active_source_calls;
-    o->active = false;
+    deactivate(o);
     (void)mc_client_render_engine_classes_release(classes);
     return ok && released;
 }
@@ -529,10 +554,8 @@ bool mc_client_nw_vertex(mc_client_tessellator *o, double x, double y, double z,
     return leave(o, ok, e);
 }
 
-bool mc_client_nw_vertex_uv(mc_client_tessellator *o, double x, double y, double z, double u,
-                            double v, mc_client_graphics_error *e) {
-    if (!enter(o, e))
-        return false;
+static MC_NW_INLINE bool vertex_uv(mc_client_tessellator *o, double x, double y, double z, double u,
+                                   double v, mc_client_graphics_error *e) {
     o->fields.m = true;
     o->last_store_pc = 2;
     o->fields.i = u;
@@ -542,7 +565,45 @@ bool mc_client_nw_vertex_uv(mc_client_tessellator *o, double x, double y, double
     const bool ok = vertex(o, x, y, z, e);
     if (!ok)
         e->parent = site("a", "(DDDDD)V", 13);
-    return leave(o, ok, e);
+    return ok;
+}
+
+bool mc_client_nw_vertex_uv(mc_client_tessellator *o, double x, double y, double z, double u,
+                            double v, mc_client_graphics_error *e) {
+    if (!enter(o, e))
+        return false;
+    return leave(o, vertex_uv(o, x, y, z, u, v, e), e);
+}
+
+static bool scene_vertex_can_borrow(const mc_client_tessellator *o,
+                                    const mc_client_render_engine_classes *scene_classes) {
+    if (o->classes != scene_classes || scene_classes->scene_lease_count == 0)
+        return false;
+    const mc_client_nw_fields *f = &o->fields;
+    /* The raw buffer was allocated last. A quad can add up to 24 words, so
+     * this cursor cannot reach the automatic draw threshold of B - 32. */
+    if (f->B != MC_NW_BUFFER_WORDS || (uint32_t)f->o >= MC_NW_BUFFER_WORDS - 56u ||
+        o->arena.head == NULL || f->g != (const int32_t *)(const void *)(o->arena.head + 1))
+        return false;
+    const size_t holds = atomic_load_explicit(&scene_classes->holds, memory_order_acquire);
+    return holds != 0 && holds != SIZE_MAX;
+}
+
+bool mc_client_nw_vertex_uv_in_scene(mc_client_tessellator *o, double x, double y, double z,
+                                     double u, double v,
+                                     const mc_client_render_engine_classes *scene_classes,
+                                     mc_client_graphics_error *e) {
+    if (!admit(o, e))
+        return false;
+    const bool borrow = scene_vertex_can_borrow(o, scene_classes);
+    if (!borrow && !retain_call(o, e))
+        return false;
+    activate(o);
+    const bool ok = vertex_uv(o, x, y, z, u, v, e);
+    if (!borrow)
+        return leave(o, ok, e);
+    deactivate(o);
+    return ok;
 }
 
 static bool device(mc_client_graphics_error *e, int32_t pc) {

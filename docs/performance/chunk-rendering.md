@@ -108,6 +108,46 @@ Three pairs after a 25-second warmup completed 200 World ticks per run and
 reported zero Chunk updates. Median FPS fell from 458.43 to 457.07, and
 median p95 rose from 2.98 to 3.06 ms. Median p99 fell from 6.14 to 6.02 ms.
 
+## Tessellator vertices under a scene hold
+
+Cloud emission uses the class hold already owned by RenderGlobal for UV
+vertices in the canonical buffer. The Tessellator checks its published
+receiver, reentry and retirement before writing. It takes the
+usual temporary class hold if a vertex could flush the batch, or if the
+scene or buffer checks fail. Both routes use the same vertex writer. On MSVC,
+the shared admission checks and UV stores are inlined in the hot entry points.
+
+Six alternating Windows MSVC Release pairs ran the same authored CPU
+fixture. Median cost per input vertex fell from 53.58 to 40.09 ns for
+triangles and from 54.76 to 41.55 ns for quads with duplicated vertices.
+Each process used nine timed samples per mode. The pairs matched the full
+vertex allocation, buffer positions, diagnostics and x86 floating-point state.
+Six separate public-entry pairs measured 53.49 and 53.08 ns for triangles
+and 54.46 and 53.77 ns for quads.
+
+The paired CPU regression covers 22 cases, including signed cursor wrap,
+partial writes, busy and retired receivers, and the automatic draw cutoff.
+The Display test also reaches that cutoff through a real GL draw. Its callback
+sees the temporary class hold and gets BUSY on a nested vertex call.
+Eight focused tests passed on Windows MSVC Release, including 72 authored
+cloud states. Seven passed on WSL Clang Debug with ASan, UBSan and llvmpipe.
+
+The frame observer compared the final route with `b321b9e0` in a stationary,
+authored Far scene at 854×480 on an i9-10900F with an RTX 3060. All 14
+qualifying intervals advanced 200 World ticks. The early runs kept compiling
+sections and the settled runs reported zero Chunk updates.
+
+| Warmup and workload | Median FPS before / after | Median p95 before / after (ms) | Median p99 before / after (ms) |
+| --- | ---: | ---: | ---: |
+| 2 seconds, early, four pairs | 76.00 / 76.10 | 14.54 / 14.50 | 15.62 / 15.24 |
+| 25 seconds, settled, three pairs | 448.73 / 450.86 | 3.01 / 2.96 | 6.13 / 6.21 |
+
+An earlier trial also changed UV submission during Chunk compilation. In
+three matched early rounds, that trial measured 76.05 median FPS against
+78.25 for the baseline, so the scene route is limited to cloud vertices.
+One settled baseline interval in the intermediate cloud trial lost
+foreground focus. Its receipt was kept and the cohort did not qualify.
+
 ## Cached lighting and Tessellator counters
 
 Two Windows Far traces after a two-second warmup recorded 7,005 render-thread

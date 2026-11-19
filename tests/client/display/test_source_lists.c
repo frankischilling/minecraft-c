@@ -992,6 +992,27 @@ cleanup:
     return result;
 }
 
+static struct {
+    mc_client_gl_draw_arrays_fn draw;
+    mc_client_tessellator *tessellator;
+    size_t expected_holds;
+    unsigned int draws;
+    bool active;
+} nw_flush_probe;
+
+static void GLAPIENTRY observe_nw_flush(GLenum mode, GLint first, GLsizei count) {
+    mc_client_tessellator *tessellator = nw_flush_probe.tessellator;
+    mc_client_render_engine_classes *classes = tessellator->classes;
+    mc_client_graphics_error error = {0};
+    ++nw_flush_probe.draws;
+    nw_flush_probe.active = tessellator->active && classes->active_source_calls == 1 &&
+                            atomic_load_explicit(&classes->holds, memory_order_acquire) ==
+                                nw_flush_probe.expected_holds &&
+                            !mc_client_nw_vertex(tessellator, 0, 0, 0, &error) &&
+                            error.status == MC_CLIENT_GRAPHICS_BUSY;
+    nw_flush_probe.draw(mode, first, count);
+}
+
 static bool tessellator_context_controls(mc_client_display *display) {
     bool result = false;
     mc_client_render_engine_classes *classes = NULL;
@@ -1016,6 +1037,26 @@ static bool tessellator_context_controls(mc_client_display *display) {
           graphics.status == MC_CLIENT_GRAPHICS_SOURCE_ILLEGAL_STATE && graphics.site.pc == 16 &&
           classes->context_lease == lease && classes->bound_display == display &&
           display->source.context_holds == starting_holds + 1);
+
+    /* Advance exactly to the canonical automatic draw threshold. Reentry
+     * through a real GL callback must see the temporary hold and busy guard. */
+    tessellator->fields.o = MC_NW_BUFFER_WORDS - 40;
+    tessellator->fields.h = 3;
+    const size_t holds = atomic_load_explicit(&classes->holds, memory_order_acquire);
+    nw_flush_probe.draw = display->gl.DrawArrays;
+    nw_flush_probe.tessellator = tessellator;
+    nw_flush_probe.expected_holds = holds + 1;
+    nw_flush_probe.draws = 0;
+    nw_flush_probe.active = false;
+    display->gl.DrawArrays = observe_nw_flush;
+    const bool flushed =
+        mc_client_nw_vertex_uv_in_scene(tessellator, 0, 0, 0, 0, 0, classes, &graphics);
+    display->gl.DrawArrays = nw_flush_probe.draw;
+    CHECK(flushed && nw_flush_probe.draws == 1 && nw_flush_probe.active &&
+          graphics.status == MC_CLIENT_GRAPHICS_OK && tessellator->fields.w &&
+          tessellator->fields.h == 0 && !tessellator->active && classes->active_source_calls == 0 &&
+          atomic_load_explicit(&classes->holds, memory_order_acquire) == holds);
+
     classes->scene_lease_count = 0;
     CHECK(!mc_client_nw_begin_quads(tessellator, &graphics) &&
           graphics.status == MC_CLIENT_GRAPHICS_SOURCE_ILLEGAL_STATE && graphics.site.pc == 16 &&
