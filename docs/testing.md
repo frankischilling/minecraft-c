@@ -10662,3 +10662,11 @@ Six alternating Windows pairs compared the same four decoded persistence
 records. Median comparison time fell from 0.598 to 0.381 seconds. This
 measurement covers the visitor and excludes fixture decoding and native
 replay.
+
+## Terrain and lighting failure evidence
+
+The Linux and Windows jobs keep the full receipt and native capture files
+from failed terrain and lighting tests in the `terrain-failures` directory
+of the failed native test artifact. The console report shows bounded excerpts.
+To collect the same files from a local build, run
+`python -B scripts/development/report_terrain_tests.py --build build --retain-failures`.

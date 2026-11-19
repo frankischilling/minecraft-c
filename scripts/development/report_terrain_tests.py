@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 import re
+import shutil
 
 
 GROUPS = (
@@ -115,9 +116,26 @@ def native_headers(directory, report):
             break
 
 
+def retain_failure(build, group, receipt):
+    directory = receipt.parent.resolve()
+    if not directory.is_relative_to(build):
+        return
+    output = build / "terrain-failures" / group / directory.name
+    if not output.resolve().is_relative_to(build):
+        return
+    output.mkdir(parents=True, exist_ok=True)
+    for source in directory.iterdir():
+        if source.is_symlink() or not source.is_file():
+            continue
+        if source.name == receipt.name or source.name.endswith((".stdout", ".stderr", ".capture.json")):
+            shutil.copyfile(source, output / source.name)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--build", type=Path, required=True)
+    parser.add_argument("--retain-failures", action="store_true",
+                        help="copy failed terrain reports and native captures into terrain-failures")
     args = parser.parse_args()
     build = args.build.resolve()
     found = 0
@@ -130,8 +148,12 @@ def main():
         path = reports[0]
         try:
             report = json.loads(path.read_text(encoding="utf-8"))
+            if not isinstance(report, dict):
+                raise ValueError("expected a JSON object")
         except (OSError, ValueError) as error:
             print(f"{group}: unreadable receipt: {error}")
+            if args.retain_failures:
+                retain_failure(build, group, path)
             continue
         keys = ("status", "rows", "frames", "normal_rows", "state_rows", "vertices", "components",
                 "cpu_rows", "device_rows", "original_rows", "compared_rows", "profiles_completed",
@@ -159,6 +181,8 @@ def main():
             report_mismatches("  profile mismatches: ", profile.get("mismatches"))
         report_mismatches("  mismatches: ", report.get("mismatches"))
         if report.get("status") not in ("PASS", "PASS_WITH_UNSUPPORTED"):
+            if args.retain_failures:
+                retain_failure(build, group, path)
             lighting = group.startswith("lighting-")
             diagnosed = bool(report.get("mismatches")) or any(
                 profile.get("mismatches") for profile in report.get("profiles", []))

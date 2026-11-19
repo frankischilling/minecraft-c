@@ -3774,8 +3774,8 @@
       "sha256": "d749c65bec50c1df278d8a5c7c96ab550358fb163f54c360546b55f92d409e9f"
     },
     "src/client/world/source_chunk_compile.c": {
-      "bytes": 42663,
-      "sha256": "0a26a6b16c0949bcd1f4765caa131feb9cc97a238867fcd09845ff43536a124b"
+      "bytes": 42670,
+      "sha256": "9e7c27a7a752d5d8c418c7e76c8bfc71a7800a2cec28e249808106d02c83d50f"
     },
     "src/client/world/source_chunk_compile_internal.h": {
       "bytes": 2862,
@@ -4138,8 +4138,8 @@
       "sha256": "f261c8ac687a25c8d5d8a75759e2c187e1b45b23dd9f8cf45acc7c49737cfec1"
     },
     "scripts/development/report_terrain_tests.py": {
-      "bytes": 9311,
-      "sha256": "1d8b926a73ecc907d66084c9580c46150c9bb5a6e7940732b027a01f9b264155"
+      "bytes": 10374,
+      "sha256": "541fd34137551e907e1ff0a1b400828b3dff0abbe4bdc6d4d06143626275cee6"
     },
     "tests/tools/client/test_submit_capability.py": {
       "bytes": 6390,
@@ -5102,12 +5102,12 @@
       "sha256": "39ee7f49684cdefaa5bab60c00dfe12708898111b68a8b4aa4ec552be7193f43"
     },
     "src/world/runtime/chunk_cache.c": {
-      "bytes": 44876,
-      "sha256": "62eb72ffd473af990d16d31c593e7a547a6473055f1b45333fe96fb1af09a6cc"
+      "bytes": 45451,
+      "sha256": "e0a457ad9f06e102ba52c39eebd94abc7254876348afa86076dbded8b259110f"
     },
     "src/world/runtime/chunk_cache_internal.h": {
-      "bytes": 3438,
-      "sha256": "7af340f2a10f60ee9f3e1aa91092f892a28a7ff5b4ac67c1ee5423c0658d41f3"
+      "bytes": 3945,
+      "sha256": "b3b9a74cf0f569e306e61c85f711a69e32c29884d800a4e3331bb2af6094f91c"
     },
     "src/world/runtime/path.c": {
       "bytes": 26664,
@@ -8046,8 +8046,8 @@
       "sha256": "d9692739a956d293cc6a5647df07abcc545c1039c2688367ef0a8ce2897a65ae"
     },
     "tests/client/world/chunk_cache_getter_controls.inc": {
-      "bytes": 35466,
-      "sha256": "36668caa61b3d50deb6a6c7967fc38186c6bb5eb26ca7c3b2a5ee06805adaaa7"
+      "bytes": 36657,
+      "sha256": "0ccbb44c56505a0f66a9dd43105a8276205ddbd8b8c767e84b9b3bc0dba59a2c"
     },
     "tests/tools/benchmarks/test_chunk_cache_render.py": {
       "bytes": 9173,

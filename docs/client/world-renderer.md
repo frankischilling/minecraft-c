@@ -115,6 +115,15 @@ pairs measured brightness at 59.45 to 53.04 ns per call and minimum
 brightness at 59.70 to 53.17 ns per call. The same nine-Chunk fixture
 matched query results, ownership receipts, and skylight side effects.
 
+Section compilation now scans consecutive air cells along each X row in
+one ChunkCache call. It reads the same cells in order and returns at the
+next non-air block or failed read. Eight alternating Windows Release
+pairs compiled an authored 16×16×16 section repeatedly. An empty
+section fell from 49.7 to 26.5 µs at the median. A section with 64 blocks
+fell from 262 to 239 µs. Each populated section produced matching
+vertex bytes and display list counts. The measurement covers compilation
+and retirement of the compile call.
+
 Separate instrumented Far runs matched 411 mesh groups by section position
 and counts of cell reads, rendered Blocks, minimum-light queries, opacity
 queries, and ambient occlusion flags. Each group had at least two samples per

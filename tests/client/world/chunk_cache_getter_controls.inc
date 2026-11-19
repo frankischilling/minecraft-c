@@ -288,6 +288,28 @@ static bool ew_getter_failure_controls(picking_fixture *f) {
     mc_world_chunk *object = cache->occurrences[0].object;
     CHECK(object != NULL && object->data != NULL && object->f != NULL && object->g != NULL);
     object->data->blocks[index] = 1;
+    /* An air run crosses a chunk seam before its first block or failed read. */
+    mc_chunk_data *next_chunk = f->chunks[2]->data;
+    uint8_t *const next_blocks = next_chunk->blocks;
+    const size_t next_index = (2u << 11u) | (8u << 7u) | 64u;
+    next_blocks[next_index] = 1;
+    int32_t cursor = 9, scanned_id = -1;
+    error->bytecode = 12345;
+    CHECK(mc_client_chunk_cache_next_block_failure(cache, &cursor, 20, 64, 8, &scanned_id, error) ==
+              MC_CLIENT_CHUNK_CACHE_OK &&
+          cursor == 18 && scanned_id == 1 && error->bytecode == 12345);
+    cursor = 19;
+    CHECK(mc_client_chunk_cache_next_block_failure(cache, &cursor, 23, 64, 8, &scanned_id, error) ==
+              MC_CLIENT_CHUNK_CACHE_OK &&
+          cursor == 23 && scanned_id == 0 && error->bytecode == 12345);
+    next_blocks[next_index] = 0;
+    next_chunk->blocks = NULL;
+    cursor = 15;
+    scanned_id = 99;
+    CHECK(mc_client_chunk_cache_next_block_failure(cache, &cursor, 20, 64, 8, &scanned_id, error) ==
+              MC_CLIENT_CHUNK_CACHE_SOURCE_NULL &&
+          cursor == 16 && scanned_id == 0 && error->bytecode == 100 && error->child_bytecode == 15);
+    next_chunk->blocks = next_blocks;
     const mc_block *stone = NULL;
     mc_world_provider_fields dimension;
     CHECK(mc_registry_block_get(f->base.registry, 1, &stone, NULL) == MC_REGISTRY_OK &&

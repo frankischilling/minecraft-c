@@ -520,6 +520,19 @@ mc_client_chunk_cache_block_failure(mc_client_chunk_cache *c, int32_t x, int32_t
     return block_query(c, x, y, z, out, error, true);
 }
 
+mc_client_chunk_cache_status
+mc_client_chunk_cache_next_block_failure(mc_client_chunk_cache *c, int32_t *x, int32_t end_x,
+                                         int32_t y, int32_t z, int32_t *out,
+                                         mc_client_chunk_cache_error *error) {
+    cache_query_error e;
+    query_error_init(&e, "a", "(III)I", NULL);
+    if (!enter(c, x != NULL && out != NULL, &e))
+        return query_result(error, &e, true);
+    while (*x < end_x && block_value(c, *x, y, z, out, &e) && *out == 0)
+        ++*x;
+    return finish(c, &e, error, true);
+}
+
 static void metadata_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z, int32_t *out,
                            cache_query_error *e) {
     if (y < 0 || y >= 128)

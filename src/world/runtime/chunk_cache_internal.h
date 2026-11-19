@@ -28,6 +28,14 @@ mc_client_chunk_cache_status mc_client_chunk_cache_block_failure(mc_client_chunk
                                                                  int32_t, int32_t, int32_t *,
                                                                  mc_client_chunk_cache_error *);
 
+/* Walk [*x,end_x) at a fixed y and z without calling back into the caller.
+ * On return, *x is the first non-air coordinate, the end, or the failed read.
+ * *out keeps the last successful Block ID. Success leaves error untouched. */
+mc_client_chunk_cache_status
+mc_client_chunk_cache_next_block_failure(mc_client_chunk_cache *, int32_t *x, int32_t end_x,
+                                         int32_t y, int32_t z, int32_t *out,
+                                         mc_client_chunk_cache_error *);
+
 /* Same metadata admission and source read. Success leaves error untouched;
  * every failure supplies the complete public record without a second read. */
 mc_client_chunk_cache_status mc_client_chunk_cache_metadata_failure(mc_client_chunk_cache *,

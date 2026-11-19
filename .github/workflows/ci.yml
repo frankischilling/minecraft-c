@@ -184,7 +184,7 @@ jobs:
         if: always()
         run: |
           df -h "$GITHUB_WORKSPACE"
-          python -B scripts/development/report_terrain_tests.py --build build
+          python -B scripts/development/report_terrain_tests.py --build build --retain-failures
       - name: Retain failed native test evidence
         if: always() && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -193,6 +193,7 @@ jobs:
           path: |
             build/Testing/Temporary/LastTest.log
             build/Testing/Temporary/LastTestsFailed.log
+            build/terrain-failures/**
             build/world-nested-controls/**/report.json
             build/world-nested-controls/**/native.capture.json
             build/world-nested-controls/**/native.stdout
@@ -343,7 +344,7 @@ jobs:
         run: ctest --test-dir build -C Debug --parallel 4 --output-on-failure
       - name: Report terrain test scopes and failures
         if: always()
-        run: python -B scripts/development/report_terrain_tests.py --build build
+        run: python -B scripts/development/report_terrain_tests.py --build build --retain-failures
       - name: Retain failed native test evidence
         if: always() && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -352,6 +353,7 @@ jobs:
           path: |
             build/Testing/Temporary/LastTest.log
             build/Testing/Temporary/LastTestsFailed.log
+            build/terrain-failures/**
             build/world-nested-controls/**/report.json
             build/world-nested-controls/**/native.capture.json
             build/world-nested-controls/**/native.stdout

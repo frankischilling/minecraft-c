@@ -713,13 +713,13 @@ static bool body(mc_source_dk_compile *c) {
             for (c->state.z = z; c->state.z < end_z; ++c->state.z)
                 for (c->state.x = x; c->state.x < end_x; ++c->state.x) {
                     if (!cache_result(c,
-                                      mc_client_chunk_cache_block_failure(
-                                          c->cache, c->state.x, c->state.y, c->state.z,
+                                      mc_client_chunk_cache_next_block_failure(
+                                          c->cache, &c->state.x, end_x, c->state.y, c->state.z,
                                           &c->state.block_id, &c->cache_error),
                                       231))
                         return false;
-                    if (c->state.block_id <= 0)
-                        continue;
+                    if (c->state.x == end_x)
+                        break;
                     if (!started) {
                         started = true;
                         if (!start_list(c))
