@@ -1,4 +1,4 @@
-#include "mc/world/runtime/world_tick.h"
+#include "world_tick_scheduled_internal.h"
 
 #include "../../block/registry/runtime_internal.h"
 #include "construction_internal.h"
@@ -65,6 +65,32 @@ static bool membership(mc_world_runtime *w, mc_world_scheduled_drain_error *e,
                 "World scheduled drain reached membership queue");
 }
 
+static bool scheduled_block(mc_world_runtime *w, int32_t id, const mc_block **block,
+                            mc_world_scheduled_drain_error *e) {
+    mc_registry_classes *classes = mc_world_runtime_registry(w);
+    e->call.bytecode = 201;
+    if (mc_registry_block_m_read_ready(classes, id, block)) {
+        e->call.bytecode = 206;
+        return true;
+    }
+
+    mc_registry_error registry = mc_world_mutation_empty_registry();
+    mc_registry_block_m_view view;
+    if (classes == NULL) {
+        registry.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
+        registry.message = "World scheduled drain Registry binding";
+    } else if (mc_registry_block_m_get(classes, &view, &registry) == MC_REGISTRY_OK) {
+        e->call.bytecode = 206;
+        if (mc_registry_block_m_at(&view, id, block, &registry) == MC_REGISTRY_OK)
+            return true;
+    }
+    e->call.registry = registry;
+    e->call.status = mc_world_runtime_registry_result(
+        w, registry.status, &registry, "World scheduled drain Block.m access", &e->call.cause);
+    e->call.operation = e->call.cause.operation;
+    return false;
+}
+
 static bool tick(mc_world_runtime *w, mc_scheduled_tick *record,
                  mc_world_scheduled_drain_error *e) {
     mc_scheduled_tick_fields f;
@@ -92,47 +118,30 @@ static bool tick(mc_world_runtime *w, mc_scheduled_tick *record,
     if (current != f.block || current <= 0)
         return true;
 
-    mc_registry_error registry = mc_world_mutation_empty_registry();
-    mc_registry_block_m_view view;
-    mc_registry_classes *classes = mc_world_runtime_registry(w);
-    e->call.bytecode = 201;
-    if (classes == NULL) {
-        registry.status = MC_REGISTRY_UNIMPLEMENTED_DEPENDENCY;
-        registry.message = "World scheduled drain Registry binding";
-    } else if (mc_registry_block_m_get(classes, &view, &registry) == MC_REGISTRY_OK) {
-        const mc_block *block;
-        e->call.bytecode = 206;
-        if (mc_registry_block_m_at(&view, current, &block, &registry) == MC_REGISTRY_OK) {
-            (void)mc_scheduled_tick_fields_get(record, &f);
-            mc_java_random *random = w->fields.r;
-            e->call.bytecode = 227;
-            if (mc_world_mutation_block_tick(w, block, f.x, f.y, f.z, random, &e->call.tick))
-                return true;
-            e->call.registry = e->call.tick.registry;
-            (void)cause(w, e, e->call.tick.cause);
-            if (e->call.tick.fire_source_null || e->call.tick.stairs_source_null ||
-                e->call.tick.redstone_ore_source_null || e->call.tick.fire_array_index ||
-                e->call.tick.world_access_source_fault != MC_WORLD_ACCESS_SOURCE_FAULT_NONE) {
-                e->native_policy = false;
-                e->exception_class = e->call.tick.fire_array_index
-                                         ? "java/lang/ArrayIndexOutOfBoundsException"
-                                         : "java/lang/NullPointerException";
-            }
-            /* The actual failed child may carry a null-sound failure by
-             * value, without a concrete producer occurrence to retain. */
-            const char *exception = NULL;
-            if (mc_world_access_failure_source_exception(&e->call.tick.world_access_failure,
-                                                         &exception)) {
-                e->native_policy = false;
-                e->exception_class = exception;
-            }
-            return false;
-        }
+    const mc_block *block;
+    if (!scheduled_block(w, current, &block, e))
+        return false;
+    (void)mc_scheduled_tick_fields_get(record, &f);
+    mc_java_random *random = w->fields.r;
+    e->call.bytecode = 227;
+    if (mc_world_mutation_block_tick(w, block, f.x, f.y, f.z, random, &e->call.tick))
+        return true;
+    e->call.registry = e->call.tick.registry;
+    (void)cause(w, e, e->call.tick.cause);
+    if (e->call.tick.fire_source_null || e->call.tick.stairs_source_null ||
+        e->call.tick.redstone_ore_source_null || e->call.tick.fire_array_index ||
+        e->call.tick.world_access_source_fault != MC_WORLD_ACCESS_SOURCE_FAULT_NONE) {
+        e->native_policy = false;
+        e->exception_class = e->call.tick.fire_array_index
+                                 ? "java/lang/ArrayIndexOutOfBoundsException"
+                                 : "java/lang/NullPointerException";
     }
-    e->call.registry = registry;
-    e->call.status = mc_world_runtime_registry_result(
-        w, registry.status, &registry, "World scheduled drain Block.m access", &e->call.cause);
-    e->call.operation = e->call.cause.operation;
+    /* A null-sound failure can have no concrete producer occurrence. */
+    const char *exception = NULL;
+    if (mc_world_access_failure_source_exception(&e->call.tick.world_access_failure, &exception)) {
+        e->native_policy = false;
+        e->exception_class = exception;
+    }
     return false;
 }
 
@@ -195,9 +204,9 @@ static bool drain(mc_world_runtime *w, bool force, bool *pending,
     return true;
 }
 
-mc_world_storage_status mc_world_runtime_drain_scheduled(mc_world_runtime *w, bool force,
-                                                         bool *pending,
-                                                         mc_world_scheduled_drain_error *error) {
+mc_world_storage_status
+mc_world_runtime_drain_scheduled_into(mc_world_runtime *w, bool force, bool *pending,
+                                      mc_world_scheduled_drain_error *frame) {
     mc_world_storage_error admission = {0};
     if (w == NULL || pending == NULL)
         admission = (mc_world_storage_error){MC_WORLD_STORAGE_INVALID_ARGUMENT,
@@ -207,17 +216,6 @@ mc_world_storage_status mc_world_runtime_drain_scheduled(mc_world_runtime *w, bo
              w->construction.phase == MC_WORLD_RUNTIME_RETIRED)
         admission = (mc_world_storage_error){MC_WORLD_STORAGE_UNSUPPORTED_STATE,
                                              "World scheduled drain actual client GAME owner", 0};
-    mc_world_scheduled_drain_error *frame = calloc(1, sizeof(*frame));
-    if (frame == NULL) {
-        if (error != NULL) {
-            memset(error, 0, sizeof(*error));
-            error->call.status = MC_WORLD_STORAGE_ALLOCATION_FAILED;
-            error->call.operation = "World scheduled drain diagnostic allocation";
-            error->call.cause =
-                (mc_world_storage_error){error->call.status, error->call.operation, 0};
-        }
-        return MC_WORLD_STORAGE_ALLOCATION_FAILED;
-    }
     mc_world_mutation_error_init(&frame->call.tick);
     frame->call.registry = mc_world_mutation_empty_registry();
     if (admission.status == MC_WORLD_STORAGE_OK)
@@ -238,7 +236,25 @@ mc_world_storage_status mc_world_runtime_drain_scheduled(mc_world_runtime *w, bo
         }
         mc_world_runtime_call_leave(w);
     }
-    const mc_world_storage_status status = frame->call.status;
+    return frame->call.status;
+}
+
+mc_world_storage_status mc_world_runtime_drain_scheduled(mc_world_runtime *w, bool force,
+                                                         bool *pending,
+                                                         mc_world_scheduled_drain_error *error) {
+    mc_world_scheduled_drain_error *frame = calloc(1, sizeof(*frame));
+    if (frame == NULL) {
+        if (error != NULL) {
+            memset(error, 0, sizeof(*error));
+            error->call.status = MC_WORLD_STORAGE_ALLOCATION_FAILED;
+            error->call.operation = "World scheduled drain diagnostic allocation";
+            error->call.cause =
+                (mc_world_storage_error){error->call.status, error->call.operation, 0};
+        }
+        return MC_WORLD_STORAGE_ALLOCATION_FAILED;
+    }
+    const mc_world_storage_status status =
+        mc_world_runtime_drain_scheduled_into(w, force, pending, frame);
     if (error != NULL)
         *error = *frame;
     free(frame);

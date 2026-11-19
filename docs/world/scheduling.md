@@ -159,6 +159,30 @@ boundaries do not qualify nonempty deferred sets, general fluid ticks, Lava,
 queue drainage, persistence or complete natural scheduling behavior. The
 ordinary entry and earlier collection results below retain their own scopes.
 
+## Scheduled drain during World tick
+
+World ticks use their existing diagnostic record for the scheduled drain.
+The standalone drain still builds a private record and copies it to the
+caller after the operation returns. A later tick has its own record, so it can
+run while an earlier failed tick remains retained. The active-call guards and
+failure receipt ownership cover both paths.
+
+The drain reads the live Block registry entry directly when the Registry is
+ready and idle. Cold, entered, null-array, and out-of-range cases still run
+the checked Registry operations. Each scheduled callback reads its record and
+the current World Random before dispatch.
+
+Eight alternating Windows Release pairs used the same workload object and
+replaced only the simulation library. Median time per World tick moved from
+8.78 to 7.49 µs with an empty queue and from 1.647 to 1.614 ms with 192 due
+wooden pressure plates. The dense runs matched callback counts and order,
+released metadata, World time, empty queues, and owner counts. These timings
+cover the World tick while the fixture has no Players.
+
+Four focused tests passed on Windows and under Linux ASan and UBSan. They cover
+scheduled queue limits, pressure-plate callbacks, and the earlier failure
+record retained across a later successful tick.
+
 ## Native validation
 
 `world.scheduling` passes 424 checks on native Windows MSVC and Linux GCC/Clang,

@@ -873,6 +873,52 @@ cleanup:
     return ok;
 }
 
+static bool retained_drain_failure(fixture *f, const char *root) {
+    bool ok = false, added;
+    mc_world_runtime *world = NULL;
+    mc_scheduled_ordered *queue = NULL, *original = NULL;
+    mc_scheduled_tick *record = NULL;
+    mc_scheduled_tick_sequence sequence = {0};
+    mc_world_tick_call *failed = NULL, *later = NULL;
+    mc_world_tick_state earlier = {0}, current = {0};
+    CHECK(tick_world_create(f, root, 5, 512));
+    world = f->worlds[5];
+    CHECK(mc_scheduled_ordered_create(1, 1024, &queue) == MC_SCHEDULED_ORDERED_OK &&
+          mc_scheduled_tick_create(&sequence, 0, -100, 0, 1, &record) == MC_SCHEDULED_TICK_OK &&
+          mc_scheduled_ordered_add(queue, record, &added) == MC_SCHEDULED_ORDERED_OK && added);
+    original = world->fields.E;
+    world->fields.E = queue;
+    CHECK(mc_world_runtime_tick_begin(world, tick_math, &failed, NULL) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          mc_world_runtime_tick_inspect(failed, &earlier) && earlier.source_pc == 190 &&
+          earlier.time_stored && !earlier.scheduled_returned && earlier.random == NULL &&
+          earlier.error->child == MC_WORLD_TICK_CHILD_SCHEDULED &&
+          earlier.error->child_bytecode == 30 && !earlier.error->native_policy &&
+          earlier.error->scheduled != NULL && earlier.error->scheduled->initial_count == 1 &&
+          earlier.error->scheduled->removed == 0 && earlier.error->scheduled->iterations == 0);
+    const mc_world_scheduled_drain_error *receipt = earlier.error->scheduled;
+    world->fields.E = original;
+    CHECK(mc_world_runtime_tick_begin(world, tick_math, &later, NULL) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_tick_inspect(later, &current) && current.scheduled_returned &&
+          current.error->scheduled == NULL &&
+          mc_world_runtime_tick_retire(&later, NULL) == MC_WORLD_STORAGE_OK &&
+          mc_world_runtime_tick_inspect(failed, &earlier) && earlier.error->scheduled == receipt &&
+          receipt->call.bytecode == 30 && receipt->removed == 0 &&
+          receipt->exception_class != NULL &&
+          strcmp(receipt->exception_class, "java/lang/IllegalStateException") == 0);
+    ok = true;
+cleanup:
+    if (world != NULL && original != NULL)
+        world->fields.E = original;
+    if (mc_world_runtime_tick_retire(&later, NULL) != MC_WORLD_STORAGE_OK)
+        ok = false;
+    if (mc_world_runtime_tick_retire(&failed, NULL) != MC_WORLD_STORAGE_OK)
+        ok = false;
+    mc_scheduled_ordered_destroy(queue);
+    mc_scheduled_tick_release(record);
+    return ok;
+}
+
 typedef struct sky_control {
     mc_world_access *self;
     size_t calls;
@@ -1321,7 +1367,8 @@ int main(int argc, char **argv) {
               MC_ENTITY_OK);
     CHECK(mc_registry_classes_initialize_blocks(f->registry[0], NULL) == MC_REGISTRY_OK);
     CHECK(tick_world_create(f, root, 0, 512));
-    CHECK(drain_cases(f) && tick_cases(f) && spawn_positive_case(f, root, 1, "uz", 0, false) &&
+    CHECK(drain_cases(f) && retained_drain_failure(f, root) && tick_cases(f) &&
+          spawn_positive_case(f, root, 1, "uz", 0, false) &&
           spawn_positive_case(f, root, 2, "dl", 1, false) &&
           spawn_positive_case(f, root, 3, "cn", 0, true) && spawn_candidate_cases(f, root, 4));
     for (unsigned int mode = 0; mode < 3; ++mode)

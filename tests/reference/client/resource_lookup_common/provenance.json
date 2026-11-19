@@ -1046,8 +1046,8 @@
       "sha256": "cd54507a873cab3e65b84940189d366d6e1896284ceeb9f247e738b7228ed378"
     },
     "docs/world/scheduling.md": {
-      "bytes": 15448,
-      "sha256": "62207ab54f1c6af97eeb455c14b188dc47f1425576a95535069332122dd71962"
+      "bytes": 16744,
+      "sha256": "946cc9b68383ddc93464a90df8fd001bcae0d746cf4c3fa35fdd0641bcbc50e2"
     },
     "docs/world/simplex.md": {
       "bytes": 3667,
@@ -6427,7 +6427,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938203,
-      "sha256": "9c5b484daa1d208496d8414dd0f439627a07c7804b71df3f083791bbbdbcb8a4"
+      "sha256": "9064d25f50094f5e788bf6116f247e39dd0397938e685e8f1c7df60ca74a11d8"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6491,7 +6491,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1068463,
-      "sha256": "348a35bfb36f4a4085cc3341f6cccff5d3509e3ce44e1765462e79ec3c22460c"
+      "sha256": "0922799e11d4913f80fd5ba3792d3530b0d46a014d993755dedc5e6cf8332db3"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6623,7 +6623,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 935028,
-      "sha256": "2a0928009b17f031d97dcf0726dc17bdf5a118122886089d4cfc4b11f375f124"
+      "sha256": "ba8ea8f3e4000d6ba6b90edb8fb57fe9ffa73847cd90359dd8794e29925e4c0d"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -10898,12 +10898,12 @@
       "sha256": "476af52bb256f13e8fe9a066459b20fafd5ffec8d84803019ee64572ee66448a"
     },
     "src/world/runtime/world_tick.c": {
-      "bytes": 65372,
-      "sha256": "e358f60e091ab9275b6dbd202a719c12620f57d6e6a4bf9360cbd3c355ad7cf5"
+      "bytes": 65420,
+      "sha256": "d222d4de07c04577ce467c851e27a2101c1762ee65702dfee4f6038b2a46b44c"
     },
     "src/world/runtime/world_tick_scheduled.c": {
-      "bytes": 10638,
-      "sha256": "ccc0ced4c9837d7a0f00215de0b5192fc430743a7fce6e2f21ada39c83b66c69"
+      "bytes": 10965,
+      "sha256": "247a1d30a6784a890261133e333b79c28dc94e5615e189795df9293cd3f052da"
     },
     "tests/client/gui/test_pause_screen.c": {
       "bytes": 10305,
@@ -11038,8 +11038,8 @@
       "sha256": "2f6d09ca61aac390dc1bd1dc9932c28bb810e7c4c2eea6328c408b7933eee21a"
     },
     "tests/world/runtime/test_world_tick.c": {
-      "bytes": 70731,
-      "sha256": "2500a07b297fdb51c3fa78b6a245e75554d0913f165ce756e5ccae35e9f0335f"
+      "bytes": 73325,
+      "sha256": "5966be03d103c114c5b84f0bc4f2b7d18e713aa67c6138552e94780e392637e3"
     },
     "tests/reference/world/tick/README.md": {
       "bytes": 4897,

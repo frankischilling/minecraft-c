@@ -3398,12 +3398,12 @@
       "sha256": "9d6b50605df8db62bce182c085fdeb5141afac3038ef8dcecb7623caca759138"
     },
     "src/world/runtime/world_tick.c": {
-      "bytes": 65372,
-      "sha256": "e358f60e091ab9275b6dbd202a719c12620f57d6e6a4bf9360cbd3c355ad7cf5"
+      "bytes": 65420,
+      "sha256": "d222d4de07c04577ce467c851e27a2101c1762ee65702dfee4f6038b2a46b44c"
     },
     "src/world/runtime/world_tick_scheduled.c": {
-      "bytes": 10638,
-      "sha256": "ccc0ced4c9837d7a0f00215de0b5192fc430743a7fce6e2f21ada39c83b66c69"
+      "bytes": 10965,
+      "sha256": "247a1d30a6784a890261133e333b79c28dc94e5615e189795df9293cd3f052da"
     },
     "tests/client/gui/test_pause_screen.c": {
       "bytes": 10305,
@@ -3458,8 +3458,8 @@
       "sha256": "6533d786d66811578c1b9141b8329d405635919a7898f93c8a8399da39fda2ce"
     },
     "tests/world/runtime/test_world_tick.c": {
-      "bytes": 70731,
-      "sha256": "2500a07b297fdb51c3fa78b6a245e75554d0913f165ce756e5ccae35e9f0335f"
+      "bytes": 73325,
+      "sha256": "5966be03d103c114c5b84f0bc4f2b7d18e713aa67c6138552e94780e392637e3"
     },
     "cmake/client_frustum.cmake": {
       "bytes": 1234,

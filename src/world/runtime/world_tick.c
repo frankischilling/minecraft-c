@@ -24,6 +24,7 @@
 #include "runtime_internal.h"
 #include "spawn_postspawn_internal.h"
 #include "world_access_internal.h"
+#include "world_tick_scheduled_internal.h"
 
 #include <limits.h>
 #include <stdlib.h>
@@ -1265,7 +1266,7 @@ static bool scheduler(mc_world_tick_call *c) {
     c->state.time_stored = true;
     at(c, 190, MC_WORLD_TICK_CHILD_SCHEDULED, "fd", "a(Z)Z", 0);
     bool pending;
-    if (mc_world_runtime_drain_scheduled(w, false, &pending, &c->scheduled) !=
+    if (mc_world_runtime_drain_scheduled_into(w, false, &pending, &c->scheduled) !=
         MC_WORLD_STORAGE_OK) {
         c->error.scheduled = &c->scheduled;
         c->error.child_bytecode = c->scheduled.call.bytecode;
