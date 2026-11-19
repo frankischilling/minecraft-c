@@ -224,6 +224,16 @@ class FixtureTests(unittest.TestCase):
         with self.assertRaisesRegex(region.Failure, "all unrelated original bytes preserved"):
             region.audit(record, region.Evidence(mapping=changed))
 
+    def test_retained_owner_audit_rejects_numeric_type_alias(self):
+        pool = {digest: region.unpack(value, region.MAX_FILE)
+                for digest, value in self.fixture["blobs"].items()}
+        record = region.strict_json(region.unpack(self.fixture["originals"]["client"]["observed"]))
+        free_sectors = record["final_state"]["held_regions"][0]["free"]
+        self.assertIs(free_sectors[0], False)
+        free_sectors[0] = 0
+        with self.assertRaisesRegex(region.Failure, "complete retained final region owners"):
+            region.audit(record, region.pool_evidence(record, pool))
+
     def test_corpus_omissions_duplicates_sides_order_and_counts_fail(self):
         for name in ("missing","duplicate","side","profile","count","index","extra"):
             value=copy.deepcopy(self.fixture)
@@ -232,6 +242,23 @@ class FixtureTests(unittest.TestCase):
             elif name=="extra": value["cases"].append(copy.deepcopy(value["cases"][0]))
             else: value["cases"][0][name if name!="count" else "writes"]={"side":"unknown","profile":"unknown","count":11,"index":True}[name]
             with self.subTest(name=name),self.assertRaises(region.Failure): region.validate_public_metadata(value)
+
+    def test_header_words_require_exact_signed_integers(self):
+        record = region.strict_json(region.unpack(self.fixture["originals"]["client"]["observed"]))
+        snapshot = next(row for row in record["events"]
+                        if row["kind"] == "snapshot" and row["state"]["held_regions"])
+        owner = snapshot["state"]["held_regions"][0]
+        for name in ("locations", "timestamps"):
+            words = owner[name]
+            saved = words[-1]
+            for invalid in (True, float(saved), None, -(1 << 31) - 1, 1 << 31):
+                words[-1] = invalid
+                try:
+                    with self.subTest(header=name, value=invalid), self.assertRaisesRegex(
+                            region.Failure, "original header bits: exact integer bounds"):
+                        region.validate_original(record, None, "client", "observed", public=True)
+                finally:
+                    words[-1] = saved
 
     def test_incomplete_or_weak_provenance_and_class_bindings_fail(self):
         for name in ("mode","jar","source","source_digest","exporter","helper","class_version","class_version_float","original_class","tool","counts","controls"):

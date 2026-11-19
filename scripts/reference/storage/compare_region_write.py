@@ -11,6 +11,7 @@ import base64
 import hashlib
 import json
 import math
+import operator
 import os
 from pathlib import Path
 import platform
@@ -158,21 +159,20 @@ class Evidence:
     def __str__(self):
         return self.relative
 
-def read_region(path):
+def read_region(path, *, signed_headers=False):
     raw = path.read_bytes()
     check(8192 <= len(raw) <= 4 * 1024 * 1024 and len(raw) % 4096 == 0, "complete aligned original region image")
-    return raw, list(struct.unpack(">1024I", raw[:4096])), list(struct.unpack(">1024I", raw[4096:8192]))
-
-
-def signed(value):
-    return value if value < 0x80000000 else value - 0x100000000
+    header_format = ">1024i" if signed_headers else ">1024I"
+    return raw, list(struct.unpack_from(header_format, raw)), list(struct.unpack_from(header_format, raw, 4096))
 
 
 def written_ranges(event):
     return {second & 0xffffffff for second in range(event["before_ms"] // 1000, event["after_ms"] // 1000 + 1)}
 
 
-def audit(record, case):
+def audit(record, case, *, validated_regions=False):
+    # The validator has already checked the exact types of every owner field.
+    same_region = operator.eq if validated_regions else same_json
     check(record["schema"] == 1 and record["side"] in JARS and record["mode"] in ("observed", "control"), "complete probe identity")
     check(record["jar_sha256"] == JARS[record["side"]][1], "original archive attribution")
     check(len(record["events"]) < 1000 and record["final_state"]["cache_count"] == 0, "bounded complete sequence and closed cache")
@@ -196,14 +196,14 @@ def audit(record, case):
         for name, expected in snapshot["files"].items():
             check(fingerprint(directory / name) == expected, "retained raw before/after snapshot")
         for region in snapshot["state"]["held_regions"]:
-            raw, locations, timestamps = read_region(directory / region["path"])
+            _, locations, timestamps = read_region(directory / region["path"], signed_headers=True)
             if region["handle_valid"]:
-                check(list(map(signed, locations)) == region["locations"] and list(map(signed, timestamps)) == region["timestamps"], "live raw header matches actual original descriptor arrays")
+                check(locations == region["locations"] and timestamps == region["timestamps"], "live raw header matches actual original descriptor arrays")
             elif region["object"] in previous_regions:
                 # Only the open/closed field changes in this comparison.
                 # All nested arrays are read-only throughout the audit.
                 expected_closed = dict(previous_regions[region["object"]], handle_valid=False)
-                check(same_json(region, expected_closed), "closed region retains its own prior arrays and allocation state")
+                check(same_region(region, expected_closed), "closed region retains its own prior arrays and allocation state")
             occupied = {0, 1}
             for location in region["locations"]:
                 if location:
@@ -218,11 +218,11 @@ def audit(record, case):
         check(fingerprint(case / "snapshots/final" / name) == expected, "complete final raw region image")
     latest_owner = {row["path"]: row["object"] for row in record["final_state"]["held_regions"]}
     for region in record["final_state"]["held_regions"]:
-        raw, locations, timestamps = read_region(case / "snapshots/final" / region["path"])
+        _, locations, timestamps = read_region(case / "snapshots/final" / region["path"], signed_headers=True)
         if latest_owner[region["path"]] == region["object"]:
-            check(list(map(signed, locations)) == region["locations"] and list(map(signed, timestamps)) == region["timestamps"], "complete final latest original descriptor arrays")
+            check(locations == region["locations"] and timestamps == region["timestamps"], "complete final latest original descriptor arrays")
         if region["object"] in previous_regions:
-            check(same_json(region, previous_regions[region["object"]]), "complete retained final region owners")
+            check(same_region(region, previous_regions[region["object"]]), "complete retained final region owners")
     check(all(not row["handle_valid"] for row in record["final_state"]["held_regions"]), "all original file descriptors closed")
 
     expected_names = {f"mapping/region/r.{x >> 5}.{z >> 5}.mcr" for x, z in
@@ -446,12 +446,15 @@ def validate_original(value, files, side, mode, jar=None, public=False):
         for i, row in enumerate(actual["held_regions"]):
             keys(row, ("object", "path", "handle_valid", "locations", "timestamps", "free", "growth"), "retained region")
             integer(row["object"], i, i, "stable ordered owner ID")
-            check(row["path"] == held[i]["path"] and type(row["handle_valid"]) is bool and row["handle_valid"] == held[i]["live"], "original path and open/closed owner state")
+            check(type(row["path"]) is str and row["path"] == held[i]["path"] and
+                  type(row["handle_valid"]) is bool and row["handle_valid"] == held[i]["live"],
+                  "original path and open/closed owner state")
             integer(row["growth"], 0, MAX_FILE, "original growth")
             check(row["growth"] == held[i]["growth"], "actual original growth ownership")
             for name in ("locations", "timestamps"):
-                check(type(row[name]) is list and len(row[name]) == 1024, "all1024 original header fields")
-                check(all(type(item) is int and -(1 << 31) <= item < (1 << 31) for item in row[name]),
+                header = row[name]
+                check(type(header) is list and len(header) == 1024, "all1024 original header fields")
+                check(set(map(type, header)) == {int} and -(1 << 31) <= min(header) and max(header) < (1 << 31),
                       "original header bits: exact integer bounds")
             check(type(row["free"]) is list and 2 <= len(row["free"]) <= MAX_FILE//4096 and all(type(b) is bool for b in row["free"]), "complete original free-sector vector")
 
@@ -508,7 +511,7 @@ def validate_original(value, files, side, mode, jar=None, public=False):
             check(row["directory"] == f"{snapshot_index:03d}-{label}", "fixed unique owned snapshot directory")
             snapshot_index += 1; fingerprints(row["files"]); state(row["state"])
     fingerprints(value["final_files"]); state(value["final_state"])
-    result = audit(value, files)
+    result = audit(value, files, validated_regions=True)
     check(result["protocol_actions"] == 341 and result["snapshots"] == (27 if mode == "observed" else 0) and len(held) == 267, "entire original fixed corpus")
     if mode == "observed":
         middle = next(row for row in value["events"] if row["kind"] == "snapshot" and row["label"] == "allocation-midpoint-reopened")

@@ -241,3 +241,28 @@ Intel Core i9-10900F with Windows 10 and CPython 3.14.3. The baseline is
 Median elapsed time fell from 28.925 to 22.804 seconds, a 21.2% reduction for
 this test command. The expanded suite also checks that nested numeric type
 aliases are rejected and a write cannot change padding in an unrelated sector.
+
+### Header decoding and retained owners
+
+The checker validates each 1,024-word header with an exact type check and
+signed range extrema. It decodes signed words directly from the file when
+comparing them to recorded owner state. Once every owner field has passed
+type validation, the audit uses dictionary equality for the retained state.
+Standalone audits still compare JSON types recursively.
+
+Four alternating pairs of fresh CPython 3.14.3 processes ran the same 39
+guards on Windows 10 with an Intel Core i9-10900F. The baseline was
+`3e6dfb07`. All guards passed in both versions, including the added checks
+for malformed header words and a numeric alias in a retained owner.
+
+| Pair order | Baseline (s) | Candidate (s) |
+| --- | ---: | ---: |
+| Baseline first | 23.351 | 19.345 |
+| Candidate first | 23.931 | 19.475 |
+| Baseline first | 23.559 | 19.921 |
+| Candidate first | 23.844 | 19.859 |
+
+Median elapsed time fell from 23.702 to 19.667 seconds, a 17.0% reduction
+for the Python guard suite. A separate authored decoder control matched
+all 2,048 header words in signed and unsigned mode and rejected
+out-of-bounds and misaligned image lengths.
