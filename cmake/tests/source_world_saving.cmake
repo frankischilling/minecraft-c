@@ -42,7 +42,7 @@ if(BUILD_TESTING AND TARGET mc_simulation)
         LABELS "public;unit;tools;world;storage" TIMEOUT 30)
 endif()
 
-option(MC_BUILD_BENCHMARKS "Build optional fixed-work CPU benchmarks" OFF)
+option(MC_BUILD_BENCHMARKS "Build optional fixed-work benchmarks" OFF)
 if(BUILD_TESTING AND TARGET mc_world)
     add_executable(mc_test_cache_validation_controls tests/benchmarks/cache_validation.c)
     target_link_libraries(mc_test_cache_validation_controls PRIVATE mc_world mc_build_options)

@@ -1,3 +1,34 @@
+## Synthetic terrain frames
+
+The Windows terrain benchmark creates a hidden 384×384 OpenGL window and
+generates its geometry in memory. It submits two passes of 98 visible
+sections over a 17×17×8 or 33×33×8 grid. Mode `0` holds the camera fixed.
+Mode `1` alternates its vertical position by five blocks to trigger
+recentering and sorting while retaining the same horizontal section
+origins. The benchmark uses one logical CPU for the render thread.
+
+```powershell
+cmake -S . -B build-windows -DCMAKE_BUILD_TYPE=Release -DMC_BUILD_BENCHMARKS=ON
+cmake --build build-windows --config Release --target mc_benchmark_terrain_frames
+.\build-windows\mc_benchmark_terrain_frames.exe 33 1
+```
+
+Use a Release configuration. With a multi-config generator, the executable
+is under the build's `Release` directory. Each process runs 40 warmup
+frames, then prints 160 frame times in milliseconds. Timing covers the
+clear, terrain selection, batching, actual OpenGL draws, and `glFinish`.
+Framebuffer readback runs after timing. Window presentation, simulation,
+and gameplay input are outside this workload.
+
+Compare baseline and candidate on the same GPU and driver, alternating
+which executable runs first. Keep the grid and camera mode the same.
+The `PROOF` line records section and dirty-queue counts, the RGBA hashes
+and pixel coverage of both terminal frames, final section order, and the
+per-pass dirty-poll cursor hash. Require matching proof values before comparing
+frame times.
+
+## Saved-world client frames
+
 The optional Windows frame observer runs a fresh client in the saved sky-view
 scene: seed 123, Tiny distance, 854x480 and Rotation 180,-30. Natural simulation,
 sound work, loading, lighting, rendering, swaps, pacing and autosaves remain

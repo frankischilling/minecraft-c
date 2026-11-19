@@ -6762,8 +6762,8 @@
       "sha256": "1cb1ecf260669d6576e2bb69fe9813e8e643a617395528cc5af6779c7220ac01"
     },
     "cmake/client_render_global_submit_tests.cmake": {
-      "bytes": 2666,
-      "sha256": "2b51cfcba141b133d15fa96bfe45d5ebf0e9fb457fcbd4eeb72d820142532fa8"
+      "bytes": 3203,
+      "sha256": "261cd623b8ca9285e5a5dc59a44f33dd56c8f5031897e921e9ad2e37d88742bf"
     },
     "cmake/tests/client_occlusion_queries.cmake": {
       "bytes": 1088,
@@ -7946,8 +7946,8 @@
       "sha256": "7e343b192ec286e343fd9496c793b38cb3cdeb0d470ee920772be8fdc222a288"
     },
     "cmake/tests/source_world_saving.cmake": {
-      "bytes": 17449,
-      "sha256": "ea1669ff616149cca13ac4bf474bc881284c55f988dfa62818eafe489940c9c4"
+      "bytes": 17445,
+      "sha256": "cfbe02995ec0ddfd419e212f81d25c8bfe55f36c7ebbb5458056a02bf763f687"
     },
     "src/world/runtime/tile_entities/source_save.inc": {
       "bytes": 11388,
