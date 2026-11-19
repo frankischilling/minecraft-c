@@ -4054,8 +4054,8 @@
       "sha256": "e0e256e893450b87f08834efa6fae296e816c3ea55fcb51cdebaa55e33e199cf"
     },
     "src/client/world/render_global_submit_draw.c": {
-      "bytes": 12438,
-      "sha256": "c3106a52834bea727c0365b5c2c4bf790d60e365fcf008d110b7ca97279d4964"
+      "bytes": 11572,
+      "sha256": "00e6f1249bed1cceab2801682862643dc3b0a7dcb2fd4df478a82f29746854ec"
     },
     "src/client/world/source_terrain_internal.h": {
       "bytes": 3053,
@@ -4082,8 +4082,8 @@
       "sha256": "102d2a4814a3df13934c42243564d91357b50d376e4dd96522ac0c73655cb9f1"
     },
     "tests/client/world/test_render_global_submit_cpu.c": {
-      "bytes": 10064,
-      "sha256": "981b855a13f135ba4d60d41f3278caa637d50968e416b826f5829c78643d0310"
+      "bytes": 12264,
+      "sha256": "dd3e8390886713b404e338bd81c7720f9418dc39b65e2e3e618f0e7371f6063f"
     },
     "tests/reference/client/occlusion_queries/capture_reference.py": {
       "bytes": 8100,

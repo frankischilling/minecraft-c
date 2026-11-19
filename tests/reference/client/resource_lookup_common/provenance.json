@@ -6419,7 +6419,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938028,
-      "sha256": "33a193ff59928f22caa7dcce0f36058c1e3d03a30182ad299df2bf0f0921ac12"
+      "sha256": "ff57aba4deb02daa57c52f208ca223f631c97eb559cc91b489d49ccde817de4f"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6483,7 +6483,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067982,
-      "sha256": "851bc9c191df1eda605144c74d2b44c1d7d8b3b39931687abc00c62017dce135"
+      "sha256": "eba0a597bd20146abbc8419854e1d5fbcb577cf647547049a1bd0de29b7ae14f"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6615,7 +6615,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934853,
-      "sha256": "4dfbd602eebf9fdfd15028df0a20c4c1da0fefa5bc2970de85fbf74cda2b49d3"
+      "sha256": "de9b15f2af25637402f46b753f57b7666c0cd7a2bc6a1785e631931bb6f5b051"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -11934,8 +11934,8 @@
       "sha256": "5ee18cd5a3f394a1d4be647bfb29cc0ddf55d25a59e17fc5fa7e1109cbf32be9"
     },
     "docs/client/terrain-submission.md": {
-      "bytes": 16213,
-      "sha256": "a26d76568368972e9a0a33f9a46afa2d6348d98c22d5a34a25d06e657712ed62"
+      "bytes": 16293,
+      "sha256": "2575ef17ec8de37db18bb82cb10c961e996f151bb25174356713e94d4dca06f5"
     },
     "include/mc/client/world/render_global_submit.h": {
       "bytes": 3276,
@@ -11974,8 +11974,8 @@
       "sha256": "e0e256e893450b87f08834efa6fae296e816c3ea55fcb51cdebaa55e33e199cf"
     },
     "src/client/world/render_global_submit_draw.c": {
-      "bytes": 12438,
-      "sha256": "c3106a52834bea727c0365b5c2c4bf790d60e365fcf008d110b7ca97279d4964"
+      "bytes": 11572,
+      "sha256": "00e6f1249bed1cceab2801682862643dc3b0a7dcb2fd4df478a82f29746854ec"
     },
     "src/client/world/source_terrain_internal.h": {
       "bytes": 3053,
@@ -12002,8 +12002,8 @@
       "sha256": "102d2a4814a3df13934c42243564d91357b50d376e4dd96522ac0c73655cb9f1"
     },
     "tests/client/world/test_render_global_submit_cpu.c": {
-      "bytes": 10064,
-      "sha256": "981b855a13f135ba4d60d41f3278caa637d50968e416b826f5829c78643d0310"
+      "bytes": 12264,
+      "sha256": "dd3e8390886713b404e338bd81c7720f9418dc39b65e2e3e618f0e7371f6063f"
     },
     "tests/reference/client/occlusion_queries/QueryObservation.java": {
       "bytes": 5998,

@@ -103,9 +103,10 @@ M32 and one of Q57 (empty pass), N83 (outside the frustum), O116 (occluded while
 N.w) or P129. These statistics describe filtering and can differ from the
 returned submission count.
 
-Selection rereads the pass flag143, visibility154 and conditional occlusion
-flag174. It invokes `dk.a(pass)I`188 and appends the same DK to S209 only when
-the returned ID is nonnegative. The helper then captures current N.t.i228 and
+Selection uses the same validated renderer and flags as the statistics pass.
+The first array and pass checks retain their diagnostic locations for each
+pass. Selection invokes `dk.a(pass)I`188 and appends the same DK to S209 only
+when the returned ID is nonnegative. The helper then captures current N.t.i228 and
 interpolates that camera, even when S is empty. This camera can differ from
 the outer argument. A null camera fails235 after earlier S/counter effects
 and before any TG reset.

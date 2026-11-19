@@ -9,8 +9,7 @@ int mc_submit_cpu_picking_fixture_main(int argc, char **argv);
 
 #include "client/render_engine/internal.h"
 #include "client/render_engine/lighting.h"
-#include "client/world/source_chunk_renderer_internal.h"
-#include "mc/client/world/render_global_submit.h"
+#include "client/world/source_terrain_internal.h"
 
 enum { CAPACITY = 16 };
 
@@ -184,6 +183,49 @@ static bool run(picking_fixture *f, const char *path) {
     return true;
 }
 
+static bool subset_selection(void) {
+    mc_client_render_global owner = {0};
+    bool empty[2] = {true, true}, populated[2] = {false, false};
+    mc_client_source_dk actors[4] = {
+        {.owner = &owner, .fields = {.p = empty}},
+        {.owner = &owner, .fields = {.p = populated}},
+        {.owner = &owner, .fields = {.o = true, .p = populated}},
+        {.owner = &owner, .fields = {.o = true, .p = populated, .x = true, .C = 7}},
+    };
+    mc_client_source_dk *sorted[] = {&actors[0], &actors[1], &actors[2], &actors[3]};
+    void *entries[4] = {0};
+    mc_client_render_list selected = {.entries = entries, .capacity = 4};
+    owner.fields.n = sorted;
+    owner.fields.S = &selected;
+    owner.fields.w = true;
+    owner.n_length = 4;
+    for (int32_t pass = 0; pass < 2; ++pass) {
+        owner.fields.M = owner.fields.N = owner.fields.O = owner.fields.P = owner.fields.Q = 0;
+        mc_client_render_global_submit_call call = {.state = {.owner = &owner, .pass = pass}};
+        int32_t result = -1;
+        CHECK(!mc_terrain_subset(&call, 0, 5, 0, &result));
+        CHECK(call.failure.status == MC_CLIENT_RENDER_GLOBAL_SOURCE_INDEX &&
+              call.failure.source_pc == (pass == 0 ? 41u : 138u) && call.state.index == 4 &&
+              call.state.selected_chunks == 1 && selected.count == 1 && entries[0] == &actors[3] &&
+              actors[3].source_pc == 24 && result == -1);
+        CHECK(owner.fields.M == (pass == 0 ? 5 : 0) && owner.fields.N == (pass == 0 ? 1 : 0) &&
+              owner.fields.O == (pass == 0 ? 1 : 0) && owner.fields.P == (pass == 0 ? 1 : 0) &&
+              owner.fields.Q == (pass == 0 ? 1 : 0));
+    }
+
+    actors[0].fields.p = NULL;
+    for (int32_t pass = 0; pass < 2; ++pass) {
+        owner.fields.M = 0;
+        mc_client_render_global_submit_call call = {.state = {.owner = &owner, .pass = pass}};
+        int32_t result = -1;
+        CHECK(!mc_terrain_subset(&call, 0, 1, 0, &result));
+        CHECK(call.failure.status == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE &&
+              call.failure.source_pc == (pass == 0 ? 46u : 143u) && call.state.index == 0 &&
+              owner.fields.M == (pass == 0 ? 1 : 0) && selected.count == 0 && result == -1);
+    }
+    return true;
+}
+
 int main(int argc, char **argv) {
     if (argc != 3)
         return 2;
@@ -193,7 +235,7 @@ int main(int argc, char **argv) {
     f->app->registry = f->base.registry;
     f->app->entities = f->base.entities;
     f->app->source_math_classes = f->math;
-    if (!run(f, argv[2]) || !picking_close(f))
+    if (!run(f, argv[2]) || !subset_selection() || !picking_close(f))
         return 1;
     free(f);
     printf("Source submission CPU: %u checks; 12 pre-U prefixes\n", checks);

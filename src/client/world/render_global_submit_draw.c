@@ -69,70 +69,46 @@ static void increment(mc_client_render_global_submit_call *c, int32_t *field, un
     mc_terrain_store(c, pc);
 }
 
-static bool statistics(mc_client_render_global_submit_call *c, int32_t index) {
-    mc_client_render_global *n = c->state.owner;
-    mc_client_source_dk *dk;
-    bool empty;
-    increment(c, &n->fields.M, 32);
-    if (!mc_terrain_array(c, true, index, 41, &dk) || !pass_empty(c, dk, 42, 46, &empty))
-        return false;
-    if (empty) {
-        increment(c, &n->fields.Q, 57);
-        return true;
-    }
-    if (!mc_terrain_array(c, true, index, 69, &dk) || !mc_terrain_dk_receiver(c, dk, 70))
-        return false;
-    if (!dk->fields.o) {
-        increment(c, &n->fields.N, 83);
-        return true;
-    }
-    if (n->fields.w) {
-        if (!mc_terrain_array(c, true, index, 102, &dk) || !mc_terrain_dk_receiver(c, dk, 103))
-            return false;
-        if (!dk->fields.x) {
-            increment(c, &n->fields.O, 116);
-            return true;
-        }
-    }
-    increment(c, &n->fields.P, 129);
-    return true;
-}
-
 static bool choose(mc_client_render_global_submit_call *c, int32_t index, int32_t *count) {
     mc_client_render_global *n = c->state.owner;
+    const bool record_statistics = c->state.pass == 0;
     mc_client_source_dk *dk;
     bool empty;
-    if (!mc_terrain_array(c, true, index, 138, &dk) || !pass_empty(c, dk, 139, 143, &empty))
+    if (record_statistics)
+        increment(c, &n->fields.M, 32);
+    if (!mc_terrain_array(c, true, index, record_statistics ? 41 : 138, &dk) ||
+        !pass_empty(c, dk, record_statistics ? 42 : 139, record_statistics ? 46 : 143, &empty))
         return false;
-    if (empty)
+    /* No callback runs between classification and selection. */
+    if (empty) {
+        if (record_statistics)
+            increment(c, &n->fields.Q, 57);
         return true;
-    if (!mc_terrain_array(c, true, index, 153, &dk) || !mc_terrain_dk_receiver(c, dk, 154))
-        return false;
-    if (!dk->fields.o)
-        return true;
-    if (n->fields.w) {
-        if (!mc_terrain_array(c, true, index, 173, &dk) || !mc_terrain_dk_receiver(c, dk, 174))
-            return false;
-        if (!dk->fields.x)
-            return true;
     }
-    if (!mc_terrain_array(c, true, index, 186, &dk) || !mc_terrain_dk_receiver(c, dk, 188))
-        return false;
+    if (!dk->fields.o) {
+        if (record_statistics)
+            increment(c, &n->fields.N, 83);
+        return true;
+    }
+    if (n->fields.w && !dk->fields.x) {
+        if (record_statistics)
+            increment(c, &n->fields.O, 116);
+        return true;
+    }
+    if (record_statistics)
+        increment(c, &n->fields.P, 129);
     int32_t id;
-    if (!mc_terrain_child(c, mc_source_dk_render_list(dk, c->state.pass, &id, &c->failure), 188))
-        return false;
+    if (!mc_source_dk_render_list(dk, c->state.pass, &id, &c->failure))
+        return mc_terrain_child(c, false, 188);
     if (id < 0)
         return true;
     mc_client_render_list *s = selected(c, 209);
-    if (s == NULL || !mc_terrain_array(c, true, index, 208, &dk))
+    if (s == NULL)
         return false;
     mc_terrain_pc(c, 209);
-    if (!mc_terrain_child(
-            c,
-            mc_render_global_pointer_append(
-                n, s, dk, (mc_client_graphics_site){"n", "a", "(IIID)I", 209}, &c->failure),
-            209))
-        return false;
+    if (!mc_render_global_pointer_append(
+            n, s, dk, (mc_client_graphics_site){"n", "a", "(IIID)I", 209}, &c->failure))
+        return mc_terrain_child(c, false, 209);
     *count = mc_java_i32_add(*count, 1);
     ++c->state.selected_chunks;
     return true;
@@ -212,9 +188,9 @@ bool mc_terrain_subset(mc_client_render_global_submit_call *c, int32_t start, in
         s->entries[i] = NULL;
     s->count = 0;
     int32_t count = 0;
-    for (int32_t i = start; i < end; i = mc_java_i32_add(i, 1)) {
+    for (int32_t i = start; i < end; ++i) {
         c->state.index = i;
-        if ((c->state.pass == 0 && !statistics(c, i)) || !choose(c, i, &count))
+        if (!choose(c, i, &count))
             return false;
     }
     double x, y, z;
