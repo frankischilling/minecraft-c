@@ -837,9 +837,11 @@ static mc_client_chunk_cache_status material_value(mc_client_chunk_cache *c, int
                 &e, mc_registry_material_get(registry(c), MC_MATERIAL_a, out, &registry_error), 14,
                 &registry_error);
         } else {
+            mc_registry_classes *classes = registry(c);
             const mc_block *block = NULL;
-            if (registry_result(&e, mc_registry_block_get(registry(c), id, &block, &registry_error),
-                                18, &registry_error)) {
+            if (mc_registry_block_m_read_ready(classes, id, &block) ||
+                registry_result(&e, mc_registry_block_get(classes, id, &block, &registry_error), 18,
+                                &registry_error)) {
                 const mc_block_fields *f = mc_block_fields_get(block);
                 if (f == NULL)
                     query_fail(&e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL,

@@ -38,7 +38,7 @@ false even at the last entry.
 A completed forced traversal flushes once. Callbacks may append, remove, replace
 or recursively process live objects; there is no shadow graph or rollback.
 
-Maintenance uses a 100-iteration loop, selecting at most 100 pending keys.
+Maintenance selects at most 100 pending keys and stops when the queue is empty.
 It retains each selected key and mapped identity through active=false, TileEntity
 invalidation, eight deferred entity
 slices, main save and extra save. It removes that key from pending and the

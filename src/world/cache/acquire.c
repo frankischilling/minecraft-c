@@ -1,5 +1,6 @@
 #include "mc/world/cache/acquire.h"
 #include "acquire_internal.h"
+#include "key_internal.h"
 
 #include "mc/core/java/java.h"
 
@@ -48,17 +49,53 @@ bool mc_chunk_pending_init_ordered(mc_chunk_pending *pending, int32_t *keys, siz
     return true;
 }
 
+enum { PENDING_VALIDATION_SLOTS = 1024 };
+
+static bool pending_keys_valid(const int32_t *keys, size_t count, const mc_java_int_set *history) {
+    /* Store each batch's ordinals plus one in a half-full table. Look up the
+     * remaining keys too, so duplicates across batches are rejected. */
+    const size_t mask = PENDING_VALIDATION_SLOTS - 1u;
+    for (size_t begin = 0; begin < count;) {
+        uint16_t seen[PENDING_VALIDATION_SLOTS] = {0};
+        const size_t remaining = count - begin;
+        const size_t width =
+            remaining < PENDING_VALIDATION_SLOTS / 2u ? remaining : PENDING_VALIDATION_SLOTS / 2u;
+        const size_t end = begin + width;
+        for (size_t i = begin; i < count; ++i) {
+            const int32_t key = keys[i];
+            size_t slot = mc_chunk_cache_hash_key(key) & mask;
+            while (seen[slot] != 0) {
+                if (keys[begin + (size_t)(seen[slot] - 1u)] == key)
+                    return false;
+                slot = (slot + 1u) & mask;
+            }
+            if (i >= end)
+                continue;
+            if (history != NULL && !mc_java_int_set_contains(history, key))
+                return false;
+            seen[slot] = (uint16_t)(i - begin + 1u);
+        }
+        begin = end;
+    }
+    return true;
+}
+
 bool mc_chunk_pending_validate(const mc_chunk_pending *pending) {
     if (!pending_metadata_valid(pending))
         return false;
-    if (pending->history != NULL && mc_java_int_set_size(pending->history) != pending->count)
+    const mc_java_int_set *history = pending->history;
+    const size_t count = pending->count;
+    const int32_t *keys = pending->keys;
+    if (history != NULL && mc_java_int_set_size(history) != count)
         return false;
-    for (size_t i = 0; i < pending->count; ++i) {
-        if (pending->history != NULL &&
-            !mc_java_int_set_contains(pending->history, pending->keys[i]))
+    if (count > 16u)
+        return pending_keys_valid(keys, count, history);
+    for (size_t i = 0; i < count; ++i) {
+        const int32_t key = keys[i];
+        if (history != NULL && !mc_java_int_set_contains(history, key))
             return false;
         for (size_t j = 0; j < i; ++j) {
-            if (pending->keys[i] == pending->keys[j])
+            if (key == keys[j])
                 return false;
         }
     }

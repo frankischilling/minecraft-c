@@ -45,6 +45,12 @@ actual add/remove history. Restoring current array membership alone cannot resto
 selection order. The separate [lifecycle coordinator](lifecycle.md) supplies the
 unload schedule.
 
+Validation checks that the pending array contains unique keys. In ordered mode
+it also checks the history size and confirms that the history contains each
+key. Small queues use a direct scan. Above 16 keys, validation checks batches
+of up to 512 keys in a 2 KiB stack table and looks for cross-batch duplicates.
+Validation leaves the array and history intact.
+
 ## Ownership, recursion and failures
 
 Keep the descriptor and callback bindings unchanged through a call and any

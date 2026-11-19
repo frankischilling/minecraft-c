@@ -100,6 +100,13 @@ of 65,536 calls per operation against nine leased Chunks.
 | Opaque | 26.90 | 23.02 |
 | Normal cube | 31.21 | 25.24 |
 
+Material queries now read a ready, idle Block registry directly after
+reading a non-air Block ID. The ordinary lookup handles initialization and
+read failures. In six alternating Windows Release pairs, the material
+query median fell from 39.19 to 17.96 ns per call across 42 samples per
+build. Query results and the World, Chunk, Random, and ownership receipts
+matched. These timings cover the getter loop.
+
 Separate instrumented Far runs matched 411 mesh groups by section position
 and counts of cell reads, rendered Blocks, minimum-light queries, opacity
 queries, and ambient occlusion flags. Each group had at least two samples per

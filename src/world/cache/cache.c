@@ -1,5 +1,7 @@
 #include "mc/world/cache/cache.h"
 
+#include "key_internal.h"
+
 #include <string.h>
 
 static bool metadata_valid(const mc_chunk_cache *cache) {
@@ -40,13 +42,7 @@ static bool compact_entries_valid(const mc_chunk_cache *cache) {
     for (size_t i = 0; i < cache->count; ++i) {
         if (!chunk_valid(cache->entries[i].chunk))
             return false;
-        uint32_t hash = (uint32_t)cache->entries[i].key;
-        hash ^= hash >> 16u;
-        hash *= UINT32_C(0x7feb352d);
-        hash ^= hash >> 15u;
-        hash *= UINT32_C(0x846ca68b);
-        hash ^= hash >> 16u;
-        size_t slot = hash & 1023u;
+        size_t slot = mc_chunk_cache_hash_key(cache->entries[i].key) & 1023u;
         while (seen[slot] != 0u) {
             if (cache->entries[seen[slot] - 1u].key == cache->entries[i].key)
                 return false;
@@ -81,16 +77,6 @@ static MC_CACHE_VALIDATION_NOINLINE bool pairwise_entries_valid(const mc_chunk_c
 
 #undef MC_CACHE_VALIDATION_NOINLINE
 
-static size_t blocked_key_slot(int32_t key) {
-    uint32_t hash = (uint32_t)key;
-    hash ^= hash >> 16u;
-    hash *= UINT32_C(0x7feb352d);
-    hash ^= hash >> 15u;
-    hash *= UINT32_C(0x846ca68b);
-    hash ^= hash >> 16u;
-    return hash & 1023u;
-}
-
 /* Pure validation of live caller-owned entries. Each 512-entry batch owns
  * only local ordinal+1 words; no cache state or caller object is modified.
  * Passive future-key reads may be reordered; there are no Source callbacks. */
@@ -103,7 +89,7 @@ static bool blocked_entries_valid(const mc_chunk_cache *cache) {
         for (size_t i = begin; i < end; ++i) {
             if (!chunk_valid(cache->entries[i].chunk))
                 return false;
-            size_t slot = blocked_key_slot(cache->entries[i].key);
+            size_t slot = mc_chunk_cache_hash_key(cache->entries[i].key) & 1023u;
             size_t probes = 0;
             while (seen[slot] != 0u) {
                 const size_t prior = begin + (size_t)(seen[slot] - 1u);
@@ -116,7 +102,7 @@ static bool blocked_entries_valid(const mc_chunk_cache *cache) {
             seen[slot] = (uint16_t)(i - begin + 1u); /* 1..512, independent of count. */
         }
         for (size_t i = end; i < cache->count; ++i) {
-            size_t slot = blocked_key_slot(cache->entries[i].key);
+            size_t slot = mc_chunk_cache_hash_key(cache->entries[i].key) & 1023u;
             size_t probes = 0;
             while (seen[slot] != 0u) {
                 const size_t prior = begin + (size_t)(seen[slot] - 1u);

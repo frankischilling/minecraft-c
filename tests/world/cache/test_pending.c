@@ -416,6 +416,41 @@ static int test_invalid_pairing(void) {
     return 0;
 }
 
+static int test_validation_batches(void) {
+    enum { count = 1025 };
+
+    int32_t keys[count];
+    mc_chunk_pending pending;
+    mc_java_int_set *history = NULL;
+    CHECK(mc_java_int_set_create(NULL, &history) == MC_JAVA_INT_SET_OK);
+    CHECK(mc_chunk_pending_init_ordered(&pending, keys, count, history));
+    for (size_t i = 0; i < count; ++i) {
+        const int32_t key = i == 0 ? INT32_MIN : ((int32_t)i - 512) * 65536;
+        bool changed = false;
+        CHECK(mc_chunk_pending_add(&pending, key, &changed) == MC_CHUNK_ACQUIRE_OK && changed);
+    }
+    CHECK(mc_chunk_pending_validate(&pending));
+    int32_t *last = &keys[count - 1];
+    const int32_t saved = *last;
+    *last = keys[0];
+    int32_t first = 77;
+    CHECK(mc_chunk_pending_first(&pending, &first) == MC_CHUNK_ACQUIRE_INVALID_ARGUMENT &&
+          first == 77);
+    *last = keys[640];
+    CHECK(!mc_chunk_pending_validate(&pending));
+    *last = INT32_MAX;
+    CHECK(!mc_chunk_pending_validate(&pending));
+    mc_chunk_pending legacy = pending;
+    legacy.history = NULL;
+    CHECK(mc_chunk_pending_validate(&legacy));
+    *last = keys[0];
+    CHECK(!mc_chunk_pending_validate(&legacy));
+    *last = saved;
+    CHECK(mc_chunk_pending_validate(&pending));
+    mc_java_int_set_free(history);
+    return 0;
+}
+
 static bool register_tile_entities(void *world, const mc_chunk_acquire_context *context,
                                    mc_chunk_state *chunk) {
     (void)context;
@@ -496,7 +531,7 @@ static int test_acquire_mutations(void) {
 int main(void) {
     if (test_arguments() || test_legacy() || test_ordered() || test_survivors_and_clear() ||
         test_capacity_and_history_entry_limit() || test_history_byte_limits() ||
-        test_invalid_pairing() || test_acquire_mutations())
+        test_invalid_pairing() || test_validation_batches() || test_acquire_mutations())
         return 1;
     printf("pending collection contracts: %u checks\n", checks);
     return 0;

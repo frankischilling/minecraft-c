@@ -319,8 +319,12 @@
       "sha256": "6c8182e95e51764943eb8f486292aa8ab4c79b82a9b09b1c978ea9f35f66d95b"
     },
     "src/world/cache/acquire.c": {
-      "bytes": 18004,
-      "sha256": "a3b7842001d2eac590df82d896ce9864b7027dbe8977295f89b938258fba4e36"
+      "bytes": 19466,
+      "sha256": "63c366bbba04752846859dc87cec6e2db68d45c174ce3327a47b7675919f3fa5"
+    },
+    "src/world/cache/key_internal.h": {
+      "bytes": 356,
+      "sha256": "dc0381643ec91969ccfe2fcbc7bf1f9d8f5fd90d8a8ea9da3f0d746155c209f5"
     },
     "tests/world/runtime/tile_entities/test_tile_entities.c": {
       "bytes": 68642,

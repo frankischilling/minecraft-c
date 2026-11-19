@@ -81,8 +81,12 @@
       "sha256": "f057aa18469be6be6db546597125f9a7592581703407ee088026b60276ba4260"
     },
     "src/world/cache/acquire.c": {
-      "bytes": 18004,
-      "sha256": "a3b7842001d2eac590df82d896ce9864b7027dbe8977295f89b938258fba4e36"
+      "bytes": 19466,
+      "sha256": "63c366bbba04752846859dc87cec6e2db68d45c174ce3327a47b7675919f3fa5"
+    },
+    "src/world/cache/key_internal.h": {
+      "bytes": 356,
+      "sha256": "dc0381643ec91969ccfe2fcbc7bf1f9d8f5fd90d8a8ea9da3f0d746155c209f5"
     },
     "tests/reference/client/statistics/support.py": {
       "bytes": 7123,
