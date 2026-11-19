@@ -387,12 +387,12 @@
       "sha256": "635ef27e7b4ff14f78dc8e27b9ecbeae86251009abd8d7db547987267f6792da"
     },
     "src/block/registry/registry.c": {
-      "bytes": 31854,
-      "sha256": "4e62c35cda13d9b415ea360c4d6a632ba6de372a5d7abdd44d281bc780973be4"
+      "bytes": 31636,
+      "sha256": "acebcb6df44f71dbad182592a1e91eec5dabb8c380997ca608786b103dac8c8f"
     },
     "src/block/registry/registry_internal.h": {
-      "bytes": 14777,
-      "sha256": "367c128628c6c258560befcae39359c882af97ce9bf3abfd14b0316ff7f83a68"
+      "bytes": 15194,
+      "sha256": "5ce7d7dc6059edfe5087fb044f56bd5b62f8a7440aa60450e5b643a746bd6918"
     },
     "src/core/java/random_profile_internal.h": {
       "bytes": 9998,

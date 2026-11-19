@@ -42,6 +42,7 @@ struct mc_source_dk_compile {
     mc_client_tile_renderer_dispatcher *ll;
     mc_client_tile_renderer_error tiles, tiles_cleanup;
     int32_t open_list;
+    bool block_statics_reported;
 };
 
 static bool shape(mc_source_dk_compile *, mc_client_render_list *, unsigned int);
@@ -380,19 +381,26 @@ static bool block(mc_source_dk_compile *c) {
     mc_registry_classes *registry = c->world_classes->registry;
     if (c->state.pass == 0) {
         const bool *tile_flags;
-        if (mc_registry_block_statics_ready(registry, &c->failure.registry)) {
+        /* Recheck the live statics each time. A prior successful read already
+         * left the same Registry success record for this compile call. */
+        if (c->block_statics_reported && mc_registry_block_statics_available(registry)) {
             tile_flags = registry->blocks.p;
         } else {
-            if (mc_registry_classes_initialize_blocks(registry, &c->failure.registry) !=
-                MC_REGISTRY_OK)
-                return fail(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED, c->failure.registry.message,
-                            370, true);
-            mc_registry_block_view view;
-            if (mc_registry_classes_inspect_blocks(registry, &view, &c->failure.registry) !=
-                MC_REGISTRY_OK)
-                return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE, "DK canonical uu.p storage",
-                            370, true);
-            tile_flags = view.p;
+            if (mc_registry_block_statics_ready(registry, &c->failure.registry)) {
+                tile_flags = registry->blocks.p;
+            } else {
+                if (mc_registry_classes_initialize_blocks(registry, &c->failure.registry) !=
+                    MC_REGISTRY_OK)
+                    return fail(c, MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
+                                c->failure.registry.message, 370, true);
+                mc_registry_block_view view;
+                if (mc_registry_classes_inspect_blocks(registry, &view, &c->failure.registry) !=
+                    MC_REGISTRY_OK)
+                    return fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
+                                "DK canonical uu.p storage", 370, true);
+                tile_flags = view.p;
+            }
+            c->block_statics_reported = true;
         }
         if (tile_flags == NULL)
             return fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE, "actual uu.p array", 375, false);

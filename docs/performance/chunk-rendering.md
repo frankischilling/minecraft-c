@@ -1028,3 +1028,51 @@ All 22 focused tests passed on Windows MSVC Release and Linux Clang Debug
 with ASan and UBSan. They include 843 CPU mesher checks, 48 original
 ambient-occlusion rows, 1,680 original face rows, 950 original ChunkCache
 rows, 18,938 Chunk compilation checks and graphics ownership controls.
+
+## Registry checks during section compilation
+
+Pass zero records the Registry result on its first non-air Block. Later Blocks
+inline the same ready, idle and allocation-range checks before reading the live
+TileEntity flag array. Cold or refused checks still use the regular initializer
+and diagnostic path. Both passes continue to read each Block from the live
+Registry before dispatch.
+
+Eight alternating Windows MSVC Release pairs per shading mode used one
+workload object and replaced only the renderer and Registry libraries. Each
+process timed seven samples of 28 compiles for a filled 16×16×16 section and a
+single-layer surface. All runs matched the vertex payload hashes, list command
+and draw counts, Chunk plane hashes, and World binding counts.
+
+| Workload | Median before / after | Faster pairs |
+| --- | ---: | ---: |
+| Ambient occlusion, filled | 5.0024 / 4.9960 ms | 6 of 8 |
+| Ambient occlusion, surface | 0.7197 / 0.7030 ms | 7 of 8 |
+| Flat lighting, filled | 2.1492 / 2.1138 ms | 8 of 8 |
+| Flat lighting, surface | 0.2982 / 0.2904 ms | 8 of 8 |
+
+An earlier six-pair trial kept the function call and omitted the diagnostic
+output on repeated checks. Filled ambient-occlusion compiles slowed from
+5.1312 to 5.3384 ms at the median and took longer in every pair. That trial was
+dropped.
+
+Four alternating Windows frame pairs used the same observer, authored Far
+route, and 854×480 settings on DISPLAY2 with an i9-10900F and RTX 3060.
+After a two-second warmup, each ten-second interval advanced 200 World ticks.
+All runs matched the entry pose, asset hashes, starting save and final saved
+Player position, rotation and World time.
+
+| Median of per-run statistics | Before | After |
+| --- | ---: | ---: |
+| FPS | 73.94 | 75.05 |
+| Frame p50 | 13.39 ms | 13.20 ms |
+| Frame p95 | 15.04 ms | 14.76 ms |
+| Frame p99 | 15.95 ms | 15.58 ms |
+| Longest frame | 18.68 ms | 16.59 ms |
+
+FPS rose and the longest frame fell in all four pairs. Frame p99 fell in
+three pairs. The comparison covers this route and settings.
+
+The Chunk compiler, ChunkCache and TileEntity eligibility tests passed on
+Windows MSVC Release and Linux Clang Debug with ASan and UBSan. The new compiler
+control reaches a missing Registry entry on the second Block and compares the
+retained success diagnostic and the failure site.

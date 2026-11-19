@@ -760,9 +760,13 @@ static bool block_compile_controls(picking_fixture *f, mc_client_render_global *
 
 static bool ready_registry_failures(picking_fixture *f, mc_client_display *display) {
     const size_t index = (1u << 11u) | (1u << 7u) | 64u;
+    const size_t next_index = (2u << 11u) | (1u << 7u) | 64u;
     const uint8_t old = f->chunks[0]->data->blocks[index];
+    const uint8_t next_old = f->chunks[0]->data->blocks[next_index];
     const size_t bindings = f->base.world->persistent_bindings;
-    for (size_t which = 0; which < 2; ++which) {
+    for (size_t which = 0; which < 3; ++which) {
+        const bool after_stone = which == 2;
+        const int32_t missing_id = after_stone ? 2 : 1;
         mc_client_render_engine_classes *graphics = NULL;
         mc_client_render_global *n = NULL;
         mc_client_render_global_error error;
@@ -794,29 +798,34 @@ static bool ready_registry_failures(picking_fixture *f, mc_client_display *displ
         dk->fields.F = n->fields.a;
         dk->fields.c = dk->fields.e = 1;
         dk->fields.d = 64;
-        dk->fields.f = dk->fields.g = dk->fields.h = 1;
+        dk->fields.f = after_stone ? 2 : 1;
+        dk->fields.g = dk->fields.h = 1;
         dk->fields.u = true;
         CHECK(mc_client_display_lists_generate(display, 3, 64, &range, &base, &display_error));
         dk->fields.C = base;
         mc_registry_classes *registry = f->base.registry;
         CHECK(registry->blocks_phase == MC_REGISTRY_READY && registry->entered == 0 &&
-              registry->blocks.p != NULL && !registry->blocks.p[1] && registry->blocks.m != NULL &&
-              registry->blocks.m[1] != NULL);
+              registry->blocks.p != NULL && !registry->blocks.p[1] &&
+              !registry->blocks.p[missing_id] && registry->blocks.m != NULL &&
+              registry->blocks.m[missing_id] != NULL);
         bool *flags = registry->blocks.p;
-        mc_block *stone = registry->blocks.m[1];
+        mc_block *missing = registry->blocks.m[missing_id];
         f->chunks[0]->data->blocks[index] = 1;
+        if (after_stone)
+            f->chunks[0]->data->blocks[next_index] = (uint8_t)missing_id;
         /* Each failure owns a fresh NW and pending definition. Retirement
          * releases that prefix without continuing a failed source compile. */
         if (which == 0)
             registry->blocks.p = NULL;
         else
-            registry->blocks.m[1] = NULL;
+            registry->blocks.m[missing_id] = NULL;
         n->active = true;
         const bool completed = mc_source_dk_compile_entered(dk, &call, &error);
         n->active = false;
         registry->blocks.p = flags;
-        registry->blocks.m[1] = stone;
+        registry->blocks.m[missing_id] = missing;
         f->chunks[0]->data->blocks[index] = old;
+        f->chunks[0]->data->blocks[next_index] = next_old;
         CHECK(!completed && error.status == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE &&
               error.source_pc == (which == 0 ? 375u : 427u) && !error.native_policy &&
               error.registry.status == MC_REGISTRY_OK && error.registry.message == NULL &&
@@ -827,8 +836,9 @@ static bool ready_registry_failures(picking_fixture *f, mc_client_display *displ
         mc_client_chunk_compile_state state;
         mc_client_source_list_state list;
         CHECK(mc_source_dk_compile_inspect(call, &state) && !state.returned && state.pass == 0 &&
-              state.block_id == 1 && state.source_pc == error.source_pc && state.list_open &&
-              state.matrix_pushed && state.tessellator_started && dk->fields.u &&
+              state.block_id == missing_id && state.x == (after_stone ? 2 : 1) &&
+              state.source_pc == error.source_pc && state.list_open && state.matrix_pushed &&
+              state.tessellator_started && dk->fields.u &&
               mc_client_display_list_inspect(display, base, &list) && !list.defined &&
               list.building && list.pending_commands == 5 && list.vertices == 0 &&
               mc_source_dk_compile_retire(&call, &error) == MC_CLIENT_RENDER_GLOBAL_OK &&

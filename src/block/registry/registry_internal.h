@@ -338,6 +338,15 @@ struct mc_registry_classes {
     int32_t *horizontal_rows[4];
 };
 
+static inline bool mc_registry_block_view_fits(const mc_registry_classes *classes) {
+    return classes->managed_current_bytes <= SIZE_MAX - classes->allocation_bytes;
+}
+
+static inline bool mc_registry_block_statics_available(const mc_registry_classes *classes) {
+    return classes != NULL && classes->entered == 0 && classes->blocks_phase == MC_REGISTRY_READY &&
+           mc_registry_block_view_fits(classes);
+}
+
 void mc_registry_initializer_enter(mc_registry_classes *classes, mc_registry_initializer *frame,
                                    const char *client, const char *server, int32_t *pc);
 void mc_registry_initializer_leave(mc_registry_classes *classes, mc_registry_initializer *frame);
