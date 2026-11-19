@@ -144,6 +144,22 @@ static void vertex_span(void) {
     CHECK(memcmp(words, expected, sizeof(words)) == 0 && owner->fields.h == 1 &&
           owner->fields.o == 8 && owner->fields.p == 1 && owner->last_store_pc == 415);
 
+    owner->fields = initial;
+    owner->fields.g = words;
+    owner->fields.B = 7;
+    const uint64_t signaling_bits = UINT64_C(0x7ff0000000000001);
+    double signaling_nan;
+    memcpy(&signaling_nan, &signaling_bits, sizeof(signaling_nan));
+    const unsigned int saved_uv = _mm_getcsr();
+    _mm_setcsr(saved_uv & ~0x3fu);
+    const bool written = mc_client_nw_vertex_uv(owner, 1, -2, 3, -0.0, signaling_nan, &error);
+    const unsigned int uv_flags = _mm_getcsr() & 0x3fu;
+    _mm_setcsr(saved_uv);
+    uint32_t uv[2];
+    memcpy(uv, words + 3, sizeof(uv));
+    CHECK(written && uv[0] == UINT32_C(0x80000000) && uv[1] == UINT32_C(0x7fc00000) &&
+          uv_flags == _MM_EXCEPT_INVALID && words[7] == sentinel);
+
     memset(words, 0, sizeof(words));
     owner->fields = initial;
     owner->fields.g = words;

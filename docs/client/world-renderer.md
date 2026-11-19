@@ -158,6 +158,25 @@ work on shared ticks. The heavy cave went from 26.47 to 26.74 median FPS and
 56.90 median FPS and 30.10 to 29.61 ms median p99. Whole-frame benefit remains
 unresolved across these scenes.
 
+### Texture-coordinate conversion
+
+The Tessellator converts both texture coordinates together once the
+vertex span and floating-point settings pass their checks. The scalar
+path retains partial writes when an element access fails.
+
+In ten paired CPU runs, the median textured write took 5.11 ns with
+Clang 18 on WSL2, down from 5.45 ns. On native Windows with MSVC Release
+it took 4.71 ns, down from 5.10 ns. On each compiler, 200,000 control
+cases matched every written word, rejected-write diagnostics and MXCSR.
+
+Six paired runs of the authored textured RTX 3060 scene rebuilt 384
+sections per frame. Framebuffer hashes and submission order matched.
+
+| Quads per list by pass | Recording p50 | Frame p50 | Frame p95 |
+| --- | ---: | ---: | ---: |
+| 16/3 | 2.847 → 2.835 ms | 4.878 → 4.881 ms | 6.371 → 5.849 ms |
+| 64/48 | 14.456 → 14.440 ms | 19.317 → 19.380 ms | 22.889 → 22.741 ms |
+
 ## GPU contract
 
 ### Terrain selection

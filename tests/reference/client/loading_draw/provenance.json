@@ -1598,8 +1598,8 @@
       "sha256": "c6f3bab175d837bdff85d0d8a5bf4977d03950ed438d599aa1b55e28933669da"
     },
     "src/client/render_engine/nw.c": {
-      "bytes": 29533,
-      "sha256": "b016b846189495b1513b280ffbde592acb749286ab13e30b5c10c1b0c6daa70a"
+      "bytes": 29664,
+      "sha256": "16cff6520658b5981e3d4d197751fec5cb967588f781f6781bf15b841dd5b175"
     },
     "src/client/render_engine/nw.h": {
       "bytes": 6588,
@@ -6890,8 +6890,8 @@
       "sha256": "03fae9d45bc2d949cc3cfd922ac3c5e77c50f7c870ee7e0cd8f2f570a8b03c2c"
     },
     "tests/client/render_engine/test_nw_normals.c": {
-      "bytes": 14534,
-      "sha256": "b3f247ac25980f70a86c845496029a781951e70889e74885e4f74e028b2277a8"
+      "bytes": 15251,
+      "sha256": "6410c4582399568bd8b98eb07ae3b6e54182e62490fae76d792e21eb4b9f6359"
     },
     "src/client/display/source_material_staging.h": {
       "bytes": 20810,

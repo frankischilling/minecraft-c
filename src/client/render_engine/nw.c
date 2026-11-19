@@ -431,8 +431,9 @@ static bool write_vertex(mc_client_tessellator *o, double x, double y, double z,
 
     int32_t *const words = (int32_t *)(void *)f->g + f->o;
     if (f->m) {
-        words[3] = narrowed_bits(f->i);
-        words[4] = narrowed_bits(f->j);
+        const __m128 coordinates = _mm_cvtpd_ps(_mm_set_pd(f->j, f->i));
+        const uint64_t bits = (uint64_t)_mm_cvtsi128_si64(_mm_castps_si128(coordinates));
+        memcpy(words + 3, &bits, sizeof(bits));
     }
     if (f->l)
         words[5] = f->k;
