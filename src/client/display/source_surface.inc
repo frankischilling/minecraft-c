@@ -24,13 +24,19 @@ static mc_client_source_attribute_profile source_attribute_profile_for(mc_client
             strcmp(display->info.renderer, "NVIDIA GeForce RTX 3060/PCIe/SSE2") == 0 &&
             strcmp(display->info.version, "3.3.0 NVIDIA 581.42") == 0)
             s->attribute_profile = SOURCE_ATTRIBUTE_PROFILE_NVIDIA_581_42;
-        else if (strcmp(display->info.vendor, "Mesa") == 0 &&
-                 strcmp(display->info.renderer, "llvmpipe (LLVM 20.1.2, 256 bits)") == 0 &&
-                 (strcmp(display->info.version,
-                         "4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4") == 0 ||
-                  strcmp(display->info.version,
-                         "4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.5") == 0))
-            s->attribute_profile = SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8;
+        else if (strcmp(display->info.vendor, "Mesa") == 0) {
+            const bool mesa25 =
+                strcmp(display->info.renderer, "llvmpipe (LLVM 20.1.2, 256 bits)") == 0 &&
+                (strcmp(display->info.version, "4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.4") ==
+                     0 ||
+                 strcmp(display->info.version, "4.5 (Core Profile) Mesa 25.2.8-0ubuntu0.24.04.5") ==
+                     0);
+            const bool mesa26 =
+                strcmp(display->info.renderer, "llvmpipe (LLVM 21.1.8, 256 bits)") == 0 &&
+                strcmp(display->info.version, "4.5 (Core Profile) Mesa 26.0.8-1ubuntu0.3") == 0;
+            if (mesa25 || mesa26)
+                s->attribute_profile = SOURCE_ATTRIBUTE_PROFILE_MESA_LLVMPIPE;
+        }
         s->attribute_profile_generation = display->native_context_generation;
     }
     return s->attribute_profile;
@@ -45,7 +51,7 @@ static float source_attribute_normal(mc_client_source_attribute_profile profile,
     const int value = byte < 128 ? byte : (int)byte - 256;
     if (compiled)
         return (float)(2 * value + 1) * (1.0f / 255.0f);
-    if (profile == SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8) {
+    if (profile == SOURCE_ATTRIBUTE_PROFILE_MESA_LLVMPIPE) {
         const float normal = (float)value * (1.0f / 127.0f);
         return normal < -1.0f ? -1.0f : normal;
     }
@@ -87,7 +93,7 @@ static void source_attribute_batch_complete(mc_client_source_state *s,
      * queried/unqueried fixed-pipeline pixels and gl_Normal feedback agree;
      * this does not assign the last array normal or repair unknown input. */
     const bool retain_direct_normal = profile == SOURCE_ATTRIBUTE_PROFILE_NVIDIA_581_42 ||
-                                      profile == SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8;
+                                      profile == SOURCE_ATTRIBUTE_PROFILE_MESA_LLVMPIPE;
     if ((arrays & color_bit) != 0) {
         if (adopt) {
             memcpy(s->color, last->color, sizeof(s->color));
@@ -612,7 +618,7 @@ static bool source_execute_batch(mc_client_display *display, mc_client_source_dr
         return fail(error, MC_CLIENT_DISPLAY_ALLOCATION_FAILED, "source draw conversion",
                     "allocation failed", 0);
     const bool multiply_color =
-        attribute_profile == SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8 ? !compiled : compiled;
+        attribute_profile == SOURCE_ATTRIBUTE_PROFILE_MESA_LLVMPIPE ? !compiled : compiled;
     for (size_t i = 0; i < conversion_count; ++i) {
         const uint8_t *raw = data + i * 32u;
         memcpy(vertices[i].position, raw, 3u * sizeof(float));

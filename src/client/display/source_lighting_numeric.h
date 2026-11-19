@@ -269,8 +269,7 @@ static inline bool source_lighting_numeric_admit(const source_draw_state *state,
     size_t normal_proof_count = 0, next_normal_proof = 0;
     for (size_t vertex = 0; vertex < count; ++vertex) {
         const mc_client_source_gpu_vertex *input = &vertices[vertex];
-        if (!source_lighting_numeric_span(input->position, 3) ||
-            !source_lighting_numeric_span(input->normal, 3))
+        if (!source_lighting_numeric_span(input->position, 3))
             return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation, detail, 0);
         double normal[3] = {0};
         source_lighting_numeric_interval eye_interval[3] = {{0}};
@@ -282,6 +281,8 @@ static inline bool source_lighting_numeric_admit(const source_draw_state *state,
                 proof = &normal_proofs[slot];
                 break;
             }
+        if (proof == NULL && !source_lighting_numeric_span(input->normal, 3))
+            return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation, detail, 0);
         if (proof != NULL)
             memcpy(normal_interval, proof->interval, sizeof(normal_interval));
         for (size_t row = 0; row < 3; ++row) {

@@ -6,6 +6,45 @@ that [standard lighting](standard-lighting.md) updates. Later loaded-World
 profiles now return through Entity drawing, hand and HUD; each retains its own
 finite qualification. This backend contract alone does not establish gameplay.
 
+## Local Mesa 26 device support
+
+Display recognizes `Mesa`, `llvmpipe (LLVM 21.1.8, 256 bits)` and
+`4.5 (Core Profile) Mesa 26.0.8-1ubuntu0.3` as one measured identity. It uses
+the llvmpipe staged attribute path for that identity. The archived raster
+comparisons retain their separate device table and captured results.
+
+The standalone GLX probe uses authored triangles in a compatibility context.
+It checks all 256 byte values in each normal and color lane, comparing 5,376
+float words per capture. Direct drawing and two list replays each matched
+their conversion formulas. Both replays used the compiled data after the
+input buffer was overwritten. The probe also checks current normal retention
+and five front/back material sequences,
+including a selector change and compiled color replay.
+
+On Ubuntu 26.04 WSL, ten sanitizer CTests passed, including lighting
+enablement, source lists, current-attribute checks and the font draw. The
+core-context raster executable completed all 72 authored modes, including
+256 normal rows, 512 color rows and 262 list-state rows. The archived array
+comparison reached native output and reported that its capture table has no
+entry for this renderer.
+
+The package source review compared the vertex-buffer flush code, the material
+setter, matrix operations and the supported state barriers. Mesa 26 adds a
+display-list flush for lists shared across multiple contexts. The Display
+owner creates its context without requesting a share group. [Mesa release
+notes](https://docs.mesa3d.org/relnotes/26.0.8.html) · [Ubuntu package source
+descriptor](https://archive.ubuntu.com/ubuntu/pool/main/m/mesa/mesa_26.0.8-1ubuntu0.3.dsc).
+
+Build the probe with X11 and OpenGL development headers and run it on a local
+X server or Xvfb. The first output row records the compatibility context
+identity.
+
+```sh
+cc -std=c17 -O2 -fno-fast-math -ffp-contract=off \
+  tests/client/display/probes/mesa_attributes.c -lGL -lX11 -o /tmp/mc-mesa-attributes
+xvfb-run -a env LIBGL_ALWAYS_SOFTWARE=1 /tmp/mc-mesa-attributes
+```
+
 ## Materials and shading
 
 Front and back retain separate ambient, diffuse, specular, emission and

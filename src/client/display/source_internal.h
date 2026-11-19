@@ -84,7 +84,7 @@ typedef struct mc_client_source_gpu_vertex {
 typedef enum mc_client_source_attribute_profile {
     SOURCE_ATTRIBUTE_PROFILE_UNKNOWN,
     SOURCE_ATTRIBUTE_PROFILE_NVIDIA_581_42,
-    SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8
+    SOURCE_ATTRIBUTE_PROFILE_MESA_LLVMPIPE
 } mc_client_source_attribute_profile;
 
 /* Mesa's active fixed-size float attributes are retained independently from

@@ -556,7 +556,7 @@ int main(int argc, char **argv) {
             unsafe_before.pending_flags == 0 &&
             (unsafe_before.attribute_profile == SOURCE_ATTRIBUTE_PROFILE_UNKNOWN ||
              unsafe_before.attribute_profile == SOURCE_ATTRIBUTE_PROFILE_NVIDIA_581_42 ||
-             unsafe_before.attribute_profile == SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8) &&
+             unsafe_before.attribute_profile == SOURCE_ATTRIBUTE_PROFILE_MESA_LLVMPIPE) &&
             memcmp(unsafe_before.modelview, unsafe_initial_modelview,
                    sizeof(unsafe_initial_modelview)) == 0);
     mc_client_direct_buffer_state unsafe_nio_before, unsafe_nio_failed, unsafe_nio_held;
@@ -587,7 +587,7 @@ int main(int argc, char **argv) {
     probe_source_prefix unsafe_expected = unsafe_before;
     memcpy(unsafe_expected.modelview, unsafe_expected_modelview, sizeof(unsafe_expected.modelview));
     ++unsafe_expected.modelview_depth;
-    if (unsafe_before.attribute_profile == SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8) {
+    if (unsafe_before.attribute_profile == SOURCE_ATTRIBUTE_PROFILE_MESA_LLVMPIPE) {
         /* sj118 stages CURRENT-only color. Push does not commit attributes and
          * Translate flushes only STORED, so sj178 retains the previous committed
          * color alongside this newly pending color. No getter/flush is inserted. */

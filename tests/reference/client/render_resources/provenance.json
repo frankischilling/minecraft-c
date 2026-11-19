@@ -758,16 +758,16 @@
       "sha256": "52167761c818678b56ed3d2a6282830c362633fbf83f8fef5213ab54de29b8af"
     },
     "src/client/display/source_internal.h": {
-      "bytes": 7303,
-      "sha256": "aa447c38744dfa0d09b7163cb33069e04aa1a54f7071d929c537cc79f28a6dcf"
+      "bytes": 7305,
+      "sha256": "594c8f8dbc39dcbe23bd2c2ea060266d8b933eabf11265fd6baa70c1be5af638"
     },
     "src/client/display/source_surface.h": {
       "bytes": 10792,
       "sha256": "7b02fadfaf8310e34b2649de9dc5a7c9b79b2773185f035ff5681d9077a8e5e1"
     },
     "src/client/display/source_surface.inc": {
-      "bytes": 64533,
-      "sha256": "77034c9147a599a80578b31c7068620b2f12db38183457ed4162aa370fb004f0"
+      "bytes": 64830,
+      "sha256": "b8f0b8da88363d4ab8647d480276f8e7e027262dc4b0322be81e2bbce00eea01"
     },
     "src/client/display/source_vertex_cache.inc": {
       "bytes": 16307,
@@ -1450,12 +1450,12 @@
       "sha256": "dd7694b79d9955ff5c5d8fe0b6c2e0318fb0d2f26e9b1f720b71bb78122c715b"
     },
     "tests/client/render_engine/test_source_font.c": {
-      "bytes": 40844,
-      "sha256": "06a7aed7805d4ffc116b59f180c128beee859a00abf9cb0b03fbb1e3b01265bc"
+      "bytes": 40848,
+      "sha256": "dffd91b6473c9b3bf633cda32e53ffbaac7fb7eab7da7eabf10ba8a434f5b22a"
     },
     "tests/client/render_engine/test_source_fp.c": {
-      "bytes": 14438,
-      "sha256": "1eb1f3633a51d29d651dbdaaf065d394886aa348d59b5526206487fe1f5e50f7"
+      "bytes": 14440,
+      "sha256": "6de120090b6607ecad88d34ac6a5353e10050f03c2b3ea671035e705ca9b3d6f"
     },
     "tests/client/render_engine/test_source_resources.c": {
       "bytes": 12780,
@@ -3958,8 +3958,8 @@
       "sha256": "38c77b611c4afd6d22f25dc5adc77ea218ba13d78eb8c5f3be4723000951f273"
     },
     "tests/client/render_engine/test_lighting_enable.c": {
-      "bytes": 41264,
-      "sha256": "e0f1edafeadbca54b950173e4ee4f86d8294ceeca9632400a1c8ca58c77eadf4"
+      "bytes": 41471,
+      "sha256": "9375b07312c7e62b47f38288cc1e321843a65478ae1727ef8309f61f794ba143"
     },
     "tests/reference/client/lighting_enable/capture_reference.py": {
       "bytes": 11749,
@@ -3978,8 +3978,8 @@
       "sha256": "4a646427fc4eb0675df6d0b09328203d38c35415710a45d74274707a1b068019"
     },
     "src/client/display/source_lighting_numeric.h": {
-      "bytes": 26270,
-      "sha256": "e75bc60deadce86bd1f7b0f88c6d745388d3ceb79ed9dd4a63a62e91ce3e6191"
+      "bytes": 26373,
+      "sha256": "54b07a41ae76bb9328d3c5a6902620d8fbd777d3d5801bb7209b173d518f5b44"
     },
     "src/client/display/source_lighting_shader.h": {
       "bytes": 4885,
@@ -3990,8 +3990,8 @@
       "sha256": "00eec8d86c8edfd5f2c99b9c26ed1c561a42ef4549d1b3a734c8ae3a865e0867"
     },
     "tests/client/display/test_lighting_raster.c": {
-      "bytes": 81553,
-      "sha256": "03fae9d45bc2d949cc3cfd922ac3c5e77c50f7c870ee7e0cd8f2f570a8b03c2c"
+      "bytes": 81769,
+      "sha256": "98b1e5c5c3a9e2d0e01ba5a5c63475962551f69f297714dd9d4ba62f012989a7"
     },
     "tests/client/render_engine/test_nw_normals.c": {
       "bytes": 16016,
@@ -4058,8 +4058,8 @@
       "sha256": "f6b77a78411595824f03752828e1c244464e08ca7db9669105a1273c42edcb65"
     },
     "src/client/display/source_material_staging.h": {
-      "bytes": 20810,
-      "sha256": "444e0296767d14fcb8ee218af115794de68ec8b58543366c7875142db05ce22b"
+      "bytes": 20746,
+      "sha256": "a67156cc16b07ebc829f23a85a492e09286043898bdb698277ef044e58e22e50"
     },
     "tests/reference/client/lighting_raster/capture_color_conversion.py": {
       "bytes": 12674,

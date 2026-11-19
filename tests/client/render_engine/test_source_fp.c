@@ -144,7 +144,7 @@ int main(int argc, char **argv) {
     CHECK(mc_client_display_source_array(display, MC_CLIENT_SOURCE_VERTEX_ARRAY, true, &error));
     CHECK(mc_client_display_source_array(display, MC_CLIENT_SOURCE_COLOR_ARRAY, true, &error));
 
-    if (source_attribute_profile_for(display) == SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8) {
+    if (source_attribute_profile_for(display) == SOURCE_ATTRIBUTE_PROFILE_MESA_LLVMPIPE) {
         const float *color = display->source.color;
         CHECK(mc_client_display_source_color(display, color[0], color[1], color[2], color[3],
                                              &error));

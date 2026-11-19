@@ -230,6 +230,23 @@ Each interval completed 200 World ticks. Median FPS fell from 74.65 to 74.30
 and median run p99 rose from 15.49 to 15.97 ms. One pair improved on both
 measures. Median run p95 rose from 14.76 to 14.86 ms.
 
+### Normal proof lookup
+
+A normal proof hit also covers the input's finiteness. The position check
+runs first, and a normal miss checks all three components before arithmetic.
+In six alternating Windows Release pairs against `7e5c1ffe`, all 12 mode and
+input medians fell by 0.13–1.98%. Individual pairs varied. All 17 admission,
+diagnostic and MXCSR controls matched.
+
+Three settled Far pairs ran after a 25-second warmup. All six ten-second
+intervals completed 200 World ticks with zero Chunk updates. Median FPS rose
+from 445.65 to 448.39 (+0.61%). Median p95 rose from 3.14 to 3.19 ms, while
+p99 fell from 6.15 to 6.07 ms. Two pairs gained FPS and all three had lower p99.
+
+Two pairs after a two-second warmup continued compiling sections and completed
+200 World ticks per run. The FPS gains varied from 0.51 to 7.43, with a median
+of 77.43 FPS before and 81.40 after. Median p99 fell from 15.29 to 15.13 ms.
+
 ## Sky-change dirty marking
 
 The sky-change callback now checks the Chunk renderer's fixed owner on

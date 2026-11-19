@@ -74,7 +74,7 @@ static bool source_material_profile_admit(mc_client_display *display, bool track
 }
 
 static bool source_material_is_staged(const mc_client_source_state *s) {
-    return s->attribute_profile == SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8;
+    return s->attribute_profile == SOURCE_ATTRIBUTE_PROFILE_MESA_LLVMPIPE;
 }
 
 /* Equality used by source state early returns, without FP evaluation. NaNs
@@ -177,8 +177,7 @@ static void source_material_flush(mc_client_source_fog_state *fog,
         stage->flags = 0;
     } else {
         source_material_copy_current(fog, stage, color, color_known);
-        /* Exact Mesa25.2.8 assignment: staged attributes remain active and
-         * STORED becomes set. This is not an &=~CURRENT operation. */
+        /* Mesa keeps staged attributes active and sets STORED by assignment. */
         stage->flags = ~UINT32_C(2);
     }
 }
