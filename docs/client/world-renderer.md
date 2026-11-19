@@ -139,6 +139,13 @@ alternating Windows Release pairs with 512 authored blocks measured
 0.997 to 0.944 ms for flat shading and 2.088 to 1.987 ms with ambient
 occlusion. Display list counts and vertex bytes matched.
 
+The tessellator now runs context release only when a binding exists
+and its resource counts are zero. In eight alternating Windows
+Release pairs, 512-block rebuilds fell from 0.939 to 0.872 ms with flat
+shading and from 1.979 to 1.909 ms with ambient occlusion. The scene
+retained its context through each rebuild and released it at retirement.
+Display list counts and vertex bytes matched.
+
 Separate instrumented Far runs matched 411 mesh groups by section position
 and counts of cell reads, rendered Blocks, minimum-light queries, opacity
 queries, and ambient occlusion flags. Each group had at least two samples per

@@ -3,6 +3,7 @@
 #include "../../../src/client/display/display.c"
 
 #include "client/render_engine/bounds_draw.h"
+#include "client/render_engine/context_internal.h"
 #include <SDL3/SDL_main.h>
 #include <stdio.h>
 
@@ -783,6 +784,47 @@ cleanup:
     return result;
 }
 
+static bool tessellator_context_controls(mc_client_display *display) {
+    bool result = false;
+    mc_client_render_engine_classes *classes = NULL;
+    mc_client_tessellator *tessellator = NULL;
+    mc_client_graphics_error graphics = {0};
+    const mc_client_graphics_site caller = {"fixture", "tessellator_context", "()V", -1};
+    const size_t starting_holds = display->source.context_holds;
+    CHECK(mc_client_render_engine_classes_create(NULL, &classes) == MC_CLIENT_RENDER_ENGINE_OK);
+    CHECK(mc_client_nw_active_use(classes, caller, &tessellator, &graphics));
+    CHECK(mc_client_nw_begin_quads(tessellator, &graphics) &&
+          graphics.status == MC_CLIENT_GRAPHICS_OK && classes->context_lease == NULL &&
+          display->source.context_holds == starting_holds);
+
+    classes->scene_lease_count = 1;
+    classes->active_source_calls = 1;
+    const bool bound = mc_client_render_context_bind(classes, display, caller, &graphics);
+    classes->active_source_calls = 0;
+    CHECK(bound && classes->context_lease != NULL &&
+          display->source.context_holds == starting_holds + 1);
+    mc_client_display_context_lease *lease = classes->context_lease;
+    CHECK(!mc_client_nw_begin_quads(tessellator, &graphics) &&
+          graphics.status == MC_CLIENT_GRAPHICS_SOURCE_ILLEGAL_STATE && graphics.site.pc == 16 &&
+          classes->context_lease == lease && classes->bound_display == display &&
+          display->source.context_holds == starting_holds + 1);
+    classes->scene_lease_count = 0;
+    CHECK(!mc_client_nw_begin_quads(tessellator, &graphics) &&
+          graphics.status == MC_CLIENT_GRAPHICS_SOURCE_ILLEGAL_STATE && graphics.site.pc == 16 &&
+          !graphics.cleanup_failed && classes->context_lease == NULL &&
+          classes->bound_display == NULL && display->source.context_holds == starting_holds);
+    result = true;
+cleanup:
+    if (classes != NULL) {
+        classes->scene_lease_count = 0;
+        if (!mc_client_render_context_unbind_empty(classes, &graphics))
+            result = false;
+        if (mc_client_render_engine_classes_release(classes) != MC_CLIENT_RENDER_ENGINE_OK)
+            result = false;
+    }
+    return result;
+}
+
 int main(int argc, char **argv) {
     if (!texture_lookup_controls())
         return 1;
@@ -810,6 +852,7 @@ int main(int argc, char **argv) {
     _mm_setcsr(0x1f80u);
     CHECK(mc_client_display_create("source list replacement controls", 64, 64, true, &display,
                                    &error));
+    CHECK(tessellator_context_controls(display));
     native_get_error = display->gl.GetError;
     display->gl.GetError = observe_error;
     display->gl.Disable(GL_CULL_FACE);

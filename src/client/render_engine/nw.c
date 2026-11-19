@@ -41,19 +41,24 @@ static bool enter(mc_client_tessellator *o, mc_client_graphics_error *e) {
 }
 
 static bool leave(mc_client_tessellator *o, bool ok, mc_client_graphics_error *e) {
-    mc_client_graphics_error cleanup = {0};
-    const bool released = mc_client_render_context_unbind_empty(o->classes, &cleanup);
-    --o->classes->active_source_calls;
-    o->active = false;
-    (void)mc_client_render_engine_classes_release(o->classes);
-    if (!released) {
-        if (ok)
-            *e = cleanup;
-        else {
-            e->cleanup_display = cleanup.display;
-            e->cleanup_failed = true;
+    mc_client_render_engine_classes *classes = o->classes;
+    bool released = true;
+    if ((classes->context_lease != NULL || classes->bound_display != NULL) &&
+        !mc_client_render_context_has_users(classes)) {
+        mc_client_graphics_error cleanup = {0};
+        released = mc_client_render_context_unbind_empty(classes, &cleanup);
+        if (!released) {
+            if (ok)
+                *e = cleanup;
+            else {
+                e->cleanup_display = cleanup.display;
+                e->cleanup_failed = true;
+            }
         }
     }
+    --classes->active_source_calls;
+    o->active = false;
+    (void)mc_client_render_engine_classes_release(classes);
     return ok && released;
 }
 
