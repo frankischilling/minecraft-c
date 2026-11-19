@@ -16,6 +16,7 @@ enum {
     REPLAY_DRAW,
     REPLAY_PROJECTION,
     REPLAY_MODELVIEW,
+    REPLAY_PROVOKING,
     REPLAY_TEXTURED,
     REPLAY_ALPHA,
     REPLAY_FOG,
@@ -75,9 +76,16 @@ static void GLAPIENTRY replay_matrix(GLint location, GLsizei count, GLboolean tr
         ++replay_calls[REPLAY_MODELVIEW];
 }
 
-static bool replay_payload_once(unsigned int draws) {
+static void GLAPIENTRY replay_provoking(GLenum convention) {
+    replay_native.ProvokingVertex(convention);
+    ++replay_calls[REPLAY_PROVOKING];
+}
+
+static bool replay_payload_counts(unsigned int draws, unsigned int projections,
+                                  unsigned int modelviews) {
     if (replay_calls[REPLAY_PROGRAM] != 1 || replay_calls[REPLAY_DRAW] != draws ||
-        replay_calls[REPLAY_PROJECTION] != draws || replay_calls[REPLAY_MODELVIEW] != draws)
+        replay_calls[REPLAY_PROJECTION] != projections ||
+        replay_calls[REPLAY_MODELVIEW] != modelviews || replay_calls[REPLAY_PROVOKING] != 1)
         return false;
     for (unsigned int kind = REPLAY_TEXTURED; kind < REPLAY_COUNTERS; ++kind)
         if (replay_calls[kind] != 1)
@@ -323,7 +331,7 @@ static bool replay_native_controls(mc_client_display *display,
                                    mc_client_display_context_lease *lease, uint8_t resume_bytes[96],
                                    mc_client_display_error *error) {
     bool result = false, observing = false;
-    mc_client_display_list_range *range = NULL;
+    mc_client_display_list_range *range = NULL, *other = NULL;
     mc_client_capture capture = {0};
     int32_t base = 0;
 
@@ -352,7 +360,7 @@ static bool replay_native_controls(mc_client_display *display,
           mc_client_display_source_fog_enable(display, false, error) &&
           mc_client_display_source_alpha_test(display, false, error) &&
           mc_client_display_source_shade_model(display, GL_SMOOTH, error));
-    CHECK(mc_client_display_lists_generate(display, 3, 8, &range, &base, error));
+    CHECK(mc_client_display_lists_generate(display, 5, 8, &range, &base, error));
     for (int32_t i = 0; i < 3; ++i) {
         uint8_t *bytes = i == 2 ? cached : small[i];
         const int32_t count = i == 2 ? CACHE_VERTICES : 3;
@@ -362,6 +370,19 @@ static bool replay_native_controls(mc_client_display *display,
                                              GL_TRIANGLES, error));
         CHECK(mc_client_display_lists_end(display, error));
     }
+    const int32_t transform_id = base + 3, pop_id = base + 4;
+    CHECK(mc_client_display_lists_begin(display, transform_id, error));
+    CHECK(mc_client_display_source_push(display, error));
+    CHECK(mc_client_display_source_translate(display, 1, 0, 0, error));
+    CHECK(mc_client_display_source_scale(display, 2, 2, 2, error));
+    CHECK(mc_client_display_lists_end(display, error));
+    CHECK(mc_client_display_lists_begin(display, pop_id, error));
+    CHECK(mc_client_display_source_pop(display, error));
+    CHECK(mc_client_display_lists_end(display, error));
+    int32_t other_id;
+    CHECK(mc_client_display_lists_generate(display, 2, 1, &other, &other_id, error));
+    CHECK(mc_client_display_lists_begin(display, other_id, error));
+    CHECK(mc_client_display_lists_end(display, error));
     /* Populate the optional command storage before observing warm replay. */
     const int32_t cached_id = base + 2;
     CHECK(mc_client_display_lists_call(display, &cached_id, 1, error));
@@ -381,6 +402,7 @@ static bool replay_native_controls(mc_client_display *display,
     display->gl.DrawArrays = replay_draw;
     display->gl.Uniform1i = replay_integer;
     display->gl.UniformMatrix4fv = replay_matrix;
+    display->gl.ProvokingVertex = replay_provoking;
     observing = true;
 
     const int32_t pair[] = {base, base + 1};
@@ -396,6 +418,10 @@ static bool replay_native_controls(mc_client_display *display,
             replay_native.Uniform1i(display->source.fog_enabled_uniform, 1);
             replay_native.Uniform1i(display->source.lighting_uniform, 1);
             replay_native.Uniform1i(display->source.flat_uniform, 1);
+            const GLfloat zero[16] = {0};
+            replay_native.UniformMatrix4fv(display->source.projection_uniform, 1, GL_FALSE, zero);
+            replay_native.UniformMatrix4fv(display->source.modelview_uniform, 1, GL_FALSE, zero);
+            replay_native.ProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
             replay_native.UseProgram(display->program);
             replay_native.BindVertexArray(display->vao);
             replay_native.BindBuffer(GL_ARRAY_BUFFER, display->vbo);
@@ -407,7 +433,7 @@ static bool replay_native_controls(mc_client_display *display,
         const bool transition = attempt == 1;
         CHECK(mc_client_display_lists_call(display, transition ? mixed : pair, transition ? 4 : 2,
                                            error));
-        CHECK(replay_payload_once(transition ? 4 : 2) &&
+        CHECK(replay_payload_counts(transition ? 4 : 2, 1, 1) &&
               replay_names[REPLAY_PROGRAM][0] == display->source.program &&
               replay_calls[REPLAY_VAO] == (transition ? 3u : 1u) &&
               replay_calls[REPLAY_BUFFER] == (transition ? 3u : 1u) &&
@@ -428,6 +454,32 @@ static bool replay_native_controls(mc_client_display *display,
               color_pixels(&capture, 0) && color_pixels(&capture, 1) && !color_pixels(&capture, 2));
         mc_client_capture_free(&capture);
     }
+    const int32_t changed[] = {base, transform_id, base + 1, pop_id, base};
+    const int32_t modes[] = {GL_MODELVIEW, GL_PROJECTION};
+    for (size_t i = 0; i < sizeof(modes) / sizeof(*modes); ++i) {
+        CHECK(mc_client_display_source_matrix_mode(display, modes[i], error));
+        memset(replay_calls, 0, sizeof(replay_calls));
+        CHECK(mc_client_display_lists_call(display, changed, sizeof(changed) / sizeof(*changed),
+                                           error));
+        const bool projection = modes[i] == GL_PROJECTION;
+        CHECK(replay_payload_counts(3, projection ? 3u : 1u, projection ? 1u : 3u) &&
+              display->source.depth == 0 && display->source.projection_depth == 0);
+    }
+    CHECK(mc_client_display_source_matrix_mode(display, GL_MODELVIEW, error));
+    const int32_t undefined[] = {base, other_id, other_id + 1, base + 1};
+    memset(replay_calls, 0, sizeof(replay_calls));
+    CHECK(!mc_client_display_lists_call(display, undefined, sizeof(undefined) / sizeof(*undefined),
+                                        error) &&
+          error->status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL && replay_payload_counts(1, 1, 1));
+    CHECK(mc_client_display_lists_retire(&other, error));
+    const int32_t missing[] = {other_id, INT32_MIN};
+    for (size_t i = 0; i < sizeof(missing) / sizeof(*missing); ++i) {
+        const int32_t replay[] = {base, missing[i], base + 1};
+        memset(replay_calls, 0, sizeof(replay_calls));
+        CHECK(!mc_client_display_lists_call(display, replay, sizeof(replay) / sizeof(*replay),
+                                            error) &&
+              error->status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL && replay_payload_counts(1, 1, 1));
+    }
     result = true;
 cleanup:
     if (observing) {
@@ -435,6 +487,8 @@ cleanup:
         replay_display = NULL;
     }
     mc_client_capture_free(&capture);
+    if (!mc_client_display_lists_retire(&other, error))
+        result = false;
     if (!mc_client_display_lists_retire(&range, error))
         result = false;
     const float white[4] = {1, 1, 1, 1};

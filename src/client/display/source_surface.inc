@@ -494,10 +494,18 @@ static bool source_gpu_create(mc_client_display *display, mc_client_display_erro
 }
 
 typedef struct source_replay_state {
-    bool drew, unlit_uniforms;
+    bool drew, unlit_uniforms, projection_uploaded, modelview_uploaded;
     GLuint vao, vbo;
     int clamp_s, clamp_t;
 } source_replay_state;
+
+static void source_replay_matrix_changed(source_replay_state *replay,
+                                         const mc_client_source_state *state) {
+    if (state->matrix_mode == GL_PROJECTION)
+        replay->projection_uploaded = false;
+    else
+        replay->modelview_uploaded = false;
+}
 
 static bool source_execute_batch(mc_client_display *display, const uint8_t *data, size_t bytes,
                                  int32_t count, int32_t mode, unsigned arrays,
@@ -645,10 +653,14 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
         }
     }
     if (ok) {
-        display->gl.UniformMatrix4fv(s->projection_uniform, 1, GL_FALSE, s->projection);
-        display->gl.UniformMatrix4fv(s->modelview_uniform, 1, GL_FALSE, s->modelview.column_major);
-        /* Replay commands can change either matrix and the current attributes.
-         * The unlit shader's other inputs stay fixed except for sampled texture clamps. */
+        if (replay == NULL || !replay->projection_uploaded)
+            display->gl.UniformMatrix4fv(s->projection_uniform, 1, GL_FALSE, s->projection);
+        if (replay == NULL || !replay->modelview_uploaded)
+            display->gl.UniformMatrix4fv(s->modelview_uniform, 1, GL_FALSE,
+                                         s->modelview.column_major);
+        if (replay != NULL)
+            replay->projection_uploaded = replay->modelview_uploaded = true;
+        /* The unlit shader's other inputs stay fixed except for sampled texture clamps. */
         const bool reuse = replay != NULL && replay->unlit_uniforms && !s->lighting_enabled &&
                            replay->clamp_s == clamp_s && replay->clamp_t == clamp_t;
         if (!reuse) {
@@ -672,7 +684,8 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
                 replay->clamp_t = clamp_t;
             }
         }
-        display->gl.ProvokingVertex(GL_LAST_VERTEX_CONVENTION);
+        if (replay == NULL || !replay->drew)
+            display->gl.ProvokingVertex(GL_LAST_VERTEX_CONVENTION);
         /* Preserve inherited blend/depth/viewport/scissor/cull/clear state. */
         display->gl.DrawArrays((GLenum)mode, 0, count);
         const mc_client_source_gpu_vertex *last = NULL;
@@ -1107,8 +1120,16 @@ static bool source_lists_execute(mc_client_display *display, const int32_t *ids,
                   0);
         goto done;
     }
+    /* Range ownership is stable until the entered replay returns. */
+    mc_client_display_list_range *range = NULL;
     for (size_t i = 0; i < count && ok; ++i) {
-        mc_client_source_list *list = source_find_list(display, ids[i], NULL);
+        const int32_t id = ids[i];
+        mc_client_source_list *list;
+        if (range != NULL && id >= range->base &&
+            (uint32_t)(id - range->base) < (uint32_t)range->count)
+            list = &range->lists[id - range->base];
+        else
+            list = source_find_list(display, id, count > 1 ? &range : NULL);
         if (list == NULL || !list->defined) {
             ok = fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation,
                       "undefined/deleted/unregistered name path", 0);
@@ -1122,18 +1143,24 @@ static bool source_lists_execute(mc_client_display *display, const int32_t *ids,
                     source_material_stage_color(&display->source, command->value.vector);
             } else if (command->kind == SOURCE_COMMAND_TRANSLATE) {
                 ok = source_fp_admit("source list matrix translation FP", error);
-                if (ok)
+                if (ok) {
                     source_matrix_translate(&display->source, command->value.vector[0],
                                             command->value.vector[1], command->value.vector[2]);
+                    source_replay_matrix_changed(&replay, &display->source);
+                }
             } else if (command->kind == SOURCE_COMMAND_PUSH) {
                 ok = source_matrix_push(&display->source, error);
             } else if (command->kind == SOURCE_COMMAND_POP) {
                 ok = source_matrix_pop(&display->source, error);
+                if (ok)
+                    source_replay_matrix_changed(&replay, &display->source);
             } else if (command->kind == SOURCE_COMMAND_SCALE) {
                 ok = source_fp_admit("source list matrix scale FP", error);
-                if (ok)
+                if (ok) {
                     source_matrix_scale(&display->source, command->value.scale[0],
                                         command->value.scale[1], command->value.scale[2]);
+                    source_replay_matrix_changed(&replay, &display->source);
+                }
             } else if (command->kind == SOURCE_COMMAND_DRAW) {
                 ok = source_execute_batch(display, command->value.draw.bytes,
                                           command->value.draw.size, command->value.draw.count,
