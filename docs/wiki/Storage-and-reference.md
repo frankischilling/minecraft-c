@@ -1,5 +1,15 @@
 # Storage and original references
 
+## Region header I/O
+
+Region opens now read the location and timestamp tables in two 4 KiB reads.
+Creating an empty region writes two sectors. A Windows fixture that opens,
+reads, and creates regions went from 63.06 to 5.96 ms at the median across
+sixteen pairs. The resulting files matched byte for byte.
+[Benchmark and scope](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/docs/performance/client-frame-baseline.md#region-header-reads-and-writes)
+
+## Reference evidence
+
 The [Torch World packet](https://github.com/frankischilling/minecraft-c/blob/feature/normal-population/tests/reference/client/torch_world/README.md)
 retains 66 actual calls through genuine saved-World, Chunk, EW/CV and NW owners.
 Twelve complete target streams agree across the private/public cohorts; two

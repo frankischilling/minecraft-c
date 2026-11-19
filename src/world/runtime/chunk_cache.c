@@ -551,8 +551,9 @@ mc_client_chunk_cache_next_block_failure(mc_client_chunk_cache *c, int32_t *x, i
     if (!enter(c, x != NULL && out != NULL, &e))
         return query_result(error, &e, true);
     if (x == out) {
-        while (*x < end_x && block_value(c, *x, y, z, out, &e) && *out == 0)
-            ++*x;
+        int32_t cursor = *x;
+        while (cursor < end_x && block_value(c, cursor, y, z, out, &e) && *out == 0)
+            ++cursor;
         return finish(c, &e, error, true);
     }
     if ((uint32_t)y >= MC_CHUNK_HEIGHT) {

@@ -306,6 +306,22 @@ static bool ew_getter_failure_controls(picking_fixture *f) {
     CHECK(mc_client_chunk_cache_next_block_failure(cache, &cursor, 20, 64, 8, &cursor, error) ==
               MC_CLIENT_CHUNK_CACHE_OK &&
           cursor == 1 && error->bytecode == 12345);
+    cursor = 9;
+    CHECK(mc_client_chunk_cache_next_block_failure(cache, &cursor, 20, 64, 8, &cursor, error) ==
+              MC_CLIENT_CHUNK_CACHE_OK &&
+          cursor == 1 && error->bytecode == 12345);
+    cursor = 19;
+    CHECK(mc_client_chunk_cache_next_block_failure(cache, &cursor, 23, 64, 8, &cursor, error) ==
+              MC_CLIENT_CHUNK_CACHE_OK &&
+          cursor == 0 && error->bytecode == 12345);
+    cursor = 23;
+    CHECK(mc_client_chunk_cache_next_block_failure(cache, &cursor, 23, -1, 8, &cursor, error) ==
+              MC_CLIENT_CHUNK_CACHE_OK &&
+          cursor == 23 && error->bytecode == 12345);
+    cursor = INT32_MAX - 1;
+    CHECK(mc_client_chunk_cache_next_block_failure(cache, &cursor, INT32_MAX, -1, 8, &cursor,
+                                                   error) == MC_CLIENT_CHUNK_CACHE_OK &&
+          cursor == 0 && error->bytecode == 12345);
     cursor = 19;
     CHECK(mc_client_chunk_cache_next_block_failure(cache, &cursor, 23, 64, 8, &scanned_id, error) ==
               MC_CLIENT_CHUNK_CACHE_OK &&

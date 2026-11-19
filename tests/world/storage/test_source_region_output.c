@@ -471,6 +471,8 @@ static int constructor_budget(fixture *f) {
           strcmp(f->output_error.stream.output.cause.operation, "native region deflater") == 0);
     CHECK(mc_java_random_access_inspect(a.random_access, &before) && before.native_open &&
           !before.close_reached);
+    CHECK(before.write_calls == 2 && before.bytes_written == 8192 && before.read_calls == 2 &&
+          before.bytes_read == 8192);
     for (size_t i = 0; i < 1024; ++i)
         CHECK(a.offsets[i] == 0 && a.timestamps[i] == 0);
     /* Failed deflateInit has freed its partial zlib allocations. The reached

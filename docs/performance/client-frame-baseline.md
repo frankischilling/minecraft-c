@@ -422,6 +422,38 @@ went from 4.004 to 3.890 ms. Median FPS went from 393.25 to 391.56, and
 the median longest frame rose from 10.175 to 10.582 ms. The frame comparisons
 cover one settled scene.
 
+### Region header reads and writes
+
+The live save handler reads each region's two 4 KiB header tables in blocks.
+Creating a header writes two 4 KiB sectors. A new-region control counted
+8,192 reads and 8,192 writes before the change and two of each after it.
+Both builds transferred 8,192 bytes in each direction.
+
+Sixteen alternating Windows Release pairs ran `mc_test_source_regions`
+against fresh copies of the same fixture. Each process opened a stored region,
+read records, observed an in-place payload update, flushed the cache, and
+created an empty region. Elapsed time includes process startup. The median
+fell from 63.06 to 5.96 ms, with a decrease in all sixteen pairs. Console
+output and the resulting region files matched byte for byte.
+
+Three alternating rounds on an i9-10900F and RTX 3060 compared the baseline,
+the header and Chunk-cache scan fixes, and those fixes with a reusable vertex
+conversion buffer. All nine runs matched the authored Far scene at 854×480
+and returned 200 World ticks after the two-second warmup. The table shows
+the median of each run's statistics.
+
+| Build | FPS | Frame p95 | Frame p99 | Longest frame |
+| --- | ---: | ---: | ---: | ---: |
+| Baseline `9530fac5` | 72.33 | 15.59 ms | 16.55 ms | 17.19 ms |
+| Header and Chunk-cache fixes | 72.24 | 15.32 ms | 16.42 ms | 17.93 ms |
+| With conversion-buffer trial | 71.02 | 15.60 ms | 16.52 ms | 17.84 ms |
+
+The conversion-buffer trial removed allocations on repeated draws while
+producing identical upload bytes. It measured lower FPS in all three
+rounds than the fixes alone and was dropped. One run in the earlier cohort
+overlapped a source-input edit, so that cohort did not qualify. The header
+timing targets region acquisition and does not establish a frame-rate gain.
+
 ## Fixed-input observer
 
 Build both comparison executables with the same observer source. The runner

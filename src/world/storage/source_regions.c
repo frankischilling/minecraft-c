@@ -333,29 +333,44 @@ static bool file_equal(mc_java_file *a, mc_java_file *b) {
     return true;
 }
 
-static mc_java_file_status read_byte(source_region *q, uint8_t *out, mc_java_file_error *e) {
-    mc_java_file_read read;
-    mc_java_file_status s = mc_java_random_access_read(q->raf, out, 1, &read, e);
-    if (s == MC_JAVA_FILE_OK && read.eof) {
-        if (e != NULL)
-            *e = (mc_java_file_error){MC_JAVA_FILE_IO_ERROR, "RandomAccessFile.read EOFException",
-                                      0};
-        s = MC_JAVA_FILE_IO_ERROR;
+static mc_java_file_status read_exact(source_region *q, uint8_t *bytes, size_t length,
+                                      size_t *filled, mc_java_file_error *e) {
+    *filled = 0;
+    while (*filled < length) {
+        mc_java_file_read read;
+        const mc_java_file_status status =
+            mc_java_random_access_read(q->raf, bytes + *filled, length - *filled, &read, e);
+        if (status != MC_JAVA_FILE_OK)
+            return status;
+        if (read.eof) {
+            if (e != NULL)
+                *e = (mc_java_file_error){MC_JAVA_FILE_IO_ERROR,
+                                          "RandomAccessFile.read EOFException", 0};
+            return MC_JAVA_FILE_IO_ERROR;
+        }
+        *filled += read.count;
     }
-    return s;
+    return MC_JAVA_FILE_OK;
+}
+
+static mc_java_file_status read_byte(source_region *q, uint8_t *out, mc_java_file_error *e) {
+    size_t filled;
+    return read_exact(q, out, 1, &filled, e);
+}
+
+static int32_t decode_i32(const uint8_t *bytes) {
+    const uint32_t value =
+        (uint32_t)bytes[0] << 24 | (uint32_t)bytes[1] << 16 | (uint32_t)bytes[2] << 8 | bytes[3];
+    return mc_java_i32_narrow((int64_t)value);
 }
 
 static mc_java_file_status read_int(source_region *q, int32_t *out, mc_java_file_error *e) {
-    uint32_t value = 0;
-    for (int i = 0; i < 4; ++i) {
-        uint8_t c;
-        mc_java_file_status s = read_byte(q, &c, e);
-        if (s != MC_JAVA_FILE_OK)
-            return s;
-        value = (value << 8) | c;
-    }
-    *out = mc_java_i32_narrow((int64_t)value);
-    return MC_JAVA_FILE_OK;
+    uint8_t bytes[4];
+    size_t filled;
+    const mc_java_file_status status = read_exact(q, bytes, sizeof(bytes), &filled, e);
+    if (status == MC_JAVA_FILE_OK)
+        *out = decode_i32(bytes);
+    return status;
 }
 
 static mc_world_source_status construct_region(mc_world_source_regions *r,
@@ -393,10 +408,10 @@ static mc_world_source_status construct_region(mc_world_source_regions *r,
     if (fs != MC_JAVA_FILE_OK)
         goto failed;
     if (length < 4096) {
-        const uint8_t zero = 0;
-        for (size_t i = 0; i < 8192; ++i) {
-            pc = i < 4096 ? 120 : 143;
-            fs = mc_java_random_access_write(q->raf, &zero, 1, &fe);
+        static const uint8_t zeros[4096] = {0};
+        for (size_t i = 0; i < 2; ++i) {
+            pc = i == 0 ? 120 : 143;
+            fs = mc_java_random_access_write(q->raf, zeros, sizeof(zeros), &fe);
             if (fs != MC_JAVA_FILE_OK)
                 goto failed;
         }
@@ -447,11 +462,14 @@ static mc_world_source_status construct_region(mc_world_source_regions *r,
     fs = mc_java_random_access_seek(q->raf, 0, &fe);
     if (fs != MC_JAVA_FILE_OK)
         goto failed;
-    for (size_t i = 0; i < 1024; ++i) {
-        pc = 310;
-        fs = read_int(q, &q->offsets[i], &fe);
-        if (fs != MC_JAVA_FILE_OK)
-            goto failed;
+    /* Read each table in one span. Only complete entries contribute to the
+     * in-memory prefix, even if an I/O error interrupts the header. */
+    uint8_t table[4096];
+    size_t filled;
+    pc = 310;
+    fs = read_exact(q, table, sizeof(table), &filled, &fe);
+    for (size_t i = 0; i < filled / 4; ++i) {
+        q->offsets[i] = decode_i32(table + i * 4);
         int32_t sector = mc_java_i32_shr(q->offsets[i], 8);
         uint32_t count = (uint32_t)q->offsets[i] & 255u;
         if (q->offsets[i] != 0 && (int64_t)sector + count <= (int64_t)q->sectors) {
@@ -468,12 +486,14 @@ static mc_world_source_status construct_region(mc_world_source_regions *r,
             }
         }
     }
-    for (size_t i = 0; i < 1024; ++i) {
-        pc = 409;
-        fs = read_int(q, &q->timestamps[i], &fe);
-        if (fs != MC_JAVA_FILE_OK)
-            goto failed;
-    }
+    if (fs != MC_JAVA_FILE_OK)
+        goto failed;
+    pc = 409;
+    fs = read_exact(q, table, sizeof(table), &filled, &fe);
+    for (size_t i = 0; i < filled / 4; ++i)
+        q->timestamps[i] = decode_i32(table + i * 4);
+    if (fs != MC_JAVA_FILE_OK)
+        goto failed;
     return result(e, MC_WORLD_SOURCE_OK, NULL, NULL, NULL, -1);
 failed:
     file_failure(e, fs, fe, "qj", "<init>", pc);

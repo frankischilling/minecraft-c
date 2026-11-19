@@ -140,6 +140,12 @@ Cached `qj` owners retain real read/write RandomAccessFile descriptors and
 their header tables. The legacy `mc_world_regions` whole-file cache remains a
 separate transport with its existing contract.
 
+Opening a region reads its location and timestamp tables in two 4 KiB reads
+on the ordinary path. Creating an empty header writes those same two sectors
+in two calls. A short read retries for the remaining bytes. If it fails, only
+complete entries count toward the constructor's read progress. Record bodies
+still come from the live descriptor.
+
 Selector 1 constructs GZIP input over the compressed byte array returned by
 `qj`; selector 2 constructs the default wrapped inflater. Both feed the same
 incremental parser. `ld` does not close its DataInputStream or request an EOF

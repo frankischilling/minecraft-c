@@ -30,7 +30,9 @@ mc_client_chunk_cache_status mc_client_chunk_cache_block_failure(mc_client_chunk
 
 /* Walk [*x,end_x) at a fixed y and z without calling back into the caller.
  * On return, *x is the first non-air coordinate, the end, or the failed read.
- * *out keeps the last successful Block ID. Success leaves error untouched. */
+ * *out keeps the last successful Block ID. When x and out alias, the shared
+ * slot receives the last successful Block ID. An empty range leaves both
+ * outputs unchanged. Success leaves error untouched. */
 mc_client_chunk_cache_status
 mc_client_chunk_cache_next_block_failure(mc_client_chunk_cache *, int32_t *x, int32_t end_x,
                                          int32_t y, int32_t z, int32_t *out,
