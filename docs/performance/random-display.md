@@ -16,6 +16,27 @@ This removes repeated initialization of an unused acquisition tree. It does
 not cache Blocks, Chunks, arrays or Random values, reduce the sample count, or
 change particle and sound dispatch.
 
+## Detail storage on Block dispatch
+
+MSVC Release cleared 30,728 bytes of diagnostics at every positive Block
+dispatch. The sampler initializes the header, then clears the detail union
+once when a child needs it or when an earlier failure needs to expose it.
+The public Block call still initializes the complete record. Poisoned-buffer
+checks cover success without a child and failures before and inside a child.
+
+Six Windows Release pairs compared this change against eager initialization.
+The eager adapter called `mc_world_runtime_block_random_display` at the
+sampler's dispatch site. Both adapters used the current failure-only Block
+getter and shared dispatcher.
+All 114 control profiles passed per adapter, with matching equal-input
+results and ordered events. Each row includes 126 measured calls per variant,
+each with 1,000 samples and 6,000 World Random draws.
+
+| Workload | Median before / after | p95 before / after |
+| --- | ---: | ---: |
+| Air | 0.1244 / 0.1203 ms | 0.1350 / 0.1271 ms |
+| Stone | 0.6117 / 0.1806 ms | 0.6401 / 0.1980 ms |
+
 ## Fixed-work comparison
 
 Configure with `MC_BUILD_BENCHMARKS=ON` and build

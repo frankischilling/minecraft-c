@@ -70,6 +70,48 @@ A separate vertex trial paired the x and y floating-point operations. It
 failed the authored test for a vertex with distinct NaN payloads. Finite
 vertex output matched across all six CPU pairs. The trial was dropped.
 
+## Settled Far culling and terrain selection
+
+Two sampled Windows Far runs after a 25-second warmup recorded 6,045
+render-thread positions inside frames with no World tick and 907 inside
+frames with a tick. Terrain selection accounted for 293 named samples in
+the first group. The culling loop and its array lookup accounted for 324,
+and Tessellator admission accounted for 371. The raw Block reader accounted
+for 136 samples in frames with a tick. These are host-clock samples with
+observer overhead. The frame comparisons use uninstrumented executables.
+
+Culling now validates the array extent once per exclusive walk and uses
+the same checked section for emptiness, throttling and the bounds test.
+The classification counters use unsigned addition for their signed wrap.
+The controls cover the null array, oversized extent, empty array, foreign
+section, failed bounds test and counter wrap.
+
+The fixed-work Windows Release comparison ran six alternating pairs per
+case. The culling workload visited 5,408 mixed sections per call and matched
+visibility bits, tested counts and throttle phase through signed wrap.
+The terrain workloads matched framebuffer hashes, pixel coverage, section
+order, dirty polls and work counts. Each workload was faster in all six
+pairs.
+
+| Workload | Median before / after |
+| --- | ---: |
+| Culling, 5,408 sections | 0.10236 / 0.07854 ms |
+| Two terrain passes, 17×17×8 grid | 0.16628 / 0.16410 ms |
+| Two terrain passes, 33×33×8 grid | 0.24995 / 0.24710 ms |
+
+Four matched Far pairs compared these changes and the [random-display
+optimization](random-display.md#detail-storage-on-block-dispatch) against
+`d08ef54c`. The authored view was stationary at 854×480 on an i9-10900F with
+an RTX 3060. All eight ten-second intervals completed 200 World ticks and
+reported zero Chunk updates after the 25-second warmup. Median FPS rose
+from 424.65 to 439.47. Median run p95 fell from 3.43 to 3.18 ms and p99 fell
+from 6.35 to 6.11 ms. FPS rose and p99 fell in every pair.
+
+Three additional pairs used a two-second warmup and continued compiling
+sections throughout the timing window. Each run completed 200 World ticks.
+Median FPS rose from 74.11 to 74.55, p95 fell from 15.05 to 14.87 ms, and p99
+fell from 16.00 to 15.73 ms. Two pairs were faster.
+
 ## Sky-change dirty marking
 
 The sky-change callback now checks the Chunk renderer's fixed owner on

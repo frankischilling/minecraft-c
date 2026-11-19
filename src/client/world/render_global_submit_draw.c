@@ -7,6 +7,7 @@
 #include "render_batch_internal.h"
 
 #include <limits.h>
+#include <string.h>
 
 static mc_client_render_list *selected(mc_client_render_global_submit_call *c, unsigned int pc) {
     mc_client_render_list *list = c->state.owner->fields.S;
@@ -66,8 +67,8 @@ static bool batch_length(mc_client_render_global_submit_call *c, unsigned int pc
 }
 
 static void increment(mc_client_render_global_submit_call *c, int32_t *field, unsigned int pc) {
-    const int32_t before = *field;
-    *field = before == INT32_MAX ? INT32_MIN : before + 1;
+    const uint32_t next = (uint32_t)*field + 1u;
+    memcpy(field, &next, sizeof(next));
     mc_terrain_store(c, pc);
 }
 

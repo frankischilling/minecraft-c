@@ -213,46 +213,27 @@ static bool cull_fail(mc_client_culling_call *c, mc_client_frustum_status status
     return false;
 }
 
-static mc_client_source_dk *get(mc_client_culling_call *c, unsigned int pc) {
-    mc_client_render_global *n = c->state.owner;
-    if (n->fields.o == NULL) {
-        cull_fail(c, MC_CLIENT_FRUSTUM_SOURCE_NULL, "actual N null DK array", pc, false);
-        return NULL;
-    }
-    if (c->state.index < 0 || (size_t)c->state.index >= n->o_length) {
-        cull_fail(c, MC_CLIENT_FRUSTUM_CHILD_FAILED, "actual N DK array index", pc, false);
-        return NULL;
-    }
-    mc_client_source_dk *dk = n->fields.o[c->state.index];
-    if (dk == NULL) {
-        cull_fail(c, MC_CLIENT_FRUSTUM_SOURCE_NULL, "actual N null DK receiver",
-                  pc == 16   ? 17
-                  : pc == 28 ? 29
-                             : 54,
-                  false);
-        return NULL;
-    }
-    if (dk->owner != n) {
-        cull_fail(c, MC_CLIENT_FRUSTUM_ARGUMENT, "N DK native occurrence provenance", pc, true);
-        return NULL;
-    }
-    c->state.chunk = dk;
-    return dk;
-}
-
 static bool cull_body(mc_client_culling_call *c) {
     mc_client_render_global *n = c->state.owner;
-    for (c->state.index = 0;; c->state.index = mc_java_i32_add(c->state.index, 1)) {
-        if (n->fields.o == NULL)
-            return cull_fail(c, MC_CLIENT_FRUSTUM_SOURCE_NULL, "actual N null DK array length", 7,
-                             false);
-        if (n->o_length > INT32_MAX)
-            return cull_fail(c, MC_CLIENT_FRUSTUM_LIMIT, "N DK array native extent", 7, true);
-        if ((size_t)c->state.index >= n->o_length)
-            break;
-        mc_client_source_dk *dk = get(c, 16);
+    mc_client_source_dk *const *const chunks = n->fields.o;
+    c->state.index = 0;
+    if (chunks == NULL)
+        return cull_fail(c, MC_CLIENT_FRUSTUM_SOURCE_NULL, "actual N null DK array length", 7,
+                         false);
+    if (n->o_length > INT32_MAX)
+        return cull_fail(c, MC_CLIENT_FRUSTUM_LIMIT, "N DK array native extent", 7, true);
+    const int32_t length = (int32_t)n->o_length;
+    const uint32_t phase = (uint32_t)n->fields.j;
+    /* The entered walk and its bounds tests cannot replace the array or its slots. */
+    for (; c->state.index < length; ++c->state.index) {
+        mc_client_source_dk *dk = chunks[c->state.index];
         if (dk == NULL)
-            return false;
+            return cull_fail(c, MC_CLIENT_FRUSTUM_SOURCE_NULL, "actual N null DK receiver", 17,
+                             false);
+        if (dk->owner != n)
+            return cull_fail(c, MC_CLIENT_FRUSTUM_ARGUMENT, "N DK native occurrence provenance", 16,
+                             true);
+        c->state.chunk = dk;
         ++c->state.visited;
         if (dk->fields.E) {
             if (dk->fields.p == NULL) {
@@ -266,16 +247,10 @@ static bool cull_body(mc_client_culling_call *c) {
                 continue;
             }
         }
-        dk = get(c, 28);
-        if (dk == NULL)
-            return false;
-        if (dk->fields.o && (((uint32_t)mc_java_i32_add(c->state.index, n->fields.j) & 15u) != 0)) {
+        if (dk->fields.o && (((uint32_t)c->state.index + phase) & 15u) != 0) {
             ++c->state.throttle_skips;
             continue;
         }
-        dk = get(c, 52);
-        if (dk == NULL)
-            return false;
         ++c->state.tested;
         bool visible;
         mc_client_culling_error child;

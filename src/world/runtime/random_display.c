@@ -2,8 +2,8 @@
 
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
+#include "block_random_display_internal.h"
 #include "construction_internal.h"
-#include "mc/world/runtime/block_random_display.h"
 #include "mc/world/storage/source_chunk_loader.h"
 #include "runtime_internal.h"
 
@@ -326,9 +326,9 @@ static bool body(mc_world_random_display_call *c) {
             ++c->state.display_calls_started;
             if (c->state.selected_block == NULL)
                 return source_null(c, "World random display null selected Block receiver");
-            if (mc_world_runtime_block_random_display(c->state.world, c->state.selected_block,
-                                                      c->state.x, c->state.y, c->state.z,
-                                                      &c->random, &c->block) != MC_WORLD_STORAGE_OK)
+            if (mc_world_runtime_block_random_display_sample(
+                    c->state.world, c->state.selected_block, c->state.x, c->state.y, c->state.z,
+                    &c->random, &c->block) != MC_WORLD_STORAGE_OK)
                 return block_fail(c);
             ++c->state.display_calls_returned;
         }

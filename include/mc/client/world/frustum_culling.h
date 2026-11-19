@@ -65,8 +65,8 @@ typedef struct mc_client_culling_state {
     const mc_client_culling_error *failure;
 } mc_client_culling_state;
 
-/* Whole actual n.a(yn,F): reread live o at each source array access, execute
- * real dk.e E/p short circuit, throttle already-visible cells by (index+j)&15,
+/* Whole actual n.a(yn,F): walk the live o array during the exclusive call,
+ * execute real dk.e E/p short circuit, throttle visible cells by (index+j)&15,
  * call sr.a on actual DK.v and only then store DK.o11. Wrap j++70 after the
  * whole loop returns. Partial effects survive errors; partial is unused.
  * The retained call independently holds N and sr. The caller keeps App and

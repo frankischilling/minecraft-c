@@ -1,4 +1,4 @@
-#include "mc/world/runtime/block_random_display.h"
+#include "block_random_display_internal.h"
 
 #include "../../block/registry/registry_internal.h"
 #include "../../block/registry/runtime_internal.h"
@@ -11,6 +11,7 @@
 #include "step_internal.h"
 
 #include <limits.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -20,8 +21,15 @@ typedef struct display_frame {
     mc_world_runtime *world;
     const mc_block *block;
     mc_world_random_display_block_error *error;
-    bool entered;
+    bool entered, detail_initialized;
 } display_frame;
+
+static void prepare_detail(display_frame *f) {
+    if (!f->detail_initialized) {
+        memset(&f->error->detail, 0, sizeof(f->error->detail));
+        f->detail_initialized = true;
+    }
+}
 
 static mc_world_random_display_block_site site(const char *cl, const char *method,
                                                const char *descriptor, unsigned int pc) {
@@ -198,6 +206,7 @@ static bool get(display_frame *f, unsigned int pc, int32_t x, int32_t y, int32_t
     if (!world_enter(f))
         return false;
     f->error->child = MC_WORLD_RANDOM_DISPLAY_BLOCK_QUERY;
+    prepare_detail(f);
     mc_world_collision_error_init(&f->error->detail.query);
     const mc_world_storage_status status = mc_world_collision_block_value_held(
         f->world, x, y, z, metadata, out, &f->error->detail.query);
@@ -220,6 +229,7 @@ static bool material(display_frame *f, unsigned int pc, int32_t x, int32_t y, in
         return false;
     mc_world_random_display_block_error *e = f->error;
     e->child = MC_WORLD_RANDOM_DISPLAY_BLOCK_MATERIAL;
+    prepare_detail(f);
     memset(&e->detail.material.error, 0, sizeof(e->detail.material.error));
     e->detail.material.error.registry = mc_world_mutation_empty_registry();
     mc_world_collision_error_init(&e->detail.material.access);
@@ -286,6 +296,7 @@ static bool opaque(display_frame *f, unsigned int pc, int32_t x, int32_t y, int3
         return false;
     mc_world_random_display_block_error *e = f->error;
     e->child = MC_WORLD_RANDOM_DISPLAY_BLOCK_STEP;
+    prepare_detail(f);
     mc_world_step_error_init(&e->detail.step);
     mc_world_step_source_failure source;
     if (mc_world_step_opaque_held(f->world, x, y, z, out, &e->detail.step, &source))
@@ -307,6 +318,7 @@ static bool support(display_frame *f, unsigned int pc, int32_t x, int32_t y, int
     at(f, pc);
     if (!world_enter(f))
         return false;
+    prepare_detail(f);
     mc_world_solid_support_detail lower;
     const mc_world_storage_status status =
         mc_world_solid_support_detailed_held(f->world, x, y, z, out, &lower);
@@ -355,6 +367,7 @@ static bool particle(display_frame *f, unsigned int literal_pc, unsigned int cal
     if (!world_enter(f))
         return false;
     f->error->child = MC_WORLD_RANDOM_DISPLAY_BLOCK_PRESENTATION;
+    prepare_detail(f);
     mc_world_mutation_error_init(&f->error->detail.presentation);
     if (!mc_world_mutation_particle(f->world, name, x, y, z, vx, vy, vz,
                                     &f->error->detail.presentation))
@@ -368,6 +381,7 @@ static bool sound(display_frame *f, unsigned int call_pc, const mc_registry_stri
     if (!world_enter(f))
         return false;
     f->error->child = MC_WORLD_RANDOM_DISPLAY_BLOCK_PRESENTATION;
+    prepare_detail(f);
     mc_world_mutation_error_init(&f->error->detail.presentation);
     if (!mc_world_mutation_sound(f->world, x, y, z, name, volume, pitch,
                                  &f->error->detail.presentation))
@@ -902,6 +916,7 @@ static bool redstone_ore(display_frame *f, int32_t x, int32_t y, int32_t z) {
     if (f->block->subtype.bs.a) {
         at(f, 13);
         f->error->child = MC_WORLD_RANDOM_DISPLAY_BLOCK_STEP;
+        prepare_detail(f);
         mc_world_step_error_init(&f->error->detail.step);
         mc_world_step_source_failure source;
         if (!mc_world_step_redstone_particles(f->world, f->block, x, y, z, &f->error->detail.step,
@@ -1054,18 +1069,22 @@ static bool dispatch(display_frame *f, int32_t x, int32_t y, int32_t z, mc_java_
     }
 }
 
-mc_world_storage_status
-mc_world_runtime_block_random_display(mc_world_runtime *world, const mc_block *block, int32_t x,
-                                      int32_t y, int32_t z, mc_java_random *random,
-                                      mc_world_random_display_block_error *out) {
+static mc_world_storage_status run(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                   int32_t y, int32_t z, mc_java_random *random,
+                                   mc_world_random_display_block_error *out, bool lazy_detail) {
     mc_world_random_display_block_error *error = out;
     if (error == NULL) {
         error = malloc(sizeof(*error));
         if (error == NULL)
             return MC_WORLD_STORAGE_ALLOCATION_FAILED;
     }
-    mc_world_random_display_block_error_init(error);
-    display_frame frame = {world, block, error, false};
+    if (lazy_detail) {
+        memset(error, 0, offsetof(mc_world_random_display_block_error, detail));
+        error->registry = mc_world_mutation_empty_registry();
+    } else {
+        mc_world_random_display_block_error_init(error);
+    }
+    display_frame frame = {world, block, error, false, !lazy_detail};
     (void)dispatch(&frame, x, y, z, random);
     if (frame.entered)
         mc_world_runtime_call_leave(world);
@@ -1073,8 +1092,23 @@ mc_world_runtime_block_random_display(mc_world_runtime *world, const mc_block *b
     if (status == MC_WORLD_STORAGE_OK) {
         error->child = MC_WORLD_RANDOM_DISPLAY_BLOCK_NONE;
         error->child_site = (mc_world_random_display_block_site){0};
+    } else {
+        prepare_detail(&frame);
     }
     if (out == NULL)
         free(error);
     return status;
+}
+
+mc_world_storage_status
+mc_world_runtime_block_random_display(mc_world_runtime *world, const mc_block *block, int32_t x,
+                                      int32_t y, int32_t z, mc_java_random *random,
+                                      mc_world_random_display_block_error *out) {
+    return run(world, block, x, y, z, random, out, false);
+}
+
+mc_world_storage_status mc_world_runtime_block_random_display_sample(
+    mc_world_runtime *world, const mc_block *block, int32_t x, int32_t y, int32_t z,
+    mc_java_random *random, mc_world_random_display_block_error *out) {
+    return run(world, block, x, y, z, random, out, true);
 }

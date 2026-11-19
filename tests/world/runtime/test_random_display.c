@@ -7,6 +7,7 @@ int mc_random_display_world_fixture_main(int argc, char **argv);
 #include "../../support/java_random.h"
 #include "mc/world/runtime/block_random_display.h"
 #include "mc/world/runtime/random_display.h"
+#include "world/runtime/block_random_display_internal.h"
 
 #undef CHECK
 #define CHECK(c)                                                                                   \
@@ -617,6 +618,70 @@ static bool inactive_controls(display_fixture *f) {
     return true;
 }
 
+static bool sampler_diagnostic_controls(display_fixture *f) {
+    mc_world_random_display_block_error *expected = malloc(sizeof(*expected));
+    CHECK(expected != NULL);
+    const mc_block *stone = f->base.registry->blocks.m[1];
+    const mc_block *torch = f->base.registry->blocks.m[50];
+    const mc_block *failures[] = {NULL, torch};
+    for (unsigned int pass = 0; pass < 2; ++pass) {
+        const unsigned char poison = pass == 0 ? 0xa5 : 0x5a;
+        memset(f->error, poison, sizeof(*f->error));
+        CHECK(mc_world_runtime_block_random_display_sample(NULL, stone, 8, 64, 8, NULL, f->error) ==
+              MC_WORLD_STORAGE_OK);
+        const unsigned char *bytes = (const unsigned char *)&f->error->detail;
+        for (size_t i = 0; i < sizeof(f->error->detail); ++i)
+            CHECK(bytes[i] == poison);
+        for (size_t i = 0; i < COUNT(failures); ++i) {
+            const mc_world_storage_status status =
+                mc_world_runtime_block_random_display(NULL, failures[i], 8, 64, 8, NULL, expected);
+            CHECK(status != MC_WORLD_STORAGE_OK);
+            CHECK(mc_world_runtime_block_random_display_sample(NULL, failures[i], 8, 64, 8, NULL,
+                                                               f->error) == status);
+            CHECK(f->error->status == expected->status &&
+                  f->error->operation == expected->operation &&
+                  f->error->exception_class == expected->exception_class &&
+                  f->error->native_policy == expected->native_policy &&
+                  f->error->site.pc == expected->site.pc &&
+                  f->error->child_site.pc == expected->child_site.pc &&
+                  f->error->block == expected->block &&
+                  f->error->wrapped_calls == expected->wrapped_calls &&
+                  f->error->child == expected->child &&
+                  f->error->cause.status == expected->cause.status &&
+                  f->error->registry.status == expected->registry.status &&
+                  f->error->registry.initializer_pc == expected->registry.initializer_pc &&
+                  f->error->registry.block_id == expected->registry.block_id &&
+                  memcmp(&f->error->detail, &expected->detail, sizeof(f->error->detail)) == 0);
+            memset(f->error, poison, sizeof(*f->error));
+        }
+    }
+    mc_world_runtime *world = f->base.world;
+    mc_chunk_provider *provider = world->fields.v;
+    const mc_world_storage_error prior_error = world->last_error;
+    world->fields.v = NULL;
+    const mc_world_storage_status status =
+        mc_world_runtime_block_random_display(world, torch, 8, 64, 8, NULL, expected);
+    memset(f->error, 0xa5, sizeof(*f->error));
+    const mc_world_storage_status actual =
+        mc_world_runtime_block_random_display_sample(world, torch, 8, 64, 8, NULL, f->error);
+    world->fields.v = provider;
+    world->last_error = prior_error;
+    CHECK(status != MC_WORLD_STORAGE_OK && actual == status &&
+          f->error->child == MC_WORLD_RANDOM_DISPLAY_BLOCK_QUERY &&
+          f->error->operation == expected->operation &&
+          f->error->child_site.pc == expected->child_site.pc &&
+          sizeof(f->error->detail.query) < sizeof(f->error->detail) &&
+          f->error->detail.query.nearby.query.cause.status ==
+              expected->detail.query.nearby.query.cause.status &&
+          f->error->detail.query.nearby.query.provider_bytecode ==
+              expected->detail.query.nearby.query.provider_bytecode);
+    const unsigned char *bytes = (const unsigned char *)&f->error->detail;
+    for (size_t i = sizeof(f->error->detail.query); i < sizeof(f->error->detail); ++i)
+        CHECK(bytes[i] == 0);
+    free(expected);
+    return true;
+}
+
 #ifndef MC_RANDOM_DISPLAY_ENTRY
 #define MC_RANDOM_DISPLAY_ENTRY main
 #endif
@@ -671,7 +736,9 @@ int MC_RANDOM_DISPLAY_ENTRY(int argc, char **argv) {
             const bool passed =
                 f->error && n > 0 && (size_t)n < sizeof(path) && prepare_world(f, argv[1], path) &&
                 attach_observer(f) &&
-                (group ? direct_case(f) && (index != 0 || inactive_controls(f)) : sampler_case(f));
+                (group ? direct_case(f) && (index != 0 || (inactive_controls(f) &&
+                                                           sampler_diagnostic_controls(f)))
+                       : sampler_case(f));
             if (!display_teardown(f)) {
                 fputs("Random display cleanup refused; live dependencies retained\n", stderr);
                 return 1;

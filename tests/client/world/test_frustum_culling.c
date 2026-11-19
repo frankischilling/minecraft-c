@@ -207,6 +207,26 @@ static bool run(void) {
               MC_CLIENT_FRUSTUM_SOURCE_NULL &&
           error.child.pc == 6 && n->fields.j == 0);
     CHECK(mc_client_render_global_cull_retire(&call, &error) == MC_CLIENT_FRUSTUM_OK);
+
+    mc_client_source_dk **const array = n->fields.o;
+    const size_t length = n->o_length;
+    n->o_length = (size_t)INT32_MAX + 1u;
+    for (unsigned int present = 0; present < 2; ++present) {
+        n->fields.o = present ? array : NULL;
+        const mc_client_frustum_status expected =
+            present ? MC_CLIENT_FRUSTUM_LIMIT : MC_CLIENT_FRUSTUM_SOURCE_NULL;
+        CHECK(mc_client_render_global_cull_begin(n, sr, 0, &call, &error) == expected &&
+              error.site.pc == 7 && error.native_policy == (present != 0) && n->fields.j == 0 &&
+              mc_client_render_global_cull_inspect(call, &failed_state) &&
+              failed_state.index == 0 && failed_state.visited == 0 && failed_state.chunk == NULL);
+        CHECK(mc_client_render_global_cull_retire(&call, &error) == MC_CLIENT_FRUSTUM_OK);
+    }
+    n->o_length = 0;
+    CHECK(mc_client_render_global_cull_begin(n, NULL, 0, &call, &error) == MC_CLIENT_FRUSTUM_OK &&
+          mc_client_render_global_cull_inspect(call, &failed_state) && failed_state.returned &&
+          failed_state.index == 0 && failed_state.visited == 0 && n->fields.j == 1);
+    CHECK(mc_client_render_global_cull_retire(&call, &error) == MC_CLIENT_FRUSTUM_OK);
+    n->o_length = length;
     CHECK(mc_client_render_global_retire(&n, NULL) == MC_CLIENT_RENDER_GLOBAL_OK);
     CHECK(mc_client_source_frustum_retire(&sr, &error) == MC_CLIENT_FRUSTUM_OK);
     CHECK(mc_client_frustum_namespace_retire(models, NULL) == MC_CLIENT_FRUSTUM_OK);
