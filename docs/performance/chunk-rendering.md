@@ -265,6 +265,72 @@ Windows MSVC Release and Linux Clang Debug with ASan and UBSan. Windows
 compared all 35 terrain replay rows. Mesa compared 30 rows and reported
 five uncredited rows for its unsupported occlusion profile.
 
+## ChunkCache construction and retirement diagnostics
+
+The first World getter establishes the canonical acquisition diagnostic.
+Later successful getters preserve that record, and a failure captures its
+full child diagnostic. Construction initializes the retained record in
+place. Retirement keeps the Store error locally and fills the retained
+cleanup record when a lease release fails. The retry resumes at the first
+lease that still needs releasing.
+
+Six rounds covered all six orders of the three Windows Release builds.
+Each process started from the first loaded Far World with 289 resident
+Chunks and the same 4,096-entry ceiling. Each measured sample created and
+retired 2,560 3 × 3 ChunkCaches and made exactly 23,040 resident GETs.
+Map and Chunk data hashes matched, and the fixture checked the selected
+cells, source positions, diagnostics and leases.
+
+| Build | Median construction and retirement (µs) |
+| --- | ---: |
+| Baseline | 3.477 |
+| Reused acquisition diagnostic | 1.972 |
+| Direct construction and cleanup records added | 1.707 |
+
+## Scene-held terrain vertices
+
+Terrain vertex submission uses RenderGlobal's retained scene hold when
+the canonical Tessellator buffer has room for the write. Unsafe buffer
+states and automatic drawing use the ordinary call hold.
+
+Six alternating Windows Release pairs each measured 65,536 synthetic
+terrain vertices per sample through the actual terrain vertex entry.
+The full raw and upload buffer hashes, source positions, diagnostics,
+and ownership receipts matched. Median time fell from 40.04 to 26.84 ns
+per vertex. The device fixture also exercises the real automatic draw
+callback and verifies rejection of reentry.
+
+## Native Far frame checks
+
+Six alternating ten-second Far runs per build used the same authored
+inputs and starting position. Each pair matched the ending position,
+200 World ticks and scheduler work counts. FPS changed only slightly
+across this scene. Five of the six pairs had higher p99 frame time.
+
+| Median across runs | Baseline | Candidate |
+| --- | ---: | ---: |
+| FPS | 72.41 | 72.52 |
+| p95 frame time (ms) | 15.48 | 15.56 |
+| p99 frame time (ms) | 16.69 | 16.89 |
+
+One 75-second pair with builds idle matched 1,500 World ticks and the
+ending Player position. Baseline and candidate FPS were 201.02 and
+198.79, with p99 frame times of 17.86 and 17.84 ms. The provider held
+1,213 and 1,214 Chunks at the end of the two intervals.
+
+The extended authored route on the candidate completed 75 seconds and
+1,500 World ticks. Save and Quit wrote World time 1,544 and Player Z
+−324.15. One reload lost window focus and paused. A focused retry
+selected another copy of the same save, ran 200 World ticks and saved
+at World time 1,789 and Player Z −367.32. Save readback used an
+independent NBT decoder.
+
+Eight focused tests passed on Windows Release and Linux Clang with ASan
+and UBSan. Both passed the automatic-draw reentry, acquisition,
+ChunkCache, retained cleanup and Chunk compilation controls. Windows
+compared all 35 terrain submission rows. Mesa compared 30 and reported
+five uncredited for its unsupported occlusion profile.
+
 ## ChunkCache lookup and lease trial
 
 The trial combined the canonical Store object lookup and lease acquisition

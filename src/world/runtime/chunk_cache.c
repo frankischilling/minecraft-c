@@ -47,6 +47,17 @@ static mc_client_chunk_cache_status copy_error(mc_client_chunk_cache_error *out,
     return e->status;
 }
 
+static mc_client_chunk_cache_status admission_failure(mc_client_chunk_cache_error *error,
+                                                      mc_client_chunk_cache_status status,
+                                                      const char *operation, const char *method,
+                                                      const char *descriptor) {
+    if (error != NULL) {
+        init_error(error, method, descriptor);
+        fail(error, status, operation, 0, true);
+    }
+    return status;
+}
+
 static bool storage(mc_client_chunk_cache_error *e, mc_world_storage_status status,
                     unsigned int pc) {
     return status == MC_WORLD_STORAGE_OK ||
@@ -76,8 +87,12 @@ static bool acquire(mc_client_chunk_cache *c, int32_t x, int32_t z,
         return fail(e, MC_CLIENT_CHUNK_CACHE_CHILD_FAILED,
                     "ew actual World provider native binding", 112, true);
     mc_chunk_state *state = NULL;
+    /* The first successful getter establishes its canonical diagnostic.
+     * Later successes leave the same record in place. A failed getter
+     * still supplies its full diagnostic and ends construction. */
     const mc_chunk_acquire_status status =
-        mc_world_runtime_get_detailed(world, x, z, &state, &e->acquisition);
+        c->state.acquired == 0 ? mc_world_runtime_get_detailed(world, x, z, &state, &e->acquisition)
+                               : mc_world_runtime_get_failure(world, x, z, &state, &e->acquisition);
     if (status != MC_CHUNK_ACQUIRE_OK) {
         e->storage = e->acquisition.cause;
         return fail(e,
@@ -146,25 +161,20 @@ mc_client_chunk_cache_status mc_client_chunk_cache_create_with_limits(
     mc_client_chunk_cache_error *error) {
     (void)y0;
     (void)y1;
-    mc_client_chunk_cache_error e;
-    init_error(&e, "<init>", "(Lfd;IIIIII)V");
-    if (out == NULL || *out != NULL) {
-        fail(&e, MC_CLIENT_CHUNK_CACHE_INVALID_ARGUMENT, "ew native output slot", 0, true);
-        return copy_error(error, &e);
-    }
+    const char *method = "<init>", *descriptor = "(Lfd;IIIIII)V";
+    if (out == NULL || *out != NULL)
+        return admission_failure(error, MC_CLIENT_CHUNK_CACHE_INVALID_ARGUMENT,
+                                 "ew native output slot", method, descriptor);
     const mc_client_chunk_cache_limits admitted =
         limits == NULL ? mc_client_chunk_cache_default_limits() : *limits;
-    if (admitted.max_native_bytes < sizeof(mc_client_chunk_cache) ||
-        admitted.max_allocations == 0) {
-        fail(&e, MC_CLIENT_CHUNK_CACHE_LIMIT, "ew native owner allocation bound", 0, true);
-        return copy_error(error, &e);
-    }
+    if (admitted.max_native_bytes < sizeof(mc_client_chunk_cache) || admitted.max_allocations == 0)
+        return admission_failure(error, MC_CLIENT_CHUNK_CACHE_LIMIT,
+                                 "ew native owner allocation bound", method, descriptor);
     mc_client_chunk_cache *c = calloc(1, sizeof(*c));
-    if (c == NULL) {
-        fail(&e, MC_CLIENT_CHUNK_CACHE_ALLOCATION_FAILED, "ew native owner allocation", 0, true);
-        return copy_error(error, &e);
-    }
-    c->failure = e;
+    if (c == NULL)
+        return admission_failure(error, MC_CLIENT_CHUNK_CACHE_ALLOCATION_FAILED,
+                                 "ew native owner allocation", method, descriptor);
+    init_error(&c->failure, method, descriptor);
     c->state.failure = &c->failure;
     c->state.cleanup = &c->cleanup;
     c->state.active = true;
@@ -256,28 +266,29 @@ bool mc_client_chunk_cache_inspect(const mc_client_chunk_cache *c,
 
 mc_client_chunk_cache_status mc_client_chunk_cache_retire(mc_client_chunk_cache **slot,
                                                           mc_client_chunk_cache_error *error) {
-    mc_client_chunk_cache_error e;
-    init_error(&e, NULL, NULL);
-    if (slot == NULL) {
-        fail(&e, MC_CLIENT_CHUNK_CACHE_INVALID_ARGUMENT, "ew native retirement slot", 0, true);
-        return copy_error(error, &e);
-    }
+    if (slot == NULL)
+        return admission_failure(error, MC_CLIENT_CHUNK_CACHE_INVALID_ARGUMENT,
+                                 "ew native retirement slot", NULL, NULL);
     mc_client_chunk_cache *c = *slot;
     if (c == NULL)
-        return copy_error(error, &e);
-    if (c->state.active) {
-        fail(&e, MC_CLIENT_CHUNK_CACHE_BUSY, "ew native active retirement", 0, true);
-        return copy_error(error, &e);
-    }
+        goto retired;
+    if (c->state.active)
+        return admission_failure(error, MC_CLIENT_CHUNK_CACHE_BUSY, "ew native active retirement",
+                                 NULL, NULL);
     c->state.retiring = true;
     c->state.c = NULL; /* End borrowed source views before any supplying lease. */
     for (size_t i = 0; c->occurrences != NULL && i < c->cell_count; ++i) {
         mc_client_chunk_cache_occurrence *cell = &c->occurrences[i];
         if (!cell->leased)
             continue;
-        if (!storage(&e, mc_world_store_release_chunk(cell->store, cell->state, &e.storage), 0)) {
-            c->cleanup = e;
-            return copy_error(error, &e);
+        mc_world_storage_error cause;
+        const mc_world_storage_status status =
+            mc_world_store_release_chunk(cell->store, cell->state, &cause);
+        if (status != MC_WORLD_STORAGE_OK) {
+            init_error(&c->cleanup, NULL, NULL);
+            c->cleanup.storage = cause;
+            (void)storage(&c->cleanup, status, 0);
+            return copy_error(error, &c->cleanup);
         }
         cell->leased = false;
         --c->state.leased;
@@ -289,7 +300,10 @@ mc_client_chunk_cache_status mc_client_chunk_cache_retire(mc_client_chunk_cache 
         mc_world_runtime_binding_release(c->state.d);
     free(c);
     *slot = NULL;
-    return copy_error(error, &e);
+retired:
+    if (error != NULL)
+        init_error(error, NULL, NULL);
+    return MC_CLIENT_CHUNK_CACHE_OK;
 }
 
 /* Accessors use a small frame. Populate the full diagnostic only when the

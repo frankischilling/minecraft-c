@@ -5,6 +5,7 @@
 #include "../../../entity/player/tick_math_internal.h"
 #include "../../../world/runtime/chunk_cache_internal.h"
 #include "../../render_engine/internal.h"
+#include "../../render_engine/nw_internal.h"
 #include "mc/block/registry/runtime.h"
 
 #include <string.h>
@@ -89,8 +90,10 @@ bool mc_cv_translation_add(mc_cv_context *c, float x, float y, float z, unsigned
 bool mc_cv_vertex(mc_cv_context *c, double x, double y, double z, double u, double v,
                   unsigned int pc) {
     mc_cv_pc(c, pc);
-    return graphics_result(
-        c, mc_client_nw_vertex_uv(c->tessellator, x, y, z, u, v, &c->failure.graphics), pc);
+    return graphics_result(c,
+                           mc_client_nw_vertex_uv_in_scene(c->tessellator, x, y, z, u, v,
+                                                           c->graphics, &c->failure.graphics),
+                           pc);
 }
 
 bool mc_cv_fields(mc_cv_context *c, const mc_block *block, unsigned int pc,

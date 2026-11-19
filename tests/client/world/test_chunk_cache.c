@@ -165,6 +165,11 @@ static bool ew_constructor(const char *name, picking_fixture *f, mc_world_runtim
     else {
         mc_client_chunk_cache_state state;
         CHECK(mc_client_chunk_cache_inspect(cache, &state) && state.returned && state.c != NULL);
+        const bool acquired = state.acquired != 0;
+        CHECK(error.registry.initializer_pc == -1 &&
+              error.acquisition.registry.initializer_pc == (acquired ? -1 : 0) &&
+              error.acquisition.load_entity.index == (acquired ? SIZE_MAX : 0) &&
+              error.acquisition.batch.index == (acquired ? SIZE_MAX : 0));
         bool same = state.d == world;
         for (int32_t x = 0; x < state.rows; ++x)
             for (int32_t z = 0; z < state.columns; ++z) {
@@ -219,6 +224,9 @@ static bool ew_unpublished_occurrence(picking_fixture *f) {
     CHECK(status == MC_CLIENT_CHUNK_CACHE_LIMIT && cache != NULL && error.native_policy &&
           error.bytecode == 112 && error.child_bytecode == 0 &&
           error.acquisition.status == MC_CHUNK_ACQUIRE_OK &&
+          error.acquisition.registry.initializer_pc == -1 &&
+          error.acquisition.load_entity.index == SIZE_MAX &&
+          error.acquisition.batch.index == SIZE_MAX &&
           error.storage.status == MC_WORLD_STORAGE_LIMIT && error.storage.operation != NULL &&
           strcmp(error.storage.operation, "chunk lease count") == 0);
     mc_client_chunk_cache_state state;
@@ -250,6 +258,47 @@ static bool ew_unpublished_occurrence(picking_fixture *f) {
           world->persistent_bindings == bindings);
     f->chunks[1]->data->blocks[index] = old_block;
     f->chunks[1]->data->metadata[index / 2u] = old_metadata;
+    return true;
+}
+
+static bool ew_retirement_retry(picking_fixture *f) {
+    mc_world_runtime *world = f->base.world;
+    store_chunk *first = store_find_chunk(f->base.store, f->chunks[0]);
+    store_chunk *second = store_find_chunk(f->base.store, f->chunks[1]);
+    CHECK(first != NULL && second != NULL && first != second);
+    const size_t first_leases = first->leases, second_leases = second->leases;
+    const size_t bindings = world->persistent_bindings;
+    mc_client_chunk_cache *cache = NULL;
+    mc_client_chunk_cache_error error;
+    CHECK(mc_client_chunk_cache_create(world, 0, 0, 0, 31, 127, 31, &cache, &error) ==
+              MC_CLIENT_CHUNK_CACHE_OK &&
+          first->leases == first_leases + 1u && second->leases == second_leases + 1u);
+
+    /* Refuse the second real Store release once, then restore its lease
+     * before checking the retained prefix and retrying the same owner. */
+    second->leases = 0;
+    memset(&error, 0xa5, sizeof(error));
+    const mc_client_chunk_cache_status refused = mc_client_chunk_cache_retire(&cache, &error);
+    second->leases = second_leases + 1u;
+    mc_client_chunk_cache_state state;
+    CHECK(refused == MC_CLIENT_CHUNK_CACHE_CHILD_FAILED && cache != NULL &&
+          mc_client_chunk_cache_inspect(cache, &state) && state.retiring && state.c == NULL &&
+          state.leased == 3 && first->leases == first_leases &&
+          world->persistent_bindings == bindings + 1u && error.native_policy &&
+          error.method == NULL && error.descriptor == NULL && error.bytecode == 0 &&
+          error.child_bytecode == 0 && error.registry.initializer_pc == -1 &&
+          error.acquisition.registry.initializer_pc == 0 && error.storage.operation != NULL &&
+          strcmp(error.storage.operation, "unbalanced chunk lease") == 0 &&
+          error.storage.status == MC_WORLD_STORAGE_INVALID_ARGUMENT &&
+          state.cleanup->status == error.status && state.cleanup->operation == error.operation);
+
+    memset(&error, 0xa5, sizeof(error));
+    CHECK(mc_client_chunk_cache_retire(&cache, &error) == MC_CLIENT_CHUNK_CACHE_OK &&
+          cache == NULL && first->leases == first_leases && second->leases == second_leases &&
+          world->persistent_bindings == bindings && error.status == MC_CLIENT_CHUNK_CACHE_OK &&
+          error.operation == NULL && error.method == NULL && error.descriptor == NULL &&
+          error.registry.initializer_pc == -1 && error.acquisition.registry.initializer_pc == 0 &&
+          error.storage.status == MC_WORLD_STORAGE_OK && error.storage.operation == NULL);
     return true;
 }
 
@@ -523,7 +572,8 @@ int main(int argc, char **argv) {
     if (f == NULL || !picking_open(f, argv[1]) || !picking_case_open(f, argv[2]) ||
         !ew_observe(f) || ew_rows != 950 || !ew_block_failure_controls(f) ||
         !ew_metadata_failure_controls(f) || !ew_getter_failure_controls(f) ||
-        !ew_light_chunk_boundary_controls(f) || !picking_case_close(f) || !picking_close(f))
+        !ew_light_chunk_boundary_controls(f) || !ew_retirement_retry(f) || !picking_case_close(f) ||
+        !picking_close(f))
         return 1;
     free(f);
     printf("Source EW: %u checks; 950 original rows and canonical leases\n", checks);
