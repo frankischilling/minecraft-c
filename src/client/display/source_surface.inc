@@ -712,8 +712,13 @@ static bool source_execute_batch(mc_client_display *display, mc_client_source_dr
                 replay->clamp_t = clamp_t;
             }
         }
-        if (!reuse_fragment || s->lighting_enabled)
-            source_lighting_upload(display, normal_matrix, normal_scale);
+        if (!reuse_fragment || s->lighting_enabled) {
+            /* Commands can change matrices and material values. Light settings
+             * remain fixed within the closed replay. */
+            const bool reuse_lights = s->lighting_enabled && replay != NULL && replay->drew &&
+                                      !s->native_current_reentered;
+            source_lighting_upload(display, normal_matrix, normal_scale, reuse_lights);
+        }
         if (replay == NULL || !replay->drew)
             display->gl.ProvokingVertex(GL_LAST_VERTEX_CONVENTION);
         /* Preserve inherited blend/depth/viewport/scissor/cull/clear state. */

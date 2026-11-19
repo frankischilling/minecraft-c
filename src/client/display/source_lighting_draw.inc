@@ -136,36 +136,43 @@ static bool source_lighting_uniforms(mc_client_display *display, mc_client_displ
 }
 
 static void source_lighting_upload(mc_client_display *display, const float normal_matrix[16],
-                                   float normal_scale) {
+                                   float normal_scale, bool reuse_lights) {
     const mc_client_source_state *s = &display->source;
     const mc_client_source_fog_state *f = &s->fog;
-    display->gl.Uniform1i(s->lighting_uniform, s->lighting_enabled ? 1 : 0);
+    if (!reuse_lights)
+        display->gl.Uniform1i(s->lighting_uniform, s->lighting_enabled ? 1 : 0);
     if (!s->lighting_enabled) {
         /* Flat vertex colors still apply with lighting disabled. */
         display->gl.Uniform1i(s->flat_uniform, s->shade_flat ? 1 : 0);
         return;
     }
     display->gl.UniformMatrix4fv(s->normal_matrix_uniform, 1, GL_FALSE, normal_matrix);
-    display->gl.Uniform1i(s->normalize_uniform, f->normalize_enabled ? 1 : 0);
-    display->gl.Uniform1i(s->rescale_uniform, f->rescale_normal_enabled ? 1 : 0);
+    if (!reuse_lights) {
+        display->gl.Uniform1i(s->normalize_uniform, f->normalize_enabled ? 1 : 0);
+        display->gl.Uniform1i(s->rescale_uniform, f->rescale_normal_enabled ? 1 : 0);
+    }
     display->gl.Uniform1f(s->normal_scale_uniform, normal_scale);
-    display->gl.Uniform1i(s->lights_uniform, (f->lights[0] ? 1 : 0) | (f->lights[1] ? 2 : 0));
-    display->gl.Uniform4fv(s->global_ambient_uniform, 1, f->light_model_ambient);
-    display->gl.Uniform1i(s->local_viewer_uniform, f->light_model_local_viewer ? 1 : 0);
-    display->gl.Uniform1i(s->two_side_uniform, f->light_model_two_side ? 1 : 0);
-    display->gl.Uniform1i(s->separate_specular_uniform,
-                          f->light_model_color_control == 33274 ? 1 : 0);
-    display->gl.Uniform1i(s->color_material_uniform, f->color_material ? 1 : 0);
-    display->gl.Uniform1i(s->material_face_uniform, f->material_face);
-    display->gl.Uniform1i(s->material_mode_uniform, f->material_mode);
-    display->gl.Uniform1i(s->flat_uniform, s->shade_flat ? 1 : 0);
+    if (!reuse_lights) {
+        display->gl.Uniform1i(s->lights_uniform, (f->lights[0] ? 1 : 0) | (f->lights[1] ? 2 : 0));
+        display->gl.Uniform4fv(s->global_ambient_uniform, 1, f->light_model_ambient);
+        display->gl.Uniform1i(s->local_viewer_uniform, f->light_model_local_viewer ? 1 : 0);
+        display->gl.Uniform1i(s->two_side_uniform, f->light_model_two_side ? 1 : 0);
+        display->gl.Uniform1i(s->separate_specular_uniform,
+                              f->light_model_color_control == 33274 ? 1 : 0);
+        display->gl.Uniform1i(s->color_material_uniform, f->color_material ? 1 : 0);
+        display->gl.Uniform1i(s->material_face_uniform, f->material_face);
+        display->gl.Uniform1i(s->material_mode_uniform, f->material_mode);
+        display->gl.Uniform1i(s->flat_uniform, s->shade_flat ? 1 : 0);
+    }
     for (size_t i = 0; i < 2; ++i) {
         const mc_client_source_light_state *light = &f->light_parameters[i];
         const mc_client_source_material_state *material = &f->materials[i];
-        display->gl.Uniform4fv(s->light_position_uniform[i], 1, light->position_eye);
-        display->gl.Uniform4fv(s->light_ambient_uniform[i], 1, light->ambient);
-        display->gl.Uniform4fv(s->light_diffuse_uniform[i], 1, light->diffuse);
-        display->gl.Uniform4fv(s->light_specular_uniform[i], 1, light->specular);
+        if (!reuse_lights) {
+            display->gl.Uniform4fv(s->light_position_uniform[i], 1, light->position_eye);
+            display->gl.Uniform4fv(s->light_ambient_uniform[i], 1, light->ambient);
+            display->gl.Uniform4fv(s->light_diffuse_uniform[i], 1, light->diffuse);
+            display->gl.Uniform4fv(s->light_specular_uniform[i], 1, light->specular);
+        }
         display->gl.Uniform4fv(s->material_ambient_uniform[i], 1, material->ambient);
         display->gl.Uniform4fv(s->material_diffuse_uniform[i], 1, material->diffuse);
         display->gl.Uniform4fv(s->material_specular_uniform[i], 1, material->specular);

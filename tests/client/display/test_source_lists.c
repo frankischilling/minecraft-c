@@ -20,6 +20,9 @@ enum {
     REPLAY_PROVOKING,
     REPLAY_ACTIVE_UNIT,
     REPLAY_TEXTURE_BINDING,
+    REPLAY_NORMAL_MATRIX,
+    REPLAY_GLOBAL_AMBIENT,
+    REPLAY_MATERIAL_DIFFUSE,
     REPLAY_TEXTURED,
     REPLAY_ALPHA,
     REPLAY_FOG,
@@ -91,6 +94,16 @@ static void GLAPIENTRY replay_matrix(GLint location, GLsizei count, GLboolean tr
         ++replay_calls[REPLAY_PROJECTION];
     if (location == replay_display->source.modelview_uniform)
         ++replay_calls[REPLAY_MODELVIEW];
+    if (location == replay_display->source.normal_matrix_uniform)
+        ++replay_calls[REPLAY_NORMAL_MATRIX];
+}
+
+static void GLAPIENTRY replay_vector(GLint location, GLsizei count, const GLfloat *values) {
+    replay_native.Uniform4fv(location, count, values);
+    if (location == replay_display->source.global_ambient_uniform)
+        ++replay_calls[REPLAY_GLOBAL_AMBIENT];
+    if (location == replay_display->source.material_diffuse_uniform[0])
+        ++replay_calls[REPLAY_MATERIAL_DIFFUSE];
 }
 
 static void GLAPIENTRY replay_provoking(GLenum convention) {
@@ -424,6 +437,7 @@ static bool replay_native_controls(mc_client_display *display,
     display->gl.GetIntegerv = replay_get_integer;
     display->gl.Uniform1i = replay_integer;
     display->gl.UniformMatrix4fv = replay_matrix;
+    display->gl.Uniform4fv = replay_vector;
     display->gl.ProvokingVertex = replay_provoking;
     observing = true;
 
@@ -502,6 +516,16 @@ static bool replay_native_controls(mc_client_display *display,
                                             error) &&
               error->status == MC_CLIENT_DISPLAY_UNSUPPORTED_GL && replay_payload_counts(1, 1, 1));
     }
+    CHECK(mc_client_display_source_normal(display, 0, 0, 1, error));
+    CHECK(mc_client_display_source_color_material_enable(display, false, error));
+    CHECK(mc_client_display_source_lighting_enable(display, true, error));
+    for (unsigned attempt = 0; attempt < 2; ++attempt) {
+        memset(replay_calls, 0, sizeof(replay_calls));
+        CHECK(mc_client_display_lists_call(display, pair, 2, error));
+        CHECK(replay_calls[REPLAY_DRAW] == 2 && replay_calls[REPLAY_LIGHTING] == 1 &&
+              replay_calls[REPLAY_GLOBAL_AMBIENT] == 1 && replay_calls[REPLAY_NORMAL_MATRIX] == 2 &&
+              replay_calls[REPLAY_MATERIAL_DIFFUSE] == 2);
+    }
     CHECK(mc_client_display_lists_retire(&range, error));
     CHECK(entry->data == NULL && entry->vao == cached_vao && entry->vbo == cached_vbo);
     result = true;
@@ -516,7 +540,8 @@ cleanup:
     if (!mc_client_display_lists_retire(&range, error))
         result = false;
     const float white[4] = {1, 1, 1, 1};
-    if (!triangle_arrays(display, lease, resume_bytes, error) ||
+    if (!mc_client_display_source_lighting_enable(display, false, error) ||
+        !triangle_arrays(display, lease, resume_bytes, error) ||
         !mc_client_display_source_color(display, white[0], white[1], white[2], white[3], error))
         result = false;
     return result;

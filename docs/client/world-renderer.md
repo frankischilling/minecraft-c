@@ -407,6 +407,12 @@ matched in every pair.
 | Textured, stationary, 2,312 slots | 0.180 → 0.169 ms | 0.231 → 0.209 ms | 0.409 → 0.388 ms |
 | Untextured, stationary, 8,712 slots | 0.533 → 0.516 ms | 0.665 → 0.744 ms | 1.013 → 0.959 ms |
 
+Twelve follow-up pairs ran the two stationary 8,712-slot profiles with
+texture sampling and light-uniform reuse enabled. The textured median
+fell from 0.573 to 0.526 ms and p99 from 1.091 to 0.990 ms. The untextured
+median fell from 0.527 to 0.506 ms and p95 from 0.665 to 0.630 ms.
+The hashes matched again.
+
 Native controls count the queries, change the texture between calls and
 check the resulting pixels. They also trigger a nested Display call and
 verify that the following draw checks the native unit again.
@@ -448,6 +454,21 @@ Framebuffer hashes, covered pixels and list order matched in every pair.
 | --- | ---: | ---: | ---: |
 | 3/3 | 9.21 → 9.11 ms | 11.85 → 14.82 ms | 15.26 → 15.43 ms |
 | 16/3 | 19.65 → 19.37 ms | 29.88 → 30.50 ms | 38.05 → 36.32 ms |
+
+#### Repeated light settings
+
+The first lit draw uploads its complete light state. Later draws in the
+same replay reuse 20 unchanged uniforms and still upload the normal
+transform, normal scale and material values. Display reentry restores
+full uploads. Native controls count both types of upload across two
+replays.
+
+In eight paired Windows Release runs, the authored 256-draw lit replay
+fell from 3.789 to 3.615 ms at the median and from 4.674 to 4.469 ms
+at p99. Each run measured 640 replays through GPU completion. The lists
+alternated modelview translations and colors with color material enabled.
+Framebuffer hashes matched. The single-draw median remained near 55 µs,
+with higher p95 in the candidate.
 
 ### Display-list recording and cache lookup
 
