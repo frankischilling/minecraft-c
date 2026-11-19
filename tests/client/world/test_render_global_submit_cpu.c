@@ -302,6 +302,29 @@ static bool subset_selection(void) {
               owner.fields.Q == (pass == 0 ? 1 : 0));
     }
 
+    owner.fields.M = owner.fields.N = owner.fields.O = owner.fields.P = owner.fields.Q = INT32_MAX;
+    mc_client_render_global_submit_call wrap = {.state = {.owner = &owner}};
+    int32_t retained_result = -1;
+    CHECK(!mc_terrain_subset(&wrap, 0, 5, 0, &retained_result));
+    CHECK(owner.fields.M == INT32_MIN + 4 && owner.fields.N == INT32_MIN &&
+          owner.fields.O == INT32_MIN && owner.fields.P == INT32_MIN &&
+          owner.fields.Q == INT32_MIN && wrap.state.last_store_pc == 32 &&
+          wrap.failure.source_pc == 41 &&
+          wrap.failure.status == MC_CLIENT_RENDER_GLOBAL_SOURCE_INDEX && selected.count == 1 &&
+          entries[0] == &actors[3] && retained_result == -1);
+
+    mc_client_render_global foreign = {0};
+    actors[3].owner = &foreign;
+    owner.fields.M = owner.fields.N = owner.fields.O = owner.fields.P = owner.fields.Q = 0;
+    mc_client_render_global_submit_call wrong_owner = {.state = {.owner = &owner}};
+    CHECK(!mc_terrain_subset(&wrong_owner, 0, 4, 0, &retained_result));
+    CHECK(wrong_owner.failure.status == MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT &&
+          wrong_owner.failure.native_policy && wrong_owner.failure.source_pc == 41 &&
+          wrong_owner.state.last_store_pc == 32 && wrong_owner.state.index == 3 &&
+          owner.fields.M == 4 && owner.fields.N == 1 && owner.fields.O == 1 &&
+          owner.fields.P == 0 && owner.fields.Q == 1 && selected.count == 0 &&
+          retained_result == -1);
+
     actors[0].fields.p = NULL;
     for (int32_t pass = 0; pass < 2; ++pass) {
         const uint32_t modifications = selected.mod_count;

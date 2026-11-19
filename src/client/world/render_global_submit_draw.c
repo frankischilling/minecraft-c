@@ -66,7 +66,8 @@ static bool batch_length(mc_client_render_global_submit_call *c, unsigned int pc
 }
 
 static void increment(mc_client_render_global_submit_call *c, int32_t *field, unsigned int pc) {
-    *field = mc_java_i32_add(*field, 1);
+    const int32_t before = *field;
+    *field = before == INT32_MAX ? INT32_MIN : before + 1;
     mc_terrain_store(c, pc);
 }
 

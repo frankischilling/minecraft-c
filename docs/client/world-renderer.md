@@ -160,6 +160,38 @@ unresolved across these scenes.
 
 ## GPU contract
 
+### Terrain selection
+
+Terrain submission inlines the renderer array and receiver checks and
+source program-counter updates. Statistics wrap from `INT32_MAX` to
+`INT32_MIN`. The CPU controls check those wraps and the counters left
+behind when a renderer from another owner interrupts selection.
+
+Eight alternating Windows MSVC Release pairs ran the production selection
+loop over authored section arrays. Every run matched the visit counters,
+ordered selections and final out-of-range diagnostic.
+
+| Sections | Workload | Before (ns/section) | After (ns/section) |
+| --- | --- | ---: | ---: |
+| 200 | Mixed | 10.76 | 7.21 |
+| 5,408 | All empty | 9.65 | 5.44 |
+| 5,408 | Mixed, 338 selected | 11.05 | 7.66 |
+
+The benchmark stops after selection, before batching and draw submission.
+
+Six alternating Windows Release pairs then ran `mc_benchmark_terrain_frames`
+on an RTX 3060. Both profiles visited 8,712 section slots and submitted
+450 lists per pass. Each run measured 160 frames through GPU completion.
+Framebuffer, section order and work hashes matched in every pair.
+
+| Profile | Median frame, before → after | p95, before → after |
+| --- | ---: | ---: |
+| Stationary, 16/3 quads per list | 0.642 → 0.571 ms | 0.750 → 0.669 ms |
+| Alternating camera height, 3/3 quads per list | 1.046 → 0.922 ms | 1.572 → 1.080 ms |
+
+The medians use the per-run percentiles. The alternating-height profile
+also exercises section recentering on this authored scene.
+
 ### Display-list draw cost
 
 Two heavy Far cave traces at 854×480 on DISPLAY2 averaged about 360
