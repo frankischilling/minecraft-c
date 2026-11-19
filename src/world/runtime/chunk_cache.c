@@ -359,15 +359,25 @@ static void wrap(cache_query_error *e, const char *method, const char *descripto
     e->bytecode = pc;
 }
 
-static bool enter(mc_client_chunk_cache *c, bool output, cache_query_error *e) {
+static mc_client_chunk_cache_status enter_status(mc_client_chunk_cache *c, bool output) {
     if (c == NULL || !output)
-        return query_fail(e, MC_CLIENT_CHUNK_CACHE_INVALID_ARGUMENT, "ew native accessor arguments",
-                          0, true);
+        return MC_CLIENT_CHUNK_CACHE_INVALID_ARGUMENT;
     if (c->state.active || c->state.retiring)
-        return query_fail(e, MC_CLIENT_CHUNK_CACHE_BUSY, "ew native active/retiring accessor", 0,
-                          true);
+        return MC_CLIENT_CHUNK_CACHE_BUSY;
     c->state.active = true;
-    return true;
+    return MC_CLIENT_CHUNK_CACHE_OK;
+}
+
+static bool enter_failure(cache_query_error *e, mc_client_chunk_cache_status status) {
+    const char *operation = status == MC_CLIENT_CHUNK_CACHE_INVALID_ARGUMENT
+                                ? "ew native accessor arguments"
+                                : "ew native active/retiring accessor";
+    return query_fail(e, status, operation, 0, true);
+}
+
+static bool enter(mc_client_chunk_cache *c, bool output, cache_query_error *e) {
+    const mc_client_chunk_cache_status status = enter_status(c, output);
+    return status == MC_CLIENT_CHUNK_CACHE_OK || enter_failure(e, status);
 }
 
 static mc_client_chunk_cache_status finish(mc_client_chunk_cache *c, const cache_query_error *e,
@@ -439,64 +449,77 @@ static bool nibble(const mc_world_chunk_nibble *n, size_t cell, int32_t *out, un
     return true;
 }
 
+typedef enum {
+    BLOCK_READ_AIR,
+    BLOCK_READ_ARRAY,
+    BLOCK_READ_NULL_OUTER,
+    BLOCK_READ_NULL_ARRAY,
+    BLOCK_READ_SHORT_ARRAY
+} block_read;
+
+static bool block_read_failed(block_read read) {
+    return read >= BLOCK_READ_NULL_OUTER;
+}
+
+static void block_read_failure(cache_query_error *e, block_read read) {
+    if (read == BLOCK_READ_NULL_OUTER) {
+        (void)query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL, "actual ew block null outer array",
+                         46, false);
+        return;
+    }
+    e->child_bytecode = 15;
+    if (read == BLOCK_READ_NULL_ARRAY)
+        (void)query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL, "actual Chunk null block array", 100,
+                         false);
+    else
+        (void)query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_INDEX, "actual Chunk block index", 100,
+                         false);
+}
+
 /* Keep the shared lookup in both hot readers. MSVC's ordinary inline drops it. */
 #ifdef _MSC_VER
 #define MC_CHUNK_CACHE_INLINE __forceinline
 #else
 #define MC_CHUNK_CACHE_INLINE inline
 #endif
-static MC_CHUNK_CACHE_INLINE bool block_data(mc_client_chunk_cache *c, int32_t x, int32_t z,
-                                             const mc_chunk_data **out, cache_query_error *e) {
+static MC_CHUNK_CACHE_INLINE block_read block_data(mc_client_chunk_cache *c, int32_t x, int32_t z,
+                                                   const mc_chunk_data **out) {
     *out = NULL;
     const int32_t row = chunk_coordinate(x) - c->state.a;
     const int32_t col = chunk_coordinate(z) - c->state.b;
     if (row < 0)
-        return true;
+        return BLOCK_READ_AIR;
     if (c->state.c == NULL)
-        return query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL, "actual ew block null outer array",
-                          46, false);
+        return BLOCK_READ_NULL_OUTER;
     if (row >= c->state.rows || col < 0 || col >= c->state.columns)
-        return true;
+        return BLOCK_READ_AIR;
     const mc_client_chunk_cache_occurrence *cell =
         &c->occurrences[(size_t)row * (size_t)c->state.columns + (size_t)col];
     if (cell->state == NULL || cell->state->blank)
-        return true;
+        return BLOCK_READ_AIR;
     const mc_chunk_data *data = cell->object->data;
-    if (data == NULL || data->blocks == NULL) {
-        e->child_bytecode = 15;
-        return query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_NULL, "actual Chunk null block array",
-                          100, false);
-    }
+    if (data == NULL || data->blocks == NULL)
+        return BLOCK_READ_NULL_ARRAY;
     *out = data;
-    return true;
+    return BLOCK_READ_ARRAY;
 }
-
-static bool block_index_failure(cache_query_error *e) {
-    e->child_bytecode = 15;
-    return query_fail(e, MC_CLIENT_CHUNK_CACHE_SOURCE_INDEX, "actual Chunk block index", 100,
-                      false);
-}
-
-typedef enum { BLOCK_READ_FAILED, BLOCK_READ_AIR, BLOCK_READ_ARRAY } block_read;
 
 static inline block_read block_value(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z,
-                                     int32_t *out, cache_query_error *e) {
+                                     int32_t *out) {
     if ((uint32_t)y >= MC_CHUNK_HEIGHT) {
         *out = 0;
         return BLOCK_READ_AIR;
     }
     const mc_chunk_data *data;
-    if (!block_data(c, x, z, &data, e))
-        return BLOCK_READ_FAILED;
-    if (data == NULL) {
-        *out = 0;
-        return BLOCK_READ_AIR;
+    const block_read read = block_data(c, x, z, &data);
+    if (read != BLOCK_READ_ARRAY) {
+        if (read == BLOCK_READ_AIR)
+            *out = 0;
+        return read;
     }
     const size_t index = block_index(x, y, z);
-    if (index >= data->blocks_capacity) {
-        block_index_failure(e);
-        return BLOCK_READ_FAILED;
-    }
+    if (index >= data->blocks_capacity)
+        return BLOCK_READ_SHORT_ARRAY;
     *out = data->blocks[index];
     return BLOCK_READ_ARRAY;
 }
@@ -504,8 +527,9 @@ static inline block_read block_value(mc_client_chunk_cache *c, int32_t x, int32_
 static bool block_child(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z, int32_t *out,
                         const char *method, const char *descriptor, unsigned int pc,
                         cache_query_error *e) {
-    const block_read read = block_value(c, x, y, z, out, e);
-    if (read == BLOCK_READ_FAILED) {
+    const block_read read = block_value(c, x, y, z, out);
+    if (block_read_failed(read)) {
+        block_read_failure(e, read);
         e->method = "a";
         e->descriptor = "(III)I";
         wrap(e, method, descriptor, pc);
@@ -522,14 +546,24 @@ static bool block_child(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t 
 static MC_CHUNK_CACHE_INLINE mc_client_chunk_cache_status
 block_query(mc_client_chunk_cache *c, int32_t x, int32_t y, int32_t z, int32_t *out,
             mc_client_chunk_cache_error *error, bool failure_only) {
+    const mc_client_chunk_cache_status status = enter_status(c, out != NULL);
+    block_read read = BLOCK_READ_AIR;
+    if (status == MC_CLIENT_CHUNK_CACHE_OK) {
+        read = block_value(c, x, y, z, out);
+        c->state.active = false;
+        if (failure_only && !block_read_failed(read))
+            return MC_CLIENT_CHUNK_CACHE_OK;
+    }
+
     cache_query_error e;
     query_error_init(&e, "a", "(III)I", NULL);
-    if (!enter(c, out != NULL, &e))
-        return query_result(error, &e, failure_only);
-    const block_read read = block_value(c, x, y, z, out, &e);
-    if (!failure_only && read == BLOCK_READ_ARRAY)
+    if (status != MC_CLIENT_CHUNK_CACHE_OK)
+        (void)enter_failure(&e, status);
+    else if (block_read_failed(read))
+        block_read_failure(&e, read);
+    else if (read == BLOCK_READ_ARRAY)
         e.bytecode = 100;
-    return finish(c, &e, error, failure_only);
+    return query_result(error, &e, failure_only);
 }
 
 #undef MC_CHUNK_CACHE_INLINE
@@ -556,9 +590,16 @@ mc_client_chunk_cache_next_block_failure(mc_client_chunk_cache *c, int32_t *x, i
         return query_result(error, &e, true);
     if (x == out) {
         int32_t cursor = *x;
-        while (cursor < end_x && block_value(c, cursor, y, z, out, &e) != BLOCK_READ_FAILED &&
-               *out == 0)
+        while (cursor < end_x) {
+            const block_read read = block_value(c, cursor, y, z, out);
+            if (block_read_failed(read)) {
+                block_read_failure(&e, read);
+                break;
+            }
+            if (*out != 0)
+                break;
             ++cursor;
+        }
         return finish(c, &e, error, true);
     }
     if ((uint32_t)y >= MC_CHUNK_HEIGHT) {
@@ -571,12 +612,15 @@ mc_client_chunk_cache_next_block_failure(mc_client_chunk_cache *c, int32_t *x, i
     const size_t stride = (size_t)MC_CHUNK_WIDTH * MC_CHUNK_HEIGHT;
     while (*x < end_x) {
         const mc_chunk_data *data;
-        if (!block_data(c, *x, z, &data, &e))
+        const block_read read = block_data(c, *x, z, &data);
+        if (block_read_failed(read)) {
+            block_read_failure(&e, read);
             break;
+        }
         size_t index = block_index(*x, y, z);
         if (data != NULL) {
             if (index >= data->blocks_capacity) {
-                block_index_failure(&e);
+                block_read_failure(&e, BLOCK_READ_SHORT_ARRAY);
                 break;
             }
             *out = data->blocks[index];
@@ -595,7 +639,7 @@ mc_client_chunk_cache_next_block_failure(mc_client_chunk_cache *c, int32_t *x, i
         while (++*x < stop) {
             index += stride;
             if (index >= data->blocks_capacity) {
-                block_index_failure(&e);
+                block_read_failure(&e, BLOCK_READ_SHORT_ARRAY);
                 return finish(c, &e, error, true);
             }
             *out = data->blocks[index];

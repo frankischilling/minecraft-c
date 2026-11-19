@@ -1,5 +1,14 @@
 # Build and tests
 
+## Player sleep packet checks
+
+Each packet mutation test now decodes a fresh tree from one serialized copy
+of the accepted JSON. Both Python modes still reject the same 668 corruptions.
+In a local Windows comparison, ordinary Python went from 12.29 to 6.31 seconds
+and Python `-O` went from 12.58 to 6.58 seconds. The earlier hosted Windows
+job spent 33.28 and 34.24 test-seconds on those cases, respectively.
+[Hosted CI baseline](https://github.com/frankischilling/minecraft-c/actions/runs/44559762382).
+
 ## Chunk lighting query measurements
 
 Two fixed-work Windows comparisons measured 42 samples per build and query.

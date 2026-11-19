@@ -70,6 +70,44 @@ A separate vertex trial paired the x and y floating-point operations. It
 failed the authored test for a vertex with distinct NaN payloads. Finite
 vertex output matched across all six CPU pairs. The trial was dropped.
 
+## Block-read diagnostic setup
+
+The shared Chunk byte reader now returns the reached read status. The
+failure-only caller builds its diagnostic frame after a failed read. Public
+calls still report either the array read or the default air result on success.
+Nested getters keep the reached failure site, and failed row scans keep the
+last successful byte. A separate cursor stops at the failed position. Render
+cache callers check success before entering the code that captures failure
+details.
+
+The [fixed-work Block benchmark](../../tests/benchmarks/chunk_cache.md)
+read 65,536 positions per sample. Both cohorts matched returned bytes,
+public diagnostics, success sentinels, state and ownership checks. The
+MSVC Release failure-only getter reserves 48 bytes of stack space in its
+prologue, down from 264, and the success path skips its diagnostic stores.
+
+| Windows cohort | Median before / after | p95 before / after |
+| --- | ---: | ---: |
+| Six pairs, 42 samples per build | 7.53 / 6.16 ns | 0.6019 / 0.7634 ms per sample |
+| Ten pairs, 70 samples per build | 7.33 / 6.02 ns | 0.5803 / 0.4870 ms per sample |
+
+Six additional pairs exercised the typed render getters with matching result
+hashes, light planes, ownership and World state. Median brightness moved from
+51.09 to 50.68 ns, minimum brightness from 51.25 to 51.51 ns, material from
+16.87 to 16.43 ns, opacity from 22.23 to 21.42 ns, normal cube from 25.14 to
+24.07 ns, and Chunk manager from 7.66 to 7.71 ns.
+
+Four early Far pairs compared these changes against `8abc9bf7` after a
+two-second warmup. The stationary authored scene ran at 854×480 on an
+i9-10900F with an RTX 3060. All eight ten-second runs completed 200 World
+ticks and continued compiling sections. Median FPS rose from 73.92 to 75.99
+(+2.80%) and every pair gained FPS. Median run p95 fell from 14.95 to 14.64 ms.
+Median p99 fell from 15.72 to 15.60 ms, with three pairs improving.
+
+Three pairs after a 25-second warmup completed 200 World ticks per run and
+reported zero Chunk updates. Median FPS fell from 458.43 to 457.07, and
+median p95 rose from 2.98 to 3.06 ms. Median p99 fell from 6.14 to 6.02 ms.
+
 ## Cached lighting and Tessellator counters
 
 Two Windows Far traces after a two-second warmup recorded 7,005 render-thread

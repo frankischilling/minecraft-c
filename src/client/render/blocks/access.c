@@ -185,9 +185,7 @@ bool mc_cv_retire(mc_cv_context *c, mc_client_render_global_error *cleanup) {
     return true;
 }
 
-static bool cache_result(mc_cv_context *c, mc_client_chunk_cache_status status, unsigned int pc) {
-    if (status == MC_CLIENT_CHUNK_CACHE_OK)
-        return true;
+static bool cache_failure(mc_cv_context *c, mc_client_chunk_cache_status status, unsigned int pc) {
     const mc_world_access_failure *f = tile_receipt(&c->cache_error.tile_entity);
     capture_receipt(c, f != NULL ? f : acquisition_receipt(&c->cache_error.acquisition));
     if (status == MC_CLIENT_CHUNK_CACHE_SOURCE_NULL)
@@ -206,6 +204,11 @@ static bool cache_result(mc_cv_context *c, mc_client_chunk_cache_status status, 
             ? MC_CLIENT_RENDER_GLOBAL_ALLOCATION_FAILED
             : MC_CLIENT_RENDER_GLOBAL_GRAPHICS_FAILED,
         c->cache_error.operation, pc, c->exception_class == NULL && c->cache_error.native_policy);
+}
+
+static inline bool cache_result(mc_cv_context *c, mc_client_chunk_cache_status status,
+                                unsigned int pc) {
+    return status == MC_CLIENT_CHUNK_CACHE_OK || cache_failure(c, status, pc);
 }
 
 /* A captured source XP reference keeps its exact EW or World identity across

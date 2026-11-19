@@ -10,6 +10,8 @@ from validate import enum_state,event,exact,load,loads,require,validate_data
 from packet import read_reference
 HERE=Path(__file__).resolve().parent
 expected=read_reference(); actual=load(HERE/'finite.json');validate_data(actual,expected)
+# Decode a fresh JSON tree for each corruption, keeping the accepted packet pristine.
+actual_json=json.dumps(actual,ensure_ascii=True,allow_nan=False,separators=(',',':'))
 checks=0
 def rejected(action,label):
     global checks
@@ -17,7 +19,7 @@ def rejected(action,label):
     except (ValueError,KeyError,TypeError,IndexError):checks+=1;return
     raise ValueError('corruption accepted: '+label)
 def mutate(path,value,label):
-    v=copy.deepcopy(actual);at=v
+    v=json.loads(actual_json);at=v
     for key in path[:-1]:at=at[key]
     at[path[-1]]=value;rejected(lambda:validate_data(v,expected),label)
 for text in ('{"a":1,"a":1}','{"a":{"z":0,"z":1}}','{"x":NaN}','{"x":Infinity}','{"x":-Infinity}'):
