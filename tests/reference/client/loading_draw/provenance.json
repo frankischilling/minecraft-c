@@ -1254,8 +1254,8 @@
       "sha256": "7b02fadfaf8310e34b2649de9dc5a7c9b79b2773185f035ff5681d9077a8e5e1"
     },
     "src/client/display/source_surface.inc": {
-      "bytes": 61453,
-      "sha256": "a6f70834eb980dc44b57b62ff48cdc71493fab035fd8e6e562d63fa1fb934224"
+      "bytes": 61293,
+      "sha256": "dccd46532ecea725bfdc21277cf6660b467ba9119183757c5c557f6ea6eb9022"
     },
     "src/client/display/source_vertex_cache.inc": {
       "bytes": 9181,
@@ -3986,8 +3986,8 @@
       "sha256": "06a7aed7805d4ffc116b59f180c128beee859a00abf9cb0b03fbb1e3b01265bc"
     },
     "tests/client/render_engine/test_source_fp.c": {
-      "bytes": 13768,
-      "sha256": "2811a5aee5eb0a8bd8d230cf663d3abc78e8a7c8fb33b78d683b47065832de6e"
+      "bytes": 14438,
+      "sha256": "1eb1f3633a51d29d651dbdaaf065d394886aa348d59b5526206487fe1f5e50f7"
     },
     "tests/client/render_engine/test_source_resources.c": {
       "bytes": 12780,
@@ -6866,12 +6866,12 @@
       "sha256": "c3e3a03848d7ea8059527a9275541e63904aefdd845d45412f09497bd7da455b"
     },
     "src/client/display/source_lighting_draw.inc": {
-      "bytes": 9958,
-      "sha256": "2604578a6f189135296746f8316ea95f78c711784cac30c73e0d6c10b7827b69"
+      "bytes": 9935,
+      "sha256": "7eb267b8e447a8ddc3292dba75d19e3101125fa09532871843936d7dc59ed1c1"
     },
     "src/client/display/source_lighting_numeric.h": {
-      "bytes": 24594,
-      "sha256": "72d0e755fa5d149075d9363e49977914d0a5b5a2e647ac56c7afcaeb30582ea6"
+      "bytes": 24520,
+      "sha256": "6af8a524a16cb0644948246b88cfbe7af03969bf917975dffea7b2a3bd0c60e3"
     },
     "src/client/display/source_lighting_shader.h": {
       "bytes": 4885,
@@ -6890,8 +6890,8 @@
       "sha256": "2bcc764a21c2f70be9ad32624f2b169e0f00f2c4f8bb6d5d52bb5db3e887a810"
     },
     "src/client/display/source_material_staging.h": {
-      "bytes": 19559,
-      "sha256": "55bd72b6057b5b477b9c83582d80207520d96307cbba4810093e11ebe6309610"
+      "bytes": 20706,
+      "sha256": "1d5a2f6dc08995691f83bab76c9a82c1f0e23e5f837319eaf1d70f44bbde7904"
     },
     "cmake/tests/client_tile_entity_renderer.cmake": {
       "bytes": 3650,

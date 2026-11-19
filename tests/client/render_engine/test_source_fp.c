@@ -144,6 +144,15 @@ int main(int argc, char **argv) {
     CHECK(mc_client_display_source_array(display, MC_CLIENT_SOURCE_VERTEX_ARRAY, true, &error));
     CHECK(mc_client_display_source_array(display, MC_CLIENT_SOURCE_COLOR_ARRAY, true, &error));
 
+    if (source_attribute_profile_for(display) == SOURCE_ATTRIBUTE_PROFILE_MESA_25_2_8) {
+        const float *color = display->source.color;
+        CHECK(mc_client_display_source_color(display, color[0], color[1], color[2], color[3],
+                                             &error));
+        CHECK(display->source.attribute_staging.flags == SOURCE_STAGE_CURRENT);
+    }
+    const uint32_t staged_flags = display->source.attribute_staging.flags;
+    const uint32_t staged_fields = display->source.attribute_staging.enabled;
+
     /* Actual GetIntegerv precedes conversion. No lazy GPU allocation, upload
      * or draw may run when that callback changes unsupported control bits. */
     callback_controls = 0x9fc0u;
@@ -157,6 +166,8 @@ int main(int argc, char **argv) {
     CHECK(query_calls == 1 && (query_controls & 0xffc0u) == (callback_controls & 0xffc0u));
     CHECK(display->source.gpu_phase == 0 && display->source.program == 0 &&
           display->source.vbo == 0 && display->source.active_calls == 0);
+    CHECK(display->source.attribute_staging.flags == staged_flags &&
+          display->source.attribute_staging.enabled == staged_fields);
 
     CHECK(mc_client_display_loading_clear_color_depth(display, &error));
     uint8_t list_bytes[32 * 96];

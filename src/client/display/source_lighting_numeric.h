@@ -205,7 +205,7 @@ static inline const float *source_lighting_numeric_material(const mc_client_sour
     return material->emission;
 }
 
-static inline bool source_lighting_numeric_admit(const mc_client_source_state *state,
+static inline bool source_lighting_numeric_admit(const source_draw_state *state,
                                                  const mc_client_source_gpu_vertex *vertices,
                                                  size_t count, const float normal_matrix[16],
                                                  float normal_scale,
@@ -218,7 +218,7 @@ static inline bool source_lighting_numeric_admit(const mc_client_source_state *s
     const double limit = source_lighting_numeric_limit();
     const double unit = source_lighting_numeric_unit_bound();
     const bool enabled_light = fog->lights[0] || fog->lights[1];
-    if (!source_lighting_numeric_span(state->modelview.column_major, 16) ||
+    if (!source_lighting_numeric_span(state->modelview, 16) ||
         !source_lighting_numeric_span(fog->light_model_ambient, 3))
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, operation, detail, 0);
     for (size_t column = 0; column < 3; ++column)
@@ -265,15 +265,15 @@ static inline bool source_lighting_numeric_admit(const mc_client_source_state *s
         source_lighting_numeric_interval eye_interval[3] = {{0}};
         source_lighting_numeric_interval normal_interval[3] = {{0}};
         for (size_t row = 0; row < 3; ++row) {
-            double eye_magnitude = fabs((double)state->modelview.column_major[12 + row]);
+            double eye_magnitude = fabs((double)state->modelview[12 + row]);
             double normal_magnitude = 0;
             source_lighting_numeric_interval position[3], current_normal[3], model[3], inverse[3];
             for (size_t column = 0; column < 3; ++column) {
                 position[column] = (source_lighting_numeric_interval){input->position[column], 0};
                 current_normal[column] =
                     (source_lighting_numeric_interval){input->normal[column], 0};
-                model[column] = (source_lighting_numeric_interval){
-                    state->modelview.column_major[column * 4 + row], 0};
+                model[column] =
+                    (source_lighting_numeric_interval){state->modelview[column * 4 + row], 0};
                 inverse[column] =
                     (source_lighting_numeric_interval){normal_matrix[column * 4 + row], 0};
                 eye_magnitude += fabs(model[column].center) * fabs(position[column].center);
@@ -281,8 +281,7 @@ static inline bool source_lighting_numeric_admit(const mc_client_source_state *s
                     fabs(inverse[column].center) * fabs(current_normal[column].center);
             }
             eye_interval[row] = source_lighting_numeric_dot3(
-                model, position,
-                (source_lighting_numeric_interval){state->modelview.column_major[12 + row], 0});
+                model, position, (source_lighting_numeric_interval){state->modelview[12 + row], 0});
             normal_interval[row] = source_lighting_numeric_dot3(
                 inverse, current_normal, (source_lighting_numeric_interval){0});
             /* Retain absolute product/sum bounds for overflow: cancellation

@@ -15,6 +15,13 @@ typedef struct source_material_field {
     size_t width;
 } source_material_field;
 
+typedef struct source_draw_state {
+    mc_client_source_fog_state fog;
+    mc_client_source_attribute_staging attribute_staging;
+    float color[4], modelview[16];
+    bool color_known, lighting_enabled;
+} source_draw_state;
+
 static int source_material_property(int32_t pname) {
     switch (pname) {
         case GL_AMBIENT:
@@ -132,18 +139,19 @@ static void source_material_assign(mc_client_source_state *s, size_t side, int32
     }
 }
 
-static void source_material_copy_current(mc_client_source_state *s) {
-    mc_client_source_attribute_staging *stage = &s->attribute_staging;
+static void source_material_copy_current(mc_client_source_fog_state *fog,
+                                         mc_client_source_attribute_staging *stage, float color[4],
+                                         bool *color_known) {
     bool color_changed = false;
     if ((stage->enabled & (UINT32_C(1) << SOURCE_STAGE_COLOR)) != 0) {
-        color_changed = !s->color_known || !stage->color_known ||
-                        memcmp(s->color, stage->color, sizeof(s->color)) != 0;
-        memcpy(s->color, stage->color, sizeof(s->color));
-        s->color_known = stage->color_known;
+        color_changed = !*color_known || !stage->color_known ||
+                        memcmp(color, stage->color, sizeof(stage->color)) != 0;
+        memcpy(color, stage->color, sizeof(stage->color));
+        *color_known = stage->color_known;
     }
     if ((stage->enabled & (UINT32_C(1) << SOURCE_STAGE_NORMAL)) != 0) {
-        memcpy(s->fog.normal, stage->normal, sizeof(s->fog.normal));
-        s->fog.normal_known = stage->normal_known;
+        memcpy(fog->normal, stage->normal, sizeof(fog->normal));
+        fog->normal_known = stage->normal_known;
     }
     for (size_t side = 0; side < 2; ++side)
         for (unsigned int property = 0; property < SOURCE_STAGE_PROPERTIES; ++property)
@@ -151,45 +159,57 @@ static void source_material_copy_current(mc_client_source_state *s) {
                 source_material_field from =
                     source_material_field_for(&stage->materials[side], property);
                 source_material_field to =
-                    source_material_field_for(&s->fog.materials[side], property);
+                    source_material_field_for(&fog->materials[side], property);
                 memcpy(to.values, from.values, to.width * sizeof(float));
                 *to.known = *from.known;
             }
-    if (color_changed && s->fog.color_material)
-        source_material_color(&s->fog, s->color, s->color_known);
+    if (color_changed && fog->color_material)
+        source_material_color(fog, color, *color_known);
 }
 
-static void source_material_flush(mc_client_source_state *s, uint32_t flags) {
+static void source_material_flush(mc_client_source_fog_state *fog,
+                                  mc_client_source_attribute_staging *stage, float color[4],
+                                  bool *color_known, uint32_t flags) {
     if ((flags & SOURCE_STAGE_STORED) != 0) {
-        if (s->attribute_staging.enabled != 0)
-            source_material_copy_current(s);
-        s->attribute_staging.enabled = 0;
-        s->attribute_staging.flags = 0;
+        if (stage->enabled != 0)
+            source_material_copy_current(fog, stage, color, color_known);
+        stage->enabled = 0;
+        stage->flags = 0;
     } else {
-        source_material_copy_current(s);
+        source_material_copy_current(fog, stage, color, color_known);
         /* Exact Mesa25.2.8 assignment: staged attributes remain active and
          * STORED becomes set. This is not an &=~CURRENT operation. */
-        s->attribute_staging.flags = ~UINT32_C(2);
+        stage->flags = ~UINT32_C(2);
     }
 }
 
 static void source_material_vertices(mc_client_source_state *s) {
     if (source_material_is_staged(s) && (s->attribute_staging.flags & SOURCE_STAGE_STORED) != 0)
-        source_material_flush(s, SOURCE_STAGE_STORED);
+        source_material_flush(&s->fog, &s->attribute_staging, s->color, &s->color_known,
+                              SOURCE_STAGE_STORED);
 }
 
 static void source_material_current(mc_client_source_state *s) {
     if (source_material_is_staged(s) && (s->attribute_staging.flags & SOURCE_STAGE_CURRENT) != 0)
-        source_material_flush(s, SOURCE_STAGE_CURRENT);
+        source_material_flush(&s->fog, &s->attribute_staging, s->color, &s->color_known,
+                              SOURCE_STAGE_CURRENT);
 }
 
-static void source_material_draw(mc_client_source_state *s) {
+static source_draw_state source_material_prepare_draw(const mc_client_source_state *s) {
+    source_draw_state draw = {.fog = s->fog,
+                              .attribute_staging = s->attribute_staging,
+                              .color_known = s->color_known,
+                              .lighting_enabled = s->lighting_enabled};
+    memcpy(draw.color, s->color, sizeof(draw.color));
+    memcpy(draw.modelview, s->modelview.column_major, sizeof(draw.modelview));
     /* llvmpipe's measured profile has allow_draw_out_of_order=false. */
-    if (source_material_is_staged(s) && s->attribute_staging.flags != 0)
-        source_material_flush(s, s->attribute_staging.flags);
+    if (source_material_is_staged(s) && draw.attribute_staging.flags != 0)
+        source_material_flush(&draw.fog, &draw.attribute_staging, draw.color, &draw.color_known,
+                              draw.attribute_staging.flags);
+    return draw;
 }
 
-static void source_material_publish(mc_client_source_state *s, const mc_client_source_state *next) {
+static void source_material_publish(mc_client_source_state *s, const source_draw_state *next) {
     memcpy(s->color, next->color, sizeof(s->color));
     s->color_known = next->color_known;
     memcpy(s->fog.normal, next->fog.normal, sizeof(s->fog.normal));

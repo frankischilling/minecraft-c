@@ -8,9 +8,9 @@ static bool source_finite_float(float value) {
     return (bits & UINT32_C(0x7f800000)) != UINT32_C(0x7f800000);
 }
 
-static bool source_normal_transform(const mc_client_source_state *s, float out[16], float *rescale,
+static bool source_normal_transform(const source_draw_state *s, float out[16], float *rescale,
                                     mc_client_display_error *error) {
-    const float *m = s->modelview.column_major;
+    const float *m = s->modelview;
     for (size_t i = 0; i < 16; ++i)
         if (!source_finite_float(m[i]))
             return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source normal transform",
@@ -53,7 +53,7 @@ static bool source_normal_transform(const mc_client_source_state *s, float out[1
     return true;
 }
 
-static bool source_lighting_admit(const mc_client_source_state *s, unsigned int arrays,
+static bool source_lighting_admit(const source_draw_state *s, unsigned int arrays,
                                   mc_client_display_error *error) {
     if (!s->lighting_enabled)
         return true;

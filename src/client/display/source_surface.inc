@@ -523,10 +523,7 @@ static bool source_execute_batch(mc_client_display *display, const uint8_t *data
                     "unsupported mode/span/client vertex state", 0);
     if (!source_material_profile_admit(display, false, "source material draw", error))
         return false;
-    /* Only the embedded semantic attribute ledger is changed on this local
-     * candidate. GPU handles/locations remain owned by the live source. */
-    mc_client_source_state candidate = *s;
-    source_material_draw(&candidate);
+    const source_draw_state candidate = source_material_prepare_draw(s);
     if (!candidate.lighting_enabled && (arrays & color_bit) == 0 && !candidate.color_known)
         return fail(error, MC_CLIENT_DISPLAY_UNSUPPORTED_GL, "source current color",
                     "unspecified color after prior color-array draw", 0);
