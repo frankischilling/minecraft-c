@@ -1270,8 +1270,8 @@
       "sha256": "3acf8b4aa52acd59628d4dfa6211ab5f63e3ad34382209988e35c392fef25a52"
     },
     "src/client/world/render_batch.c": {
-      "bytes": 9664,
-      "sha256": "83e104d35ea1249e3408a40a5520bc6cdecb8fe55a507786190e0e7da04db436"
+      "bytes": 9518,
+      "sha256": "521cb955055d8172a677047fa25c1be761f16a4ad56f968341d6380d3bd62665"
     },
     "src/client/world/render_global_construct.c": {
       "bytes": 10427,
@@ -3826,8 +3826,8 @@
       "sha256": "135c7604b43841fee100209c26a78f55ae5a9db25a6f3ee2af134e610a893af3"
     },
     "src/client/world/render_batch_internal.h": {
-      "bytes": 1424,
-      "sha256": "cc07231e2862dc52025a69222daab07f6c485b814e090dfbe21ead8d7649c6fa"
+      "bytes": 1857,
+      "sha256": "991ffc39b12b39e738eb47ce1d844a7a8b0e8fde6e297fa832ee076009def014"
     },
     "src/client/world/render_global_jo.c": {
       "bytes": 5551,
@@ -3854,12 +3854,12 @@
       "sha256": "74e120717f93b1fb01c9b0bd2c99636918f4bbedcb250649c9d1083f5f447e1f"
     },
     "src/client/world/render_global_submit_access.c": {
-      "bytes": 10372,
-      "sha256": "e0e256e893450b87f08834efa6fae296e816c3ea55fcb51cdebaa55e33e199cf"
+      "bytes": 10216,
+      "sha256": "33b46a0d73554b0c70c3e0222b00fbceb7ba328a62ac1600e5fa242f5e44e569"
     },
     "src/client/world/render_global_submit_draw.c": {
-      "bytes": 11518,
-      "sha256": "e5f0eb8952508524243bd90fa0e30a4049e7a19d2043552256377d2e51bd0e33"
+      "bytes": 10942,
+      "sha256": "abcd4ebb6ea3f198087ae69fe09829d24b0e6ecec1b752f479eacc4b59f80ebb"
     },
     "src/client/world/source_terrain_internal.h": {
       "bytes": 3053,
@@ -3886,8 +3886,8 @@
       "sha256": "102d2a4814a3df13934c42243564d91357b50d376e4dd96522ac0c73655cb9f1"
     },
     "tests/client/world/test_render_global_submit_cpu.c": {
-      "bytes": 12545,
-      "sha256": "2c6e0d9a4b8524a26d5a726489d5fd9615b05233f7f23043c00b53de19f47164"
+      "bytes": 13942,
+      "sha256": "eed15c40823eb3150200458f85874f51faafaded66a70aae9cde7512c4b192d3"
     },
     "tests/reference/client/occlusion_queries/capture_reference.py": {
       "bytes": 8100,

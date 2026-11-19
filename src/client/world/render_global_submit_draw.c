@@ -1,5 +1,6 @@
 #include "source_terrain_internal.h"
 
+#include "../../entity/entity_internal.h"
 #include "../../entity/player/tick_math_internal.h"
 #include "../application_state.h"
 #include "../render_engine/internal.h"
@@ -130,16 +131,13 @@ static bool camera(mc_client_render_global_submit_call *c, double *x, double *y,
     if (current == NULL)
         return mc_terrain_fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
                                "actual N batching camera", 235, false);
-    mc_entity_snapshot v;
-    c->failure.entity.status = mc_entity_get_snapshot(current, &v);
-    if (c->failure.entity.status != MC_ENTITY_OK)
-        return mc_terrain_fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
-                               "N batching canonical camera fields", 235, true);
+    const mc_entity_base_fields *fields = mc_entity_runtime_fields(current);
+    c->failure.entity.status = MC_ENTITY_OK;
     if (!mc_terrain_fp(c, 248))
         return false;
-    *x = at_add(v.base.bl, at_mul(at_sub(v.base.x, v.base.bl), c->state.partial));
-    *y = at_add(v.base.bm, at_mul(at_sub(v.base.y, v.base.bm), c->state.partial));
-    *z = at_add(v.base.bn, at_mul(at_sub(v.base.z, v.base.bn), c->state.partial));
+    *x = at_add(fields->bl, at_mul(at_sub(fields->x, fields->bl), c->state.partial));
+    *y = at_add(fields->bm, at_mul(at_sub(fields->y, fields->bm), c->state.partial));
+    *z = at_add(fields->bn, at_mul(at_sub(fields->z, fields->bn), c->state.partial));
     return true;
 }
 
@@ -211,35 +209,26 @@ bool mc_terrain_subset(mc_client_render_global_submit_call *c, int32_t start, in
             return false;
     }
     int32_t used = 0;
-    for (int32_t i = 0;; i = mc_java_i32_add(i, 1)) {
+    for (size_t i = 0;; ++i) {
+        /* A preceding append can draw. Recheck the live list before reading this entry. */
         s = selected(c, 340);
         if (s == NULL)
             return false;
-        if ((size_t)i >= s->count)
+        if (i >= s->count)
             break;
-        s = selected(c, 354);
-        if (s == NULL)
-            return false;
-        if (i < 0 || (size_t)i >= s->count)
-            return mc_terrain_fail(c, MC_CLIENT_RENDER_GLOBAL_SOURCE_INDEX,
-                                   "actual N selected List.get index", 354, false);
         mc_client_source_dk *dk = s->entries[i];
         int32_t chosen = -1;
-        for (int32_t j = 0; j < used; j = mc_java_i32_add(j, 1)) {
+        for (int32_t j = 0; j < used; ++j) {
             mc_client_render_batch *b;
-            if (!batch(c, j, 383, &b) || !mc_terrain_dk_receiver(c, dk, 386))
+            if (!batch(c, j, 383, &b))
                 return false;
+            if (dk == NULL)
+                return mc_terrain_dk_receiver(c, dk, 386);
             if (b == NULL)
                 return mc_terrain_fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
                                        "actual TG match receiver", 399, false);
-            bool matches;
             mc_terrain_pc(c, 399);
-            if (!mc_terrain_child(c,
-                                  mc_render_batch_matches(n, b, dk->fields.i, dk->fields.j,
-                                                          dk->fields.k, &matches, &c->failure),
-                                  399))
-                return false;
-            if (matches)
+            if (mc_render_batch_match_fields(b, dk->fields.i, dk->fields.j, dk->fields.k))
                 chosen = j; /* The original search deliberately has no break. */
         }
         if (chosen < 0) {

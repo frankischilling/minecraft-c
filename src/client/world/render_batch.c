@@ -134,13 +134,7 @@ bool mc_render_batch_matches(mc_client_render_global *o, mc_client_render_batch 
     if (out == NULL)
         return fail(o, b, e, MC_CLIENT_RENDER_GLOBAL_INVALID_ARGUMENT, "TG native match output",
                     "a", "(III)Z", 0, true);
-    if (!b->state.h) {
-        b->state.source_pc = 8;
-        *out = false;
-    } else {
-        *out = x == b->state.a && y == b->state.b && z == b->state.c;
-        b->state.source_pc = 38;
-    }
+    *out = mc_render_batch_match_fields(b, x, y, z);
     return true;
 }
 

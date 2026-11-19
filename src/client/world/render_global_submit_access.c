@@ -1,5 +1,6 @@
 #include "source_terrain_internal.h"
 
+#include "../../entity/entity_internal.h"
 #include "../../entity/player/tick_math_internal.h"
 #include "../application_state.h"
 #include "../render_engine/internal.h"
@@ -196,16 +197,13 @@ bool mc_terrain_distance(mc_client_render_global_submit_call *c, mc_client_sourc
     if (c->state.camera == NULL)
         return mc_terrain_fail(c, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
                                "actual DK distance camera", 1, false);
-    mc_entity_snapshot snapshot;
-    c->failure.entity.status = mc_entity_get_snapshot(c->state.camera, &snapshot);
-    if (c->failure.entity.status != MC_ENTITY_OK)
-        return mc_terrain_fail(c, MC_CLIENT_RENDER_GLOBAL_INVALID_PHASE,
-                               "DK canonical camera fields", 1, true);
+    const mc_entity_base_fields *camera = mc_entity_runtime_fields(c->state.camera);
+    c->failure.entity.status = MC_ENTITY_OK;
     if (!mc_terrain_fp(c, 9))
         return false;
-    const float x = at_narrow(at_sub(snapshot.base.x, (double)dk->fields.q));
-    const float y = at_narrow(at_sub(snapshot.base.y, (double)dk->fields.r));
-    const float z = at_narrow(at_sub(snapshot.base.z, (double)dk->fields.s));
+    const float x = at_narrow(at_sub(camera->x, (double)dk->fields.q));
+    const float y = at_narrow(at_sub(camera->y, (double)dk->fields.r));
+    const float z = at_narrow(at_sub(camera->z, (double)dk->fields.s));
     *out = at_fadd(at_fadd(at_fmul(x, x), at_fmul(y, y)), at_fmul(z, z));
     mc_terrain_pc(c, 50);
     mc_terrain_pop(c);

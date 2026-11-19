@@ -13,6 +13,15 @@ bool mc_render_batch_configure(mc_client_render_global *, mc_client_render_batch
                                double camera_z, mc_client_render_global_error *);
 bool mc_render_batch_matches(mc_client_render_global *, mc_client_render_batch *, int32_t x,
                              int32_t y, int32_t z, bool *out, mc_client_render_global_error *);
+
+/* The entered submission loop checks both receivers before comparing fields. */
+static inline bool mc_render_batch_match_fields(mc_client_render_batch *batch, int32_t x, int32_t y,
+                                                int32_t z) {
+    const bool configured = batch->state.h;
+    batch->state.source_pc = configured ? 38 : 8;
+    return configured && x == batch->state.a && y == batch->state.b && z == batch->state.c;
+}
+
 bool mc_render_batch_reset(mc_client_render_global *, mc_client_render_batch *,
                            mc_client_render_global_error *);
 bool mc_render_batch_append(mc_client_render_global *, mc_client_render_batch *, int32_t list,

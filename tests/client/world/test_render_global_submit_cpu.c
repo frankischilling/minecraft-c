@@ -10,6 +10,7 @@ int mc_submit_cpu_picking_fixture_main(int argc, char **argv);
 #include "client/render_engine/internal.h"
 #include "client/render_engine/lighting.h"
 #include "client/world/source_terrain_internal.h"
+#include "entity/entity_internal.h"
 
 enum { CAPACITY = 16 };
 
@@ -230,6 +231,35 @@ static bool subset_selection(void) {
     return true;
 }
 
+static bool live_camera_distance(mc_entity_classes *classes) {
+    mc_entity *camera = NULL;
+    CHECK(mc_minecart_entity_allocate(classes, &camera, NULL) == MC_ENTITY_OK);
+    mc_entity_base_fields *fields = mc_entity_runtime_fields(camera);
+    fields->x = 9.5;
+    fields->y = -1.5;
+    fields->z = 12.0;
+    mc_client_source_dk section = {.fields = {.q = 8, .r = -4, .s = 16}};
+    mc_client_render_global_submit_call call = {.state = {.camera = camera}};
+    CHECK(mc_terrain_push(&call, "n", "a", "(Lls;ID)I"));
+    float distance = -1.0f;
+    CHECK(mc_terrain_distance(&call, &section, 581, &distance) && distance == 24.5f &&
+          call.depth == 1 && call.frames[0].pc == 581 && call.state.source_pc == 50 &&
+          call.failure.entity.status == MC_ENTITY_OK);
+
+    fields->x = 8.0;
+    fields->y = -4.0;
+    fields->z = 18.25;
+    CHECK(mc_terrain_distance(&call, &section, 581, &distance) && distance == 5.0625f &&
+          call.depth == 1 && camera->holds == 1);
+
+    call.state.camera = NULL;
+    CHECK(!mc_terrain_distance(&call, &section, 581, &distance) && distance == 5.0625f &&
+          call.failure.status == MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE && call.depth == 2 &&
+          call.frames[0].pc == 581 && call.frames[1].pc == 1);
+    mc_entity_release(camera);
+    return true;
+}
+
 int main(int argc, char **argv) {
     if (argc != 3)
         return 2;
@@ -239,7 +269,8 @@ int main(int argc, char **argv) {
     f->app->registry = f->base.registry;
     f->app->entities = f->base.entities;
     f->app->source_math_classes = f->math;
-    if (!run(f, argv[2]) || !subset_selection() || !picking_close(f))
+    if (!run(f, argv[2]) || !subset_selection() || !live_camera_distance(f->base.entities) ||
+        !picking_close(f))
         return 1;
     free(f);
     printf("Source submission CPU: %u checks; 12 pre-U prefixes\n", checks);
