@@ -6427,7 +6427,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938032,
-      "sha256": "67b6102ec22f6e3afde4ea5f914d9ec20c3fb621e9ec9445e8c1e8ed7928fdda"
+      "sha256": "eb4939fbdecf3ec4a3ebcfce15a59936ccac9ff368b2864129454da56fa80284"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6491,7 +6491,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1068291,
-      "sha256": "b248d3e1fa8f4ef95323657389796d1aa94307a048e7418c54c35b1b2b6fe93c"
+      "sha256": "cd21269c849eded3a41f89d0f591c588c982ba1884e662a742f4030a3bfdb34c"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6623,7 +6623,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934857,
-      "sha256": "d1564e97c387a870ce3f7eb1ab7c61cfb71a0c5e4bf3cf4fbb77bc288bdd1af3"
+      "sha256": "cc7435db7d2752436e3f75e6fdc88dee5ab2fa0e9d46598541544b360abfab11"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -11750,8 +11750,8 @@
       "sha256": "3e6e0b238dfe0d0ef272957574056d97be18b5d00060cf2258fff9b55e29fc17"
     },
     "src/client/render/blocks/access.c": {
-      "bytes": 25563,
-      "sha256": "f50e4e09d203ff9fca22e55447063e531785b9ce83bb00c6334e1f93ec11249d"
+      "bytes": 25327,
+      "sha256": "3d8b5f05ee00806d330c4e685bb061058f1c6c89ad7f5d2e976d01957327d3f0"
     },
     "src/client/render/blocks/ambient_occlusion.c": {
       "bytes": 14963,
@@ -11778,8 +11778,8 @@
       "sha256": "4eb109dad24b3d7d43e397a91eea5c4f0d6417fb386c0bf84d254e2687187d84"
     },
     "src/client/render/blocks/internal.h": {
-      "bytes": 13131,
-      "sha256": "b1a0b09e4453c4a717e3235ebbc7f3754337d8b8fe695c9811a819d3349ef06a"
+      "bytes": 13317,
+      "sha256": "9e7ffabb990b7089c499c03660755c1b1cf5f64941d1ccafe58ae3732e67cfde"
     },
     "src/client/render/blocks/render.c": {
       "bytes": 9206,

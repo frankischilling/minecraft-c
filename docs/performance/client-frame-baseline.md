@@ -148,6 +148,59 @@ ticks. The table shows the median of the per-process statistics.
 FPS rose in seven pairs, while p95 and p99 fell in six. The median of
 each run's longest frame rose from 19.48 to 21.09 ms.
 
+### Longest frames while sections compile
+
+Four further pairs timed both renderer revisions around the World draw,
+section update, section compile, Display update and retirement calls.
+All eight intervals used the same authored Far save and advanced 200
+World ticks. The median of each process's longest frame went from
+18.26 to 19.07 ms in this instrumented cohort.
+
+The longest earlier frame took 21.20 ms with no World tick, and two
+section compiles took 14.71 ms of that frame. The longest later frame
+took 21.79 ms. Its single tick batch took 5.30 ms, and the World draw
+took 15.58 ms, including one 9.51 ms section compile.
+
+Across 5,481 measured frames, previous-frame draw retirement took at
+most 0.070 ms. Section-child retirement took at most 0.064 ms in a
+frame, and Display list publication at most 0.020 ms. Each measurement
+uses the host clock. The frame and World-draw spans include nested work.
+
+Three profiles of the later revision also timed individual World tick
+calls. The median tick batch took 5.21–5.43 ms on frames that ran a tick.
+Random block work took 2.62–2.72 ms at the median, and spawning took
+1.80–1.86 ms. The longest frame in those profiles took 24.67 ms,
+including an 8.92 ms tick batch and a 14.40 ms World draw. Within that
+tick, random block work took 4.14 ms and spawning took 3.17 ms.
+
+### Renderer source-frame updates
+
+The Block renderer now inlines its two small operations for recording
+the current program counter and popping a completed call frame. The
+same checks protect an empty or failed frame stack.
+
+Eight alternating Windows Release pairs measured 168 compiles per
+fixture and variant. The authored sparse section went from 92.6 to
+91.7 µs at the median. The solid section went from 2.418 to 2.401 ms,
+and the mixed solid-and-Ice section went from 8.471 to 8.184 ms.
+Pass counts, vertex counts and hashes of the complete vertex batches
+matched for all three fixtures.
+
+Two groups of four alternating Far frame pairs used the same stationary
+authored save and graphics settings. The second group built the
+production source. All 16 runs finished and advanced 200 or 201 World
+ticks.
+
+| Windows group | Median FPS before / after | Frame p95 before / after | Frame p99 before / after |
+| --- | ---: | ---: | ---: |
+| First four pairs | 68.79 / 69.66 | 15.99 / 15.86 ms | 17.12 / 16.95 ms |
+| Four repeats | 68.61 / 69.44 | 16.05 / 15.90 ms | 17.25 / 17.53 ms |
+| All eight pairs | 68.67 / 69.44 | 16.05 / 15.89 ms | 17.25 / 17.17 ms |
+
+FPS rose in seven pairs, p95 fell in six, and p99 fell in three.
+Across all eight pairs, the median of each run's longest frame
+fell from 20.11 to 19.50 ms.
+
 ## Fixed-input observer
 
 Build both comparison executables with the same observer source. The runner

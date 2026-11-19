@@ -10,12 +10,6 @@
 #include <string.h>
 #include <xmmintrin.h>
 
-void mc_cv_pc(mc_cv_context *c, unsigned int pc) {
-    c->source_pc = pc;
-    if (c->depth != 0)
-        c->frames[c->depth - 1].pc = pc;
-}
-
 bool mc_cv_fail(mc_cv_context *c, mc_client_render_global_status status, const char *operation,
                 unsigned int pc, bool native) {
     if (c->failed)
@@ -42,11 +36,6 @@ bool mc_cv_push_source(mc_cv_context *c, const char *class_name, const char *met
 
 bool mc_cv_push(mc_cv_context *c, const char *method, const char *descriptor) {
     return mc_cv_push_source(c, "cv", method, descriptor);
-}
-
-void mc_cv_pop(mc_cv_context *c) {
-    if (!c->failed && c->depth != 0)
-        --c->depth;
 }
 
 void mc_cv_store(mc_cv_context *c, unsigned int pc) {

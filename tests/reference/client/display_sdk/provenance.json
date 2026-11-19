@@ -3898,8 +3898,8 @@
       "sha256": "db48725dd52b8f9b466cb9d98768104adf93ce762818eedcb3015c2597f2497f"
     },
     "src/client/render/blocks/access.c": {
-      "bytes": 25563,
-      "sha256": "f50e4e09d203ff9fca22e55447063e531785b9ce83bb00c6334e1f93ec11249d"
+      "bytes": 25327,
+      "sha256": "3d8b5f05ee00806d330c4e685bb061058f1c6c89ad7f5d2e976d01957327d3f0"
     },
     "src/client/render/blocks/ambient_occlusion.c": {
       "bytes": 14963,
@@ -3926,8 +3926,8 @@
       "sha256": "4eb109dad24b3d7d43e397a91eea5c4f0d6417fb386c0bf84d254e2687187d84"
     },
     "src/client/render/blocks/internal.h": {
-      "bytes": 13131,
-      "sha256": "b1a0b09e4453c4a717e3235ebbc7f3754337d8b8fe695c9811a819d3349ef06a"
+      "bytes": 13317,
+      "sha256": "9e7ffabb990b7089c499c03660755c1b1cf5f64941d1ccafe58ae3732e67cfde"
     },
     "src/client/render/blocks/render.c": {
       "bytes": 9206,
