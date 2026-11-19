@@ -64,6 +64,14 @@ struct mc_client_render_batch {
     mc_client_render_batch_state state;
 };
 
+typedef struct mc_render_global_grid {
+    struct mc_render_global_grid *next;
+    mc_client_render_arena arena;
+    /* A rebuild's uninterrupted interval in N.chunk_owners, newest first. */
+    mc_client_source_dk *newest, *oldest;
+    mc_client_source_dk **spatial, **sorted;
+} mc_render_global_grid;
+
 struct mc_client_render_global {
     mc_client_render_global_phase phase;
     size_t holds;
@@ -100,6 +108,7 @@ struct mc_client_render_global {
     mc_client_render_manager *world_manager;
     mc_render_global_cv *cv_owners;
     mc_client_source_dk *chunk_owners;
+    mc_render_global_grid *grids, *latest_grid, *building_grid;
     mc_client_render_list *tile_list_origin; /* Actual constructor-created N.a List. */
     mc_render_global_tile_occurrence *tile_occurrences;
     size_t o_length, n_length, t_length;
@@ -126,6 +135,7 @@ mc_client_render_global_status mc_render_global_fail(mc_client_render_global_err
 bool mc_render_global_graphics(mc_client_render_global *, unsigned int enclosing_pc);
 bool mc_render_global_display(mc_client_render_global *, unsigned int source_pc);
 bool mc_render_global_fp(mc_client_render_global *, const char *method, unsigned int pc);
+void mc_render_global_grids_free(mc_client_render_global *);
 /* Caller has ended source admission and proved actual N quiescence. May run
  * inside its native cleanup guard; never used for an ordinary World change. */
 mc_client_render_global_status

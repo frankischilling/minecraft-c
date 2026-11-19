@@ -22,6 +22,16 @@ if(BUILD_TESTING AND TARGET mc_test_application_startup AND TARGET mc_client_ren
     add_test(NAME client.render_global_world_cpu COMMAND mc_test_render_global_world --cpu)
     set_tests_properties(client.render_global_world_cpu PROPERTIES
         LABELS "public;unit;client;ownership" TIMEOUT 30)
+    if(WIN32 AND MC_ENABLE_CLIENT_DISPLAY_TESTS)
+        add_test(NAME client.render_global_world_rebuild_budget COMMAND Python3::Interpreter -B
+            "${CMAKE_CURRENT_SOURCE_DIR}/tests/tools/client/test_render_global_world.py"
+            --executable "$<TARGET_FILE:mc_test_render_global_world>"
+            --resources "${CMAKE_CURRENT_SOURCE_DIR}/tests/client/startup/fixtures"
+            --authored-assets --rebuild-budget)
+        set_tests_properties(client.render_global_world_rebuild_budget PROPERTIES
+            LABELS "integration;client;startup;graphics;ownership"
+            RUN_SERIAL TRUE TIMEOUT 240)
+    endif()
     if(WIN32 AND MC_ENABLE_CLIENT_DISPLAY_TESTS AND
        MC_ENABLE_APPLICATION_STARTUP_DEFAULT_DIRECTORY_TESTS)
         add_test(NAME client.render_global_world_device COMMAND Python3::Interpreter -B

@@ -180,6 +180,7 @@ mc_client_render_global_release(mc_client_render_global **slot,
         goto retained;
     }
     o->classes = NULL;
+    mc_render_global_grids_free(o);
     mc_client_render_arena_free(&o->arena);
     free(o);
     *slot = NULL;

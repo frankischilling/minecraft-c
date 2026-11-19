@@ -87,6 +87,186 @@ static bool list_shape(const mc_client_render_list *list) {
            (list->capacity == 0 || list->entries != NULL);
 }
 
+void *mc_render_global_grid_allocate(mc_client_render_global *o, mc_render_global_grid *grid,
+                                     size_t bytes, mc_client_graphics_site site,
+                                     mc_client_render_global_error *e) {
+    if (grid == NULL)
+        return mc_render_global_allocate(o, bytes, site, e);
+    void *out = NULL;
+    if (bytes <= SIZE_MAX - sizeof(render_allocation) &&
+        mc_client_render_arena_check(&o->arena, sizeof(render_allocation) + bytes, site,
+                                     &e->graphics)) {
+        const size_t previous = grid->arena.bytes;
+        out = mc_client_render_arena_allocate(&grid->arena, bytes, site, &e->graphics);
+        if (out != NULL)
+            mc_client_render_arena_commit_external(&o->arena, grid->arena.bytes - previous);
+    }
+    if (out == NULL) {
+        if (bytes > SIZE_MAX - sizeof(render_allocation))
+            mc_client_graphics_fail(&e->graphics, MC_CLIENT_GRAPHICS_LIMIT,
+                                    "graphics native constructor limit", site, true);
+        e->child = e->graphics.site;
+        mc_render_global_source_fail(e,
+                                     e->graphics.status == MC_CLIENT_GRAPHICS_ALLOCATION_FAILED
+                                         ? MC_CLIENT_RENDER_GLOBAL_ALLOCATION_FAILED
+                                         : MC_CLIENT_RENDER_GLOBAL_LIMIT,
+                                     e->graphics.operation, site.class_name, site.method,
+                                     site.descriptor, (unsigned int)site.pc, true);
+    }
+    return out;
+}
+
+void *mc_render_global_chunk_allocate(mc_client_source_dk *dk, size_t bytes,
+                                      mc_client_graphics_site site,
+                                      mc_client_render_global_error *e) {
+    mc_client_render_global *owner = dk->owner;
+    /* Private Tile storage grows rarely. Prove the DK's identity against the
+     * entered grid ranges without reading before a possibly stack-backed DK. */
+    for (mc_render_global_grid *grid = owner->grids; grid != NULL; grid = grid->next) {
+        const mc_client_source_dk *end = grid->oldest == NULL ? NULL : grid->oldest->next;
+        for (const mc_client_source_dk *chunk = grid->newest; chunk != end; chunk = chunk->next)
+            if (chunk == dk)
+                return mc_render_global_grid_allocate(owner, grid, bytes, site, e);
+    }
+    return mc_render_global_allocate(owner, bytes, site, e);
+}
+
+static bool list_references_grid(const mc_client_render_list *list,
+                                 const mc_render_global_grid *grid) {
+    if (list == NULL)
+        return false;
+    if (!list_shape(list))
+        return true; /* An invalid live List cannot establish that its entries are gone. */
+    const mc_client_source_dk *end = grid->oldest == NULL ? NULL : grid->oldest->next;
+    for (const mc_client_source_dk *chunk = grid->newest; chunk != end; chunk = chunk->next)
+        for (size_t index = 0; index < list->count; ++index)
+            if (list->entries[index] == chunk)
+                return true;
+    return false;
+}
+
+enum { GRID_MEMBER_BITS = 13, GRID_MEMBER_SLOTS = 1 << GRID_MEMBER_BITS };
+
+static size_t grid_member_slot(const void *value) {
+    const uint64_t hash = (uint64_t)(uintptr_t)value * UINT64_C(0x9e3779b97f4a7c15);
+    return (size_t)(hash >> (64 - GRID_MEMBER_BITS));
+}
+
+static bool lists_reference_grid(const mc_client_render_global *o,
+                                 const mc_render_global_grid *grid) {
+    const mc_client_render_list *lists[] = {o->fields.m, o->fields.S};
+    size_t entries = 0;
+    for (size_t list = 0; list < 2; ++list) {
+        if (lists[list] == NULL)
+            continue;
+        if (!list_shape(lists[list]))
+            return true; /* A malformed live List cannot prove that its references ended. */
+        entries += lists[list]->count;
+    }
+    if (entries == 0)
+        return false;
+    /* Index only the private owned chain. Source List values are compared as
+     * identities, without dereferencing an unproved source pointer. */
+    const mc_client_source_dk *members[GRID_MEMBER_SLOTS] = {0};
+    size_t count = 0;
+    const mc_client_source_dk *end = grid->oldest == NULL ? NULL : grid->oldest->next;
+    for (const mc_client_source_dk *chunk = grid->newest; chunk != end; chunk = chunk->next) {
+        if (++count > GRID_MEMBER_SLOTS * 3u / 4u)
+            return list_references_grid(lists[0], grid) || list_references_grid(lists[1], grid);
+        size_t slot = grid_member_slot(chunk);
+        while (members[slot] != NULL)
+            slot = (slot + 1u) & (GRID_MEMBER_SLOTS - 1u);
+        members[slot] = chunk;
+    }
+    for (size_t list = 0; list < 2; ++list) {
+        if (lists[list] == NULL)
+            continue;
+        for (size_t index = 0; index < lists[list]->count; ++index) {
+            const void *value = lists[list]->entries[index];
+            size_t slot = grid_member_slot(value);
+            while (members[slot] != NULL) {
+                if (members[slot] == value)
+                    return true;
+                slot = (slot + 1u) & (GRID_MEMBER_SLOTS - 1u);
+            }
+        }
+    }
+    return false;
+}
+
+static void grid_free(mc_client_render_global *o, mc_render_global_grid *grid) {
+    if (grid->oldest != NULL) {
+        mc_client_source_dk **link = &o->chunk_owners;
+        while (*link != NULL && *link != grid->newest)
+            link = &(*link)->next;
+        if (*link != NULL)
+            *link = grid->oldest->next;
+    }
+    o->arena.bytes -= sizeof(*grid) + grid->arena.bytes;
+    o->arena.allocations -= 1u + grid->arena.allocations;
+    mc_client_render_arena_free(&grid->arena);
+    free(grid);
+}
+
+static bool collect_grids(mc_client_render_global *o, mc_client_render_global_error *e) {
+    mc_render_global_grid **link = &o->grids;
+    while (*link != NULL) {
+        mc_render_global_grid *grid = *link;
+        if (grid == o->latest_grid ||
+            (grid->spatial != NULL &&
+             (o->fields.o == grid->spatial || o->fields.n == grid->spatial)) ||
+            (grid->sorted != NULL &&
+             (o->fields.o == grid->sorted || o->fields.n == grid->sorted)) ||
+            lists_reference_grid(o, grid)) {
+            link = &grid->next;
+            continue;
+        }
+        mc_client_source_dk *end = grid->oldest == NULL ? NULL : grid->oldest->next;
+        for (mc_client_source_dk *chunk = grid->newest; chunk != end; chunk = chunk->next)
+            if (mc_source_dk_native_retire(chunk, e) != MC_CLIENT_RENDER_GLOBAL_OK)
+                return false;
+        *link = grid->next;
+        grid_free(o, grid);
+    }
+    return true;
+}
+
+static bool grid_begin(mc_client_render_global *o, mc_client_render_global_error *e) {
+    if (!collect_grids(o, e))
+        return false;
+    const mc_client_graphics_site site = {"n", "a", "()V", 125};
+    if (!mc_client_render_arena_check(&o->arena, sizeof(mc_render_global_grid), site,
+                                      &e->graphics)) {
+        e->child = e->graphics.site;
+        mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_LIMIT, e->graphics.operation, "n",
+                                     "a", "()V", 125, true);
+        return false;
+    }
+    mc_render_global_grid *grid = calloc(1, sizeof(*grid));
+    if (grid == NULL) {
+        mc_client_graphics_fail(&e->graphics, MC_CLIENT_GRAPHICS_ALLOCATION_FAILED,
+                                "renderer grid native allocation", site, true);
+        e->child = e->graphics.site;
+        mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_ALLOCATION_FAILED,
+                                     "renderer grid native allocation", "n", "a", "()V", 125, true);
+        return false;
+    }
+    grid->arena.options = o->arena.options;
+    mc_client_render_arena_commit_external(&o->arena, sizeof(*grid));
+    grid->next = o->grids;
+    o->grids = o->latest_grid = o->building_grid = grid;
+    return true;
+}
+
+void mc_render_global_grids_free(mc_client_render_global *o) {
+    while (o->grids != NULL) {
+        mc_render_global_grid *grid = o->grids;
+        o->grids = grid->next;
+        grid_free(o, grid);
+    }
+    o->latest_grid = o->building_grid = NULL;
+}
+
 bool mc_render_global_pointer_append(mc_client_render_global *o, mc_client_render_list *list,
                                      void *value, mc_client_graphics_site site,
                                      mc_client_render_global_error *e) {
@@ -205,17 +385,22 @@ static bool rebuild(rebuild_context *c) {
         return rebuild_failure(c, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
                                "actual renderer array length dependency", 125, false);
     const mc_client_graphics_site old_array = {"n", "a", "()V", 125};
-    mc_client_source_dk **array =
-        mc_render_global_allocate(o, (size_t)count * sizeof(*array), old_array, c->failure);
+    if (!grid_begin(o, c->failure))
+        return false;
+    mc_client_source_dk **array = mc_render_global_grid_allocate(
+        o, o->building_grid, (size_t)count * sizeof(*array), old_array, c->failure);
     if (array == NULL)
         return false;
+    o->building_grid->spatial = array;
     o->fields.o = array;
     o->o_length = (size_t)count;
     c->state->last_store_pc = 128;
-    array = mc_render_global_allocate(o, (size_t)count * sizeof(*array),
-                                      (mc_client_graphics_site){"n", "a", "()V", 146}, c->failure);
+    array =
+        mc_render_global_grid_allocate(o, o->building_grid, (size_t)count * sizeof(*array),
+                                       (mc_client_graphics_site){"n", "a", "()V", 146}, c->failure);
     if (array == NULL)
         return false;
+    o->building_grid->sorted = array;
     o->fields.n = array;
     o->n_length = (size_t)count;
     c->state->last_store_pc = 149;
@@ -354,7 +539,9 @@ bool mc_render_global_rebuild_entered(mc_client_render_global *owner, mc_math_cl
     state->failure = error;
     state->rebuild_returned = false;
     rebuild_context c = {owner, math, state, error};
-    return rebuild(&c);
+    const bool returned = rebuild(&c);
+    owner->building_grid = NULL;
+    return returned;
 }
 
 static bool run(mc_client_render_global_world_call *c) {

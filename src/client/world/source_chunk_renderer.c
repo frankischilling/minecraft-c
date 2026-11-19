@@ -51,11 +51,17 @@ mc_client_source_dk *mc_source_dk_allocate(mc_client_render_global *n,
                                      e->graphics.native_policy);
         return NULL;
     }
-    mc_client_source_dk *o = mc_render_global_allocate(n, sizeof(*o), site, e);
+    mc_client_source_dk *o =
+        mc_render_global_grid_allocate(n, n->building_grid, sizeof(*o), site, e);
     if (o != NULL) {
         o->owner = n;
         o->next = n->chunk_owners;
         n->chunk_owners = o;
+        if (n->building_grid != NULL) {
+            n->building_grid->newest = o;
+            if (n->building_grid->oldest == NULL)
+                n->building_grid->oldest = o;
+        }
     }
     return o;
 }
@@ -258,8 +264,9 @@ bool mc_source_dk_construct(mc_client_source_dk *o, mc_world_runtime *world,
     o->fields.o = false;
     o->last_store_pc = 11;
     o->source_pc = 16;
-    o->fields.p = mc_render_global_allocate(o->owner, 2u * sizeof(bool),
-                                            (mc_client_graphics_site){"dk", "<init>", CTOR, 16}, e);
+    o->fields.p =
+        mc_render_global_grid_allocate(o->owner, o->owner->building_grid, 2u * sizeof(bool),
+                                       (mc_client_graphics_site){"dk", "<init>", CTOR, 16}, e);
     if (o->fields.p == NULL)
         goto failed;
     o->last_store_pc = 18;
@@ -268,8 +275,9 @@ bool mc_source_dk_construct(mc_client_source_dk *o, mc_world_runtime *world,
     o->fields.E = false;
     o->last_store_pc = 28;
     o->source_pc = 32;
-    o->fields.B = mc_render_global_allocate(o->owner, sizeof(*o->fields.B),
-                                            (mc_client_graphics_site){"dk", "<init>", CTOR, 32}, e);
+    o->fields.B =
+        mc_render_global_grid_allocate(o->owner, o->owner->building_grid, sizeof(*o->fields.B),
+                                       (mc_client_graphics_site){"dk", "<init>", CTOR, 32}, e);
     if (o->fields.B == NULL)
         goto failed;
     o->tile_list_origin = o->fields.B;

@@ -62,4 +62,8 @@ bool mc_render_global_pointer_append(mc_client_render_global *, mc_client_render
                                      mc_client_graphics_site, mc_client_render_global_error *);
 void *mc_render_global_allocate(mc_client_render_global *, size_t, mc_client_graphics_site,
                                 mc_client_render_global_error *);
+void *mc_render_global_grid_allocate(mc_client_render_global *, mc_render_global_grid *, size_t,
+                                     mc_client_graphics_site, mc_client_render_global_error *);
+void *mc_render_global_chunk_allocate(mc_client_source_dk *, size_t, mc_client_graphics_site,
+                                      mc_client_render_global_error *);
 #endif

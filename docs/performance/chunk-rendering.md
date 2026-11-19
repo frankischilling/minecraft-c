@@ -1,5 +1,30 @@
 # Chunk rendering and EW diagnostics
 
+## Render-distance rebuilds
+
+The authored Windows rebuild case reached its 8 MiB arena limit on the
+sixth Tiny/Far change. Retiring displaced renderer grids lets all 12 changes
+complete. The arena charge peaked at 4,207,616 bytes with an older grid held
+by the selection list and fell to 4,146,304 bytes on the next rebuild after
+the list cleared. The failure case checks retry with the actual bounds owner
+restored. Run the case
+with `ctest --test-dir build-windows -R '^client\.render_global_world_rebuild_budget$'`
+on a Windows client configured for startup and display tests.
+
+The first cleanup implementation grew each Chunk renderer from 208 to 224
+bytes. Three alternating Far rounds measured 72.91 FPS before, 67.62 FPS
+with that layout, and 65.44 FPS when the same build also reused registry
+diagnostics during face lighting. All nine runs qualified and completed
+200 World ticks. The final implementation restores the 208-byte layout. The
+face-lighting trial was dropped.
+
+Four alternating pairs against `22837ae9` measured 72.21 FPS before and 72.23
+FPS after, with two pairs faster and two slower. Median run p95 frame time
+was 15.32 ms before and 15.26 ms after. All eight intervals completed 200
+World ticks in the stationary authored Far scene at 854×480 after a two-second
+warmup, on an i9-10900F with an RTX 3060. This comparison measured steady
+rendering. The rebuild test checks arena use during distance changes.
+
 ## Sky-change dirty marking
 
 The sky-change callback now checks the Chunk renderer's fixed owner on

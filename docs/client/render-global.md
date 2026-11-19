@@ -93,6 +93,21 @@ native World occurrences. Source `n.a(NULL)` removes the WorldAccess occurrence
 and replaces `k/u`, but leaves the old DK arrays and their World references
 intact. Those references end at a later source DK clear or checked native cleanup.
 
+Each renderer grid owns its Chunk renderers, arrays, and private TileEntity
+storage. A rebuild retains the grid it displaces. Later rebuilds retire older
+grids once the renderer arrays and the selected and dirty lists release their
+references. Retirement releases native bounds and TileEntity holds before
+returning the grid's allocation charge to the shared 8 MiB budget. Failed
+cleanup retains the grid for a checked retry.
+
+The authored Windows `client.render_global_world_rebuild_budget` case found
+that the sixth Tiny/Far change hit the arena ceiling. With grid retirement,
+all 12 changes complete under the same 8 MiB limit. The largest live charge
+is 4,207,616 bytes while the selection list still holds an old grid. After
+clearing the list, the next rebuild returns to 4,146,304 bytes. The same
+test withholds the Entity bounds owner, checks the retained cleanup failure,
+and restores the owner for a successful terminal retry.
+
 The owner retains its graphics namespace and context independently of App
 publication. Optional query names keep their original context generation and
 buffer alive until checked deletion. Failed cleanup retains its rights and the

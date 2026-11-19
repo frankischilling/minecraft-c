@@ -8,6 +8,7 @@ int mc_render_world_startup_fixture_main(int argc, char **argv);
 #include "client/render_engine/chunk_statistics.h"
 #include "client/render_engine/internal.h"
 #include "client/world/render_global_access.h"
+#include "client/world/render_global_recenter.h"
 #include "client/world/source_chunk_renderer_internal.h"
 #include "mc/client/world/frustum_culling.h"
 #include "mc/world/dimension/world_provider.h"
@@ -274,7 +275,7 @@ static int quota_prefix(fixture *runtime, client_application *app, mc_world_runt
     mc_client_render_global_error *error = calloc(1, sizeof(*error));
     CHECK(error != NULL);
     const mc_client_render_engine_options options = {8u * 1024u * 1024u,
-                                                     constructor_allocations + 5u};
+                                                     constructor_allocations + 6u};
     CHECK(mc_client_render_global_allocate(runtime->graphics, &options, &owner, error) ==
           MC_CLIENT_RENDER_GLOBAL_OK);
     CHECK(mc_client_render_global_construct(owner, app, app->render_engine, app->display, error) ==
@@ -552,7 +553,124 @@ static int lifetime(mc_client_render_global **slot, mc_world_runtime *world) {
     return 0;
 }
 
-static int world_device(const char *resources, const char *assets, const char *world_path) {
+static size_t grid_count(const mc_client_render_global *owner) {
+    size_t count = 0;
+    for (const mc_render_global_grid *grid = owner->grids; grid != NULL; grid = grid->next)
+        ++count;
+    return count;
+}
+
+static int rebuild_budget_cleanup(fixture *runtime, client_application *app,
+                                  mc_world_runtime *world, mc_client_render_global_error *error) {
+    mc_client_render_global *owner = NULL;
+    CHECK(mc_client_render_global_allocate(runtime->graphics, NULL, &owner, error) ==
+              MC_CLIENT_RENDER_GLOBAL_OK &&
+          mc_client_render_global_construct(owner, app, app->render_engine, app->display, error) ==
+              MC_CLIENT_RENDER_GLOBAL_OK);
+    CHECK(distance(app, 3) == 0);
+    size_t bytes;
+    CHECK(attach(owner, world, 5, 200, &bytes) == 0);
+    mc_client_render_global_world_state state = {0};
+    owner->active = true;
+    const bool second =
+        mc_render_global_rebuild_entered(owner, app->source_math_classes, &state, error);
+    owner->active = false;
+    CHECK(second && grid_count(owner) == 2);
+    const size_t retained_bytes = owner->arena.bytes;
+    const size_t retained_allocations = owner->arena.allocations;
+    mc_render_global_grid *const retained_grid = owner->grids;
+    mc_entity_classes *const entities = app->entities;
+    /* Withhold the reached native dependency after two complete source grids.
+     * Cleanup must retain both groups, then succeed after the owner returns. */
+    app->entities = NULL;
+    owner->active = true;
+    const bool third =
+        mc_render_global_rebuild_entered(owner, app->source_math_classes, &state, error);
+    owner->active = false;
+    const mc_client_render_global_status collect_status = error->status;
+    mc_client_render_global *const retained_owner = owner;
+    const mc_client_render_global_status retire_status =
+        mc_client_render_global_retire(&owner, error);
+    app->entities = entities;
+    CHECK(!third && collect_status == MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED &&
+          retire_status == MC_CLIENT_RENDER_GLOBAL_CLEANUP_FAILED && owner == retained_owner &&
+          owner->grids == retained_grid && grid_count(owner) == 2 &&
+          owner->arena.bytes == retained_bytes &&
+          owner->arena.allocations == retained_allocations && owner->world_retiring &&
+          owner->building_grid == NULL && error->bounds.status == MC_ENTITY_INVALID_PHASE);
+    CHECK(mc_client_render_global_retire(&owner, error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+          owner == NULL);
+    return 0;
+}
+
+static int rebuild_budget(fixture *runtime, client_application *app, mc_world_runtime *world,
+                          mc_client_render_global_error *error) {
+    mc_client_render_global *owner = NULL;
+    CHECK(mc_client_render_global_allocate(runtime->graphics, NULL, &owner, error) ==
+              MC_CLIENT_RENDER_GLOBAL_OK &&
+          mc_client_render_global_construct(owner, app, app->render_engine, app->display, error) ==
+              MC_CLIENT_RENDER_GLOBAL_OK);
+    CHECK(distance(app, 0) == 0);
+    size_t bytes;
+    CHECK(attach(owner, world, 26, 5408, &bytes) == 0);
+    const size_t ceiling = owner->arena.options.max_constructor_bytes;
+    CHECK(ceiling == 8u * 1024u * 1024u);
+    size_t completed = 0;
+    mc_client_source_dk *selected = NULL;
+    for (size_t step = 0; step < 12; ++step) {
+        const int32_t setting = (step & 1u) == 0 ? 3 : 0;
+        const int32_t extent = setting == 0 ? 26 : 5;
+        const size_t count = setting == 0 ? 5408u : 200u;
+        CHECK(distance(app, setting) == 0);
+        mc_client_source_dk **previous_array = owner->fields.o;
+        mc_client_source_dk *previous_first = previous_array[0];
+        mc_client_render_global_world_state state = {0};
+        *error = (mc_client_render_global_error){0};
+        owner->active = true;
+        const bool rebuilt =
+            mc_render_global_rebuild_entered(owner, app->source_math_classes, &state, error);
+        owner->active = false;
+        printf("REBUILD_BUDGET step=%zu distance=%d returned=%d status=%d pc=%u arena=%zu "
+               "allocations=%zu ceiling=%zu\n",
+               step, setting, rebuilt, error->status, state.rebuild_pc, owner->arena.bytes,
+               owner->arena.allocations, ceiling);
+        CHECK(fflush(stdout) == 0);
+        if (!rebuilt) {
+            CHECK(error->status != MC_CLIENT_RENDER_GLOBAL_OK && !state.rebuild_returned);
+            break;
+        }
+        CHECK(state.rebuild_returned && state.rebuild_pc == 699 &&
+              state.constructed_chunks == count && state.published_chunks == count &&
+              state.queued_chunks == count && owner->fields.p == extent &&
+              owner->fields.r == extent && owner->o_length == count &&
+              owner->fields.o != previous_array && previous_first->fields.a == NULL &&
+              owner->arena.bytes <= ceiling);
+        if (step == 0) {
+            selected = owner->fields.o[0];
+            CHECK(mc_render_global_pointer_append(
+                owner, owner->fields.S, selected,
+                (mc_client_graphics_site){"n", "a", "(IIID)I", 209}, error));
+        }
+        if (selected != NULL)
+            CHECK(owner->fields.S->count == 1 && owner->fields.S->entries[0] == selected &&
+                  selected->phase == MC_CLIENT_RENDER_GLOBAL_READY && selected->fields.v != NULL &&
+                  (step == 0 || selected->fields.a == NULL));
+        CHECK(grid_count(owner) <= (selected != NULL ? 3u : 2u));
+        if (step == 5) {
+            mc_client_render_list_clear(owner->fields.S);
+            selected = NULL;
+        }
+        ++completed;
+    }
+    CHECK(mc_client_render_global_retire(&owner, error) == MC_CLIENT_RENDER_GLOBAL_OK &&
+          owner == NULL);
+    CHECK(completed == 12);
+    CHECK(rebuild_budget_cleanup(runtime, app, world, error) == 0);
+    return 0;
+}
+
+static int world_device(const char *resources, const char *assets, const char *world_path,
+                        bool check_rebuild_budget) {
     fixture runtime;
     startup_fixture startup;
     CHECK(fixture_open(&runtime, resources) == 0 && startup_services(&startup) == 0 &&
@@ -618,6 +736,8 @@ static int world_device(const char *resources, const char *assets, const char *w
            large_bytes, sizeof(mc_client_source_dk));
     CHECK(terminal_preserves_manager(&large, owner, &world, attempt->manager_classes) == 0 &&
           large == NULL);
+    if (check_rebuild_budget)
+        CHECK(rebuild_budget(&runtime, app, world.world, error) == 0);
     CHECK(distance(app, 3) == 0 &&
           quota_prefix(&runtime, app, world.world, constructor_allocations) == 0);
     CHECK(lifetime(&owner, world.world) == 0 && direct_world_close(&world) == 0);
@@ -644,8 +764,8 @@ int main(int argc, char **argv) {
     if (argc == 2 && strcmp(argv[1], "--cpu") == 0)
         CHECK(raw_world_admission() == 0);
     else {
-        CHECK(argc == 4);
-        CHECK(world_device(argv[1], argv[2], argv[3]) == 0);
+        CHECK(argc == 4 || (argc == 5 && strcmp(argv[4], "--rebuild-budget") == 0));
+        CHECK(world_device(argv[1], argv[2], argv[3], argc == 5) == 0);
     }
     printf("Actual RenderGlobal World contracts: %u checks\n", checks);
     return 0;

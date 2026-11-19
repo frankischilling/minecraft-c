@@ -93,9 +93,12 @@ static bool grow_tile_list(mc_source_dk_compile *c, mc_client_render_list *list,
     if (capacity > INT32_MAX || capacity > SIZE_MAX / sizeof(*list->entries))
         return fail(c, MC_CLIENT_RENDER_GLOBAL_LIMIT, "DK Tile List backing native extent", pc,
                     true);
-    void **entries = mc_render_global_allocate(
-        c->state.chunk->owner, capacity * sizeof(*entries),
-        (mc_client_graphics_site){"dk", "a", "()V", (int32_t)pc}, &c->failure);
+    mc_client_source_dk *dk = c->state.chunk;
+    const mc_client_graphics_site site = {"dk", "a", "()V", (int32_t)pc};
+    void **entries =
+        list == dk->fields.B
+            ? mc_render_global_chunk_allocate(dk, capacity * sizeof(*entries), site, &c->failure)
+            : mc_render_global_allocate(dk->owner, capacity * sizeof(*entries), site, &c->failure);
     if (entries == NULL)
         return fail(c, c->failure.status, c->failure.operation, pc, true);
     if (list->count != 0)
@@ -249,7 +252,7 @@ static bool tile_eligibility(mc_source_dk_compile *c) {
         while (hold != NULL && hold->tile != NULL)
             hold = hold->next;
         if (hold == NULL) {
-            hold = mc_render_global_allocate(n, sizeof(*hold), at, &c->failure);
+            hold = mc_render_global_chunk_allocate(dk, sizeof(*hold), at, &c->failure);
             if (hold == NULL)
                 return fail(c, c->failure.status, c->failure.operation, 411, true);
             hold->next = dk->tile_holds;
