@@ -1,5 +1,18 @@
 # Reference-reader performance
 
+## Plant lifecycle replay
+
+The corruption controls copy only the containers along each changed path.
+The cell validator checks the same five exact integer types, bounds and
+ordering without building a generator or slicing each cell.
+
+Four alternating WSL2 pairs ran both sides' controls over the same captured
+native packets. Median Python CPU time for the guards fell from 5.990 to
+1.933 seconds. All 332 ordered comparison outcomes and 152 additional cell
+validation cases matched. The complete replay still compares 59 cases per
+side and runs 12 corruption and 154 malformed-input guards per side. The
+timing covers the Python guards with the native probe already captured.
+
 ## Redstone Ore fixture construction
 
 The `ff81d0ea` GCC CI run passed 1,341 of 1,343 tests. Both Redstone Ore native

@@ -15,30 +15,49 @@ SPEC = importlib.util.spec_from_file_location("plant_lifecycle_comparison", DRIV
 COMPARE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(COMPARE)
 FIXTURES = ROOT / "tests/reference/world/plants"
+MISSING = object()
+
+
+def replace_at(source, path, value):
+    # Detach the containers on the changed path. Comparison treats all cells
+    # and cases outside that path as read-only.
+    changed = copy.copy(source)
+    source_at, changed_at = source, changed
+    for key in path[:-1]:
+        child = copy.copy(source_at[key])
+        changed_at[key] = child
+        source_at, changed_at = source_at[key], child
+    if value is MISSING:
+        del changed_at[path[-1]]
+    else:
+        changed_at[path[-1]] = value
+    return changed
 
 
 def guards(expected, native, names):
     count = 0
     for field in ("before", "after", "drops"):
-        changed = copy.deepcopy(expected)
         if field == "drops":
-            changed["cases"][0][field] = [{"stack": [1, 0, 6, 0], "pickup_delay": 10,
-                                           "position_bits": ["0" * 16] * 3}]
+            changed = replace_at(expected, ("cases", 0, field),
+                                 [{"stack": [1, 0, 6, 0], "pickup_delay": 10,
+                                   "position_bits": ["0" * 16] * 3}])
         else:
-            changed["cases"][0][field][0][4] ^= 1
+            metadata = expected["cases"][0][field][0][4]
+            changed = replace_at(expected, ("cases", 0, field, 0, 4), metadata ^ 1)
         if not COMPARE.compare(changed, native, names):
             raise ValueError("missing comparison for " + field)
         count += 1
     for stream in ("supplied_random_tail", "world_random_tail"):
         for key in ("next_long_hex", "next_int31", "next_double_bits", "next_gaussian_bits"):
-            changed = copy.deepcopy(expected)
-            value = changed["cases"][0][stream][key]
-            changed["cases"][0][stream][key] = value ^ 1 if type(value) is int else "0" * 16
+            value = expected["cases"][0][stream][key]
+            changed = replace_at(expected, ("cases", 0, stream, key),
+                                 value ^ 1 if type(value) is int else "0" * 16)
             if not COMPARE.compare(changed, native, names):
                 raise ValueError("missing Random comparison for " + stream + "." + key)
             count += 1
-    changed = copy.deepcopy(expected)
-    changed["cases"][0], changed["cases"][1] = changed["cases"][1], changed["cases"][0]
+    cases = expected["cases"].copy()
+    cases[0], cases[1] = cases[1], cases[0]
+    changed = replace_at(expected, ("cases",), cases)
     try:
         COMPARE.compare(changed, native, names)
     except ValueError:
@@ -50,7 +69,6 @@ def guards(expected, native, names):
 
 def malformed_guards(expected, native, names):
     dropped = next(index for index, row in enumerate(expected["cases"]) if row["drops"])
-    missing = object()
     variants = [(("schema",), True),
                 (("unexpected",), 0),
                 (("sparse_default", 0), False),
@@ -60,7 +78,7 @@ def malformed_guards(expected, native, names):
         prefix = ("cases", 0, stream)
         for value in (True, 0.0, -1, 31):
             variants.append((prefix + ("next_int31",), value))
-        variants.extend(((prefix + ("next_long_hex",), missing),
+        variants.extend(((prefix + ("next_long_hex",), MISSING),
                          (prefix + ("unexpected",), 0)))
         for field in ("next_long_hex", "next_double_bits", "next_gaussian_bits"):
             for value in (False, "0" * 15, "A" * 16, "g" * 16):
@@ -76,24 +94,13 @@ def malformed_guards(expected, native, names):
             variants.append((prefix + ("position_bits", field), value))
     variants.extend(((prefix + ("stack",), [1, 0, 6]),
                      (prefix + ("position_bits",), ["0" * 16] * 2),
-                     (prefix + ("pickup_delay",), missing),
+                     (prefix + ("pickup_delay",), MISSING),
                      (prefix + ("unexpected",), 0)))
     count = 0
     for path, value in variants:
         for original in (True, False):
-            # Copy only containers along the changed path. The other cells and
-            # cases remain read-only, keeping these schema trials inexpensive.
             source = expected if original else native
-            changed = copy.copy(source)
-            source_at, changed_at = source, changed
-            for key in path[:-1]:
-                child = copy.copy(source_at[key])
-                changed_at[key] = child
-                source_at, changed_at = source_at[key], child
-            if value is missing:
-                del changed_at[path[-1]]
-            else:
-                changed_at[path[-1]] = value
+            changed = replace_at(source, path, value)
             try:
                 COMPARE.compare(changed if original else expected,
                                 native if original else changed, names)

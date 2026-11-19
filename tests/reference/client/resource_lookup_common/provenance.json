@@ -2362,8 +2362,8 @@
       "sha256": "6c3548c35acba842d8752089831b3fd58345f51e338fd15de1f6f45c9bc29418"
     },
     "scripts/reference/world/plants/compare_lifecycle.py": {
-      "bytes": 14676,
-      "sha256": "c3f2e1372c1b1baf2ac4c06c0be4f7e02815d1904265b2196d462aa425cfd2fc"
+      "bytes": 14879,
+      "sha256": "bfe6c9b2c1833ab1eb6d221c12b510d5feb8d7b5422abd67a70cb3e379053ba6"
     },
     "scripts/reference/world/population/compare_named_data.py": {
       "bytes": 25506,
@@ -8798,8 +8798,8 @@
       "sha256": "73f9daf65a13697ce0587d08f4193b5a0a0a4e460e12e82685ba54a41a866679"
     },
     "tests/tools/world/replay_plant_lifecycle.py": {
-      "bytes": 8047,
-      "sha256": "20acf0e493d630978344444b96928692fd0615759adf3deb9e86c6430a10c9bf"
+      "bytes": 8161,
+      "sha256": "f71d3b95715877b8768b32fd101d1dfb79246b9a57de1df3e7498bc59103d518"
     },
     "tests/tools/world/replay_population_named_data.py": {
       "bytes": 9777,
@@ -21674,8 +21674,8 @@
       "sha256": "548d810f6542a3ad5d8ff073acae9387f604bf6a426bac83c775772bc76efd57"
     },
     "docs/performance/reference-readers.md": {
-      "bytes": 11752,
-      "sha256": "a8c1575cfbe4af4a24bf380d7161e4f9f9b1e209e145c78c4305663360e1ae1c"
+      "bytes": 12430,
+      "sha256": "ba43ba14eea05ff235215d26622b1688ed9236a6153ce6d9facc4091732509df"
     },
     "docs/world/bed-interaction.md": {
       "bytes": 5514,

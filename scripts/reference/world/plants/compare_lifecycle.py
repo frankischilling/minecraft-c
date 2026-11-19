@@ -175,13 +175,17 @@ def projection(row, original, extent=None):
             raise ValueError("invalid sparse cell list")
         previous = None
         for cell in cells:
-            if (type(cell) is not list or len(cell) != 5 or any(type(value) is not int for value in cell) or
-                    not (extent[0] <= cell[0] <= extent[1] and extent[2] <= cell[1] <= extent[3] and
-                         extent[4] <= cell[2] <= extent[5]) or
-                    not (0 <= cell[3] <= 255 and 0 <= cell[4] <= 15) or
-                    cell[3:] == [0, 0]):
+            if type(cell) is not list or len(cell) != 5:
                 raise ValueError("invalid sparse cell projection")
-            coordinate = (cell[0], cell[2], cell[1])
+            x, y, z, block_id, metadata = cell
+            if (type(x) is not int or type(y) is not int or type(z) is not int or
+                    type(block_id) is not int or type(metadata) is not int or
+                    not (extent[0] <= x <= extent[1] and extent[2] <= y <= extent[3] and
+                         extent[4] <= z <= extent[5]) or
+                    not (0 <= block_id <= 255 and 0 <= metadata <= 15) or
+                    (block_id == 0 and metadata == 0)):
+                raise ValueError("invalid sparse cell projection")
+            coordinate = (x, z, y)
             if previous is not None and coordinate <= previous:
                 raise ValueError("unordered or duplicate sparse cell")
             previous = coordinate
