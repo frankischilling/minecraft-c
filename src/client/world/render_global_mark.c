@@ -1,5 +1,6 @@
 #include "../render_engine/internal.h"
 #include "source_chunk_renderer_internal.h"
+#include <limits.h>
 #include <string.h>
 
 static mc_client_render_global_status mark(mc_client_render_global *o, int32_t x0, int32_t y0,
@@ -16,7 +17,8 @@ static mc_client_render_global_status mark(mc_client_render_global *o, int32_t x
                   first_z = mc_java_i32_shr(z0, 4);
     const int32_t last_x = mc_java_i32_shr(x1, 4), last_y = mc_java_i32_shr(y1, 4),
                   last_z = mc_java_i32_shr(z1, 4);
-    for (int32_t x = first_x; x <= last_x; x = mc_java_i32_add(x, 1)) {
+    /* Shifting the block coordinates leaves room for the final increment. */
+    for (int32_t x = first_x; x <= last_x; ++x) {
         int32_t wrapped_x;
         if (!mc_java_i32_rem(x, o->fields.p, &wrapped_x))
             return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
@@ -24,7 +26,7 @@ static mc_client_render_global_status mark(mc_client_render_global *o, int32_t x
                                                 "a", "(IIIIII)V", 68, false);
         if (wrapped_x < 0)
             wrapped_x = mc_java_i32_add(wrapped_x, o->fields.p);
-        for (int32_t y = first_y; y <= last_y; y = mc_java_i32_add(y, 1)) {
+        for (int32_t y = first_y; y <= last_y; ++y) {
             int32_t wrapped_y;
             if (!mc_java_i32_rem(y, o->fields.q, &wrapped_y))
                 return mc_render_global_source_fail(
@@ -33,7 +35,7 @@ static mc_client_render_global_status mark(mc_client_render_global *o, int32_t x
                     false);
             if (wrapped_y < 0)
                 wrapped_y = mc_java_i32_add(wrapped_y, o->fields.q);
-            for (int32_t z = first_z; z <= last_z; z = mc_java_i32_add(z, 1)) {
+            for (int32_t z = first_z; z <= last_z; ++z) {
                 int32_t wrapped_z;
                 if (!mc_java_i32_rem(z, o->fields.r, &wrapped_z))
                     return mc_render_global_source_fail(
@@ -42,16 +44,16 @@ static mc_client_render_global_status mark(mc_client_render_global *o, int32_t x
                         false);
                 if (wrapped_z < 0)
                     wrapped_z = mc_java_i32_add(wrapped_z, o->fields.r);
-                const int32_t index = mc_java_i32_add(
-                    mc_java_i32_mul(
-                        mc_java_i32_add(mc_java_i32_mul(wrapped_z, o->fields.q), wrapped_y),
-                        o->fields.p),
-                    wrapped_x);
+                /* Unsigned arithmetic preserves the wrapped index bits. */
+                const uint32_t index =
+                    ((uint32_t)wrapped_z * (uint32_t)o->fields.q + (uint32_t)wrapped_y) *
+                        (uint32_t)o->fields.p +
+                    (uint32_t)wrapped_x;
                 if (o->fields.o == NULL)
                     return mc_render_global_source_fail(e, MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE,
                                                         "actual n.o array receiver", "n", "a",
                                                         "(IIIIII)V", 179, false);
-                if (index < 0 || (size_t)index >= o->o_length)
+                if (index > INT32_MAX || (size_t)index >= o->o_length)
                     return mc_render_global_source_fail(
                         e, MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY,
                         "actual n.o array index", "n", "a", "(IIIIII)V", 179, false);

@@ -184,6 +184,92 @@ static bool run(picking_fixture *f, const char *path) {
     return true;
 }
 
+static bool dirty_queue_polls(picking_fixture *f) {
+    mc_client_render_global *n = NULL;
+    mc_client_render_global_error error = {0};
+    CHECK(mc_client_render_global_allocate(f->graphics, NULL, &n, &error) ==
+          MC_CLIENT_RENDER_GLOBAL_OK);
+    mc_client_source_dk actors[6] = {0};
+    mc_client_source_dk *spatial[5];
+    for (size_t i = 0; i < 5; ++i) {
+        actors[i].owner = n;
+        actors[i].fields.u = true;
+        spatial[i] = &actors[i];
+    }
+    void *entries[16] = {0};
+    for (size_t i = 0; i < 13; ++i)
+        entries[i] = &actors[5];
+    entries[0] = &actors[0];
+    entries[7] = &actors[1];
+    entries[12] = &actors[2];
+    mc_client_render_list queue = {.entries = entries, .count = 13, .capacity = 16};
+    n->fields.o = spatial;
+    n->o_length = 5;
+    n->fields.m = &queue;
+
+    mc_client_render_global_submit_call *call = NULL;
+    mc_client_render_global_submit_state state;
+    n->fields.R = INT32_MAX;
+    CHECK(mc_client_render_global_submit_begin(n, NULL, 0, 0, NULL, &call, &error) ==
+          MC_CLIENT_RENDER_GLOBAL_SOURCE_INDEX);
+    CHECK(mc_client_render_global_submit_inspect(call, &state) && state.dirty_polls == 1 &&
+          state.queued_chunks == 0 && n->fields.R == -3 && error.source_pc == 34 &&
+          queue.count == 13 && queue.mod_count == 0);
+    CHECK(mc_client_render_global_submit_retire(&call, &error) == MC_CLIENT_RENDER_GLOBAL_OK);
+
+    n->fields.R = 0;
+    CHECK(mc_client_render_global_submit_begin(n, NULL, 0, 0, NULL, &call, &error) ==
+          MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE);
+    CHECK(mc_client_render_global_submit_inspect(call, &state) && state.dirty_polls == 10 &&
+          state.queued_chunks == 2 && n->fields.R == 0 && error.source_pc == 81 &&
+          queue.count == 15 && queue.mod_count == 2 && entries[13] == &actors[3] &&
+          entries[14] == &actors[4]);
+    CHECK(mc_client_render_global_submit_retire(&call, &error) == MC_CLIENT_RENDER_GLOBAL_OK);
+
+    n->fields.o = NULL;
+    n->fields.m = NULL;
+    n->o_length = 0;
+    CHECK(mc_client_render_global_retire(&n, &error) == MC_CLIENT_RENDER_GLOBAL_OK);
+    return true;
+}
+
+static bool dirty_range_marking(void) {
+    mc_client_render_global owner = {0};
+    mc_client_source_dk actors[4] = {0};
+    mc_client_source_dk *spatial[] = {&actors[0], &actors[1], &actors[2], &actors[3]};
+    void *entries[4] = {0};
+    mc_client_render_list queue = {.entries = entries, .capacity = 4};
+    mc_client_render_global_error error;
+    owner.fields.p = 2;
+    owner.fields.q = 1;
+    owner.fields.r = 2;
+    owner.fields.o = spatial;
+    owner.o_length = 4;
+    owner.fields.m = &queue;
+    CHECK(mc_render_global_mark_range(&owner, -16, 7, -16, 16, 7, 16, &error) ==
+              MC_CLIENT_RENDER_GLOBAL_OK &&
+          error.source_returned && queue.count == 4 && queue.mod_count == 4 &&
+          entries[0] == &actors[0] && entries[1] == &actors[2] && entries[2] == &actors[1] &&
+          entries[3] == &actors[3]);
+
+    queue.count = 0;
+    for (size_t i = 0; i < 4; ++i)
+        actors[i].fields.u = false;
+    spatial[3] = NULL;
+    CHECK(mc_render_global_mark_range(&owner, -16, 7, -16, 16, 7, 16, &error) ==
+              MC_CLIENT_RENDER_GLOBAL_NULL_REFERENCE &&
+          error.source_pc == 184 && !error.source_returned && queue.count == 3 &&
+          queue.mod_count == 7 && entries[0] == &actors[0] && entries[1] == &actors[2] &&
+          entries[2] == &actors[1] && !actors[3].fields.u);
+
+    owner.fields.p = INT32_MAX;
+    owner.fields.r = 4;
+    CHECK(mc_render_global_mark_cell(&owner, 2, 7, 40, &error) ==
+              MC_CLIENT_RENDER_GLOBAL_UNIMPLEMENTED_DEPENDENCY &&
+          error.source_pc == 179 && error.parent.pc == 19 && queue.count == 3);
+    return true;
+}
+
 static bool subset_selection(void) {
     mc_client_render_global owner = {0};
     bool empty[2] = {true, true}, populated[2] = {false, false};
@@ -269,8 +355,8 @@ int main(int argc, char **argv) {
     f->app->registry = f->base.registry;
     f->app->entities = f->base.entities;
     f->app->source_math_classes = f->math;
-    if (!run(f, argv[2]) || !subset_selection() || !live_camera_distance(f->base.entities) ||
-        !picking_close(f))
+    if (!run(f, argv[2]) || !dirty_queue_polls(f) || !dirty_range_marking() ||
+        !subset_selection() || !live_camera_distance(f->base.entities) || !picking_close(f))
         return 1;
     free(f);
     printf("Source submission CPU: %u checks; 12 pre-U prefixes\n", checks);

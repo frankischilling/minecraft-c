@@ -6419,7 +6419,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938028,
-      "sha256": "ee045dd9fa1852b3865394d575fce5bfbc9963eaed84a0a552f5bacac0c70b67"
+      "sha256": "76925d56a5580f054a6e68d759d242a3cb31f93c8ded9f6a6dea6c657c130414"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6483,7 +6483,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1067982,
-      "sha256": "11a3bd86eeae960339251630a4f618d419b66b18315e9de076cb6be063f6c3f0"
+      "sha256": "8688bb4a0c955830addb851d12115fd7a4e64774600e1cb7090225972365398f"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6615,7 +6615,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934853,
-      "sha256": "ef7e1b3743ae6dfb100c76322e2dbcdb3c6523a55088f542ba33b0192cbe77e7"
+      "sha256": "773c89dcc41a0f29e07bfc4c8f1e983fbed1cea3e99628ba95c0ab5a9717ae8d"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -10202,8 +10202,8 @@
       "sha256": "c7d2a1667fc903c72067bb003212825ea047e91f4314371f6f721b81f5767e53"
     },
     "src/client/world/render_global_mark.c": {
-      "bytes": 5817,
-      "sha256": "438f7bfb7cddc97374ba94c5f089860192fa2b33bd9091cb1703496895682b22"
+      "bytes": 5896,
+      "sha256": "9f634be976f17cc954b44fe69959f37e3dbc49288cdd33940e5ab52bd02809b2"
     },
     "src/client/world/render_global_world.c": {
       "bytes": 33559,
@@ -11966,8 +11966,8 @@
       "sha256": "7e47836a47ebd6145e7142abb20338ff3d550209c8440e4c950a3b0414f3ba0a"
     },
     "src/client/world/render_global_submit.c": {
-      "bytes": 16414,
-      "sha256": "74e120717f93b1fb01c9b0bd2c99636918f4bbedcb250649c9d1083f5f447e1f"
+      "bytes": 16881,
+      "sha256": "79934d96dd3eeb2a08f3eb31dd8e3bf291c87fe161bc7776e3e1a66ffddc9cd3"
     },
     "src/client/world/render_global_submit_access.c": {
       "bytes": 10216,
@@ -12002,8 +12002,8 @@
       "sha256": "102d2a4814a3df13934c42243564d91357b50d376e4dd96522ac0c73655cb9f1"
     },
     "tests/client/world/test_render_global_submit_cpu.c": {
-      "bytes": 13942,
-      "sha256": "eed15c40823eb3150200458f85874f51faafaded66a70aae9cde7512c4b192d3"
+      "bytes": 17742,
+      "sha256": "846ee20c12cbfa74026e16683b627625b1df48710b2904d6d270137f6cc427f8"
     },
     "tests/reference/client/occlusion_queries/QueryObservation.java": {
       "bytes": 5998,

@@ -41,15 +41,34 @@ static mc_client_render_list *dirty(mc_client_render_global_submit_call *c, unsi
     return m;
 }
 
+static bool dirty_list_contains(const mc_client_render_list *list, const mc_client_source_dk *dk) {
+    const size_t count = list->count;
+    void *const *entries = list->entries;
+    size_t index = 0;
+    for (; count - index >= 4; index += 4)
+        if (entries[index] == dk || entries[index + 1] == dk || entries[index + 2] == dk ||
+            entries[index + 3] == dk)
+            return true;
+    for (; index < count; ++index)
+        if (entries[index] == dk)
+            return true;
+    return false;
+}
+
 static bool polls(mc_client_render_global_submit_call *c) {
     mc_client_render_global *n = c->state.owner;
+    int32_t count;
+    if (!length(c, false, 21, &count))
+        return false;
+    if (count == 0)
+        return mc_terrain_fail(c, MC_CLIENT_RENDER_GLOBAL_SOURCE_ARITHMETIC,
+                               "actual N dirty-poll remainder by zero", 22, false);
+    /* These polls have no callback that can replace the renderer array. */
     for (int i = 0; i < 10; ++i) {
-        int32_t count, next;
-        if (!length(c, false, 21, &count))
-            return false;
-        if (!mc_java_i32_rem(mc_java_i32_add(n->fields.R, 1), count, &next))
-            return mc_terrain_fail(c, MC_CLIENT_RENDER_GLOBAL_SOURCE_ARITHMETIC,
-                                   "actual N dirty-poll remainder by zero", 22, false);
+        const int32_t current = n->fields.R;
+        const int32_t next = current >= -1 && current < count
+                                 ? (current + 1 == count ? 0 : current + 1)
+                                 : mc_java_i32_add(current, 1) % count;
         n->fields.R = next;
         mc_terrain_store(c, 23);
         ++c->state.dirty_polls;
@@ -61,24 +80,12 @@ static bool polls(mc_client_render_global_submit_call *c) {
         mc_client_render_list *m = dirty(c, 51);
         if (m == NULL)
             return false;
-        bool contains = false;
-        for (size_t j = 0; j < m->count; ++j)
-            if (m->entries[j] == dk) {
-                contains = true;
-                break;
-            }
-        if (contains)
+        if (dirty_list_contains(m, dk))
             continue;
-        m = dirty(c, 65);
-        if (m == NULL)
-            return false;
         mc_terrain_pc(c, 65);
-        if (!mc_terrain_child(
-                c,
-                mc_render_global_pointer_append(
-                    n, m, dk, (mc_client_graphics_site){"n", "a", "(Lls;ID)I", 65}, &c->failure),
-                65))
-            return false;
+        if (!mc_render_global_pointer_append(
+                n, m, dk, (mc_client_graphics_site){"n", "a", "(Lls;ID)I", 65}, &c->failure))
+            return mc_terrain_child(c, false, 65);
         ++c->state.queued_chunks;
     }
     return true;
