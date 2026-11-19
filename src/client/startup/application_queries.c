@@ -15,6 +15,25 @@ static mc_client_application_query_status fail(mc_client_application_query_error
     return status;
 }
 
+static bool read_settings(const client_application *app, bool *value,
+                          mc_client_application_query_error *error) {
+    if (app == NULL) {
+        fail(error, MC_CLIENT_APPLICATION_QUERY_SOURCE_NULL, "Minecraft.v App.z receiver", 9,
+             false);
+        return false;
+    }
+    const mc_game_settings *settings = app->settings;
+    if (settings == NULL)
+        fail(error, MC_CLIENT_APPLICATION_QUERY_SOURCE_NULL, "Minecraft.v Settings.k receiver", 12,
+             false);
+    else if (!mc_game_settings_read_ambient_occlusion(settings, value))
+        fail(error, MC_CLIENT_APPLICATION_QUERY_NATIVE_FAILED, "Minecraft.v Settings native view",
+             12, true);
+    else
+        return true;
+    return false;
+}
+
 mc_client_application_query_status
 mc_client_application_ambient_occlusion(mc_client_application_classes *classes, bool *out,
                                         mc_client_application_query_error *error) {
@@ -25,6 +44,22 @@ mc_client_application_ambient_occlusion(mc_client_application_classes *classes, 
              true);
         goto done;
     }
+    if (mtx_lock(&classes->mutex) != thrd_success) {
+        e.owner.status = MC_CLIENT_APPLICATION_OWNER_THREAD_FAILED;
+        fail(&e, MC_CLIENT_APPLICATION_QUERY_NATIVE_FAILED, "Minecraft.v namespace hold", 0, true);
+        goto done;
+    }
+    if (!classes->native_retiring && classes->holds != SIZE_MAX &&
+        classes->phase == MC_CLIENT_APPLICATION_CLASS_READY) {
+        /* The caller keeps the namespace alive. The lock protects both reads
+         * of the published App, and reading Settings cannot call back. */
+        const bool ok = classes->a == NULL || read_settings(classes->a, &value, &e);
+        (void)mtx_unlock(&classes->mutex);
+        if (ok)
+            goto returned;
+        goto done;
+    }
+    (void)mtx_unlock(&classes->mutex);
     e.owner.status = mc_client_application_classes_retain(classes);
     if (e.owner.status != MC_CLIENT_APPLICATION_OWNER_OK) {
         fail(&e, MC_CLIENT_APPLICATION_QUERY_NATIVE_FAILED, "Minecraft.v namespace hold", 0, true);
@@ -50,23 +85,10 @@ mc_client_application_ambient_occlusion(mc_client_application_classes *classes, 
                  "Minecraft.v getstatic6 native view", 6, true);
             goto done;
         }
-        if (second == NULL) {
-            fail(&e, MC_CLIENT_APPLICATION_QUERY_SOURCE_NULL, "Minecraft.v App.z receiver", 9,
-                 false);
+        if (!read_settings(second, &value, &e))
             goto done;
-        }
-        mc_game_settings *settings = second->settings;
-        if (settings == NULL) {
-            fail(&e, MC_CLIENT_APPLICATION_QUERY_SOURCE_NULL, "Minecraft.v Settings.k receiver", 12,
-                 false);
-            goto done;
-        }
-        if (!mc_game_settings_read_ambient_occlusion(settings, &value)) {
-            fail(&e, MC_CLIENT_APPLICATION_QUERY_NATIVE_FAILED, "Minecraft.v Settings native view",
-                 12, true);
-            goto done;
-        }
     }
+returned:
     e.site = (mc_client_application_owner_site){"net/minecraft/client/Minecraft", "v", "()Z", 23};
     e.source_returned = true;
     *out = value;

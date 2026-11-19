@@ -41,12 +41,13 @@ mc_client_entity_renderer_options mc_client_entity_renderer_default_options(void
 mc_client_entity_renderer_status
 mc_client_entity_renderer_class_active_use(mc_client_render_classes *classes,
                                            mc_client_entity_renderer_error *out) {
-    mc_client_entity_renderer_error local;
-    mc_client_entity_renderer_error *e = out == NULL ? &local : out;
-    mc_client_entity_renderer_error_init(e);
-    if (classes == NULL)
-        return entity_renderer_fail(e, MC_CLIENT_ENTITY_RENDERER_INVALID_ARGUMENT,
-                                    "EntityRenderer actual model namespace", NULL, -1, true);
+    mc_client_entity_renderer_error_init(out);
+    if (classes == NULL) {
+        if (out != NULL)
+            entity_renderer_fail(out, MC_CLIENT_ENTITY_RENDERER_INVALID_ARGUMENT,
+                                 "EntityRenderer actual model namespace", NULL, -1, true);
+        return MC_CLIENT_ENTITY_RENDERER_INVALID_ARGUMENT;
+    }
     if (!classes->px_ready) {
         classes->px_a = false; /* px.<clinit> putstatic1; b remains its real zero default. */
         classes->px_ready = true;

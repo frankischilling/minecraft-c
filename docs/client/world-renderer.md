@@ -3,7 +3,8 @@
 The client can construct an actual client GAME World, generate/populate its
 chunks, mesh a fixed area and draw it through OpenGL 3.3 core. This is a diagnostic
 scene. It has no Player, world tick, targeting, mining, placement or inventory.
-The Singleplayer button still requires its world-selection and gameplay owners.
+In normal startup, choose Singleplayer to open World selection.
+The `--inspect-world` option opens the separate fixed-camera diagnostic scene.
 
 After [asset import](../reference/resources.md), run:
 
@@ -123,6 +124,13 @@ section fell from 49.7 to 26.5 µs at the median. A section with 64 blocks
 fell from 262 to 239 µs. Each populated section produced matching
 vertex bytes and display list counts. The measurement covers compilation
 and retirement of the compile call.
+
+Section compilation also avoids preparing an EntityRenderer diagnostic
+when the caller provides no output. An initialized application reads the
+live ambient-occlusion setting under one lock. Eight alternating Windows
+Release pairs with 512 authored blocks measured 1.106 to 1.010 ms for flat
+shading and 2.167 to 2.047 ms with ambient occlusion. Display list counts
+and vertex bytes matched in both modes.
 
 Separate instrumented Far runs matched 411 mesh groups by section position
 and counts of cell reads, rendered Blocks, minimum-light queries, opacity

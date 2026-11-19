@@ -83,6 +83,22 @@ int main(void) {
     CHECK(mc_client_application_classes_publish(classes, &app, NULL) ==
           MC_CLIENT_APPLICATION_OWNER_OK);
     row(classes, "FIRST_REPUBLISHED_ON", false);
+    mc_client_application_query_error error;
+    bool ready_output = false;
+    const size_t holds = classes->holds;
+    classes->holds = SIZE_MAX;
+    CHECK(mc_client_application_ambient_occlusion(classes, &ready_output, &error) ==
+              MC_CLIENT_APPLICATION_QUERY_NATIVE_FAILED &&
+          !ready_output && !error.source_returned && error.native_policy && error.site.pc == 0 &&
+          error.owner.status == MC_CLIENT_APPLICATION_OWNER_LIMIT && classes->holds == SIZE_MAX);
+    classes->holds = holds;
+    classes->native_retiring = true;
+    CHECK(mc_client_application_ambient_occlusion(classes, &ready_output, &error) ==
+              MC_CLIENT_APPLICATION_QUERY_NATIVE_FAILED &&
+          !ready_output && !error.source_returned && error.native_policy && error.site.pc == 0 &&
+          error.owner.status == MC_CLIENT_APPLICATION_OWNER_INVALID_PHASE &&
+          classes->holds == holds);
+    classes->native_retiring = false;
     /* An independent cold namespace must not borrow the first namespace's
      * actual published App or an earlier renderer's AO value. */
     mc_client_application_classes *independent = NULL;
@@ -104,7 +120,6 @@ int main(void) {
     CHECK(mc_client_application_classes_create(&zero, &classes, NULL) ==
           MC_CLIENT_APPLICATION_OWNER_OK);
     bool unchanged = true;
-    mc_client_application_query_error error;
     CHECK(mc_client_application_ambient_occlusion(classes, &unchanged, &error) ==
           MC_CLIENT_APPLICATION_QUERY_NATIVE_FAILED);
     CHECK(unchanged && error.native_policy && !error.source_returned &&
