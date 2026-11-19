@@ -265,7 +265,11 @@ def public_documents(row):
 
 
 def rebind_public(snapshot, trace, side, scenario, root):
-    snapshot, trace = copy.deepcopy(snapshot), copy.deepcopy(trace)
+    return bind_public_paths(copy.deepcopy(snapshot), copy.deepcopy(trace), side, scenario, root)
+
+
+def bind_public_paths(snapshot, trace, side, scenario, root):
+    """Bind host paths in freshly owned protocol documents."""
     jar, classes, java = root / (side + " selected.jar"), root / "classes", root / "java"
     snapshot["class_origins"] = dict.fromkeys(snapshot["class_origins"], jar.resolve().as_uri().replace("file:///", "file:/", 1))
     if trace is not None:

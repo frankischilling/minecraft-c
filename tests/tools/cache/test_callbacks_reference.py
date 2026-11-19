@@ -407,7 +407,13 @@ def visit_dictionaries(value):
 class CallbackProtocolGuards(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.fixture, cls.cases = INTEROP.load_fixture()
+        fixture, cls.cases = INTEROP.load_fixture()
+        # Load and validate the complete public fixture once. Each mutation
+        # decodes its own document trees from these pristine copies.
+        cls.public_documents = tuple(json.dumps((row["snapshot"], row["trace"]), ensure_ascii=False,
+                                                separators=(",", ":")) for row in cls.cases)
+        cls.preparations = {side: INTEROP.unpack(record["snapshot"], INTEROP.MAX_ORIGINAL)
+                            for side, record in fixture["preparations"].items()}
 
     def setUp(self):
         directory = tempfile.TemporaryDirectory(prefix="mc-callback-protocol-")
@@ -415,12 +421,13 @@ class CallbackProtocolGuards(unittest.TestCase):
         self.root = Path(directory.name).resolve()
 
     def original(self, index):
-        row = self.cases[index]
-        return INTEROP.rebind_public(row["snapshot"], row["trace"], row["record"]["side"], row["record"]["scenario"], self.root)
+        record = self.cases[index]["record"]
+        snapshot, trace = json.loads(self.public_documents[index])
+        return INTEROP.bind_public_paths(snapshot, trace, record["side"], record["scenario"], self.root)
 
     def preparation(self, side):
-        document = INTEROP.strict_json(INTEROP.unpack(self.fixture["preparations"][side]["snapshot"], INTEROP.MAX_ORIGINAL))
-        return INTEROP.rebind_public(document, None, side, "prepare", self.root)[0]
+        document = json.loads(self.preparations[side])
+        return INTEROP.bind_public_paths(document, None, side, "prepare", self.root)[0]
 
     def validate(self, value, trace, jar, index):
         side, scenario = CALLBACKS.CASES[index]

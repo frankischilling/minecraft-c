@@ -8358,12 +8358,12 @@
       "sha256": "1c20186c22e37f4ad4eebc975ec06f7ff0b70deca7e58b37c4187695286f6c34"
     },
     "tests/tools/cache/test_callbacks_interop.py": {
-      "bytes": 51129,
-      "sha256": "3f32a7b7211d6775e1f890b871ebd317a129643a89c2fff9d590d43996bb5396"
+      "bytes": 51286,
+      "sha256": "79724f940a6067a1b62661b0bbc9c6676b2c523043a0f6a012e38c66f517d1df"
     },
     "tests/tools/cache/test_callbacks_reference.py": {
-      "bytes": 38492,
-      "sha256": "12a2c58238e6ac1ddd0b18b12e79cc9b9b4c2825f5440f6cc5219ef624520fe4"
+      "bytes": 38989,
+      "sha256": "f04a83e403eb11ac1614d12cbb2902e6a1124e01cb86f246406c9742b3a636b4"
     },
     "tests/tools/caves/test_geometry_reference.py": {
       "bytes": 16777,
@@ -21678,8 +21678,8 @@
       "sha256": "548d810f6542a3ad5d8ff073acae9387f604bf6a426bac83c775772bc76efd57"
     },
     "docs/performance/reference-readers.md": {
-      "bytes": 15264,
-      "sha256": "5a317adce5af0626ebe9a04470153a7e554f42dcd09578d811b515c877833cfb"
+      "bytes": 15691,
+      "sha256": "8124779fbfc31d9fd40ced18771dd7538feabf107d2aa2e78e8196b20b916e88"
     },
     "docs/world/bed-interaction.md": {
       "bytes": 5514,

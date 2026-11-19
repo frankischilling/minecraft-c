@@ -1,5 +1,15 @@
 # Reference-reader performance
 
+## Callback protocol guards
+
+Each mutation now decodes its own snapshot and trace from the verified
+public fixture. The guards decode saved preparations from retained bytes.
+All cases still validate the rebound paths, protocol records and expected
+failures independently.
+
+Across four alternating Windows pairs, the 24-test suite took 14.02 seconds
+at the median, down from 20.48 seconds. Every test name and outcome matched.
+
 ## Locale selection for native replays
 
 The held-item attack and plant lifecycle drivers run their Linux native
