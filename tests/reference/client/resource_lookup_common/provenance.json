@@ -10834,8 +10834,8 @@
       "sha256": "b05e4477cdce9b689482035656a0378c11dde1b1f6e06d7144e80b49fb44f4a4"
     },
     "docs/world/ticking.md": {
-      "bytes": 6406,
-      "sha256": "76296440822be556597be238654a1a0d750365a1c80ac8b0c867a5f65c764085"
+      "bytes": 6826,
+      "sha256": "78406dae2763ec2542f090a1bac233678ee2d5151dc5382e01d0874ae5d53700"
     },
     "include/mc/client/world/renderer_focus.h": {
       "bytes": 3003,
