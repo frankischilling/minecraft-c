@@ -39,8 +39,10 @@ def checked(path, common, expected=None, maximum=chunks.MAX_RECORD):
     record = common.file_record(path, byte_limit=maximum)
     with path.open('rb') as stream:
         raw = stream.read(maximum+1)
-    require(len(raw) <= maximum and chunks.fp(raw) == file_fp(record) and
-            (expected is None or chunks.fp(raw) == file_fp(expected)), 'bounded stable retained artifact: '+str(path))
+    error = 'bounded stable retained artifact: '+str(path)
+    require(len(raw) <= maximum, error)
+    actual = chunks.fp(raw)
+    require(actual == file_fp(record) and (expected is None or actual == file_fp(expected)), error)
     return raw
 
 
@@ -49,7 +51,7 @@ def packed(raw, *, compression=zlib.Z_BEST_COMPRESSION):
     return {**chunks.fp(raw), 'zlib_base64': base64.b64encode(zlib.compress(raw, compression)).decode('ascii')}
 
 
-def unpacked(value, maximum=chunks.MAX_RECORD):
+def _unpack_verified(value, maximum):
     chunks.keys(value, ('bytes', 'sha256', 'zlib_base64'), 'complete packed stream')
     expected = fingerprint({key: value[key] for key in ('bytes', 'sha256')}, maximum)
     require(type(value['zlib_base64']) is str and len(value['zlib_base64']) <= 4*((maximum+maximum//1000+4096+2)//3), 'bounded encoded stream')
@@ -58,9 +60,21 @@ def unpacked(value, maximum=chunks.MAX_RECORD):
         decoder = zlib.decompressobj()
         result = decoder.decompress(raw, expected['bytes']+1)
         require(decoder.eof and not decoder.unused_data and not decoder.unconsumed_tail and chunks.fp(result) == expected, 'one complete hashed lossless stream')
-        return result
+        return result, expected
     except (ValueError, zlib.error) as error:
         raise chunks.Failure('invalid packed original stream') from error
+
+
+def unpacked(value, maximum=chunks.MAX_RECORD):
+    result, _ = _unpack_verified(value, maximum)
+    return result
+
+
+def verified_process_stream(value, name, error):
+    raw, receipt = _unpack_verified(value[name], chunks.MAX_RECORD)
+    process = value['process']
+    require(process[name] == receipt and process[name+'_observed'] == len(raw), error)
+    return raw
 
 
 def source_name(path):
@@ -121,27 +135,26 @@ def public_inventory(value, root):
     return result
 
 
-def validate_inventory(value, files, root, directories):
+def unpack_inventory(value, packed_files, root, directories, maximum=chunks.MAX_RECORD):
+    require(type(packed_files) is dict and len(packed_files) <= 128, 'bounded complete packed file inventory')
+    files, expected, total = {}, [], 0
+    for name, record in packed_files.items():
+        require(type(name) is str and re.fullmatch(r'[A-Za-z0-9_./-]{1,160}', name) and all(x not in ('', '.', '..') for x in name.split('/')), 'safe relative original artifact path')
+        raw, receipt = _unpack_verified(record, min(maximum, chunks.MAX_RECORD - total))
+        files[name] = raw
+        expected.append({'path': name, 'kind': 'file', **receipt})
+        total += len(raw)
+
     chunks.keys(value, ('root', 'exists', 'entries', 'files', 'directories', 'bytes', 'complete', 'error'), 'complete public inventory')
     require(value['root'] == root and value['exists'] is True and value['complete'] is True and value['error'] is None and
             type(value['entries']) is list and len(value['entries']) <= 256, 'complete actual public inventory')
     for key in ('files', 'directories', 'bytes'):
         chunks.level.integer_value(value[key], 0, chunks.MAX_RECORD, 'typed inventory count')
-    expected = [{'path': name, 'kind': 'file', **chunks.fp(raw)} for name, raw in files.items()]
     expected += [{'path': name, 'kind': 'directory'} for name in directories]
     expected.sort(key=lambda row: row['path'])
     require(chunks.same_json(value['entries'], expected) and value['files'] == len(files) and value['directories'] == len(directories) and
-            value['bytes'] == sum(map(len, files.values())), 'every actual inventory entry and byte hash')
-
-
-def file_map(value, maximum=chunks.MAX_RECORD):
-    require(type(value) is dict and len(value) <= 128, 'bounded complete packed file inventory')
-    result = {}
-    for name, record in value.items():
-        require(type(name) is str and re.fullmatch(r'[A-Za-z0-9_./-]{1,160}', name) and all(x not in ('', '.', '..') for x in name.split('/')), 'safe relative original artifact path')
-        result[name] = unpacked(record, maximum)
-    require(sum(map(len, result.values())) <= chunks.MAX_RECORD, 'complete unpacked context byte budget')
-    return result
+            value['bytes'] == total, 'every actual inventory entry and byte hash')
+    return files
 
 
 def validate_provenance(value):
@@ -188,7 +201,7 @@ def validate_provenance(value):
     success(compilation['process'], True)
     require(compilation['process']['command'] == logical_compile(), 'exact isolated Java17 compilation argv')
     for stream in ('stdout', 'stderr'):
-        raw = unpacked(compilation[stream]); require(compilation['process'][stream] == chunks.fp(raw) and compilation['process'][stream+'_observed'] == len(raw), 'all compile stream bytes')
+        verified_process_stream(compilation, stream, 'all compile stream bytes')
     require(value['redaction'] == 'Only host class-origin URLs, inventory roots and process argv paths use logical names. Snapshot JSON is re-encoded solely for origin replacement; raw-record hashes remain separate. Every NBT/world/thread/stream byte is retained. Original method code is represented by pinned class/method fingerprints only.', 'explicit exact public artifact policy')
 
 
@@ -203,14 +216,14 @@ def validate_fixture(value):
     for side, row in value['preparations'].items():
         chunks.keys(row, ('record', 'raw_record', 'files', 'inventory', 'process', 'stdout', 'stderr'), 'complete public original preparation')
         fingerprint(row['raw_record'])
-        files = file_map(row['files'])
-        validate_inventory(row['inventory'], files, 'prepare:'+side, {'world', 'world/data', 'world/region'})
+        files = unpack_inventory(row['inventory'], row['files'], 'prepare:'+side,
+                                 {'world', 'world/data', 'world/region'})
         original = chunks.strict_json(unpacked(row['record']))
         chunks.validate_preparation(original, side, files, 'supplied:'+side, old)
         success(row['process'], True)
         require(row['process']['command'] == logical_prepare(side), 'exact logical genuine creator argv')
         for stream in ('stdout', 'stderr'):
-            raw = unpacked(row[stream]); require(row['process'][stream] == chunks.fp(raw) and row['process'][stream+'_observed'] == len(raw), 'all actual preparation streams')
+            verified_process_stream(row, stream, 'all actual preparation streams')
         baseline_files[side] = files
     contexts = value['contexts']
     require(type(contexts) is list and [(row.get('side'), row.get('repeat')) for row in contexts] ==
@@ -222,11 +235,13 @@ def validate_fixture(value):
                          'process', 'stdout', 'stderr', 'bindings'), 'complete public original context')
         side, repeat = row['side'], row['repeat']; label = side+'-'+str(repeat)
         fingerprint(row['raw_record'])
-        artifacts = file_map(row['artifacts'], chunks.MAX_NBT)
-        validate_inventory(row['artifact_inventory'], artifacts, 'case:'+label+'/artifacts', set())
-        before, after = file_map(row['world_before']), file_map(row['world_after'])
-        for phase, files in (('before', before), ('after', after)):
-            validate_inventory(row['world_'+phase+'_inventory'], files, 'case:'+label+'/owned', {'world', 'world/data', 'world/region'})
+        artifacts = unpack_inventory(row['artifact_inventory'], row['artifacts'],
+                                     'case:'+label+'/artifacts', set(), chunks.MAX_NBT)
+        directories = {'world', 'world/data', 'world/region'}
+        before = unpack_inventory(row['world_before_inventory'], row['world_before'],
+                                 'case:'+label+'/owned', directories)
+        after = unpack_inventory(row['world_after_inventory'], row['world_after'],
+                                 'case:'+label+'/owned', directories)
         require(before == baseline_files[side] | {'.chunk-storage-owned': chunks.MARKER}, 'byte-exact complete fresh genuine baseline copy')
         require(row['world_changed'] == chunks.world_changes(before, after), 'all actual copied-world changes')
         raw = unpacked(row['record']); original = chunks.strict_json(raw)
@@ -238,9 +253,9 @@ def validate_fixture(value):
         require(chunks.same_json(row['bindings'], chunks.BINDING_PINS[side]), 'all pinned original method/class fingerprints; no raw original bytecode')
         success(row['process'], True)
         require(row['process']['command'] == logical_original(side, repeat), 'exact logical untouched original argv')
-        for stream in ('stdout', 'stderr'):
-            data = unpacked(row[stream]); require(row['process'][stream] == chunks.fp(data) and row['process'][stream+'_observed'] == len(data), 'all actual original stream bytes')
-        require(unpacked(row['stdout']) == b'', 'original diagnostic output retained on stderr only')
+        stdout = verified_process_stream(row, 'stdout', 'all actual original stream bytes')
+        verified_process_stream(row, 'stderr', 'all actual original stream bytes')
+        require(stdout == b'', 'original diagnostic output retained on stderr only')
         signature = chunks.original_signature(original, artifacts)
         if side not in signatures:
             signatures[side] = signature; controls[side] = (raw, artifacts)
@@ -272,7 +287,8 @@ def normalized_process(record, command, directory, common, *, prefix):
         raw = checked(path, common, record[name], maximum=chunks.MAX_RECORD if name == 'stdout' else 4*1024*1024)
         require(record[name+'_observed'] == len(raw) and record[name+'_retained'] == len(raw),
                 'complete '+prefix+' '+name+' stream counters match actual bytes')
-        streams[name] = packed(raw); result[name] = chunks.fp(raw)
+        streams[name] = packed(raw)
+        result[name] = file_fp(streams[name])
     return {'process': result, **streams}
 
 

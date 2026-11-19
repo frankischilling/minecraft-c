@@ -390,6 +390,25 @@ separately; the comparison does not substitute that transport for the complete
 gameplay scheduler. Explicit-provider base/Nether contexts have independent
 metadata owners here and do not establish gameplay dimension-transition sharing.
 
+## Public chunk fixture validation
+
+The validator reads helper source on every load and reuses compiled code only
+for the same filename and exact bytes. Each load still executes in fresh
+modules. A same-length source edit changes both the executed code and its
+recorded fingerprint.
+
+Chunk artifact inventories compare their recorded fingerprints with the
+fingerprints already checked during decompression. Every packed stream still
+has to decode completely, match its declared length and SHA-256, and stay
+within the remaining inventory byte budget. The validator checks that budget
+before starting each file's decompression.
+
+Four alternating Windows pairs used the same fixture and native executable.
+Median time for the complete chunk-storage wrapper fell from 19.44 to 16.98
+seconds. Each run completed all 268 native replay comparisons and all seven
+malformed command checks. The candidate also exercised fresh helper modules,
+same-length source changes, and rejection before over-budget decompression.
+
 ## Reproduction
 
 Run from the repository root. Live observations require the pinned archives and

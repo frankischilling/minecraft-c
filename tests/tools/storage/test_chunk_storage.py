@@ -102,6 +102,26 @@ class ChunkStorageGuards(unittest.TestCase):
         with self.assertRaises(chunks.Failure):
             export.unpacked(value, len(raw)-1)
 
+    def test_inventory_joins_verified_streams_and_bounds_combined_size(self):
+        raw = {'first': b'abcd', 'second': b'efgh'}
+        packed = {name: export.packed(data) for name, data in raw.items()}
+        inventory = {'root': 'case', 'exists': True, 'entries': [
+            {'path': name, 'kind': 'file', **chunks.fp(data)} for name, data in raw.items()
+        ], 'files': 2, 'directories': 0, 'bytes': 8, 'complete': True, 'error': None}
+        self.assertEqual(export.unpack_inventory(inventory, packed, 'case', set()), raw)
+        with patch.object(chunks, 'MAX_RECORD', 7), \
+             patch.object(zlib, 'decompressobj', wraps=zlib.decompressobj) as decompress:
+            with self.assertRaisesRegex(chunks.Failure, 'fingerprint byte count'):
+                export.unpack_inventory(inventory, packed, 'case', set())
+            self.assertEqual(decompress.call_count, 1)
+        forged = copy.deepcopy(inventory)
+        forged['entries'][1]['sha256'] = '0'*64
+        with self.assertRaisesRegex(chunks.Failure, 'every actual inventory entry and byte hash'):
+            export.unpack_inventory(forged, packed, 'case', set())
+        packed['second']['sha256'] = '0'*64
+        with self.assertRaisesRegex(chunks.Failure, 'one complete hashed lossless stream'):
+            export.unpack_inventory(forged, packed, 'case', set())
+
     def test_complete_contexts_preparations_and_exact_integer_repeats_required(self):
         for mode in ('omit', 'duplicate', 'order', 'float', 'preparation'):
             value = copy.deepcopy(self.fixture)
@@ -284,6 +304,33 @@ class ChunkStorageGuards(unittest.TestCase):
                 chunks.helpers()
         with contextlib.redirect_stderr(io.StringIO()):
             self.assertEqual(chunks.main(['--client', 'none', '--server', 'none', '--work-dir', '.local/not-created-bad-chunk-label', '--capture-only', '--tested-commit', 'short']), 1)
+
+    def test_repeated_helper_loads_get_fresh_modules_and_current_bytes(self):
+        driver = ROOT/'scripts/reference/chunk/compare_chunk.py'
+        read_bytes = Path.read_bytes
+        source = read_bytes(driver)
+        marker = b'1'
+
+        def read(path):
+            if path == driver:
+                return source + b'\ncache_test_marker = ' + marker + b'\n'
+            return read_bytes(path)
+
+        with patch.object(Path, 'read_bytes', read):
+            common, old, executed = chunks.helpers()
+            fresh_common, fresh_old, fresh_executed = chunks.helpers()
+            self.assertIsNot(common, fresh_common)
+            self.assertIsNot(old, fresh_old)
+            self.assertEqual(executed, fresh_executed)
+            self.assertEqual((old.cache_test_marker, fresh_old.cache_test_marker), (1, 1))
+            marker = b'2'
+            _, changed, observed = chunks.helpers()
+
+        self.assertEqual(changed.cache_test_marker, 2)
+        expected, = (entry for entry in executed if entry['path'] == str(driver.resolve()))
+        actual, = (entry for entry in observed if entry['path'] == str(driver.resolve()))
+        self.assertEqual(expected['bytes'], actual['bytes'])
+        self.assertNotEqual(expected['sha256'], actual['sha256'])
 
 
 class ChunkExporterStreamGuards(unittest.TestCase):

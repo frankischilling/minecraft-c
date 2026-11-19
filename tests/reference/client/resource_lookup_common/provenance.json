@@ -746,8 +746,8 @@
       "sha256": "42d11c554ec478441f53b2d3203563f017dcf6bcc060d6697584978d98b46fab"
     },
     "docs/reference/storage.md": {
-      "bytes": 31096,
-      "sha256": "5ab743c1411ec555948df8869399cd31fff0fa2dd9fe740d396d6794ff3ee758"
+      "bytes": 32106,
+      "sha256": "6ddc2db979e4bff94066dded640971baa09cea5727cd6df2eb4bb6c625a78362"
     },
     "docs/reference/string-format.md": {
       "bytes": 3746,
@@ -2286,8 +2286,8 @@
       "sha256": "d5e2b53556194d52cd361480f140b3dc3d5beb56df6f895fbf0713786360496e"
     },
     "scripts/reference/storage/compare_chunk_storage.py": {
-      "bytes": 85685,
-      "sha256": "127853013cc752ff8dd8ca551065dd1b69f38850c77d86f6be0701dcd9a4931a"
+      "bytes": 85941,
+      "sha256": "4180adcab8f4d811133eaba54818dd5a9f8770f54236cd3e48c2eef9cc612ddd"
     },
     "scripts/reference/storage/compare_level.py": {
       "bytes": 63764,
@@ -2302,8 +2302,8 @@
       "sha256": "787f7375d70c31adf422a0a27a9a76651224af2b4b0c98a671097bbf649dd251"
     },
     "scripts/reference/storage/export_chunk_storage.py": {
-      "bytes": 31355,
-      "sha256": "4ab74533bfdf9f14478669cbe7f023a124a3697f9dbe95bb7f4e94018d597c44"
+      "bytes": 31558,
+      "sha256": "144208889ed4951c1c5c834c66edb4be62ac318b61002b03452f7fb5f6cb1d7f"
     },
     "scripts/reference/storage/export_level.py": {
       "bytes": 23862,
@@ -8722,8 +8722,8 @@
       "sha256": "d72021a689b1e0b1cc871bdcacdbfb5a161dda8b81044d7b959ad64fbe36b599"
     },
     "tests/tools/storage/test_chunk_storage.py": {
-      "bytes": 40521,
-      "sha256": "1ca0344910f2d164f91380f94c12733ae03380e90959443265fface27ce48c0d"
+      "bytes": 43144,
+      "sha256": "f32c7a0478824076e8d49bddba46dea75a5b2ae9abbf1d9d33976b180a109d09"
     },
     "tests/tools/storage/test_level.py": {
       "bytes": 34899,
@@ -18626,8 +18626,8 @@
       "sha256": "68104b4cadc250a000f7317cb933b537127c7a66aad2909f8cc1c609c67dd076"
     },
     "docs/performance/registry-random-ticks.md": {
-      "bytes": 8330,
-      "sha256": "d686dd89ca1c81bbbe205118bcd1d2d04e0fc6a284970d598fdd4b4766d7a337"
+      "bytes": 8686,
+      "sha256": "f08926c0d6adcee2ef928d57475a335333cb2bb6f93d793c48f3f382bf0a7389"
     },
     "tests/benchmarks/world_registry_tick_windows.json": {
       "bytes": 702450,

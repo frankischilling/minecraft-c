@@ -11,6 +11,12 @@ cover different operations and frozen builds. Their percentages cannot be
 combined with the captured-array results here. The retained Linux phase
 diagnosis and Source progress ownership change also keep separate scopes.
 
+An MSVC Release trial moved the live ready `Block.n` read into the scheduler
+translation unit. The compiler removed the external call. In six paired fixed
+workloads, the median for air moved from 1.842 to 1.826 ms and the median for
+stone rose from 1.666 to 1.803 ms. All sample and state checks matched. The
+trial was dropped after the stone regression.
+
 The [Windows receipt](../../tests/benchmarks/world_registry_tick_windows.json)
 measures `mc_world_runtime_random_tick_begin` on genuine GAME Worlds with a Player,
 Math and Registry owners, and 361 distinct loaded saved Chunks. Each completed call
