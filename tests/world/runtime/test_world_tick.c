@@ -623,6 +623,71 @@ static bool spawn_add_player(fixture *f, size_t slot, mc_entity **out) {
     return true;
 }
 
+static bool spawn_candidate_cases(fixture *f, const char *root, size_t slot) {
+    bool ok = false;
+    mc_entity *first_player = NULL, *second = NULL;
+    mc_world_tick_call *call = NULL;
+
+    static const struct {
+        int32_t chunk_dx;
+        size_t count;
+    } cases[] = {{0, 289}, {1, 306}, {32768 + 40, 578}};
+
+    CHECK(tick_world_create(f, root, slot, 512) && spawn_add_player(f, slot, &first_player) &&
+          spawn_add_player(f, slot, &second));
+    mc_world_runtime *w = f->worlds[slot];
+    mc_world_active_chunks *set = &w->classes->spawning_chunks;
+    mc_java_random *random = w->fields.r;
+    w->fields.N = true;
+    w->fields.O = false;
+    for (size_t i = 0; i < COUNT(cases); ++i) {
+        second->base.x = -0.25 + (double)cases[i].chunk_dx * 16.0;
+        CHECK(mc_world_info_source_rain_time_set(w->fields.x, 20) == MC_WORLD_INFO_OK &&
+              mc_world_info_source_thunder_time_set(w->fields.x, 30) == MC_WORLD_INFO_OK);
+        /* Stop the first selected candidate after its actual coordinate and
+         * Biome reads, before a spawn draw or Chunk acquisition. */
+        w->fields.r = NULL;
+        const mc_world_storage_status status =
+            mc_world_runtime_tick_begin(w, tick_math, &call, NULL);
+        w->fields.r = random;
+        mc_world_tick_state state = {0};
+        int32_t key = 0;
+        CHECK(status == MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+              mc_world_runtime_tick_inspect(call, &state) && state.source_pc == 80 &&
+              state.error->spawning != NULL && state.error->child_bytecode == 366 &&
+              strcmp(state.error->spawning->operation, "World spawn null Random receiver") == 0 &&
+              state.spawn_chunk_count == cases[i].count && state.spawn_candidates_visited == 1 &&
+              state.spawn_random_calls == 0 && !state.spawning_returned &&
+              set->count == cases[i].count && mc_java_int_set_size(set->order) == set->count &&
+              mc_java_int_set_first(set->order, &key) == MC_JAVA_INT_SET_OK &&
+              oracle_hash(state.spawn_chunk_x, state.spawn_chunk_z) == key);
+        size_t first = 0;
+        while (first < set->count && set->entries[first].hash != key)
+            ++first;
+        CHECK(first < set->count && set->entries[first].x == state.spawn_chunk_x &&
+              set->entries[first].z == state.spawn_chunk_z);
+        CHECK(mc_world_runtime_tick_retire(&call, NULL) == MC_WORLD_STORAGE_OK);
+    }
+    /* Nine columns append before the positive x hash wraps to the first area's x=0. */
+    second->base.x = -0.25 + 32768.0 * 16.0;
+    CHECK(mc_world_runtime_tick_begin(w, tick_math, &call, NULL) == MC_WORLD_STORAGE_LIMIT);
+    mc_world_tick_state state;
+    CHECK(mc_world_runtime_tick_inspect(call, &state) && state.source_pc == 80 &&
+          state.error->child_bytecode == 124 && state.error->native_policy &&
+          strcmp(state.error->operation,
+                 "World tick distinct yy keys with equal hash native boundary") == 0 &&
+          set->count == 289 + 9 * 17 && mc_java_int_set_size(set->order) == set->count &&
+          state.spawn_candidates_visited == 0 && !state.spawning_returned);
+    ok = true;
+cleanup:
+    (void)mc_world_runtime_tick_retire(&call, NULL);
+    mc_entity_release(first_player);
+    mc_entity_release(second);
+    if (f->worlds[slot] != NULL && !retire_spawn_chunks(f, slot))
+        ok = false;
+    return ok;
+}
+
 static bool spawn_positive_case(fixture *f, const char *root, size_t slot, const char *name,
                                 int32_t category, bool jockey) {
     bool ok = false;
@@ -1258,7 +1323,7 @@ int main(int argc, char **argv) {
     CHECK(tick_world_create(f, root, 0, 512));
     CHECK(drain_cases(f) && tick_cases(f) && spawn_positive_case(f, root, 1, "uz", 0, false) &&
           spawn_positive_case(f, root, 2, "dl", 1, false) &&
-          spawn_positive_case(f, root, 3, "cn", 0, true));
+          spawn_positive_case(f, root, 3, "cn", 0, true) && spawn_candidate_cases(f, root, 4));
     for (unsigned int mode = 0; mode < 3; ++mode)
         CHECK(registry_tick_case(root, mode));
     result = 0;

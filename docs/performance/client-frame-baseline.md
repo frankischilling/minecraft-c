@@ -201,6 +201,47 @@ FPS rose in seven pairs, p95 fell in six, and p99 fell in three.
 Across all eight pairs, the median of each run's longest frame
 fell from 20.11 to 19.50 ms.
 
+### Spawn candidate indexing trial
+
+The trial reused the random Chunk tick's call-local coordinate index during
+spawning. It stored ledger positions, preserved Set traversal and version
+checks, and scanned the ledger above 512 entries or when a probe ran out.
+The trial replaced two objects from baseline `3a9f04bb` in an MSVC Release
+client build with the standard frame observer.
+
+Eight alternating pairs measured nine authored spawn cases per process. The
+40 resident samples per build rejected spawn predicates. The 32 cold samples
+per build included Chunk acquisition and publication. Candidate visits, Random
+draws and final spawning Random state, constructor and rejection counts, and
+publications matched across all pairs. Each process also checked its later
+random-block work independently.
+
+| Spawning workload | Median before / trial | p95 before / trial |
+| --- | ---: | ---: |
+| Resident Chunks, rejected predicates | 0.785 / 0.753 ms | 0.854 / 0.805 ms |
+| Cold acquisition and publication | 59.27 / 59.54 ms | 62.19 / 63.29 ms |
+
+Two groups of four alternating Far pairs used the same authored save, textures,
+854×480 viewport and fixed camera on `DISPLAY2`. All 16 runs passed the observer
+checks and advanced 200 World ticks. The table reports the median of each
+per-process statistic.
+
+| Windows group | FPS before / trial | Frame p95 before / trial | Frame p99 before / trial | Longest frame before / trial |
+| --- | ---: | ---: | ---: | ---: |
+| First four pairs | 68.23 / 67.94 | 16.14 / 16.30 ms | 17.06 / 17.31 ms | 17.94 / 21.11 ms |
+| Four repeats | 68.11 / 67.94 | 16.20 / 16.27 ms | 17.36 / 17.48 ms | 19.62 / 20.81 ms |
+| All eight pairs | 68.18 / 67.94 | 16.17 / 16.30 ms | 17.12 / 17.43 ms | 18.62 / 20.85 ms |
+
+Four more pairs ran the same baseline binary under both labels. Median FPS
+was 68.03 and 68.07. Individual runs ranged from 66.54 to 68.73 FPS, and
+their longest frames ranged from 18.47 to 22.86 ms.
+
+World tick batch p99 fell from 6.73 to 6.38 ms across the eight pairs. The
+pre-HUD span p99 rose from 16.05 to 16.30 ms. Two trial runs peaked on a
+frame with zero World ticks, and the pre-HUD span accounted for over 97% of
+both frames. That span includes draw, display update and pacing. The cause of
+the longer tails remains uncertain. The index remains a prototype.
+
 ## Fixed-input observer
 
 Build both comparison executables with the same observer source. The runner

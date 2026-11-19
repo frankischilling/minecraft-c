@@ -92,3 +92,9 @@ Native component tests cover no-Player returns, weather/time order, the 1,000
 record bound, force/future entries, size mismatch, removals before provider
 failure, sky callback mutation/reentry and retained ownership. Their finite
 scope does not establish every spawning branch, Block override or server tick.
+
+The native test also covers duplicate and overlapping Player areas, a
+578-candidate area, and distinct coordinates with the same packed hash. The
+checks exercise the live Set and confirm that the first visited coordinate
+matches its ledger entry. The [spawn candidate indexing trial](../performance/client-frame-baseline.md#spawn-candidate-indexing-trial)
+reports the isolated spawning and complete-frame measurements.

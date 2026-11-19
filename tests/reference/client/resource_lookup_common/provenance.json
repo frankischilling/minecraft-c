@@ -6427,7 +6427,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938032,
-      "sha256": "eb4939fbdecf3ec4a3ebcfce15a59936ccac9ff368b2864129454da56fa80284"
+      "sha256": "cb358f5abbcf4013650420428dbbea02b8bdc3b2468fc957941f4cbefeb5f50f"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6491,7 +6491,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1068291,
-      "sha256": "cd21269c849eded3a41f89d0f591c588c982ba1884e662a742f4030a3bfdb34c"
+      "sha256": "6b77d25695c15ede80b7ea8245d76d5e6f61850b84144d9d78273588dbf3a391"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6623,7 +6623,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 934857,
-      "sha256": "cc7435db7d2752436e3f75e6fdc88dee5ab2fa0e9d46598541544b360abfab11"
+      "sha256": "e83d9a8f705c7e947bed6f91101052b6690fd494ce01ced87fb696db745e1f32"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -11038,8 +11038,8 @@
       "sha256": "2f6d09ca61aac390dc1bd1dc9932c28bb810e7c4c2eea6328c408b7933eee21a"
     },
     "tests/world/runtime/test_world_tick.c": {
-      "bytes": 67285,
-      "sha256": "3d5d3e61b1a36c0dc60a5e710ab5a242d48a4caf1caa94d18bd1aedbccbbb0de"
+      "bytes": 70731,
+      "sha256": "2500a07b297fdb51c3fa78b6a245e75554d0913f165ce756e5ccae35e9f0335f"
     },
     "tests/reference/world/tick/README.md": {
       "bytes": 4897,
