@@ -7,6 +7,7 @@
 #include "mc/client/particles/effect_renderer.h"
 #include "mc/core/math/math.h"
 
+#include <stddef.h>
 #include <string.h>
 #include <xmmintrin.h>
 
@@ -319,7 +320,13 @@ bool mc_client_world_tick_run(client_application *app, mc_math_classes *math,
         call->renderer != NULL || call->scheduler != NULL || call->ambience != NULL ||
         call->effects_owner != NULL || call->entities.child != MC_WORLD_ENTITY_TICK_CHILD_NONE)
         return false;
-    memset(call, 0, sizeof(*call));
+    /* Admission leaves the Entity child inactive. A reached Entity call
+     * publishes its own diagnostic, including any newly active child. */
+    const size_t child_begin = offsetof(mc_client_world_tick, entities) +
+                               offsetof(mc_world_entity_tick_error, child_error);
+    const size_t child_end = child_begin + sizeof(call->entities.child_error);
+    memset(call, 0, child_begin);
+    memset((unsigned char *)call + child_end, 0, sizeof(*call) - child_end);
     call->active = true;
     const bool result = body(app, math, call);
     call->active = false;

@@ -3178,8 +3178,8 @@
       "sha256": "44c04d7f465a6fbdbea456db236456ca9a6fc4dcb586951a007d796234a2e412"
     },
     "src/client/runtime/world_tick.c": {
-      "bytes": 20843,
-      "sha256": "a41bf2a1ea33311699a0e658e6004dc1f528647248a5801c99ef748ee965cdfd"
+      "bytes": 21320,
+      "sha256": "1e5a636353d9fb053a9ad42c5ea97d93240bf98a966933fd45aa26b0bb41e272"
     },
     "src/client/runtime/world_tick.h": {
       "bytes": 5846,
@@ -3462,8 +3462,8 @@
       "sha256": "6533d786d66811578c1b9141b8329d405635919a7898f93c8a8399da39fda2ce"
     },
     "tests/world/runtime/test_world_tick.c": {
-      "bytes": 73325,
-      "sha256": "5966be03d103c114c5b84f0bc4f2b7d18e713aa67c6138552e94780e392637e3"
+      "bytes": 77994,
+      "sha256": "c9754071d3bd0d6a3a42dc30e8f5339b2691a4a91616cc28d4ac554c491aa103"
     },
     "cmake/client_frustum.cmake": {
       "bytes": 1234,
@@ -3558,8 +3558,8 @@
       "sha256": "3648e9969949eae1af1c48e5a26af525151e0318e3ec30f96286cc4f4efdeaf0"
     },
     "src/world/runtime/world_tick_spawn.c": {
-      "bytes": 4617,
-      "sha256": "5bf9d46abb30c1a835877c26a094532d7e69dd088b856b3bdc86e88d0ea9a15c"
+      "bytes": 4836,
+      "sha256": "1f96d08c372aaf621ebdb522265fdc0cfd64d780d1a960f1ee49ce4c765c8004"
     },
     "tests/client/world/test_frustum.c": {
       "bytes": 21506,
@@ -5956,6 +5956,10 @@
     "tests/client/startup/test_world_reload.inc": {
       "bytes": 24902,
       "sha256": "79445812857fc09299a2d3cce11ab554ba41619ccbd533c69cacda05985e5278"
+    },
+    "src/world/biome/spawn_list_internal.h": {
+      "bytes": 273,
+      "sha256": "90d7863fbad57f4d3a594be1bd288ac3743349fa1b0e40650a466efab33b0a16"
     },
     "src/world/cache/acquire_internal.h": {
       "bytes": 707,
@@ -8782,8 +8786,8 @@
       "sha256": "7146698805c7e63101e3cd2a4af1065a73f5f052dc6d2f8c53654aa69bd90716"
     },
     "tests/client/gameplay/test_player_sleep_tick_cleanup.c": {
-      "bytes": 16149,
-      "sha256": "4e3e96392c41ef53da385802d02598bc46bc52c60c9ddd4f217c503afd404719"
+      "bytes": 16780,
+      "sha256": "5a6aeaca0e3a1295f93831df63c0980c825cdffde251700ad008f85bc9f5558b"
     },
     "tests/entity/player/test_sleep_tick.c": {
       "bytes": 34543,
@@ -10031,7 +10035,7 @@
     },
     "tests/tools/world/test_arrow_natural_flight.py": {
       "bytes": 16754,
-      "sha256": "2d1026c7a96ca638b8737b94a212bfe7de64b24caf09fb0cc89460f7210bf38e"
+      "sha256": "b542be8dfcef1ee172d47d191546eb343ace22a4a06ebb67399cc065fe4e7886"
     },
     "tests/world/runtime/test_arrow_natural_flight.c": {
       "bytes": 19352,
@@ -10047,7 +10051,7 @@
     },
     "tests/tools/client/test_arrow_world_tick_cleanup.py": {
       "bytes": 20496,
-      "sha256": "bcec0b2db8f6a4a46d4566c374defa46de907c1803cf561f1baad4eee5167cfb"
+      "sha256": "8f9d64ba47de98b8fa0884d393ef22e64d49f503e9fa3a1d845551676890c4c8"
     },
     "cmake/tests/damage_native_close.cmake": {
       "bytes": 2115,

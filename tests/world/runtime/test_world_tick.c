@@ -3,6 +3,7 @@
 #include "test_entity_publication.c"
 #undef main
 #include "../../../src/core/java/random_profile_internal.h"
+#include "../../../src/world/biome/spawn_list_internal.h"
 #include "../../../src/world/info/tick_source_internal.h"
 #include "../../../src/world/info/weather_source_internal.h"
 #include "../../../src/world/runtime/entity_publication_internal.h"
@@ -85,6 +86,94 @@ static bool spawn_chunks(fixture *f, size_t slot, uint8_t light) {
             if (!spawn_chunk(f, slot, x, z, x == -3 && z == -3, light))
                 return false;
     return true;
+}
+
+static bool spawn_pick_cases(fixture *f) {
+    bool ok = false;
+    mc_world_runtime *world = f->worlds[0];
+    mc_java_random *original = world->fields.r;
+    mc_java_random random;
+    mc_java_random_seed(&random, 41);
+    mc_biome_spawn first = {.fields = {.b = 0}}, second = {.fields = {.b = 1}};
+    void *entries[] = {&first, &second};
+    mc_biome_spawn_list list = {.data = {entries, COUNT(entries), COUNT(entries)}};
+    const mc_biome_spawn_list empty = {0};
+    mc_biome biome = {.classes = f->registry[0], .phase = BIOME_CONSTRUCTED};
+    mc_world_spawn_pick_error no_error;
+    mc_world_spawn_pick pick;
+    mc_world_spawn_pick_error error;
+    memset(&no_error, 0, sizeof(no_error));
+    memset(&error, 0xa5, sizeof(error));
+    world->fields.r = NULL;
+    CHECK(mc_world_runtime_pick_spawn_entry(world, &biome, 0, &pick, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          pick.entry == NULL && pick.total_weight == 0 &&
+          memcmp(&error, &no_error, sizeof(error)) == 0);
+    biome.fields.s = &empty;
+    CHECK(mc_world_runtime_pick_spawn_entry(world, &biome, 0, &pick, NULL) == MC_WORLD_STORAGE_OK &&
+          pick.entry == NULL && pick.total_weight == 0);
+
+    world->fields.r = &random;
+    biome.fields.s = &list;
+    mc_java_random expected = random;
+    int32_t ticket;
+    CHECK(mc_java_random_next_bounded(&expected, 1, &ticket));
+    CHECK(mc_world_runtime_pick_spawn_entry(world, &biome, 0, &pick, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          pick.entry == &second && pick.index == 1 && pick.total_weight == 1 && pick.ticket == 0 &&
+          pick.remainder == -1 && mc_test_java_random_equal(&random, &expected));
+
+    const mc_world_spawn_pick previous = pick;
+    entries[1] = NULL;
+    CHECK(mc_world_runtime_pick_spawn_entry(world, &biome, 0, &pick, &error) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          error.bytecode == 351 && !error.native_policy && error.exception_class != NULL &&
+          strcmp(error.exception_class, "java/lang/NullPointerException") == 0 &&
+          pick.entry == previous.entry && pick.index == previous.index &&
+          pick.total_weight == previous.total_weight && pick.ticket == previous.ticket &&
+          pick.remainder == previous.remainder && mc_test_java_random_equal(&random, &expected));
+
+    entries[1] = &second;
+    first.fields.b = INT32_MAX;
+    CHECK(mc_world_runtime_pick_spawn_entry(world, &biome, 0, &pick, &error) ==
+              MC_WORLD_STORAGE_UNSUPPORTED_STATE &&
+          error.bytecode == 366 && !error.native_policy && error.exception_class != NULL &&
+          strcmp(error.exception_class, "java/lang/IllegalArgumentException") == 0 &&
+          mc_test_java_random_equal(&random, &expected));
+
+    mc_biome_spawn negative = {.fields = {.b = -1}};
+    entries[1] = &negative;
+    first.fields.b = INT32_MIN;
+    CHECK(mc_java_random_next_bounded(&expected, INT32_MAX, &ticket));
+    CHECK(mc_world_runtime_pick_spawn_entry(world, &biome, 0, &pick, &error) ==
+              MC_WORLD_STORAGE_OK &&
+          pick.entry == &first && pick.index == 0 && pick.total_weight == INT32_MAX &&
+          pick.ticket == ticket && pick.remainder == INT32_MIN + ticket &&
+          memcmp(&error, &no_error, sizeof(error)) == 0 &&
+          mc_test_java_random_equal(&random, &expected));
+
+    const mc_world_spawn_pick completed = pick;
+    const size_t active_calls = world->active_calls;
+    const mc_world_storage_error saved_error = world->last_error;
+    const char *sentinel = "authored previous World error";
+    world->last_error = (mc_world_storage_error){MC_WORLD_STORAGE_BUSY, sentinel, 0};
+    world->active_calls = SIZE_MAX;
+    const mc_world_storage_status refused =
+        mc_world_runtime_pick_spawn_entry(world, &biome, 0, &pick, &error);
+    const bool preserved = world->active_calls == SIZE_MAX &&
+                           world->last_error.status == MC_WORLD_STORAGE_BUSY &&
+                           world->last_error.operation == sentinel;
+    world->active_calls = active_calls;
+    world->last_error = saved_error;
+    CHECK(refused == MC_WORLD_STORAGE_LIMIT && preserved && error.status == refused &&
+          error.native_policy && error.bytecode == 0 && error.cause.status == refused &&
+          pick.entry == completed.entry && pick.index == completed.index &&
+          pick.total_weight == completed.total_weight && pick.ticket == completed.ticket &&
+          pick.remainder == completed.remainder && mc_test_java_random_equal(&random, &expected));
+    ok = true;
+cleanup:
+    world->fields.r = original;
+    return ok;
 }
 
 static bool spawn_seed_from(mc_world_runtime *world, int32_t category, const char *target,
@@ -1367,8 +1456,8 @@ int main(int argc, char **argv) {
               MC_ENTITY_OK);
     CHECK(mc_registry_classes_initialize_blocks(f->registry[0], NULL) == MC_REGISTRY_OK);
     CHECK(tick_world_create(f, root, 0, 512));
-    CHECK(drain_cases(f) && retained_drain_failure(f, root) && tick_cases(f) &&
-          spawn_positive_case(f, root, 1, "uz", 0, false) &&
+    CHECK(spawn_pick_cases(f) && drain_cases(f) && retained_drain_failure(f, root) &&
+          tick_cases(f) && spawn_positive_case(f, root, 1, "uz", 0, false) &&
           spawn_positive_case(f, root, 2, "dl", 1, false) &&
           spawn_positive_case(f, root, 3, "cn", 0, true) && spawn_candidate_cases(f, root, 4));
     for (unsigned int mode = 0; mode < 3; ++mode)

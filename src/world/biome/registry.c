@@ -1,7 +1,7 @@
 #include "mc/world/biome/registry.h"
 
-#include "../../block/registry/registry_internal.h"
 #include "mc/core/java/java.h"
+#include "spawn_list_internal.h"
 
 #include <float.h>
 #include <limits.h>
@@ -18,14 +18,6 @@ _Static_assert(FLT_RADIX == 2 && FLT_MANT_DIG == 24 && FLT_MAX_EXP == 128 && DBL
                    DBL_MAX_EXP == 1024 && FLT_EVAL_METHOD == 0,
                "Biome registry requires binary32/binary64 evaluation");
 _Static_assert(sizeof(float) == 4 && sizeof(double) == 8, "Biome registry floating-point storage");
-
-struct mc_biome_spawn_list {
-    mc_registry_list data;
-};
-
-struct mc_biome_spawn {
-    mc_biome_spawn_fields fields;
-};
 
 static const char *const client_classes[MC_BIOME_KIND_COUNT] = {"kd", "fs", "tf", "t",
                                                                 "ry", "yj", "rb", "g"};

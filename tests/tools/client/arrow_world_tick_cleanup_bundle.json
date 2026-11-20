@@ -18,8 +18,8 @@
       "sha256": "9c3f505d2c44c1583b8126e6dd703b125df5dc511caecaceef41d8768ada3cb3"
     },
     "src/client/runtime/world_tick.c": {
-      "bytes": 20843,
-      "sha256": "a41bf2a1ea33311699a0e658e6004dc1f528647248a5801c99ef748ee965cdfd"
+      "bytes": 21320,
+      "sha256": "1e5a636353d9fb053a9ad42c5ea97d93240bf98a966933fd45aa26b0bb41e272"
     },
     "src/entity/arrow/internal.h": {
       "bytes": 2425,

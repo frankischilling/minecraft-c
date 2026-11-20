@@ -727,3 +727,56 @@ same observer source and frozen dependency libraries. Both runs advanced
 49.58 to 43.53 ns per group, including the timers. There were 3,462 and
 3,486 groups per tick at the median, before and after. The comparisons
 cover one settled scene.
+
+### Weighted spawn selection and client tick setup
+
+Weighted spawn selection borrows the current list storage for one pick.
+It visits the same entries in order, wraps the total and remainder, and
+draws from the current World Random once when the list is nonempty and its
+total is positive. It builds the detailed error record on failure and
+clears the caller's diagnostic on success. Authored controls cover empty
+and replaced lists, null and replaced entries, and weight overflow.
+
+The client World tick resets the diagnostic fields around the inactive
+Entity child payload. The Entity tick publishes its own report at return.
+The client cleanup test poisons the inactive payload before two World-less
+ticks and checks that an active retained child still blocks reuse.
+
+Eight alternating Windows Release pairs per workload replaced one object
+at a time. Weighted selection timed seven samples of 55,488 picks per
+process and list length. Entry identity, output hashes and final Random
+state matched. The client setup workload timed seven samples of 1,024
+World-less ticks per process and checked the returned value fields.
+
+| Fixed workload | Before median | After median |
+| --- | ---: | ---: |
+| Weighted pick, two entries | 47.30 ns | 24.69 ns |
+| Weighted pick, six entries | 74.11 ns | 34.24 ns |
+| Client tick with no active World | 10.52 µs | 3.66 µs |
+
+All eight pairs were faster for each workload. The setup change skipped
+363,440 of the tick record's 572,352 bytes on this build.
+
+The combined client build used the same observer at 854×480 and Far
+distance. Four qualified settled pairs each ran 200 World ticks after
+a 30-second warmup and reported zero Chunk updates. A test-helper hash
+changed during one attempt, invalidating that pair. The table uses its
+repeat with frozen inputs and the other three qualified pairs.
+
+| Median of per-run results | Before | After |
+| --- | ---: | ---: |
+| FPS | 524.23 | 528.71 |
+| Frame interval p99 | 5.613 ms | 5.669 ms |
+| Host frame p99 on frames that ran a tick | 7.824 ms | 7.732 ms |
+| Longest frame interval | 8.721 ms | 10.767 ms |
+
+FPS improved in all four pairs. Frame interval p99 and tick-bearing host
+frame p99 each improved in three. The longest interval rose in three.
+The largest interval over all runs fell from 16.213 to 12.171 ms.
+
+Two moving Far pairs at the same resolution matched 200 World ticks,
+42.91 blocks of movement, simulation counters and saved Player state
+through Save and Quit. Median FPS moved from 76.58 to 76.25, and median
+frame interval p99 rose from 15.660 to 15.859 ms. Median maximum host
+frame time fell from 18.52 to 17.55 ms. One pair improved FPS and frame
+interval p99.

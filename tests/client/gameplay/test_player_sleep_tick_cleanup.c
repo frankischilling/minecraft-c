@@ -136,6 +136,17 @@ int main(int argc, char **argv) {
     app = calloc(1, sizeof *app);
     call = calloc(1, sizeof *call);
     CHECK(f != NULL && app != NULL && call != NULL);
+    for (size_t i = 0; i < 2; ++i) {
+        memset(&call->entities.child_error, 0xa5, sizeof(call->entities.child_error));
+        call->entities.status = MC_WORLD_STORAGE_BUSY;
+        call->difficulty_stored = true;
+        call->close_calls = 7;
+        CHECK(mc_client_world_tick_run(app, NULL, call) && call->returned && !call->active &&
+              !call->difficulty_stored && !call->entities_entered && call->close_calls == 0 &&
+              call->entities.status == MC_WORLD_STORAGE_OK &&
+              call->entities.child == MC_WORLD_ENTITY_TICK_CHILD_NONE &&
+              mc_client_world_tick_cleanup(call));
+    }
     CHECK(mc_resource_files_create(resource_root, &app->files) == MC_REGISTRY_OK);
     tick_resources = mc_resource_files_source(app->files);
     CHECK(tick_setup(f, root) && tick_presence(f) && app_setup(f, app, root));
