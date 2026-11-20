@@ -926,3 +926,72 @@ translation unit at -O0 passed all 387 FP checks.
 The FP test now preserves exception effects across MXCSR writes
 and samples under Clang. The restored runtime passed the optimized
 FP test and seven other native checks with ASan and UBSan.
+
+### Render-thread dispatch in the settled Far scene
+
+The Windows Release probe sampled dispatch counters for the client
+thread and used QPC for wall time at the same call boundaries. In
+calibration, twelve 4 ms busy intervals each recorded zero context
+switches and about 11.2 million cycles at the median. Twelve sleeps
+lasted 11.257 ms at the median and each recorded one switch. The
+probe reports cycles and elapsed time separately.
+[Windows thread profiling data](https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-performance_data)
+
+All five runs matched the authored starting save, textures, camera,
+GPU and graphics settings at 854×480 and Far distance. They used swap
+interval zero and reported zero Chunk updates. After the 30-second
+warmup, the three ten-second observer checks ran 200 World ticks
+each. They recorded 527.31 FPS with the original observer, 513.91
+with wall timers, and 516.39 with wall and dispatch samples.
+
+The two-minute dispatch run advanced 2,400 World ticks. This table
+covers its 59,653 frames without a main or World tick. The slowest
+1% were selected by frame interval.
+
+| Measure | All frames without a tick | Slowest 1% |
+| --- | ---: | ---: |
+| Median swap wall time | 0.116 ms | 0.893 ms |
+| Median swap thread cycles | 325,779 | 556,396 |
+| Frames with a switch in swap | 6,818 of 59,653 | 531 of 597 |
+| Median World draw wall time | 1.412 ms | 1.759 ms |
+
+Swap showed the largest increase over each phase's own median in 443
+of those 597 frames. A one-minute capture added a timer inside SDL's
+Windows backend around Win32 `SwapBuffers`. It advanced 1,200 World
+ticks and included 30,233 frames without a tick. In its slowest 303
+frames without a tick, all 2,375 switches counted in the SDL swap
+span occurred inside `SwapBuffers`. That call took 0.894 ms at the
+median. The dispatch data identifies the call where the switches
+occurred. The resource behind those waits remains unresolved.
+
+The longest frame without a tick in the one-minute capture was 6.527
+ms, including 5.559 ms and 15.60 million thread cycles in World draw
+with zero switches there. Opaque terrain accounted for 1.355 ms and
+clouds for 1.198 ms inside that span. The earlier 16.213 ms spike
+remains unclassified by dispatch data.
+
+The terrain selection frame trial recorded a second long interval
+without a tick. It lasted 16.278 ms, with 16.113 ms in the pre-HUD
+span and 0.139 ms in the HUD and display-active span. This observer
+used the existing broad phase boundaries, so the individual call
+responsible remains unresolved.
+
+### Frustum CPU trials
+
+Two independent Windows Release trials used the live culling code
+on 5,408 sections. Six alternating pairs timed the same steady
+camera and camera sweep. Both trials matched the cull results and
+24,000 edge controls, including signed zero, subnormals, nonfinite
+coordinates and all 64 initial FP sticky-flag combinations.
+
+| Trial and workload | Before | Trial | Faster pairs |
+| --- | ---: | ---: | ---: |
+| Packed subtraction, steady | 88.328 µs | 90.127 µs | 2 of 6 |
+| Packed subtraction, sweep | 71.308 µs | 73.585 µs | 1 of 6 |
+| Single MXCSR control check, steady | 87.642 µs | 88.183 µs | 2 of 6 |
+| Single MXCSR control check, sweep | 71.277 µs | 70.311 µs | 5 of 6 |
+
+Both trials were reverted. The existing scalar path had the best
+median in both steady-camera comparisons. The terrain scan trial
+measured work inside the opaque pass.
+[Terrain section selection](chunk-rendering.md#terrain-section-selection-trial)

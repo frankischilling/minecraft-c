@@ -6435,7 +6435,7 @@
     },
     "tests/reference/client/display_sdk/provenance.json": {
       "bytes": 938512,
-      "sha256": "715ba1e69368237348327d4d60aae0643976cdb21ff8c334b11023810de5bebe"
+      "sha256": "3b757cb5e03ee8cfa03db40fdd79bb4512004937e9b595d063b1c8816c92d693"
     },
     "tests/reference/client/display_sdk/source-pins.json": {
       "bytes": 461785,
@@ -6499,7 +6499,7 @@
     },
     "tests/reference/client/loading_draw/provenance.json": {
       "bytes": 1068772,
-      "sha256": "820d45fb6203a03c9f584da26c4aa4d112c2d8c023f42b99858712a1181af7e4"
+      "sha256": "5020498b4aa4d274466296f747ab1a3056a4e60f4a6a57e639bcde494665e549"
     },
     "tests/reference/client/notice/NoticeObservation.java": {
       "bytes": 12573,
@@ -6631,7 +6631,7 @@
     },
     "tests/reference/client/render_resources/provenance.json": {
       "bytes": 935337,
-      "sha256": "7c8cbf792a81851a8cd49fa81c4c482c34f8caf3157f8bc118cf1b8e00ad24f1"
+      "sha256": "10e5b6f4c974317db4cf207c39e6b060e9f62cd5edafdb063b51800515415d0c"
     },
     "tests/reference/client/render_resources/source-pins.json": {
       "bytes": 30431,
@@ -12018,8 +12018,8 @@
       "sha256": "102d2a4814a3df13934c42243564d91357b50d376e4dd96522ac0c73655cb9f1"
     },
     "tests/client/world/test_render_global_submit_cpu.c": {
-      "bytes": 25802,
-      "sha256": "f218bcf6ca07da8cdbca78c068271a1c9b800b30d2cd64051df3bc02c1b91107"
+      "bytes": 26530,
+      "sha256": "2c461e6d4a959a398396b33380a4234ced299d927176d84fa909f850202a871a"
     },
     "tests/reference/client/occlusion_queries/QueryObservation.java": {
       "bytes": 5998,
@@ -21142,8 +21142,8 @@
       "sha256": "c139f7e3ef971d333fd08805edbdc162a294ac1a17652febd922ee691baf76a3"
     },
     "docs/performance/chunk-rendering.md": {
-      "bytes": 62641,
-      "sha256": "b57fbf1a4bac5f2a491aeecc867b6c10e9624529682008c19c6bf4919e22b124"
+      "bytes": 65319,
+      "sha256": "63120b6d7b8e1654835b0a4fd7a425a1a40bb422c8e8d6451bfda2bb8dfec8b6"
     },
     "tests/benchmarks/chunk_cache_render_windows.json": {
       "bytes": 2023922,

@@ -302,6 +302,19 @@ static bool subset_selection(void) {
               owner.fields.Q == (pass == 0 ? 1 : 0));
     }
 
+    actors[3].fields.C = INT32_MAX;
+    actors[3].source_pc = 0;
+    const uint32_t modifications_before_wrap = selected.mod_count;
+    mc_client_render_global_submit_call negative_id = {.state = {.owner = &owner, .pass = 1}};
+    int32_t negative_result = -1;
+    CHECK(!mc_terrain_subset(&negative_id, 0, 5, 0, &negative_result));
+    CHECK(negative_id.failure.status == MC_CLIENT_RENDER_GLOBAL_SOURCE_INDEX &&
+          negative_id.failure.source_pc == 138 && negative_id.state.index == 4 &&
+          negative_id.state.selected_chunks == 0 && actors[3].source_pc == 24 &&
+          selected.count == 0 && selected.mod_count == modifications_before_wrap + 1u &&
+          negative_result == -1);
+    actors[3].fields.C = 7;
+
     owner.fields.M = owner.fields.N = owner.fields.O = owner.fields.P = owner.fields.Q = INT32_MAX;
     mc_client_render_global_submit_call wrap = {.state = {.owner = &owner}};
     int32_t retained_result = -1;

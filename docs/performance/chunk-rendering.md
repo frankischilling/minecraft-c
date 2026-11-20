@@ -1171,3 +1171,55 @@ Two early candidate runs recorded 83–85 FPS and more Chunk updates than
 their baselines. The repeat stayed near 77 FPS. The fixed-work section
 compiles were faster at the median in both lighting modes. The moving
 captures give mixed results for FPS and p99.
+
+## Terrain section selection trial
+
+The first scan of the sorted sections already checks the renderer owner,
+pass bounds, pass occupancy, visibility and occlusion. The trial computed the
+list ID at that point. Batching still used the checked lookup because
+an append can draw and change the live state. A regression test
+exercises a pass-1 list ID that wraps from `INT32_MAX` to `INT32_MIN`.
+That section stays out of the selected list and keeps its successful
+lookup diagnostic at PC 24. A subsequent invalid array access still
+reports its own failure at PC 138.
+
+Six alternating Windows MSVC Release pairs used identical observer
+objects and linked dependencies, replacing only the two terrain
+renderer objects. Each timed sample made 192 scans and alternated the
+two passes. A deliberate missing camera stopped each call after the
+selection scan. Counts, section order, renderer program counters and
+the failure site matched throughout.
+
+| Fixed CPU scan | Before | After | Faster pairs |
+| --- | ---: | ---: | ---: |
+| 5,408 sections, 2,163 selected | 38.682 µs | 35.567 µs | 6 of 6 |
+| 8,712 sections, 5,973 selected | 81.935 µs | 72.514 µs | 6 of 6 |
+
+The terrain device workloads matched framebuffer hashes, list order
+and work counters for both grid sizes, with and without occlusion
+replay. The median total submit time changed by less than 1% in all
+four workloads. The 33-grid replay was faster in five of six pairs.
+
+Four valid alternating complete-frame pairs used the authored Far
+scene at 854×480, after 30 seconds of warmup. Each ten-second interval
+matched the starting scene, camera and graphics settings, advanced
+200 World ticks and reported zero Chunk updates. An initial baseline
+lost focus and advanced only 187 simulation ticks. That pair was
+retained in the evidence and excluded from the comparison. A fresh
+before-first pair replaced it.
+
+| Median of per-run results | Before | Trial | Improved pairs |
+| --- | ---: | ---: | ---: |
+| FPS | 526.42 | 519.64 | 1 of 4 |
+| Frame interval p50 | 1.696 ms | 1.717 ms | 0 of 4 |
+| Frame interval p95 | 2.519 ms | 2.598 ms | 0 of 4 |
+| Frame interval p99 | 5.681 ms | 5.629 ms | 2 of 4 |
+| Host frame p99 without a tick | 2.573 ms | 2.661 ms | 1 of 4 |
+| Host frame p99 with a tick | 7.645 ms | 8.064 ms | 0 of 4 |
+
+The runtime trial was reverted. Nine focused checks passed with the
+restored runtime on Windows Release and on WSL with Clang ASan and
+UBSan. Windows compared all 35 terrain submission rows. The WSL
+software renderer compared 30 rows and lacked the occlusion feature
+for the remaining five.
+[Frame observer and reproduction](client-frame-baseline.md#complete-frames-with-authored-assets)

@@ -4086,8 +4086,8 @@
       "sha256": "102d2a4814a3df13934c42243564d91357b50d376e4dd96522ac0c73655cb9f1"
     },
     "tests/client/world/test_render_global_submit_cpu.c": {
-      "bytes": 25802,
-      "sha256": "f218bcf6ca07da8cdbca78c068271a1c9b800b30d2cd64051df3bc02c1b91107"
+      "bytes": 26530,
+      "sha256": "2c461e6d4a959a398396b33380a4234ced299d927176d84fa909f850202a871a"
     },
     "tests/reference/client/occlusion_queries/capture_reference.py": {
       "bytes": 8100,
